@@ -75,9 +75,10 @@ export const updateCollectionSchema = {
     })
     .optional(),
   twitter: Joi.string().allow(null, '').regex(TWITTER_REGEXP).optional(),
+  price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).optional(),
 };
 
-const createCollectionSchema = Joi.object({
+const createCollectionSchema = {
   ...updateCollectionSchema,
   type: Joi.number()
     .equal(CollectionType.CLASSIC, CollectionType.GENERATED, CollectionType.SFT)
@@ -99,10 +100,10 @@ const createCollectionSchema = Joi.object({
     .equal(...Object.keys(Categories))
     .required(),
   limitedEdition: Joi.boolean().optional(),
-});
+};
 
 export const createCollection = onCall(WEN_FUNC.cCollection)(
-  createCollectionSchema,
+  Joi.object(createCollectionSchema),
   createCollectionControl,
 );
 

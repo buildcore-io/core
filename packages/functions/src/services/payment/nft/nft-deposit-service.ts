@@ -378,6 +378,7 @@ const getMigratedCollection = (
     accessCollections: [],
     availableFrom: dateToTimestamp(dayjs()),
     price: 0,
+    availablePrice: 0,
     onePerMemberOnly: false,
     placeholderNft: '',
     placeholderUrl: '',

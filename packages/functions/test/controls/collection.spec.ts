@@ -9,6 +9,7 @@ import {
   CollectionType,
   Member,
   MIN_IOTA_AMOUNT,
+  Nft,
   RANKING_TEST,
   Space,
   StakeType,
@@ -25,6 +26,7 @@ import { chunk } from 'lodash';
 import admin from '../../src/admin.config';
 import { rankController } from '../../src/controls/rank.control';
 import { voteController } from '../../src/controls/vote.control';
+import { createNft, orderNft } from '../../src/runtime/firebase/nft';
 import * as config from '../../src/utils/config.utils';
 import { cOn } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -195,6 +197,54 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     const uCollection = await testEnv.wrap(updateCollection)({});
     expect(uCollection?.uid).toBeDefined();
     expect(uCollection?.description).toBe('123');
+    walletSpy.mockRestore();
+  });
+
+  it('successfully create collection & update price', async () => {
+    mockWalletReturnValue(walletSpy, dummyAddress, dummyCollection(space.uid, 0.6));
+    let collection = await testEnv.wrap(createCollection)({});
+
+    mockWalletReturnValue(walletSpy, dummyAddress, { uid: collection?.uid });
+    await testEnv.wrap(approveCollection)({});
+
+    const dummyNft = () => ({
+      name: 'Collection A',
+      description: 'babba',
+      collection: collection.uid,
+      availableFrom: dayjs().subtract(1, 'minute').toDate(),
+      price: MIN_IOTA_AMOUNT,
+    });
+    mockWalletReturnValue(walletSpy, dummyAddress, dummyNft());
+    const nft1 = await testEnv.wrap(createNft)({});
+    mockWalletReturnValue(walletSpy, dummyAddress, dummyNft());
+    const nft2 = await testEnv.wrap(createNft)({});
+    mockWalletReturnValue(walletSpy, dummyAddress, { collection: collection.uid, nft: nft1.uid });
+    const order = await testEnv.wrap(orderNft)({});
+    const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
+    await milestoneProcessed(milestone.milestone, milestone.tranId);
+
+    mockWalletReturnValue(walletSpy, dummyAddress, {
+      uid: collection?.uid,
+      price: 15 * MIN_IOTA_AMOUNT,
+      name: 'asd',
+      description: '123',
+      royaltiesFee: 0.6,
+      royaltiesSpace: space.uid,
+    });
+    const uCollection = await testEnv.wrap(updateCollection)({});
+    expect(uCollection?.uid).toBe(collection.uid);
+    expect(uCollection?.price).toBe(15 * MIN_IOTA_AMOUNT);
+    expect(uCollection?.availablePrice).toBe(15 * MIN_IOTA_AMOUNT);
+
+    let nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft1.uid}`);
+    let nftData = <Nft>(await nftDocRef.get()).data();
+    expect(nftData.price).toBe(MIN_IOTA_AMOUNT);
+
+    nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft2.uid}`);
+    nftData = <Nft>(await nftDocRef.get()).data();
+    expect(nftData.price).toBe(15 * MIN_IOTA_AMOUNT);
+    expect(nftData.availablePrice).toBe(15 * MIN_IOTA_AMOUNT);
+
     walletSpy.mockRestore();
   });
 
