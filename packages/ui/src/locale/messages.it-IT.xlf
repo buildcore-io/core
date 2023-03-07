@@ -1256,7 +1256,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">232</context>
         </context-group>
-        <target state="translated">Transazione negata per autenticazione fallita. La preghiamo di ricaricare la pagina.</target>
+        <target state="translated">Transazione negata per autenticazione fallita. Ti preghiamo di ricaricare la pagina e riprovare.</target>
       </trans-unit>
       <trans-unit id="4055437571775141299" datatype="html">
         <source>You must unlock your MetaMask first!</source>
@@ -1264,7 +1264,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">278</context>
         </context-group>
-        <target state="translated">Accedere innanzitutto al MetaMask inserendo la password!</target>
+        <target state="translated">Per prima cosa è necessario sbloccare il tuo MetaMask!</target>
       </trans-unit>
       <trans-unit id="720946609464126782" datatype="html">
         <source>You must enable access to read your account address.</source>
@@ -1292,7 +1292,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">378</context>
         </context-group>
-        <target state="translated">Nonce da autenticazione negato!</target>
+        <target state="translated">Impossibile ottenere il nonce per l'autenticazione!</target>
       </trans-unit>
       <trans-unit id="4682022086195235271" datatype="html">
         <source>Unable to connect your TanglePay wallet.</source>
@@ -1304,7 +1304,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">482</context>
         </context-group>
-        <target state="translated">Impossibile interagire con il portafoglio TanglePay, Connessione negata.</target>
+        <target state="translated">Impossibile interagire con il tuo portafoglio TanglePay. Connessione negata.</target>
       </trans-unit>
       <trans-unit id="6187247060217853815" datatype="html">
         <source>Unable to detect address in TanglePay!</source>
@@ -1340,7 +1340,7 @@
           <context context-type="sourcefile">src/app/components/award/components/award-give-badges/award-give-badges.component.html</context>
           <context context-type="linenumber">16</context>
         </context-group>
-        <target state="translated">Offerta di badges</target>
+        <target state="translated">Offerta di badge</target>
       </trans-unit>
       <trans-unit id="4883306013539623033" datatype="html">
         <source>Once issued, this badge is sent to the rewarded participant&apos;s wallet.</source>
@@ -1348,7 +1348,7 @@
           <context context-type="sourcefile">src/app/components/award/components/award-awards/award-awards.component.html</context>
           <context context-type="linenumber">36</context>
         </context-group>
-        <target state="translated">Una volta rilasciato, questo badge verrà inviato al portafoglio del partecipante premiato.</target>
+        <target state="translated">Una volta rilasciato questo badge verrà inviato al portafoglio del partecipante premiato.</target>
       </trans-unit>
       <trans-unit id="5919462042392318578" datatype="html">
         <source> Upload CSV </source>
@@ -1372,7 +1372,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
           <context context-type="linenumber">10</context>
         </context-group>
-        <target state="translated">Scarica modello CSV</target>
+        <target state="translated">Scarica il file CSV di esempio</target>
       </trans-unit>
       <trans-unit id="3326151895287428367" datatype="html">
         <source> You can create badge airdrops for any user. You can upload CSV with users addresses and they will be properly reward. </source>
@@ -1380,7 +1380,7 @@
           <context context-type="sourcefile">src/app/components/award/components/award-give-badges/award-give-badges.component.html</context>
           <context context-type="linenumber">42,44</context>
         </context-group>
-        <target state="translated"> È possibile creare airdrops di badges per qualsiasi utente. È anche possibile importare file CSV e caricare gli indirizzi degli utenti i quali riceveranno a loro volta delle belle ricompense. </target>
+        <target state="translated"> Puoi creare airdrops di badge per qualsiasi utente. Puoi importare file CSV e caricare gli indirizzi degli utenti i quali riceveranno a loro volta delle belle ricompense. </target>
       </trans-unit>
       <trans-unit id="5396117322147562409" datatype="html">
         <source> If you don’t know how to prepare CSV file, you can download our template made for you. </source>
@@ -1396,7 +1396,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
           <context context-type="linenumber">25,26</context>
         </context-group>
-        <target state="translated"> Se non sai come preparare il file CSV, puoi scaricare il nostro modello creato per te. </target>
+        <target state="translated"> Se stai pensando di creare un file CSV, ma non sai come farlo, il nostro schema di costruzione del file scaricabile, pensato per te, ti aiuterà a farlo. </target>
       </trans-unit>
       <trans-unit id="9038733468722036123" datatype="html">
         <source>Confirm schedule</source>
@@ -1668,7 +1668,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">294</context>
         </context-group>
-        <target state="translated">Transazione completata. Congratulazioni.</target>
+        <target state="translated">Congratulazioni! La transazione è stata completata.</target>
       </trans-unit>
       <trans-unit id="3042357735796894995" datatype="html">
         <source> Finish Mint </source>
@@ -1780,7 +1780,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.ts</context>
           <context context-type="linenumber">79</context>
         </context-group>
-        <target state="translated">Confermato</target>
+        <target state="translated">L'indirizzo è stato confermato</target>
       </trans-unit>
       <trans-unit id="1319571754064551125" datatype="html">
         <source>Payment received.</source>
@@ -1896,7 +1896,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.ts</context>
           <context context-type="linenumber">208</context>
         </context-group>
-        <target state="translated">Confermare transazione.</target>
+        <target state="translated">La transazione è in fase di elaborazione.</target>
       </trans-unit>
       <trans-unit id="2538082719897429511" datatype="html">
         <source>Transaction confirmed.</source>
@@ -2240,7 +2240,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">570</context>
         </context-group>
-        <target state="translated">Solo i membri dello spazio</target>
+        <target state="translated">Solo Membri dello Spazio</target>
       </trans-unit>
       <trans-unit id="7084997937034694532" datatype="html">
         <source>Space Guardians Only</source>
@@ -2264,7 +2264,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">583</context>
         </context-group>
-        <target state="translated">Spazio membri con badge solo</target>
+        <target state="translated">Solo Membri dello Spazio con Badge</target>
       </trans-unit>
       <trans-unit id="7476114218032668015" datatype="html">
         <source>At least one NFT from Collections</source>
@@ -6726,7 +6726,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">105,106</context>
         </context-group>
-        <target state="translated"> Totale token in stake </target>
+        <target state="translated"> Numero complessivo di token con i quali è stato fatto staking </target>
       </trans-unit>
       <trans-unit id="7543689964177787800" datatype="html">
         <source> Voting is active on </source>
@@ -7878,7 +7878,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">76,77</context>
         </context-group>
-        <target state="translated"> Spazio riservato ai membri </target>
+        <target state="translated"> Solo Membri dello Spazio </target>
       </trans-unit>
       <trans-unit id="2601510202253646556" datatype="html">
         <source> Space Guardians Only </source>
@@ -7894,7 +7894,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">102,103</context>
         </context-group>
-        <target state="translated"> Spazio riservato ai membri con distintivo </target>
+        <target state="translated"> Solo Membri dello Spazio con Badge </target>
       </trans-unit>
       <trans-unit id="4041633029622034196" datatype="html">
         <source> Must hold at least one NFT from each selected Collections </source>
@@ -8378,7 +8378,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">217</context>
         </context-group>
-        <target state="translated">Lo sconto si applica solo ai membri che hanno guadagnato token dai ricompense emesse da questo spazio.</target>
+        <target state="translated">Lo sconto si applica solo ai membri che hanno guadagnato token in gioco per premi emessi in questo spazio.</target>
       </trans-unit>
       <trans-unit id="6430237919890046575" datatype="html">
         <source>Token amount higher than</source>
