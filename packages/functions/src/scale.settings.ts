@@ -62,7 +62,7 @@ export function scale(func: WEN_FUNC): number {
   scaleSettings[WEN_FUNC.mnemonicWrite] = superPump;
   scaleSettings[WEN_FUNC.mintCollection] = low;
 
-  scaleSettings[WEN_FUNC.algolia] = important;
+  scaleSettings[WEN_FUNC.algolia] = pump;
 
   return isEmulatorEnv() ? 0 : scaleSettings[func] || low;
 }

@@ -29,6 +29,7 @@ import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
 import { assertIpNotBlocked } from '../utils/ip.utils';
 import { assertValidationAsync } from '../utils/schema.utils';
+import { getSpace } from '../utils/space.utils';
 import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 
 export const openBid = functions
@@ -95,8 +96,7 @@ export const openBid = functions
 
     const newWallet = await WalletService.newWallet(network);
     const targetAddress = await newWallet.getNewIotaAddressDetails();
-    const refRoyaltySpace = admin.firestore().collection(COL.SPACE).doc(collection.royaltiesSpace);
-    const royaltySpace = <Space | undefined>(await refRoyaltySpace.get()).data();
+    const royaltySpace = await getSpace(collection.royaltiesSpace);
 
     const tranId = getRandomEthAddress();
     const transactionDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${tranId}`);

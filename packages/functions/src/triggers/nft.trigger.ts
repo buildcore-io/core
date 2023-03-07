@@ -6,7 +6,7 @@ import { downloadMediaAndPackCar, nftToIpfsMetadata } from '../utils/car.utils';
 import { uOn } from '../utils/dateTime.utils';
 
 const getNftAvailability = (nft: Nft | undefined) => {
-  if (!nft) {
+  if (!nft || nft.placeholderNft) {
     return NftAvailable.UNAVAILABLE;
   }
   if (nft.availableFrom && nft.auctionFrom) {
@@ -38,11 +38,22 @@ export const nftWrite = functions
     const prevAvailability = getNftAvailability(prev);
     const currAvailability = getNftAvailability(curr);
     if (prevAvailability !== currAvailability) {
-      await updateCollectionStatsOnAvailabilityChange(
+      const { nftsOnSale, nftsOnAuction } = getSaleChanges(
         prevAvailability,
         currAvailability,
-        curr.collection,
+        prev?.owner,
       );
+      const availableNfts = getAvailableNftsChange(prevAvailability, currAvailability, prev?.owner);
+
+      const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${curr.collection}`);
+      await collectionDocRef.update(
+        uOn({
+          nftsOnSale: inc(nftsOnSale),
+          nftsOnAuction: inc(nftsOnAuction),
+          availableNfts: inc(availableNfts),
+        }),
+      );
+
       await change.after.ref.update(uOn({ available: currAvailability }));
     }
 
@@ -77,32 +88,34 @@ const prepareNftMedia = async (nft: Nft) => {
   await batch.commit();
 };
 
-const updateCollectionStatsOnAvailabilityChange = async (
-  prev: NftAvailable,
-  curr: NftAvailable,
-  collection: string,
-) => {
-  const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${collection}`);
-  let availableNfts = 0;
+const getSaleChanges = (prev: NftAvailable, curr: NftAvailable, owner = '') => {
+  let nftsOnSale = 0;
   let nftsOnAuction = 0;
 
+  if (!owner) {
+    return { nftsOnSale, nftsOnAuction };
+  }
+
   if (prev === NftAvailable.UNAVAILABLE) {
-    availableNfts = [NftAvailable.SALE, NftAvailable.AUCTION_AND_SALE].includes(curr) ? 1 : 0;
+    nftsOnSale = [NftAvailable.SALE, NftAvailable.AUCTION_AND_SALE].includes(curr) ? 1 : 0;
     nftsOnAuction = [NftAvailable.AUCTION, NftAvailable.AUCTION_AND_SALE].includes(curr) ? 1 : 0;
   } else if (prev === NftAvailable.SALE) {
-    availableNfts = [NftAvailable.UNAVAILABLE, NftAvailable.AUCTION].includes(curr) ? -1 : 0;
+    nftsOnSale = [NftAvailable.UNAVAILABLE, NftAvailable.AUCTION].includes(curr) ? -1 : 0;
     nftsOnAuction = [NftAvailable.AUCTION, NftAvailable.AUCTION_AND_SALE].includes(curr) ? 1 : 0;
   } else if (prev === NftAvailable.AUCTION) {
+    nftsOnSale = 0;
     nftsOnAuction = curr === NftAvailable.UNAVAILABLE ? -1 : 0;
   } else if (prev === NftAvailable.AUCTION_AND_SALE) {
-    availableNfts = curr === NftAvailable.UNAVAILABLE ? -1 : 0;
+    nftsOnSale = curr === NftAvailable.UNAVAILABLE ? -1 : 0;
     nftsOnAuction = curr === NftAvailable.UNAVAILABLE ? -1 : 0;
   }
 
-  await collectionDocRef.update(
-    uOn({
-      availableNfts: inc(availableNfts),
-      nftsOnAuction: inc(nftsOnAuction),
-    }),
-  );
+  return { nftsOnSale, nftsOnAuction };
+};
+
+const getAvailableNftsChange = (prev: NftAvailable, curr: NftAvailable, prevOwner = '') => {
+  if (prev === curr || prevOwner) {
+    return 0;
+  }
+  return curr === NftAvailable.SALE ? 1 : -1;
 };

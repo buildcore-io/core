@@ -26,12 +26,13 @@ import {
   Collection,
   CollectionType,
   FILE_SIZES,
+  GLOBAL_DEBOUNCE_TIME,
   Network,
   RANKING,
   RANKING_TEST,
 } from '@soonaverse/interfaces';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { first, firstValueFrom, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, first, firstValueFrom, skip, Subscription } from 'rxjs';
 import { DataService } from '../../services/data.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 
@@ -46,6 +47,7 @@ export class CollectionPage implements OnInit, OnDestroy {
   public isAboutCollectionVisible = false;
   public seeMore = false;
   public rankingConfig = environment.production === true ? RANKING : RANKING_TEST;
+  public showNfts$ = new BehaviorSubject<boolean>(false);
   private guardiansSubscription$?: Subscription;
   private guardiansRankModeratorSubscription$?: Subscription;
   private subscriptions$: Subscription[] = [];
@@ -160,6 +162,12 @@ export class CollectionPage implements OnInit, OnDestroy {
         }
       }
     });
+    const t = setInterval(() => {
+      if (this.data.collection$.value?.uid) {
+        this.showNfts$.next(true);
+        clearInterval(t);
+      }
+    }, GLOBAL_DEBOUNCE_TIME);
   }
 
   public createNft(): void {

@@ -30,7 +30,7 @@ export const migrateUriToSotrage = async (
     if (!fileName) {
       return '';
     }
-    await bucket.upload(path.join(workdir, fileName), {
+    const response = await bucket.upload(path.join(workdir, fileName), {
       destination: `${owner}/${uid}/${fileName}`,
       metadata: {
         contentType,
@@ -39,7 +39,7 @@ export const migrateUriToSotrage = async (
     });
 
     if (bucket.name === Bucket.DEV) {
-      return `http://localhost:4000/storage/${bucket.name}/${owner}/${uid}/${fileName}`;
+      return response[1].mediaLink;
     }
     return `https://${bucket.name}/${owner}/${uid}/${fileName}`;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

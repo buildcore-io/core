@@ -61,7 +61,7 @@ describe('Minted nft trading', () => {
 
     const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${helper.nft?.collection}`);
     let collection = <Collection>(await collectionDocRef.get()).data();
-    expect(collection.availableNfts).toBe(1);
+    expect(collection.nftsOnSale).toBe(1);
     expect(collection.nftsOnAuction).toBe(0);
 
     await helper.walletService!.send(address, tangleOrder.payload.targetAddress, MIN_IOTA_AMOUNT, {
@@ -94,7 +94,7 @@ describe('Minted nft trading', () => {
     expect(nftOutputIds.items.length).toBe(1);
 
     collection = <Collection>(await collectionDocRef.get()).data();
-    expect(collection.availableNfts).toBe(0);
+    expect(collection.nftsOnSale).toBe(0);
     expect(collection.nftsOnAuction).toBe(0);
   });
 });

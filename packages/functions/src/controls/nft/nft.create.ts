@@ -116,6 +116,7 @@ const processOneCreateNft = async (
     approved: collection.approved,
     rejected: collection.rejected,
     owner: null,
+    isOwned: false,
     soldOn: null,
     ipfsRetries: 0,
     space: collection.space,

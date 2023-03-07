@@ -59,9 +59,12 @@ const getProposalUpdateDataAfterVote = (
   values: number[],
 ) => {
   const prevAnswer = head(Object.keys(head(proposalMember.values) || {}));
+  if (prevAnswer === values[0].toString()) {
+    return {};
+  }
   const data = {
     results: {
-      voted: inc(proposalMember.voted ? 0 : weight * proposal.questions.length),
+      voted: inc(proposalMember.voted ? 0 : weight),
       answers: { [`${values[0]}`]: inc(weight) },
     },
   };

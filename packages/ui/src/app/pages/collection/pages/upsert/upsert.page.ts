@@ -195,7 +195,7 @@ export class UpsertPage implements OnInit, OnDestroy {
 
               // Disable fields that are not editable.
               this.spaceControl.disable();
-              this.priceControl.disable();
+              // this.priceControl.disable();
               this.availableFromControl.disable();
               this.typeControl.disable();
               this.categoryControl.disable();
@@ -206,7 +206,7 @@ export class UpsertPage implements OnInit, OnDestroy {
                 this.collectionMinted = true;
                 this.nameControl.disable();
                 this.descriptionControl.disable();
-                this.priceControl.disable();
+                // this.priceControl.disable();
                 this.royaltiesFeeControl.disable();
                 this.royaltiesSpaceControl.disable();
                 this.royaltiesSpaceDifferentControl.disable();
@@ -596,7 +596,7 @@ export class UpsertPage implements OnInit, OnDestroy {
       delete data.space;
       delete data.type;
       delete data.category;
-      delete data.price;
+      // delete data.price;
       delete data.availableFrom;
       delete data.limitedEdition;
 

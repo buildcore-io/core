@@ -14,8 +14,14 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/proposal/services/helper.service';
-import { Award, FILE_SIZES, Proposal, ProposalType } from '@soonaverse/interfaces';
-import { BehaviorSubject, first, firstValueFrom, skip, Subscription } from 'rxjs';
+import {
+  Award,
+  FILE_SIZES,
+  GLOBAL_DEBOUNCE_TIME,
+  Proposal,
+  ProposalType,
+} from '@soonaverse/interfaces';
+import { BehaviorSubject, debounceTime, first, firstValueFrom, skip, Subscription } from 'rxjs';
 import { MemberApi } from './../../../../@api/member.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { SpaceApi } from './../../../../@api/space.api';
@@ -76,7 +82,7 @@ export class ProposalPage implements OnInit, OnDestroy {
 
     // If we're unable to find the space we take the user out as well.
     this.data.proposal$
-      .pipe(skip(1), untilDestroyed(this))
+      .pipe(skip(1), untilDestroyed(this), debounceTime(GLOBAL_DEBOUNCE_TIME))
       .subscribe((obj: Proposal | undefined) => {
         if (!obj) {
           this.notFound();

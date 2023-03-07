@@ -25,6 +25,9 @@ import { saveBaseToken } from './common';
 const network = Network.RMS;
 let walletSpy: any;
 
+const CUSTOM_MEDIA =
+  'https://ipfs.io/ipfs/bafkreiapx7kczhfukx34ldh3pxhdip5kgvh237dlhp55koefjo6tyupnj4';
+
 describe('Award tangle request', () => {
   let guardian: string;
   let space: Space;
@@ -51,8 +54,8 @@ describe('Award tangle request', () => {
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
   });
 
-  it('Should create with tangle request', async () => {
-    const newAward = awardRequest(space.uid, token.symbol);
+  it.each([CUSTOM_MEDIA, MEDIA])('Should create with tangle request', async (media: string) => {
+    const newAward = awardRequest(space.uid, token.symbol, media);
     await requestFundsFromFaucet(Network.RMS, guardianAddress.bech32, 5 * MIN_IOTA_AMOUNT);
     await walletService.send(
       guardianAddress,
@@ -98,7 +101,7 @@ describe('Award tangle request', () => {
   });
 });
 
-const awardRequest = (space: string, tokenSymbol: string) => ({
+const awardRequest = (space: string, tokenSymbol: string, image: string) => ({
   name: 'award',
   description: 'award',
   space,
@@ -107,7 +110,7 @@ const awardRequest = (space: string, tokenSymbol: string) => ({
     name: 'badge',
     description: 'badge',
     total: 2,
-    image: MEDIA,
+    image,
     tokenReward: MIN_IOTA_AMOUNT,
     lockTime: 31557600000,
     tokenSymbol,

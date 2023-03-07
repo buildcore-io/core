@@ -1,6 +1,7 @@
 import {
   COL,
   Network,
+  Proposal,
   ProposalStartDateMin,
   ProposalSubType,
   ProposalType,
@@ -322,9 +323,9 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     );
   });
 
-  it('create proposal, approve & vote ', async () => {
+  it('create proposal, approve & vote twice on same ', async () => {
     await giveBadge(memberId, memberId, space, token.symbol, 10);
-    const proposal = await cProposal(
+    let proposal: Proposal = await cProposal(
       memberId,
       space,
       ProposalType.MEMBERS,
@@ -333,9 +334,38 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
 
     await apprProposal(memberId, proposal);
 
-    const vResult = await vote(memberId, proposal, [1]);
+    const vResult = await vote(memberId, proposal, [2]);
     expect(vResult?.payload).toBeDefined();
     expect(vResult?.payload?.weight).toEqual(1);
+    await vote(memberId, proposal, [2]);
+
+    const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+    proposal = <Proposal>(await proposalDocRef.get()).data();
+
+    expect(proposal.results.answers[2]).toBe(1);
+  });
+
+  it('create proposal, approve & vote twice on different ', async () => {
+    await giveBadge(memberId, memberId, space, token.symbol, 10);
+    let proposal: Proposal = await cProposal(
+      memberId,
+      space,
+      ProposalType.MEMBERS,
+      ProposalSubType.ONE_MEMBER_ONE_VOTE,
+    );
+
+    await apprProposal(memberId, proposal);
+
+    const vResult = await vote(memberId, proposal, [2]);
+    expect(vResult?.payload).toBeDefined();
+    expect(vResult?.payload?.weight).toEqual(1);
+    await vote(memberId, proposal, [1]);
+
+    const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+    proposal = <Proposal>(await proposalDocRef.get()).data();
+
+    expect(proposal.results.answers[2]).toBe(0);
+    expect(proposal.results.answers[1]).toBe(1);
   });
 
   it('create proposal, approve & vote - REPUTATION_BASED_ON_SPACE ', async () => {

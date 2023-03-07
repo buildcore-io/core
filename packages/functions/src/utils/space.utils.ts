@@ -1,4 +1,5 @@
 import { COL, Space, SUB_COL, WenError } from '@soonaverse/interfaces';
+import admin from '../admin.config';
 import { Database } from '../database/Database';
 import { throwInvalidArgument } from './error.utils';
 
@@ -20,3 +21,11 @@ export const spaceToIpfsMetadata = (space: Space) => ({
   name: space.name,
   soonaverseId: space.uid,
 });
+
+export const getSpace = async (space: string | undefined) => {
+  if (!space) {
+    return undefined;
+  }
+  const docRef = admin.firestore().collection(COL.SPACE).doc(space);
+  return <Space | undefined>(await docRef.get()).data();
+};

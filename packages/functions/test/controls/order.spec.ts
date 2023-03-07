@@ -29,6 +29,7 @@ import {
   mockWalletReturnValue,
   submitMilestoneFunc,
   submitMilestoneOutputsFunc,
+  wait,
 } from './common';
 
 const db = admin.firestore();
@@ -126,30 +127,41 @@ describe('Ordering flows', () => {
     await expectThrow(submitOrderFunc(member, nftPurchase), WenError.nft_locked_for_sale.key);
   });
 
-  it('One collection, one classic NFT, one purchase & paid for', async () => {
-    // Create collection.
-    const price = 100;
-    let collection: Collection = await createCollectionFunc(
-      member,
-      dummyCollection(space, CollectionType.CLASSIC, 0.5, price),
-    );
-    let nft: Nft = await createNftFunc(member, dummyNft(collection, price));
+  it.each([false, true])(
+    'One collection, one classic NFT, one purchase & paid for',
+    async (noRoyaltySpace: boolean) => {
+      const price = 100;
+      let collection: Collection = await createCollectionFunc(
+        member,
+        dummyCollection(space, CollectionType.CLASSIC, 0.5, price),
+      );
+      if (noRoyaltySpace) {
+        await admin
+          .firestore()
+          .doc(`${COL.COLLECTION}/${collection.uid}`)
+          .update({ royaltiesSpace: '', royaltiesFee: 0 });
+      }
+      let nft: Nft = await createNftFunc(member, dummyNft(collection, price));
 
-    const order = await submitOrderFunc(member, { collection: collection.uid, nft: nft.uid });
-    const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
-    await milestoneProcessed(milestone.milestone, milestone.tranId);
+      const order = await submitOrderFunc(member, { collection: collection.uid, nft: nft.uid });
+      const milestone = await submitMilestoneFunc(
+        order.payload.targetAddress,
+        order.payload.amount,
+      );
+      await milestoneProcessed(milestone.milestone, milestone.tranId);
 
-    const nftDocRef = db.collection(COL.NFT).doc(nft.uid);
-    nft = <Nft>(await nftDocRef.get()).data();
-    expect(nft.owner).toBe(member);
-    expect(nft.lastTradedOn).toBeDefined();
-    expect(nft.totalTrades).toBe(1);
+      const nftDocRef = db.collection(COL.NFT).doc(nft.uid);
+      nft = <Nft>(await nftDocRef.get()).data();
+      expect(nft.owner).toBe(member);
+      expect(nft.lastTradedOn).toBeDefined();
+      expect(nft.totalTrades).toBe(1);
 
-    const collectionDocRef = db.collection(COL.COLLECTION).doc(nft.collection);
-    collection = <Collection>(await collectionDocRef.get()).data();
-    expect(collection.lastTradedOn).toBeDefined();
-    expect(collection.totalTrades).toBe(1);
-  });
+      const collectionDocRef = db.collection(COL.COLLECTION).doc(nft.collection);
+      collection = <Collection>(await collectionDocRef.get()).data();
+      expect(collection.lastTradedOn).toBeDefined();
+      expect(collection.totalTrades).toBe(1);
+    },
+  );
 
   it('One collection, one classic NFT, one purchase & paid for and try again', async () => {
     const price = 100;
@@ -211,6 +223,12 @@ describe('Ordering flows', () => {
       submitOrderFunc(member, { collection: collection.uid }),
       WenError.no_more_nft_available_for_sale.key,
     );
+
+    const placeholderNftDocRef = admin.firestore().doc(`${COL.NFT}/${collection.placeholderNft}`);
+    await wait(async () => {
+      const placeholderNft = <Nft>(await placeholderNftDocRef.get()).data();
+      return placeholderNft.hidden || false;
+    });
   });
 
   it('One collection, generated NFT, 15 Nfts should equal to 15 purchases', async () => {

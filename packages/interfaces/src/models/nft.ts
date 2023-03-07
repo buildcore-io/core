@@ -64,6 +64,7 @@ export interface Nft extends BaseRecord {
   properties: PropStats;
   stats: PropStats;
   placeholderNft: boolean;
+  position: number;
   locked?: boolean;
   lockedBy?: string | null;
   sold?: boolean;

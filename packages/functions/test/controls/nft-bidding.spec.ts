@@ -108,6 +108,12 @@ beforeEach(async () => {
   mockWalletReturnValue(walletSpy, memberAddress, { media: MEDIA, ...dummyNft(collection.uid) });
   nft = await testEnv.wrap(createNft)({});
 
+  const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`);
+  await wait(async () => {
+    collection = <Collection>(await collectionDocRef.get()).data();
+    return collection.availableNfts === 1;
+  });
+
   const nftOrder = await submitOrderFunc(memberAddress, {
     collection: collection.uid,
     nft: nft.uid,
@@ -117,6 +123,10 @@ beforeEach(async () => {
     nftOrder.payload.amount,
   );
   await milestoneProcessed(nftMilestone.milestone, nftMilestone.tranId);
+  await wait(async () => {
+    collection = <Collection>(await collectionDocRef.get()).data();
+    return collection.availableNfts === 0;
+  });
 });
 
 describe('Nft controller: setForSale', () => {
@@ -137,7 +147,7 @@ describe('Nft controller: setForSale', () => {
     const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${saleNft.collection}`);
     const collection = <Collection>(await collectionDocRef.get()).data();
     expect(collection.nftsOnAuction).toBe(0);
-    expect(collection.availableNfts).toBe(1);
+    expect(collection.nftsOnSale).toBe(1);
   });
 
   it('Should set nft for auction', async () => {
@@ -159,7 +169,7 @@ describe('Nft controller: setForSale', () => {
     const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${auctionNft.collection}`);
     const collection = <Collection>(await collectionDocRef.get()).data();
     expect(collection.nftsOnAuction).toBe(1);
-    expect(collection.availableNfts).toBe(1);
+    expect(collection.nftsOnSale).toBe(1);
   });
 
   it('Should throw, auction already in progress', async () => {
@@ -311,13 +321,19 @@ describe('Should finalize bidding', () => {
     );
   });
 
-  it('Should bid and finalize it', async () => {
+  it.each([false, true])('Should bid and finalize it', async (noRoyaltySpace: boolean) => {
+    if (noRoyaltySpace) {
+      await admin
+        .firestore()
+        .doc(`${COL.COLLECTION}/${collection.uid}`)
+        .update({ royaltiesSpace: '', royaltiesFee: 0 });
+    }
     await bidNft(members[0], MIN_IOTA_AMOUNT);
     const nftData = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
     expect(nftData.auctionHighestBidder).toBe(members[0]);
 
     const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${nftData.collection}`);
-    let collection = <Collection>(await collectionDocRef.get()).data();
+    collection = <Collection>(await collectionDocRef.get()).data();
     expect(collection.nftsOnAuction).toBe(1);
 
     await admin

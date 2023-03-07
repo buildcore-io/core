@@ -76,6 +76,7 @@ export interface Collection extends CollectionBase {
   space: string;
   availableFrom: Timestamp;
   price: number;
+  availablePrice: number;
   onePerMemberOnly: boolean;
   placeholderNft: EthAddress;
   placeholderUrl: string;
@@ -89,8 +90,9 @@ export interface Collection extends CollectionBase {
   mediaStatus?: MediaStatus;
 
   stakedNft?: number;
-  availableNfts?: number;
+  nftsOnSale?: number;
   nftsOnAuction?: number;
+  availableNfts?: number;
   floorPrice?: number;
 
   votes?: VoteStats;
