@@ -30,6 +30,11 @@ export class Firestore implements IDatabase {
       } while (lastDoc);
     };
 
+  public getAll = async <T>(col: COL, parentId: string, subCol: SUB_COL) => {
+    const snap = await admin.firestore().collection(`${col}/${parentId}/${subCol}`).get();
+    return snap.docs.map((doc) => doc.data() as T);
+  };
+
   public create = async <T extends Base>(
     col: COL,
     data: T,

@@ -80,7 +80,7 @@
     "@iota/crypto.js": "1.8.6",
     "@iota/crypto.js-next": "npm:@iota/crypto.js@2.0.0-rc.1",
     "@iota/iota.js": "1.8.6",
-    "@iota/iota.js-next": "npm:@iota/iota.js@2.0.0-rc.1",
+    "@iota/iota.js-next": "npm:@iota/iota.js@2.0.0-rc.2",
     "@iota/util.js": "1.8.6",
     "@iota/util.js-next": "npm:@iota/util.js@2.0.0-rc.1",
     "@metamask/eth-sig-util": "4.0.0",

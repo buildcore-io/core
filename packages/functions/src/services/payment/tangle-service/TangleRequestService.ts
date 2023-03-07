@@ -23,6 +23,7 @@ import { AwardApproveParticipantService } from './award/award.approve.participan
 import { AwardCreateService } from './award/award.create.service';
 import { AwardFundService } from './award/award.fund.service';
 import { TangleNftPurchaseService } from './nft-purchase.service';
+import { ProposalCreateService } from './proposal/ProposalCreateService';
 import { TangleStakeService } from './stake.service';
 import { TangleTokenClaimService } from './token-claim.service';
 import { TangleTokenTradeService } from './token-trade.service';
@@ -126,6 +127,10 @@ export class TangleRequestService {
       case TangleRequestType.AWARD_APPROVE_PARTICIPANT: {
         const service = new AwardApproveParticipantService(this.transactionService);
         return await service.handleApproveParticipantRequest(owner, request);
+      }
+      case TangleRequestType.PROPOSAL_CREATE: {
+        const service = new ProposalCreateService(this.transactionService);
+        return await service.handleProposalCreateRequest(owner, request);
       }
       default:
         throw throwInvalidArgument(WenError.invalid_tangle_request_type);
