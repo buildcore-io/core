@@ -19,6 +19,7 @@ export interface IDatabase {
     filters: Record<string, unknown>,
     pageSize?: number,
   ) => (onPage: (data: T[]) => Promise<void>) => Promise<void>;
+  getAll: <T>(col: COL, parentId: string, subCol: SUB_COL) => Promise<T[]>;
 
   create: <T extends Base>(col: COL, data: T, subCol?: SUB_COL, parentId?: string) => Promise<void>;
   update: <T extends Base>(
