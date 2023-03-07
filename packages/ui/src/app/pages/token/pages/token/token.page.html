@@ -51,15 +51,19 @@
             <wen-icon-thumb-up (click)="vote(1)"></wen-icon-thumb-up
           ></a>
           <div class="font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark">
-            {{(data.tokenStats$ | async)?.votes?.upvotes || 0}}
+            {{(data.tokenStats$ | async)?.votes?.upvotes || 0 | number: '1.0-2'}}
           </div>
           <a class="px-2 dark:bg-transparent">
             <wen-icon-thumb-down (click)="vote(-1)"></wen-icon-thumb-down
           ></a>
-          <ng-container *ngIf="(data.isGuardianInRankModeratorSpace$ | async)">
+          <ng-container
+            *ngIf="(data.isGuardianInRankModeratorSpace$ | async) || (data.isGuardianWithinSpace$| async)"
+          >
             <div class="font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark">
-              {{(data.tokenStats$ | async)?.votes?.downvotes || 0}}
+              {{(data.tokenStats$ | async)?.votes?.downvotes || 0 | number: '1.0-2'}}
             </div>
+          </ng-container>
+          <ng-container *ngIf="(data.isGuardianInRankModeratorSpace$ | async)">
             <a class="flex px-2 dark:bg-transparent" (click)="rank()">
               <wen-icon-crown></wen-icon-crown>
               <div
@@ -70,8 +74,8 @@
               </div></a
             >
             <div class="font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark">
-              {{(data.tokenStats$ | async)?.ranks?.avg || 0}} ({{(data.tokenStats$ |
-              async)?.ranks?.count || 0}})
+              {{(data.tokenStats$ | async)?.ranks?.avg || 0 | number: '1.0-2'}} ({{(data.tokenStats$
+              | async)?.ranks?.count || 0 | number: '1.0-2'}})
             </div>
           </ng-container>
         </div>
