@@ -1256,7 +1256,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">232</context>
         </context-group>
-        <target state="translated">Impossible de signer la transaction. Essayez à nouveau de charger la page.</target>
+        <target state="translated">Impossible de signer la transaction. Veuillez recharger la page et réessayer.</target>
       </trans-unit>
       <trans-unit id="4055437571775141299" datatype="html">
         <source>You must unlock your MetaMask first!</source>
@@ -1264,7 +1264,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">278</context>
         </context-group>
-        <target state="translated">Premièrement, vous devez déverrouiller votre MetaMask !</target>
+        <target state="translated">Tout d'abord, vous devez déverrouiller votre MetaMask !</target>
       </trans-unit>
       <trans-unit id="720946609464126782" datatype="html">
         <source>You must enable access to read your account address.</source>
@@ -6726,7 +6726,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">105,106</context>
         </context-group>
-        <target state="translated"> Total des jetons stakés </target>
+        <target state="translated"> Nombre total de tokens stakés </target>
       </trans-unit>
       <trans-unit id="7543689964177787800" datatype="html">
         <source> Voting is active on </source>
@@ -8378,7 +8378,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">217</context>
         </context-group>
-        <target state="translated">La réduction s'applique uniquement aux membres qui ont gagné des jetons grâce à des récompenses émises par cet espace.</target>
+        <target state="translated">La réduction ne s'applique qu'aux membres ayant gagné des tokens de récompense émis dans cet espace.</target>
       </trans-unit>
       <trans-unit id="6430237919890046575" datatype="html">
         <source>Token amount higher than</source>
