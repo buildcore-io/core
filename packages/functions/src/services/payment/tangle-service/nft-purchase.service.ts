@@ -195,46 +195,22 @@ const getNft = async (collection: Collection, nftId: string | undefined) => {
     throw throwInvalidArgument(WenError.nft_does_not_exists);
   }
 
-  const randomPosition = Math.floor(Math.random() * collection.total);
+  const nftSnap = await admin
+    .firestore()
+    .collection(COL.NFT)
+    .where('sold', '==', false)
+    .where('locked', '==', false)
+    .where('placeholderNft', '==', false)
+    .where('collection', '==', collection.uid)
+    .limit(1)
+    .get();
 
-  const nftAbove = await getNftAbove(collection, randomPosition);
-  if (nftAbove.size) {
-    return <Nft>nftAbove.docs[0].data();
-  }
-
-  const nftBelow = await getNftBelow(collection, randomPosition);
-  if (nftBelow.size) {
-    return <Nft>nftBelow.docs[0].data();
+  if (nftSnap.size) {
+    return <Nft>nftSnap.docs[0].data();
   }
 
   throw throwInvalidArgument(WenError.no_more_nft_available_for_sale);
 };
-
-const getNftAbove = (collection: Collection, position: number) =>
-  admin
-    .firestore()
-    .collection(COL.NFT)
-    .where('sold', '==', false)
-    .where('locked', '==', false)
-    .where('placeholderNft', '==', false)
-    .where('collection', '==', collection.uid)
-    .where('position', '>=', position)
-    .orderBy('position', 'asc')
-    .limit(1)
-    .get();
-
-const getNftBelow = (collection: Collection, position: number) =>
-  admin
-    .firestore()
-    .collection(COL.NFT)
-    .where('sold', '==', false)
-    .where('locked', '==', false)
-    .where('placeholderNft', '==', false)
-    .where('collection', '==', collection.uid)
-    .where('position', '<=', position)
-    .orderBy('position', 'desc')
-    .limit(1)
-    .get();
 
 const assertNftCanBePurchased = async (
   space: Space,
