@@ -1,6 +1,6 @@
 import { MIN_IOTA_AMOUNT, WenError } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { voteOnProposal } from '../../src/controls/proposal/vote/vote.on.proposal';
+import { voteOnProposal } from '../../src/runtime/firebase/proposal';
 import { expectThrow, mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';

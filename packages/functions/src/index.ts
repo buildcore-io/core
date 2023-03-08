@@ -4,8 +4,6 @@ import { validateAddress } from './controls/address.control';
 import { generateCustomFirebaseToken } from './controls/auth.control';
 import { createMember, updateMember } from './controls/member.control';
 import { openBid } from './controls/order.control';
-import { approveProposal, rejectProposal } from './controls/proposal/approve.reject.proposal';
-import { voteOnProposal } from './controls/proposal/vote/vote.on.proposal';
 import { rankController } from './controls/rank.control';
 import { addGuardian, removeGuardian } from './controls/space/guardian.add.remove.control';
 import { acceptMemberSpace } from './controls/space/member.accept.control';
@@ -61,7 +59,12 @@ import {
   updateUnsoldNft,
   withdrawNft,
 } from './runtime/firebase/nft/index';
-import { createProposal } from './runtime/firebase/proposal';
+import {
+  approveProposal,
+  createProposal,
+  rejectProposal,
+  voteOnProposal,
+} from './runtime/firebase/proposal';
 import { claimSpace } from './runtime/firebase/space';
 import { awardUpdateTrigger } from './triggers/award.trigger';
 import { collectionStatsUpdate } from './triggers/collection.stats.trigger';

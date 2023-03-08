@@ -1,6 +1,5 @@
 import { HexHelper } from '@iota/util.js-next';
 import {
-  COL,
   Network,
   Proposal,
   Token,
@@ -12,17 +11,16 @@ import {
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
-import admin from '../../../admin.config';
-import { SmrWallet } from '../../../services/wallet/SmrWalletService';
-import { WalletService } from '../../../services/wallet/wallet';
-import { packBasicOutput } from '../../../utils/basic-output.utils';
-import { isProdEnv } from '../../../utils/config.utils';
-import { cOn, dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
-import { getRandomEthAddress } from '../../../utils/wallet.utils';
+import { packBasicOutput } from '../../../../../utils/basic-output.utils';
+import { isProdEnv } from '../../../../../utils/config.utils';
+import { dateToTimestamp, serverTime } from '../../../../../utils/dateTime.utils';
+import { getRandomEthAddress } from '../../../../../utils/wallet.utils';
+import { SmrWallet } from '../../../../wallet/SmrWalletService';
+import { WalletService } from '../../../../wallet/wallet';
 
 export const createVoteTransactionOrder = async (
-  proposal: Proposal,
   owner: string,
+  proposal: Proposal,
   voteValues: number[],
   token: Token,
 ) => {
@@ -42,7 +40,7 @@ export const createVoteTransactionOrder = async (
     targetAddress.bech32,
   );
 
-  const voteOrder: Transaction = {
+  return <Transaction>{
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,
@@ -62,9 +60,6 @@ export const createVoteTransactionOrder = async (
     },
     linkedTransactions: [],
   };
-  const voteTransactionOrderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${voteOrder.uid}`);
-  await voteTransactionOrderDocRef.create(cOn(voteOrder));
-  return voteOrder;
 };
 
 const getExpiresOn = (proposal: Proposal) => {
