@@ -12,6 +12,7 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import Joi from 'joi';
+import admin from '../../../../admin.config';
 import { Database } from '../../../../database/Database';
 import { createProposalSchema } from '../../../../runtime/firebase/proposal';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
@@ -28,7 +29,18 @@ export class ProposalCreateService {
     delete request.requestType;
     await assertValidationAsync(Joi.object(createProposalSchema), request);
 
-    const proposal = await createProposal(owner, request);
+    const { proposal, proposalOwner } = await createProposal(owner, request);
+
+    const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+    this.transactionService.updates.push({ ref: proposalDocRef, data: proposal, action: 'set' });
+
+    const proposalOwnerDocRef = proposalDocRef.collection(SUB_COL.OWNERS).doc(proposalOwner.uid);
+    this.transactionService.updates.push({
+      ref: proposalOwnerDocRef,
+      data: proposalOwner,
+      action: 'set',
+    });
+
     return { proposal: proposal?.uid };
   };
 }
@@ -74,19 +86,14 @@ export const createProposal = async (owner: string, params: Record<string, unkno
     voted: 0,
   };
 
-  await Database.create(COL.PROPOSAL, { ...proposal, totalWeight, results });
-  await Database.create(
-    COL.PROPOSAL,
-    {
+  return {
+    proposal: { ...proposal, totalWeight, results },
+    proposalOwner: {
       uid: owner,
       parentId: proposal.uid,
       parentCol: COL.PROPOSAL,
     },
-    SUB_COL.OWNERS,
-    proposal.uid,
-  );
-
-  return await Database.getById<Proposal>(COL.PROPOSAL, proposal.uid);
+  };
 };
 
 const createProposalMembersAndGetTotalWeight = async (proposal: Proposal) => {
@@ -100,7 +107,7 @@ const createProposalMembersAndGetTotalWeight = async (proposal: Proposal) => {
   const promises = spaceMembers.map(async (spaceMember) => {
     const proposalMember = await createProposalMember(proposal, spaceMember);
     if (proposalMember.weight || proposal.type === ProposalType.NATIVE) {
-      await Database.update(COL.PROPOSAL, proposalMember, SUB_COL.MEMBERS, proposal.uid);
+      await Database.create(COL.PROPOSAL, proposalMember, SUB_COL.MEMBERS, proposal.uid);
     }
     return proposalMember.weight || 0;
   });
