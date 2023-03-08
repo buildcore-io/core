@@ -168,7 +168,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">201</context>
         </context-group>
-        <target state="translated">SOON im Verkauf</target>
+        <target state="translated">SOON on Sale</target>
       </trans-unit>
       <trans-unit id="2768814534974244581" datatype="html">
         <source>Recently Minted</source>
