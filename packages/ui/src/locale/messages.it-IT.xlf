@@ -132,7 +132,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">203</context>
         </context-group>
-        <target state="translated">Top Scambi</target>
+        <target state="translated">Più Scambiati</target>
       </trans-unit>
       <trans-unit id="1746507721336332259" datatype="html">
         <source>Recently Traded</source>
@@ -168,7 +168,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">201</context>
         </context-group>
-        <target state="translated">SOON in vendita</target>
+        <target state="translated">SOON on Sale</target>
       </trans-unit>
       <trans-unit id="2768814534974244581" datatype="html">
         <source>Recently Minted</source>
@@ -2124,7 +2124,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.ts</context>
           <context context-type="linenumber">279</context>
         </context-group>
-        <target state="translated">Pagamento non valido rimborsato.</target>
+        <target state="translated">Rimborso di pagamento non autorizzato.</target>
       </trans-unit>
       <trans-unit id="3978157429994044725" datatype="html">
         <source>Waiting for transaction...</source>
@@ -5422,7 +5422,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-card/token-card.component.html</context>
           <context context-type="linenumber">23</context>
         </context-group>
-        <target state="translated">Termine Asta di chiusura</target>
+        <target state="translated">La vendita sta per chiudersi</target>
       </trans-unit>
       <trans-unit id="8278687690560202576" datatype="html">
         <source>Cooldown ends</source>
@@ -7926,7 +7926,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">190</context>
         </context-group>
-        <target state="translated">sconto per i membri con ricompense da questo spazio nel valore totale di </target>
+        <target state="translated">sconto riservato ai membri che hanno accumulato premi in questo spazio per un importo totale corrispondente al valore di </target>
       </trans-unit>
       <trans-unit id="2003820108458886875" datatype="html">
         <source>About collection</source>
@@ -12006,8 +12006,8 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.ts</context>
           <context context-type="linenumber">81,82</context>
         </context-group>
-        <target state="translated">Si prega di assicurarsi che ci sia una sola allocazione contrassegnata per la vendita pubblica in quanto questo potrebbe essere successivamente venduto su Soonaverse.
-        È possibile avviare una vendita pubblica una volta creato e approvato il token.</target>
+        <target state="translated">Assicurati che ci sia una sola distribuzione per vendita pubblica, perché potrebbe essere venduta in seguito su Soonaverse.
+        Una volta creato il token e ottenuta l'approvazione, potrai rendere pubblico il tuo marketplace per la vendita.</target>
       </trans-unit>
       <trans-unit id="5385408710926538560" datatype="html">
         <source>Create token</source>
