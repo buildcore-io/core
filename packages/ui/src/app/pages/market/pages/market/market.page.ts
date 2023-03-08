@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { CollectionApi } from '@api/collection.api';
 import { CollectionHighlightCardType } from '@components/collection/components/collection-highlight-card/collection-highlight-card.component';
 import { TabSection } from '@components/tabs/tabs.component';
 import { DeviceService } from '@core/services/device';
@@ -40,7 +39,6 @@ export class MarketPage implements OnInit {
   constructor(
     public filter: FilterService,
     public deviceService: DeviceService,
-    private collectionApi: CollectionApi,
     private cd: ChangeDetectorRef,
   ) {
     // none;

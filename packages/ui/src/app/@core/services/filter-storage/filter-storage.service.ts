@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { flattenObj } from '@core/utils/manipulations.utils';
 import { TokenStatus } from '@soonaverse/interfaces';
 import { BehaviorSubject, map } from 'rxjs';
+import { DeviceService } from '../device';
 export interface DiscoverSpacesFilters {
   sortBy: string;
 }
@@ -99,7 +100,7 @@ export class FilterStorageService {
     ],
   };
   public discoverSpacesFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
-    false,
+    this.deviceService.isMobile$.value ? false : true,
   );
   public discoverSpacesResetVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
     false,
@@ -117,7 +118,7 @@ export class FilterStorageService {
     ],
   };
   public discoverAwardsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
-    false,
+    this.deviceService.isMobile$.value ? false : true,
   );
   public discoverAwardsResetVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
     false,
@@ -148,7 +149,7 @@ export class FilterStorageService {
     ],
   };
   public discoverMembersFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
-    false,
+    this.deviceService.isMobile$.value ? false : true,
   );
   public discoverMembersResetVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
     false,
@@ -166,7 +167,7 @@ export class FilterStorageService {
     ],
   };
   public discoverProposalsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
-    false,
+    this.deviceService.isMobile$.value ? false : true,
   );
   public discoverProposalsResetVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
     false,
@@ -187,7 +188,9 @@ export class FilterStorageService {
       { value: 'nft_createdOn_asc', label: $localize`Oldest` },
     ],
   };
-  public marketNftsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  public marketNftsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
+    this.deviceService.isMobile$.value ? false : true,
+  );
   public marketNftsResetVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public marketNftsFilters$: BehaviorSubject<MarketNftsFilters> =
     new BehaviorSubject<MarketNftsFilters>({
@@ -207,7 +210,7 @@ export class FilterStorageService {
     ],
   };
   public marketCollectionsFiltersVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
-    true,
+    this.deviceService.isMobile$.value ? false : true,
   );
   public marketCollectionsResetVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
     false,
@@ -245,7 +248,7 @@ export class FilterStorageService {
   public memberNftsFitlers$: BehaviorSubject<MemberNftsFilters> =
     new BehaviorSubject<MemberNftsFilters>({ sortBy: 'nft' });
 
-  constructor() {
+  constructor(private deviceService: DeviceService) {
     this.discoverSpacesFilters$
       .pipe(map((filters) => this.filterToResetVisibility(filters)))
       .subscribe(this.discoverSpacesResetVisible$);
