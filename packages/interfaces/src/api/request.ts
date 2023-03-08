@@ -28,6 +28,8 @@ export interface GetUpdatedAfterRequest {
 
   /** Unix milliseconds */
   readonly updatedAfter?: number;
+
+  readonly startAfter?: string;
 }
 
 export interface GetTokenPrice {
