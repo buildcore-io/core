@@ -132,7 +132,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">203</context>
         </context-group>
-        <target state="translated">Le Top 100 des Tokens les plus Négociés</target>
+        <target state="translated">Top des NFT les plus Négociés</target>
       </trans-unit>
       <trans-unit id="1746507721336332259" datatype="html">
         <source>Recently Traded</source>
@@ -168,7 +168,7 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">201</context>
         </context-group>
-        <target state="translated">Mise en Vente de Tokens SOON</target>
+        <target state="translated">SOON on Sale</target>
       </trans-unit>
       <trans-unit id="2768814534974244581" datatype="html">
         <source>Recently Minted</source>
@@ -1452,7 +1452,7 @@
           <context context-type="sourcefile">src/app/service-modules/audit-one/components/modal/modal.component.html</context>
           <context context-type="linenumber">24</context>
         </context-group>
-        <target state="translated">Initiative</target>
+        <target state="translated">Action</target>
       </trans-unit>
       <trans-unit id="8093646814201446191" datatype="html">
         <source>Badge</source>
@@ -5422,7 +5422,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-card/token-card.component.html</context>
           <context context-type="linenumber">23</context>
         </context-group>
-        <target state="translated">La vente prendra fin dans quelques instants</target>
+        <target state="translated">La vente va bientôt se terminer</target>
       </trans-unit>
       <trans-unit id="8278687690560202576" datatype="html">
         <source>Cooldown ends</source>
@@ -6358,7 +6358,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">52,54</context>
         </context-group>
-        <target state="translated"> - Votre capital est placé dans votre portefeuille, mais vous ne pourrez pas toucher à votre argent tant que la durée de staking ne sera pas achevée. </target>
+        <target state="translated"> - Votre capital est placé dans votre portefeuille, mais vous ne pourrez pas toucher à votre argent tant que la phase de staking ne sera pas achevée. </target>
       </trans-unit>
       <trans-unit id="5367965241510245815" datatype="html">
         <source> - You will get staked points based on your input. </source>
@@ -7926,7 +7926,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">190</context>
         </context-group>
-        <target state="translated">remise pour les membres ayant gagné des récompenses depuis cet espace pour un montant total correspondant à la valeur de </target>
+        <target state="translated">de réduction réservée aux membres ayant gagné des récompenses depuis cet espace pour un montant total correspondant à la valeur de </target>
       </trans-unit>
       <trans-unit id="2003820108458886875" datatype="html">
         <source>About collection</source>
