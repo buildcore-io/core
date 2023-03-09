@@ -4402,7 +4402,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale.component.html</context>
           <context context-type="linenumber">80</context>
         </context-group>
-        <target state="translated">Nicht zum Verkauf angeboten</target>
+        <target state="translated">Nicht zum Verkauf bestimmt</target>
       </trans-unit>
       <trans-unit id="4668399393309435986" datatype="html">
         <source>Fixed price</source>
@@ -6742,7 +6742,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">131,132</context>
         </context-group>
-        <target state="translated"> Dein Gesamtstimmrecht </target>
+        <target state="translated"> Dein volles Stimmgewicht </target>
       </trans-unit>
       <trans-unit id="4462894283276603804" datatype="html">
         <source> Note tha staked tokens can be used only for one voting. Your voting weight will be split if you use staked tokens on other proposal. </source>
