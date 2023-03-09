@@ -213,6 +213,41 @@ describe('Web3 cron test', () => {
     });
   });
 
+  it('Should fail first then retry', async () => {
+    const guardian = await createMember(walletSpy);
+    let space = await createSpace(walletSpy, guardian);
+
+    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
+    await spaceDocRef.update({ bannerUrl: 'asd' });
+
+    await uploadMediaToWeb3();
+
+    space = <Space>(await spaceDocRef.get()).data();
+    expect((space as any).mediaUploadErrorCount).toBe(1);
+
+    await spaceDocRef.update({ bannerUrl: MEDIA });
+    await uploadMediaToWeb3();
+    await wait(async () => {
+      space = <Space>(await spaceDocRef.get()).data();
+      return space.mediaStatus === MediaStatus.UPLOADED;
+    });
+  });
+
+  it('Should fail 5 times, then set to error', async () => {
+    const guardian = await createMember(walletSpy);
+    let space = await createSpace(walletSpy, guardian);
+
+    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
+    await spaceDocRef.update({ bannerUrl: 'asd' });
+
+    for (let i = 0; i < 6; ++i) {
+      await uploadMediaToWeb3();
+      space = <Space>(await spaceDocRef.get()).data();
+      expect((space as any).mediaUploadErrorCount).toBe(i + 1);
+      expect(space.mediaStatus).toBe(i === 5 ? MediaStatus.ERROR : MediaStatus.PENDING_UPLOAD);
+    }
+  });
+
   afterEach(async () => {
     await cleanupPendingUploads();
   });
