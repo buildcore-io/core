@@ -37,7 +37,7 @@ export abstract class CrudRepository<T> {
    */
   public getByField = async (
     fieldName: string,
-    fieldValue: string | number | boolean,
+    fieldValue: string | number | boolean | (string | number | boolean)[],
     startAfter?: string,
   ) => {
     const params: GetManyRequest = {
@@ -78,12 +78,14 @@ export abstract class CrudRepository<T> {
   /**
    * Returns entities updated after the given time
    * @param updatedAfter - Unix seconds
+   * @param startAfter - The query will start after the given entity id
    * @returns
    */
-  public getAllUpdatedAfter = async (updatedAfter: number) => {
+  public getAllUpdatedAfter = async (updatedAfter: number, startAfter?: string) => {
     const params: GetUpdatedAfterRequest = {
       collection: this.col,
       updatedAfter,
+      startAfter,
     };
     const response = await axios({
       method: 'get',

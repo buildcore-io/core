@@ -12,6 +12,15 @@ import admin from '../admin.config';
 import { CommonJoi } from '../services/joi/common';
 import { getQueryLimit, getQueryParams } from './common';
 
+const MAX_WHERE_STATEMENTS = 8;
+
+const fieldNameSchema = Joi.string().max(MAX_FIELD_NAME_LENGTH);
+const fieldValueSchema = Joi.alternatives().try(
+  Joi.boolean(),
+  Joi.number(),
+  Joi.string().max(MAX_FIELD_VALUE_LENGTH),
+);
+
 const getManySchema = Joi.object({
   collection: Joi.string()
     .equal(...Object.values(PublicCollections))
@@ -20,12 +29,16 @@ const getManySchema = Joi.object({
   subCollection: Joi.string()
     .equal(...Object.values(PublicSubCollections))
     .optional(),
-  fieldName: Joi.string().max(MAX_FIELD_NAME_LENGTH).optional(),
-  fieldValue: [
-    Joi.boolean().optional(),
-    Joi.number().optional(),
-    Joi.string().max(MAX_FIELD_VALUE_LENGTH).optional(),
-  ],
+  fieldName: Joi.alternatives()
+    .try(fieldNameSchema, Joi.array().min(1).max(MAX_WHERE_STATEMENTS).items(fieldNameSchema))
+    .optional(),
+  fieldValue: Joi.alternatives()
+    .conditional('fieldName', {
+      is: fieldNameSchema,
+      then: fieldValueSchema,
+      otherwise: Joi.array().min(1).max(MAX_WHERE_STATEMENTS).items(fieldValueSchema),
+    })
+    .optional(),
   startAfter: CommonJoi.uid(false),
 });
 
@@ -44,8 +57,12 @@ export const getMany = async (req: functions.https.Request, res: functions.Respo
     .collection(baseCollectionPath)
     .limit(getQueryLimit(body.collection));
 
-  if (body.fieldName && body.fieldValue) {
-    query = query.where(body.fieldName, '==', body.fieldValue);
+  if (body.fieldName && body.fieldValue != null) {
+    const fieldNames = Array.isArray(body.fieldName) ? body.fieldName : [body.fieldName];
+    const fieldValue = Array.isArray(body.fieldValue) ? body.fieldValue : [body.fieldValue];
+    for (let i = 0; i < fieldNames.length; ++i) {
+      query = query.where(fieldNames[i], '==', fieldValue[i]);
+    }
   }
 
   if (body.collection === PublicCollections.NFT) {

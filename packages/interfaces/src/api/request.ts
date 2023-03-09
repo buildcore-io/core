@@ -14,8 +14,8 @@ export interface GetManyRequest {
   readonly uid?: string;
   readonly subCollection?: PublicSubCollections;
 
-  readonly fieldName?: string;
-  readonly fieldValue?: string | number | boolean;
+  readonly fieldName?: string | string[];
+  readonly fieldValue?: string | number | boolean | (string | number | boolean)[];
 
   readonly startAfter?: string;
 }

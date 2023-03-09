@@ -24,7 +24,7 @@ describe('Stake nft', () => {
     await helper.beforeEach();
   });
 
-  it.each([true])('Should credit first then stake', async (migration: boolean) => {
+  it.each([true, false])('Should credit first then stake', async (migration: boolean) => {
     let nft = await helper.createAndOrderNft();
     let nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
     await helper.mintCollection();
@@ -56,7 +56,7 @@ describe('Stake nft', () => {
       .where('member', '==', helper.guardian);
     await wait(async () => {
       const snap = await creditQuery.get();
-      return snap.size === 1;
+      return snap.size === 1 && snap.docs[0]?.data()?.payload?.walletReference?.confirmed;
     });
 
     const snap = await creditQuery.get();
