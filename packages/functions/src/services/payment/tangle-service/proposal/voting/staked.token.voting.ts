@@ -1,7 +1,6 @@
 import {
   COL,
   Proposal,
-  ProposalMember,
   Stake,
   SUB_COL,
   TokenDistribution,
@@ -9,83 +8,81 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin, { inc } from '../../../admin.config';
-import { getTokenVoteMultiplier } from '../../../services/payment/voting-service';
-import { cOn, serverTime, uOn } from '../../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../../utils/error.utils';
-import { createVoteTransaction } from './vote.on.proposal';
+import admin, { inc } from '../../../../../admin.config';
+import { cOn, serverTime, uOn } from '../../../../../utils/dateTime.utils';
+import { throwInvalidArgument } from '../../../../../utils/error.utils';
+import { getTokenVoteMultiplier } from '../../../voting-service';
+import { createVoteTransaction } from './ProposalVoteService';
 
-export const voteWithStakedTokens = (
+export const voteWithStakedTokens = async (
+  transaction: admin.firestore.Transaction,
+  member: string,
   proposal: Proposal,
-  member: ProposalMember,
   values: number[],
-) =>
-  admin.firestore().runTransaction(async (transaction) => {
-    const distributionDocRef = admin
-      .firestore()
-      .collection(COL.TOKEN)
-      .doc(proposal.token!)
-      .collection(SUB_COL.DISTRIBUTION)
-      .doc(member.uid);
-    const distribution = <TokenDistribution>(await transaction.get(distributionDocRef)).data();
-    if (distribution.stakeVoteTransactionId) {
-      await expireStakeVoteTransaction(transaction, proposal, distribution.stakeVoteTransactionId);
-    }
+) => {
+  const distributionDocRef = admin
+    .firestore()
+    .collection(COL.TOKEN)
+    .doc(proposal.token!)
+    .collection(SUB_COL.DISTRIBUTION)
+    .doc(member);
+  const distribution = <TokenDistribution>(await transaction.get(distributionDocRef)).data();
+  if (distribution.stakeVoteTransactionId) {
+    await expireStakeVoteTransaction(transaction, proposal, distribution.stakeVoteTransactionId);
+  }
 
-    const stakes = await getActiveStakes(member.uid, proposal.token!);
-    const weight = getWeightForStakes(
-      proposal,
-      dayjs(),
-      stakes,
-      dayjs(proposal.settings.endDate.toDate()),
-    );
+  const stakes = await getActiveStakes(member, proposal.token!);
+  const weight = getWeightForStakes(
+    proposal,
+    dayjs(),
+    stakes,
+    dayjs(proposal.settings.endDate.toDate()),
+  );
 
-    if (!weight) {
-      throw throwInvalidArgument(WenError.not_enough_staked_tokens);
-    }
+  if (!weight) {
+    throw throwInvalidArgument(WenError.not_enough_staked_tokens);
+  }
 
-    const voteTransaction = createVoteTransaction(
-      proposal,
-      member.uid,
-      weight,
-      values,
-      stakes.map((s) => s.uid),
-    );
-    const voteTransactionDocRef = admin
-      .firestore()
-      .doc(`${COL.TRANSACTION}/${voteTransaction.uid}`);
-    transaction.create(voteTransactionDocRef, cOn(voteTransaction));
+  const voteTransaction = createVoteTransaction(
+    proposal,
+    member,
+    weight,
+    values,
+    stakes.map((s) => s.uid),
+  );
+  const voteTransactionDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`);
+  transaction.create(voteTransactionDocRef, cOn(voteTransaction));
 
-    const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
-    const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(member.uid);
-    transaction.set(
-      proposalMemberDocRef,
-      uOn({
-        voted: true,
-        voteTransactions: inc(1),
-        tranId: voteTransaction.uid,
-        weightPerAnswer: { [values[0]]: inc(weight) },
-        values: admin.firestore.FieldValue.arrayUnion({
-          [values[0]]: weight,
-          voteTransaction: voteTransaction.uid,
-        }),
+  const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(member);
+  transaction.set(
+    proposalMemberDocRef,
+    uOn({
+      voted: true,
+      voteTransactions: inc(1),
+      tranId: voteTransaction.uid,
+      weightPerAnswer: { [values[0]]: inc(weight) },
+      values: admin.firestore.FieldValue.arrayUnion({
+        [values[0]]: weight,
+        voteTransaction: voteTransaction.uid,
       }),
-      { merge: true },
-    );
+    }),
+    { merge: true },
+  );
 
-    const proposalData = {
-      results: {
-        total: inc(weight),
-        voted: inc(weight),
-        answers: { [`${values[0]}`]: inc(weight) },
-      },
-    };
-    transaction.set(proposalDocRef, uOn(proposalData), { merge: true });
+  const proposalData = {
+    results: {
+      total: inc(weight),
+      voted: inc(weight),
+      answers: { [`${values[0]}`]: inc(weight) },
+    },
+  };
+  transaction.set(proposalDocRef, uOn(proposalData), { merge: true });
 
-    transaction.update(distributionDocRef, uOn({ stakeVoteTransactionId: voteTransaction.uid }));
+  transaction.update(distributionDocRef, uOn({ stakeVoteTransactionId: voteTransaction.uid }));
 
-    return voteTransaction;
-  });
+  return voteTransaction;
+};
 
 const expireStakeVoteTransaction = async (
   transaction: admin.firestore.Transaction,

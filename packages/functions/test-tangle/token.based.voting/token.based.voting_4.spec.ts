@@ -1,7 +1,7 @@
 import { COL, Member, WenError } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
-import { voteOnProposal } from '../../src/controls/proposal/vote/vote.on.proposal';
+import { voteOnProposal } from '../../src/runtime/firebase/proposal';
 import { getAddress } from '../../src/utils/address.utils';
 import { expectThrow, mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';

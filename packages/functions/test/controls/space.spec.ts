@@ -17,7 +17,6 @@ import {
 import dayjs from 'dayjs';
 import { tail } from 'lodash';
 import admin from '../../src/admin.config';
-import { voteOnProposal } from '../../src/controls/proposal/vote/vote.on.proposal';
 import { addGuardian, removeGuardian } from '../../src/controls/space/guardian.add.remove.control';
 import { acceptMemberSpace } from '../../src/controls/space/member.accept.control';
 import { blockMember } from '../../src/controls/space/member.block.control';
@@ -27,6 +26,7 @@ import { leaveSpace } from '../../src/controls/space/member.leave.control';
 import { unblockMember } from '../../src/controls/space/member.unblock.control';
 import { createSpace } from '../../src/controls/space/space.create.control';
 import { updateSpace } from '../../src/controls/space/space.update.control';
+import { voteOnProposal } from '../../src/runtime/firebase/proposal';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import {

@@ -9,8 +9,8 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
-import { voteOnProposal } from '../../src/controls/proposal/vote/vote.on.proposal';
 import { removeStakeReward } from '../../src/controls/stake.control';
+import { voteOnProposal } from '../../src/runtime/firebase/proposal';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import {
