@@ -16,10 +16,12 @@ import {
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
-import { approveProposal } from '../../src/controls/proposal/approve.reject.proposal';
-import { voteOnProposal } from '../../src/controls/proposal/vote/vote.on.proposal';
 import { joinSpace } from '../../src/controls/space/member.join.control';
-import { createProposal } from '../../src/runtime/firebase/proposal';
+import {
+  approveProposal,
+  createProposal,
+  voteOnProposal,
+} from '../../src/runtime/firebase/proposal';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';

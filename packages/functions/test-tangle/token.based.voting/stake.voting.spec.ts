@@ -1,8 +1,7 @@
 import { COL, SUB_COL } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
-import { approveProposal } from '../../src/controls/proposal/approve.reject.proposal';
-import { createProposal } from '../../src/runtime/firebase/proposal';
+import { approveProposal, createProposal } from '../../src/runtime/firebase/proposal';
 import { mockWalletReturnValue } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { dummyProposal, Helper } from './Helper';

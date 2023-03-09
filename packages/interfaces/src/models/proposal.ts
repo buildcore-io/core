@@ -63,7 +63,10 @@ export interface Proposal extends BaseRecord {
   type: ProposalType;
   subType: ProposalSubType;
   approved?: boolean;
+  approvedBy?: string;
   rejected?: boolean;
+  rejectedBy?: string;
+
   eventId?: string;
   owners: {
     // Owner / from date
