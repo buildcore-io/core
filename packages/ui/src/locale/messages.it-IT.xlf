@@ -2228,7 +2228,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/proposals/proposals.page.ts</context>
           <context context-type="linenumber">32</context>
         </context-group>
-        <target state="translated">Completato</target>
+        <target state="translated">Chiusa</target>
       </trans-unit>
       <trans-unit id="8718332458225136926" datatype="html">
         <source>Space Members Only</source>
@@ -4234,7 +4234,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">69</context>
         </context-group>
-        <target state="translated">L'On disponibile è richiesto.</target>
+        <target state="translated">Disponibile Da è richiesto.</target>
       </trans-unit>
       <trans-unit id="8351398594800422168" datatype="html">
         <source>Available on</source>
@@ -4378,7 +4378,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-not-for-sale/nft-sale-not-for-sale.component.html</context>
           <context context-type="linenumber">16</context>
         </context-group>
-        <target state="translated">Questo renderà l'elemento crittografico non disponibile per la vendita.</target>
+        <target state="translated">Questo renderà l'elemento non disponibile alla vendita.</target>
       </trans-unit>
       <trans-unit id="6072453612343506743" datatype="html">
         <source>Stop sale!</source>
@@ -4394,7 +4394,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale.component.html</context>
           <context context-type="linenumber">15</context>
         </context-group>
-        <target state="translated">Elenco di Elementi crittografici. (Vendita)</target>
+        <target state="translated">Lista degli Articoli destinati alla vendita</target>
       </trans-unit>
       <trans-unit id="6564930054206844076" datatype="html">
         <source>Not for sale</source>
@@ -4402,7 +4402,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale.component.html</context>
           <context context-type="linenumber">80</context>
         </context-group>
-        <target state="translated">Non destinati alla vendita</target>
+        <target state="translated">Non destinato alla vendita</target>
       </trans-unit>
       <trans-unit id="4668399393309435986" datatype="html">
         <source>Fixed price</source>
@@ -4446,7 +4446,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-stake/nft-stake.component.html</context>
           <context context-type="linenumber">147,149</context>
         </context-group>
-        <target state="translated"> Il tuo NFT sarà inviato nuovamente nel tuo portafoglio per mezzo di un fattore di blocco temporale. È importante fornire quantità adeguate per il deposito affinché tu possa attivare la funzione di blocco temporale. Aggiungi semplicemente il tag direttamente a "soonaverse", nel tuo portafoglio. </target>
+        <target state="translated"> Il tuo NFT sarà inviato nuovamente nel tuo portafoglio per mezzo del fattore di blocco temporale. È importante fornire sufficienti quantità per il deposito affinché tu possa attivare la funzione di blocco temporale. Aggiungi semplicemente il tag direttamente a "soonaverse", nel tuo portafoglio. </target>
       </trans-unit>
       <trans-unit id="6480637640833693690" datatype="html">
         <source> For how long you want to stake? </source>
@@ -4570,7 +4570,7 @@
           <context context-type="sourcefile">src/app/components/proposal/components/proposal-status/proposal-status.component.html</context>
           <context context-type="linenumber">31,32</context>
         </context-group>
-        <target state="translated">Completato </target>
+        <target state="translated">Chiusa </target>
       </trans-unit>
       <trans-unit id="7419704019640008953" datatype="html">
         <source>Share</source>
@@ -4622,7 +4622,7 @@
           <context context-type="sourcefile">src/app/components/space/components/select-space/select-space.component.html</context>
           <context context-type="linenumber">13</context>
         </context-group>
-        <target state="translated">Seleziona Spazio</target>
+        <target state="translated">Selezionare lo Spazio</target>
       </trans-unit>
       <trans-unit id="7516823680655125055" datatype="html">
         <source>Select a space</source>
@@ -4678,7 +4678,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-claim/space-claim.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="translated">Rivendicazione Spazio</target>
+        <target state="translated">Richiesta Spazio</target>
       </trans-unit>
       <trans-unit id="8562795996489852351" datatype="html">
         <source> Confirm and generate address </source>
@@ -4702,7 +4702,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">251,252</context>
         </context-group>
-        <target state="translated"> Confermare e creare un account </target>
+        <target state="translated"> Confermare e creare un indirizzo </target>
       </trans-unit>
       <trans-unit id="3223994057392000560" datatype="html">
         <source>Claim complete. Congratulations.</source>
@@ -4766,7 +4766,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-claim/space-claim.component.ts</context>
           <context context-type="linenumber">306</context>
         </context-group>
-        <target state="translated">Rivendicazione spazio inoltrata.</target>
+        <target state="translated">Richiesta dello spazio inoltrata.</target>
       </trans-unit>
       <trans-unit id="5373164668509384244" datatype="html">
         <source>Token Reward Schedule</source>
@@ -6742,7 +6742,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">131,132</context>
         </context-group>
-        <target state="translated"> Peso complessivo del voto </target>
+        <target state="translated"> Il tuo peso di voto complessivo </target>
       </trans-unit>
       <trans-unit id="4462894283276603804" datatype="html">
         <source> Note tha staked tokens can be used only for one voting. Your voting weight will be split if you use staked tokens on other proposal. </source>
@@ -6934,7 +6934,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">106,107</context>
         </context-group>
-        <target state="translated"> Attendere la convalida della transazione. Invieremo la vostra transazione una volta completata </target>
+        <target state="translated"> Attendere la convalida di pagamento. Non appena la transazione sarà stata elaborata, riceverai una notifica di convalida della transazione </target>
       </trans-unit>
       <trans-unit id="183349183857585379" datatype="html">
         <source>Validating address...</source>
