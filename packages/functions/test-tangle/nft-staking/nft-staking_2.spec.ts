@@ -58,7 +58,7 @@ describe('Stake nft', () => {
         .where('member', '==', helper.guardian);
       await wait(async () => {
         const snap = await creditQuery.get();
-        return snap.size === 1;
+        return snap.size === 1 && snap.docs[0]?.data()?.payload?.walletReference?.confirmed;
       });
 
       const snap = await creditQuery.get();
