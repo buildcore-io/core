@@ -4446,7 +4446,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-stake/nft-stake.component.html</context>
           <context context-type="linenumber">147,149</context>
         </context-group>
-        <target state="translated"> Votre NFT sera envoyé à nouveau sur votre wallet à l'aide du facteur de verrouillage temporel. Il est important d'indiquer des montants adéquats que vous allez devoir stocker afin de pouvoir activer la fonction de verrouillage temporel. Il suffit d'ajouter des balises directement à "soonaverse", dans votre portefeuille. </target>
+        <target state="translated"> Votre NFT sera envoyé à nouveau sur votre wallet à l'aide du facteur de verrouillage temporel. Il est important d'indiquer des montants adéquats que vous allez devoir stocker afin de pouvoir activer la fonction de verrouillage temporel. Il suffit d'ajouter une balise directement à "soonaverse", dans votre portefeuille. </target>
       </trans-unit>
       <trans-unit id="6480637640833693690" datatype="html">
         <source> For how long you want to stake? </source>
@@ -4782,7 +4782,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="translated">Calendrier existant</target>
+        <target state="translated">Programme Actuel</target>
       </trans-unit>
       <trans-unit id="3961809524741647246" datatype="html">
         <source>Upload New</source>
@@ -4806,7 +4806,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">82,83</context>
         </context-group>
-        <target state="translated"> Planifier une nouvelle récompense </target>
+        <target state="translated"> Planifier une nouvelle Récompense </target>
       </trans-unit>
       <trans-unit id="3847203472811995633" datatype="html">
         <source> You can schedule new staking rewards here. To do this, upload a .csv file containing user addresses and allocation details. </source>
@@ -4850,7 +4850,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/votes/votes.page.ts</context>
           <context context-type="linenumber">25</context>
         </context-group>
-        <target state="translated">Date de Clôture</target>
+        <target state="translated">Date Butoir</target>
       </trans-unit>
       <trans-unit id="7020736742326352871" datatype="html">
         <source>Vesting Date</source>
@@ -5498,7 +5498,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="translated">Demande de token</target>
+        <target state="translated">Demande de Token</target>
       </trans-unit>
       <trans-unit id="9062587503945539377" datatype="html">
         <source>Total available tokens to claim as of today</source>
@@ -5534,7 +5534,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.ts</context>
           <context context-type="linenumber">320</context>
         </context-group>
-        <target state="translated">La demande de token a été soumise.</target>
+        <target state="translated">Votre demande de token a été soumise.</target>
       </trans-unit>
       <trans-unit id="6621039751810529116" datatype="html">
         <source>Guardian&apos;s of the space will be able to decide where this token will be minted.</source>
@@ -5542,7 +5542,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-info/token-info-description.component.html</context>
           <context context-type="linenumber">41</context>
         </context-group>
-        <target state="translated">Les gardiens de l'espace auront la faculté de décider où la création du token en question aura lieu.</target>
+        <target state="translated">Les gardiens de l'espace auront la faculté de décider où le mint du token en question aura lieu.</target>
       </trans-unit>
       <trans-unit id="3074987902485823708" datatype="html">
         <source>Icon</source>
@@ -5670,7 +5670,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="translated">Offre totale</target>
+        <target state="translated">Total supply</target>
       </trans-unit>
       <trans-unit id="4663052908009509312" datatype="html">
         <source>Current distribution</source>
@@ -8458,7 +8458,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">391</context>
         </context-group>
-        <target state="translated">Chaque collection présente des spécificités propres, ce qui la différencie des autres. Dès sa création, elles ne pourront plus être modifiées.</target>
+        <target state="translated">Chaque collection présente des spécificités propres, ce qui la différencie des autres. Dès sa création, il ne sera plus possible d'apporter des modifications à la collection.</target>
       </trans-unit>
       <trans-unit id="5401784168930937916" datatype="html">
         <source>Banner</source>
@@ -9270,7 +9270,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">172</context>
         </context-group>
-        <target state="translated">Airdroppés</target>
+        <target state="translated">Distribué via un Airdrop</target>
       </trans-unit>
       <trans-unit id="23518581647153834" datatype="html">
         <source>from</source>
@@ -11628,7 +11628,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.ts</context>
           <context context-type="linenumber">96</context>
         </context-group>
-        <target state="translated">Total Supply Token</target>
+        <target state="translated">Total supply de tokens</target>
       </trans-unit>
       <trans-unit id="7878107362838629605" datatype="html">
         <source>Launchpad price per token</source>
@@ -11806,7 +11806,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">74</context>
         </context-group>
-        <target state="translated">Total Supply (registre de valeur supporté, propulsé par Token divisible en 6 décimales)</target>
+        <target state="translated">Total supply de tokens (le registre de valeur pris en charge, est divisible en 6 décimales au maximum)</target>
       </trans-unit>
       <trans-unit id="7627800558083286146" datatype="html">
         <source>Total supply is invalid.</source>
@@ -12268,7 +12268,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">80,81</context>
         </context-group>
-        <target state="translated"> Total Supply Token </target>
+        <target state="translated"> Total supply de tokens </target>
       </trans-unit>
       <trans-unit id="455321209818208492" datatype="html">
         <source> Description title </source>
