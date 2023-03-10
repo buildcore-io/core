@@ -36,7 +36,7 @@ export abstract class CrudRepository<T> {
    * @returns
    */
   public getByField = async (
-    fieldName: string,
+    fieldName: string | string[],
     fieldValue: string | number | boolean | (string | number | boolean)[],
     startAfter?: string,
   ) => {
