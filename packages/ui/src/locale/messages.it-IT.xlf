@@ -4782,7 +4782,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="translated">Pianificazione Esistente</target>
+        <target state="translated">Programma Attuale</target>
       </trans-unit>
       <trans-unit id="3961809524741647246" datatype="html">
         <source>Upload New</source>
@@ -4806,7 +4806,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">82,83</context>
         </context-group>
-        <target state="translated"> Pianifica una nuova ricompensa </target>
+        <target state="translated"> Pianifica una nuova Ricompensa </target>
       </trans-unit>
       <trans-unit id="3847203472811995633" datatype="html">
         <source> You can schedule new staking rewards here. To do this, upload a .csv file containing user addresses and allocation details. </source>
@@ -4850,7 +4850,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/votes/votes.page.ts</context>
           <context context-type="linenumber">25</context>
         </context-group>
-        <target state="translated">Data di fine</target>
+        <target state="translated">Data di Chiusura</target>
       </trans-unit>
       <trans-unit id="7020736742326352871" datatype="html">
         <source>Vesting Date</source>
@@ -5258,7 +5258,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-refund/token-refund.component.html</context>
           <context context-type="linenumber">67</context>
         </context-group>
-        <target state="translated">Token: termini e condizioni</target>
+        <target state="translated">Token: termini e Condizioni</target>
       </trans-unit>
       <trans-unit id="5507545684379795783" datatype="html">
         <source> and generate address</source>
@@ -5338,7 +5338,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">74,75</context>
         </context-group>
-        <target state="translated"> Annulla vendita </target>
+        <target state="translated"> Annullamento della vendita </target>
       </trans-unit>
       <trans-unit id="7763424556364538672" datatype="html">
         <source>Canceled public sale.</source>
@@ -5390,7 +5390,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.ts</context>
           <context context-type="linenumber">589</context>
         </context-group>
-        <target state="translated">Cancellato.</target>
+        <target state="translated">Revocato.</target>
       </trans-unit>
       <trans-unit id="7622031675379779678" datatype="html">
         <source>Cancel your buy</source>
@@ -5398,7 +5398,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.ts</context>
           <context context-type="linenumber">80</context>
         </context-group>
-        <target state="translated">Annulla il tuo acquisto</target>
+        <target state="translated">Annullare l'acquisto</target>
       </trans-unit>
       <trans-unit id="7228483309208078738" datatype="html">
         <source>Cancel your sell</source>
@@ -5406,7 +5406,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.ts</context>
           <context context-type="linenumber">81</context>
         </context-group>
-        <target state="translated">Annulla la tua vendita</target>
+        <target state="translated">Annullare la vendita</target>
       </trans-unit>
       <trans-unit id="7524111316829061741" datatype="html">
         <source>Ongoing sale</source>
@@ -5490,7 +5490,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-card/token-card.component.html</context>
           <context context-type="linenumber">235,237</context>
         </context-group>
-        <target state="translated"> Termine Raffreddamento </target>
+        <target state="translated"> Termine raffreddamento </target>
       </trans-unit>
       <trans-unit id="1881053505332654488" datatype="html">
         <source>Token Claim</source>
@@ -5498,7 +5498,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="translated">Richiesta token</target>
+        <target state="translated">Richiesta di Token</target>
       </trans-unit>
       <trans-unit id="9062587503945539377" datatype="html">
         <source>Total available tokens to claim as of today</source>
@@ -5510,7 +5510,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
           <context context-type="linenumber">56</context>
         </context-group>
-        <target state="translated">Numero totale di token disponibili che possono essere reclamati a partire da oggi</target>
+        <target state="translated">Numero complessivo di token disponibili che possono essere richiesti a partire da oggi</target>
       </trans-unit>
       <trans-unit id="8840634792565917676" datatype="html">
         <source>Tokens available from</source>
@@ -5526,7 +5526,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
           <context context-type="linenumber">84</context>
         </context-group>
-        <target state="translated">Numero totale di token reclamabili</target>
+        <target state="translated">Numero complessivo di token richiedibili</target>
       </trans-unit>
       <trans-unit id="4126730028669943854" datatype="html">
         <source>Token claim submitted.</source>
@@ -5542,7 +5542,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-info/token-info-description.component.html</context>
           <context context-type="linenumber">41</context>
         </context-group>
-        <target state="translated">Il guardiano di questo spazio sarà in grado di decidere dove sarà coniato il token.</target>
+        <target state="translated">I guardiani dello spazio potranno decidere dove verrà effettuato il mint di questo token.</target>
       </trans-unit>
       <trans-unit id="3074987902485823708" datatype="html">
         <source>Icon</source>
@@ -5622,7 +5622,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-info/token-info-description.component.ts</context>
           <context context-type="linenumber">28</context>
         </context-group>
-        <target state="translated">Prezzo di Avvio</target>
+        <target state="translated">Prezzo di Lancio</target>
       </trans-unit>
       <trans-unit id="1415060111017347427" datatype="html">
         <source>Network</source>
@@ -5670,7 +5670,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="translated">Quantità totale</target>
+        <target state="translated">Total supply</target>
       </trans-unit>
       <trans-unit id="4663052908009509312" datatype="html">
         <source>Current distribution</source>
@@ -6218,7 +6218,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-refund/token-refund.component.html</context>
           <context context-type="linenumber">23</context>
         </context-group>
-        <target state="translated">Termine Periodo di raffreddamento</target>
+        <target state="translated">Termine del periodo di raffreddamento</target>
       </trans-unit>
       <trans-unit id="1960516795442717035" datatype="html">
         <source> Confirm and refund </source>
@@ -7242,7 +7242,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">19</context>
         </context-group>
-        <target state="translated">Il titolo e la descrizione saranno inclusi nel Premio. La data di fine determina la durata del premio.</target>
+        <target state="translated">La descrizione e i tecnicismi saranno inclusi nel Premio. Con la data di chiusura si stabilisce la durata del Premio.</target>
       </trans-unit>
       <trans-unit id="5701618810648052610" datatype="html">
         <source>Title</source>
@@ -8450,7 +8450,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">389</context>
         </context-group>
-        <target state="translated">Tipo di collezione</target>
+        <target state="translated">Tipo di Collezione</target>
       </trans-unit>
       <trans-unit id="2155204474780589508" datatype="html">
         <source>Each type has different characteristics. This cannot be changed after creation.</source>
@@ -9270,7 +9270,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">172</context>
         </context-group>
-        <target state="translated">Distribuiti</target>
+        <target state="translated">Distribuito tramite Airdrop</target>
       </trans-unit>
       <trans-unit id="23518581647153834" datatype="html">
         <source>from</source>
@@ -11636,7 +11636,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/metrics/metrics.page.ts</context>
           <context context-type="linenumber">67</context>
         </context-group>
-        <target state="translated">Launchpad prezzo per token</target>
+        <target state="translated">Prezzo di lancio per token</target>
       </trans-unit>
       <trans-unit id="6900637723105316963" datatype="html">
         <source>Initial Cap</source>
@@ -11805,7 +11805,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">74</context>
         </context-group>
-        <target state="translated">Fornitura totale del token (sono supportati fino a 6 decimali)</target>
+        <target state="translated">Total supply di token (il registro dei valori supportati è divisibile fino a 6 cifre decimali)</target>
       </trans-unit>
       <trans-unit id="7627800558083286146" datatype="html">
         <source>Total supply is invalid.</source>
@@ -11817,7 +11817,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">107</context>
         </context-group>
-        <target state="translated">La fornitura Totale non è valida.</target>
+        <target state="translated">La Total Supply non è autorizzata.</target>
       </trans-unit>
       <trans-unit id="1971259695916929385" datatype="html">
         <source>Allocation title</source>
@@ -11957,7 +11957,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">324</context>
         </context-group>
-        <target state="translated">Termini e condizioni del token</target>
+        <target state="translated">Termini e condizioni del Token</target>
       </trans-unit>
       <trans-unit id="940422992605518398" datatype="html">
         <source>Provide link for Terms and Conditions</source>
@@ -12662,7 +12662,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.ts</context>
           <context context-type="linenumber">248</context>
         </context-group>
-        <target state="translated">Vendita In Corso</target>
+        <target state="translated">Asta In Corso</target>
       </trans-unit>
       <trans-unit id="9172233176401579786" datatype="html">
         <source>Scheduled</source>
