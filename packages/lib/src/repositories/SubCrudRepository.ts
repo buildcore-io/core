@@ -1,12 +1,6 @@
-import {
-  GetByIdRequest,
-  GetManyRequest,
-  GetUpdatedAfterRequest,
-  PublicCollections,
-  PublicSubCollections,
-} from '@soonaverse/interfaces';
-import axios from 'axios';
+import { PublicCollections, PublicSubCollections } from '@soonaverse/interfaces';
 import { getByIdUrl, getByManyUrl, getUpdatedAfterUrl, SoonEnv } from '../Config';
+import { fetch } from '../fetch.utils';
 
 export abstract class SubCrudRepository<T> {
   constructor(
@@ -22,18 +16,8 @@ export abstract class SubCrudRepository<T> {
    * @returns
    */
   public getById = async (parent: string, uid: string) => {
-    const params: GetByIdRequest = {
-      collection: this.col,
-      parentUid: parent,
-      subCollection: this.subCol,
-      uid,
-    };
-    const response = await axios({
-      method: 'get',
-      url: getByIdUrl(this.env),
-      params,
-    });
-    return response.data as T;
+    const params = { collection: this.col, parentUid: parent, subCollection: this.subCol, uid };
+    return await fetch<T>(getByIdUrl(this.env), params);
   };
 
   /**
@@ -43,18 +27,8 @@ export abstract class SubCrudRepository<T> {
    * @returns
    */
   public getAll = async (parent: string, startAfter?: string) => {
-    const params: GetManyRequest = {
-      collection: this.col,
-      uid: parent,
-      subCollection: this.subCol,
-      startAfter,
-    };
-    const response = await axios({
-      method: 'get',
-      url: getByManyUrl(this.env),
-      params,
-    });
-    return response.data as T[];
+    const params = { collection: this.col, uid: parent, subCollection: this.subCol, startAfter };
+    return await fetch<T[]>(getByManyUrl(this.env), params);
   };
 
   /**
@@ -71,7 +45,7 @@ export abstract class SubCrudRepository<T> {
     fieldValue: string | number | boolean,
     startAfter?: string,
   ) => {
-    const params: GetManyRequest = {
+    const params = {
       collection: this.col,
       uid: parent,
       subCollection: this.subCol,
@@ -79,12 +53,7 @@ export abstract class SubCrudRepository<T> {
       fieldValue,
       startAfter,
     };
-    const response = await axios({
-      method: 'get',
-      url: getByManyUrl(this.env),
-      params,
-    });
-    return response.data as T[];
+    return await fetch<T[]>(getByManyUrl(this.env), params);
   };
 
   /**
@@ -93,17 +62,7 @@ export abstract class SubCrudRepository<T> {
    * @returns
    */
   public getAllUpdatedAfter = async (parent: string, updatedAfter: number) => {
-    const params: GetUpdatedAfterRequest = {
-      collection: this.col,
-      uid: parent,
-      subCollection: this.subCol,
-      updatedAfter,
-    };
-    const response = await axios({
-      method: 'get',
-      url: getUpdatedAfterUrl(this.env),
-      params,
-    });
-    return response.data as T[];
+    const params = { collection: this.col, uid: parent, subCollection: this.subCol, updatedAfter };
+    return await fetch<T[]>(getUpdatedAfterUrl(this.env), params);
   };
 }
