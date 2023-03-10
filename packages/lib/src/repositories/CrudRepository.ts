@@ -1,11 +1,6 @@
-import {
-  GetByIdRequest,
-  GetManyRequest,
-  GetUpdatedAfterRequest,
-  PublicCollections,
-} from '@soonaverse/interfaces';
-import axios from 'axios';
+import { PublicCollections } from '@soonaverse/interfaces';
 import { getByIdUrl, getByManyUrl, getUpdatedAfterUrl, SoonEnv } from '../Config';
+import { fetch } from '../fetch.utils';
 
 export abstract class CrudRepository<T> {
   constructor(protected readonly env: SoonEnv, protected readonly col: PublicCollections) {}
@@ -16,16 +11,8 @@ export abstract class CrudRepository<T> {
    * @returns List of entities
    */
   public getById = async (uid: string) => {
-    const params: GetByIdRequest = {
-      collection: this.col,
-      uid,
-    };
-    const response = await axios({
-      method: 'get',
-      url: getByIdUrl(this.env),
-      params,
-    });
-    return response.data as T;
+    const params = { collection: this.col, uid };
+    return await fetch<T>(getByIdUrl(this.env), params);
   };
 
   /**
@@ -40,18 +27,8 @@ export abstract class CrudRepository<T> {
     fieldValue: string | number | boolean | (string | number | boolean)[],
     startAfter?: string,
   ) => {
-    const params: GetManyRequest = {
-      collection: this.col,
-      fieldName,
-      fieldValue,
-      startAfter,
-    };
-    const response = await axios({
-      method: 'get',
-      url: getByManyUrl(this.env),
-      params,
-    });
-    return response.data as T[];
+    const params = { collection: this.col, fieldName, fieldValue, startAfter };
+    return await fetch<T[]>(getByManyUrl(this.env), params);
   };
 
   /**
@@ -61,18 +38,8 @@ export abstract class CrudRepository<T> {
    * @returns - List of entities
    */
   public getBySpace = async (space: string, startAfter?: string) => {
-    const params: GetManyRequest = {
-      collection: this.col,
-      fieldName: 'space',
-      fieldValue: space,
-      startAfter,
-    };
-    const response = await axios({
-      method: 'get',
-      url: getByManyUrl(this.env),
-      params,
-    });
-    return response.data as T[];
+    const params = { collection: this.col, fieldName: 'space', fieldValue: space, startAfter };
+    return await fetch<T[]>(getByManyUrl(this.env), params);
   };
 
   /**
@@ -82,16 +49,7 @@ export abstract class CrudRepository<T> {
    * @returns
    */
   public getAllUpdatedAfter = async (updatedAfter: number, startAfter?: string) => {
-    const params: GetUpdatedAfterRequest = {
-      collection: this.col,
-      updatedAfter,
-      startAfter,
-    };
-    const response = await axios({
-      method: 'get',
-      url: getUpdatedAfterUrl(this.env),
-      params,
-    });
-    return response.data as T[];
+    const params = { collection: this.col, updatedAfter, startAfter };
+    return await fetch<T[]>(getUpdatedAfterUrl(this.env), params);
   };
 }
