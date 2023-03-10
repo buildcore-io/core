@@ -4782,7 +4782,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="translated">Vorhandener Zeitplan</target>
+        <target state="translated">Aktuelles Programm</target>
       </trans-unit>
       <trans-unit id="3961809524741647246" datatype="html">
         <source>Upload New</source>
