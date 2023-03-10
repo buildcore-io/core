@@ -32,7 +32,7 @@ describe('Token minting', () => {
   it.each([false, true])('Should mint token', async (hasExpiration: boolean) => {
     const expiresAt = hasExpiration ? dateToTimestamp(dayjs().add(2, 'h').toDate()) : undefined;
 
-    await helper.setup();
+    await helper.setup(false, hasExpiration);
     mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, {
       token: helper.token.uid,
       network: helper.network,
@@ -66,6 +66,8 @@ describe('Token minting', () => {
     expect(helper.token.ipfsMedia).toBeDefined();
     expect(helper.token.ipfsMetadata).toBeDefined();
     expect(helper.token.ipfsRoot).toBeDefined();
+    expect(helper.token.approved).toBe(true);
+    expect(helper.token.tradingDisabled).toBe(!hasExpiration);
 
     await wait(async () => {
       const balance = await addressBalance(

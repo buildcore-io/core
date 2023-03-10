@@ -66,6 +66,7 @@ import {
   voteOnProposal,
 } from './runtime/firebase/proposal';
 import { claimSpace } from './runtime/firebase/space';
+import { importMintedToken } from './runtime/firebase/token';
 import { awardUpdateTrigger } from './triggers/award.trigger';
 import { collectionStatsUpdate } from './triggers/collection.stats.trigger';
 import { collectionWrite } from './triggers/collection.trigger';
@@ -197,3 +198,5 @@ exports[WEN_FUNC.removeStakeReward] = removeStakeReward;
 exports[WEN_FUNC.generateCustomFirebaseToken] = generateCustomFirebaseToken;
 
 exports[WEN_FUNC.claimSpace] = claimSpace;
+
+exports[WEN_FUNC.importMintedToken] = importMintedToken;

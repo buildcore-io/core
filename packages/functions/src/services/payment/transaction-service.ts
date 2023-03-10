@@ -209,6 +209,7 @@ export class TransactionService {
     ignoreWalletReason = TransactionIgnoreWalletReason.NONE,
     storageReturn?: StorageReturn,
     customPayload?: { [key: string]: unknown },
+    response: { [key: string]: unknown } = {},
   ): Promise<Transaction | undefined> {
     if (payment.payload.amount > 0) {
       const data = <Transaction>{
@@ -234,6 +235,7 @@ export class TransactionService {
           collection: payment.payload.collection || null,
           invalidPayment: payment.payload.invalidPayment,
           ...customPayload,
+          response,
         },
         ignoreWallet: !isEmpty(ignoreWalletReason),
         ignoreWalletReason,

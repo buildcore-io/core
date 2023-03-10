@@ -266,7 +266,10 @@ describe('Trade controller, sell token', () => {
   });
 
   it('Should fail first, tading disabled, then succeeed', async () => {
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ tradingDisabled: true });
+    await admin
+      .firestore()
+      .doc(`${COL.TOKEN}/${token.uid}`)
+      .update({ tradingDisabled: true, public: true });
     const request = {
       symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,

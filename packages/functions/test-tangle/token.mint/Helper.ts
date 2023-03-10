@@ -45,26 +45,37 @@ export class Helper {
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
   };
 
-  public setup = async () => {
+  public setup = async (approved = true, isPublicToken?: boolean) => {
     const guardianId = await createMember(this.walletSpy);
     this.member = await createMember(this.walletSpy);
     this.guardian = <Member>(
       (await admin.firestore().doc(`${COL.MEMBER}/${guardianId}`).get()).data()
     );
     this.space = await createSpace(this.walletSpy, this.guardian.uid);
-    this.token = await this.saveToken(this.space.uid, this.guardian.uid, this.member);
+    this.token = await this.saveToken(
+      this.space.uid,
+      this.guardian.uid,
+      this.member,
+      approved,
+      isPublicToken,
+    );
     this.walletService = (await getWallet(this.network)) as SmrWallet;
     this.address = await this.walletService.getAddressDetails(
       getAddress(this.guardian, this.network),
     );
   };
 
-  public saveToken = async (space: string, guardian: string, member: string) => {
+  public saveToken = async (
+    space: string,
+    guardian: string,
+    member: string,
+    approved = true,
+    isPublicToken = true,
+  ) => {
     const tokenId = getRandomEthAddress();
     const token = {
       symbol: getRandomSymbol(),
       totalSupply: this.totalSupply,
-      approved: true,
       updatedOn: serverTime(),
       createdOn: serverTime(),
       space,
@@ -74,6 +85,8 @@ export class Helper {
       status: TokenStatus.AVAILABLE,
       access: 0,
       icon: MEDIA,
+      public: isPublicToken,
+      approved,
     };
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
     await admin

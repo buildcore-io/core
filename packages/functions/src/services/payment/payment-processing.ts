@@ -25,6 +25,7 @@ import { NftStakeService } from './nft/nft-stake-service';
 import { SpaceService } from './space/space-service';
 import { StakeService } from './stake-service';
 import { TangleRequestService } from './tangle-service/TangleRequestService';
+import { ImportMintedTokenService } from './token/import-minted-token.service';
 import { MintedTokenClaimService } from './token/minted-token-claim';
 import { TokenMintService } from './token/token-mint-service';
 import { TokenService } from './token/token-service';
@@ -221,6 +222,11 @@ export class ProcessingService {
         case TransactionOrderType.FUND_AWARD: {
           const service = new AwardService(this.transactionService);
           await service.handleAwardFundingOrder(order, match);
+          break;
+        }
+        case TransactionOrderType.IMPORT_TOKEN: {
+          const service = new ImportMintedTokenService(this.transactionService);
+          await service.handleMintedTokenImport(order, match);
           break;
         }
       }
