@@ -98,6 +98,117 @@ describe('Get all', () => {
     } as any;
     await getMany(req, res);
   });
+
+  it('Get all, array query', async () => {
+    const uids = Array.from(Array(4)).map(() => getRandomEthAddress());
+
+    for (let i = 0; i < uids.length; ++i) {
+      await admin
+        .firestore()
+        .doc(`${PublicCollections.MEMBER}/${uids[i]}`)
+        .create({ uid: uids[i], space, small: i < 3, age: i < 3 ? 3 : 4 });
+    }
+
+    let req = {
+      query: {
+        collection: PublicCollections.MEMBER,
+        fieldName: ['space', 'small', 'age'],
+        fieldValue: [space, true, 3],
+      },
+    } as any;
+    let res = {
+      send: (body: any) => {
+        expect(body.length).toBe(3);
+      },
+    } as any;
+    await getMany(req, res);
+
+    req = {
+      query: {
+        collection: PublicCollections.MEMBER,
+        fieldName: ['space', 'small'],
+        fieldValue: [space, false],
+      },
+    } as any;
+    res = {
+      send: (body: any) => {
+        expect(body.length).toBe(1);
+      },
+    } as any;
+    await getMany(req, res);
+
+    req = {
+      query: {
+        collection: PublicCollections.MEMBER,
+        fieldName: ['space', 'age'],
+        fieldValue: [space, 4],
+      },
+    } as any;
+    res = {
+      send: (body: any) => {
+        expect(body.length).toBe(1);
+      },
+    } as any;
+    await getMany(req, res);
+  });
+
+  it('Should throw, fieldName type not equal fieldValue type', async () => {
+    let req = {
+      query: {
+        collection: PublicCollections.MEMBER,
+        fieldName: ['space'],
+        fieldValue: space,
+      },
+    } as any;
+    let res = {
+      status: (status: number) => {
+        expect(status).toBe(400);
+      },
+      send: (body: any) => {
+        expect(body).toEqual(['"fieldValue" must be an array']);
+      },
+    } as any;
+    await getMany(req, res);
+
+    req = {
+      query: {
+        collection: PublicCollections.MEMBER,
+        fieldName: 'space',
+        fieldValue: [space],
+      },
+    } as any;
+    res = {
+      status: (status: number) => {
+        expect(status).toBe(400);
+      },
+      send: (body: any) => {
+        expect(body).toEqual(['"fieldValue" must be one of [boolean, number, string]']);
+      },
+    } as any;
+    await getMany(req, res);
+  });
+
+  it('Should ge by boolean field', async () => {
+    const randomFieldName = Math.random().toString().replace('0.', 'a');
+    await admin
+      .firestore()
+      .doc(`${PublicCollections.MEMBER}/${getRandomEthAddress()}`)
+      .create({ [randomFieldName]: false });
+
+    const req = {
+      query: {
+        collection: PublicCollections.MEMBER,
+        fieldName: randomFieldName,
+        fieldValue: false,
+      },
+    } as any;
+    const res = {
+      send: (body: any) => {
+        expect(body.length).toBe(1);
+      },
+    } as any;
+    await getMany(req, res);
+  });
 });
 
 describe('Get all sub', () => {

@@ -224,6 +224,7 @@ export const createToken = functions
       ipfsMetadata: null,
       totalDeposit: 0,
       totalAirdropped: 0,
+      tradingDisabled: true,
     };
     const data = cOn(merge(params.body, publicSaleTimeFrames, extraData), URL_PATHS.TOKEN);
     await admin.firestore().collection(COL.TOKEN).doc(tokenUid).set(cOn(data));
@@ -308,6 +309,9 @@ export const setTokenAvailableForSale = functions
       }
 
       assertTokenApproved(token);
+      if (!token.public) {
+        throw throwInvalidArgument(WenError.token_must_be_public);
+      }
 
       if (token.saleStartDate) {
         throw throwInvalidArgument(WenError.public_sale_already_set);
@@ -557,6 +561,10 @@ export const enableTokenTrading = functions.https.onCall(async (req: WenRequest,
   const token = <Token | undefined>(await tokenDocRef.get()).data();
   if (!token) {
     throw throwInvalidArgument(WenError.token_does_not_exist);
+  }
+
+  if (!token.public) {
+    throw throwInvalidArgument(WenError.token_must_be_public);
   }
 
   await assertIsGuardian(token.space, owner);

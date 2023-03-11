@@ -73,6 +73,7 @@ export const enum WEN_FUNC {
   claimMintedTokenOrder = 'claimMintedTokenOrder',
   airdropMintedToken = 'airdropMintedToken',
   enableTokenTrading = 'enableTokenTrading',
+  importMintedToken = 'importMintedToken',
 
   milestoneTransactionWrite = 'milestoneTransactionWrite',
   nftWrite = 'nftWrite',

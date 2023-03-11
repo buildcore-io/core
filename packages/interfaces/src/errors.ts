@@ -234,4 +234,16 @@ export const WenError = {
     code: 2121,
     key: 'Legacy awards will be funded by soonaverse.',
   },
+  not_alias_governor: {
+    code: 2122,
+    key: 'Your are not the governor of the alias.',
+  },
+  token_not_irc27_compilant: {
+    code: 2123,
+    key: 'Token metedata not irc27 compilant',
+  },
+  token_must_be_public: {
+    code: 2124,
+    key: 'Token must be public',
+  },
 };

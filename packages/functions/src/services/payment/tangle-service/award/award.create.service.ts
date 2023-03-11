@@ -17,7 +17,7 @@ import { downloadMediaAndPackCar } from '../../../../utils/car.utils';
 import { getBucket } from '../../../../utils/config.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../../../utils/error.utils';
-import { migrateUriToSotrage } from '../../../../utils/media.utils';
+import { migrateUriToSotrage, uriToUrl } from '../../../../utils/media.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsSpaceMember } from '../../../../utils/space.utils';
 import { getTokenBySymbol } from '../../../../utils/token.utils';
@@ -90,7 +90,7 @@ export const createAward = async (owner: string, params: Record<string, unknown>
     let imageUrl = badge.image as string;
     if (!isStorageUrl(imageUrl)) {
       const bucket = admin.storage().bucket(getBucket());
-      imageUrl = await migrateUriToSotrage(COL.AWARD, owner, awardUid, imageUrl, bucket);
+      imageUrl = await migrateUriToSotrage(COL.AWARD, owner, awardUid, uriToUrl(imageUrl), bucket);
       set(badge, 'image', imageUrl);
     }
     const ipfs = await downloadMediaAndPackCar(awardId, imageUrl, {});

@@ -36,7 +36,6 @@ import {
 import { getOwnedTokenTotal } from '../../utils/token-minting-utils/member.utils';
 import {
   assertIsGuardian,
-  assertTokenApproved,
   assertTokenStatus,
   getUnclaimedAirdropTotalValue,
 } from '../../utils/token.utils';
@@ -66,8 +65,6 @@ export const mintTokenOrder = functions
       if (!token) {
         throw throwInvalidArgument(WenError.invalid_params);
       }
-
-      assertTokenApproved(token, true);
 
       if (
         token.coolDownEnd &&

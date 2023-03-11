@@ -1,11 +1,6 @@
-import {
-  GetByIdRequest,
-  GetManyRequest,
-  GetUpdatedAfterRequest,
-  PublicCollections,
-} from '@soonaverse/interfaces';
-import axios from 'axios';
+import { PublicCollections } from '@soonaverse/interfaces';
 import { getByIdUrl, getByManyUrl, getUpdatedAfterUrl, SoonEnv } from '../Config';
+import { wrappedFetch } from '../fetch.utils';
 
 export abstract class CrudRepository<T> {
   constructor(protected readonly env: SoonEnv, protected readonly col: PublicCollections) {}
@@ -16,16 +11,8 @@ export abstract class CrudRepository<T> {
    * @returns List of entities
    */
   public getById = async (uid: string) => {
-    const params: GetByIdRequest = {
-      collection: this.col,
-      uid,
-    };
-    const response = await axios({
-      method: 'get',
-      url: getByIdUrl(this.env),
-      params,
-    });
-    return response.data as T;
+    const params = { collection: this.col, uid };
+    return await wrappedFetch<T>(getByIdUrl(this.env), params);
   };
 
   /**
@@ -36,22 +23,12 @@ export abstract class CrudRepository<T> {
    * @returns
    */
   public getByField = async (
-    fieldName: string,
-    fieldValue: string | number | boolean,
+    fieldName: string | string[],
+    fieldValue: string | number | boolean | (string | number | boolean)[],
     startAfter?: string,
   ) => {
-    const params: GetManyRequest = {
-      collection: this.col,
-      fieldName,
-      fieldValue,
-      startAfter,
-    };
-    const response = await axios({
-      method: 'get',
-      url: getByManyUrl(this.env),
-      params,
-    });
-    return response.data as T[];
+    const params = { collection: this.col, fieldName, fieldValue, startAfter };
+    return await wrappedFetch<T[]>(getByManyUrl(this.env), params);
   };
 
   /**
@@ -61,35 +38,18 @@ export abstract class CrudRepository<T> {
    * @returns - List of entities
    */
   public getBySpace = async (space: string, startAfter?: string) => {
-    const params: GetManyRequest = {
-      collection: this.col,
-      fieldName: 'space',
-      fieldValue: space,
-      startAfter,
-    };
-    const response = await axios({
-      method: 'get',
-      url: getByManyUrl(this.env),
-      params,
-    });
-    return response.data as T[];
+    const params = { collection: this.col, fieldName: 'space', fieldValue: space, startAfter };
+    return await wrappedFetch<T[]>(getByManyUrl(this.env), params);
   };
 
   /**
    * Returns entities updated after the given time
    * @param updatedAfter - Unix seconds
+   * @param startAfter - The query will start after the given entity id
    * @returns
    */
-  public getAllUpdatedAfter = async (updatedAfter: number) => {
-    const params: GetUpdatedAfterRequest = {
-      collection: this.col,
-      updatedAfter,
-    };
-    const response = await axios({
-      method: 'get',
-      url: getUpdatedAfterUrl(this.env),
-      params,
-    });
-    return response.data as T[];
+  public getAllUpdatedAfter = async (updatedAfter: number, startAfter?: string) => {
+    const params = { collection: this.col, updatedAfter, startAfter };
+    return await wrappedFetch<T[]>(getUpdatedAfterUrl(this.env), params);
   };
 }

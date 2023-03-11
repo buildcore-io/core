@@ -106,19 +106,6 @@ describe('Token minting', () => {
     await expectThrow(testEnv.wrap(mintTokenOrder)({}), WenError.token_in_invalid_status.key);
   });
 
-  it('Should throw, not approved and not public', async () => {
-    await helper.setup();
-    await admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${helper.token.uid}`)
-      .update({ approved: false, public: false });
-    mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, {
-      token: helper.token.uid,
-      network: helper.network,
-    });
-    await expectThrow(testEnv.wrap(mintTokenOrder)({}), WenError.token_not_approved.key);
-  });
-
   it('Should credit, already minted', async () => {
     await helper.setup();
     mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, {

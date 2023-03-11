@@ -47,6 +47,7 @@ export enum TransactionOrderType {
   CLAIM_SPACE = 'CLAIM_SPACE',
   STAKE_NFT = 'STAKE_NFT',
   FUND_AWARD = 'FUND_AWARD',
+  IMPORT_TOKEN = 'IMPORT_TOKEN',
 }
 
 export enum TransactionMintCollectionType {
@@ -78,6 +79,7 @@ export enum TransactionCreditType {
   DATA_NO_LONGER_VALID = 'DATA_NO_LONGER_VALID',
   SPACE_CALIMED = 'SPACE_CALIMED',
   PRE_MINTED_CLAIM = 'PRE_MINTED_CLAIM',
+  IMPORT_TOKEN = 'IMPORT_TOKEN',
 }
 
 export enum TransactionUnlockType {

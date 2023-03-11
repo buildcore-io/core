@@ -1,6 +1,6 @@
-import { GetTokenPrice, PublicCollections, TokenTradeOrder } from '@soonaverse/interfaces';
-import axios from 'axios';
+import { PublicCollections, TokenTradeOrder } from '@soonaverse/interfaces';
 import { getTokenPriceUrl, SoonEnv } from '../../Config';
+import { wrappedFetch } from '../../fetch.utils';
 import { CrudRepository } from '../CrudRepository';
 
 export class TokenMarketRepository extends CrudRepository<TokenTradeOrder> {
@@ -14,15 +14,8 @@ export class TokenMarketRepository extends CrudRepository<TokenTradeOrder> {
    * @returns
    */
   public getTokenPrice = async (token: string) => {
-    const params: GetTokenPrice = {
-      token,
-    };
-    const response = await axios({
-      method: 'post',
-      url: getTokenPriceUrl(this.env),
-      params,
-    });
-    return response.data.price;
+    const response = await wrappedFetch(getTokenPriceUrl(this.env), { token });
+    return (response as Record<string, unknown>).price;
   };
 
   /**
@@ -31,14 +24,7 @@ export class TokenMarketRepository extends CrudRepository<TokenTradeOrder> {
    * @returns
    */
   public getTokenPriceInUsd = async (token: string) => {
-    const params: GetTokenPrice = {
-      token,
-    };
-    const response = await axios({
-      method: 'post',
-      url: getTokenPriceUrl(this.env),
-      params,
-    });
-    return response.data.usdPrice;
+    const response = await wrappedFetch(getTokenPriceUrl(this.env), { token });
+    return (response as Record<string, unknown>).usdPrice;
   };
 }

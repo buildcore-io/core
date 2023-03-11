@@ -62,12 +62,6 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
     mockWalletReturnValue(walletSpy, memberAddress, token);
     const result = await testEnv.wrap(createToken)({});
     expect(result?.uid).toBeDefined();
-  });
-
-  it('Should create token, trading disabled', async () => {
-    mockWalletReturnValue(walletSpy, memberAddress, { ...token, tradingDisabled: true });
-    const result = await testEnv.wrap(createToken)({});
-    expect(result?.uid).toBeDefined();
     expect(result.tradingDisabled).toBe(true);
   });
 
