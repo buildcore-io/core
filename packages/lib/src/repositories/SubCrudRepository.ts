@@ -1,6 +1,6 @@
 import { PublicCollections, PublicSubCollections } from '@soonaverse/interfaces';
 import { getByIdUrl, getByManyUrl, getUpdatedAfterUrl, SoonEnv } from '../Config';
-import { fetch } from '../fetch.utils';
+import { wrappedFetch } from '../fetch.utils';
 
 export abstract class SubCrudRepository<T> {
   constructor(
@@ -17,7 +17,7 @@ export abstract class SubCrudRepository<T> {
    */
   public getById = async (parent: string, uid: string) => {
     const params = { collection: this.col, parentUid: parent, subCollection: this.subCol, uid };
-    return await fetch<T>(getByIdUrl(this.env), params);
+    return await wrappedFetch<T>(getByIdUrl(this.env), params);
   };
 
   /**
@@ -28,7 +28,7 @@ export abstract class SubCrudRepository<T> {
    */
   public getAll = async (parent: string, startAfter?: string) => {
     const params = { collection: this.col, uid: parent, subCollection: this.subCol, startAfter };
-    return await fetch<T[]>(getByManyUrl(this.env), params);
+    return await wrappedFetch<T[]>(getByManyUrl(this.env), params);
   };
 
   /**
@@ -53,7 +53,7 @@ export abstract class SubCrudRepository<T> {
       fieldValue,
       startAfter,
     };
-    return await fetch<T[]>(getByManyUrl(this.env), params);
+    return await wrappedFetch<T[]>(getByManyUrl(this.env), params);
   };
 
   /**
@@ -63,6 +63,6 @@ export abstract class SubCrudRepository<T> {
    */
   public getAllUpdatedAfter = async (parent: string, updatedAfter: number) => {
     const params = { collection: this.col, uid: parent, subCollection: this.subCol, updatedAfter };
-    return await fetch<T[]>(getUpdatedAfterUrl(this.env), params);
+    return await wrappedFetch<T[]>(getUpdatedAfterUrl(this.env), params);
   };
 }

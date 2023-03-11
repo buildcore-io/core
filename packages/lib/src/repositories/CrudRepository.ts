@@ -1,6 +1,6 @@
 import { PublicCollections } from '@soonaverse/interfaces';
 import { getByIdUrl, getByManyUrl, getUpdatedAfterUrl, SoonEnv } from '../Config';
-import { fetch } from '../fetch.utils';
+import { wrappedFetch } from '../fetch.utils';
 
 export abstract class CrudRepository<T> {
   constructor(protected readonly env: SoonEnv, protected readonly col: PublicCollections) {}
@@ -12,7 +12,7 @@ export abstract class CrudRepository<T> {
    */
   public getById = async (uid: string) => {
     const params = { collection: this.col, uid };
-    return await fetch<T>(getByIdUrl(this.env), params);
+    return await wrappedFetch<T>(getByIdUrl(this.env), params);
   };
 
   /**
@@ -28,7 +28,7 @@ export abstract class CrudRepository<T> {
     startAfter?: string,
   ) => {
     const params = { collection: this.col, fieldName, fieldValue, startAfter };
-    return await fetch<T[]>(getByManyUrl(this.env), params);
+    return await wrappedFetch<T[]>(getByManyUrl(this.env), params);
   };
 
   /**
@@ -39,7 +39,7 @@ export abstract class CrudRepository<T> {
    */
   public getBySpace = async (space: string, startAfter?: string) => {
     const params = { collection: this.col, fieldName: 'space', fieldValue: space, startAfter };
-    return await fetch<T[]>(getByManyUrl(this.env), params);
+    return await wrappedFetch<T[]>(getByManyUrl(this.env), params);
   };
 
   /**
@@ -50,6 +50,6 @@ export abstract class CrudRepository<T> {
    */
   public getAllUpdatedAfter = async (updatedAfter: number, startAfter?: string) => {
     const params = { collection: this.col, updatedAfter, startAfter };
-    return await fetch<T[]>(getUpdatedAfterUrl(this.env), params);
+    return await wrappedFetch<T[]>(getUpdatedAfterUrl(this.env), params);
   };
 }
