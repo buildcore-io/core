@@ -1,23 +1,10 @@
-import https from 'https';
-
-export const fetch = <T>(url: string, params: Record<string, unknown>) =>
+export const wrappedFetch = <T>(url: string, params: Record<string, unknown>) =>
   new Promise<T>((res, rej) => {
-    https
-      .get(url + toQueryParams(params), (response) => {
-        let data = '';
-        response.on('data', (chunk) => {
-          data += chunk;
-        });
-        response.on('end', () => {
-          if (response.statusCode !== 200) {
-            rej(data);
-            return;
-          }
-          res(JSON.parse(data) as T);
-        });
+    return fetch(url + toQueryParams(params))
+      .then((r) => {
+        res(r.json());
       })
-      .on('error', (error) => {
-        console.log(error);
+      .catch((error) => {
         rej(error);
       });
   });

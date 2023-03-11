@@ -1,6 +1,6 @@
 import { PublicCollections, TokenTradeOrder } from '@soonaverse/interfaces';
 import { getTokenPriceUrl, SoonEnv } from '../../Config';
-import { fetch } from '../../fetch.utils';
+import { wrappedFetch } from '../../fetch.utils';
 import { CrudRepository } from '../CrudRepository';
 
 export class TokenMarketRepository extends CrudRepository<TokenTradeOrder> {
@@ -14,7 +14,7 @@ export class TokenMarketRepository extends CrudRepository<TokenTradeOrder> {
    * @returns
    */
   public getTokenPrice = async (token: string) => {
-    const response = await fetch(getTokenPriceUrl(this.env), { token });
+    const response = await wrappedFetch(getTokenPriceUrl(this.env), { token });
     return (response as Record<string, unknown>).price;
   };
 
@@ -24,7 +24,7 @@ export class TokenMarketRepository extends CrudRepository<TokenTradeOrder> {
    * @returns
    */
   public getTokenPriceInUsd = async (token: string) => {
-    const response = await fetch(getTokenPriceUrl(this.env), { token });
+    const response = await wrappedFetch(getTokenPriceUrl(this.env), { token });
     return (response as Record<string, unknown>).usdPrice;
   };
 }
