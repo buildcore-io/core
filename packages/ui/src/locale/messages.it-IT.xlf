@@ -8458,7 +8458,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">391</context>
         </context-group>
-        <target state="translated">Ogni tipo ha caratteristiche diverse. Questo non può essere cambiato dopo la creazione.</target>
+        <target state="translated">Ogni collezione ha le sue caratteristiche che la differenziano dalle altre. Una volta creata, non sarà possibile apportare alcuna modifica alla collezione.</target>
       </trans-unit>
       <trans-unit id="5401784168930937916" datatype="html">
         <source>Banner</source>
@@ -11438,7 +11438,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">127</context>
         </context-group>
-        <target state="translated">Ogni tipo ha caratteristiche diverse.</target>
+        <target state="translated">Ogni collezione ha le sue caratteristiche che la differenziano dalle altre.</target>
       </trans-unit>
       <trans-unit id="6381437034277705988" datatype="html">
         <source>Open for anyone to join instantly </source>
