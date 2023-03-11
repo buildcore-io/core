@@ -7,7 +7,6 @@ import {
   Collection,
   CollectionStatus,
   CollectionType,
-  IPFS_GATEWAY,
   MediaStatus,
   MilestoneTransactionEntry,
   Network,
@@ -27,7 +26,7 @@ import admin, { inc } from '../../../admin.config';
 import { getNftByMintingId } from '../../../utils/collection-minting-utils/nft.utils';
 import { getBucket } from '../../../utils/config.utils';
 import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
-import { migrateUriToSotrage } from '../../../utils/media.utils';
+import { migrateUriToSotrage, uriToUrl } from '../../../utils/media.utils';
 import {
   collectionIrc27Scheam,
   getAliasId,
@@ -398,14 +397,4 @@ const getMigratedCollection = (
     createdOn: serverTime(),
   };
   return mintedCollection;
-};
-
-const uriToUrl = (uri: string) => {
-  if (uri.startsWith('http')) {
-    return uri;
-  }
-  if (uri.startsWith('ipfs://')) {
-    return `${IPFS_GATEWAY}${uri.replace('ipfs://', '')}`;
-  }
-  throw WenError.ipfs_retrieve;
 };

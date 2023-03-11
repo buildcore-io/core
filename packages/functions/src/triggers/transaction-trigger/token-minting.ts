@@ -140,13 +140,14 @@ const onFoundryMinted = async (transaction: Transaction) => {
 };
 
 const onAliasSendToGuardian = async (transaction: Transaction) => {
-  await admin
-    .firestore()
-    .doc(`${COL.TOKEN}/${transaction.payload.token}`)
-    .update(
-      uOn({
-        'mintingData.mintedOn': admin.firestore.FieldValue.serverTimestamp(),
-        status: TokenStatus.MINTED,
-      }),
-    );
+  const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${transaction.payload.token}`);
+  const token = <Token>(await tokenDocRef.get()).data();
+  await tokenDocRef.update(
+    uOn({
+      'mintingData.mintedOn': admin.firestore.FieldValue.serverTimestamp(),
+      status: TokenStatus.MINTED,
+      approved: true,
+      tradingDisabled: !token.public || token.tradingDisabled || false,
+    }),
+  );
 };

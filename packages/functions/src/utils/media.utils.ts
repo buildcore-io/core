@@ -4,6 +4,7 @@ import {
   COL,
   generateRandomFileName,
   IMAGE_CACHE_AGE,
+  IPFS_GATEWAY,
   WenError,
 } from '@soonaverse/interfaces';
 import axios from 'axios';
@@ -39,7 +40,7 @@ export const migrateUriToSotrage = async (
     });
 
     if (bucket.name === Bucket.DEV) {
-      return response[1].mediaLink;
+      return response[1].mediaLink as string;
     }
     return `https://${bucket.name}/${owner}/${uid}/${fileName}`;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -83,4 +84,14 @@ const downloadMedia = async (workdir: string, url: string) => {
   }
 
   throw error;
+};
+
+export const uriToUrl = (uri: string) => {
+  if (uri.startsWith('http')) {
+    return uri;
+  }
+  if (uri.startsWith('ipfs://')) {
+    return `${IPFS_GATEWAY}${uri.replace('ipfs://', '')}`;
+  }
+  throw WenError.ipfs_retrieve;
 };

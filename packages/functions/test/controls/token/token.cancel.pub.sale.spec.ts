@@ -195,7 +195,10 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
     await admin
       .firestore()
       .doc(`${COL.TOKEN}/${token.uid}`)
-      .update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] });
+      .update({
+        allocations: [{ title: 'public', percentage: 100, isPublicSale: true }],
+        public: true,
+      });
     const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };
     mockWalletReturnValue(walletSpy, memberAddress, updateData);
     const result = await testEnv.wrap(setTokenAvailableForSale)({});
