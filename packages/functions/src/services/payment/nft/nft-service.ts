@@ -17,6 +17,7 @@ import {
 import dayjs from 'dayjs';
 import { get, last } from 'lodash';
 import admin, { arrayUnion, inc } from '../../../admin.config';
+import { AVAILABLE_NETWORKS } from '../../../controls/common';
 import { getAddress } from '../../../utils/address.utils';
 import { OrderPayBillCreditTransaction } from '../../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
@@ -50,13 +51,13 @@ export class NftService {
     this.setTradingStats(nft);
 
     const tanglePuchase = get(order, 'payload.tanglePuchase', false);
-    if (tanglePuchase) {
+    if (tanglePuchase && AVAILABLE_NETWORKS.includes(order.network!)) {
       const membderDocRef = admin.firestore().doc(`${COL.MEMBER}/${order.member}`);
       const member = <Member>(await membderDocRef.get()).data();
       const { order: withdrawOrder, nftUpdateData } = createNftWithdrawOrder(
         nft,
         member.uid,
-        getAddress(member, nft.mintingData?.network!),
+        getAddress(member, order.network!),
       );
       this.transactionService.updates.push({
         ref: admin.firestore().doc(`${COL.TRANSACTION}/${withdrawOrder.uid}`),

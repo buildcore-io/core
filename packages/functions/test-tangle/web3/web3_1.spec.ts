@@ -5,30 +5,27 @@ import {
   Member,
   Network,
   Nft,
-  Space,
   SUB_COL,
   Token,
   TokenStatus,
 } from '@soonaverse/interfaces';
 import { Web3Storage } from 'web3.storage';
-import admin from '../src/admin.config';
-import { updateSpace } from '../src/controls/space/space.update.control';
-import { mintTokenOrder } from '../src/controls/token-minting/token-mint.control';
-import { uploadMediaToWeb3 } from '../src/cron/media.cron';
-import { collectionToIpfsMetadata, nftToIpfsMetadata } from '../src/utils/car.utils';
-import { getWeb3Token } from '../src/utils/config.utils';
-import { serverTime } from '../src/utils/dateTime.utils';
-import * as wallet from '../src/utils/wallet.utils';
+import admin from '../../src/admin.config';
+import { mintTokenOrder } from '../../src/controls/token-minting/token-mint.control';
+import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
+import { getWeb3Token } from '../../src/utils/config.utils';
+import { serverTime } from '../../src/utils/dateTime.utils';
+import * as wallet from '../../src/utils/wallet.utils';
 import {
   createMember,
   createSpace,
   getRandomSymbol,
   mockWalletReturnValue,
   wait,
-} from '../test/controls/common';
-import { MEDIA, testEnv } from '../test/set-up';
-import { CollectionMintHelper } from './collection-minting/Helper';
-import { requestFundsFromFaucet } from './faucet';
+} from '../../test/controls/common';
+import { MEDIA, testEnv } from '../../test/set-up';
+import { CollectionMintHelper } from '../collection-minting/Helper';
+import { requestFundsFromFaucet } from '../faucet';
 
 let walletSpy: any;
 const network = Network.RMS;
@@ -143,109 +140,6 @@ describe('Web3 cron test', () => {
     const client = new Web3Storage({ token: getWeb3Token() });
     const tokenWeb3Status = await client.status(token.ipfsRoot!);
     expect(tokenWeb3Status?.pins[0]?.status).toBe('Pinned');
-  });
-
-  it('Should set metadata.json correctly', async () => {
-    await collectionHelper.beforeAll();
-    await collectionHelper.beforeEach();
-
-    const collectionDocRef = admin
-      .firestore()
-      .doc(`${COL.COLLECTION}/${collectionHelper.collection}`);
-    const collection = <Collection>(await collectionDocRef.get()).data();
-    const nft = collectionHelper.createDummyNft(collection.uid, collectionHelper.space!.uid) as any;
-
-    const nftMetadata = nftToIpfsMetadata(collection, nft);
-    expect(nftMetadata.name).toBe(nft.name);
-    expect(nftMetadata.description).toBe(nft.description);
-    expect(nftMetadata.author).toBe(nft.createdBy);
-    expect(nftMetadata.space).toBe(nft.space);
-    expect(nftMetadata.royaltySpace).toBe(collection.royaltiesSpace);
-    expect(nftMetadata.uid).toBe(nft.uid);
-    expect(nftMetadata.attributes).toEqual([
-      { trait_type: 'custom', value: 'custom' },
-      { trait_type: 'customStat', value: 'customStat' },
-    ]);
-    expect(nftMetadata.collectionId).toBe(collection.uid);
-
-    const collectionMetadata = collectionToIpfsMetadata(collection);
-    expect(collectionMetadata.name).toBe(collection.name);
-    expect(collectionMetadata.description).toBe(collection.description);
-    expect(collectionMetadata.author).toBe(collection.createdBy);
-    expect(collectionMetadata.space).toBe(collection.space);
-    expect(collectionMetadata.royaltySpace).toBe(collection.royaltiesSpace);
-    expect(collectionMetadata.uid).toBe(collection.uid);
-  });
-
-  it('Should upload space media', async () => {
-    const guardian = await createMember(walletSpy);
-    let space = await createSpace(walletSpy, guardian);
-
-    await uploadMediaToWeb3();
-
-    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
-    await wait(async () => {
-      space = <Space>(await spaceDocRef.get()).data();
-      return space.mediaStatus === MediaStatus.UPLOADED;
-    });
-  });
-
-  it('Should upload space media after edit vote', async () => {
-    const guardian = await createMember(walletSpy);
-    let space = await createSpace(walletSpy, guardian);
-
-    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
-    await spaceDocRef.update({ bannerUrl: '' });
-
-    mockWalletReturnValue(walletSpy, guardian, { uid: space?.uid, bannerUrl: MEDIA });
-    await testEnv.wrap(updateSpace)({});
-
-    await wait(async () => {
-      space = <Space>(await spaceDocRef.get()).data();
-      return space.bannerUrl === MEDIA;
-    });
-
-    await uploadMediaToWeb3();
-
-    await wait(async () => {
-      space = <Space>(await spaceDocRef.get()).data();
-      return space.mediaStatus === MediaStatus.UPLOADED;
-    });
-  });
-
-  it('Should fail first then retry', async () => {
-    const guardian = await createMember(walletSpy);
-    let space = await createSpace(walletSpy, guardian);
-
-    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
-    await spaceDocRef.update({ bannerUrl: 'asd' });
-
-    await uploadMediaToWeb3();
-
-    space = <Space>(await spaceDocRef.get()).data();
-    expect((space as any).mediaUploadErrorCount).toBe(1);
-
-    await spaceDocRef.update({ bannerUrl: MEDIA });
-    await uploadMediaToWeb3();
-    await wait(async () => {
-      space = <Space>(await spaceDocRef.get()).data();
-      return space.mediaStatus === MediaStatus.UPLOADED;
-    });
-  });
-
-  it('Should fail 5 times, then set to error', async () => {
-    const guardian = await createMember(walletSpy);
-    let space = await createSpace(walletSpy, guardian);
-
-    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
-    await spaceDocRef.update({ bannerUrl: 'asd' });
-
-    for (let i = 0; i < 6; ++i) {
-      await uploadMediaToWeb3();
-      space = <Space>(await spaceDocRef.get()).data();
-      expect((space as any).mediaUploadErrorCount).toBe(i + 1);
-      expect(space.mediaStatus).toBe(i === 5 ? MediaStatus.ERROR : MediaStatus.PENDING_UPLOAD);
-    }
   });
 
   afterEach(async () => {
