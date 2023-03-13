@@ -58,6 +58,13 @@ export const updateMintedCollectionSchema = {
     otherwise: Joi.forbidden(),
   }),
   price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).optional(),
+  availableFrom: Joi.date()
+    .greater(
+      dayjs()
+        .add(isProdEnv() ? NftAvailableFromDateMin.value : -600000)
+        .toDate(),
+    )
+    .optional(),
 };
 
 export const updateCollectionSchema = {
