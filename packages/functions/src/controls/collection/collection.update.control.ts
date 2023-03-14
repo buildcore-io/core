@@ -8,8 +8,9 @@ import {
   NftStatus,
   WenError,
 } from '@soonaverse/interfaces';
+import dayjs from 'dayjs';
 import Joi from 'joi';
-import { set } from 'lodash';
+import { isEmpty, set } from 'lodash';
 import { Database } from '../../database/Database';
 import {
   updateCollectionSchema,
@@ -39,6 +40,9 @@ export const updateCollectionControl = async (owner: string, params: Record<stri
   }
 
   if (params.availableFrom) {
+    if (dayjs().isAfter(collection.availableFrom.toDate())) {
+      throw throwInvalidArgument(WenError.available_from_must_be_in_the_future);
+    }
     params.availableFrom = dateToTimestamp(params.availableFrom as Date, true);
   }
 
@@ -80,23 +84,31 @@ export const updateCollectionControl = async (owner: string, params: Record<stri
   }
   await batchWriter.commit();
 
+  const nftUpdateData = {};
   if (price !== collection.price) {
+    set(nftUpdateData, 'price', price);
+    set(nftUpdateData, 'availablePrice', price);
+  }
+  if (params.availableFrom) {
+    set(nftUpdateData, 'availableFrom', params.availableFrom);
+  }
+  if (!isEmpty(nftUpdateData)) {
     for (const status of [NftStatus.PRE_MINTED, NftStatus.MINTED]) {
       await Database.getManyPaginated<Nft>(
         COL.NFT,
         { collection: collection.uid, isOwned: false, status },
         500,
-      )(updateNftsPrice(price));
+      )(updateNftsPrice(nftUpdateData));
     }
   }
 
   return await Database.getById<Collection>(COL.COLLECTION, params.uid as string);
 };
 
-const updateNftsPrice = (price: number) => async (nfts: Nft[]) => {
+const updateNftsPrice = (data: Record<string, unknown>) => async (nfts: Nft[]) => {
   const batchWriter = Database.createBatchWriter();
   for (const nft of nfts) {
-    batchWriter.update(COL.NFT, { uid: nft.uid, price, availablePrice: price });
+    batchWriter.update(COL.NFT, { uid: nft.uid, ...data });
   }
   await batchWriter.commit();
 };
