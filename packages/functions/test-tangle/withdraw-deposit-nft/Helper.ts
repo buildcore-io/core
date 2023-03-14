@@ -4,6 +4,7 @@ import {
   Bech32Helper,
   EXPIRATION_UNLOCK_CONDITION_TYPE,
   REFERENCE_UNLOCK_TYPE,
+  STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
   TransactionHelper,
 } from '@iota/iota.js-next';
 import {
@@ -181,6 +182,7 @@ export class Helper {
     targetAddressBech32: string,
     expiresOn?: Timestamp,
     nftId?: string,
+    storageReturnAddress?: string,
   ) => {
     if (!expiresOn) {
       const order = <Transaction>{
@@ -214,18 +216,31 @@ export class Helper {
       targetAddressBech32,
       this.walletService!.info.protocol.bech32Hrp,
     );
-    nftOutput.unlockConditions = [
-      { type: ADDRESS_UNLOCK_CONDITION_TYPE, address: targetAddress },
-      {
-        type: EXPIRATION_UNLOCK_CONDITION_TYPE,
+    nftOutput.unlockConditions = [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: targetAddress }];
+    nftOutput.amount = (Number(nftOutput.amount) + total).toString();
+
+    if (storageReturnAddress) {
+      nftOutput.unlockConditions.push({
+        type: STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
+        amount: TransactionHelper.getStorageDeposit(
+          nftOutput,
+          this.walletService!.info.protocol.rentStructure,
+        ).toString(),
         returnAddress: Bech32Helper.addressFromBech32(
-          sourceAddress.bech32,
+          storageReturnAddress,
           this.walletService!.info.protocol.bech32Hrp,
         ),
-        unixTime: dayjs(expiresOn.toDate()).unix(),
-      },
-    ];
-    nftOutput.amount = (Number(nftOutput.amount) + total).toString();
+      });
+    }
+
+    nftOutput.unlockConditions.push({
+      type: EXPIRATION_UNLOCK_CONDITION_TYPE,
+      returnAddress: Bech32Helper.addressFromBech32(
+        sourceAddress.bech32,
+        this.walletService!.info.protocol.bech32Hrp,
+      ),
+      unixTime: dayjs(expiresOn.toDate()).unix(),
+    });
 
     const inputs = [...Object.keys(outputs), nftOutputId].map(TransactionHelper.inputFromOutputId);
     const inputsCommitment = TransactionHelper.getInputsCommitment([

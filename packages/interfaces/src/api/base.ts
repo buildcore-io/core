@@ -34,6 +34,7 @@ export enum PublicSubCollections {
   DISTRIBUTION = 'distribution',
   STATS = 'stats',
   VOTES = 'votes',
+  RANKS = 'ranks',
 }
 
 export const QUERY_MIN_LENGTH = 1;
