@@ -55,7 +55,7 @@ export class Helper {
     this.nftWallet = new NftWallet(this.walletService);
   };
 
-  public beforeEach = async () => {
+  public beforeEach = async (collectionType = CollectionType.CLASSIC) => {
     this.guardian = await createMemberTest(this.walletSpy);
     this.member = await createMemberTest(this.walletSpy);
     this.space = await createSpace(this.walletSpy, this.guardian);
@@ -64,7 +64,7 @@ export class Helper {
     mockWalletReturnValue(
       this.walletSpy,
       this.guardian,
-      this.createDummyCollection(this.space.uid, this.royaltySpace.uid),
+      this.createDummyCollection(this.space.uid, this.royaltySpace.uid, collectionType),
     );
     this.collection = (await testEnv.wrap(createCollection)({})).uid;
 
@@ -95,7 +95,7 @@ export class Helper {
     this.nft = <Nft>(await nftDocRef.get()).data();
   };
 
-  public createAndOrderNft = async () => {
+  public createAndOrderNft = async (shouldOrder = true) => {
     let nft: any = this.createDummyNft(this.collection!);
     delete nft.uid;
     delete nft.status;
@@ -107,13 +107,18 @@ export class Helper {
       .firestore()
       .doc(`${COL.NFT}/${nft.uid}`)
       .update({ availableFrom: dayjs().subtract(1, 'h').toDate() });
-    mockWalletReturnValue(this.walletSpy, this.guardian!, {
-      collection: this.collection,
-      nft: nft.uid,
-    });
-    const order = await testEnv.wrap(orderNft)({});
-    const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
-    await milestoneProcessed(milestone.milestone, milestone.tranId);
+    if (shouldOrder) {
+      mockWalletReturnValue(this.walletSpy, this.guardian!, {
+        collection: this.collection,
+        nft: nft.uid,
+      });
+      const order = await testEnv.wrap(orderNft)({});
+      const milestone = await submitMilestoneFunc(
+        order.payload.targetAddress,
+        order.payload.amount,
+      );
+      await milestoneProcessed(milestone.milestone, milestone.tranId);
+    }
 
     this.nft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
     return this.nft;
@@ -137,10 +142,10 @@ export class Helper {
     );
   };
 
-  public createDummyCollection = (space: string, royaltiesSpace: string) => ({
+  public createDummyCollection = (space: string, royaltiesSpace: string, type: CollectionType) => ({
     name: 'Collection A',
     description: 'babba',
-    type: CollectionType.CLASSIC,
+    type,
     royaltiesFee: 0.6,
     category: Categories.ART,
     access: Access.OPEN,
