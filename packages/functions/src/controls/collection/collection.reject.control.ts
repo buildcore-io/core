@@ -1,16 +1,12 @@
-import { COL, Collection, Member, WenError } from '@soonaverse/interfaces';
+import { COL, Collection, WenError } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { Database } from '../../database/Database';
+import { soonDb } from '../../database/wrapper/soondb';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 
 export const rejectCollectionControl = async (owner: string, params: Record<string, unknown>) => {
-  const member = await Database.getById<Member>(COL.MEMBER, owner);
-  if (!member) {
-    throw throwInvalidArgument(WenError.member_does_not_exists);
-  }
-
-  const collection = await Database.getById<Collection>(COL.COLLECTION, params.uid as string);
+  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${params.uid}`);
+  const collection = await collectionDocRef.get<Collection>();
   if (!collection) {
     throw throwInvalidArgument(WenError.collection_does_not_exists);
   }
@@ -25,6 +21,6 @@ export const rejectCollectionControl = async (owner: string, params: Record<stri
 
   await assertIsGuardian(collection.space, owner);
 
-  await Database.update(COL.COLLECTION, { uid: collection.uid, approved: false, rejected: true });
+  await collectionDocRef.update({ approved: false, rejected: true });
   return { ...collection, approved: false, rejected: true };
 };

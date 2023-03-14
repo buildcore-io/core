@@ -1,12 +1,14 @@
 import { Award, COL, WenError } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { TransactionRunner } from '../../database/Database';
+import { soonDb } from '../../database/wrapper/soondb';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 
 export const cancelAwardControl = (owner: string, params: Record<string, unknown>) =>
-  TransactionRunner.runTransaction(async (transaction) => {
-    const award = await transaction.getById<Award>(COL.AWARD, params.uid as string);
+  soonDb().runTransaction(async (transaction) => {
+    const awardDocRef = soonDb().doc(`${COL.AWARD}/${params.uid}`);
+    const award = await transaction.get<Award>(awardDocRef);
+
     if (!award) {
       throw throwInvalidArgument(WenError.award_does_not_exists);
     }
@@ -20,5 +22,5 @@ export const cancelAwardControl = (owner: string, params: Record<string, unknown
     await assertIsGuardian(award.space, owner);
 
     const data = { uid: award.uid, completed: true };
-    transaction.update({ col: COL.AWARD, data, action: 'update' });
+    transaction.update(awardDocRef, data);
   });

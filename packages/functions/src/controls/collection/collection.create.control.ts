@@ -5,13 +5,13 @@ import {
   CollectionType,
   DEFAULT_NETWORK,
   DiscountLine,
+  Member,
   NftStatus,
   Space,
-  SpaceMember,
   SUB_COL,
   WenError,
 } from '@soonaverse/interfaces';
-import { Database } from '../../database/Database';
+import { soonDb } from '../../database/wrapper/soondb';
 import { hasStakedSoonTokens } from '../../services/stake.service';
 import { assertSpaceHasValidAddress } from '../../utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
@@ -24,24 +24,19 @@ export const createCollectionControl = async (owner: string, params: Record<stri
   if (!hasStakedSoons) {
     throw throwInvalidArgument(WenError.no_staked_soon);
   }
-
-  const space = await Database.getById<Space>(COL.SPACE, params.space as string);
+  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${params.space}`);
+  const space = await spaceDocRef.get<Space>();
   if (!space) {
     throw throwInvalidArgument(WenError.space_does_not_exists);
   }
   assertSpaceHasValidAddress(space, DEFAULT_NETWORK);
 
-  const spaceMember = await Database.getById<SpaceMember>(
-    COL.SPACE,
-    params.space as string,
-    SUB_COL.MEMBERS,
-    owner,
-  );
+  const spaceMember = await spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner).get<Member>();
   if (!spaceMember) {
     throw throwInvalidArgument(WenError.you_are_not_part_of_space);
   }
 
-  const royaltySpace = await Database.getById<Space>(COL.SPACE, params.royaltiesSpace as string);
+  const royaltySpace = await soonDb().doc(`${COL.SPACE}/${params.royaltiesSpace}`).get<Space>();
   if (!royaltySpace) {
     throw throwInvalidArgument(WenError.space_does_not_exists);
   }
@@ -51,7 +46,7 @@ export const createCollectionControl = async (owner: string, params: Record<stri
     params.availableFrom = dateToTimestamp(params.availableFrom as Date, true);
   }
 
-  const batchWriter = Database.createBatchWriter();
+  const batch = soonDb().batch();
 
   const discounts = <DiscountLine[]>(params.discounts || []);
   const placeholderNftId = params.type !== CollectionType.CLASSIC ? getRandomEthAddress() : null;
@@ -70,7 +65,8 @@ export const createCollectionControl = async (owner: string, params: Record<stri
     placeholderNft: placeholderNftId || null,
     status: CollectionStatus.PRE_MINTED,
   };
-  batchWriter.set(COL.COLLECTION, collection);
+  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${collection.uid}`);
+  batch.create(collectionDocRef, collection);
 
   if (placeholderNftId) {
     const placeholderNft = {
@@ -98,9 +94,10 @@ export const createCollectionControl = async (owner: string, params: Record<stri
       createdBy: owner,
       status: NftStatus.PRE_MINTED,
     };
-    batchWriter.set(COL.NFT, placeholderNft);
+    const placeholderNftDocRef = soonDb().doc(`${COL.NFT}/${placeholderNft.uid}`);
+    batch.create(placeholderNftDocRef, placeholderNft);
   }
-  await batchWriter.commit();
+  await batch.commit();
 
-  return await Database.getById<Collection>(COL.COLLECTION, collection.uid);
+  return await collectionDocRef.get<Collection>();
 };
