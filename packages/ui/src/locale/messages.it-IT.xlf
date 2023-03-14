@@ -768,7 +768,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/network-status/network-status.component.html</context>
           <context context-type="linenumber">197,198</context>
         </context-group>
-        <target state="translated"> Posizione della rete </target>
+        <target state="translated"> Stato della rete </target>
       </trans-unit>
       <trans-unit id="8542165674704180150" datatype="html">
         <source>Operational</source>
@@ -2012,7 +2012,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.ts</context>
           <context context-type="linenumber">159</context>
         </context-group>
-        <target state="translated">Importo fornito non autorizzato. Operazione di rimborso...</target>
+        <target state="translated">Importo fornito non autorizzato. Erogazione dell'indennità in corso...</target>
       </trans-unit>
       <trans-unit id="1895973094357809697" datatype="html">
         <source>Invalid transaction.You must gift storage deposit.</source>
@@ -2124,7 +2124,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.ts</context>
           <context context-type="linenumber">279</context>
         </context-group>
-        <target state="translated">Rimborso di pagamento non autorizzato.</target>
+        <target state="translated">Erogazione dell'indennità (token non autorizzati) effettuata.</target>
       </trans-unit>
       <trans-unit id="3978157429994044725" datatype="html">
         <source>Waiting for transaction...</source>
@@ -2680,7 +2680,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.ts</context>
           <context context-type="linenumber">100</context>
         </context-group>
-        <target state="translated">Seleziona rete</target>
+        <target state="translated">Seleziona la rete</target>
       </trans-unit>
       <trans-unit id="9217311297628108490" datatype="html">
         <source>Pending
@@ -5806,7 +5806,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">90,91</context>
         </context-group>
-        <target state="translated"> Fine Periodo Cooldown </target>
+        <target state="translated"> Termine del periodo di raffreddamento </target>
       </trans-unit>
       <trans-unit id="1053688643340333587" datatype="html">
         <source>Mint token on network</source>
@@ -5814,7 +5814,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="translated">Coniare (mint) token sulla rete</target>
+        <target state="translated">Mint token sulla rete</target>
       </trans-unit>
       <trans-unit id="768977102113981130" datatype="html">
         <source> Public sale will no longer be available after bringing token to a network. </source>
@@ -5838,7 +5838,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">68,70</context>
         </context-group>
-        <target state="translated"> Si segnala che i token non emessi saranno depositati nel tuo profilo membro e l'esercizio dei diritti di proprietà sui token sarà soggetto a condizioni applicabili al tuo profilo. </target>
+        <target state="translated"> Nota: i token che non sono ancora stati assegnati saranno depositati nel tuo profilo membro e l'esercizio dei diritti di proprietà sui token sarà soggetto a condizioni applicabili al tuo profilo. </target>
       </trans-unit>
       <trans-unit id="4601252939815730452" datatype="html">
         <source> Tokens to migrate </source>
@@ -6234,7 +6234,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-refund/token-refund.component.ts</context>
           <context context-type="linenumber">61</context>
         </context-group>
-        <target state="translated">Rimborso token</target>
+        <target state="translated">Indennità</target>
       </trans-unit>
       <trans-unit id="2622096548656431532" datatype="html">
         <source>Initial Price</source>
@@ -10750,7 +10750,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/votes/votes.page.html</context>
           <context context-type="linenumber">24</context>
         </context-group>
-        <target state="translated">Una volta rimborsato il token output consumato, il voto scade e viene applicato il peso proporzionale. Dovrai votare di nuovo per esprimere il tuo voto.</target>
+        <target state="translated">Una volta effettuato il pagamento delle indennità e liquidate le somme corrispondenti, la votazione è conclusa e la ponderazione dei voti sarà applicata secondo un sistema proporzionale. Devi votare nuovamente per poter esprimere il tuo voto.</target>
       </trans-unit>
       <trans-unit id="7111923952686668823" datatype="html">
         <source>One Member One Vote</source>
@@ -11628,7 +11628,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.ts</context>
           <context context-type="linenumber">96</context>
         </context-group>
-        <target state="translated">Fornitura totale del token</target>
+        <target state="translated">Total token supply</target>
       </trans-unit>
       <trans-unit id="7878107362838629605" datatype="html">
         <source>Launchpad price per token</source>
@@ -11769,7 +11769,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">53</context>
         </context-group>
-        <target state="translated">Fornitura totale del Token</target>
+        <target state="translated">Total supply</target>
       </trans-unit>
       <trans-unit id="9206303416792778912" datatype="html">
         <source>Price per token (MIOTA)</source>
@@ -11805,7 +11805,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">74</context>
         </context-group>
-        <target state="translated">Total supply di token (il registro dei valori supportati è divisibile fino a 6 cifre decimali)</target>
+        <target state="translated">Total token supply (sono supportati fino a 6 cifre decimali)</target>
       </trans-unit>
       <trans-unit id="7627800558083286146" datatype="html">
         <source>Total supply is invalid.</source>
@@ -11817,7 +11817,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">107</context>
         </context-group>
-        <target state="translated">La Total Supply non è autorizzata.</target>
+        <target state="translated">La Total supply non è autorizzata.</target>
       </trans-unit>
       <trans-unit id="1971259695916929385" datatype="html">
         <source>Allocation title</source>
@@ -11965,7 +11965,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">300</context>
         </context-group>
-        <target state="translated">Fornisci link per Termini e Condizioni</target>
+        <target state="translated">Inserisci un link alla pagina Termini e Condizioni</target>
       </trans-unit>
       <trans-unit id="322524188436077631" datatype="html">
         <source>Terms and Conditions link is invalid. (Start with http:// or https://)</source>
@@ -11973,7 +11973,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">306</context>
         </context-group>
-        <target state="translated">Il link di Termini e Condizioni non è valido. (Inizia con http:// o https://)</target>
+        <target state="translated">I caratteri del link Termini e condizioni non sono consentiti. (Iniziare a digitare gli Url http://; https://)</target>
       </trans-unit>
       <trans-unit id="731928120017865074" datatype="html">
         <source>Token allocation</source>
@@ -12267,7 +12267,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">80,81</context>
         </context-group>
-        <target state="translated"> Fornitura totale del token </target>
+        <target state="translated"> Total token supply </target>
       </trans-unit>
       <trans-unit id="455321209818208492" datatype="html">
         <source> Description title </source>
