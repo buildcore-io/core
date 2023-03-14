@@ -5814,7 +5814,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="translated">Mintez votre token sur le réseau</target>
+        <target state="translated">Mint un token sur le réseau</target>
       </trans-unit>
       <trans-unit id="768977102113981130" datatype="html">
         <source> Public sale will no longer be available after bringing token to a network. </source>
@@ -6234,7 +6234,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-refund/token-refund.component.ts</context>
           <context context-type="linenumber">61</context>
         </context-group>
-        <target state="translated">Remboursement Tokens</target>
+        <target state="translated">Versement d'indemnités</target>
       </trans-unit>
       <trans-unit id="2622096548656431532" datatype="html">
         <source>Initial Price</source>
@@ -10750,7 +10750,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/votes/votes.page.html</context>
           <context context-type="linenumber">24</context>
         </context-group>
-        <target state="translated">Une fois que le jeton est emboursé, votre vote expire et le poids proportionnel est appliqué. Vous devrez voter à nouveau pour exprimer votre vote.</target>
+        <target state="translated">Lorsque le versement d'indemnités aura été effectué et que les sommes correspondant à ces dernières auront été liquidées, le vote est terminé et la pondération des votes sera appliquée selon un système proportionnel. Pour pouvoir exprimer votre vote, vous devrez voter à nouveau.</target>
       </trans-unit>
       <trans-unit id="7111923952686668823" datatype="html">
         <source>One Member One Vote</source>
