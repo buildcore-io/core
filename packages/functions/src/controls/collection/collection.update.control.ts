@@ -10,8 +10,8 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import Joi from 'joi';
-import { isEmpty, set } from 'lodash';
-import { Database } from '../../database/Database';
+import { isEmpty, last, set } from 'lodash';
+import { soonDb } from '../../database/wrapper/soondb';
 import {
   updateCollectionSchema,
   updateMintedCollectionSchema,
@@ -24,7 +24,8 @@ import { assertIsGuardian } from '../../utils/token.utils';
 import { populateTokenUidOnDiscounts } from './common';
 
 export const updateCollectionControl = async (owner: string, params: Record<string, unknown>) => {
-  const collection = await Database.getById<Collection>(COL.COLLECTION, params.uid as string);
+  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${params.uid}`);
+  const collection = await collectionDocRef.get<Collection>();
   if (!collection) {
     throw throwInvalidArgument(WenError.collection_does_not_exists);
   }
@@ -34,7 +35,7 @@ export const updateCollectionControl = async (owner: string, params: Record<stri
   const schema = Joi.object({ uid: CommonJoi.uid(), ...updateSchemaObj });
   await assertValidationAsync(schema, params);
 
-  const member = await Database.getById<Member>(COL.MEMBER, owner);
+  const member = await soonDb().doc(`${COL.MEMBER}/${owner}`).get<Member>();
   if (!member) {
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
@@ -56,7 +57,7 @@ export const updateCollectionControl = async (owner: string, params: Record<stri
 
   await assertIsGuardian(collection.space, owner);
 
-  const batchWriter = Database.createBatchWriter();
+  const batch = soonDb().batch();
 
   const price = (params.price as number) || collection.price;
   const collectionUpdateData = {
@@ -69,20 +70,21 @@ export const updateCollectionControl = async (owner: string, params: Record<stri
   if (discounts) {
     set(collectionUpdateData, 'discounts', await populateTokenUidOnDiscounts(discounts));
   }
-  batchWriter.update(COL.COLLECTION, collectionUpdateData);
+
+  batch.update(collectionDocRef, collectionUpdateData);
 
   if (!isMinted && collection.placeholderNft) {
     const data = {
-      uid: collection.placeholderNft,
       name: params.name || '',
       description: params.description || '',
       media: params.placeholderUrl || '',
       space: collection.space,
       type: collection.type,
     };
-    batchWriter.update(COL.NFT, data);
+    const nftDocRef = soonDb().doc(`${COL.NFT}/${collection.placeholderNft}`);
+    batch.update(nftDocRef, data);
   }
-  await batchWriter.commit();
+  await batch.commit();
 
   const nftUpdateData = {};
   if (price !== collection.price) {
@@ -94,21 +96,26 @@ export const updateCollectionControl = async (owner: string, params: Record<stri
   }
   if (!isEmpty(nftUpdateData)) {
     for (const status of [NftStatus.PRE_MINTED, NftStatus.MINTED]) {
-      await Database.getManyPaginated<Nft>(
-        COL.NFT,
-        { collection: collection.uid, isOwned: false, status },
-        500,
-      )(updateNftsPrice(nftUpdateData));
+      let lastNftId = '';
+      do {
+        const nfts = await soonDb()
+          .collection(COL.NFT)
+          .where('collection', '==', collection.uid)
+          .where('isOwned', '==', false)
+          .where('status', '==', status)
+          .limit(500)
+          .startAfter(lastNftId ? `${COL.NFT}/${lastNftId}` : '')
+          .get<Nft>();
+        lastNftId = last(nfts)?.uid || '';
+
+        const batch = soonDb().batch();
+        for (const nft of nfts) {
+          batch.update(soonDb().doc(`${COL.NFT}/${nft.uid}`), nftUpdateData);
+        }
+        await batch.commit();
+      } while (lastNftId);
     }
   }
 
-  return await Database.getById<Collection>(COL.COLLECTION, params.uid as string);
-};
-
-const updateNftsPrice = (data: Record<string, unknown>) => async (nfts: Nft[]) => {
-  const batchWriter = Database.createBatchWriter();
-  for (const nft of nfts) {
-    batchWriter.update(COL.NFT, { uid: nft.uid, ...data });
-  }
-  await batchWriter.commit();
+  return await soonDb().doc(`${COL.COLLECTION}/${params.uid}`).get();
 };

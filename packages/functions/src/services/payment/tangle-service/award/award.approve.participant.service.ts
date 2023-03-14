@@ -1,5 +1,7 @@
 import {
+  Award,
   AwardBadgeType,
+  AwardParticipant,
   COL,
   Member,
   Network,
@@ -13,8 +15,9 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { get, isEmpty } from 'lodash';
-import admin, { arrayUnion, inc } from '../../../../admin.config';
+import { get, head, isEmpty } from 'lodash';
+import { ITransaction } from '../../../../database/wrapper/interfaces';
+import { soonDb } from '../../../../database/wrapper/soondb';
 import { approveAwardParticipantSchema } from '../../../../runtime/firebase/award';
 import { getAddress } from '../../../../utils/address.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../../../../utils/dateTime.utils';
@@ -42,9 +45,9 @@ export class AwardApproveParticipantService {
 
     for (const member of params.members) {
       try {
-        const badge = await admin
-          .firestore()
-          .runTransaction(approveAwardParticipant(owner, params.award, member));
+        const badge = await soonDb().runTransaction(
+          approveAwardParticipant(owner, params.award, member),
+        );
         badges[badge.uid] = member;
       } catch (error) {
         errors[member] = {
@@ -59,10 +62,9 @@ export class AwardApproveParticipantService {
 }
 
 export const approveAwardParticipant =
-  (owner: string, awardId: string, uidOrAddress: string) =>
-  async (transaction: admin.firestore.Transaction) => {
-    const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${awardId}`);
-    const award = (await transaction.get(awardDocRef)).data();
+  (owner: string, awardId: string, uidOrAddress: string) => async (transaction: ITransaction) => {
+    const awardDocRef = soonDb().doc(`${COL.AWARD}/${awardId}`);
+    const award = await transaction.get<Award>(awardDocRef);
     if (!award) {
       throw throwInvalidArgument(WenError.award_does_not_exists);
     }
@@ -82,7 +84,7 @@ export const approveAwardParticipant =
     const memberAddress = getAddress(member, award.network) || '';
 
     const participantDocRef = awardDocRef.collection(SUB_COL.PARTICIPANTS).doc(memberId);
-    const participant = (await transaction.get(participantDocRef)).data();
+    const participant = await transaction.get<AwardParticipant>(participantDocRef);
 
     const count = (award.issued || 0) + 1;
     const data = {
@@ -97,11 +99,11 @@ export const approveAwardParticipant =
       parentId: award.uid,
       parentCol: COL.AWARD,
       completed: true,
-      count: inc(1),
+      count: soonDb().inc(1),
       createdOn: participant?.createdOn || serverTime(),
-      tokenReward: inc(award.badge.tokenReward),
+      tokenReward: soonDb().inc(award.badge.tokenReward),
     };
-    transaction.set(participantDocRef, uOn(participantUpdateData), { merge: true });
+    transaction.set(participantDocRef, participantUpdateData);
 
     const badgeTransaction = {
       type: TransactionType.AWARD,
@@ -123,16 +125,14 @@ export const approveAwardParticipant =
         participatedOn: participant?.createdOn || dateToTimestamp(dayjs()),
       },
     };
-    const badgeTransactionDocRef = admin
-      .firestore()
-      .doc(`${COL.TRANSACTION}/${badgeTransaction.uid}`);
+    const badgeTransactionDocRef = soonDb().doc(`${COL.TRANSACTION}/${badgeTransaction.uid}`);
     transaction.create(badgeTransactionDocRef, cOn(badgeTransaction));
 
     const memberUpdateData = {
       uid: memberId,
 
-      awardsCompleted: inc(1),
-      totalReward: inc(award.badge.tokenReward),
+      awardsCompleted: soonDb().inc(1),
+      totalReward: soonDb().inc(award.badge.tokenReward),
 
       spaces: {
         [award.space]: {
@@ -143,19 +143,19 @@ export const approveAwardParticipant =
           awardStat: {
             [award.badge.tokenUid]: {
               tokenSymbol: award.badge.tokenSymbol,
-              badges: arrayUnion(badgeTransaction.uid),
-              completed: inc(1),
-              totalReward: inc(award.badge.tokenReward),
+              badges: soonDb().arrayUnion(badgeTransaction.uid),
+              completed: soonDb().inc(1),
+              totalReward: soonDb().inc(award.badge.tokenReward),
             },
           },
 
-          awardsCompleted: inc(1),
-          totalReward: inc(award.badge.tokenReward),
+          awardsCompleted: soonDb().inc(1),
+          totalReward: soonDb().inc(award.badge.tokenReward),
         },
       },
     };
-    const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${memberId}`);
-    transaction.set(memberDocRef, uOn(memberUpdateData), { merge: true });
+    const memberDocRef = soonDb().doc(`${COL.MEMBER}/${memberId}`);
+    transaction.set(memberDocRef, memberUpdateData);
 
     if (award.badge.tokenReward) {
       const airdrop: TokenDrop = {
@@ -170,33 +170,32 @@ export const approveAwardParticipant =
         sourceAddress: award.address,
         isBaseToken: award.badge.type === AwardBadgeType.BASE,
       };
-      const airdropDocRef = admin.firestore().doc(`${COL.AIRDROP}/${airdrop.uid}`);
-      transaction.create(airdropDocRef, cOn(airdrop));
+      const airdropDocRef = soonDb().doc(`${COL.AIRDROP}/${airdrop.uid}`);
+      transaction.create(airdropDocRef, airdrop);
 
       const distribution = {
         parentId: airdrop.token,
         parentCol: COL.TOKEN,
         uid: memberId,
-        totalUnclaimedAirdrop: inc(airdrop.count),
+        totalUnclaimedAirdrop: soonDb().inc(airdrop.count),
       };
-      const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${airdrop.token}`);
+      const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${airdrop.token}`);
       const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(memberId);
-      transaction.set(distributionDocRef, uOn(distribution), { merge: true });
+      transaction.set(distributionDocRef, uOn(distribution));
     }
 
     return badgeTransaction as Transaction;
   };
 
 const getMember = async (network: Network, uidOrAddress: string) => {
-  const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${uidOrAddress}`);
-  const member = <Member>(await memberDocRef.get()).data();
+  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${uidOrAddress}`);
+  const member = await memberDocRef.get<Member>();
   if (member) {
     return member;
   }
-  const snap = await admin
-    .firestore()
+  const members = await soonDb()
     .collection(COL.MEMBER)
     .where(`validatedAddress.${network}`, '==', uidOrAddress)
-    .get();
-  return snap.docs[0]?.data() as Member | undefined;
+    .get<Member>();
+  return head(members);
 };

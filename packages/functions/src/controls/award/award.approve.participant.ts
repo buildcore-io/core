@@ -1,6 +1,6 @@
 import { Transaction } from '@soonaverse/interfaces';
 import { get } from 'lodash';
-import admin from '../../admin.config';
+import { soonDb } from '../../database/wrapper/soondb';
 import { approveAwardParticipant } from '../../services/payment/tangle-service/award/award.approve.participant.service';
 
 export const approveAwardParticipantControl = async (
@@ -14,9 +14,7 @@ export const approveAwardParticipantControl = async (
 
   for (const member of members) {
     try {
-      const badge = await admin
-        .firestore()
-        .runTransaction(approveAwardParticipant(owner, awardId, member));
+      const badge = await soonDb().runTransaction(approveAwardParticipant(owner, awardId, member));
       badges[badge.uid] = badge;
     } catch (error) {
       errors[member] = {
