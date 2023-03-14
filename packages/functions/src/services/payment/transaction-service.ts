@@ -307,6 +307,7 @@ export class TransactionService {
     tran: TransactionMatch,
     error?: Record<string, unknown>,
     customErrorParams: Record<string, unknown> = {},
+    ignoreWalletReason = TransactionIgnoreWalletReason.NONE,
   ) {
     const response = error
       ? { status: 'error', code: error.code || '', message: error.key || '', ...customErrorParams }
@@ -327,6 +328,8 @@ export class TransactionService {
         nftId: tran.to.nftOutput?.nftId,
         invalidPayment: payment.payload.invalidPayment,
         response,
+        ignoreWallet: !isEmpty(ignoreWalletReason),
+        ignoreWalletReason,
       },
     };
     this.updates.push({
@@ -431,7 +434,7 @@ export class TransactionService {
       const payment = await this.createPayment(order, match, true);
       const ignoreWalletReason = this.getIngnoreWalletReason(tranOutput.unlockConditions || []);
       if (order.payload.type === TransactionOrderType.DEPOSIT_NFT) {
-        this.createNftCredit(payment, match);
+        this.createNftCredit(payment, match, undefined, undefined, ignoreWalletReason);
         return;
       }
       await this.createCredit(
@@ -445,7 +448,9 @@ export class TransactionService {
     }
   }
 
-  private getIngnoreWalletReason = (unlockConditions: UnlockConditionTypes[]) => {
+  private getIngnoreWalletReason = (
+    unlockConditions: UnlockConditionTypes[],
+  ): TransactionIgnoreWalletReason => {
     const hasTimelock =
       unlockConditions.find((u) => u.type === TIMELOCK_UNLOCK_CONDITION_TYPE) !== undefined;
     if (hasTimelock) {
@@ -507,9 +512,9 @@ export class TransactionService {
       | undefined;
 
   private getUnsupportedUnlockCondition = (
-    unlockCondiiton: UnlockConditionTypes[] = [],
+    unlockConditions: UnlockConditionTypes[] = [],
     supportedUnlockConditions = SUPPORTED_UNLOCK_CONDITION,
-  ) => unlockCondiiton.find((u) => !supportedUnlockConditions.includes(u.type));
+  ) => unlockConditions.find((u) => !supportedUnlockConditions.includes(u.type));
 }
 
 const SUPPORTED_UNLOCK_CONDITION = [
