@@ -32,6 +32,7 @@ import {
 } from './controls/token.control';
 import { voteController } from './controls/vote.control';
 import { cron } from './cron';
+import { algoliaRoll } from './firebase/dbRoll/algolia.roll';
 import {
   addOwnerAward,
   approveAwardParticipant,
@@ -200,3 +201,6 @@ exports[WEN_FUNC.generateCustomFirebaseToken] = generateCustomFirebaseToken;
 exports[WEN_FUNC.claimSpace] = claimSpace;
 
 exports[WEN_FUNC.importMintedToken] = importMintedToken;
+
+// TODO remove after release
+exports['algolia_roll'] = algoliaRoll;
