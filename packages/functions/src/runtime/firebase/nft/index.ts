@@ -88,7 +88,7 @@ const depositNftSchema = Joi.object({
 });
 export const depositNft = onCall(WEN_FUNC.depositNft)(depositNftSchema, depositNftControl);
 
-const nftPurchaseSchema = Joi.object({
+export const nftPurchaseSchema = Joi.object({
   collection: CommonJoi.uid(),
   nft: CommonJoi.uid(false),
 });

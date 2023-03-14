@@ -8,6 +8,7 @@ import {
   MilestoneTransaction,
   MilestoneTransactionEntry,
   MIN_AMOUNT_TO_TRANSFER,
+  Network,
   Nft,
   NftAccess,
   NftStatus,
@@ -22,9 +23,11 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import Joi from 'joi';
 import { isEmpty, set } from 'lodash';
 import admin from '../../../admin.config';
+import { AVAILABLE_NETWORKS } from '../../../controls/common';
+import { Database } from '../../../database/Database';
+import { nftPurchaseSchema } from '../../../runtime/firebase/nft';
 import { assertHasAccess } from '../../../services/validators/access';
 import { WalletService } from '../../../services/wallet/wallet';
 import { getAddress } from '../../../utils/address.utils';
@@ -35,16 +38,8 @@ import { throwInvalidArgument } from '../../../utils/error.utils';
 import { assertIpNotBlocked } from '../../../utils/ip.utils';
 import { assertValidationAsync } from '../../../utils/schema.utils';
 import { getSpace } from '../../../utils/space.utils';
-import {
-  getRandomEthAddress,
-  maxAddressLength,
-  minAddressLength,
-} from '../../../utils/wallet.utils';
+import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { TransactionService } from '../transaction-service';
-
-const nftPurchaseSchema = {
-  nft: Joi.string().alphanum().min(minAddressLength).max(maxAddressLength).lowercase().required(),
-};
 
 export class TangleNftPurchaseService {
   constructor(readonly transactionService: TransactionService) {}
@@ -55,24 +50,19 @@ export class TangleNftPurchaseService {
     owner: string,
     request: Record<string, unknown>,
   ) => {
-    const params = { nft: request.nft };
-    const schema = Joi.object(nftPurchaseSchema);
-    await assertValidationAsync(schema, params);
-
-    const nftByMintingId = await getNftByMintingId(params.nft as string);
-    if (!nftByMintingId) {
-      throw throwInvalidArgument(WenError.nft_does_not_exists);
-    }
+    await assertValidationAsync(nftPurchaseSchema, request, { allowUnknown: true });
 
     const order = await createNftPuchaseOrder(
-      nftByMintingId.collection,
-      nftByMintingId.uid,
+      request.collection as string,
+      request.nft as string,
       owner,
       '',
     );
     set(order, 'payload.tanglePuchase', true);
 
-    if (tranEntry.amount !== order.payload.amount) {
+    const isMintedNft = AVAILABLE_NETWORKS.includes(order.network!);
+
+    if (isMintedNft && tranEntry.amount !== order.payload.amount) {
       return {
         requiredAmount: order.payload.amount,
         status: 'error',
@@ -86,6 +76,14 @@ export class TangleNftPurchaseService {
       data: order,
       action: 'set',
     });
+
+    if (!isMintedNft) {
+      return {
+        status: 'success',
+        amount: order.payload.amount,
+        address: order.payload.targetAddress,
+      };
+    }
 
     this.transactionService.createUnlockTransaction(
       order,
@@ -107,10 +105,11 @@ export const createNftPuchaseOrder = async (
   const collection = await getCollection(collectionId);
   const space = (await getSpace(collection.space))!;
 
+  const isProd = isProdEnv();
   const nft = await getNft(collection, nftId);
-  const network = nft.mintingData?.network || DEFAULT_NETWORK;
+  const network = nft.mintingData?.network || (isProd ? Network.IOTA : Network.ATOI);
 
-  if (isProdEnv()) {
+  if (isProd) {
     await assertIpNotBlocked(ip, nft.uid, 'nft');
   }
 
@@ -183,12 +182,11 @@ const getMember = async (id: string) => {
 
 const getNft = async (collection: Collection, nftId: string | undefined) => {
   if (nftId) {
-    const docRef = admin.firestore().doc(`${COL.NFT}/${nftId}`);
-    const nft = <Nft | undefined>(await docRef.get()).data();
-    if (!nft) {
-      throw throwInvalidArgument(WenError.nft_does_not_exists);
+    const nft = (await getNftByMintingId(nftId)) || (await Database.getById(COL.NFT, nftId));
+    if (nft) {
+      return nft;
     }
-    return nft;
+    throw throwInvalidArgument(WenError.nft_does_not_exists);
   }
 
   if (collection.type === CollectionType.CLASSIC) {

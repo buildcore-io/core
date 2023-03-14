@@ -1,17 +1,16 @@
-import { IndexerPluginClient } from '@iota/iota.js-next';
 import {
   COL,
   Collection,
   MIN_IOTA_AMOUNT,
   Network,
   Nft,
-  NftStatus,
   TangleRequestType,
   Transaction,
   TransactionType,
 } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
+import { WalletService } from '../../src/services/wallet/wallet';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
@@ -30,12 +29,11 @@ describe('Minted nft trading', () => {
     await helper.beforeEach();
   });
 
-  it('Should purchase nft with tangle request', async () => {
+  it('Should purchase pre_minted nft with tangle request', async () => {
     const address = await helper.walletService!.getNewIotaAddressDetails();
     await requestFundsFromFaucet(Network.RMS, address.bech32, 5 * MIN_IOTA_AMOUNT);
 
-    await helper.createAndOrderNft();
-    await helper.mintCollection();
+    await helper.createAndOrderNft(false);
 
     await helper.walletService!.send(address, tangleOrder.payload.targetAddress, MIN_IOTA_AMOUNT, {
       customMetadata: {
@@ -48,55 +46,47 @@ describe('Minted nft trading', () => {
     });
     await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
 
+    const creditQuery = admin
+      .firestore()
+      .collection(COL.TRANSACTION)
+      .where('member', '==', address.bech32)
+      .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
     await wait(async () => {
-      const snap = await admin
-        .firestore()
-        .collection(COL.TRANSACTION)
-        .where('member', '==', address.bech32)
-        .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST)
-        .get();
+      const snap = await creditQuery.get();
       return snap.size > 0 && snap.docs[0]?.data()?.payload?.walletReference?.confirmed;
     });
-
-    await helper.setAvailableForSale();
+    const snap = await creditQuery.get();
+    const credit = snap.docs[0].data() as Transaction;
 
     const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${helper.nft?.collection}`);
-    let collection = <Collection>(await collectionDocRef.get()).data();
-    expect(collection.nftsOnSale).toBe(1);
+    const collection = <Collection>(await collectionDocRef.get()).data();
+    expect(collection.availableNfts).toBe(1);
+    expect(collection.nftsOnSale).toBe(0);
     expect(collection.nftsOnAuction).toBe(0);
 
-    await helper.walletService!.send(address, tangleOrder.payload.targetAddress, MIN_IOTA_AMOUNT, {
-      customMetadata: {
-        request: {
-          requestType: TangleRequestType.NFT_PURCHASE,
-          collection: helper.collection,
-          nft: helper.nft!.mintingData?.nftId,
-        },
-      },
-    });
+    const atoiWallet = await WalletService.newWallet(Network.ATOI);
+    const atoiAddress = await atoiWallet.getNewIotaAddressDetails();
+    await requestFundsFromFaucet(Network.ATOI, atoiAddress.bech32, 5 * MIN_IOTA_AMOUNT);
+
+    await atoiWallet.send(
+      atoiAddress,
+      credit.payload.response.address,
+      credit.payload.response.amount,
+      {},
+    );
 
     const nftDocRef = admin.firestore().doc(`${COL.NFT}/${helper.nft?.uid}`);
     await wait(async () => {
       const nft = <Nft>(await nftDocRef.get()).data();
-      return nft.status === NftStatus.WITHDRAWN;
+      return nft.sold || false;
     });
+    const nft = <Nft>(await nftDocRef.get()).data();
+    expect(nft.owner).toBe(address.bech32);
 
     await wait(async () => {
-      const snap = await admin
-        .firestore()
-        .collection(COL.TRANSACTION)
-        .where('member', '==', address.bech32)
-        .where('type', '==', TransactionType.WITHDRAW_NFT)
-        .get();
-      return snap.size > 0 && snap.docs[0]?.data()?.payload?.walletReference?.confirmed;
+      const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${helper.nft?.collection}`);
+      const collection = <Collection>(await collectionDocRef.get()).data();
+      return !collection.availableNfts && !collection.nftsOnSale && !collection.nftsOnAuction;
     });
-
-    const indexer = new IndexerPluginClient(helper.walletService!.client);
-    const nftOutputIds = await indexer.nfts({ addressBech32: address.bech32 });
-    expect(nftOutputIds.items.length).toBe(1);
-
-    collection = <Collection>(await collectionDocRef.get()).data();
-    expect(collection.nftsOnSale).toBe(0);
-    expect(collection.nftsOnAuction).toBe(0);
   });
 });

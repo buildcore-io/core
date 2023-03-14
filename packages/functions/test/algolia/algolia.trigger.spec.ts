@@ -1,9 +1,12 @@
-import { ALGOLIA_COLLECTIONS, COL } from '@soonaverse/interfaces';
+import { ALGOLIA_COLLECTIONS, COL, UnsoldMintingOptions } from '@soonaverse/interfaces';
 import algoliasearch from 'algoliasearch';
 import dayjs from 'dayjs';
+import admin from '../../src/admin.config';
+import { algoliaRoll } from '../../src/firebase/dbRoll/algolia.roll';
 import { algoliaTrigger } from '../../src/index';
 import * as config from '../../src/utils/config.utils';
 import { algoliaAppId, algoliaKey } from '../../src/utils/config.utils';
+import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { getRandomSymbol, wait } from '../controls/common';
 import { testEnv } from '../set-up';
 
@@ -63,5 +66,65 @@ describe('Algolia trigger', () => {
     expect(hit.bookings[0].name).toEqual(data.bookings[0].name);
 
     isEmulatorSpy.mockRestore();
+  });
+
+  it.each(ALGOLIA_COLLECTIONS)('Should delete algolia index', async (col: COL) => {
+    const data = {
+      uid: `${col}_doc_id`,
+      symbol: getRandomSymbol(),
+    };
+    const docPath = `${col}/${data.uid}`;
+
+    let beforeSnap = testEnv.firestore.makeDocumentSnapshot(data, docPath);
+    let afterSnap = testEnv.firestore.makeDocumentSnapshot(data, docPath);
+
+    let change = testEnv.makeChange(beforeSnap, afterSnap);
+    let wrapped = testEnv.wrap(algoliaTrigger[col]);
+    await wrapped(change);
+
+    await wait(async () => {
+      const { hits } = await client.initIndex(col).search(data.symbol);
+      return hits.length > 0;
+    });
+
+    beforeSnap = testEnv.firestore.makeDocumentSnapshot(data, docPath);
+    afterSnap = testEnv.firestore.makeDocumentSnapshot({}, docPath);
+
+    change = testEnv.makeChange(beforeSnap, afterSnap);
+    wrapped = testEnv.wrap(algoliaTrigger[col]);
+    await wrapped(change);
+
+    await wait(async () => {
+      const { hits } = await client.initIndex(col).search(data.symbol);
+      return hits.length === 0;
+    });
+  });
+
+  it('Should roll algolia', async () => {
+    const collectionId = getRandomEthAddress();
+    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${collectionId}`);
+    await collectionDocRef.create({
+      uid: collectionId,
+      mintingData: { unsoldMintingOptions: UnsoldMintingOptions.BURN_UNSOLD },
+    });
+
+    const nfts = Array.from(Array(2))
+      .map(() => getRandomEthAddress())
+      .map((uid) => ({ collection: collectionId, uid, objectID: uid }));
+
+    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nfts[0].uid}`);
+    await nftDocRef.create(nfts[0]);
+
+    for (const nft of nfts) {
+      await client.initIndex(COL.NFT).saveObject(nft).wait();
+    }
+    const req = {} as any;
+    const res = { sendStatus: () => {} } as any;
+    await algoliaRoll(req, res);
+
+    await wait(async () => {
+      const { hits } = await client.initIndex(COL.NFT).search(collectionId);
+      return hits.length === 1;
+    });
   });
 });

@@ -29,7 +29,7 @@ import { rankController } from '../../src/controls/rank.control';
 import { voteController } from '../../src/controls/vote.control';
 import { createNft, orderNft } from '../../src/runtime/firebase/nft';
 import * as config from '../../src/utils/config.utils';
-import { cOn } from '../../src/utils/dateTime.utils';
+import { cOn, dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { validateAddress } from './../../src/controls/address.control';
@@ -237,6 +237,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
 
     admin.firestore().doc(`${COL.NFT}/${nfts[1].uid}`).update({ status: NftStatus.WITHDRAWN });
 
+    const availableFrom = dayjs().add(1, 'd');
     mockWalletReturnValue(walletSpy, dummyAddress, {
       uid: collection?.uid,
       price: 15 * MIN_IOTA_AMOUNT,
@@ -244,6 +245,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       description: '123',
       royaltiesFee: 0.6,
       royaltiesSpace: space.uid,
+      availableFrom: availableFrom.toDate(),
     });
     const uCollection = await testEnv.wrap(updateCollection)({});
     expect(uCollection?.uid).toBe(collection.uid);
@@ -256,6 +258,11 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       const price = i === 0 ? null : i < 2 ? MIN_IOTA_AMOUNT : 15 * MIN_IOTA_AMOUNT;
       expect(nftData.price).toBe(price || MIN_IOTA_AMOUNT);
       expect(nftData.availablePrice).toBe(price);
+      if (i >= 2) {
+        expect(nftData.availableFrom?.toDate()).toEqual(
+          dateToTimestamp(availableFrom, true).toDate(),
+        );
+      }
     }
 
     walletSpy.mockRestore();
