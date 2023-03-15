@@ -4046,7 +4046,7 @@
           <context context-type="sourcefile">src/app/pages/nft/services/helper.service.ts</context>
           <context context-type="linenumber">142</context>
         </context-group>
-        <target state="translated">La vendita inizia</target>
+        <target state="translated">Asta di Apertura</target>
       </trans-unit>
       <trans-unit id="4629255373567370412" datatype="html">
         <source>Current price</source>
@@ -5726,7 +5726,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-launchpad-row/token-launchpad-row.component.html</context>
           <context context-type="linenumber">91,92</context>
         </context-group>
-        <target state="translated"> Prossimamente </target>
+        <target state="translated"> In arrivo </target>
       </trans-unit>
       <trans-unit id="3165050256850882495" datatype="html">
         <source> In Cooldown </source>
@@ -5838,7 +5838,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">68,70</context>
         </context-group>
-        <target state="translated"> Nota: i token che non sono ancora stati assegnati saranno depositati nel tuo profilo membro e l'esercizio dei diritti di proprietà sui token sarà soggetto a condizioni applicabili al tuo profilo. </target>
+        <target state="translated"> Nota: tutti i token non assegnati saranno depositati nel tuo profilo membro e l'esercizio dei diritti di proprietà sui token sarà soggetto a condizioni applicabili al tuo profilo. </target>
       </trans-unit>
       <trans-unit id="4601252939815730452" datatype="html">
         <source> Tokens to migrate </source>
@@ -5870,7 +5870,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-mint/token-offer-mint.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="translated">Apri ordine di vendita</target>
+        <target state="translated">Aprire l'ordine di vendita</target>
       </trans-unit>
       <trans-unit id="8110565505797963340" datatype="html">
         <source> Token ID </source>
@@ -5898,7 +5898,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">1132,1133</context>
         </context-group>
-        <target state="translated"> Riceverai </target>
+        <target state="translated"> Ricevi </target>
       </trans-unit>
       <trans-unit id="1666887226757993490" datatype="html">
         <source>Fee</source>
@@ -5914,7 +5914,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">1172</context>
         </context-group>
-        <target state="translated">Commissione</target>
+        <target state="translated">Costi di Transazione</target>
       </trans-unit>
       <trans-unit id="4973727667427230652" datatype="html">
         <source> No FEES! </source>
@@ -5942,7 +5942,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">249,251</context>
         </context-group>
-        <target state="translated"> Assicurati che le funzioni di bonus di riferimento del deposito siano abilitate nel tuo portafoglio Firefly al momento dell'invio dei token. </target>
+        <target state="translated"> Assicurati che le funzioni di bonus del deposito siano abilitate nel tuo portafoglio Firefly al momento dell'invio dei token. </target>
       </trans-unit>
       <trans-unit id="6304165245341203397" datatype="html">
         <source>Sell complete. Congratulations.</source>
@@ -5970,7 +5970,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer/token-offer.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="translated">Apri una Posizione di Vendita</target>
+        <target state="translated">Aprire la Posizione di Vendita</target>
       </trans-unit>
       <trans-unit id="4447826262259689742" datatype="html">
         <source> Your Balance </source>
@@ -6010,7 +6010,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">4</context>
         </context-group>
-        <target state="translated">Asta pubblica - Info</target>
+        <target state="translated">Asta pubblica: Info</target>
       </trans-unit>
       <trans-unit id="2247424863242829913" datatype="html">
         <source>Start date is required.</source>
@@ -6026,7 +6026,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">16</context>
         </context-group>
-        <target state="translated">Data di apertura dell'offerta (ICO)</target>
+        <target state="translated">Data di apertura dell'offerta di token al pubblico</target>
       </trans-unit>
       <trans-unit id="6064692598923026619" datatype="html">
         <source>Offering length is required.</source>
@@ -6034,7 +6034,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">23</context>
         </context-group>
-        <target state="translated">È richiesta la durata dell'offerta.</target>
+        <target state="translated">È richiesta la durata di validità dell'offerta.</target>
       </trans-unit>
       <trans-unit id="5066202217652800772" datatype="html">
         <source>Select token offering length (Default 2 days)</source>
@@ -6074,7 +6074,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">98,99</context>
         </context-group>
-        <target state="translated"> Attiva l'opzione di Raffreddamento con rimborso. </target>
+        <target state="translated"> Attiva la funzione di Raffreddamento con indennità. </target>
       </trans-unit>
       <trans-unit id="5047067481558570452" datatype="html">
         <source>Cooldown period length is required.</source>
@@ -6098,7 +6098,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">149,150</context>
         </context-group>
-        <target state="translated"> Nessun Raffreddamento. I partecipanti non possono rimborsare. </target>
+        <target state="translated"> Nessun Raffreddamento. I partecipanti non possono versare indennità. </target>
       </trans-unit>
       <trans-unit id="4680569220639422679" datatype="html">
         <source> Enable Oversale </source>
@@ -6118,7 +6118,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.html</context>
           <context context-type="linenumber">54,55</context>
         </context-group>
-        <target state="translated"> Zero Overselling. L'asta si è conclusa raggiungendo il 100% della vendita. </target>
+        <target state="translated"> 0% Overselling. L'asta si è conclusa raggiungendo il 100% della vendita. </target>
       </trans-unit>
       <trans-unit id="1231109454938483838" datatype="html">
         <source> Sale continues after 100% reached </source>
@@ -6154,7 +6154,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
           <context context-type="linenumber">42</context>
         </context-group>
-        <target state="translated">Valore di un token</target>
+        <target state="translated">Prezzo per token</target>
       </trans-unit>
       <trans-unit id="8605831971249305978" datatype="html">
         <source>Public sale</source>
@@ -6186,7 +6186,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">113</context>
         </context-group>
-        <target state="translated">Digitare il numero di token prescelti per l'acquisto. La quotazione avviene in IOTA.</target>
+        <target state="translated">Digitare il numero di token desiderati per l'acquisto. La quotazione avviene in IOTA.</target>
       </trans-unit>
       <trans-unit id="1647367556246573738" datatype="html">
         <source>Enter how much you want to spend. Amount of tokens will be calculated.</source>
@@ -6254,7 +6254,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">47</context>
         </context-group>
-        <target state="translated">Prezzo medio</target>
+        <target state="translated">Prezzo Medio</target>
       </trans-unit>
       <trans-unit id="5488786408353450137" datatype="html">
         <source> Change (24h) </source>
@@ -6286,7 +6286,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">582</context>
         </context-group>
-        <target state="translated">Capitalizzazione</target>
+        <target state="translated">Market Cap</target>
       </trans-unit>
       <trans-unit id="6188069562258249012" datatype="html">
         <source> Claim </source>
@@ -6638,7 +6638,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.ts</context>
           <context context-type="linenumber">170</context>
         </context-group>
-        <target state="translated">Le Commissioni di Transazione su Soonaverse</target>
+        <target state="translated">Costi di Transazione su Soonaverse</target>
       </trans-unit>
       <trans-unit id="2985771562121730564" datatype="html">
         <source>Exchange Fee</source>
@@ -10170,7 +10170,7 @@
           <context context-type="sourcefile">src/app/pages/swap/pages/market/swap.page.html</context>
           <context context-type="linenumber">35</context>
         </context-group>
-        <target state="translated">In arrivo SOON</target>
+        <target state="translated">Coming SOON</target>
       </trans-unit>
       <trans-unit id="1560637914532726363" datatype="html">
         <source> See Pool <x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p class=&quot;hidden ml-1 lg:block&quot;&gt;"/>on iotabee<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
@@ -10262,7 +10262,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">40</context>
         </context-group>
-        <target state="translated">La data di inizio è richiesta.</target>
+        <target state="translated">È richiesta la Data di Apertura.</target>
       </trans-unit>
       <trans-unit id="5374034773931099277" datatype="html">
         <source>Question Info</source>
@@ -11668,7 +11668,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">23,26</context>
         </context-group>
-        <target state="translated"> Le seguenti informazioni possono rivestire importanza per la creazione di un token su Soonaverse. Si prega di leggere le istruzioni e di compilare il modulo di richiesta disponibile su questo schermo, se si è interessati a rendere disponibile il proprio token alla vendita sulla piattaforma di scambio di Soonaverse. </target>
+        <target state="translated"> Importanti aspetti di cui tenere conto per la creazione di un token su Soonaverse: Si prega di leggere le istruzioni e di compilare il modulo di richiesta disponibile su questo schermo, se si è interessati a rendere disponibile il proprio token alla vendita sulla piattaforma di scambio di Soonaverse. </target>
       </trans-unit>
       <trans-unit id="2917314929120683887" datatype="html">
         <source> Continue </source>
@@ -12006,7 +12006,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.ts</context>
           <context context-type="linenumber">81,82</context>
         </context-group>
-        <target state="translated">Assicurati che ci sia una sola distribuzione per vendita pubblica, perché potrebbe essere venduta in seguito su Soonaverse.
+        <target state="translated">Assicurati che ci sia una sola distribuzione per vendita pubblica: è fondamentale per un'eventuale vendita su Soonaverse.
         Una volta creato il token e ottenuta l'approvazione, potrai rendere pubblico il tuo marketplace per la vendita.</target>
       </trans-unit>
       <trans-unit id="5385408710926538560" datatype="html">
@@ -12381,7 +12381,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">42,43</context>
         </context-group>
-        <target state="translated"> Pianifica vendita pubblica </target>
+        <target state="translated"> Pianifica la vendita pubblica </target>
       </trans-unit>
       <trans-unit id="5917950723234807780" datatype="html">
         <source> Allow Trading </source>
@@ -12525,7 +12525,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-progress/token-progress.component.html</context>
           <context context-type="linenumber">4</context>
         </context-group>
-        <target state="translated">Token acquistati</target>
+        <target state="translated">I Miei Token acquistati</target>
       </trans-unit>
       <trans-unit id="521952543941236208" datatype="html">
         <source>
@@ -12616,7 +12616,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-progress/token-progress.component.ts</context>
           <context context-type="linenumber">69</context>
         </context-group>
-        <target state="translated">La vendita inizia tra</target>
+        <target state="translated">L' asta si apre in</target>
       </trans-unit>
       <trans-unit id="3938497767810948515" datatype="html">
         <source>Cooldown ends in</source>
