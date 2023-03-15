@@ -16,7 +16,7 @@ import { download } from '@core/utils/tools.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/member/services/data.service';
 import { HelperService } from '@pages/member/services/helper.service';
-import { Member, Transaction } from '@soonaverse/interfaces';
+import { Member, Transaction, TransactionType } from '@soonaverse/interfaces';
 import Papa from 'papaparse';
 import { BehaviorSubject, first, map, Observable, of, Subscription } from 'rxjs';
 
@@ -88,6 +88,10 @@ export class TransactionsPage implements OnInit, OnDestroy {
 
   public isEmpty(arr: any): boolean {
     return Array.isArray(arr) && arr.length === 0;
+  }
+
+  public isNotVote(type: TransactionType): boolean {
+    return type !== TransactionType.VOTE;
   }
 
   public claimLocked(transaction: Transaction): void {
