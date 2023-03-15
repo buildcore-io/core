@@ -81,10 +81,10 @@
                 class="font-medium underline wen-btn-link"
                 (click)="claimLocked(t)"
               >
-                Claim locked
+                Claim locked tokens
               </button>
             </div>
-            <div *ngIf="!t.ignoreWallet && isNotVote(t.type)" i18n>Processing...</div>
+            <div *ngIf="!t.ignoreWallet" i18n>Processing...</div>
           </ng-template>
         </td>
       </tr>

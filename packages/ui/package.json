@@ -13,8 +13,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --configuration=development && sh scripts/post-build.sh",
-    "build:prod": "ng build && sh scripts/post-build.sh",
+    "build": "ng build --configuration=development --localize && sh scripts/post-build.sh",
+    "build:prod": "ng build --localize && sh scripts/post-build.sh",
     "build:stats": "ng build --stats-json",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
