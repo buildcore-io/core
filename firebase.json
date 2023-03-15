@@ -27,14 +27,11 @@
       "target": "5d1024cf-d55e-4b10-9d27-eccc37e80161",
       "public": "packages/ui/dist",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-      "i18n": {
-        "root": "/localized"
-      },
       "rewrites": [
         { "source": "/api/**", "function": "api" },
         {
           "source": "**",
-          "destination": "/localized/en/index.html"
+          "destination": "/index.html"
         }
       ]
     },
@@ -42,14 +39,11 @@
       "target": "def-host",
       "public": "packages/ui/dist",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-      "i18n": {
-        "root": "/localized"
-      },
       "rewrites": [
         { "source": "/api/**", "function": "api" },
         {
           "source": "**",
-          "destination": "/localized/en/index.html"
+          "destination": "/index.html"
         }
       ]
     }
