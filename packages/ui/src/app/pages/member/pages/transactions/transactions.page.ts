@@ -90,13 +90,13 @@ export class TransactionsPage implements OnInit, OnDestroy {
     return Array.isArray(arr) && arr.length === 0;
   }
 
-  public isNotVote(type: TransactionType): boolean {
-    return type !== TransactionType.VOTE;
-  }
-
   public claimLocked(transaction: Transaction): void {
     this.openLockedTokenClaim = transaction;
     this.cd.markForCheck();
+  }
+
+  public isNotVote(type: TransactionType): boolean {
+    return type !== TransactionType.VOTE;
   }
 
   public getHandler(last?: any): Observable<Transaction[]> {
