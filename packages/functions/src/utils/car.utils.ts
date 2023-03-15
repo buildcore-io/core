@@ -2,7 +2,6 @@ import { CarReader } from '@ipld/car';
 import * as dagPb from '@ipld/dag-pb';
 import { Collection, KEY_NAME_TANGLE, Nft, Token } from '@soonaverse/interfaces';
 import { randomUUID } from 'crypto';
-import download from 'download';
 import * as functions from 'firebase-functions';
 import fs from 'fs';
 import { FsBlockStore as Blockstore } from 'ipfs-car/blockstore/fs';
@@ -12,6 +11,7 @@ import os from 'os';
 import { Filelike, getFilesFromPath, Web3Storage } from 'web3.storage';
 import { propsToAttributes } from './collection-minting-utils/nft.prop.utils';
 import { getWeb3Token } from './config.utils';
+import { downloadFile } from './media.utils';
 
 const MAX_BLOCK_SIZE = 1048576;
 
@@ -40,7 +40,7 @@ export const downloadMediaAndPackCar = async <M>(uid: string, mediaUrl: string, 
   const workdir = `${os.tmpdir()}/${randomUUID()}`;
   fs.mkdirSync(workdir);
 
-  await download(mediaUrl, workdir, { filename: uid });
+  await downloadFile(mediaUrl, workdir, uid);
 
   const metadataFileName = `metadata.json`;
   fs.writeFileSync(workdir + '/' + metadataFileName, JSON.stringify(metadata));
