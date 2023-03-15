@@ -97,6 +97,10 @@
               class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
             >
               {{a.text}}
+              <span class="text-xxs" i18n
+                >(weight: {{(data.proposal$ | async)?.results?.answers[a.value] || 0 | number :
+                '1.0-2'}})</span
+              >
             </p>
             <nz-progress
               [nzPercent]="data.getProgress(data.proposal$ | async, a) | number : '1.2-2'"

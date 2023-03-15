@@ -14,23 +14,18 @@
 >
   <span
     *ngIf="
-      (data.currentMembersVotes$ | async)?.length &&
-      !helper.isNativeVote((data.proposal$ | async)?.type)
-    "
-    i18n
-    >Voted</span
-  >
-  <span
-    *ngIf="
-      (helper.isInProgress(data.proposal$ | async) &&
-        !(data.currentMembersVotes$ | async)?.length) ||
       (helper.isNativeVote((data.proposal$ | async)?.type) &&
         helper.isCommencing(data.proposal$ | async)) ||
       helper.isInProgress(data.proposal$ | async)
     "
-    i18n
-    >Vote Now</span
   >
+    <ng-container *ngIf="(data.currentMembersVotes$ | async)?.length" i18n>
+      Change Vote
+    </ng-container>
+    <ng-container *ngIf="!(data.currentMembersVotes$ | async)?.length" i18n>
+      Vote Now
+    </ng-container>
+  </span>
   <span
     *ngIf="
       helper.isInProgressIgnoreStatus(data.proposal$ | async) === false &&
