@@ -5882,7 +5882,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer/token-offer.component.html</context>
           <context context-type="linenumber">27,28</context>
         </context-group>
-        <target state="translated"> ID token </target>
+        <target state="translated"> ID Token </target>
       </trans-unit>
       <trans-unit id="8713587445018366556" datatype="html">
         <source> You will receive </source>
@@ -6026,7 +6026,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">16</context>
         </context-group>
-        <target state="translated">Date d'ouverture de l'offre au public de tokens</target>
+        <target state="translated">Date d'ouverture de l'offre de tokens au public</target>
       </trans-unit>
       <trans-unit id="6064692598923026619" datatype="html">
         <source>Offering length is required.</source>
@@ -6042,7 +6042,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">48</context>
         </context-group>
-        <target state="translated">Sélectionnez la durée de validité de l'offre au public de tokens (2 jours par défaut)</target>
+        <target state="translated">Sélectionnez la durée de validité de l'offre de tokens au public (2 jours par défaut)</target>
       </trans-unit>
       <trans-unit id="7951842543694651304" datatype="html">
         <source>Token allocation info</source>
@@ -6074,7 +6074,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">98,99</context>
         </context-group>
-        <target state="translated"> Activer l'option de Refroidissement avec remboursement. </target>
+        <target state="translated"> Activer l'option de Refroidissement avec paiement d'indemnités. </target>
       </trans-unit>
       <trans-unit id="5047067481558570452" datatype="html">
         <source>Cooldown period length is required.</source>
@@ -6098,7 +6098,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">149,150</context>
         </context-group>
-        <target state="translated"> Il N'existe Pas de Refroidissement. Les participants ne peuvent pas rembourser. </target>
+        <target state="translated"> Il N'existe Pas de Refroidissement. Les participants ne peuvent pas verser d'indemnités. </target>
       </trans-unit>
       <trans-unit id="4680569220639422679" datatype="html">
         <source> Enable Oversale </source>
@@ -6226,7 +6226,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-refund/token-refund.component.html</context>
           <context context-type="linenumber">82,83</context>
         </context-group>
-        <target state="translated"> Validation et remboursement </target>
+        <target state="translated"> Validation et versement d'indemnités </target>
       </trans-unit>
       <trans-unit id="2816366509744534533" datatype="html">
         <source>Refund token</source>
@@ -6286,7 +6286,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">582</context>
         </context-group>
-        <target state="translated">Capitalisation de Marché</target>
+        <target state="translated">Market Cap</target>
       </trans-unit>
       <trans-unit id="6188069562258249012" datatype="html">
         <source> Claim </source>
