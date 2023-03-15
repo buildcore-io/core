@@ -9,7 +9,6 @@ import {
 } from '@soonaverse/interfaces';
 import axios from 'axios';
 import { randomUUID } from 'crypto';
-import download from 'download';
 import * as functions from 'firebase-functions';
 import fs from 'fs';
 import mime from 'mime-types';
@@ -75,7 +74,7 @@ const downloadMedia = async (workdir: string, url: string) => {
       const extension = <string>mime.extension(contentType);
       const fileName = generateRandomFileName() + '.' + extension;
 
-      await download(url, workdir, { filename: fileName });
+      await downloadFile(url, workdir, fileName);
       return { fileName, contentType };
     } catch {
       error = WenError.ipfs_retrieve;
@@ -94,4 +93,22 @@ export const uriToUrl = (uri: string) => {
     return `${IPFS_GATEWAY}${uri.replace('ipfs://', '')}`;
   }
   throw WenError.ipfs_retrieve;
+};
+
+export const downloadFile = async (url: string, workDir: string, fileName: string) => {
+  const response = await axios({
+    method: 'GET',
+    url,
+    responseType: 'stream',
+    timeout: 120000,
+  });
+
+  response.data.pipe(fs.createWriteStream(path.join(workDir, fileName)));
+
+  return new Promise<void>((resolve, reject) => {
+    response.data.on('end', () => {
+      resolve();
+    });
+    response.data.on('error', reject);
+  });
 };
