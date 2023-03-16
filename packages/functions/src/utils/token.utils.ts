@@ -99,10 +99,21 @@ export const getSoonToken = async () => {
 };
 
 export const getTokenForSpace = async (space: string) => {
-  const snap = await admin
+  let snap = await admin
     .firestore()
     .collection(COL.TOKEN)
     .where('space', '==', space)
+    .where('approved', '==', true)
+    .limit(1)
+    .get();
+  if (snap.size) {
+    return <Token>snap.docs[0].data();
+  }
+  snap = await admin
+    .firestore()
+    .collection(COL.TOKEN)
+    .where('space', '==', space)
+    .where('public', '==', true)
     .limit(1)
     .get();
   return <Token | undefined>snap.docs[0]?.data();
@@ -140,10 +151,21 @@ export const getUnclaimedAirdropTotalValue = async (token: string) => {
 };
 
 export const getTokenBySymbol = async (symbol: string) => {
-  const snap = await admin
+  let snap = await admin
     .firestore()
     .collection(COL.TOKEN)
     .where('symbol', '==', symbol.toUpperCase())
+    .where('approved', '==', true)
+    .limit(1)
+    .get();
+  if (snap.size) {
+    return <Token>snap.docs[0].data();
+  }
+  snap = await admin
+    .firestore()
+    .collection(COL.TOKEN)
+    .where('symbol', '==', symbol.toUpperCase())
+    .where('public', '==', true)
     .limit(1)
     .get();
   return <Token | undefined>snap.docs[0]?.data();

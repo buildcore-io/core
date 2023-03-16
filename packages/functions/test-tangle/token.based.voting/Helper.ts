@@ -72,6 +72,7 @@ export class Helper {
         space: this.space.uid,
         mintingData: { tokenId: MINTED_TOKEN_ID },
         status: TokenStatus.MINTED,
+        approved: true,
       });
 
     mockWalletReturnValue(this.walletSpy, this.guardian, this.proposal);

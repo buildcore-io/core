@@ -82,6 +82,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
       uid: tokenId,
       space: space.uid,
       status: TokenStatus.MINTED,
+      approved: true,
     });
   });
 

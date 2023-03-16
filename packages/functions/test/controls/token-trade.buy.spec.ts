@@ -130,7 +130,7 @@ describe('Trade controller, buy token', () => {
       type: TokenTradeOrderType.BUY,
     };
     mockWalletReturnValue(walletSpy, memberAddress, request);
-    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.token_not_approved.key);
+    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.token_does_not_exist.key);
   });
 
   it('Should fail, country blocked by default', async () => {
