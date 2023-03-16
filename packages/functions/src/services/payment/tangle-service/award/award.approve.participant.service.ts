@@ -79,7 +79,7 @@ export const approveAwardParticipant =
 
     const member = await getMember(award.network, uidOrAddress);
     const memberId = member?.uid || uidOrAddress;
-    const memberAddress = getAddress(member, award.network) || '';
+    const memberAddress = getTargetAddres(member, award.network, uidOrAddress);
 
     const participantDocRef = awardDocRef.collection(SUB_COL.PARTICIPANTS).doc(memberId);
     const participant = (await transaction.get(participantDocRef)).data();
@@ -199,4 +199,12 @@ const getMember = async (network: Network, uidOrAddress: string) => {
     .where(`validatedAddress.${network}`, '==', uidOrAddress)
     .get();
   return snap.docs[0]?.data() as Member | undefined;
+};
+
+const getTargetAddres = (member: Member | undefined, network: Network, uidOrAddress: string) => {
+  const address = getAddress(member, network);
+  if (address) {
+    return address;
+  }
+  return uidOrAddress.startsWith(network) ? uidOrAddress : '';
 };
