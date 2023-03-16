@@ -6,7 +6,6 @@ import { createMember, updateMember } from './controls/member.control';
 import { openBid } from './controls/order.control';
 import { rankController } from './controls/rank.control';
 import { unblockMember } from './controls/space/member.unblock.control';
-import { createSpace } from './controls/space/space.create.control';
 import { updateSpace } from './controls/space/space.update.control';
 import { depositStake, removeStakeReward, stakeReward } from './controls/stake.control';
 import { airdropToken, claimAirdroppedToken } from './controls/token-airdrop.control';
@@ -65,6 +64,7 @@ import {
   addGuardian,
   blockMember,
   claimSpace,
+  createSpace,
   declineMemberSpace,
   joinSpace,
   leaveSpace,

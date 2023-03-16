@@ -28,13 +28,13 @@ import admin from '../../src/admin.config';
 import { rankController } from '../../src/controls/rank.control';
 import { voteController } from '../../src/controls/vote.control';
 import { createNft, orderNft } from '../../src/runtime/firebase/nft';
+import { createSpace } from '../../src/runtime/firebase/space';
 import * as config from '../../src/utils/config.utils';
 import { cOn, dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { validateAddress } from './../../src/controls/address.control';
 import { createMember } from './../../src/controls/member.control';
-import { createSpace } from './../../src/controls/space/space.create.control';
 import {
   approveCollection,
   createCollection,

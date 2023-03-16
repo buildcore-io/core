@@ -19,7 +19,6 @@ import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../set-up';
-import { createSpace } from './../../src/controls/space/space.create.control';
 import {
   approveAwardParticipant,
   awardParticipate,
@@ -31,7 +30,7 @@ import {
   rejectProposal,
   voteOnProposal,
 } from './../../src/runtime/firebase/proposal/index';
-import { joinSpace } from './../../src/runtime/firebase/space/index';
+import { createSpace, joinSpace } from './../../src/runtime/firebase/space/index';
 import {
   addGuardianToSpace,
   createMember,
