@@ -98,7 +98,7 @@
             >
               {{a.text}}
               <span class="text-xxs" i18n
-                >(weight: {{(data.proposal$ | async)?.results?.answers[a.value] || 0 | number :
+                >(weight: {{(data.proposal$ | async)?.results?.answers?.[a.value] || 0 | number :
                 '1.0-2'}})</span
               >
             </p>
