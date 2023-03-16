@@ -6234,7 +6234,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-refund/token-refund.component.ts</context>
           <context context-type="linenumber">61</context>
         </context-group>
-        <target state="translated">Versement d'indemnités</target>
+        <target state="translated">Indemnisation</target>
       </trans-unit>
       <trans-unit id="2622096548656431532" datatype="html">
         <source>Initial Price</source>
@@ -6302,7 +6302,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">222,223</context>
         </context-group>
-        <target state="translated"> Remboursement </target>
+        <target state="translated"> Indemnisation </target>
       </trans-unit>
       <trans-unit id="7242328171913152773" datatype="html">
         <source> Launching soon </source>
@@ -6326,7 +6326,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="translated">Stakez vos tokens</target>
+        <target state="translated">Stakez votre token</target>
       </trans-unit>
       <trans-unit id="8310238595519563608" datatype="html">
         <source>Select or define the amount you want to stake and the period for how long you want to lock it. </source>
@@ -6442,7 +6442,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">230</context>
         </context-group>
-        <target state="translated">Vous gagnerez</target>
+        <target state="translated">Vous gagnez</target>
       </trans-unit>
       <trans-unit id="2926496528264966619" datatype="html">
         <source>Stake complete. Congratulations.</source>
@@ -6466,7 +6466,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="translated">Facilité trade</target>
+        <target state="translated">Particularité du Trade</target>
       </trans-unit>
       <trans-unit id="498448430508956061" datatype="html">
         <source> Traded amount </source>
@@ -6618,7 +6618,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/transactions/transactions.page.html</context>
           <context context-type="linenumber">77</context>
         </context-group>
-        <target state="translated">Non Cessibles</target>
+        <target state="translated">Non Transférable</target>
       </trans-unit>
       <trans-unit id="4428081059558168074" datatype="html">
         <source>Processing...</source>
@@ -12656,7 +12656,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.ts</context>
           <context context-type="linenumber">275</context>
         </context-group>
-        <target state="translated">Achetez, vendez, et tradez des SOON tokens ainsi que des Shimmer tokens sur L1 : une plateforme d'Échanges décentralisée et autonome, garante de sécurité et de protection. Démarrez en quelques minutes. Rejoignez-nous dès aujourd'hui.</target>
+        <target state="translated">Achetez, vendez, et tradez des SOON tokens ainsi que des Shimmer tokens sur un exchange layer 1 : une plateforme d'Échanges décentralisée et autonome, garante de sécurité et de protection. Démarrez en quelques minutes. Rejoignez-nous dès aujourd'hui.</target>
       </trans-unit>
       <trans-unit id="7567730388688848225" datatype="html">
         <source>Ongoing Sale</source>
