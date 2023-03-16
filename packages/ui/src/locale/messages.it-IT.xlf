@@ -5830,7 +5830,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">56,58</context>
         </context-group>
-        <target state="translated"> Tutti i proprietari potranno trasferire i propri token verso la rete selezionata solo al momento del reveal e una volta completato il processo di creazione di token. </target>
+        <target state="translated"> Tutti i proprietari potranno trasferire i propri token nella rete selezionata solo al momento del reveal e una volta completato il processo di creazione di token. </target>
       </trans-unit>
       <trans-unit id="1760282093782632284" datatype="html">
         <source> Note that the ownership and all undistributed tokens will be deposited to your member profile. </source>
@@ -6310,7 +6310,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">238,239</context>
         </context-group>
-        <target state="translated"> In arrivo </target>
+        <target state="translated"> Lancio a breve </target>
       </trans-unit>
       <trans-unit id="1688484720339103989" datatype="html">
         <source> Buy / Sell </source>
@@ -6326,7 +6326,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="translated">Fai staking con i tuoi token</target>
+        <target state="translated">Fai staking con il tuo token</target>
       </trans-unit>
       <trans-unit id="8310238595519563608" datatype="html">
         <source>Select or define the amount you want to stake and the period for how long you want to lock it. </source>
@@ -6342,7 +6342,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">17</context>
         </context-group>
-        <target state="translated">Considerato il tuo ruolo di guardiano, puoi anche </target>
+        <target state="translated">Considerato il tuo ruolo di guardiano puoi anche </target>
       </trans-unit>
       <trans-unit id="7629780047978285906" datatype="html">
         <source>- Choose an amount and for how long you’d like to lock it.</source>
@@ -6350,7 +6350,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">50</context>
         </context-group>
-        <target state="translated">- Scegli l'importo e la durata di staking.</target>
+        <target state="translated">- Scegli l'importo e la durata desiderata di staking.</target>
       </trans-unit>
       <trans-unit id="2994531722606895480" datatype="html">
         <source> - Your funds stay at your wallet, but you will not be able to use them during the staking period. </source>
@@ -6402,7 +6402,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">21,22</context>
         </context-group>
-        <target state="translated"> Quanto <x id="INTERPOLATION" equiv-text="{{ token?.symbol | uppercase }}"/> vuoi mettere in stake? </target>
+        <target state="translated"> Indicare <x id="INTERPOLATION" equiv-text="{{ token?.symbol | uppercase }}"/> la quantità di token con la quale si desidera fare staking. </target>
       </trans-unit>
       <trans-unit id="5050202075787133565" datatype="html">
         <source>Rewards Multiplier</source>
@@ -6410,7 +6410,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">192</context>
         </context-group>
-        <target state="translated">Moltiplicatore Ricompense</target>
+        <target state="translated">Calcolatrice delle Ricompense</target>
       </trans-unit>
       <trans-unit id="3140124213480341700" datatype="html">
         <source> Staking Value <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle             [size]=&quot;18&quot;             class=&quot;float-right ml-2 text-icons-secondary dark:text-icons-secondary-dark&quot;             nz-tooltip             i18n-nzTooltipTitle             nzTooltipTitle=&quot;Staked amount * Rewards Multiplier&quot;           &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;/d"/></source>
@@ -6418,7 +6418,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">210,219</context>
         </context-group>
-        <target state="translated"> Rendimento da staking <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle             [size]=&quot;18&quot;             class=&quot;float-right ml-2 text-icons-secondary dark:text-icons-secondary-dark&quot;             nz-tooltip             i18n-nzTooltipTitle             nzTooltipTitle=&quot;Staked amount * Rewards Multiplier&quot;           &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;/d"/></target>
+        <target state="translated"> Rendimento da Staking <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle             [size]=&quot;18&quot;             class=&quot;float-right ml-2 text-icons-secondary dark:text-icons-secondary-dark&quot;             nz-tooltip             i18n-nzTooltipTitle             nzTooltipTitle=&quot;Staked amount * Rewards Multiplier&quot;           &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;/d"/></target>
       </trans-unit>
       <trans-unit id="2619520312264979459" datatype="html">
         <source>Staked amount * Rewards Multiplier</source>
@@ -6434,7 +6434,7 @@
           <context context-type="sourcefile">src/app/pages/soon-staking/pages/staking/staking.page.html</context>
           <context context-type="linenumber">107</context>
         </context-group>
-        <target state="translated">Amount in stake * Moltiplicatore Ricompense</target>
+        <target state="translated">Quantità di token con la quale è stato fatto staking * Calcolatrice delle Ricompense</target>
       </trans-unit>
       <trans-unit id="6847681955671819318" datatype="html">
         <source>You will earn</source>
@@ -6466,7 +6466,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="translated">Informazioni dello scambio</target>
+        <target state="translated">Particolarità del Trade</target>
       </trans-unit>
       <trans-unit id="498448430508956061" datatype="html">
         <source> Traded amount </source>
@@ -6502,7 +6502,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.html</context>
           <context context-type="linenumber">94,95</context>
         </context-group>
-        <target state="translated"> Completato </target>
+        <target state="translated"> Realizzato </target>
       </trans-unit>
       <trans-unit id="3973931101896534797" datatype="html">
         <source>Date</source>
@@ -6566,7 +6566,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.html</context>
           <context context-type="linenumber">252</context>
         </context-group>
-        <target state="translated">Completamento</target>
+        <target state="translated">Realizzazione</target>
       </trans-unit>
       <trans-unit id="6545950307584910634" datatype="html">
         <source>Seller</source>
@@ -6618,7 +6618,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/transactions/transactions.page.html</context>
           <context context-type="linenumber">77</context>
         </context-group>
-        <target state="translated">Non trasferibile</target>
+        <target state="translated">Non Trasferibile</target>
       </trans-unit>
       <trans-unit id="4428081059558168074" datatype="html">
         <source>Processing...</source>
@@ -6630,7 +6630,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/transactions/transactions.page.html</context>
           <context context-type="linenumber">87</context>
         </context-group>
-        <target state="translated">In elaborazione...</target>
+        <target state="translated">Elaborazione delle immagini...</target>
       </trans-unit>
       <trans-unit id="1707504675035422352" datatype="html">
         <source>Soonaverse Fee</source>
@@ -6750,7 +6750,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">151,153</context>
         </context-group>
-        <target state="translated"> - Si ricorda che i token con i quali è stato fatto staking possono essere utilizzati una sola volta per partecipare alla votazione. Il peso della tua partecipazione al voto sarà dimezzato se i token sono già stati utilizzati per un'altra offerta. </target>
+        <target state="translated"> - Nota: i token con i quali è stato fatto staking possono essere utilizzati una sola volta per partecipare alla votazione. Il peso della tua partecipazione al voto sarà dimezzato se i token saranno già stati utilizzati per un'altra offerta. </target>
       </trans-unit>
       <trans-unit id="5582494186843763678" datatype="html">
         <source>Cast Votes</source>
@@ -8850,7 +8850,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.ts</context>
           <context context-type="linenumber">69</context>
         </context-group>
-        <target state="translated">Un marketplace di Gettoni Non Fungibili (NFT), di oggetti digitali da collezione, dell'arte digitale, dei diritti di proprietà e altro ancora, completamento gratuito.</target>
+        <target state="translated">Un marketplace di Gettoni Non Fungibili (NFT), di oggetti digitali da collezione, dell'arte digitale, dei diritti di proprietà e altro ancora, completamente gratuito.</target>
       </trans-unit>
       <trans-unit id="5250193940279356015" datatype="html">
         <source>NFT Collections</source>
@@ -11841,7 +11841,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">122</context>
         </context-group>
-        <target state="translated">Percentuale del token non valida.</target>
+        <target state="translated">Percentuale di token non autorizzata.</target>
       </trans-unit>
       <trans-unit id="3671877264768385844" datatype="html">
         <source>% of tokens for sale (Default 100%)</source>
@@ -12654,7 +12654,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.ts</context>
           <context context-type="linenumber">275</context>
         </context-group>
-        <target state="translated">Compra, vendi e scambia SOON e Shimmer token su L1: una piattaforma di trading decentralizzata e autonoma, sicura e affidabile. In soli pochi minuti. Unisciti a noi, oggi.</target>
+        <target state="translated">Compra, vendi e scambia SOON e Shimmer token su un exchange layer 1: una piattaforma di scambio decentralizzata e autonoma, che garantisce sicurezza e protezione. In soli pochi minuti. Unisciti a noi oggi stesso.</target>
       </trans-unit>
       <trans-unit id="7567730388688848225" datatype="html">
         <source>Ongoing Sale</source>
@@ -13018,7 +13018,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">1116</context>
         </context-group>
-        <target state="translated">Per Prezzo Ask si intende il prezzo minimo auspicato dal singolo per la vendita dei suoi crypto-assets.</target>
+        <target state="translated">Per prezzo ask si intende il prezzo minimo auspicato dal singolo per la vendita dei suoi asset tokenizzati.</target>
       </trans-unit>
       <trans-unit id="664623260439075126" datatype="html">
         <source> You will spend </source>
@@ -13042,7 +13042,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">1179</context>
         </context-group>
-        <target state="translated">L'importo pari al 2,5% del prezzo di vendita è destinato alla tesoreria di Soonaverse. Non ci sono commissioni aggiuntive o nascoste. L'acquisto di token è libero.</target>
+        <target state="translated">L'importo pari al 2,5% del prezzo di vendita è destinato alla tesoreria di Soonaverse. Non ci sono commissioni aggiuntive o nascoste. Sei libero di acquistare token.</target>
       </trans-unit>
       <trans-unit id="9184963060275130414" datatype="html">
         <source>1h</source>
@@ -13138,7 +13138,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/favourites/favourites.page.ts</context>
           <context context-type="linenumber">53</context>
         </context-group>
-        <target state="translated">Compra, scambia e detieni i tuoi token Shimmer, IOTA e SOON preferiti. La nostra piattaforma di scambio L1 decentralizzata e autonoma, garante di sicurezza e protezione aspetta solo te! Iscriviti oggi stesso.</target>
+        <target state="translated">Compra, scambia e detieni i tuoi token Shimmer, IOTA e SOON preferiti. La nostra piattaforma di scambio layer 1, decentralizzata e autonoma, garante di sicurezza e protezione aspetta solo te! Iscriviti oggi stesso.</target>
       </trans-unit>
       <trans-unit id="3611662161955889309" datatype="html">
         <source>Tokens - Launchpad</source>
@@ -13154,7 +13154,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/launchpad/launchpad.page.ts</context>
           <context context-type="linenumber">42</context>
         </context-group>
-        <target state="translated">Aumenta il tuo capitale, il riconoscimento e fai crescere l'audience LANCIANDO i tuoi token Shimmer attraverso il progetto Soonaverse Launchpad. Unisciti a noi, oggi.</target>
+        <target state="translated">Aumenta il tuo capitale, il riconoscimento e fai crescere l'audience, LANCIA i tuoi token Shimmer attraverso il progetto Soonaverse Launchpad. Unisciti a noi, oggi.</target>
       </trans-unit>
       <trans-unit id="6398435388847530123" datatype="html">
         <source> Some tokens may not yet be migrated to the decentralized network. Make sure you know what you are buying. </source>
@@ -13218,7 +13218,7 @@
           <context context-type="sourcefile">src/app/pages/tokens/pages/trading-pairs/trading-pairs.page.ts</context>
           <context context-type="linenumber">44</context>
         </context-group>
-        <target state="translated">L'elenco più completo di progetti Shimmer, coppie valutarie SOON e rispettivi mercati, su L1: una piattaforma di trading decentralizzata e autonoma, che garantisce sicurezza e protezione. Registrati oggi stesso!</target>
+        <target state="translated">L'elenco più completo di progetti Shimmer, coppie valutarie SOON e rispettivi mercati, su un exchange layer 1: una piattaforma di trading decentralizzata e autonoma, che garantisce sicurezza e protezione. Registrati oggi stesso!</target>
       </trans-unit>
       <trans-unit id="4608783121595710624" datatype="html">
         <source>AuditOne Validation</source>
