@@ -9,9 +9,9 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
-import { joinSpace } from '../../src/controls/space/member.join.control';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
 import { createAward, fundAward } from '../../src/runtime/firebase/award';
+import { joinSpace } from '../../src/runtime/firebase/space';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
 import { MEDIA, testEnv } from '../../test/set-up';

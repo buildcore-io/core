@@ -9,62 +9,68 @@ import {
   ProposalType,
   Space,
   SUB_COL,
+  TangleRequestType,
   Transaction,
   TransactionType,
-  URL_PATHS,
   VoteTransaction,
   WenError,
-  WenRequest,
-  WEN_FUNC,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions';
-import Joi from 'joi';
-import admin from '../../admin.config';
-import { scale } from '../../scale.settings';
-import { CommonJoi } from '../../services/joi/common';
-import { cOn, dateToTimestamp } from '../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../utils/error.utils';
-import { appCheck } from '../../utils/google.utils';
-import { assertValidationAsync } from '../../utils/schema.utils';
-import { assertIsGuardian } from '../../utils/token.utils';
-import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
+import admin from '../../../../admin.config';
+import { editSpaceMemberSchema } from '../../../../runtime/firebase/space';
+import { cOn, dateToTimestamp } from '../../../../utils/dateTime.utils';
+import { throwInvalidArgument } from '../../../../utils/error.utils';
+import { assertValidationAsync } from '../../../../utils/schema.utils';
+import { assertIsGuardian } from '../../../../utils/token.utils';
+import { getRandomEthAddress } from '../../../../utils/wallet.utils';
+import { TransactionService } from '../../transaction-service';
 
-export const addGuardian = functions
-  .runWith({
-    minInstances: scale(WEN_FUNC.addGuardianSpace),
-  })
-  .https.onCall(async (req, context) => {
-    appCheck(WEN_FUNC.addGuardianSpace, context);
-    return await addRemoveGuardian(req, ProposalType.ADD_GUARDIAN, WEN_FUNC.addGuardianSpace);
-  });
+export class SpaceGuardianService {
+  constructor(readonly transactionService: TransactionService) {}
 
-export const removeGuardian = functions
-  .runWith({
-    minInstances: scale(WEN_FUNC.removeGuardianSpace),
-  })
-  .https.onCall(async (req, context) => {
-    appCheck(WEN_FUNC.removeGuardianSpace, context);
-    return await addRemoveGuardian(req, ProposalType.REMOVE_GUARDIAN, WEN_FUNC.removeGuardianSpace);
-  });
+  public handleEditGuardianRequest = async (owner: string, request: Record<string, unknown>) => {
+    await assertValidationAsync(editSpaceMemberSchema, request, { allowUnknown: true });
 
-const addRemoveGuardianSchema = Joi.object({
-  uid: CommonJoi.uid(),
-  member: CommonJoi.uid(),
-});
+    const type =
+      request.requestType == TangleRequestType.SPACE_ADD_GUARDIAN
+        ? ProposalType.ADD_GUARDIAN
+        : ProposalType.REMOVE_GUARDIAN;
+    const { proposal, voteTransaction, members } = await addRemoveGuardian(owner, request, type);
 
-const addRemoveGuardian = async (req: WenRequest, type: ProposalType, func: WEN_FUNC) => {
+    const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+    const memberPromisses = members.map((member) => {
+      proposalDocRef.collection(SUB_COL.MEMBERS).doc(member.uid).set(cOn(member));
+    });
+    await Promise.all(memberPromisses);
+
+    const transactionDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`);
+    this.transactionService.updates.push({
+      ref: transactionDocRef,
+      data: voteTransaction,
+      action: 'set',
+    });
+    this.transactionService.updates.push({
+      ref: proposalDocRef,
+      data: proposal,
+      action: 'set',
+    });
+
+    return { proposal: proposal.uid };
+  };
+}
+
+export const addRemoveGuardian = async (
+  owner: string,
+  params: Record<string, unknown>,
+  type: ProposalType,
+) => {
   const isAddGuardian = type === ProposalType.ADD_GUARDIAN;
-  const params = await decodeAuth(req, func);
-  const owner = params.address.toLowerCase();
-  await assertValidationAsync(addRemoveGuardianSchema, params.body);
+  await assertIsGuardian(params.uid as string, owner);
 
-  await assertIsGuardian(params.body.uid, owner);
-
-  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${params.body.uid}`);
+  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${params.uid}`);
   const spaceMemberDoc = await spaceDocRef
     .collection(SUB_COL.MEMBERS)
-    .doc(params.body.member)
+    .doc(params.member as string)
     .get();
   if (!spaceMemberDoc.exists) {
     throw throwInvalidArgument(WenError.member_is_not_part_of_the_space);
@@ -72,7 +78,7 @@ const addRemoveGuardian = async (req: WenRequest, type: ProposalType, func: WEN_
 
   const spaceGuardianMember = await spaceDocRef
     .collection(SUB_COL.GUARDIANS)
-    .doc(params.body.member)
+    .doc(params.member as string)
     .get();
   if (isAddGuardian && spaceGuardianMember.exists) {
     throw throwInvalidArgument(WenError.member_is_already_guardian_of_space);
@@ -83,7 +89,7 @@ const addRemoveGuardian = async (req: WenRequest, type: ProposalType, func: WEN_
   const ongoingProposalSnap = await admin
     .firestore()
     .collection(COL.PROPOSAL)
-    .where('settings.addRemoveGuardian', '==', params.body.member)
+    .where('settings.addRemoveGuardian', '==', params.member)
     .where('settings.endDate', '>=', dateToTimestamp(dayjs()))
     .get();
 
@@ -102,15 +108,15 @@ const addRemoveGuardian = async (req: WenRequest, type: ProposalType, func: WEN_
 
   const guardian = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data();
   const member = <Member>(
-    (await admin.firestore().doc(`${COL.MEMBER}/${params.body.member}`).get()).data()
+    (await admin.firestore().doc(`${COL.MEMBER}/${params.member}`).get()).data()
   );
   const guardians = await admin
     .firestore()
-    .collection(`${COL.SPACE}/${params.body.uid}/${SUB_COL.GUARDIANS}`)
+    .collection(`${COL.SPACE}/${params.uid}/${SUB_COL.GUARDIANS}`)
     .get();
-  const proposal = createAddRemoveGuardianProposal(
+  const proposal = getProposalData(
     guardian,
-    params.body.uid,
+    params.uid as string,
     member,
     isAddGuardian,
     guardians.size,
@@ -120,7 +126,7 @@ const addRemoveGuardian = async (req: WenRequest, type: ProposalType, func: WEN_
     type: TransactionType.VOTE,
     uid: getRandomEthAddress(),
     member: owner,
-    space: params.body.uid,
+    space: params.uid,
     network: DEFAULT_NETWORK,
     payload: <VoteTransaction>{
       proposalId: proposal.uid,
@@ -131,36 +137,20 @@ const addRemoveGuardian = async (req: WenRequest, type: ProposalType, func: WEN_
     linkedTransactions: [],
   };
 
-  const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
-  const memberPromisses = guardians.docs.map((doc) => {
-    proposalDocRef
-      .collection(SUB_COL.MEMBERS)
-      .doc(doc.id)
-      .set(
-        cOn({
-          uid: doc.id,
-          weight: 1,
-          voted: doc.id === owner,
-          tranId: doc.id === owner ? voteTransaction.uid : '',
-          parentId: proposal.uid,
-          parentCol: COL.PROPOSAL,
-          values: doc.id === owner ? [{ [1]: 1 }] : [],
-        }),
-      );
-  });
-  await Promise.all(memberPromisses);
+  const members = guardians.docs.map((doc) => ({
+    uid: doc.id,
+    weight: 1,
+    voted: doc.id === owner,
+    tranId: doc.id === owner ? voteTransaction.uid : '',
+    parentId: proposal.uid,
+    parentCol: COL.PROPOSAL,
+    values: doc.id === owner ? [{ [1]: 1 }] : [],
+  }));
 
-  await admin
-    .firestore()
-    .doc(`${COL.TRANSACTION}/${voteTransaction.uid}`)
-    .create(cOn(voteTransaction));
-
-  await proposalDocRef.create(cOn(proposal, URL_PATHS.PROPOSAL));
-
-  return <Proposal>(await proposalDocRef.get()).data();
+  return { proposal, voteTransaction, members };
 };
 
-const createAddRemoveGuardianProposal = (
+const getProposalData = (
   owner: Member,
   space: string,
   member: Member,
