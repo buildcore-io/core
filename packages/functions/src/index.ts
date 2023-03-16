@@ -5,12 +5,6 @@ import { generateCustomFirebaseToken } from './controls/auth.control';
 import { createMember, updateMember } from './controls/member.control';
 import { openBid } from './controls/order.control';
 import { rankController } from './controls/rank.control';
-import { addGuardian, removeGuardian } from './controls/space/guardian.add.remove.control';
-import { acceptMemberSpace } from './controls/space/member.accept.control';
-import { blockMember } from './controls/space/member.block.control';
-import { declineMemberSpace } from './controls/space/member.decline.control';
-import { joinSpace } from './controls/space/member.join.control';
-import { leaveSpace } from './controls/space/member.leave.control';
 import { unblockMember } from './controls/space/member.unblock.control';
 import { createSpace } from './controls/space/space.create.control';
 import { updateSpace } from './controls/space/space.update.control';
@@ -66,7 +60,16 @@ import {
   rejectProposal,
   voteOnProposal,
 } from './runtime/firebase/proposal';
-import { claimSpace } from './runtime/firebase/space';
+import {
+  acceptMemberSpace,
+  addGuardian,
+  blockMember,
+  claimSpace,
+  declineMemberSpace,
+  joinSpace,
+  leaveSpace,
+  removeGuardian,
+} from './runtime/firebase/space';
 import { importMintedToken } from './runtime/firebase/token';
 import { awardUpdateTrigger } from './triggers/award.trigger';
 import { collectionStatsUpdate } from './triggers/collection.stats.trigger';

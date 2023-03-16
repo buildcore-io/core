@@ -26,6 +26,12 @@ import { TangleNftPurchaseService } from './nft-purchase.service';
 import { ProposalApprovalService } from './proposal/ProposalApporvalService';
 import { ProposalCreateService } from './proposal/ProposalCreateService';
 import { ProposalVoteService } from './proposal/voting/ProposalVoteService';
+import { SpaceAcceptMemberService } from './space/SpaceAcceptMemberService';
+import { SpaceBlockMemberService } from './space/SpaceBlockMemberService';
+import { SpaceDeclineMemberService } from './space/SpaceDeclineMemberService';
+import { SpaceGuardianService } from './space/SpaceGuardianService';
+import { SpaceJoinService } from './space/SpaceJoinService';
+import { SpaceLeaveService } from './space/SpaceLeaveService';
 import { TangleStakeService } from './stake.service';
 import { TangleTokenClaimService } from './token-claim.service';
 import { TangleTokenTradeService } from './token-trade.service';
@@ -142,6 +148,31 @@ export class TangleRequestService {
       case TangleRequestType.PROPOSAL_VOTE: {
         const service = new ProposalVoteService(this.transactionService);
         return await service.handleVoteOnProposal(owner, request, tran, tranEntry);
+      }
+      case TangleRequestType.SPACE_JOIN: {
+        const service = new SpaceJoinService(this.transactionService);
+        return await service.handleSpaceJoinRequest(owner, request);
+      }
+      case TangleRequestType.SPACE_ADD_GUARDIAN:
+      case TangleRequestType.SPACE_REMOVE_GUARDIAN: {
+        const service = new SpaceGuardianService(this.transactionService);
+        return await service.handleEditGuardianRequest(owner, request);
+      }
+      case TangleRequestType.SPACE_ACCEPT_MEMBER: {
+        const service = new SpaceAcceptMemberService(this.transactionService);
+        return await service.handleAcceptMemberRequest(owner, request);
+      }
+      case TangleRequestType.SPACE_BLOCK_MEMBER: {
+        const service = new SpaceBlockMemberService(this.transactionService);
+        return await service.handleBlockMemberRequest(owner, request);
+      }
+      case TangleRequestType.SPACE_DECLINE_MEMBER: {
+        const service = new SpaceDeclineMemberService(this.transactionService);
+        return await service.handleDeclineMemberRequest(owner, request);
+      }
+      case TangleRequestType.SPACE_LEAVE: {
+        const service = new SpaceLeaveService(this.transactionService);
+        return await service.handleLeaveSpaceRequest(owner, request);
       }
       default:
         throw throwInvalidArgument(WenError.invalid_tangle_request_type);
