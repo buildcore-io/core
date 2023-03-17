@@ -64,6 +64,7 @@ export class Helper {
         space: this.space.uid,
         status: TokenStatus.MINTED,
         mintingData: { tokenId: MINTED_TOKEN_ID },
+        approved: true,
       });
 
     const distributionDocRef = admin

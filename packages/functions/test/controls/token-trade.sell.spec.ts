@@ -217,7 +217,7 @@ describe('Trade controller, sell token', () => {
       count: 8,
       type: TokenTradeOrderType.SELL,
     });
-    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.token_not_approved.key);
+    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.token_does_not_exist.key);
   });
 
   it('Should throw, precision too much', async () => {

@@ -662,7 +662,7 @@ describe('Token based space', () => {
     await admin
       .firestore()
       .doc(`${COL.TOKEN}/${token}`)
-      .set({ status: TokenStatus.MINTED, space: space.uid, uid: token });
+      .set({ status: TokenStatus.MINTED, space: space.uid, uid: token, approved: true });
 
     mockWalletReturnValue(walletSpy, member, { uid: space?.uid });
     await testEnv.wrap(joinSpace)({});
