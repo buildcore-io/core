@@ -18,13 +18,13 @@ import dayjs from 'dayjs';
 import { tail } from 'lodash';
 import admin from '../../src/admin.config';
 import { unblockMember } from '../../src/controls/space/member.unblock.control';
-import { createSpace } from '../../src/controls/space/space.create.control';
 import { updateSpace } from '../../src/controls/space/space.update.control';
 import { voteOnProposal } from '../../src/runtime/firebase/proposal';
 import {
   acceptMemberSpace,
   addGuardian,
   blockMember,
+  createSpace,
   declineMemberSpace,
   joinSpace,
   leaveSpace,

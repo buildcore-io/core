@@ -28,6 +28,7 @@ import { ProposalCreateService } from './proposal/ProposalCreateService';
 import { ProposalVoteService } from './proposal/voting/ProposalVoteService';
 import { SpaceAcceptMemberService } from './space/SpaceAcceptMemberService';
 import { SpaceBlockMemberService } from './space/SpaceBlockMemberService';
+import { SpaceCreateService } from './space/SpaceCreateService';
 import { SpaceDeclineMemberService } from './space/SpaceDeclineMemberService';
 import { SpaceGuardianService } from './space/SpaceGuardianService';
 import { SpaceJoinService } from './space/SpaceJoinService';
@@ -173,6 +174,10 @@ export class TangleRequestService {
       case TangleRequestType.SPACE_LEAVE: {
         const service = new SpaceLeaveService(this.transactionService);
         return await service.handleLeaveSpaceRequest(owner, request);
+      }
+      case TangleRequestType.SPACE_CREATE: {
+        const service = new SpaceCreateService(this.transactionService);
+        return await service.handleSpaceCreateRequest(owner, request);
       }
       default:
         throw throwInvalidArgument(WenError.invalid_tangle_request_type);
