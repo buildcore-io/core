@@ -12,7 +12,7 @@ import {
 import chance from 'chance';
 import admin, { inc } from '../../src/admin.config';
 import { createMember as createMemberFunc } from '../../src/controls/member.control';
-import { createSpace as createSpaceFunc } from '../../src/controls/space/space.create.control';
+import { createSpace as createSpaceFunc } from '../../src/runtime/firebase/space/index';
 import * as config from '../../src/utils/config.utils';
 import { cOn, serverTime } from '../../src/utils/dateTime.utils';
 import * as ipUtils from '../../src/utils/ip.utils';

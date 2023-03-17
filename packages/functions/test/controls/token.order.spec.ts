@@ -12,8 +12,8 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
-import { joinSpace } from '../../src/controls/space/member.join.control';
 import { creditToken, orderToken } from '../../src/controls/token.control';
+import { joinSpace } from '../../src/runtime/firebase/space';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../set-up';

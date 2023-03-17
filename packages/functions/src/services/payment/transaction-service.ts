@@ -44,7 +44,7 @@ interface TransactionUpdates {
   ref: admin.firestore.DocumentReference<admin.firestore.DocumentData>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
-  action: 'update' | 'set';
+  action: 'update' | 'set' | 'delete';
   merge?: boolean;
 }
 
@@ -60,8 +60,12 @@ export class TransactionService {
       const data = dateFunc(params.data);
       if (params.action === 'set') {
         this.transaction.set(params.ref, data, { merge: params.merge || false });
-      } else {
+      } else if (params.action === 'update') {
         this.transaction.update(params.ref, data);
+      } else if (params.action === 'delete') {
+        this.transaction.delete(params.ref);
+      } else {
+        throw Error('Invalid action ' + params.action);
       }
     });
   }

@@ -24,6 +24,7 @@ import * as functions from 'firebase-functions';
 import Joi from 'joi';
 import { get, startCase } from 'lodash';
 import admin from '../../admin.config';
+import { createSpaceSchema } from '../../runtime/firebase/space';
 import { scale } from '../../scale.settings';
 import { CommonJoi } from '../../services/joi/common';
 import { cOn, dateToTimestamp } from '../../utils/dateTime.utils';
@@ -32,7 +33,6 @@ import { appCheck } from '../../utils/google.utils';
 import { assertValidationAsync, pSchema } from '../../utils/schema.utils';
 import { assertIsGuardian, getTokenForSpace } from '../../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
-import { spaceUpsertSchema } from './space.create.control';
 
 export const updateSpace = functions
   .runWith({
@@ -44,7 +44,7 @@ export const updateSpace = functions
     const owner = params.address.toLowerCase();
 
     const schema = Joi.object({
-      ...spaceUpsertSchema,
+      ...createSpaceSchema,
       uid: CommonJoi.uid(),
       tokenBased: Joi.boolean().allow(false, true).optional(),
       minStakedValue: Joi.when('tokenBased', {
