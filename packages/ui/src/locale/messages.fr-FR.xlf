@@ -6418,7 +6418,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">210,219</context>
         </context-group>
-        <target state="translated"> Rendements Passifs en Staking <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle             [size]=&quot;18&quot;             class=&quot;float-right ml-2 text-icons-secondary dark:text-icons-secondary-dark&quot;             nz-tooltip             i18n-nzTooltipTitle             nzTooltipTitle=&quot;Staked amount * Rewards Multiplier&quot;           &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;/d"/></target>
+        <target state="translated"> Rendements en Staking <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle             [size]=&quot;18&quot;             class=&quot;float-right ml-2 text-icons-secondary dark:text-icons-secondary-dark&quot;             nz-tooltip             i18n-nzTooltipTitle             nzTooltipTitle=&quot;Staked amount * Rewards Multiplier&quot;           &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;/d"/></target>
       </trans-unit>
       <trans-unit id="2619520312264979459" datatype="html">
         <source>Staked amount * Rewards Multiplier</source>
@@ -6686,7 +6686,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="translated">Faire un vote</target>
+        <target state="translated">Participer au Vote</target>
       </trans-unit>
       <trans-unit id="1669185263898985643" datatype="html">
         <source> Question </source>
@@ -6718,7 +6718,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">88,89</context>
         </context-group>
-        <target state="translated"> Total des jetons natifs </target>
+        <target state="translated"> Montant total de tokens natifs </target>
       </trans-unit>
       <trans-unit id="2801524532428962383" datatype="html">
         <source> Total staked tokens </source>
@@ -6734,7 +6734,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">119,120</context>
         </context-group>
-        <target state="translated"> Le vote est actif le </target>
+        <target state="translated"> Le système de vote sera opérationnel le </target>
       </trans-unit>
       <trans-unit id="4493470914915801104" datatype="html">
         <source> Your total voting weight </source>
@@ -6758,7 +6758,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">193</context>
         </context-group>
-        <target state="translated">Faire un vote</target>
+        <target state="translated">Participer aux Votes</target>
       </trans-unit>
       <trans-unit id="8582615186038213404" datatype="html">
         <source>Send Native Tokens</source>
@@ -6766,7 +6766,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.ts</context>
           <context context-type="linenumber">124</context>
         </context-group>
-        <target state="translated">Envoyer les jetons natifs</target>
+        <target state="translated">Envoyez des Tokens Natifs</target>
       </trans-unit>
       <trans-unit id="1138430762589156166" datatype="html">
         <source>Use Staked Tokens</source>
@@ -6774,7 +6774,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.ts</context>
           <context context-type="linenumber">128</context>
         </context-group>
-        <target state="translated">Utiliser les jetons stakés</target>
+        <target state="translated">Utilisez des Tokens Stakés</target>
       </trans-unit>
       <trans-unit id="5389248267529904597" datatype="html">
         <source>Vote received.</source>
@@ -6782,7 +6782,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.ts</context>
           <context context-type="linenumber">191</context>
         </context-group>
-        <target state="translated">Vote reçu.</target>
+        <target state="translated">Confirmation de Réception du Vote.</target>
       </trans-unit>
       <trans-unit id="7239551635073899682" datatype="html">
         <source>Transaction confirmed and funds refunded.</source>
@@ -8394,7 +8394,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">257</context>
         </context-group>
-        <target state="needs-translation">Type awarded token...</target>
+        <target state="translated">Saisir le token que vous avez reçu en récompenses...</target>
       </trans-unit>
       <trans-unit id="875494721798124100" datatype="html">
         <source>Discount %</source>
@@ -10482,7 +10482,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
           <context context-type="linenumber">23,24</context>
         </context-group>
-        <target state="needs-translation"> Change Vote </target>
+        <target state="translated"> Modifier le Vote </target>
       </trans-unit>
       <trans-unit id="4724170629105755794" datatype="html">
         <source> Vote Now </source>
@@ -10490,7 +10490,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
           <context context-type="linenumber">26,27</context>
         </context-group>
-        <target state="needs-translation"> Vote Now </target>
+        <target state="translated"> Votez dès Maintenant </target>
       </trans-unit>
       <trans-unit id="1263780838220828223" datatype="html">
         <source>Voting starts</source>
@@ -10706,7 +10706,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.html</context>
           <context context-type="linenumber">101,102</context>
         </context-group>
-        <target state="needs-translation">(weight: <x id="INTERPOLATION" equiv-text="{{(data.proposal$ | async)?.results?.answers?.[a.value] || 0 | number :                 '1.0-2'}}"/>)</target>
+        <target state="translated">(poids : <x id="INTERPOLATION" equiv-text="{{(data.proposal$ | async)?.results?.answers?.[a.value] || 0 | number :                 '1.0-2'}}"/>)</target>
       </trans-unit>
       <trans-unit id="8944543613835375251" datatype="html">
         <source>Selected Badges</source>
@@ -12403,7 +12403,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">132,133</context>
         </context-group>
-        <target state="needs-translation"> Mint &amp; Approve Token </target>
+        <target state="translated"> Mint &amp; Validez le Token </target>
       </trans-unit>
       <trans-unit id="7505091927294166710" datatype="html">
         <source> Minting in progress </source>
