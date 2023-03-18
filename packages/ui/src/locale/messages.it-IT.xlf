@@ -2656,7 +2656,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">318</context>
         </context-group>
-        <target state="translated">Importo Totale dei Costi di Stoccaggio</target>
+        <target state="translated">Importo Totale delle Spese di Stoccaggio</target>
       </trans-unit>
       <trans-unit id="7641106209540662730" datatype="html">
         <source>(NFTs Storage Fee + Collection Storage Fee)</source>
@@ -6554,7 +6554,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.html</context>
           <context context-type="linenumber">144</context>
         </context-group>
-        <target state="translated">Commissione di deposito e stoccaggio</target>
+        <target state="translated">Deposito e spese di stoccaggio</target>
       </trans-unit>
       <trans-unit id="3291381153613418025" datatype="html">
         <source>Fullfilment</source>
@@ -6686,7 +6686,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="translated">Trasmetti voto</target>
+        <target state="translated">Dai il Tuo Voto</target>
       </trans-unit>
       <trans-unit id="1669185263898985643" datatype="html">
         <source> Question </source>
@@ -6718,7 +6718,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">88,89</context>
         </context-group>
-        <target state="translated"> Token nativi totali </target>
+        <target state="translated"> Importo totale di token nativi </target>
       </trans-unit>
       <trans-unit id="2801524532428962383" datatype="html">
         <source> Total staked tokens </source>
@@ -6734,7 +6734,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">119,120</context>
         </context-group>
-        <target state="translated"> Votazione attiva su </target>
+        <target state="translated"> Il sistema di voto sarà operativo il </target>
       </trans-unit>
       <trans-unit id="4493470914915801104" datatype="html">
         <source> Your total voting weight </source>
@@ -6750,7 +6750,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">151,153</context>
         </context-group>
-        <target state="translated"> - Nota: i token con i quali è stato fatto staking possono essere utilizzati una sola volta per partecipare alla votazione. Il peso della tua partecipazione al voto sarà dimezzato se i token saranno già stati utilizzati per un'altra offerta. </target>
+        <target state="translated"> Nota: i token con i quali è stato fatto staking possono essere utilizzati una sola volta per partecipare alla votazione. Il peso della tua partecipazione al voto sarà dimezzato se i token saranno già stati utilizzati per un'altra offerta. </target>
       </trans-unit>
       <trans-unit id="5582494186843763678" datatype="html">
         <source>Cast Votes</source>
@@ -6758,7 +6758,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">193</context>
         </context-group>
-        <target state="translated">Trasmetti Voti</target>
+        <target state="translated">Dai i Tuoi Voti</target>
       </trans-unit>
       <trans-unit id="8582615186038213404" datatype="html">
         <source>Send Native Tokens</source>
@@ -6774,7 +6774,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.ts</context>
           <context context-type="linenumber">128</context>
         </context-group>
-        <target state="translated">Usa token in stake</target>
+        <target state="translated">Usa Token di Staking</target>
       </trans-unit>
       <trans-unit id="5389248267529904597" datatype="html">
         <source>Vote received.</source>
@@ -8394,7 +8394,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">257</context>
         </context-group>
-        <target state="needs-translation">Type awarded token...</target>
+        <target state="translated">Inserire il token ricevuto in premio...</target>
       </trans-unit>
       <trans-unit id="875494721798124100" datatype="html">
         <source>Discount %</source>
@@ -10482,7 +10482,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
           <context context-type="linenumber">23,24</context>
         </context-group>
-        <target state="needs-translation"> Change Vote </target>
+        <target state="translated"> Cambiare Voto </target>
       </trans-unit>
       <trans-unit id="4724170629105755794" datatype="html">
         <source> Vote Now </source>
@@ -10490,7 +10490,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
           <context context-type="linenumber">26,27</context>
         </context-group>
-        <target state="needs-translation"> Vote Now </target>
+        <target state="translated"> Adesso Vota </target>
       </trans-unit>
       <trans-unit id="1263780838220828223" datatype="html">
         <source>Voting starts</source>
@@ -10706,7 +10706,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.html</context>
           <context context-type="linenumber">101,102</context>
         </context-group>
-        <target state="needs-translation">(weight: <x id="INTERPOLATION" equiv-text="{{(data.proposal$ | async)?.results?.answers?.[a.value] || 0 | number :                 '1.0-2'}}"/>)</target>
+        <target state="translated">(peso: <x id="INTERPOLATION" equiv-text="{{(data.proposal$ | async)?.results?.answers?.[a.value] || 0 | number :                 '1.0-2'}}"/>)</target>
       </trans-unit>
       <trans-unit id="8944543613835375251" datatype="html">
         <source>Selected Badges</source>
@@ -10754,7 +10754,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/votes/votes.page.html</context>
           <context context-type="linenumber">24</context>
         </context-group>
-        <target state="translated">Una volta effettuato il pagamento delle indennità e liquidate le somme corrispondenti, la votazione è conclusa e la ponderazione dei voti sarà applicata secondo un sistema proporzionale. Devi votare nuovamente per poter esprimere il tuo voto.</target>
+        <target state="translated">Una volta effettuato il pagamento delle indennità e liquidate le somme corrispondenti, la votazione è conclusa attribuendo ai voti un peso proporzionale. Partecipa nuovamente al voto per poter esprimere il tuo voto.</target>
       </trans-unit>
       <trans-unit id="7111923952686668823" datatype="html">
         <source>One Member One Vote</source>
@@ -12401,7 +12401,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">132,133</context>
         </context-group>
-        <target state="needs-translation"> Mint &amp; Approve Token </target>
+        <target state="translated"> Mint &amp; Convalida Token </target>
       </trans-unit>
       <trans-unit id="7505091927294166710" datatype="html">
         <source> Minting in progress </source>
