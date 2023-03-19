@@ -8394,7 +8394,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">257</context>
         </context-group>
-        <target state="needs-translation">Type awarded token...</target>
+        <target state="translated">Type toegekende token...</target>
       </trans-unit>
       <trans-unit id="875494721798124100" datatype="html">
         <source>Discount %</source>
@@ -10482,7 +10482,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
           <context context-type="linenumber">23,24</context>
         </context-group>
-        <target state="needs-translation"> Change Vote </target>
+        <target state="translated"> Wijzig stem </target>
       </trans-unit>
       <trans-unit id="4724170629105755794" datatype="html">
         <source> Vote Now </source>
@@ -10490,7 +10490,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
           <context context-type="linenumber">26,27</context>
         </context-group>
-        <target state="needs-translation"> Vote Now </target>
+        <target state="translated"> Stem nu </target>
       </trans-unit>
       <trans-unit id="1263780838220828223" datatype="html">
         <source>Voting starts</source>
@@ -10706,7 +10706,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.html</context>
           <context context-type="linenumber">101,102</context>
         </context-group>
-        <target state="needs-translation">(weight: <x id="INTERPOLATION" equiv-text="{{(data.proposal$ | async)?.results?.answers?.[a.value] || 0 | number :                 '1.0-2'}}"/>)</target>
+        <target state="translated">(weight: <x id="INTERPOLATION" equiv-text="{{(data.proposal$ | async)?.results?.answers?.[a.value] || 0 | number :                 '1.0-2'}}"/>)</target>
       </trans-unit>
       <trans-unit id="8944543613835375251" datatype="html">
         <source>Selected Badges</source>
@@ -12402,7 +12402,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">132,133</context>
         </context-group>
-        <target state="needs-translation"> Mint &amp; Approve Token </target>
+        <target state="translated"> Mint &amp; Token goedkeuren </target>
       </trans-unit>
       <trans-unit id="7505091927294166710" datatype="html">
         <source> Minting in progress </source>
