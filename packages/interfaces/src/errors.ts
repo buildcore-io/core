@@ -246,4 +246,8 @@ export const WenError = {
     code: 2124,
     key: 'Token must be public',
   },
+  url_not_img_or_video: {
+    code: 2125,
+    key: 'Url does not point to an image or video',
+  },
 };

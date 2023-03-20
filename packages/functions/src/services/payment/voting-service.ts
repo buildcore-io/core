@@ -9,7 +9,7 @@ import {
   VoteTransaction,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { get } from 'lodash';
+import { get, head } from 'lodash';
 import admin, { inc } from '../../admin.config';
 import { getTokenForSpace } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -24,7 +24,7 @@ export class VotingService {
     const token = await getTokenForSpace(order.space!);
     const nativeTokens = match.to.nativeTokens || [];
 
-    const hasValidToken = nativeTokens[0].id === token?.mintingData?.tokenId;
+    const hasValidToken = head(nativeTokens)?.id === token?.mintingData?.tokenId;
     const proposalId = get(order, 'payload.proposalId', '');
     const values = get(order, 'payload.voteValues', []);
     const customData = hasValidToken ? { proposalId, values } : undefined;

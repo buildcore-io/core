@@ -27,7 +27,8 @@ import {
   TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { isEmpty, set } from 'lodash';
+import * as functions from 'firebase-functions';
+import { get, isEmpty, set } from 'lodash';
 import admin from '../../admin.config';
 import { SmrMilestoneTransactionAdapter } from '../../triggers/milestone-transactions-triggers/SmrMilestoneTransactionAdapter';
 import { getOutputMetadata } from '../../utils/basic-output.utils';
@@ -316,6 +317,9 @@ export class TransactionService {
     const response = error
       ? { status: 'error', code: error.code || '', message: error.key || '', ...customErrorParams }
       : {};
+    if (!isEmpty(error) && !get(error, 'code')) {
+      functions.logger.error(payment.uid, tran.to.nftOutput?.nftId, error);
+    }
     const transaction = <Transaction>{
       type: TransactionType.CREDIT_NFT,
       uid: getRandomEthAddress(),
