@@ -101,18 +101,19 @@
       <nz-select
         class="w-full"
         nzSize="large"
-        nzShowSearch
-        nzAllowClear
+        [formControl]="lengthFromControl"
         [nzPlaceHolder]="placeholderTpl"
-        [nzDisabled]="true"
       >
+        <nz-option nzLabel="3 days" i18n-nzLabel [nzValue]="3"></nz-option>
+        <nz-option nzLabel="2 days" i18n-nzLabel [nzValue]="2"></nz-option>
+        <nz-option nzLabel="1 day" i18n-nzLabel [nzValue]="1"></nz-option>
       </nz-select>
       <ng-template #placeholderTpl>
         <div class="flex items-center space-x-4">
           <wen-icon-time
             class="text-accent-secondary dark:text-accent-secondary-dark"
           ></wen-icon-time>
-          <span i18n>Duration of auction is 3 days</span>
+          <span i18n>Set duration of auction</span>
         </div>
       </ng-template>
     </nz-form-control>
