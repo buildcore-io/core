@@ -1,7 +1,7 @@
 import { COL, MediaStatus, Space } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
-import { updateSpace } from '../../src/controls/space/space.update.control';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
+import { updateSpace } from '../../src/runtime/firebase/space';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
 import { MEDIA, testEnv } from '../../test/set-up';

@@ -12,32 +12,29 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { Database } from '../../database/Database';
+import { soonDb } from '../../database/wrapper/soondb';
 import { isProdEnv } from '../../utils/config.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const createNftControl = async (owner: string, params: Record<string, unknown>) => {
-  const collection = await Database.getById<Collection>(
-    COL.COLLECTION,
-    params.collection as string,
-  );
+  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${params.collection}`);
+  const collection = await collectionDocRef.get<Collection>();
   if (!collection) {
     throw throwInvalidArgument(WenError.collection_does_not_exists);
   }
   if (collection.status !== CollectionStatus.PRE_MINTED) {
     throw throwInvalidArgument(WenError.invalid_collection_status);
   }
-  const member = await Database.getById<Member>(COL.MEMBER, owner);
+  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
+  const member = await memberDocRef.get<Member>();
   return await processOneCreateNft(member, params, collection, collection.total + 1);
 };
 
 export const createBatchNftControl = async (owner: string, params: Record<string, unknown>[]) => {
-  const collection = await Database.getById<Collection>(
-    COL.COLLECTION,
-    params[0].collection as string,
-  );
+  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${params[0].collection}`);
+  const collection = await collectionDocRef.get<Collection>();
   if (!collection) {
     throw throwInvalidArgument(WenError.collection_does_not_exists);
   }
@@ -45,7 +42,8 @@ export const createBatchNftControl = async (owner: string, params: Record<string
     throw throwInvalidArgument(WenError.invalid_collection_status);
   }
 
-  const member = await Database.getById<Member>(COL.MEMBER, owner);
+  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
+  const member = await memberDocRef.get<Member>();
   const promises = params.map((param, i) =>
     processOneCreateNft(member, param, collection, collection.total + i + 1),
   );
@@ -128,18 +126,22 @@ const processOneCreateNft = async (
     placeholderNft: false,
     status: CollectionStatus.PRE_MINTED,
   };
-  await Database.create(COL.NFT, nft);
+  const batch = soonDb().batch();
+  const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+  batch.create(nftDocRef, nft);
 
-  await Database.update(COL.COLLECTION, { uid: collection.uid, total: Database.inc(1) });
+  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${collection.uid}`);
+  batch.update(collectionDocRef, { total: soonDb().inc(1) });
 
   if (collection.placeholderNft) {
-    await Database.update(COL.NFT, {
-      uid: collection.placeholderNft,
+    const placeholderNftDocRef = soonDb().doc(`${COL.NFT}/${collection.placeholderNft}`);
+    batch.update(placeholderNftDocRef, {
       sold: false,
       availableFrom: params.availableFrom,
       hidden: false,
     });
   }
+  await batch.commit();
 
-  return (await Database.getById<Nft>(COL.NFT, nft.uid))!;
+  return (await nftDocRef.get<Nft>())!;
 };

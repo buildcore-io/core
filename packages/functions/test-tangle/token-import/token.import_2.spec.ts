@@ -1,6 +1,6 @@
 import { COL, MIN_IOTA_AMOUNT } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
-import { importMintedToken } from '../../src/runtime/firebase/token/index';
+import { importMintedToken } from '../../src/runtime/firebase/token/minting';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';

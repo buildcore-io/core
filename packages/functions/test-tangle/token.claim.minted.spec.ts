@@ -19,9 +19,8 @@ import {
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import admin from '../src/admin.config';
-import { claimMintedTokenOrder } from '../src/controls/token-minting/claim-minted-token.control';
-import { mintTokenOrder } from '../src/controls/token-minting/token-mint.control';
 import { retryWallet } from '../src/cron/wallet.cron';
+import { claimMintedTokenOrder, mintTokenOrder } from '../src/runtime/firebase/token/minting';
 import { MnemonicService } from '../src/services/wallet/mnemonic';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
 import { cOn, dateToTimestamp, serverTime } from '../src/utils/dateTime.utils';

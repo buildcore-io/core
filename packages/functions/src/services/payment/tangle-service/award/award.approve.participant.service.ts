@@ -20,7 +20,7 @@ import { ITransaction } from '../../../../database/wrapper/interfaces';
 import { soonDb } from '../../../../database/wrapper/soondb';
 import { approveAwardParticipantSchema } from '../../../../runtime/firebase/award';
 import { getAddress } from '../../../../utils/address.utils';
-import { cOn, dateToTimestamp, serverTime, uOn } from '../../../../utils/dateTime.utils';
+import { dateToTimestamp, serverTime } from '../../../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
@@ -92,7 +92,7 @@ export const approveAwardParticipant =
       issued: count,
       completed: count === award.badge.total,
     };
-    transaction.update(awardDocRef, uOn(data));
+    transaction.update(awardDocRef, data);
 
     const participantUpdateData = {
       uid: memberId,
@@ -103,7 +103,7 @@ export const approveAwardParticipant =
       createdOn: participant?.createdOn || serverTime(),
       tokenReward: soonDb().inc(award.badge.tokenReward),
     };
-    transaction.set(participantDocRef, participantUpdateData);
+    transaction.set(participantDocRef, participantUpdateData, true);
 
     const badgeTransaction = {
       type: TransactionType.AWARD,
@@ -126,7 +126,7 @@ export const approveAwardParticipant =
       },
     };
     const badgeTransactionDocRef = soonDb().doc(`${COL.TRANSACTION}/${badgeTransaction.uid}`);
-    transaction.create(badgeTransactionDocRef, cOn(badgeTransaction));
+    transaction.create(badgeTransactionDocRef, badgeTransaction);
 
     const memberUpdateData = {
       uid: memberId,
@@ -155,7 +155,7 @@ export const approveAwardParticipant =
       },
     };
     const memberDocRef = soonDb().doc(`${COL.MEMBER}/${memberId}`);
-    transaction.set(memberDocRef, memberUpdateData);
+    transaction.set(memberDocRef, memberUpdateData, true);
 
     if (award.badge.tokenReward) {
       const airdrop: TokenDrop = {
@@ -181,7 +181,7 @@ export const approveAwardParticipant =
       };
       const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${airdrop.token}`);
       const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(memberId);
-      transaction.set(distributionDocRef, uOn(distribution));
+      transaction.set(distributionDocRef, distribution, true);
     }
 
     return badgeTransaction as Transaction;

@@ -13,7 +13,7 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../../src/admin.config';
-import { createToken } from '../../../src/controls/token.control';
+import { createToken } from '../../../src/runtime/firebase/token/base';
 import * as config from '../../../src/utils/config.utils';
 import { dateToTimestamp } from '../../../src/utils/dateTime.utils';
 import * as wallet from '../../../src/utils/wallet.utils';

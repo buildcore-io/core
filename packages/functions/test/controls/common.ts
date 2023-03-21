@@ -11,14 +11,14 @@ import {
 } from '@soonaverse/interfaces';
 import chance from 'chance';
 import admin, { inc } from '../../src/admin.config';
-import { createMember as createMemberFunc } from '../../src/controls/member.control';
+import { validateAddress } from '../../src/runtime/firebase/address';
+import { createMember as createMemberFunc } from '../../src/runtime/firebase/member';
 import { createSpace as createSpaceFunc } from '../../src/runtime/firebase/space/index';
 import * as config from '../../src/utils/config.utils';
 import { cOn, serverTime } from '../../src/utils/dateTime.utils';
 import * as ipUtils from '../../src/utils/ip.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { getWallet, MEDIA, testEnv } from '../set-up';
-import { validateAddress } from './../../src/controls/address.control';
 
 export const mockWalletReturnValue = <T>(walletSpy: any, address: string, body: T) =>
   walletSpy.mockReturnValue(Promise.resolve({ address, body }));

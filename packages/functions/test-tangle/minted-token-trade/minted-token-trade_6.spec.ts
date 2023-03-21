@@ -9,7 +9,7 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
-import { cancelTradeOrder } from '../../src/controls/token-trading/token-trade-cancel.controller';
+import { cancelTradeOrder } from '../../src/runtime/firebase/token/trading';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';

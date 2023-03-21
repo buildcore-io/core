@@ -2,6 +2,7 @@ import { TransactionHelper } from '@iota/iota.js-next';
 import {
   COL,
   Member,
+  Network,
   Token,
   TokenStatus,
   Transaction,
@@ -10,23 +11,14 @@ import {
   TransactionValidationType,
   TRANSACTION_AUTO_EXPIRY_MS,
   WenError,
-  WenRequest,
-  WEN_FUNC,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions';
-import Joi from 'joi';
-import admin from '../../admin.config';
-import { scale } from '../../scale.settings';
-import { CommonJoi } from '../../services/joi/common';
+import { soonDb } from '../../database/wrapper/soondb';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
-import { networks } from '../../utils/config.utils';
-import { cOn, dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
+import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
-import { appCheck } from '../../utils/google.utils';
-import { assertValidationAsync } from '../../utils/schema.utils';
 import { createAliasOutput } from '../../utils/token-minting-utils/alias.utils';
 import {
   createFoundryOutput,
@@ -39,82 +31,59 @@ import {
   assertTokenStatus,
   getUnclaimedAirdropTotalValue,
 } from '../../utils/token.utils';
-import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
-import { AVAILABLE_NETWORKS } from '../common';
+import { getRandomEthAddress } from '../../utils/wallet.utils';
 
-export const mintTokenOrder = functions
-  .runWith({
-    minInstances: scale(WEN_FUNC.mintTokenOrder),
-  })
-  .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
-    appCheck(WEN_FUNC.mintTokenOrder, context);
-    const params = await decodeAuth(req, WEN_FUNC.mintTokenOrder);
-    const owner = params.address.toLowerCase();
-    const availaibleNetworks = AVAILABLE_NETWORKS.filter((n) => networks.includes(n));
-    const schema = Joi.object({
-      token: CommonJoi.uid(),
-      network: Joi.string()
-        .equal(...availaibleNetworks)
-        .required(),
-    });
-    await assertValidationAsync(schema, params.body);
+export const mintTokenControl = (owner: string, params: Record<string, unknown>) =>
+  soonDb().runTransaction(async (transaction) => {
+    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${params.token}`);
+    const token = await transaction.get<Token>(tokenDocRef);
+    if (!token) {
+      throw throwInvalidArgument(WenError.invalid_params);
+    }
 
-    return await admin.firestore().runTransaction(async (transaction) => {
-      const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`);
-      const token = <Token | undefined>(await transaction.get(tokenDocRef)).data();
-      if (!token) {
-        throw throwInvalidArgument(WenError.invalid_params);
-      }
+    if (token.coolDownEnd && dayjs().subtract(1, 'm').isBefore(dayjs(token.coolDownEnd.toDate()))) {
+      throw throwInvalidArgument(WenError.can_not_mint_in_pub_sale);
+    }
 
-      if (
-        token.coolDownEnd &&
-        dayjs().subtract(1, 'm').isBefore(dayjs(token.coolDownEnd.toDate()))
-      ) {
-        throw throwInvalidArgument(WenError.can_not_mint_in_pub_sale);
-      }
+    assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED]);
 
-      assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED]);
+    await assertIsGuardian(token.space, owner);
+    const member = await soonDb().doc(`${COL.MEMBER}/${owner}`).get<Member>();
+    assertMemberHasValidAddress(member, params.network as Network);
 
-      await assertIsGuardian(token.space, owner);
-      const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data();
-      assertMemberHasValidAddress(member, params.body.network);
+    const wallet = (await WalletService.newWallet(params.network as Network)) as SmrWallet;
+    const targetAddress = await wallet.getNewIotaAddressDetails();
 
-      const wallet = (await WalletService.newWallet(params.body.network)) as SmrWallet;
-      const targetAddress = await wallet.getNewIotaAddressDetails();
+    const totalDistributed =
+      (await getOwnedTokenTotal(token.uid)) + (await getUnclaimedAirdropTotalValue(token.uid));
+    const storageDeposits = await getStorageDepositForMinting(
+      token,
+      totalDistributed,
+      targetAddress,
+      wallet,
+    );
 
-      const totalDistributed =
-        (await getOwnedTokenTotal(token.uid)) + (await getUnclaimedAirdropTotalValue(token.uid));
-      const storageDeposits = await getStorageDepositForMinting(
-        token,
-        totalDistributed,
-        targetAddress,
-        wallet,
-      );
-
-      const order = <Transaction>{
-        type: TransactionType.ORDER,
-        uid: getRandomEthAddress(),
-        member: owner,
-        space: token!.space,
-        network: params.body.network,
-        payload: {
-          type: TransactionOrderType.MINT_TOKEN,
-          amount: Object.values(storageDeposits).reduce((acc, act) => acc + act, 0),
-          targetAddress: targetAddress.bech32,
-          expiresOn: dateToTimestamp(
-            dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms'),
-          ),
-          validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
-          reconciled: false,
-          void: false,
-          token: params.body.token,
-          ...storageDeposits,
-          tokensInVault: totalDistributed,
-        },
-      };
-      transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`), cOn(order));
-      return order;
-    });
+    const order = <Transaction>{
+      type: TransactionType.ORDER,
+      uid: getRandomEthAddress(),
+      member: owner,
+      space: token!.space,
+      network: params.network,
+      payload: {
+        type: TransactionOrderType.MINT_TOKEN,
+        amount: Object.values(storageDeposits).reduce((acc, act) => acc + act, 0),
+        targetAddress: targetAddress.bech32,
+        expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
+        validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
+        reconciled: false,
+        void: false,
+        token: params.token,
+        ...storageDeposits,
+        tokensInVault: totalDistributed,
+      },
+    };
+    transaction.create(soonDb().doc(`${COL.TRANSACTION}/${order.uid}`), order);
+    return order;
   });
 
 const getStorageDepositForMinting = async (

@@ -10,18 +10,20 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { Database } from '../../database/Database';
+import { soonDb } from '../../database/wrapper/soondb';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 
 export const setForSaleNftControl = async (owner: string, params: Record<string, unknown>) => {
-  const member = await Database.getById<Member>(COL.MEMBER, owner);
+  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
+  const member = await memberDocRef.get<Member>();
   if (!member) {
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
 
-  const nft = await Database.getById<Nft>(COL.NFT, params.nft as string);
+  const nftDocRef = soonDb().doc(`${COL.NFT}/${params.nft}`);
+  const nft = await nftDocRef.get<Nft>();
   if (!nft) {
     throw throwInvalidArgument(WenError.nft_does_not_exists);
   }
@@ -52,13 +54,14 @@ export const setForSaleNftControl = async (owner: string, params: Record<string,
     throw throwInvalidArgument(WenError.nft_auction_already_in_progress);
   }
 
-  const collection = await Database.getById<Collection>(COL.COLLECTION, nft.collection);
+  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nft.collection}`);
+  const collection = await collectionDocRef.get<Collection>();
   if (![CollectionStatus.PRE_MINTED, CollectionStatus.MINTED].includes(collection?.status!)) {
     throw throwInvalidArgument(WenError.invalid_collection_status);
   }
 
-  await Database.update(COL.NFT, { uid: nft.uid, ...getNftUpdateData(params) });
-  return await Database.getById<Nft>(COL.NFT, nft.uid);
+  await nftDocRef.update(getNftUpdateData(params));
+  return await nftDocRef.get<Nft>();
 };
 
 const getNftUpdateData = (params: Record<string, unknown>) => {

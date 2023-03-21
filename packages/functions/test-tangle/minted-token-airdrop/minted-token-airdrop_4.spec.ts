@@ -15,7 +15,7 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
-import { airdropMintedToken } from '../../src/controls/token-minting/airdrop-minted-token';
+import { airdropMintedToken } from '../../src/runtime/firebase/token/minting';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';

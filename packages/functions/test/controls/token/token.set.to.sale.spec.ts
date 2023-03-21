@@ -8,7 +8,7 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../../src/admin.config';
-import { createToken, setTokenAvailableForSale } from '../../../src/controls/token.control';
+import { createToken, setTokenAvailableForSale } from '../../../src/runtime/firebase/token/base';
 import { dateToTimestamp } from '../../../src/utils/dateTime.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../../set-up';

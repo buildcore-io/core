@@ -1,5 +1,5 @@
 import { WenError, WEN_FUNC } from '@soonaverse/interfaces';
-import { createMember, updateMember } from '../../src/controls/member.control';
+import { createMember, updateMember } from '../../src/runtime/firebase/member';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../../test/set-up';
 import { expectThrow, mockWalletReturnValue } from './common';
@@ -18,35 +18,6 @@ describe('MemberController: ' + WEN_FUNC.cMemberNotExists, () => {
     expect(member?.updatedOn).toBeDefined();
     walletSpy.mockRestore();
   });
-
-  it('address not provided', async () => {
-    await expectThrow(testEnv.wrap(createMember)({}), WenError.address_must_be_provided.key);
-  });
-
-  it('address is too short', async () => {
-    const dummyAddress = '0xdasdsadasd';
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    mockWalletReturnValue(walletSpy, dummyAddress, {});
-    await expectThrow(
-      testEnv.wrap(createMember)(dummyAddress),
-      WenError.address_must_be_provided.key,
-    );
-  });
-
-  it('address is too long', async () => {
-    const dummyAddress =
-      '0xdasdsadasdadasdaskljasklsdfldsflksdfhlsdfhlksdflksdflksdhflkasdasdsadasdasdasdsadsadsadsadsa' +
-      'sadasdadasdaskljasklsdfldsflksdfhlsdfhlksdflksdflksdhflkasdasdsadasdasdasdsadsadsadsadsadsadsa' +
-      'sadasdadasdaskljasklsdfldsflksdfhlsdfhlksdflksdflksdhflkasdasdsadasdasdasdsadsadsadsadsadsadsa' +
-      'sadasdadasdaskljasklsdfldsflksdfhlsdfhlksdflksdflksdhflkasdasdsadasdasdasdsadsadsadsadsadsadsa' +
-      'sadasdadasdaskljasklsdfldsflksdfhlsdfhlksdflksdflksdhflkasdasdsadasdasdasdsadsadsadsadsadsadsa';
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    mockWalletReturnValue(walletSpy, dummyAddress, {});
-    await expectThrow(
-      testEnv.wrap(createMember)(dummyAddress),
-      WenError.address_must_be_provided.key,
-    );
-  });
 });
 
 describe('MemberController: ' + WEN_FUNC.uMember, () => {
@@ -63,7 +34,6 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
 
   it('successfully update member', async () => {
     const updateParams = {
-      uid: dummyAddress,
       name: wallet.getRandomEthAddress(),
       about: 'He rocks',
       discord: 'adamkun#1233',
@@ -81,7 +51,7 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
   });
 
   it('fail to update member username exists already', async () => {
-    const updateParams = { uid: dummyAddress, name: 'abcd' + Math.floor(Math.random() * 1000) };
+    const updateParams = { name: 'abcd' + Math.floor(Math.random() * 1000) };
     mockWalletReturnValue(walletSpy, dummyAddress, updateParams);
     const uMember = await testEnv.wrap(updateMember)({});
     expect(uMember?.name).toEqual(updateParams.name);
@@ -91,15 +61,12 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
     const cMember = await testEnv.wrap(createMember)(dummyAddress2);
     expect(cMember?.uid).toEqual(dummyAddress2.toLowerCase());
 
-    mockWalletReturnValue(walletSpy, dummyAddress2, {
-      uid: dummyAddress2,
-      name: updateParams.name,
-    });
+    mockWalletReturnValue(walletSpy, dummyAddress2, { name: updateParams.name });
     await expectThrow(testEnv.wrap(updateMember)({}), WenError.member_username_exists.key);
   });
 
   it('unset discord', async () => {
-    const updateParams = { uid: dummyAddress, discord: undefined };
+    const updateParams = { discord: undefined };
     mockWalletReturnValue(walletSpy, dummyAddress, updateParams);
     const uMember = await testEnv.wrap(updateMember)({});
     expect(uMember?.discord).toEqual(null);
