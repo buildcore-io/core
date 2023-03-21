@@ -33,6 +33,7 @@ const dummyToken = (space: string) =>
     overviewGraphics: MEDIA,
     termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
     access: 0,
+    decimals: 6,
   } as any);
 
 describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {

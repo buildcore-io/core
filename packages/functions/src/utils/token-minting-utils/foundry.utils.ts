@@ -72,6 +72,6 @@ export const tokenToFoundryMetadata = async (token: Token) => {
     issuerName: KEY_NAME_TANGLE,
     soonaverseId: token.uid,
     symbol: token.symbol.toLowerCase(),
-    decimals: 6,
+    decimals: token.decimals,
   };
 };

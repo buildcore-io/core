@@ -406,6 +406,7 @@ jobs:
         run: npm run milestone-sync & firebase emulators:exec "
                 npm run test:ci -- --findRelatedTests ./test/dbRoll/0.18/nftId.roll.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/dbRoll/0.18/sale.access.roll.spec.ts &&
+                npm run test:ci -- --findRelatedTests ./test/dbRoll/0.18/token.decimlas.roll.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/stake/delete.stake.reward.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/stake/stake.reward.cron.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/storage/resize.img.spec.ts &&

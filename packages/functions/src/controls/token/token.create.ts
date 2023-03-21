@@ -8,7 +8,6 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import { merge } from 'lodash';
-import admin from '../../admin.config';
 import { soonDb } from '../../database/wrapper/soondb';
 import { hasStakedSoonTokens } from '../../services/stake.service';
 import { assertSpaceHasValidAddress } from '../../utils/address.utils';
@@ -25,26 +24,24 @@ export const createTokenControl = async (owner: string, params: Record<string, u
     throw throwInvalidArgument(WenError.no_staked_soon);
   }
 
-  const snapshot = await admin
-    .firestore()
+  const tokens = await soonDb()
     .collection(COL.TOKEN)
     .where('space', '==', params.space)
-    .get();
-  const nonOrAllRejected = snapshot.docs.reduce(
-    (sum, doc) => sum && !doc.data()?.approve && doc.data()?.rejected,
+    .get<Token>();
+  const nonOrAllRejected = tokens.reduce(
+    (acc, token) => acc && !token.approved && token.rejected,
     true,
   );
   if (!nonOrAllRejected) {
     throw throwInvalidArgument(WenError.token_already_exists_for_space);
   }
 
-  const symbolSnapshot = await admin
-    .firestore()
+  const symbolSnapshot = await soonDb()
     .collection(COL.TOKEN)
     .where('symbol', '==', params.symbol)
     .where('rejected', '==', false)
-    .get();
-  if (symbolSnapshot.size > 0) {
+    .get<Token>();
+  if (symbolSnapshot.length > 0) {
     throw throwInvalidArgument(WenError.token_symbol_must_be_globally_unique);
   }
 

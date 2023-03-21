@@ -60,6 +60,7 @@ describe('Token import', () => {
     expect(migratedToken.icon).toBeDefined();
     expect(migratedToken.status).toBe(TokenStatus.MINTED);
     expect(migratedToken.access).toBe(Access.OPEN);
+    expect(migratedToken.decimals).toBe(4);
 
     expect(migratedToken.mintingData?.aliasId).toBe(helper.token.mintingData?.aliasId);
     expect(migratedToken.mintingData?.aliasStorageDeposit).toBe(

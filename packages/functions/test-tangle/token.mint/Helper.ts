@@ -87,6 +87,7 @@ export class Helper {
       icon: MEDIA,
       public: isPublicToken,
       approved,
+      decimals: 5,
     };
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
     await admin
