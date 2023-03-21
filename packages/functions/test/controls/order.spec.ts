@@ -4,7 +4,9 @@ import {
   COL,
   Collection,
   CollectionType,
+  MIN_IOTA_AMOUNT,
   Nft,
+  NftAccess,
   Space,
   TransactionAwardType,
   TransactionOrder,
@@ -12,7 +14,11 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { createNft, orderNft } from '../../../functions/src/runtime/firebase//nft/index';
+import {
+  createNft,
+  orderNft,
+  setForSaleNft,
+} from '../../../functions/src/runtime/firebase//nft/index';
 import {
   approveCollection,
   createCollection,
@@ -93,6 +99,13 @@ const submitOrderFunc = async <T>(address: string, params: T) => {
   return order;
 };
 
+const dummySaleData = (uid: string) => ({
+  nft: uid,
+  price: MIN_IOTA_AMOUNT,
+  availableFrom: dayjs().toDate(),
+  access: NftAccess.OPEN,
+});
+
 describe('Ordering flows', () => {
   let member: string;
   let space: Space;
@@ -162,6 +175,36 @@ describe('Ordering flows', () => {
       expect(collection.totalTrades).toBe(1);
     },
   );
+
+  it('Should not soldOn after nft is sold', async () => {
+    const price = 100;
+    let collection: Collection = await createCollectionFunc(
+      member,
+      dummyCollection(space, CollectionType.CLASSIC, 0.5, price),
+    );
+    let nft: Nft = await createNftFunc(member, dummyNft(collection, price));
+
+    let order = await submitOrderFunc(member, { collection: collection.uid, nft: nft.uid });
+    let milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
+    await milestoneProcessed(milestone.milestone, milestone.tranId);
+
+    const nftDocRef = db.collection(COL.NFT).doc(nft.uid);
+    nft = <Nft>(await nftDocRef.get()).data();
+    expect(nft.soldOn).toBeDefined();
+
+    mockWalletReturnValue(walletSpy, member, dummySaleData(nft.uid));
+    await testEnv.wrap(setForSaleNft)({});
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const buyer = await createMember(walletSpy);
+    order = await submitOrderFunc(buyer, { collection: collection.uid, nft: nft.uid });
+    milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
+    await milestoneProcessed(milestone.milestone, milestone.tranId);
+
+    const secondSoldNft = <Nft>(await nftDocRef.get()).data();
+    expect(secondSoldNft.soldOn).toEqual(nft.soldOn);
+  });
 
   it('One collection, one classic NFT, one purchase & paid for and try again', async () => {
     const price = 100;

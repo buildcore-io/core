@@ -350,29 +350,31 @@ export class NftService {
   private async setNftOwner(order: Transaction, payment: Transaction): Promise<void> {
     const nftDocRef = admin.firestore().collection(COL.NFT).doc(payment.payload.nft);
     const nft = <Nft>(await this.transactionService.transaction.get(nftDocRef)).data();
+
+    const nftUpdateData = {
+      owner: payment.member,
+      isOwned: true,
+      price: nft.saleAccess === NftAccess.MEMBERS ? nft.price : payment.payload.amount,
+      sold: true,
+      locked: false,
+      lockedBy: null,
+      hidden: false,
+      soldOn: nft.soldOn || serverTime(),
+      availableFrom: null,
+      availablePrice: null,
+      auctionFrom: null,
+      auctionTo: null,
+      auctionFloorPrice: null,
+      auctionLength: null,
+      auctionHighestBid: null,
+      auctionHighestBidder: null,
+      auctionHighestTransaction: null,
+      saleAccess: null,
+      saleAccessMembers: [],
+    };
     this.transactionService.updates.push({
       ref: nftDocRef,
-      data: {
-        owner: payment.member,
-        isOwned: true,
-        price: nft.saleAccess === NftAccess.MEMBERS ? nft.price : payment.payload.amount,
-        sold: true,
-        locked: false,
-        lockedBy: null,
-        hidden: false,
-        soldOn: serverTime(),
-        availableFrom: null,
-        availablePrice: null,
-        auctionFrom: null,
-        auctionTo: null,
-        auctionFloorPrice: null,
-        auctionLength: null,
-        auctionHighestBid: null,
-        auctionHighestBidder: null,
-        auctionHighestTransaction: null,
-        saleAccess: null,
-        saleAccessMembers: [],
-      },
+      data: nftUpdateData,
       action: 'update',
     });
 
