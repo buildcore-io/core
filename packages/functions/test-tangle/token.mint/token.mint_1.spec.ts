@@ -132,6 +132,6 @@ describe('Token minting', () => {
     expect(metadata.issuerName).toBe(KEY_NAME_TANGLE);
     expect(metadata.soonaverseId).toBe(helper.token.uid);
     expect(metadata.symbol).toBe(helper.token.symbol.toLowerCase());
-    expect(metadata.decimals).toBe(6);
+    expect(metadata.decimals).toBe(5);
   });
 });

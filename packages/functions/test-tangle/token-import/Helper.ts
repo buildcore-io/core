@@ -76,6 +76,7 @@ export class Helper {
       status: TokenStatus.AVAILABLE,
       access: 0,
       icon: MEDIA,
+      decimals: 4,
     };
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
     await admin

@@ -73,6 +73,7 @@ describe('Order and claim airdropped token test', () => {
       totalAirdropped: 0,
       termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
       access: 0,
+      decimals: 6,
     };
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
 

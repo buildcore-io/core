@@ -92,6 +92,7 @@ const createTokenSchema = Joi.object({
     otherwise: Joi.forbidden(),
   }),
   tradingDisabled: Joi.boolean().allow(true, false).optional(),
+  decimals: Joi.number().integer().min(0).max(20).required(),
 });
 
 export const createToken = onCall(WEN_FUNC.cToken)(createTokenSchema, createTokenControl);
