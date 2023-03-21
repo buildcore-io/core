@@ -27,9 +27,6 @@ export const migrateUriToSotrage = async (
   try {
     fs.mkdirSync(workdir);
     const { fileName, contentType } = await downloadMedia(workdir, url);
-    if (!fileName) {
-      return '';
-    }
     const response = await bucket.upload(path.join(workdir, fileName), {
       destination: `${owner}/${uid}/${fileName}`,
       metadata: {
@@ -69,7 +66,8 @@ const downloadMedia = async (workdir: string, url: string) => {
 
       const contentType = head.headers.get('content-type') || '';
       if (!contentType.startsWith('image') && !contentType.startsWith('video')) {
-        return { fileName: '', contentType: '' };
+        error = WenError.url_not_img_or_video;
+        break;
       }
       const extension = <string>mime.extension(contentType);
       const fileName = generateRandomFileName() + '.' + extension;
