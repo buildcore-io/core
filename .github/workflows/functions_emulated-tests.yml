@@ -404,6 +404,7 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
+                npm run test:ci -- --findRelatedTests ./test/dbRoll/0.18/nft.sold.on.roll.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/dbRoll/0.18/nftId.roll.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/dbRoll/0.18/sale.access.roll.spec.ts &&
                 npm run test:ci -- --findRelatedTests ./test/stake/delete.stake.reward.spec.ts &&
