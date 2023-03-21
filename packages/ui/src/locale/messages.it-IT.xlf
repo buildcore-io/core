@@ -1528,7 +1528,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">146,148</context>
         </context-group>
-        <target state="translated"> Una volta accettate le condizioni di acquisto, l'indirizzo generato rimarrà in vigore per tutto il processo di creazione. </target>
+        <target state="translated"> Una volta accettate le condizioni di acquisto, l'indirizzo generato rimarrà in vigore per tutto il processo di minting. </target>
       </trans-unit>
       <trans-unit id="2425176902066414533" datatype="html">
         <source> Use deeplink to make the transfer. Unfortunatelly no manual entry supported by Firefly. </source>
@@ -1692,7 +1692,7 @@
           <context context-type="sourcefile">src/app/components/award/components/award-mint/award-mint.component.ts</context>
           <context context-type="linenumber">83</context>
         </context-group>
-        <target state="translated">Info Predisposizione di bilancio</target>
+        <target state="translated">Info sulla predisposizione di bilancio</target>
       </trans-unit>
       <trans-unit id="8296987453705264149" datatype="html">
         <source>Make transaction</source>
@@ -2504,7 +2504,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">150</context>
         </context-group>
-        <target state="translated">Selezionando questa casella si acconsente alla cancellazione di tutte le attività operative di vendita di questa collezione NFT.</target>
+        <target state="translated">Selezionando questa casella si acconsente alla cancellazione di tutte le attività operative di vendita di questa collezione di NFT.</target>
       </trans-unit>
       <trans-unit id="8662905884464724150" datatype="html">
         <source> Confirm &amp; Start minting </source>
@@ -4702,7 +4702,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">251,252</context>
         </context-group>
-        <target state="translated"> Confermare e creare un indirizzo </target>
+        <target state="translated"> Conferma e crea un indirizzo </target>
       </trans-unit>
       <trans-unit id="3223994057392000560" datatype="html">
         <source>Claim complete. Congratulations.</source>
@@ -5318,7 +5318,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel-sale/token-cancel-sale.component.html</context>
           <context context-type="linenumber">17</context>
         </context-group>
-        <target state="translated">È sicuro di volere annullare la vendita?</target>
+        <target state="translated">Sei sicuro di volere annullare la vendita?</target>
       </trans-unit>
       <trans-unit id="185671227521588375" datatype="html">
         <source> Once the sale is cancelled process will trigger automatically and all investors will be refunded immediately. </source>
@@ -5326,7 +5326,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel-sale/token-cancel-sale.component.html</context>
           <context context-type="linenumber">23,25</context>
         </context-group>
-        <target state="translated"> Un processo di rimborso automatizzato sarà attivato con la rinuncia all'acquisto al fine di consentire a tutti gli investitori di procedere a un immediato rimborso. </target>
+        <target state="translated"> Un processo di rimborso automatizzato sarà attivato con la rinuncia all'acquisto al fine di consentire il versamento immediato delle indennità a tutti gli investitori. </target>
       </trans-unit>
       <trans-unit id="960300885376951723" datatype="html">
         <source> Cancel sale </source>
@@ -5362,7 +5362,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.html</context>
           <context context-type="linenumber">66</context>
         </context-group>
-        <target state="translated"> È sicuro di volere annullare l'ordine di acquisto?</target>
+        <target state="translated"> Sei sicuro di volere annullare l'ordine di acquisto?</target>
       </trans-unit>
       <trans-unit id="2943613670345896363" datatype="html">
         <source> Are you sure you want to cancel your sell order?</source>
@@ -5370,7 +5370,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.html</context>
           <context context-type="linenumber">69</context>
         </context-group>
-        <target state="translated"> È sicuro di volere annullare l'ordine di vendita?</target>
+        <target state="translated"> Sei sicuro di volere annullare l'ordine di vendita?</target>
       </trans-unit>
       <trans-unit id="6249484391846924804" datatype="html">
         <source> Confirm </source>
@@ -6790,7 +6790,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.ts</context>
           <context context-type="linenumber">217</context>
         </context-group>
-        <target state="translated">Transazione confermata e fondi rimborsati.</target>
+        <target state="translated">Conferma della transazione e versamento dell'indennità effettuato.</target>
       </trans-unit>
       <trans-unit id="943552711706647465" datatype="html">
         <source>Token vote executed.</source>
@@ -6798,7 +6798,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.ts</context>
           <context context-type="linenumber">375</context>
         </context-group>
-        <target state="translated">Voto token eseguito.</target>
+        <target state="translated">Votazione token effettuata.</target>
       </trans-unit>
       <trans-unit id="34777720354479263" datatype="html">
         <source>Token vote order created.</source>
@@ -6830,7 +6830,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/manage-addresses/manage-addresses.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="translated">Gestisci indirizzi</target>
+        <target state="translated">Gestione degli indirizzi</target>
       </trans-unit>
       <trans-unit id="7761891876356262381" datatype="html">
         <source> Not yet verified</source>
@@ -6846,7 +6846,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/manage-addresses/manage-addresses.component.html</context>
           <context context-type="linenumber">66</context>
         </context-group>
-        <target state="translated"> Modifica </target>
+        <target state="translated"> Rinnovo </target>
       </trans-unit>
       <trans-unit id="1812429098722823159" datatype="html">
         <source> Verify </source>
@@ -6862,7 +6862,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">33</context>
         </context-group>
-        <target state="translated">L'invio di capitale viene richiesto al nuovo</target>
+        <target state="translated">Ti sarà chiesto di inviare capitale al nuovo</target>
       </trans-unit>
       <trans-unit id="442640129041331815" datatype="html">
         <source>address for the verification process. The address you send funds from will be linked to your</source>
@@ -6870,7 +6870,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">36,37</context>
         </context-group>
-        <target state="translated">indirizzo per il processo di approvazione. L'indirizzo dal quale viene inviato il capitale sarà collegato al tuo</target>
+        <target state="translated">indirizzo per il processo di approvazione. L'Indirizzo dal quale viene inviato il capitale sarà dotato di un link di collegamento con il tuo</target>
       </trans-unit>
       <trans-unit id="1717434159688656264" datatype="html">
         <source>space</source>
@@ -6902,7 +6902,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">55,56</context>
         </context-group>
-        <target state="translated"> Generare un nuovo indirizzo </target>
+        <target state="translated"> Genera un nuovo indirizzo </target>
       </trans-unit>
       <trans-unit id="8339972866659886806" datatype="html">
         <source>Send a small </source>
@@ -6950,7 +6950,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">174</context>
         </context-group>
-        <target state="translated">Ora puoi trattare gli NFTs e partecipare al trading dei token.</target>
+        <target state="translated">Adesso puoi scambiare NFT e partecipare al trading di token.</target>
       </trans-unit>
       <trans-unit id="2842762856463928843" datatype="html">
         <source>Your new address has been verified!</source>
@@ -6958,7 +6958,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">176</context>
         </context-group>
-        <target state="translated">Il processo di approvazione del nuovo indirizzo è stato completato!</target>
+        <target state="translated">Il processo di approvazione del tuo nuovo indirizzo è stato completato!</target>
       </trans-unit>
       <trans-unit id="2214536746976302698" datatype="html">
         <source> Finish Verification </source>
@@ -6966,7 +6966,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">181,182</context>
         </context-group>
-        <target state="translated"> Completare La Verifica </target>
+        <target state="translated"> Completamento Processo di Approvazione </target>
       </trans-unit>
       <trans-unit id="8192132051305791752" datatype="html">
         <source>Generate address</source>
@@ -6974,7 +6974,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.ts</context>
           <context context-type="linenumber">76</context>
         </context-group>
-        <target state="translated">Generare l'indirizzo</target>
+        <target state="translated">Genera un indirizzo</target>
       </trans-unit>
       <trans-unit id="9179207171059033307" datatype="html">
         <source>Refunding your payment...</source>
@@ -6990,7 +6990,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/wallet-address.component.html</context>
           <context context-type="linenumber">4</context>
         </context-group>
-        <target state="translated">Controllo dell'indirizzo non effettuato</target>
+        <target state="translated">Indirizzo non verificato</target>
       </trans-unit>
       <trans-unit id="5836410887011743771" datatype="html">
         <source>wallet</source>
@@ -6998,7 +6998,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/wallet-address.component.html</context>
           <context context-type="linenumber">25</context>
         </context-group>
-        <target state="translated">portafogli</target>
+        <target state="translated">portafoglio digitale</target>
       </trans-unit>
       <trans-unit id="5990642021000137684" datatype="html">
         <source>Copy address</source>
@@ -7006,7 +7006,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/wallet-address.component.html</context>
           <context context-type="linenumber">30</context>
         </context-group>
-        <target state="translated">Copia indirizzo</target>
+        <target state="translated">Copia l'indirizzo</target>
       </trans-unit>
       <trans-unit id="7777716908827651954" datatype="html">
         <source>Verify your</source>
@@ -7046,7 +7046,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award-info/award-info.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
-        <target state="translated">Informazioni sulla ricompensa</target>
+        <target state="translated">Info: Premio</target>
       </trans-unit>
       <trans-unit id="3715596725146409911" datatype="html">
         <source>Owner</source>
@@ -7062,7 +7062,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award-info/award-info.component.ts</context>
           <context context-type="linenumber">18</context>
         </context-group>
-        <target state="translated">Distintivi usati / disponibili</target>
+        <target state="translated">Badge usati / disponibili</target>
       </trans-unit>
       <trans-unit id="3292810209141973314" datatype="html">
         <source>Badge lock period</source>
@@ -7070,7 +7070,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award-info/award-info.component.ts</context>
           <context context-type="linenumber">20</context>
         </context-group>
-        <target state="translated">Periodo di blocco badge</target>
+        <target state="translated">Periodo di blocco del badge</target>
       </trans-unit>
       <trans-unit id="522350230764713670" datatype="html">
         <source>Award info</source>
@@ -7094,7 +7094,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">47</context>
         </context-group>
-        <target state="translated">Processo di Minting effettuato il:</target>
+        <target state="translated">Processo di Minting effettuato il</target>
       </trans-unit>
       <trans-unit id="1946196451891766319" datatype="html">
         <source> Fund Award </source>
@@ -7102,7 +7102,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">121,122</context>
         </context-group>
-        <target state="translated"> Finanzia Ricompensa </target>
+        <target state="translated"> Finanziamento Premio </target>
       </trans-unit>
       <trans-unit id="1941285608714830379" datatype="html">
         <source> Minting in Progress </source>
@@ -7122,7 +7122,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">210</context>
         </context-group>
-        <target state="translated">Verifica premio</target>
+        <target state="translated">Verifica il premio</target>
       </trans-unit>
       <trans-unit id="4274407677127610120" datatype="html">
         <source>Reject Award</source>
@@ -7130,7 +7130,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">157</context>
         </context-group>
-        <target state="translated">Rifiuta ricompensa</target>
+        <target state="translated">Rifiuta Ricompensa</target>
       </trans-unit>
       <trans-unit id="4207094385815311412" datatype="html">
         <source>Confirm your participation</source>
@@ -7154,7 +7154,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">180</context>
         </context-group>
-        <target state="translated">Fornisci descrizione o link al tuo lavoro.</target>
+        <target state="translated">Allega una descrizione o fornisci un link al tuo lavoro.</target>
       </trans-unit>
       <trans-unit id="935187492052582731" datatype="html">
         <source>Submit</source>
@@ -7514,7 +7514,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">170</context>
         </context-group>
-        <target state="translated">Informazioni ricompense</target>
+        <target state="translated">Info: ricompensa</target>
       </trans-unit>
       <trans-unit id="1248863392331556768" datatype="html">
         <source>You need to fund this award with native token. Select which token will be used as reward.</source>
@@ -7622,7 +7622,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">334,335</context>
         </context-group>
-        <target state="translated"> Impostare un periodo di tempo durante il quale il badge sarà bloccato nel portafoglio Firefly. </target>
+        <target state="translated"> Imposta un periodo di tempo durante il quale il badge sarà bloccato nel portafoglio Firefly. </target>
       </trans-unit>
       <trans-unit id="6370171716321321620" datatype="html">
         <source> Create award </source>
@@ -8058,7 +8058,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">392</context>
         </context-group>
-        <target state="translated">Annullare collezione</target>
+        <target state="translated">Annullare Collezione</target>
       </trans-unit>
       <trans-unit id="6742195391489882590" datatype="html">
         <source>Create NFT</source>
@@ -8998,7 +8998,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/manage/manage.page.html</context>
           <context context-type="linenumber">27</context>
         </context-group>
-        <target state="translated">Gestisci indirizzi</target>
+        <target state="translated">Gestione Indirizzi</target>
       </trans-unit>
       <trans-unit id="7895495835242414759" datatype="html">
         <source>Export All Transactions</source>
