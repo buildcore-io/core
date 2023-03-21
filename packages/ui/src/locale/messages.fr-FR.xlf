@@ -6790,7 +6790,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.ts</context>
           <context context-type="linenumber">217</context>
         </context-group>
-        <target state="translated">Transaction confirmée et fonds remboursés.</target>
+        <target state="translated">Confirmation de la transaction et versements d'indemnités effectués.</target>
       </trans-unit>
       <trans-unit id="943552711706647465" datatype="html">
         <source>Token vote executed.</source>
@@ -6798,7 +6798,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.ts</context>
           <context context-type="linenumber">375</context>
         </context-group>
-        <target state="translated">Vote de jeton exécuté.</target>
+        <target state="translated">Un vote associé au token a été effectué.</target>
       </trans-unit>
       <trans-unit id="34777720354479263" datatype="html">
         <source>Token vote order created.</source>
@@ -7046,7 +7046,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award-info/award-info.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
-        <target state="translated">Infos sur la récompense</target>
+        <target state="translated">Prime : Infos</target>
       </trans-unit>
       <trans-unit id="3715596725146409911" datatype="html">
         <source>Owner</source>
@@ -7070,7 +7070,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award-info/award-info.component.ts</context>
           <context context-type="linenumber">20</context>
         </context-group>
-        <target state="translated">Période de verrouillage du badge</target>
+        <target state="translated">Durée de verrouillage du badge</target>
       </trans-unit>
       <trans-unit id="522350230764713670" datatype="html">
         <source>Award info</source>
@@ -7082,7 +7082,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">17</context>
         </context-group>
-        <target state="translated">Info Prime</target>
+        <target state="translated">Prime : Infos</target>
       </trans-unit>
       <trans-unit id="6301422640529959906" datatype="html">
         <source>Minted on:</source>
@@ -7102,7 +7102,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">121,122</context>
         </context-group>
-        <target state="translated"> Financer une récompense </target>
+        <target state="translated"> Financement de la Prime </target>
       </trans-unit>
       <trans-unit id="1941285608714830379" datatype="html">
         <source> Minting in Progress </source>
@@ -7130,7 +7130,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">157</context>
         </context-group>
-        <target state="translated">Rejeter la récompense</target>
+        <target state="translated">Rejeter la Prime</target>
       </trans-unit>
       <trans-unit id="4207094385815311412" datatype="html">
         <source>Confirm your participation</source>
@@ -7154,7 +7154,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">180</context>
         </context-group>
-        <target state="translated">Veuillez joindre une description ou fournir un lien vers votre activité.</target>
+        <target state="translated">Veuillez joindre une description ou fournir un lien vers votre activité de travail.</target>
       </trans-unit>
       <trans-unit id="935187492052582731" datatype="html">
         <source>Submit</source>
