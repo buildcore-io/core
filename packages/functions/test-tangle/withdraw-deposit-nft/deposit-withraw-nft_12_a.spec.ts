@@ -57,35 +57,8 @@ describe('Collection minting', () => {
     const credit = <Transaction>snap.docs[0].data();
     expect(credit.payload.response.code).toBe(WenError.nft_not_irc27_compilant.code);
     expect(credit.payload.response.message).toBe(WenError.nft_not_irc27_compilant.key);
-    await isInvalidPayment(credit.payload.sourceTransaction[0]);
+    await helper.isInvalidPayment(credit.payload.sourceTransaction[0]);
   });
-
-  it('Should migrate, collection has non ipfs media', async () => {
-    await mintAndDeposit(
-      {
-        collectionName: 'test-collection',
-        uri: 'ipfs://bafkreiapx7kczhfukx34ldh3pxhdip5kgvh237dlhp55koefjo6tyupnj4',
-        name: 'nft-name',
-        description: 'nft-description',
-      },
-      {
-        uri: 'https://shimmer.network',
-        name: 'test',
-        description: 'test',
-      },
-    );
-    const query = admin.firestore().collection(COL.NFT).where('owner', '==', helper.guardian);
-    await wait(async () => {
-      const snap = await query.get();
-      return snap.size === 1;
-    });
-  });
-
-  const isInvalidPayment = async (paymentId: string) => {
-    const paymentDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${paymentId}`);
-    const payment = (await paymentDocRef.get()).data()!;
-    expect(payment.payload.invalidPayment).toBe(true);
-  };
 
   const mintAndDeposit = async (nftMetadata: any, collectionMetadata: any) => {
     await requestFundsFromFaucet(
