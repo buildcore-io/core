@@ -13,9 +13,9 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
-import { validateAddress } from '../../src/controls/address.control';
-import { claimMintedTokenOrder } from '../../src/controls/token-minting/claim-minted-token.control';
+import { validateAddress } from '../../src/runtime/firebase/address';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
+import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { WalletService } from '../../src/services/wallet/wallet';
 import * as wallet from '../../src/utils/wallet.utils';

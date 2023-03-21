@@ -1,5 +1,5 @@
 import { COL, Network, StakeType } from '@soonaverse/interfaces';
-import { Database } from '../../database/Database';
+import { soonDb } from '../../database/wrapper/soondb';
 import { createNftStakeOrder } from '../../services/payment/nft/nft-stake-service';
 
 export const nftStakeControl = async (owner: string, params: Record<string, unknown>) => {
@@ -9,6 +9,7 @@ export const nftStakeControl = async (owner: string, params: Record<string, unkn
     params.weeks as number,
     params.type as StakeType,
   );
-  await Database.create(COL.TRANSACTION, order);
+  const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+  await orderDocRef.create(order);
   return order;
 };

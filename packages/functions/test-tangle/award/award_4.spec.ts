@@ -13,7 +13,6 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
-import { claimMintedTokenOrder } from '../../src/controls/token-minting/claim-minted-token.control';
 import { processExpiredAwards } from '../../src/cron/award.cron';
 import {
   approveAwardParticipant,
@@ -23,6 +22,7 @@ import {
   fundAward,
 } from '../../src/runtime/firebase/award';
 import { joinSpace } from '../../src/runtime/firebase/space';
+import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';

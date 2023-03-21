@@ -14,10 +14,9 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import Joi from 'joi';
 import { set } from 'lodash';
 import admin from '../../../admin.config';
-import { validateAddressSchema } from '../../../controls/address.control';
+import { validateAddressSchema } from '../../../runtime/firebase/address';
 import { getAddress } from '../../../utils/address.utils';
 import { generateRandomAmount } from '../../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
@@ -42,8 +41,7 @@ export class TangleAddressValidationService {
       network: request.network || tangleOrder.network,
       space: request.space,
     };
-    const schema = Joi.object(validateAddressSchema);
-    await assertValidationAsync(schema, params);
+    await assertValidationAsync(validateAddressSchema, params);
 
     const order = await createAddressValidationOrder(
       owner,

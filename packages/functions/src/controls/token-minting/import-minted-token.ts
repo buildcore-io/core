@@ -11,20 +11,21 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { TransactionRunner } from '../database/Database';
-import { SmrWallet } from '../services/wallet/SmrWalletService';
-import { WalletService } from '../services/wallet/wallet';
-import { generateRandomAmount } from '../utils/common.utils';
-import { dateToTimestamp } from '../utils/dateTime.utils';
-import { throwInvalidArgument } from '../utils/error.utils';
-import { assertIsGuardian } from '../utils/token.utils';
-import { getRandomEthAddress } from '../utils/wallet.utils';
+import { soonDb } from '../../database/wrapper/soondb';
+import { SmrWallet } from '../../services/wallet/SmrWalletService';
+import { WalletService } from '../../services/wallet/wallet';
+import { generateRandomAmount } from '../../utils/common.utils';
+import { dateToTimestamp } from '../../utils/dateTime.utils';
+import { throwInvalidArgument } from '../../utils/error.utils';
+import { assertIsGuardian } from '../../utils/token.utils';
+import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const importMintedTokenControl = async (owner: string, params: Record<string, unknown>) =>
-  TransactionRunner.runTransaction(async (transaction) => {
+  soonDb().runTransaction(async (transaction) => {
     await assertIsGuardian(params.space as string, owner);
 
-    const existingToken = await transaction.getById(COL.TOKEN, params.tokenId as string);
+    const existingTokenDocRef = soonDb().doc(`${COL.TOKEN}/${params.tokenId}`);
+    const existingToken = await transaction.get(existingTokenDocRef);
     if (existingToken) {
       throw throwInvalidArgument(WenError.token_already_exists_for_space);
     }
@@ -55,6 +56,7 @@ export const importMintedTokenControl = async (owner: string, params: Record<str
         tokenId: params.tokenId,
       },
     };
-    transaction.update({ col: COL.TRANSACTION, data: order, action: 'set' });
+    const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+    transaction.create(orderDocRef, order);
     return order;
   });

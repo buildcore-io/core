@@ -13,7 +13,7 @@ import {
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import admin from '../../src/admin.config';
-import { tradeToken } from '../../src/controls/token-trading/token-trade.controller';
+import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { getAddress } from '../../src/utils/address.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { getWallet, testEnv } from '../../test/set-up';

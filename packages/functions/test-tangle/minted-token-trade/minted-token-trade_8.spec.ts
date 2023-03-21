@@ -2,7 +2,7 @@
 
 import { COL, MIN_IOTA_AMOUNT, TokenTradeOrderType, WenError } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
-import { tradeToken } from '../../src/controls/token-trading/token-trade.controller';
+import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';

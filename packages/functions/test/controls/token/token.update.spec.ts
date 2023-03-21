@@ -8,7 +8,7 @@ import {
   WEN_FUNC,
 } from '@soonaverse/interfaces';
 import admin from '../../../src/admin.config';
-import { createToken, updateToken } from '../../../src/controls/token.control';
+import { createToken, updateToken } from '../../../src/runtime/firebase/token/base';
 import * as wallet from '../../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../../set-up';
 import {

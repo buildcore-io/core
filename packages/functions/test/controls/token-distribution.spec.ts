@@ -17,7 +17,7 @@ import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
 import admin from '../../src/admin.config';
-import { orderToken } from '../../src/controls/token.control';
+import { orderToken } from '../../src/runtime/firebase/token/base';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';

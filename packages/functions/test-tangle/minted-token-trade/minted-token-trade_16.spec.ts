@@ -11,8 +11,7 @@ import {
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import admin from '../../src/admin.config';
-import { cancelTradeOrder } from '../../src/controls/token-trading/token-trade-cancel.controller';
-import { tradeToken } from '../../src/controls/token-trading/token-trade.controller';
+import { cancelTradeOrder, tradeToken } from '../../src/runtime/firebase/token/trading';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';

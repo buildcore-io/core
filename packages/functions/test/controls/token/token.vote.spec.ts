@@ -1,7 +1,7 @@
 import { COL, Space, SUB_COL, TokenAllocation, TokenStats, WenError } from '@soonaverse/interfaces';
 import admin from '../../../src/admin.config';
-import { createToken } from '../../../src/controls/token.control';
 import { voteController } from '../../../src/controls/vote.control';
+import { createToken } from '../../../src/runtime/firebase/token/base';
 import * as config from '../../../src/utils/config.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../../set-up';

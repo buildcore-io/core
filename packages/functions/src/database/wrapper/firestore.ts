@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { COL, SUB_COL } from '@soonaverse/interfaces';
 import admin from '../../admin.config';
-import { cOn } from '../../utils/dateTime.utils';
-import { uOn } from '../firestore/common';
+import { cOn, uOn } from './common';
 import { IBatch, ICollection, IDatabase, IDocument, IQuery, ITransaction } from './interfaces';
 
 export class Firestore implements IDatabase {
@@ -28,6 +27,8 @@ export class Firestore implements IDatabase {
   public arrayUnion = <T>(...value: T[]) => admin.firestore.FieldValue.arrayUnion(...value);
 
   public arrayRemove = <T>(...value: T[]) => admin.firestore.FieldValue.arrayRemove(...value);
+
+  public deleteField = () => admin.firestore.FieldValue.delete();
 }
 
 export class FirestoreBatch implements IBatch {
@@ -39,12 +40,22 @@ export class FirestoreBatch implements IBatch {
 
   public create = (docRef: IDocument, data: any) => {
     const ref = this.db.doc(docRef.getPath());
-    this.batch.create(ref, cOn(data));
+    this.batch.create(ref, cOn(docRef, data));
   };
 
   public update = (docRef: IDocument, data: any) => {
     const ref = this.db.doc(docRef.getPath());
     this.batch.update(ref, uOn(data));
+  };
+
+  public set = (docRef: IDocument, data: any, merge = false) => {
+    const ref = this.db.doc(docRef.getPath());
+    this.batch.set(ref, merge ? uOn(data) : cOn(docRef, data), { merge });
+  };
+
+  public delete = (docRef: IDocument) => {
+    const ref = this.db.doc(docRef.getPath());
+    this.batch.delete(ref);
   };
 
   public commit = async () => {
@@ -59,14 +70,19 @@ export class FirestoreTransaction implements ITransaction {
   ) {}
 
   public get = async <T>(docRef: IDocument) => {
-    const ref = this.db.doc(docRef.getPath());
-    const doc = await this.transaction.get(ref);
+    const refs = this.db.doc(docRef.getPath());
+    const doc = await this.transaction.get(refs);
     return <T | undefined>doc.data();
+  };
+
+  public getByQuery = async <T>(query: IQuery) => {
+    const snap = await this.transaction.get(query.getInstance());
+    return snap.docs.map((d) => d.data() as T);
   };
 
   public create = (docRef: IDocument, data: any) => {
     const ref = this.db.doc(docRef.getPath());
-    this.transaction.create(ref, cOn(data));
+    this.transaction.create(ref, cOn(docRef, data));
   };
 
   public update = (docRef: IDocument, data: any) => {
@@ -74,10 +90,10 @@ export class FirestoreTransaction implements ITransaction {
     this.transaction.update(ref, uOn(data));
   };
 
-  public set = (docRef: IDocument, data: any, merge = true) => {
+  public set = (docRef: IDocument, data: any, merge = false) => {
     const ref = this.db.doc(docRef.getPath());
-    const dateFunc = merge ? uOn : cOn;
-    this.transaction.set(ref, dateFunc(data), { merge });
+    const uData = merge ? uOn(data) : cOn(docRef, data);
+    this.transaction.set(ref, uData, { merge });
   };
 }
 
@@ -86,6 +102,11 @@ export class FirestoreCollection implements ICollection {
     private readonly db: admin.firestore.Firestore,
     private readonly collection: admin.firestore.CollectionReference,
   ) {}
+
+  public get = async <T>() => {
+    const snap = await this.collection.get();
+    return snap.docs.map((d) => d.data() as T);
+  };
 
   public doc = (documentPath: string) =>
     new FirestoreDocument(this.db, this.collection.doc(documentPath));
@@ -101,11 +122,15 @@ export class FirestoreDocument implements IDocument {
   ) {}
 
   public create = async (data: any) => {
-    await this.document.create(cOn(data));
+    await this.document.create(cOn(this, data));
   };
 
   public update = async (data: any) => {
     await this.document.update(uOn(data));
+  };
+
+  public set = async (data: any, merge = false) => {
+    await this.document.set(merge ? uOn(data) : cOn(this, data), { merge });
   };
 
   public delete = async () => {
@@ -155,4 +180,6 @@ export class FirestoreQuery implements IQuery {
     }
     return this;
   };
+
+  public getInstance = () => this.query;
 }

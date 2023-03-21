@@ -5,11 +5,11 @@ import {
   RelatedRecordsResponse,
   SUB_COL,
   TokenStatus,
+  Transaction,
   WenError,
 } from '@soonaverse/interfaces';
-import { Transaction } from 'ethers';
 import admin from '../../admin.config';
-import { Database } from '../../database/Database';
+import { soonDb } from '../../database/wrapper/soondb';
 import {
   getProposal,
   getProposalMember,
@@ -40,26 +40,31 @@ export const voteOnProposalControl = async (owner: string, params: Record<string
     }
 
     const order = await createVoteTransactionOrder(owner, proposal, values, token);
-    await Database.create(COL.TRANSACTION, order);
-    return await Database.getById<Transaction>(COL.TRANSACTION, order.uid);
+    const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+    await orderDocRef.create(order);
+
+    return await orderDocRef.get<Transaction>();
   }
 
   const voteData = await executeSimpleVoting(proposalMember, proposal, values);
-  const batch = Database.createBatchWriter();
-  batch.set(COL.PROPOSAL, voteData.proposal, undefined, undefined, true);
-  batch.set(COL.PROPOSAL, voteData.proposalMember, SUB_COL.MEMBERS, proposal.uid, true);
-  batch.set(COL.TRANSACTION, voteData.voteTransaction);
+  const batch = soonDb().batch();
+
+  const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  batch.set(proposalDocRef, voteData.proposal, true);
+
+  const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(proposalMember.uid);
+  batch.set(proposalMemberDocRef, voteData.proposalMember, true);
+
+  const voteTransactionDocRef = soonDb().doc(`${COL.TRANSACTION}/${voteData.voteTransaction.uid}`);
+  batch.create(voteTransactionDocRef, voteData.voteTransaction);
   await batch.commit();
 
-  const voteTransaction = await Database.getById<Transaction>(
-    COL.TRANSACTION,
-    voteData.voteTransaction.uid,
-  );
+  const voteTransaction = await voteTransactionDocRef.get<Transaction>();
   if (RelatedRecordsResponse.status) {
     return {
       ...voteTransaction,
       ...{
-        _relatedRecs: { proposal: await Database.getById<Proposal>(COL.PROPOSAL, proposal.uid) },
+        _relatedRecs: { proposal: await proposalDocRef.get<Proposal>() },
       },
     };
   } else {

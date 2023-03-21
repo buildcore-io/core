@@ -11,7 +11,7 @@ import {
 import dayjs from 'dayjs';
 import admin from '../../../src/admin.config';
 import { airdropToken, claimAirdroppedToken } from '../../../src/controls/token-airdrop.control';
-import { orderToken } from '../../../src/controls/token.control';
+import { orderToken } from '../../../src/runtime/firebase/token/base';
 import { dateToTimestamp, serverTime } from '../../../src/utils/dateTime.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../../set-up';

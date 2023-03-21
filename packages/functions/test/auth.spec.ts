@@ -4,7 +4,7 @@ import { COL, Member, Network, WenError, WEN_FUNC } from '@soonaverse/interfaces
 import jwt from 'jsonwebtoken';
 import { get } from 'lodash';
 import admin from '../src/admin.config';
-import { generateCustomFirebaseToken } from '../src/controls/auth.control';
+import { generateCustomFirebaseToken } from '../src/runtime/firebase/auth';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
 import { WalletService } from '../src/services/wallet/wallet';
 import * as config from '../src/utils/config.utils';

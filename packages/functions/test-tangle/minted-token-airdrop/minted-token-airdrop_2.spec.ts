@@ -18,9 +18,11 @@ import {
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
-import { airdropMintedToken } from '../../src/controls/token-minting/airdrop-minted-token';
-import { claimMintedTokenOrder } from '../../src/controls/token-minting/claim-minted-token.control';
-import { mintTokenOrder } from '../../src/controls/token-minting/token-mint.control';
+import {
+  airdropMintedToken,
+  claimMintedTokenOrder,
+  mintTokenOrder,
+} from '../../src/runtime/firebase/token/minting';
 import { getAddress } from '../../src/utils/address.utils';
 import { cOn, dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';

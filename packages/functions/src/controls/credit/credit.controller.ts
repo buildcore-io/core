@@ -10,17 +10,15 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { TransactionRunner } from '../../database/Database';
+import { soonDb } from '../../database/wrapper/soondb';
 import { WalletService } from '../../services/wallet/wallet';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const creditUnrefundableControl = (owner: string, params: Record<string, unknown>) =>
-  TransactionRunner.runTransaction(async (transaction) => {
-    const creditTtransaction = await transaction.getById<Transaction>(
-      COL.TRANSACTION,
-      params.transaction as string,
-    );
+  soonDb().runTransaction(async (transaction) => {
+    const transactionDocRef = soonDb().doc(`${COL.TRANSACTION}/${params.transaction}`);
+    const creditTtransaction = await transaction.get<Transaction>(transactionDocRef);
 
     if (
       creditTtransaction?.ignoreWalletReason !==
@@ -34,10 +32,12 @@ export const creditUnrefundableControl = (owner: string, params: Record<string, 
 
     const wallet = await WalletService.newWallet(creditTtransaction.network);
     const targetAddress = await wallet.getNewIotaAddressDetails();
-    const data = createCreditOrder(creditTtransaction, owner, targetAddress.bech32);
 
-    transaction.update({ col: COL.TRANSACTION, data, action: 'set' });
-    return data;
+    const creditOrder = createCreditOrder(creditTtransaction, owner, targetAddress.bech32);
+    const creditDocRef = soonDb().doc(`${COL.TRANSACTION}/${creditOrder.uid}`);
+    transaction.create(creditDocRef, creditOrder);
+
+    return creditOrder;
   });
 
 const createCreditOrder = (creditTtransaction: Transaction, owner: string, targetAddress: string) =>
