@@ -21,6 +21,7 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
+import * as functions from 'firebase-functions';
 import { head, isEmpty, set } from 'lodash';
 import admin, { inc } from '../../../admin.config';
 import { getNftByMintingId } from '../../../utils/collection-minting-utils/nft.utils';
@@ -82,7 +83,7 @@ export class NftDepositService {
         transactionEntry.nftOutput!,
       );
     }
-    return await this.depositNftMintedOnSoon(nft, order, transactionEntry.nftOutput!, match);
+    return await this.depositNftMintedOnSoon(nft, order, transactionEntry.nftOutput, match);
   };
 
   private depositNftMintedOnSoon = async (
@@ -108,13 +109,13 @@ export class NftDepositService {
         mintedOn: admin.firestore.FieldValue.serverTimestamp(),
         mintedBy: order.member,
         blockId: match.msgId,
-        nftId: nftOutput.nftId || '',
+        nftId: nftOutput.nftId,
         storageDeposit: match.to.amount,
         mintingOrderId: order.uid,
       },
       hidden: false,
       isOwned: true,
-      owner: order.member!,
+      owner: order.member,
     };
     const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
     this.transactionService.updates.push({ ref: nftDocRef, data, action: 'update' });
@@ -216,17 +217,19 @@ export class NftDepositService {
     set(nft, 'media', nftMedia);
 
     if (!existingCollection && metadata.collection.uri) {
-      const bannerUrl = await migrateUriToSotrage(
-        COL.COLLECTION,
-        space.uid,
-        migratedCollection.uid,
-        uriToUrl(metadata.collection.uri),
-        bucket,
-      );
-      if (bannerUrl) {
+      try {
+        const bannerUrl = await migrateUriToSotrage(
+          COL.COLLECTION,
+          space.uid,
+          migratedCollection.uid,
+          uriToUrl(metadata.collection.uri),
+          bucket,
+        );
         set(migratedCollection, 'bannerUrl', bannerUrl);
         set(migratedCollection, 'mediaStatus', MediaStatus.PENDING_UPLOAD);
         set(space, 'avatarUrl', bannerUrl);
+      } catch (error) {
+        functions.logger.warn('Could not get banner url', order.uid, nftOutput.nftId, error);
       }
     }
 

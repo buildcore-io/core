@@ -14,6 +14,7 @@ import {
   Collection,
   CollectionStatus,
   CollectionType,
+  MediaStatus,
   Member,
   MIN_IOTA_AMOUNT,
   Network,
@@ -377,5 +378,67 @@ export class Helper {
     const guardianDocRef = admin.firestore().doc(`${COL.MEMBER}/${this.guardian}`);
     const guardianData = <Member>(await guardianDocRef.get()).data();
     expect(guardianData.spaces![space.uid].isMember).toBe(true);
+  };
+
+  public isInvalidPayment = async (paymentId: string) => {
+    const paymentDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${paymentId}`);
+    const payment = (await paymentDocRef.get()).data()!;
+    expect(payment.payload.invalidPayment).toBe(true);
+  };
+
+  public mintWithCustomNftCID = async (func: (ipfsMedia: string) => string) => {
+    let nft = await this.createAndOrderNft();
+    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
+
+    mockWalletReturnValue(this.walletSpy, this.guardian!, {
+      collection: this.collection!,
+      network: this.network,
+      unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE,
+    });
+    const collectionMintOrder = await testEnv.wrap(mintCollection)({});
+    await requestFundsFromFaucet(this.network, this.guardianAddress!.bech32, 10 * MIN_IOTA_AMOUNT);
+    await this.walletService!.send(
+      this.guardianAddress!,
+      collectionMintOrder.payload.targetAddress,
+      collectionMintOrder.payload.amount,
+      {},
+    );
+    await MnemonicService.store(this.guardianAddress!.bech32, this.guardianAddress!.mnemonic);
+
+    const unsubscribe = nftDocRef.onSnapshot(async (doc) => {
+      const nft = doc.data() as Nft;
+      const ipfsMedia = func(nft.ipfsMedia || '');
+      if (nft.mediaStatus === MediaStatus.PENDING_UPLOAD && nft.ipfsMedia !== ipfsMedia) {
+        await nftDocRef.update({ ipfsMedia });
+      }
+    });
+    await wait(async () => {
+      const nft = <Nft>(await nftDocRef.get()).data();
+      return nft.mediaStatus === MediaStatus.PENDING_UPLOAD;
+    });
+    unsubscribe();
+
+    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${this.collection}`);
+    await wait(async () => {
+      const collection = <Collection>(await collectionDocRef.get()).data();
+      return collection.status === CollectionStatus.MINTED;
+    });
+
+    mockWalletReturnValue(this.walletSpy, this.guardian!, { nft: nft.uid });
+    await testEnv.wrap(withdrawNft)({});
+
+    let query = admin
+      .firestore()
+      .collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.WITHDRAW_NFT)
+      .where('payload.nft', '==', nft.uid);
+    await wait(async () => {
+      const snap = await query.get();
+      return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+    });
+    nft = <Nft>(await nftDocRef.get()).data();
+
+    await nftDocRef.delete();
+    await admin.firestore().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
   };
 }

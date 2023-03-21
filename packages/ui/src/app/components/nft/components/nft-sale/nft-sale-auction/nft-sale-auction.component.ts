@@ -72,6 +72,7 @@ export class NftSaleAuctionComponent implements OnInit {
     Validators.max(MAX_IOTA_AMOUNT / 1000 / 1000),
   ]);
   public availableFromControl: FormControl = new FormControl('', Validators.required);
+  public lengthFromControl: FormControl = new FormControl(3);
   public selectedAccessControl: FormControl = new FormControl(NftAccess.OPEN, Validators.required);
   public buyerControl: FormControl = new FormControl('');
   public minimumPrice = MIN_IOTA_AMOUNT;
@@ -90,6 +91,7 @@ export class NftSaleAuctionComponent implements OnInit {
     this.form = new FormGroup({
       floorPrice: this.floorPriceControl,
       availableFrom: this.availableFromControl,
+      length: this.lengthFromControl,
       selectedAccess: this.selectedAccessControl,
       buyer: this.buyerControl,
     });
@@ -137,10 +139,17 @@ export class NftSaleAuctionComponent implements OnInit {
   }
 
   public submit(): void {
+    let length = TRANSACTION_DEFAULT_AUCTION;
+    if (this.lengthFromControl.value === 1) {
+      length = 24 * 60 * 60 * 1000;
+    } else if (this.lengthFromControl.value === 2) {
+      length = 2 * 24 * 60 * 60 * 1000;
+    }
+
     const up: UpdateEvent = {
       type: SaleType.FIXED_PRICE,
       auctionFrom: this.availableFromControl.value,
-      auctionLength: TRANSACTION_DEFAULT_AUCTION,
+      auctionLength: length,
       auctionFloorPrice: this.floorPriceControl.value * 1000 * 1000,
       access: this.selectedAccessControl.value,
     };
