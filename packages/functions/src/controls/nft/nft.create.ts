@@ -3,7 +3,6 @@ import {
   Collection,
   CollectionStatus,
   CollectionType,
-  Member,
   MIN_IOTA_AMOUNT,
   Nft,
   NftAccess,
@@ -12,6 +11,7 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
+import { isEmpty } from 'lodash';
 import { soonDb } from '../../database/wrapper/soondb';
 import { isProdEnv } from '../../utils/config.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
@@ -19,51 +19,49 @@ import { throwInvalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const createNftControl = async (owner: string, params: Record<string, unknown>) => {
-  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${params.collection}`);
-  const collection = await collectionDocRef.get<Collection>();
-  if (!collection) {
-    throw throwInvalidArgument(WenError.collection_does_not_exists);
-  }
-  if (collection.status !== CollectionStatus.PRE_MINTED) {
-    throw throwInvalidArgument(WenError.invalid_collection_status);
-  }
-  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
-  const member = await memberDocRef.get<Member>();
-  return await processOneCreateNft(member, params, collection, collection.total + 1);
+  const collection = await getCollection(owner, params.collection as string);
+  return await processOneCreateNft(params, collection, collection.total + 1);
 };
 
 export const createBatchNftControl = async (owner: string, params: Record<string, unknown>[]) => {
-  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${params[0].collection}`);
-  const collection = await collectionDocRef.get<Collection>();
-  if (!collection) {
-    throw throwInvalidArgument(WenError.collection_does_not_exists);
-  }
-  if ((collection.status || CollectionStatus.PRE_MINTED) !== CollectionStatus.PRE_MINTED) {
-    throw throwInvalidArgument(WenError.invalid_collection_status);
-  }
-
-  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
-  const member = await memberDocRef.get<Member>();
+  const collection = await getCollection(owner, params[0].collection as string);
   const promises = params.map((param, i) =>
-    processOneCreateNft(member, param, collection, collection.total + i + 1),
+    processOneCreateNft(param, collection, collection.total + i + 1),
   );
   return (await Promise.all(promises)).map((n) => n.uid);
 };
 
+const getCollection = async (owner: string, collectionId: string) => {
+  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${collectionId}`);
+  const collection = await collectionDocRef.get<Collection>();
+  if (!collection) {
+    throw throwInvalidArgument(WenError.collection_does_not_exists);
+  }
+
+  if ((collection.status || CollectionStatus.PRE_MINTED) !== CollectionStatus.PRE_MINTED) {
+    throw throwInvalidArgument(WenError.invalid_collection_status);
+  }
+
+  if (collection.rejected) {
+    throw throwInvalidArgument(WenError.collection_is_already_rejected);
+  }
+
+  if (collection.approved === true && collection.limitedEdition) {
+    throw throwInvalidArgument(WenError.this_is_limited_addition_collection);
+  }
+
+  if (collection.createdBy !== owner) {
+    throw throwInvalidArgument(WenError.you_must_be_the_creator_of_this_collection);
+  }
+
+  return collection;
+};
+
 const processOneCreateNft = async (
-  member: Member | undefined,
   params: Record<string, unknown>,
   collection: Collection,
   position: number,
 ) => {
-  if (!member) {
-    throw throwInvalidArgument(WenError.member_does_not_exists);
-  }
-
-  if (collection.createdBy !== member.uid) {
-    throw throwInvalidArgument(WenError.you_must_be_the_creator_of_this_collection);
-  }
-
   if (params.availableFrom) {
     params.availableFrom = dateToTimestamp(params.availableFrom as Date, true);
   }
@@ -77,14 +75,6 @@ const processOneCreateNft = async (
     );
   }
 
-  if (collection.rejected) {
-    throw throwInvalidArgument(WenError.collection_is_already_rejected);
-  }
-
-  if (collection.approved === true && collection.limitedEdition) {
-    throw throwInvalidArgument(WenError.this_is_limited_addition_collection);
-  }
-
   if (collection.type === CollectionType.CLASSIC) {
     const availableFrom = dayjs((params.availableFrom as Timestamp).toDate());
     const expectedAvailableFrom = dayjs().add(
@@ -93,6 +83,10 @@ const processOneCreateNft = async (
     if (availableFrom.isBefore(expectedAvailableFrom)) {
       throw throwInvalidArgument(WenError.available_from_must_be_in_the_future);
     }
+  }
+
+  if (!isEmpty(params.saleAccessMembers) && collection.type !== CollectionType.CLASSIC) {
+    throw throwInvalidArgument(WenError.collection_must_be_classic);
   }
 
   if (collection.type === CollectionType.GENERATED || collection.type === CollectionType.SFT) {
@@ -107,7 +101,7 @@ const processOneCreateNft = async (
     locked: false,
     price,
     availablePrice: price,
-    saleAccess: NftAccess.OPEN,
+    saleAccess: isEmpty(params.saleAccessMembers) ? NftAccess.OPEN : NftAccess.MEMBERS,
     position,
     lockedBy: null,
     ipfsMedia: null,
@@ -122,7 +116,7 @@ const processOneCreateNft = async (
     space: collection.space,
     type: collection.type,
     hidden: CollectionType.CLASSIC !== collection.type,
-    createdBy: member.uid,
+    createdBy: collection.createdBy,
     placeholderNft: false,
     status: CollectionStatus.PRE_MINTED,
   };

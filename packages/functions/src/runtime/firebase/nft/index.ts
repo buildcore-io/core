@@ -42,6 +42,7 @@ const nftCreateSchema = {
   // TODO Validate.
   properties: Joi.object().optional(),
   stats: Joi.object().optional(),
+  saleAccessMembers: Joi.array().items(CommonJoi.uid(false)).optional(),
 };
 export const createNft = onCall(WEN_FUNC.cNft)(Joi.object(nftCreateSchema), createNftControl);
 
