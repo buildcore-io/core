@@ -24,6 +24,10 @@ export const withdrawNftControl = async (owner: string, params: Record<string, u
       throw throwInvalidArgument(WenError.nft_on_sale);
     }
 
+    if (nft.setAsAvatar) {
+      throw throwInvalidArgument(WenError.nft_set_as_avatar);
+    }
+
     const memberDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
     const member = await memberDocRef.get<Member>();
     assertMemberHasValidAddress(member, nft.mintingData?.network!);

@@ -150,6 +150,14 @@ describe('Nft controller: setForSale', () => {
     expect(collection.nftsOnSale).toBe(1);
   });
 
+  it('Should throw, nft set as avatar', async () => {
+    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
+    await nftDocRef.update({ setAsAvatar: true });
+
+    mockWalletReturnValue(walletSpy, memberAddress, dummySaleData(nft.uid));
+    await expectThrow(testEnv.wrap(setForSaleNft)({}), WenError.nft_set_as_avatar.key);
+  });
+
   it('Should set nft for auction', async () => {
     mockWalletReturnValue(walletSpy, memberAddress, dummyAuctionData(nft.uid));
     await testEnv.wrap(setForSaleNft)({});
