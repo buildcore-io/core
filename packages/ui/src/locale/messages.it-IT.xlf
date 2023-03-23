@@ -4486,7 +4486,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-stake/nft-stake.component.html</context>
           <context context-type="linenumber">207</context>
         </context-group>
-        <target state="translated">Hai già fatto staking con questo NFT.</target>
+        <target state="translated">È già stato fatto staking con questo NFT.</target>
       </trans-unit>
       <trans-unit id="2085041511399786443" datatype="html">
         <source> See Collection </source>
@@ -6750,7 +6750,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">151,153</context>
         </context-group>
-        <target state="translated"> Nota: i token con i quali è stato fatto staking possono essere utilizzati una sola volta per partecipare alla votazione. Il peso della tua partecipazione al voto sarà dimezzato se i token saranno già stati utilizzati per un'altra offerta. </target>
+        <target state="translated"> Nota: i token con i quali è stato fatto staking possono essere utilizzati una sola volta per partecipare alla votazione. Il peso della tua partecipazione al voto sarà dimezzato se i token con i quali è stato fatto staking saranno già stati utilizzati per un'altra offerta. </target>
       </trans-unit>
       <trans-unit id="5582494186843763678" datatype="html">
         <source>Cast Votes</source>
@@ -7902,7 +7902,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">118,119</context>
         </context-group>
-        <target state="translated"> È necessario possedere almeno un NFT di ciascuna collezione selezionata </target>
+        <target state="translated"> È necessario possedere almeno un NFT per ogni Collezione selezionata </target>
       </trans-unit>
       <trans-unit id="1486015525220675253" datatype="html">
         <source> (One NFT per member) </source>
@@ -7994,7 +7994,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">189</context>
         </context-group>
-        <target state="translated">Apertura alle</target>
+        <target state="translated">La vendita avrà inizio alle ore</target>
       </trans-unit>
       <trans-unit id="7775354865820756771" datatype="html">
         <source>Deposited</source>
@@ -8010,7 +8010,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">218</context>
         </context-group>
-        <target state="translated">In stake</target>
+        <target state="translated">È stato fatto Staking</target>
       </trans-unit>
       <trans-unit id="7565716024468232322" datatype="html">
         <source>Links</source>
@@ -8142,7 +8142,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">30</context>
         </context-group>
-        <target state="translated">Filtri&amp;Categoria</target>
+        <target state="translated">Filtri&amp;Selezione</target>
       </trans-unit>
       <trans-unit id="7387129629487497351" datatype="html">
         <source>Filters&amp;sort</source>
@@ -8170,7 +8170,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">79</context>
         </context-group>
-        <target state="translated">Filtri&amp;categoria</target>
+        <target state="translated">Filtri&amp;selezione</target>
       </trans-unit>
       <trans-unit id="7699622144571229146" datatype="html">
         <source>Sort by</source>
@@ -8198,7 +8198,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">95,94</context>
         </context-group>
-        <target state="translated">Ordina per</target>
+        <target state="translated">Seleziona per</target>
       </trans-unit>
       <trans-unit id="2028563318899266275" datatype="html">
         <source>Price range</source>
@@ -8238,7 +8238,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">20</context>
         </context-group>
-        <target state="translated">Il nome e la descrizione saranno inclusi nella Collezione.</target>
+        <target state="translated">La denominazione e la descrizione saranno inclusi nella Collezione.</target>
       </trans-unit>
       <trans-unit id="1152217532438453452" datatype="html">
         <source>Sales info</source>
@@ -8310,7 +8310,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">155</context>
         </context-group>
-        <target state="translated">I link saranno inclusi nel dettaglio NFT. Usa i nomi utente per Twitter e Discord (nome#id).</target>
+        <target state="translated">Sul piano delle caratteristiche dell'NFT saranno inclusi dei link. Per Twitter o Discord utilizzare i nomi utente (nome#id).</target>
       </trans-unit>
       <trans-unit id="7814705431910246103" datatype="html">
         <source>Invalid URL.</source>
@@ -8318,7 +8318,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">160</context>
         </context-group>
-        <target state="translated">URL non valido.</target>
+        <target state="translated">Non è ammesso l'utilizzo dell'URL.</target>
       </trans-unit>
       <trans-unit id="2375260419993138758" datatype="html">
         <source>URL</source>
@@ -9334,7 +9334,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">326</context>
         </context-group>
-        <target state="translated">Staking fatto Dalla</target>
+        <target state="translated">È stato fatto Staking Dalla</target>
       </trans-unit>
       <trans-unit id="6535760418646280839" datatype="html">
         <source>Staked Until</source>
@@ -9342,7 +9342,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">327</context>
         </context-group>
-        <target state="translated">Staking fatto Fino al</target>
+        <target state="translated">È stato fatto Staking Fino al</target>
       </trans-unit>
       <trans-unit id="5493880020176468567" datatype="html">
         <source>Multiplier</source>
@@ -9382,7 +9382,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">432,433</context>
         </context-group>
-        <target state="translated"> In stake da - a </target>
+        <target state="translated"> È stato fatto Staking da - a </target>
       </trans-unit>
       <trans-unit id="7784596082876459828" datatype="html">
         <source> Amount (Multiplier) </source>
@@ -10118,7 +10118,7 @@
           <context context-type="sourcefile">src/app/pages/nft/services/helper.service.ts</context>
           <context context-type="linenumber">145</context>
         </context-group>
-        <target state="translated">Asta di apertura</target>
+        <target state="translated">Asta di Apertura</target>
       </trans-unit>
       <trans-unit id="4747545493491400295" datatype="html">
         <source>Auction Ends</source>
@@ -10498,7 +10498,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
           <context context-type="linenumber">38</context>
         </context-group>
-        <target state="translated">Iniziano le votazioni</target>
+        <target state="translated">Apertura delle votazioni</target>
       </trans-unit>
       <trans-unit id="51925352922836086" datatype="html">
         <source>You are not part of the vote</source>
@@ -11262,7 +11262,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">193</context>
         </context-group>
-        <target state="translated"> valore in stake da aggiungere</target>
+        <target state="translated"> valore Aggiunto da Staking da includere</target>
       </trans-unit>
       <trans-unit id="5288210860972403382" datatype="html">
         <source>Related Links</source>
@@ -12195,7 +12195,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
           <context context-type="linenumber">84</context>
         </context-group>
-        <target state="translated">URL non valido. (Inizia con http:// o https://)</target>
+        <target state="translated">Non è ammesso l'utilizzo dell'URL. (Inizia con http:// o https://)</target>
       </trans-unit>
       <trans-unit id="7518346502693747462" datatype="html">
         <source>Add link</source>
