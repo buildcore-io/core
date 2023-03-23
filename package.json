@@ -5,9 +5,11 @@
     "packages/*"
   ],
   "scripts": {
+    "build:ui": "npx lerna bootstrap --scope=@soonaverse/ui",
     "build:functions": "npx lerna bootstrap --scope=@soonaverse/functions",
     "build:interfaces": "npx lerna bootstrap --scope=@soonaverse/interfaces",
     "build:lib": "npx lerna bootstrap --scope=@soonaverse/lib",
+    "build": "npx lerna bootstrap",
     "clean:functions": "rm -rf packages/functions/interfaces; rm -rf packages/functions/lib",
     "clean:interfaces": "rm -rf packages/interfaces/lib",
     "clean:lib": "rm -rf packages/lib/lib",

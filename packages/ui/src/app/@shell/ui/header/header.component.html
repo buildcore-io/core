@@ -181,7 +181,7 @@
     >
       <nz-avatar
         nzIcon="user"
-        [nzSrc]="(member$ | async)?.currentProfileImage | ipfsAvatar : filesizes.small"
+        [nzSrc]="(member$ | async)?.avatar | resizeAvatar : filesizes.small"
         [nzSize]="48"
         class="mr-1"
       ></nz-avatar>

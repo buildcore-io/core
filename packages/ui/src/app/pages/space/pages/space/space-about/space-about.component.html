@@ -266,7 +266,7 @@
     >
       <nz-avatar
         nzIcon="user"
-        [nzSrc]="g.currentProfileImage | ipfsAvatar : filesizes.small"
+        [nzSrc]="g.avatar | resizeAvatar : filesizes.small"
         class="mr-2"
         [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 32"
       >

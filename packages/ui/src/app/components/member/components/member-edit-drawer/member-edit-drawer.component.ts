@@ -110,7 +110,7 @@ export class MemberEditDrawerComponent implements OnInit {
     this.discordControl.setValue(obj.discord);
     this.twitterControl.setValue(obj.twitter);
     this.githubControl.setValue(obj.github);
-    this.currentProfileImageControl.setValue(obj.currentProfileImage);
+    this.currentProfileImageControl.setValue(obj.avatarNft);
   }
 
   public async save(): Promise<void> {

@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { IconModule } from '@components/icon/icon.module';
 import { WalletAddressModule } from '@components/wallet-address/wallet-address.module';
-import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
+import { ResizeAvatarModule } from '@core/pipes/resize-avatar/resize-avatar.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
@@ -29,7 +29,7 @@ import { MemberAboutComponent } from './member-about.component';
     AuditOneModule,
     NzTagModule,
     TruncateModule,
-    IpfsAvatarModule,
+    ResizeAvatarModule,
     NzButtonModule,
     WalletAddressModule,
     NzIconModule,

@@ -638,7 +638,7 @@ export class NFTPage implements OnInit, OnDestroy {
       orders?.map((order) => ({
         type: TimelineItemType.ORDER,
         payload: {
-          image: order.newMember.currentProfileImage,
+          image: order.newMember.avatar,
           date: order.order.createdOn?.toDate(),
           name: order.newMember.name || order.newMember.uid,
           amount: order.order.payload.amount,
@@ -651,7 +651,7 @@ export class NFTPage implements OnInit, OnDestroy {
       res.unshift({
         type: TimelineItemType.LISTED_BY_MEMBER,
         payload: {
-          image: this.data.owner$.value?.currentProfileImage,
+          image: this.data.owner$.value?.avatar,
           date: (nft?.availableFrom || nft?.auctionFrom)?.toDate(),
           isAuction: !!(!nft?.availableFrom && nft?.auctionFrom),
           name: this.data.owner$.value?.name || this.data.owner$.value?.uid || '',
