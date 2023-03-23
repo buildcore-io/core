@@ -73,4 +73,5 @@ export interface Nft extends BaseRecord {
   status?: NftStatus;
   hidden?: boolean;
   mediaStatus?: MediaStatus;
+  soldOn?: Timestamp;
 }

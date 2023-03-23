@@ -11,18 +11,23 @@ import {
 import { Converter } from '@iota/util.js-next';
 import { COL, Network, Nft, NftStatus } from '@soonaverse/interfaces';
 import axios from 'axios';
+import dayjs from 'dayjs';
 import { App } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
-import { last } from 'lodash';
+import { get, last } from 'lodash';
 import zlib from 'zlib';
 
-export const fixMintedNftIds = async (app: App, status: NftStatus) => {
+export const fixMintedNftIds = async (app: App) => {
   const db = getFirestore(app);
 
   let lastDoc: any | undefined = undefined;
 
   do {
-    let query = db.collection(COL.NFT).where('status', '==', status).limit(500);
+    let query = db
+      .collection(COL.NFT)
+      .where('mintingData.mintedOn', '<=', dayjs('2022-10-15').toDate())
+      .where('status', '==', NftStatus.WITHDRAWN)
+      .limit(500);
     if (lastDoc) {
       query = query.startAfter(lastDoc);
     }
@@ -32,7 +37,7 @@ export const fixMintedNftIds = async (app: App, status: NftStatus) => {
     const promises = snap.docs.map(async (doc) => {
       try {
         const nft = <Nft>doc.data();
-        if (!nft.mintingData?.nftId || !nft.mintingData?.blockId) {
+        if (!nft.mintingData?.blockId || get(nft, 'mintingData.nftIdFixed')) {
           return;
         }
 
@@ -44,14 +49,16 @@ export const fixMintedNftIds = async (app: App, status: NftStatus) => {
           indexToString(outputIndex);
         const nftId = TransactionHelper.resolveIdFromOutputId(outputId);
 
-        await db.doc(`${COL.NFT}/${nft.uid}`).update({ 'mintingData.nftId': nftId });
+        await db
+          .doc(`${COL.NFT}/${nft.uid}`)
+          .update({ 'mintingData.nftId': nftId, 'mintingData.nftIdFixed': true });
       } catch (error) {
         console.log(doc.id);
         throw error;
       }
     });
 
-    await Promise.allSettled(promises);
+    await Promise.all(promises);
   } while (lastDoc);
 };
 
@@ -105,7 +112,4 @@ const getBlockPayload = async (network: Network, blockId: string) => {
   return JSON.parse(decodedData).block.payload as ITransactionPayload;
 };
 
-export const roll = async (app: App) => {
-  await fixMintedNftIds(app, NftStatus.MINTED);
-  await fixMintedNftIds(app, NftStatus.WITHDRAWN);
-};
+export const roll = fixMintedNftIds;

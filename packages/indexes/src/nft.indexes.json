@@ -543,6 +543,20 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "nft",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "mintingData.mintedOn",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ]
 }
