@@ -7994,7 +7994,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">189</context>
         </context-group>
-        <target state="translated">Date de lancement</target>
+        <target state="translated">La vente débutera à</target>
       </trans-unit>
       <trans-unit id="7775354865820756771" datatype="html">
         <source>Deposited</source>
@@ -8238,7 +8238,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">20</context>
         </context-group>
-        <target state="translated">Le nom et la description seront inclus dans la Collection.</target>
+        <target state="translated">La dénomination et la description seront incluses dans la Collection.</target>
       </trans-unit>
       <trans-unit id="1152217532438453452" datatype="html">
         <source>Sales info</source>
@@ -10142,7 +10142,7 @@
           <context context-type="sourcefile">src/app/pages/pool/pages/market/pool.page.html</context>
           <context context-type="linenumber">20,21</context>
         </context-group>
-        <target state="translated"> Qu'est-ce qu'un Pool ? </target>
+        <target state="translated"> Qu'est-ce qu'un Pool ? </target>
       </trans-unit>
       <trans-unit id="1981478456598084810" datatype="html">
         <source> Anyone can become a liquidity provider (LP) by depositing an equivalent value of each underlying token in return for pool tokens. These tokens track pro-rata LP shares of the total reserves, and can be redeemed for the underlying assets at any time. </source>
