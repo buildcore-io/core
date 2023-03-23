@@ -1,9 +1,4 @@
-import {
-  ProposalStartDateMin,
-  ProposalSubType,
-  ProposalType,
-  WEN_FUNC,
-} from '@soonaverse/interfaces';
+import { ProposalStartDateMin, ProposalType, WEN_FUNC } from '@soonaverse/interfaces';
 import Joi from 'joi';
 import { proposalApprovalControl } from '../../../controls/proposal/approve.reject.proposal';
 import { createProposalControl } from '../../../controls/proposal/create.proposal';
@@ -18,17 +13,6 @@ export const createProposalSchema = {
   space: CommonJoi.uid(),
   additionalInfo: Joi.string().allow(null, '').optional(),
   type: Joi.number().equal(ProposalType.MEMBERS, ProposalType.NATIVE).required(),
-  subType: Joi.when('type', {
-    is: Joi.exist().valid(ProposalType.NATIVE),
-    then: Joi.number().equal(ProposalSubType.ONE_MEMBER_ONE_VOTE).required(),
-    otherwise: Joi.number()
-      .equal(
-        ProposalSubType.ONE_MEMBER_ONE_VOTE,
-        ProposalSubType.REPUTATION_BASED_ON_AWARDS,
-        ProposalSubType.REPUTATION_BASED_ON_SPACE,
-      )
-      .required(),
-  }),
   settings: Joi.object({
     startDate: isProdEnv()
       ? Joi.date()
@@ -37,19 +21,6 @@ export const createProposalSchema = {
       : Joi.date().required(),
     endDate: Joi.date().greater(Joi.ref('startDate')).required(),
     onlyGuardians: Joi.boolean().required(),
-    awards: Joi.when('...subType', {
-      is: Joi.exist().valid(ProposalSubType.REPUTATION_BASED_ON_AWARDS),
-      then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
-      otherwise: Joi.forbidden(),
-    }),
-    defaultMinWeight: Joi.when('...subType', {
-      is: Joi.exist().valid(
-        ProposalSubType.REPUTATION_BASED_ON_SPACE,
-        ProposalSubType.REPUTATION_BASED_ON_AWARDS,
-      ),
-      then: Joi.number().optional(),
-      otherwise: Joi.forbidden(),
-    }),
   }).required(),
   questions: Joi.array()
     .items(

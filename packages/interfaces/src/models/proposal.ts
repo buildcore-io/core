@@ -15,12 +15,6 @@ export enum ProposalType {
   REMOVE_STAKE_REWARD = 5,
 }
 
-export enum ProposalSubType {
-  ONE_MEMBER_ONE_VOTE = 1,
-  REPUTATION_BASED_ON_SPACE = 2,
-  REPUTATION_BASED_ON_AWARDS = 3,
-}
-
 export interface ProposalMember extends BaseSubCollection {
   uid: string;
   voted?: boolean;
@@ -61,7 +55,6 @@ export interface Proposal extends BaseRecord {
   };
   description: string;
   type: ProposalType;
-  subType: ProposalSubType;
   approved?: boolean;
   approvedBy?: string;
   rejected?: boolean;

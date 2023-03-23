@@ -4,7 +4,6 @@ import {
   DEFAULT_NETWORK,
   Member,
   Proposal,
-  ProposalSubType,
   ProposalType,
   Space,
   SpaceGuardian,
@@ -132,7 +131,6 @@ const createUpdateSpaceProposal = (
     space,
     description: '',
     type: ProposalType.EDIT_SPACE,
-    subType: ProposalSubType.ONE_MEMBER_ONE_VOTE,
     approved: true,
     rejected: false,
     settings: {

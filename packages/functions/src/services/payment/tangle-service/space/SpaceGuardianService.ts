@@ -5,7 +5,6 @@ import {
   DEFAULT_NETWORK,
   Member,
   Proposal,
-  ProposalSubType,
   ProposalType,
   Space,
   SUB_COL,
@@ -169,7 +168,6 @@ const getProposalData = (
     space,
     description: '',
     type: isAddGuardian ? ProposalType.ADD_GUARDIAN : ProposalType.REMOVE_GUARDIAN,
-    subType: ProposalSubType.ONE_MEMBER_ONE_VOTE,
     approved: true,
     rejected: false,
     settings: {
