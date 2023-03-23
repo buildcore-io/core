@@ -28,6 +28,10 @@ export const setForSaleNftControl = async (owner: string, params: Record<string,
     throw throwInvalidArgument(WenError.nft_does_not_exists);
   }
 
+  if (nft.setAsAvatar) {
+    throw throwInvalidArgument(WenError.nft_set_as_avatar);
+  }
+
   if (nft.hidden) {
     throw throwInvalidArgument(WenError.hidden_nft);
   }

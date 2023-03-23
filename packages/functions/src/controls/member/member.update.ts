@@ -1,9 +1,8 @@
-import { COL, FileMetedata, Member, WenError } from '@soonaverse/interfaces';
-import { get } from 'lodash';
+import { COL, Member, Nft, NftAvailable, NftStatus, WenError } from '@soonaverse/interfaces';
 import { soonDb } from '../../database/wrapper/soondb';
-import { updateMemberSchema } from '../../runtime/firebase/member';
+import { uOn } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
-import { pSchema } from '../../utils/schema.utils';
+import { cleanupParams } from '../../utils/schema.utils';
 
 export const updateMemberControl = async (owner: string, params: Record<string, unknown>) => {
   const memberDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
@@ -23,31 +22,43 @@ export const updateMemberControl = async (owner: string, params: Record<string, 
     }
   }
 
-  // TODO Add validation via SC they really own the NFT.
-  if (params.currentProfileImage) {
-    const avatar = await soonDb()
-      .collection(COL.AVATARS)
-      .doc((params.currentProfileImage as FileMetedata).metadata)
-      .get();
-    if (!avatar) {
-      throw throwInvalidArgument(WenError.nft_does_not_exists);
-    }
+  const batch = soonDb().batch();
 
-    if (!get(avatar, 'available')) {
-      throw throwInvalidArgument(WenError.nft_is_no_longer_available);
-    }
+  if (params.avatarNft) {
+    const nft = await getNft(owner, params.avatarNft as string);
+    params.avatar = nft.media;
+
+    const nftDocRef = soonDb().doc(`${COL.NFT}/${params.avatarNft}`);
+    batch.update(nftDocRef, uOn({ setAsAvatar: true }));
+  } else if (Object.keys(params).includes('avatarNft')) {
+    params.avatar = null;
   }
 
-  if (params) {
-    await memberDocRef.update(pSchema(updateMemberSchema, params, ['currentProfileImage']));
-
-    if (params.currentProfileImage) {
-      await soonDb()
-        .collection(COL.AVATARS)
-        .doc((params.currentProfileImage as FileMetedata).metadata)
-        .update({ available: false });
-    }
+  if (member.avatarNft && member.avatarNft !== params.avatarNft) {
+    const currentAvatarDocRef = soonDb().doc(`${COL.NFT}/${member.avatarNft}`);
+    batch.update(currentAvatarDocRef, { setAsAvatar: false });
   }
+
+  batch.update(memberDocRef, cleanupParams(params));
+  await batch.commit();
 
   return await memberDocRef.get<Member>();
+};
+
+const getNft = async (owner: string, nftId: string) => {
+  const nftDocRef = soonDb().doc(`${COL.NFT}/${nftId}`);
+  const nft = await nftDocRef.get<Nft>();
+  if (!nft) {
+    throw throwInvalidArgument(WenError.nft_does_not_exists);
+  }
+  if (nft.owner !== owner) {
+    throw throwInvalidArgument(WenError.you_must_be_the_owner_of_nft);
+  }
+  if (nft.status !== NftStatus.MINTED) {
+    throw throwInvalidArgument(WenError.nft_not_minted);
+  }
+  if (nft.available !== NftAvailable.UNAVAILABLE) {
+    throw throwInvalidArgument(WenError.nft_on_sale);
+  }
+  return nft;
 };
