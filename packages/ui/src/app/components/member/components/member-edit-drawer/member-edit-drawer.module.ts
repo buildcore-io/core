@@ -9,6 +9,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzFormModule } from 'ng-zorro-antd/form';
+import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzTagModule } from 'ng-zorro-antd/tag';
@@ -35,6 +36,7 @@ import { MemberEditDrawerComponent } from './member-edit-drawer.component';
     NzFormModule,
     NzButtonModule,
     NzDrawerModule,
+    NzSelectModule,
     IconModule,
   ],
 })
