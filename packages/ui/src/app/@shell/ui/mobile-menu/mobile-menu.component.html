@@ -21,7 +21,7 @@
           <div class="flex rounded-full bg-tags-regular dark:bg-tags-regular-dark">
             <nz-avatar
               nzIcon="user"
-              [nzSrc]="(member$ | async)?.currentProfileImage | ipfsAvatar : filesizes.small"
+              [nzSrc]="(member$ | async)?.avatar | resizeAvatar : filesizes.small"
               [nzSize]="48"
               class="mr-4"
             ></nz-avatar>

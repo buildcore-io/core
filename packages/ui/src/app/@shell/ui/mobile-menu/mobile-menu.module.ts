@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { IconModule } from '@components/icon/icon.module';
-import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
+import { ResizeAvatarModule } from '@core/pipes/resize-avatar/resize-avatar.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
@@ -25,7 +25,7 @@ import { MobileMenuComponent } from './mobile-menu.component';
     IconModule,
     TruncateModule,
     NzTagModule,
-    IpfsAvatarModule,
+    ResizeAvatarModule,
     MenuModule,
     ThemeSwitchModule,
     NzIconModule,
