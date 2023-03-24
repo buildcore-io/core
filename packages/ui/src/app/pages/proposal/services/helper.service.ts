@@ -3,7 +3,6 @@ import { UnitsService } from '@core/services/units';
 import {
   Proposal,
   ProposalQuestion,
-  ProposalSubType,
   ProposalType,
   PROPOSAL_COMMENCING_IN_DAYS,
 } from '@soonaverse/interfaces';
@@ -15,21 +14,11 @@ import dayjs from 'dayjs';
 export class HelperService {
   constructor(public unitsService: UnitsService) {}
 
-  public getVotingTypeText(
-    subType: ProposalSubType | undefined,
-    type: ProposalType | undefined,
-  ): string {
-    if (subType === ProposalSubType.ONE_MEMBER_ONE_VOTE && type === ProposalType.NATIVE) {
+  public getVotingTypeText(type: ProposalType | undefined): string {
+    if (type === ProposalType.NATIVE) {
       return $localize`Space's Native Token`;
-    } else if (subType === ProposalSubType.ONE_MEMBER_ONE_VOTE) {
-      return $localize`One Member One Vote`;
-    } else if (subType === ProposalSubType.REPUTATION_BASED_ON_SPACE) {
-      return $localize`XP Reputation - Space`;
-    } else if (subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
-      return $localize`XP Reputation - Selected Badges`;
-    } else {
-      return '';
     }
+    return $localize`One Member One Vote`;
   }
 
   public getCommenceDate(proposal?: Proposal | null): Date | null {

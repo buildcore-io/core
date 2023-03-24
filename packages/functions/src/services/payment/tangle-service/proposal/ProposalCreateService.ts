@@ -2,13 +2,10 @@ import {
   COL,
   Proposal,
   ProposalMember,
-  ProposalSubType,
   ProposalType,
   SpaceMember,
   SUB_COL,
   TokenStatus,
-  Transaction,
-  TransactionAwardType,
   WenError,
 } from '@soonaverse/interfaces';
 import Joi from 'joi';
@@ -117,49 +114,11 @@ const createProposalMembersAndGetTotalWeight = async (proposal: Proposal) => {
 };
 
 const createProposalMember = async (proposal: Proposal, spaceMember: SpaceMember) => {
-  const defaultWeight = proposal.settings.defaultMinWeight || 0;
-  const votingWeight = await calculateVotingWeight(proposal, spaceMember.uid);
-  const weight = Math.max(votingWeight, defaultWeight);
   return <ProposalMember>{
     uid: spaceMember.uid,
-    weight,
+    weight: proposal.type === ProposalType.NATIVE ? 0 : 1,
     voted: false,
     parentId: proposal.uid,
     parentCol: COL.PROPOSAL,
   };
-};
-
-const calculateVotingWeight = async (proposal: Proposal, member: string) => {
-  if (proposal.type === ProposalType.NATIVE) {
-    return 0;
-  }
-  if (
-    proposal.subType === ProposalSubType.REPUTATION_BASED_ON_SPACE ||
-    proposal.subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS
-  ) {
-    let weight = 0;
-    await Database.getManyPaginated<Transaction>(COL.TRANSACTION, {
-      ['payload.type']: TransactionAwardType.BADGE,
-      member,
-    })(async (badges) => {
-      for (const badge of badges) {
-        weight += getReputationFromBadge(proposal, badge);
-      }
-    });
-    return weight;
-  }
-  return 1;
-};
-
-const getReputationFromBadge = (proposal: Proposal, badge: Transaction) => {
-  if (proposal.subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
-    if (proposal.settings.awards.includes(badge.payload.award)) {
-      return badge.payload?.tokenReward || 0;
-    }
-    return 0;
-  }
-  if (badge.space === proposal.space) {
-    return Math.trunc(badge.payload?.tokenReward || 0);
-  }
-  return 0;
 };
