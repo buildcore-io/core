@@ -1,9 +1,15 @@
-import { COL, GetAddressesRequest, MAX_MILLISECONDS, Network } from '@soonaverse/interfaces';
+import {
+  COL,
+  GetAddressesRequest,
+  MAX_MILLISECONDS,
+  Mnemonic,
+  Network,
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
-import admin from '../admin.config';
-import { dateToTimestamp } from '../utils/dateTime.utils';
+import { get } from 'lodash';
+import { soonDb } from '../firebase/firestore/soondb';
 import { getQueryParams } from './common';
 
 const getAddressesSchema = Joi.object({
@@ -19,18 +25,17 @@ export const getAddresses = async (req: functions.https.Request, res: functions.
     return;
   }
 
-  const query = admin
-    .firestore()
+  const snap = await soonDb()
     .collection(COL.MNEMONIC)
     .where('network', '==', body.network)
     .orderBy('createdOn')
-    .startAfter(dateToTimestamp(dayjs(body.createdAfter)))
-    .limit(1000);
+    .startAfter(dayjs(body.createdAfter).toDate())
+    .limit(1000)
+    .get<Mnemonic>();
 
-  const snap = await query.get();
-  const result = snap.docs.map((d) => ({
-    createdOn: d.data()?.createdOn?.toDate(),
-    addressBech32: d.id,
+  const result = snap.map((d) => ({
+    createdOn: d.createdOn?.toDate(),
+    addressBech32: get(d, 'uid'),
   }));
 
   res.send(result);

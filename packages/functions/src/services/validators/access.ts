@@ -1,5 +1,5 @@
-import { Access, COL, SUB_COL, TransactionAwardType, WenError } from '@soonaverse/interfaces';
-import admin from '../../admin.config';
+import { Access, COL, Nft, SUB_COL, TransactionAwardType, WenError } from '@soonaverse/interfaces';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { throwInvalidArgument } from '../../utils/error.utils';
 
 export const assertHasAccess = async (
@@ -14,34 +14,27 @@ export const assertHasAccess = async (
   }
 
   if (access === Access.MEMBERS_ONLY) {
-    if (
-      !(await admin.firestore().doc(`${COL.SPACE}/${spaceId}/${SUB_COL.MEMBERS}/${member}`).get())
-        .exists
-    ) {
+    if (!(await soonDb().doc(`${COL.SPACE}/${spaceId}/${SUB_COL.MEMBERS}/${member}`).get())) {
       throw throwInvalidArgument(WenError.you_are_not_part_of_space);
     }
   }
 
   if (access === Access.GUARDIANS_ONLY) {
-    if (
-      !(await admin.firestore().doc(`${COL.SPACE}/${spaceId}/${SUB_COL.GUARDIANS}/${member}`).get())
-        .exists
-    ) {
+    if (!(await soonDb().doc(`${COL.SPACE}/${spaceId}/${SUB_COL.GUARDIANS}/${member}`).get())) {
       throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
     }
   }
 
   if (access === Access.MEMBERS_WITH_BADGE) {
     for (const award of accessAwards) {
-      const snapshot = await admin
-        .firestore()
+      const snapshot = await soonDb()
         .collection(COL.TRANSACTION)
         .where('payload.type', '==', TransactionAwardType.BADGE)
         .where('member', '==', member)
         .where('payload.award', '==', award)
         .limit(1)
         .get();
-      if (!snapshot.size) {
+      if (!snapshot.length) {
         throw throwInvalidArgument(WenError.you_dont_have_required_badge);
       }
     }
@@ -49,10 +42,9 @@ export const assertHasAccess = async (
 
   if (access === Access.MEMBERS_WITH_NFT_FROM_COLLECTION) {
     const includedCollections: string[] = [];
-    const snapshot = await admin.firestore().collection(COL.NFT).where('owner', '==', member).get();
-    if (snapshot.size > 0 && accessCollections?.length) {
-      for (const doc of snapshot.docs) {
-        const data = doc.data();
+    const snapshot = await soonDb().collection(COL.NFT).where('owner', '==', member).get<Nft>();
+    if (snapshot.length > 0 && accessCollections?.length) {
+      for (const data of snapshot) {
         if (
           accessCollections.includes(data.collection) &&
           !includedCollections.includes(data.collection)

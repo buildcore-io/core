@@ -1,5 +1,5 @@
 import { COL, SpaceMember, SUB_COL } from '@soonaverse/interfaces';
-import { soonDb } from '../../database/wrapper/soondb';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { getBlockMemberUpdateData } from '../../services/payment/tangle-service/space/SpaceBlockMemberService';
 
 export const blockMemberControl = async (owner: string, params: Record<string, unknown>) => {

@@ -21,7 +21,6 @@ import {
   TransactionUnlockType,
   TransactionValidationType,
   TRANSACTION_MAX_EXPIRY_MS,
-  URL_PATHS,
   WenError,
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
@@ -29,17 +28,15 @@ import dayjs from 'dayjs';
 import Joi from 'joi';
 import bigDecimal from 'js-big-decimal';
 import { get, set } from 'lodash';
-import admin from '../../../admin.config';
-import { FirestoreTransaction } from '../../../database/wrapper/firestore';
-import { ITransaction } from '../../../database/wrapper/interfaces';
-import { soonDb } from '../../../database/wrapper/soondb';
+import { ITransaction } from '../../../firebase/firestore/interfaces';
+import { soonDb } from '../../../firebase/firestore/soondb';
 import { tradeTokenSchema } from '../../../runtime/firebase/token/trading';
 import { SmrWallet } from '../../../services/wallet/SmrWalletService';
 import { WalletService } from '../../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../../utils/address.utils';
 import { packBasicOutput } from '../../../utils/basic-output.utils';
 import { isProdEnv } from '../../../utils/config.utils';
-import { cOn, dateToTimestamp } from '../../../utils/dateTime.utils';
+import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../../utils/error.utils';
 import { assertIpNotBlocked } from '../../../utils/ip.utils';
 import { assertValidationAsync } from '../../../utils/schema.utils';
@@ -82,8 +79,8 @@ export class TangleTokenTradeService {
     await assertValidationAsync(sellMintedTokenSchema, params);
 
     let token = await getTokenBySymbol(params.symbol as string);
-    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token?.uid}`);
-    token = <Token | undefined>(await this.transactionService.transaction.get(tokenDocRef)).data();
+    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token?.uid}`);
+    token = await this.transactionService.get<Token>(tokenDocRef);
     if (!token) {
       throw throwInvalidArgument(WenError.token_does_not_exist);
     }
@@ -96,10 +93,8 @@ export class TangleTokenTradeService {
       await assertValidationAsync(tradeTokenSchema, params);
     }
 
-    // TODO remove later
-    const trans = new FirestoreTransaction(admin.firestore(), this.transactionService.transaction);
     const { tradeOrderTransaction } = await createTokenTradeOrder(
-      trans,
+      this.transactionService.transaction,
       owner,
       token,
       params.type,
@@ -116,8 +111,8 @@ export class TangleTokenTradeService {
     if (params.type === TokenTradeOrderType.SELL && token?.status === TokenStatus.MINTED) {
       set(tradeOrderTransaction, 'payload.amount', tranEntry.amount);
     }
-    this.transactionService.updates.push({
-      ref: admin.firestore().doc(`${COL.TRANSACTION}/${tradeOrderTransaction.uid}`),
+    this.transactionService.push({
+      ref: soonDb().doc(`${COL.TRANSACTION}/${tradeOrderTransaction.uid}`),
       data: tradeOrderTransaction,
       action: 'set',
     });
@@ -199,31 +194,28 @@ export const createTokenTradeOrder = async (
   if (Number(count) > tokensLeftForSale) {
     throw throwInvalidArgument(WenError.no_available_tokens_for_sale);
   }
-  const tradeOrder = cOn(
-    <TokenTradeOrder>{
-      uid: getRandomEthAddress(),
-      owner,
-      token: token.uid,
-      tokenStatus: token.status,
-      type: TokenTradeOrderType.SELL,
-      count: Number(count),
-      price: Number(price),
-      totalDeposit: count,
-      balance: count,
-      fulfilled: 0,
-      status: TokenTradeOrderStatus.ACTIVE,
-      expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS)),
-      sourceNetwork,
-      targetNetwork,
-    },
-    URL_PATHS.TOKEN_MARKET,
-  );
+  const tradeOrder = <TokenTradeOrder>{
+    uid: getRandomEthAddress(),
+    owner,
+    token: token.uid,
+    tokenStatus: token.status,
+    type: TokenTradeOrderType.SELL,
+    count: Number(count),
+    price: Number(price),
+    totalDeposit: count,
+    balance: count,
+    fulfilled: 0,
+    status: TokenTradeOrderStatus.ACTIVE,
+    expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS)),
+    sourceNetwork,
+    targetNetwork,
+  };
 
   return {
     tradeOrderTransaction: undefined,
     tradeOrder,
     distribution: {
-      lockedForSale: admin.firestore.FieldValue.increment(Number(count)),
+      lockedForSale: soonDb().inc(Number(count)),
     },
   };
 };

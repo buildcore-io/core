@@ -1,5 +1,5 @@
 import { COL, SUB_COL } from '@soonaverse/interfaces';
-import { soonDb } from '../../database/wrapper/soondb';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { getCreateSpaceData } from '../../services/payment/tangle-service/space/SpaceCreateService';
 
 export const createSpaceControl = async (owner: string, params: Record<string, unknown>) => {

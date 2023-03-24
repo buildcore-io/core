@@ -7,7 +7,7 @@ import {
   Transaction,
   TransactionType,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails } from '../../src/services/wallet/wallet';
@@ -63,7 +63,7 @@ describe('Transaction trigger spec', () => {
         void: false,
       },
     };
-    await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
+    await soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
     await wait(async () => {
       const balance = await addressBalance(wallet.client, targetAddress.bech32);
       return Number(Object.values(balance.nativeTokens)[0]) === 1;
@@ -82,19 +82,15 @@ describe('Transaction trigger spec', () => {
         void: false,
       },
     };
-    await admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`).create(credit);
+    await soonDb().doc(`${COL.TRANSACTION}/${credit.uid}`).create(credit);
     await wait(async () => {
       const balance = await addressBalance(wallet.client, sourceAddress.bech32);
       return Number(Object.values(balance.nativeTokens)[0]) === 1;
     });
 
     await wait(async () => {
-      billPayment = <Transaction>(
-        (await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()).data()
-      );
-      credit = <Transaction>(
-        (await admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`).get()).data()
-      );
+      billPayment = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get();
+      credit = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${credit.uid}`).get();
       return (
         billPayment.payload?.walletReference?.confirmed &&
         credit.payload?.walletReference?.confirmed

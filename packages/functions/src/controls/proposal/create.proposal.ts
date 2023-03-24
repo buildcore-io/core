@@ -1,5 +1,5 @@
 import { COL, Proposal, SUB_COL } from '@soonaverse/interfaces';
-import { soonDb } from '../../database/wrapper/soondb';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { createProposal } from '../../services/payment/tangle-service/proposal/ProposalCreateService';
 
 export const createProposalControl = async (owner: string, params: Record<string, unknown>) => {

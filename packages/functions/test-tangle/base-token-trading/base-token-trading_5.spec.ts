@@ -1,5 +1,5 @@
 import { COL, MIN_IOTA_AMOUNT, TokenPurchase, TokenTradeOrderType } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -42,12 +42,11 @@ describe('Base token trading', () => {
     );
 
     await wait(async () => {
-      const snap = await admin
-        .firestore()
+      const snap = await soonDb()
         .collection(COL.TOKEN_MARKET)
         .where('owner', '==', helper.seller!.uid)
         .get();
-      return snap.size === 2;
+      return snap.length === 2;
     });
 
     mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
@@ -63,15 +62,14 @@ describe('Base token trading', () => {
       buyOrder.payload.amount,
     );
 
-    const purchaseQuery = admin
-      .firestore()
+    const purchaseQuery = soonDb()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {
       const snap = await purchaseQuery.get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
-    const purchase = <TokenPurchase>(await purchaseQuery.get()).docs[0].data();
+    const purchase = <TokenPurchase>(await purchaseQuery.get())[0];
 
     expect(purchase.count).toBe(MIN_IOTA_AMOUNT);
     expect(purchase.price).toBe(1);

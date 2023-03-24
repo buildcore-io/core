@@ -1,6 +1,6 @@
 import { COL, Member, Network, WenError } from '@soonaverse/interfaces';
 import { isEmpty } from 'lodash';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { validateAddress } from '../../src/runtime/firebase/address';
 import { getAddress } from '../../src/utils/address.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -19,7 +19,7 @@ import {
 
 const waitForAddressValidation = async (id: string, col: COL) => {
   await wait(async () => {
-    const doc = (await admin.firestore().doc(`${col}/${id}`).get()).data();
+    const doc = await soonDb().doc(`${col}/${id}`).get<Record<string, unknown>>();
     return !isEmpty(getAddress(doc, Network.IOTA));
   });
 };
@@ -32,9 +32,9 @@ describe('Address validation test', () => {
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     member = await createMember(walletSpy);
-    await admin.firestore().doc(`${COL.MEMBER}/${member}`).update({ validatedAddress: {} });
+    await soonDb().doc(`${COL.MEMBER}/${member}`).update({ validatedAddress: {} });
     space = (await createSpace(walletSpy, member)).uid;
-    await admin.firestore().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} });
+    await soonDb().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} });
   });
 
   it('Should validate member address', async () => {
@@ -82,22 +82,21 @@ describe('Address validation test', () => {
     await validate();
     await waitForAddressValidation(member, COL.MEMBER);
 
-    const docRef = admin.firestore().doc(`${COL.MEMBER}/${member}`);
-    const memberData = <Member>(await docRef.get()).data();
+    const docRef = soonDb().doc(`${COL.MEMBER}/${member}`);
+    const memberData = <Member>await docRef.get();
     await validate();
     await wait(async () => {
-      const data = <Member>(await docRef.get()).data();
+      const data = <Member>await docRef.get();
       return getAddress(data, Network.IOTA) !== getAddress(memberData, Network.IOTA);
     });
 
-    const updatedMemberData = <Member>(await docRef.get()).data();
+    const updatedMemberData = <Member>await docRef.get();
     expect(updatedMemberData.prevValidatedAddresses?.length).toBe(1);
     expect(updatedMemberData.prevValidatedAddresses![0]).toBe(getAddress(memberData, Network.IOTA));
   });
 
   it('Should throw,space already has valid address', async () => {
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.SPACE}/${space}`)
       .update({ validatedAddress: { [Network.IOTA]: 'someaddress' } });
     mockWalletReturnValue(walletSpy, member, { space });

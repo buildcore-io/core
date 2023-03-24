@@ -5,10 +5,11 @@ import {
   MIN_IOTA_AMOUNT,
   Token,
   TokenStatus,
+  Transaction,
   TransactionCreditType,
   TransactionType,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { importMintedToken } from '../../src/runtime/firebase/token/minting';
 import { getAddress } from '../../src/utils/address.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -41,12 +42,10 @@ describe('Token import', () => {
       {},
     );
 
-    const migratedTokenDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${helper.token.mintingData?.tokenId}`);
-    await wait(async () => (await migratedTokenDocRef.get()).exists);
+    const migratedTokenDocRef = soonDb().doc(`${COL.TOKEN}/${helper.token.mintingData?.tokenId}`);
+    await wait(async () => (await migratedTokenDocRef.get()) !== undefined);
 
-    const migratedToken = <Token>(await migratedTokenDocRef.get()).data();
+    const migratedToken = <Token>await migratedTokenDocRef.get();
 
     expect(migratedToken.createdBy).toBe(helper.guardian.uid);
     expect(migratedToken.uid).toBe(helper.token.mintingData?.tokenId);
@@ -76,17 +75,16 @@ describe('Token import', () => {
     expect(migratedToken.mediaStatus).toBe(MediaStatus.PENDING_UPLOAD);
     expect(migratedToken.tradingDisabled).toBe(true);
 
-    const creditQuery = admin
-      .firestore()
+    const creditQuery = soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.guardian.uid)
       .where('type', '==', TransactionType.CREDIT)
       .where('payload.type', '==', TransactionCreditType.IMPORT_TOKEN);
     await wait(async () => {
-      const snap = await creditQuery.get();
-      return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+      const snap = await creditQuery.get<Transaction>();
+      return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
-    const snap = await creditQuery.get();
-    expect(snap.docs[0].data()?.payload.amount).toBe(2 * MIN_IOTA_AMOUNT);
+    const snap = await creditQuery.get<Transaction>();
+    expect(snap[0]?.payload.amount).toBe(2 * MIN_IOTA_AMOUNT);
   });
 });

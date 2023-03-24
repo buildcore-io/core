@@ -13,7 +13,7 @@ import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { packBasicOutput } from '../../../../../utils/basic-output.utils';
 import { isProdEnv } from '../../../../../utils/config.utils';
-import { dateToTimestamp, serverTime } from '../../../../../utils/dateTime.utils';
+import { dateToTimestamp } from '../../../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../../../utils/wallet.utils';
 import { SmrWallet } from '../../../../wallet/SmrWalletService';
 import { WalletService } from '../../../../wallet/wallet';
@@ -64,7 +64,7 @@ export const createVoteTransactionOrder = async (
 
 const getExpiresOn = (proposal: Proposal) => {
   const endDate = dayjs(proposal.settings.endDate.toDate());
-  const expiresOn = dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
+  const expiresOn = dayjs().add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
   if (expiresOn.isAfter(endDate)) {
     return endDate;
   }

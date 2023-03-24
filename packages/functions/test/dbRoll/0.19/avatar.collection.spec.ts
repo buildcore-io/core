@@ -10,15 +10,16 @@ import {
   AVATAR_COLLECTION_TEST_CONFIG,
   createAvatarCollection,
 } from '../../../scripts/dbUpgrades/0.19/avatar.roll_1';
-import admin from '../../../src/admin.config';
+import { soonApp } from '../../../src/firebase/app/soonApp';
+import { soonDb } from '../../../src/firebase/firestore/soondb';
 
 describe('Create avatar collection', () => {
   it('Should create avatar collection', async () => {
-    await createAvatarCollection(admin.app());
+    await createAvatarCollection(soonApp());
 
     const config = AVATAR_COLLECTION_TEST_CONFIG;
-    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${config.collection}`);
-    const collection = <Collection>(await collectionDocRef.get()).data();
+    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${config.collection}`);
+    const collection = <Collection>await collectionDocRef.get();
     expect(collection.createdOn).toBeDefined();
     expect(collection.updatedOn).toBeDefined();
     expect(collection.uid).toBe(AVATAR_COLLECTION_TEST_CONFIG.collection);

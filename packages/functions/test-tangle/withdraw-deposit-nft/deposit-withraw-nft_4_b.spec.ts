@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { COL, Nft, NftStatus, WenError } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { updateMember } from '../../src/runtime/firebase/member';
 import { withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';
@@ -34,8 +34,8 @@ describe('Collection minting', () => {
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, { nft: helper.nft!.uid });
     await testEnv.wrap(withdrawNft)({});
 
-    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${helper.nft?.uid}`);
-    const nft = <Nft>(await nftDocRef.get()).data();
+    const nftDocRef = soonDb().doc(`${COL.NFT}/${helper.nft?.uid}`);
+    const nft = <Nft>await nftDocRef.get();
     expect(nft.status).toBe(NftStatus.WITHDRAWN);
   });
 });

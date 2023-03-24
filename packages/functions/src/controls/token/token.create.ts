@@ -8,7 +8,7 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import { merge } from 'lodash';
-import { soonDb } from '../../database/wrapper/soondb';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { hasStakedSoonTokens } from '../../services/stake.service';
 import { assertSpaceHasValidAddress } from '../../utils/address.utils';
 import { isProdEnv } from '../../utils/config.utils';

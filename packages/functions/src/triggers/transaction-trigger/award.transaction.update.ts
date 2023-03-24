@@ -1,8 +1,7 @@
-import { TransactionHelper } from '@iota/iota.js-next';
+import { ITransactionPayload, TransactionHelper } from '@iota/iota.js-next';
 import { COL, Transaction, TransactionAwardType, TransactionType } from '@soonaverse/interfaces';
-import admin, { inc } from '../../admin.config';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { indexToString } from '../../utils/block.utils';
-import { cOn, uOn } from '../../utils/dateTime.utils';
 import { getTransactionPayloadHex } from '../../utils/smr.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -25,16 +24,16 @@ export const onAwardUpdate = async (transaction: Transaction) => {
 
 const onAliasMinted = async (transaction: Transaction) => {
   const path = transaction.payload.walletReference.milestoneTransactionPath;
-  const milestoneTransaction = (await admin.firestore().doc(path).get()).data()!;
-  const aliasOutputId = getTransactionPayloadHex(milestoneTransaction.payload) + indexToString(0);
+  const milestoneTransaction = (await soonDb().doc(path).get<Record<string, unknown>>())!;
+  const aliasOutputId =
+    getTransactionPayloadHex(milestoneTransaction.payload as ITransactionPayload) +
+    indexToString(0);
 
-  const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${transaction.payload.award}`);
-  await awardDocRef.update(
-    uOn({
-      aliasBlockId: milestoneTransaction.blockId,
-      aliasId: TransactionHelper.resolveIdFromOutputId(aliasOutputId),
-    }),
-  );
+  const awardDocRef = soonDb().doc(`${COL.AWARD}/${transaction.payload.award}`);
+  await awardDocRef.update({
+    aliasBlockId: milestoneTransaction.blockId,
+    aliasId: TransactionHelper.resolveIdFromOutputId(aliasOutputId),
+  });
 
   const order = <Transaction>{
     type: TransactionType.AWARD,
@@ -48,30 +47,27 @@ const onAliasMinted = async (transaction: Transaction) => {
       award: transaction.payload.award,
     },
   };
-  await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(cOn(order));
+  await soonDb().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
 };
 
 const onCollectionMinted = async (transaction: Transaction) => {
   const path = transaction.payload.walletReference.milestoneTransactionPath;
-  const milestoneTransaction = (await admin.firestore().doc(path).get()).data()!;
+  const milestoneTransaction = (await soonDb().doc(path).get<Record<string, unknown>>())!;
   const collectionOutputId =
-    getTransactionPayloadHex(milestoneTransaction.payload) + indexToString(1);
+    getTransactionPayloadHex(milestoneTransaction.payload as ITransactionPayload) +
+    indexToString(1);
 
-  await admin
-    .firestore()
+  await soonDb()
     .doc(`${COL.AWARD}/${transaction.payload.award}`)
-    .update(
-      uOn({
-        collectionBlockId: milestoneTransaction.blockId,
-        collectionId: TransactionHelper.resolveIdFromOutputId(collectionOutputId),
-        approved: true,
-        rejected: false,
-      }),
-    );
+    .update({
+      collectionBlockId: milestoneTransaction.blockId,
+      collectionId: TransactionHelper.resolveIdFromOutputId(collectionOutputId),
+      approved: true,
+      rejected: false,
+    });
 };
 
 const onBadgeMinted = async (transaction: Transaction) =>
-  admin
-    .firestore()
+  soonDb()
     .doc(`${COL.AWARD}/${transaction.payload.award}`)
-    .update(uOn({ badgesMinted: inc(1) }));
+    .update({ badgesMinted: soonDb().inc(1) });

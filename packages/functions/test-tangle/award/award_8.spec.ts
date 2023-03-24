@@ -9,7 +9,7 @@ import {
   TransactionAwardType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -54,9 +54,9 @@ describe('Create award, base', () => {
     const order = await testEnv.wrap(fundAward)({});
     await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount);
 
-    const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${awardId}`);
+    const awardDocRef = soonDb().doc(`${COL.AWARD}/${awardId}`);
     await wait(async () => {
-      const award = <Award>(await awardDocRef.get()).data();
+      const award = <Award>await awardDocRef.get();
       return award.approved && award.funded;
     });
   };
@@ -71,18 +71,17 @@ describe('Create award, base', () => {
     });
     await Promise.all(promises);
 
-    const nttQuery = admin
-      .firestore()
+    const nttQuery = soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
       .where('payload.type', '==', TransactionAwardType.BADGE);
     await wait(async () => {
       const snap = await nttQuery.get();
-      return snap.size === 6;
+      return snap.length === 6;
     });
 
-    const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${member}`);
-    const memberData = <Member>(await memberDocRef.get()).data();
+    const memberDocRef = soonDb().doc(`${COL.MEMBER}/${member}`);
+    const memberData = <Member>await memberDocRef.get();
 
     assertMemberSpaceAwardStats(
       memberData,

@@ -5,6 +5,7 @@ import {
   SUB_COL,
   Token,
   TokenAllocation,
+  TokenDistribution,
   TokenDrop,
   TokenDropStatus,
   TokenStatus,
@@ -14,9 +15,12 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../../src/admin.config';
-import { airdropToken, claimAirdroppedToken } from '../../../src/controls/token-airdrop.control';
-import { createToken } from '../../../src/runtime/firebase/token/base';
+import { soonDb } from '../../../src/firebase/firestore/soondb';
+import {
+  airdropToken,
+  claimAirdroppedToken,
+  createToken,
+} from '../../../src/runtime/firebase/token/base';
 import * as wallet from '../../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../../set-up';
 import {
@@ -72,7 +76,7 @@ describe('Claim airdropped token test', () => {
     ];
     mockWalletReturnValue(walletSpy, guardian, dummyTokenData);
     token = await testEnv.wrap(createToken)({});
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true });
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true });
   });
 
   const airdrop = async () => {
@@ -94,26 +98,23 @@ describe('Claim airdropped token test', () => {
     );
     await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
-    const orderTran = <Transaction>(
-      (await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).get()).data()
-    );
+    const orderTran = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${order.uid}`).get();
     expect(orderTran.member).toBe(guardian);
     expect(orderTran.payload.type).toBe(TransactionOrderType.TOKEN_AIRDROP);
 
     await waitAllClaimed(token.uid);
 
-    const paymentsSnap = await admin
-      .firestore()
+    const paymentsSnap = await soonDb()
       .collection(COL.TRANSACTION)
       .where('payload.sourceTransaction', 'array-contains', orderTran.uid)
-      .get();
-    const types = paymentsSnap.docs.map((d) => d.data().type).sort();
+      .get<Transaction>();
+    const types = paymentsSnap.map((d) => d.type).sort();
     expect(types).toEqual([TransactionType.BILL_PAYMENT, TransactionType.PAYMENT]);
 
-    const distirbutionDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian}`);
-    const distribution = (await distirbutionDocRef.get()).data();
+    const distirbutionDocRef = soonDb().doc(
+      `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian}`,
+    );
+    const distribution = await distirbutionDocRef.get<TokenDistribution>();
     expect(distribution?.tokenClaimed).toBe(450);
     expect(distribution?.tokenOwned).toBe(450);
 
@@ -134,30 +135,27 @@ describe('Claim airdropped token test', () => {
     );
     await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
-    const orderTran = <Transaction>(
-      (await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).get()).data()
-    );
+    const orderTran = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${order.uid}`).get();
     expect(orderTran.member).toBe(guardian);
     expect(orderTran.payload.type).toBe(TransactionOrderType.TOKEN_AIRDROP);
 
     await waitAllClaimed(token.uid);
 
-    const paymentsSnap = await admin
-      .firestore()
+    const paymentsSnap = await soonDb()
       .collection(COL.TRANSACTION)
       .where('payload.sourceTransaction', 'array-contains', orderTran.uid)
-      .get();
-    const types = paymentsSnap.docs.map((d) => d.data().type).sort();
+      .get<Transaction>();
+    const types = paymentsSnap.map((d) => d.type).sort();
     expect(types).toEqual([
       TransactionType.BILL_PAYMENT,
       TransactionType.BILL_PAYMENT,
       TransactionType.PAYMENT,
     ]);
 
-    const distirbutionDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian}`);
-    const distribution = (await distirbutionDocRef.get()).data();
+    const distirbutionDocRef = soonDb().doc(
+      `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian}`,
+    );
+    const distribution = await distirbutionDocRef.get<TokenDistribution>();
     expect(distribution?.tokenClaimed).toBe(900);
     expect(distribution?.tokenOwned).toBe(900);
 
@@ -184,25 +182,22 @@ describe('Claim airdropped token test', () => {
     );
     await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
-    const orderTran = <Transaction>(
-      (await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).get()).data()
-    );
+    const orderTran = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${order.uid}`).get();
     expect(orderTran.member).toBe(guardian);
     expect(orderTran.payload.type).toBe(TransactionOrderType.TOKEN_AIRDROP);
     await waitAllClaimed(token.uid, 1);
 
-    const paymentsSnap = await admin
-      .firestore()
+    const paymentsSnap = await soonDb()
       .collection(COL.TRANSACTION)
       .where('payload.sourceTransaction', 'array-contains', orderTran.uid)
-      .get();
-    const types = paymentsSnap.docs.map((d) => d.data().type).sort();
+      .get<Transaction>();
+    const types = paymentsSnap.map((d) => d.type).sort();
     expect(types).toEqual([TransactionType.BILL_PAYMENT, TransactionType.PAYMENT]);
 
-    const distirbutionDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian}`);
-    const distribution = (await distirbutionDocRef.get()).data();
+    const distirbutionDocRef = soonDb().doc(
+      `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian}`,
+    );
+    const distribution = await distirbutionDocRef.get<TokenDistribution>();
     expect(distribution?.tokenClaimed).toBe(450);
     expect(distribution?.tokenOwned).toBe(450);
   });
@@ -224,31 +219,29 @@ describe('Claim airdropped token test', () => {
     await Promise.all(promises);
     await waitAllClaimed(token.uid);
 
-    const distirbutionDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian}`);
-    const distribution = (await distirbutionDocRef.get()).data();
+    const distirbutionDocRef = soonDb().doc(
+      `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian}`,
+    );
+    const distribution = await distirbutionDocRef.get<TokenDistribution>();
     expect(distribution?.tokenClaimed).toBe(450);
     expect(distribution?.tokenOwned).toBe(450);
 
-    const creditSnap = await admin
-      .firestore()
+    const creditSnap = await soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', guardian)
       .where('type', '==', TransactionType.CREDIT)
       .where('payload.token', '==', token.uid)
       .get();
-    expect(creditSnap.size).toBe(2);
+    expect(creditSnap.length).toBe(2);
 
-    const billPaymentSnap = await admin
-      .firestore()
+    const billPaymentSnap = await soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', guardian)
       .where('type', '==', TransactionType.BILL_PAYMENT)
       .where('payload.token', '==', token.uid)
-      .get();
-    expect(billPaymentSnap.size).toBe(1);
-    const billPayment = billPaymentSnap.docs[0].data()!;
+      .get<Transaction>();
+    expect(billPaymentSnap.length).toBe(1);
+    const billPayment = billPaymentSnap[0]!;
     expect(billPayment.payload.token).toBe(token.uid);
     expect(billPayment.payload.tokenSymbol).toBe(token.symbol);
     expect(billPayment.payload.type).toBe(BillPaymentType.PRE_MINTED_AIRDROP_CLAIM);
@@ -256,7 +249,7 @@ describe('Claim airdropped token test', () => {
 
   it('Should throw, token is minted', async () => {
     mockWalletReturnValue(walletSpy, guardian, { token: token.uid });
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.MINTED });
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.MINTED });
     await expectThrow(testEnv.wrap(claimAirdroppedToken)({}), WenError.token_in_invalid_status.key);
   });
 
@@ -282,9 +275,7 @@ describe('Claim airdropped token test', () => {
     );
     await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
-    const orderTran = <Transaction>(
-      (await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).get()).data()
-    );
+    const orderTran = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${order.uid}`).get();
     expect(orderTran.member).toBe(guardian);
     expect(orderTran.payload.type).toBe(TransactionOrderType.TOKEN_AIRDROP);
     await waitAllClaimed(token.uid, 700);
@@ -292,6 +283,6 @@ describe('Claim airdropped token test', () => {
 });
 
 const getAirdropsForToken = async (token: string) => {
-  const snap = await admin.firestore().collection(COL.AIRDROP).where('token', '==', token).get();
-  return snap.docs.map((d) => d.data() as TokenDrop);
+  const snap = await soonDb().collection(COL.AIRDROP).where('token', '==', token).get();
+  return snap.map((d) => d as TokenDrop);
 };

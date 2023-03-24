@@ -38,7 +38,6 @@ module.exports = {
     'use-isnan': 2,
     '@typescript-eslint/await-thenable': 2,
     '@typescript-eslint/no-misused-new': 2,
-    'keyword-spacing': 2,
     'space-before-blocks': 2,
     '@typescript-eslint/type-annotation-spacing': 2,
     'comma-spacing': 2,

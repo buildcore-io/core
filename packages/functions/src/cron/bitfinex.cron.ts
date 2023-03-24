@@ -1,7 +1,6 @@
 import { COL, TICKERS } from '@soonaverse/interfaces';
 import axios from 'axios';
-import admin from '../admin.config';
-import { uOn } from '../utils/dateTime.utils';
+import { soonDb } from '../firebase/firestore/soondb';
 
 export const getLatestBitfinexPricesCron = async () => {
   try {
@@ -15,29 +14,17 @@ export const getLatestBitfinexPricesCron = async () => {
     ).data;
 
     if (data[0][1] > 0) {
-      await admin
-        .firestore()
-        .collection(COL.TICKER)
-        .doc(TICKERS.SMRUSD)
-        .set(
-          uOn({
-            uid: TICKERS.SMRUSD,
-            price: data[0][1],
-          }),
-        );
+      await soonDb().collection(COL.TICKER).doc(TICKERS.SMRUSD).set({
+        uid: TICKERS.SMRUSD,
+        price: data[0][1],
+      });
     }
 
     if (data[1][1] > 0) {
-      await admin
-        .firestore()
-        .collection(COL.TICKER)
-        .doc(TICKERS.IOTAUSD)
-        .set(
-          uOn({
-            uid: TICKERS.IOTAUSD,
-            price: data[1][1],
-          }),
-        );
+      await soonDb().collection(COL.TICKER).doc(TICKERS.IOTAUSD).set({
+        uid: TICKERS.IOTAUSD,
+        price: data[1][1],
+      });
     }
   } catch (e) {
     console.error('Failed to get latest prices. Try again in 5 minutes', e);

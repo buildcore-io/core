@@ -1,8 +1,8 @@
-import { COL, MilestoneTransaction, Network, SUB_COL } from '@soonaverse/interfaces';
+import { COL, Network, SUB_COL } from '@soonaverse/interfaces';
+import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
-import admin from '../../admin.config';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { ProcessingService } from '../../services/payment/payment-processing';
-import { serverTime, uOn } from '../../utils/dateTime.utils';
 import { confirmTransaction, milestoneTriggerConfig } from './common';
 
 const handleMilestoneTransactionWrite =
@@ -10,19 +10,20 @@ const handleMilestoneTransactionWrite =
     if (!change.after.data()) {
       return;
     }
-    return admin.firestore().runTransaction(async (transaction) => {
-      const doc = await transaction.get(change.after.ref);
-      const milestoneTransaction = doc.data();
+    return soonDb().runTransaction(async (transaction) => {
+      const docRef = soonDb().doc(change.after.ref.path);
+      const milestoneTransaction = await transaction.get<Record<string, unknown>>(docRef);
       if (!milestoneTransaction || milestoneTransaction.processed) {
         return;
       }
-      await confirmTransaction(doc, network);
+      await confirmTransaction(change.after.ref.path, milestoneTransaction, network);
 
       const service = new ProcessingService(transaction);
-      await service.processMilestoneTransactions(milestoneTransaction as MilestoneTransaction);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await service.processMilestoneTransactions(milestoneTransaction as any);
       service.submit();
 
-      transaction.update(change.after.ref, uOn({ processed: true, processedOn: serverTime() }));
+      transaction.update(docRef, { processed: true, processedOn: dayjs().toDate() });
     });
   };
 

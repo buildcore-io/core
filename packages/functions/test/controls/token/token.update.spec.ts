@@ -7,7 +7,7 @@ import {
   WenError,
   WEN_FUNC,
 } from '@soonaverse/interfaces';
-import admin from '../../../src/admin.config';
+import { soonDb } from '../../../src/firebase/firestore/soondb';
 import { createToken, updateToken } from '../../../src/runtime/firebase/token/base';
 import * as wallet from '../../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../../set-up';
@@ -111,28 +111,19 @@ describe('Token controller: ' + WEN_FUNC.uToken, () => {
     const updateData = { ...data, name: token.name, uid: token.uid, title: 'title2' };
     mockWalletReturnValue(walletSpy, memberAddress, updateData);
 
-    await admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}`)
-      .update({ status: TokenStatus.CANCEL_SALE });
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.CANCEL_SALE });
     await expectThrow(testEnv.wrap(updateToken)({}), WenError.token_in_invalid_status.key);
 
-    await admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}`)
-      .update({ status: TokenStatus.PRE_MINTED });
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.PRE_MINTED });
     await expectThrow(testEnv.wrap(updateToken)({}), WenError.token_in_invalid_status.key);
 
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.MINTED });
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.MINTED });
     await expectThrow(testEnv.wrap(updateToken)({}), WenError.token_in_invalid_status.key);
 
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.BASE });
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.BASE });
     await expectThrow(testEnv.wrap(updateToken)({}), WenError.token_in_invalid_status.key);
 
-    await admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}`)
-      .update({ status: TokenStatus.AVAILABLE });
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.AVAILABLE });
     const result = await testEnv.wrap(updateToken)({});
     expect(result.name).toBe(token.name);
   });

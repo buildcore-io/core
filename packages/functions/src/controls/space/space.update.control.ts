@@ -18,9 +18,8 @@ import {
 import dayjs from 'dayjs';
 import Joi from 'joi';
 import { get, startCase } from 'lodash';
-import admin from '../../admin.config';
-import { soonDb } from '../../database/wrapper/soondb';
-import { dateToTimestamp } from '../../utils/dateTime.utils';
+import { soonDb } from '../../firebase/firestore/soondb';
+import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { pSchema } from '../../utils/schema.utils';
 import { assertIsGuardian, getTokenForSpace } from '../../utils/token.utils';
@@ -48,13 +47,12 @@ export const updateSpaceControl =
 
     await assertIsGuardian(space.uid, owner);
 
-    const ongoingProposalSnap = await admin
-      .firestore()
+    const ongoingProposalSnap = await soonDb()
       .collection(COL.PROPOSAL)
       .where('settings.spaceUpdateData.uid', '==', space.uid)
-      .where('settings.endDate', '>=', dateToTimestamp(dayjs()))
+      .where('settings.endDate', '>=', serverTime())
       .get();
-    if (ongoingProposalSnap.size) {
+    if (ongoingProposalSnap.length) {
       throw throwInvalidArgument(WenError.ongoing_proposal);
     }
 
@@ -102,10 +100,7 @@ export const updateSpaceControl =
     });
     await Promise.all(memberPromisses);
 
-    await admin
-      .firestore()
-      .doc(`${COL.TRANSACTION}/${voteTransaction.uid}`)
-      .create(voteTransaction);
+    await soonDb().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`).create(voteTransaction);
 
     await proposalDocRef.create(proposal);
 

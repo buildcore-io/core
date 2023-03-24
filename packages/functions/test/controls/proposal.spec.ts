@@ -12,7 +12,7 @@ import {
   WEN_FUNC,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -75,7 +75,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
     body = dummyBody(space.uid);
 
     const tokenId = wallet.getRandomEthAddress();
-    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).create({
+    await soonDb().doc(`${COL.TOKEN}/${tokenId}`).create({
       uid: tokenId,
       space: space.uid,
       status: TokenStatus.MINTED,
@@ -257,10 +257,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     const award = await testEnv.wrap(createAward)({});
     expect(award?.uid).toBeDefined();
 
-    await admin
-      .firestore()
-      .doc(`${COL.AWARD}/${award.uid}`)
-      .update({ approved: true, address: '' });
+    await soonDb().doc(`${COL.AWARD}/${award.uid}`).update({ approved: true, address: '' });
 
     // Participate
     mockWalletReturnValue(walletSpy, address, { uid: award?.uid });
@@ -306,8 +303,8 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     expect(vResult?.payload?.weight).toEqual(1);
     await vote(memberId, proposal, [2]);
 
-    const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
-    proposal = <Proposal>(await proposalDocRef.get()).data();
+    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+    proposal = <Proposal>await proposalDocRef.get();
 
     expect(proposal.results.answers[2]).toBe(1);
   });
@@ -323,8 +320,8 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     expect(vResult?.payload?.weight).toEqual(1);
     await vote(memberId, proposal, [1]);
 
-    const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
-    proposal = <Proposal>(await proposalDocRef.get()).data();
+    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+    proposal = <Proposal>await proposalDocRef.get();
 
     expect(proposal.results.answers[2]).toBe(0);
     expect(proposal.results.answers[1]).toBe(1);
@@ -473,6 +470,6 @@ export const saveBaseToken = async (space: string, guardian: string) => {
       network: Network.RMS,
     },
   };
-  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token as Token;
 };

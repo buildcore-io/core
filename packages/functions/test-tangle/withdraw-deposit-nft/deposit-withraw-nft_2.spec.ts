@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, TransactionType } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { COL, Transaction, TransactionType } from '@soonaverse/interfaces';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { depositNft } from '../../src/runtime/firebase/nft/index';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -40,13 +40,12 @@ describe('Collection minting', () => {
     await Promise.all(promises);
 
     await wait(async () => {
-      const snap = await admin
-        .firestore()
+      const snap = await soonDb()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT_NFT)
         .where('member', '==', helper.guardian)
-        .get();
-      return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+        .get<Transaction>();
+      return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
   });
 });

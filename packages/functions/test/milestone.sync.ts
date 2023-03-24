@@ -6,11 +6,9 @@ import dayjs from 'dayjs';
 import * as adminPackage from 'firebase-admin';
 
 import { last } from 'lodash';
-
-import admin from '../src/admin.config';
+import { soonDb } from '../src/firebase/firestore/soondb';
 
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
-import { dateToTimestamp } from '../src/utils/dateTime.utils';
 
 import { getWallet, projectId } from './set-up';
 
@@ -35,9 +33,8 @@ const syncMilestones = async (col: COL) => {
       .startAfter(lastDoc)
       .limit(500)
       .get();
-
-    const batch = admin.firestore().batch();
-    snap.docs.forEach((doc) => batch.create(admin.firestore().doc(doc.ref.path), doc.data()));
+    const batch = soonDb().batch();
+    snap.docs.forEach((doc) => batch.create(soonDb().doc(doc.ref.path), doc.data()));
     await batch.commit();
 
     lastDoc = last(snap.docs) || lastDoc;
@@ -52,7 +49,7 @@ const syncTransactions = async () => {
   onlineDb
     .collectionGroup(SUB_COL.TRANSACTIONS)
     .where('processed', '==', false)
-    .where('createdOn', '>=', dateToTimestamp(dayjs().toDate()))
+    .where('createdOn', '>=', dayjs().toDate())
     .limit(1000)
     .onSnapshot(
       async (snap) => {
@@ -70,7 +67,7 @@ const syncTransactions = async () => {
 
         const promises = docs.map(async (doc) => {
           try {
-            await admin.firestore().doc(doc!.ref.path).create(doc!.data());
+            await soonDb().doc(doc!.ref.path).create(doc!.data());
           } catch (error) {}
         });
 
@@ -92,8 +89,8 @@ const getAddesses = async (doc: any, network: Network, wallet: SmrWallet) => {
 
 const addressInDb = async (addresses: string[]) => {
   for (const address of addresses) {
-    const doc = await admin.firestore().collection(COL.MNEMONIC).doc(address).get();
-    if (doc.exists) {
+    const doc = await soonDb().collection(COL.MNEMONIC).doc(address).get();
+    if (doc) {
       return true;
     }
   }

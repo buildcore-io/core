@@ -10,8 +10,7 @@ import {
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { last } from 'lodash';
-import admin from '../admin.config';
-import { LastDocType } from './common.utils';
+import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
 import { throwInvalidArgument } from './error.utils';
 
 export const BIG_DECIMAL_PRECISION = 1000;
@@ -20,23 +19,21 @@ export const tokenOrderTransactionDocId = (member: string, token: Token) =>
   member + '_' + token.uid;
 
 export const allPaymentsQuery = (member: string, token: string) =>
-  admin
-    .firestore()
+  soonDb()
     .collection(COL.TRANSACTION)
     .where('member', '==', member)
     .where('payload.token', '==', token);
 
 export const orderDocRef = (member: string, token: Token) =>
-  admin.firestore().doc(`${COL.TRANSACTION}/${tokenOrderTransactionDocId(member, token)}`);
+  soonDb().doc(`${COL.TRANSACTION}/${tokenOrderTransactionDocId(member, token)}`);
 
-export const memberDocRef = (member: string) => admin.firestore().doc(`${COL.MEMBER}/${member}`);
+export const memberDocRef = (member: string) => soonDb().doc(`${COL.MEMBER}/${member}`);
 
 export const assertIsGuardian = async (space: string, member: string) => {
-  const guardianDoc = await admin
-    .firestore()
+  const guardianDoc = await soonDb()
     .doc(`${COL.SPACE}/${space}/${SUB_COL.GUARDIANS}/${member}`)
     .get();
-  if (!guardianDoc.exists) {
+  if (!guardianDoc) {
     throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
   }
 };
@@ -89,93 +86,78 @@ export const tokenIsInCoolDownPeriod = (token: Token) =>
   dayjs().isBefore(dayjs(token.coolDownEnd.toDate()));
 
 export const getSoonToken = async () => {
-  const snap = await admin
-    .firestore()
-    .collection(COL.TOKEN)
-    .where('symbol', '==', 'SOON')
-    .limit(1)
-    .get();
-  return <Token>snap.docs[0]?.data();
+  const snap = await soonDb().collection(COL.TOKEN).where('symbol', '==', 'SOON').limit(1).get();
+  return <Token>snap[0];
 };
 
 export const getTokenForSpace = async (space: string) => {
-  let snap = await admin
-    .firestore()
+  let snap = await soonDb()
     .collection(COL.TOKEN)
     .where('space', '==', space)
     .where('approved', '==', true)
     .limit(1)
     .get();
-  if (snap.size) {
-    return <Token>snap.docs[0].data();
+  if (snap.length) {
+    return <Token>snap[0];
   }
-  snap = await admin
-    .firestore()
+  snap = await soonDb()
     .collection(COL.TOKEN)
     .where('space', '==', space)
     .where('public', '==', true)
     .limit(1)
     .get();
-  return <Token | undefined>snap.docs[0]?.data();
+  return <Token | undefined>snap[0];
 };
 
-export const getUnclaimedDrops = async (token: string, member: string) => {
-  const snap = await admin
-    .firestore()
+export const getUnclaimedDrops = async (token: string, member: string) =>
+  soonDb()
     .collection(COL.AIRDROP)
     .where('token', '==', token)
     .where('member', '==', member)
     .where('status', '==', TokenDropStatus.UNCLAIMED)
-    .get();
-  return snap.docs.map((d) => d.data() as TokenDrop);
-};
+    .get<TokenDrop>();
 
 export const getUnclaimedAirdropTotalValue = async (token: string) => {
   let count = 0;
-  let lastDoc: LastDocType | undefined = undefined;
+  let lastDocId = '';
   do {
-    let query = admin
-      .firestore()
+    const lastDoc = await getSnapshot(COL.AIRDROP, lastDocId);
+    const snap = await soonDb()
       .collection(COL.AIRDROP)
       .where('token', '==', token)
-      .where('status', '==', TokenDropStatus.UNCLAIMED);
-    if (lastDoc) {
-      query = query.startAfter(lastDoc);
-    }
-    const snap = await query.get();
-    lastDoc = last(snap.docs);
+      .where('status', '==', TokenDropStatus.UNCLAIMED)
+      .startAfter(lastDoc)
+      .get<TokenDrop>();
+    lastDocId = last(snap)?.uid || '';
 
-    count += snap.docs.reduce((acc, act) => acc + (<TokenDrop>act.data()).count, 0);
-  } while (lastDoc);
+    count += snap.reduce((acc, act) => acc + act.count, 0);
+  } while (lastDocId);
   return count;
 };
 
 export const getTokenBySymbol = async (symbol: string) => {
-  let snap = await admin
-    .firestore()
+  let snap = await soonDb()
     .collection(COL.TOKEN)
     .where('symbol', '==', symbol.toUpperCase())
     .where('approved', '==', true)
     .limit(1)
     .get();
-  if (snap.size) {
-    return <Token>snap.docs[0].data();
+  if (snap.length) {
+    return <Token>snap[0];
   }
-  snap = await admin
-    .firestore()
+  snap = await soonDb()
     .collection(COL.TOKEN)
     .where('symbol', '==', symbol.toUpperCase())
     .where('public', '==', true)
     .limit(1)
     .get();
-  return <Token | undefined>snap.docs[0]?.data();
+  return <Token | undefined>snap[0];
 };
 
 export const getTokenByMintId = async (tokenId: string) => {
-  const snap = await admin
-    .firestore()
+  const snap = await soonDb()
     .collection(COL.TOKEN)
     .where('mintingData.tokenId', '==', tokenId)
     .get();
-  return <Token | undefined>snap.docs[0]?.data();
+  return <Token | undefined>snap[0];
 };

@@ -7,7 +7,7 @@ import {
   WEN_FUNC,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../../src/admin.config';
+import { soonDb } from '../../../src/firebase/firestore/soondb';
 import { createToken, setTokenAvailableForSale } from '../../../src/runtime/firebase/token/base';
 import { dateToTimestamp } from '../../../src/utils/dateTime.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
@@ -52,21 +52,18 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
     space = await createSpace(walletSpy, memberAddress);
     mockWalletReturnValue(walletSpy, memberAddress, dummyToken(space.uid));
     token = await testEnv.wrap(createToken)({});
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true });
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true });
   });
 
   it('Should throw, not approved', async () => {
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false });
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false });
     const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };
     mockWalletReturnValue(walletSpy, memberAddress, updateData);
     await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.token_not_approved.key);
   });
 
   it('Should throw, rejected', async () => {
-    await admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}`)
-      .update({ approved: true, rejected: true });
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true, rejected: true });
     const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };
     mockWalletReturnValue(walletSpy, memberAddress, updateData);
     await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.token_not_approved.key);
@@ -91,8 +88,7 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
   });
 
   it('Should set public availability', async () => {
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.TOKEN}/${token.uid}`)
       .update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] });
     const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };
@@ -113,8 +109,7 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
   });
 
   it('Should set public availability', async () => {
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.TOKEN}/${token.uid}`)
       .update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] });
     const updateData = {
@@ -140,8 +135,7 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
   });
 
   it('Should throw, can not set public availability twice', async () => {
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.TOKEN}/${token.uid}`)
       .update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] });
     mockWalletReturnValue(walletSpy, memberAddress, {
@@ -163,7 +157,7 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
   });
 
   it('Should set no cool down length', async () => {
-    const docRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`);
+    const docRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
     await docRef.update({
       allocations: [{ title: 'public', percentage: 100, isPublicSale: true }],
     });

@@ -7,7 +7,7 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import { isEmpty, isEqual } from 'lodash';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { IotaWallet } from '../../src/services/wallet/IotaWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
@@ -45,7 +45,7 @@ describe('Transaction trigger spec', () => {
         sourceAddress.bech32,
         targetAddress.bech32,
       );
-      await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
+      await soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
 
       await wait(async () => {
         const mnemonic = await MnemonicService.getData(sourceAddress.bech32);
@@ -55,7 +55,7 @@ describe('Transaction trigger spec', () => {
       await wait(async () => {
         const mnemonic = await MnemonicService.getData(sourceAddress.bech32);
         const payment = <Transaction>(
-          (await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()).data()
+          await soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()
         );
         return (
           isEmpty(mnemonic.consumedOutputIds) &&

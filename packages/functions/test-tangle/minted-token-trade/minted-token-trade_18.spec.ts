@@ -11,7 +11,7 @@ import {
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
@@ -45,15 +45,15 @@ describe('Minted toke trading tangle request', () => {
         },
       },
     });
-    await admin.firestore().doc(`${COL.MNEMONIC}/${tmp.bech32}`).update({ consumedOutputIds: [] });
+    await soonDb().doc(`${COL.MNEMONIC}/${tmp.bech32}`).update({ consumedOutputIds: [] });
 
-    const query = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', tmp.bech32);
+    const query = soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', tmp.bech32);
     await wait(async () => {
       const snap = await query.get();
-      return snap.size > 0;
+      return snap.length > 0;
     });
     const snap = await query.get();
-    const buyOrder = <TokenTradeOrder>snap.docs[0].data();
+    const buyOrder = <TokenTradeOrder>snap[0];
     expect(buyOrder.owner).toBe(tmp.bech32);
     expect(buyOrder.price).toBe(MIN_IOTA_AMOUNT);
     expect(buyOrder.count).toBe(5);
@@ -94,16 +94,13 @@ describe('Minted toke trading tangle request', () => {
             : undefined,
         },
       );
-      const query = admin
-        .firestore()
-        .collection(COL.TOKEN_MARKET)
-        .where('owner', '==', helper.seller);
+      const query = soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', helper.seller);
       await wait(async () => {
         const snap = await query.get();
-        return snap.size > 0;
+        return snap.length > 0;
       });
       const snap = await query.get();
-      const sellOrder = <TokenTradeOrder>snap.docs[0].data();
+      const sellOrder = <TokenTradeOrder>snap[0];
       expect(sellOrder.owner).toBe(helper.seller!);
       expect(sellOrder.price).toBe(MIN_IOTA_AMOUNT);
       expect(sellOrder.count).toBe(5);
@@ -120,10 +117,7 @@ describe('Minted toke trading tangle request', () => {
   );
 
   it('Should throw, trading disabled', async () => {
-    await admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${helper.token!.uid}`)
-      .update({ tradingDisabled: true });
+    await soonDb().doc(`${COL.TOKEN}/${helper.token!.uid}`).update({ tradingDisabled: true });
     const tmp = await helper.walletService!.getNewIotaAddressDetails();
     await requestFundsFromFaucet(Network.RMS, tmp.bech32, 10 * MIN_IOTA_AMOUNT);
 
@@ -137,20 +131,19 @@ describe('Minted toke trading tangle request', () => {
         },
       },
     });
-    await admin.firestore().doc(`${COL.MNEMONIC}/${tmp.bech32}`).update({ consumedOutputIds: [] });
+    await soonDb().doc(`${COL.MNEMONIC}/${tmp.bech32}`).update({ consumedOutputIds: [] });
 
-    const creditQuery = admin
-      .firestore()
+    const creditQuery = soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST)
       .where('member', '==', tmp.bech32);
     await wait(async () => {
       const snap = await creditQuery.get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
 
     const snap = await creditQuery.get();
-    const credit = <Transaction>snap.docs[0].data();
+    const credit = <Transaction>snap[0];
     expect(credit.payload.response.code).toBe(2111);
   });
 });

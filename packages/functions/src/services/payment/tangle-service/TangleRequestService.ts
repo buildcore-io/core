@@ -7,14 +7,12 @@ import {
   TangleRequestType,
   Transaction,
   TransactionOrder,
-  URL_PATHS,
   WenError,
 } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import { get } from 'lodash';
-import admin from '../../../admin.config';
+import { soonDb } from '../../../firebase/firestore/soondb';
 import { getOutputMetadata } from '../../../utils/basic-output.utils';
-import { cOn } from '../../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../../utils/error.utils';
 import { getRandomNonce } from '../../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from '../transaction-service';
@@ -185,22 +183,21 @@ export class TangleRequestService {
   };
 
   private getOwner = async (senderAddress: string, network: Network) => {
-    const snap = await admin
-      .firestore()
+    const snap = await soonDb()
       .collection(COL.MEMBER)
       .where(`validatedAddress.${network}`, '==', senderAddress)
-      .get();
+      .get<Member>();
 
-    if (snap.size > 1) {
+    if (snap.length > 1) {
       throw throwInvalidArgument(WenError.multiple_members_with_same_address);
     }
 
-    if (snap.size === 1) {
-      return snap.docs[0].id;
+    if (snap.length === 1) {
+      return snap[0].uid;
     }
 
-    const docRef = admin.firestore().doc(`${COL.MEMBER}/${senderAddress}`);
-    const member = <Member | undefined>(await docRef.get()).data();
+    const docRef = soonDb().doc(`${COL.MEMBER}/${senderAddress}`);
+    const member = <Member | undefined>await docRef.get();
     if (!member) {
       const memberData = {
         uid: senderAddress,
@@ -209,7 +206,7 @@ export class TangleRequestService {
           [network as string]: senderAddress,
         },
       };
-      await docRef.create(cOn(memberData, URL_PATHS.MEMBER));
+      await docRef.create(memberData);
     }
 
     return senderAddress;

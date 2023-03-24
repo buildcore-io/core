@@ -1,5 +1,5 @@
-import { COL, NftAvailable, NftStatus, WenError, WEN_FUNC } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { COL, Nft, NftAvailable, NftStatus, WenError, WEN_FUNC } from '@soonaverse/interfaces';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { createMember, updateMember } from '../../src/runtime/firebase/member';
 import * as wallet from '../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../../test/set-up';
@@ -78,7 +78,7 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
       status: NftStatus.MINTED,
       available: NftAvailable.UNAVAILABLE,
     };
-    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
+    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
     await nftDocRef.create(nft);
     const updateParams = { avatarNft: nft.uid };
     mockWalletReturnValue(walletSpy, dummyAddress, updateParams);
@@ -86,7 +86,7 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
     expect(uMember.avatarNft).toBe(nft.uid);
     expect(uMember.avatar).toBe(MEDIA);
 
-    let nftData = (await nftDocRef.get()).data();
+    let nftData = await nftDocRef.get<Nft>();
     expect(nftData?.setAsAvatar).toBe(true);
 
     mockWalletReturnValue(walletSpy, dummyAddress, { avatarNft: undefined });
@@ -94,7 +94,7 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
     expect(uMember.avatarNft).toBeNull();
     expect(uMember.avatar).toBeNull();
 
-    nftData = (await nftDocRef.get()).data();
+    nftData = await nftDocRef.get();
     expect(nftData?.setAsAvatar).toBe(false);
   });
 
@@ -103,7 +103,7 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
     await expectThrow(testEnv.wrap(updateMember)({}), WenError.nft_does_not_exists.key);
 
     const nft = { uid: wallet.getRandomEthAddress(), media: MEDIA };
-    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
+    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
 
     await nftDocRef.create(nft);
     mockWalletReturnValue(walletSpy, dummyAddress, { avatarNft: nft.uid });

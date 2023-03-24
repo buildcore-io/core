@@ -7,12 +7,13 @@ import {
   Network,
   Space,
   Token,
+  TokenDrop,
   TokenDropStatus,
   Transaction,
   TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { validateAddress } from '../../src/runtime/firebase/address';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
 import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
@@ -54,9 +55,9 @@ describe('Award', () => {
     const order = await testEnv.wrap(fundAward)({});
     await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount);
 
-    const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${award.uid}`);
+    const awardDocRef = soonDb().doc(`${COL.AWARD}/${award.uid}`);
     await wait(async () => {
-      const award = <Award>(await awardDocRef.get()).data();
+      const award = <Award>await awardDocRef.get();
       return award.approved && award.funded;
     });
 
@@ -88,9 +89,9 @@ describe('Award', () => {
       return response.items.length === 2;
     });
 
-    const airdropQuery = admin.firestore().collection(COL.AIRDROP).where('member', '==', tmp);
-    let airdropSnap = await airdropQuery.get();
-    expect(airdropSnap.size).toBe(2);
+    const airdropQuery = soonDb().collection(COL.AIRDROP).where('member', '==', tmp);
+    let airdropSnap = await airdropQuery.get<TokenDrop>();
+    expect(airdropSnap.length).toBe(2);
 
     mockWalletReturnValue(walletSpy, tmp, { symbol: token.symbol });
     const claimOrder = await testEnv.wrap(claimMintedTokenOrder)({});
@@ -101,9 +102,9 @@ describe('Award', () => {
     );
 
     await wait(async () => {
-      airdropSnap = await airdropQuery.get();
-      const allClaimed = airdropSnap.docs.reduce(
-        (acc, doc) => acc && doc.data().status === TokenDropStatus.CLAIMED,
+      airdropSnap = await airdropQuery.get<TokenDrop>();
+      const allClaimed = airdropSnap.reduce(
+        (acc, doc) => acc && doc.status === TokenDropStatus.CLAIMED,
         true,
       );
       return allClaimed;
@@ -117,12 +118,11 @@ describe('Award', () => {
       );
     });
 
-    const billPaymentQuery = admin
-      .firestore()
+    const billPaymentQuery = soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', tmp)
       .where('type', '==', TransactionType.BILL_PAYMENT);
-    const billPayments = (await billPaymentQuery.get()).docs.map((d) => d.data() as Transaction);
+    const billPayments = (await billPaymentQuery.get()).map((d) => d as Transaction);
     billPayments.forEach((billPayment) => {
       expect(billPayment.payload.token).toBe(token.uid);
       expect(billPayment.payload.tokenSymbol).toBe(token.symbol);

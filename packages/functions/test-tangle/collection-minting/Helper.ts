@@ -21,7 +21,7 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import {
   approveCollection,
   createCollection,
@@ -86,8 +86,7 @@ export class CollectionMintHelper {
     mockWalletReturnValue(this.walletSpy, this.guardian!, nft);
     nft = <Nft>await testEnv.wrap(createNft)({});
 
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.NFT}/${nft.uid}`)
       .update({ availableFrom: dayjs().subtract(1, 'h').toDate() });
 
@@ -96,7 +95,7 @@ export class CollectionMintHelper {
       nft: nft.uid,
     });
     await testEnv.wrap(orderNft)({});
-    return <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
+    return <Nft>await soonDb().doc(`${COL.NFT}/${nft.uid}`).get();
   };
 
   public createAndOrderNft = async (buyAndAuctionId = false, shouldBid = false) => {
@@ -108,8 +107,7 @@ export class CollectionMintHelper {
     nft = await testEnv.wrap(createNft)({});
 
     if (buyAndAuctionId) {
-      await admin
-        .firestore()
+      await soonDb()
         .doc(`${COL.NFT}/${nft.uid}`)
         .update({ availableFrom: dayjs().subtract(1, 'h').toDate() });
 
@@ -127,8 +125,7 @@ export class CollectionMintHelper {
       mockWalletReturnValue(this.walletSpy, this.guardian!, this.dummyAuctionData(nft.uid));
       await testEnv.wrap(setForSaleNft)({});
       await wait(
-        async () =>
-          (await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data()?.available === 3,
+        async () => (await soonDb().doc(`${COL.NFT}/${nft.uid}`).get<Nft>())?.available === 3,
       );
 
       if (shouldBid) {
@@ -141,7 +138,7 @@ export class CollectionMintHelper {
         await milestoneProcessed(bidMilestone.milestone, bidMilestone.tranId);
       }
     }
-    return <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
+    return <Nft>await soonDb().doc(`${COL.NFT}/${nft.uid}`).get();
   };
 
   public mintCollection = async (
@@ -163,13 +160,13 @@ export class CollectionMintHelper {
       collectionMintOrder.payload.targetAddress,
       collectionMintOrder.payload.amount,
     );
-    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${this.collection}`);
+    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${this.collection}`);
     await wait(async () => {
-      const data = <Collection>(await collectionDocRef.get()).data();
+      const data = <Collection>await collectionDocRef.get();
       return data.status === CollectionStatus.MINTED;
     });
 
-    const collectionData = <Collection>(await collectionDocRef.get()).data();
+    const collectionData = <Collection>await collectionDocRef.get();
     expect(collectionData.mintingData?.network).toBe(this.network);
     expect(collectionData.mintingData?.mintedBy).toBe(this.guardian);
     expect(collectionData.mintingData?.mintingOrderId).toBe(collectionMintOrder.uid);
@@ -177,14 +174,13 @@ export class CollectionMintHelper {
     expect(collectionData.mintingData?.nftsToMint).toBe(0);
 
     const ownerChangeTran = (
-      await admin
-        .firestore()
+      await soonDb()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.MINT_COLLECTION)
         .where('payload.type', '==', TransactionMintCollectionType.SEND_ALIAS_TO_GUARDIAN)
         .where('member', '==', this.guardian)
         .get()
-    ).docs.map((d) => <Transaction>d.data());
+    ).map((d) => <Transaction>d);
 
     expect(ownerChangeTran.length).toBe(1);
     expect(ownerChangeTran[0].payload?.walletReference?.confirmed).toBe(true);
@@ -192,14 +188,13 @@ export class CollectionMintHelper {
 
   public lockCollectionConfirmed = async () => {
     const lockTran = (
-      await admin
-        .firestore()
+      await soonDb()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.MINT_COLLECTION)
         .where('payload.type', '==', TransactionMintCollectionType.LOCK_COLLECTION)
         .where('member', '==', this.guardian)
         .get()
-    ).docs.map((d) => <Transaction>d.data());
+    ).map((d) => <Transaction>d);
 
     expect(lockTran.length).toBe(1);
     expect(lockTran[0].payload?.walletReference?.confirmed).toBe(true);

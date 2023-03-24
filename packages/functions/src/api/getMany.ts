@@ -1,4 +1,5 @@
 import {
+  COL,
   GetManyRequest,
   MAX_FIELD_NAME_LENGTH,
   MAX_FIELD_VALUE_LENGTH,
@@ -8,7 +9,7 @@ import {
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
 import { isEmpty } from 'lodash';
-import admin from '../admin.config';
+import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
 import { CommonJoi } from '../services/joi/common';
 import { getQueryLimit, getQueryParams } from './common';
 
@@ -52,9 +53,8 @@ export const getMany = async (req: functions.https.Request, res: functions.Respo
     body.subCollection && body.uid
       ? `${body.collection}/${body.uid}/${body.subCollection}`
       : body.collection;
-  let query = admin
-    .firestore()
-    .collection(baseCollectionPath)
+  let query = soonDb()
+    .collection(baseCollectionPath as COL)
     .limit(getQueryLimit(body.collection));
 
   if (body.fieldName && body.fieldValue != null) {
@@ -74,18 +74,16 @@ export const getMany = async (req: functions.https.Request, res: functions.Respo
   }
 
   if (body.startAfter) {
-    const path =
-      body.subCollection && body.uid
-        ? `${body.collection}/${body.uid}/${body.subCollection}/${body.startAfter}`
-        : `${body.collection}/${body.startAfter}`;
-    const startAfter = await admin.firestore().doc(path).get();
-    query = query.startAfter(startAfter);
+    const startAfter = getSnapshot(
+      body.collection,
+      body.uid || body.startAfter,
+      body.subCollection,
+      body.startAfter,
+    );
+    query = query.startAfter(await startAfter);
   }
 
-  const snap = await query.get();
-  const result = snap.docs
-    .map((d) => d.data())
-    .filter((d) => !isEmpty(d))
-    .map((d) => ({ id: d.uid, ...d }));
+  const snap = await query.get<Record<string, unknown>>();
+  const result = snap.filter((d) => !isEmpty(d)).map((d) => ({ id: d.uid, ...d }));
   res.send(result);
 };

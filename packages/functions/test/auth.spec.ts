@@ -3,7 +3,7 @@ import { Converter, Converter as ConverterNext } from '@iota/util.js-next';
 import { COL, Member, Network, WenError, WEN_FUNC } from '@soonaverse/interfaces';
 import jwt from 'jsonwebtoken';
 import { get } from 'lodash';
-import admin from '../src/admin.config';
+import { soonDb } from '../src/firebase/firestore/soondb';
 import { generateCustomFirebaseToken } from '../src/runtime/firebase/auth';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
 import { WalletService } from '../src/services/wallet/wallet';
@@ -69,7 +69,7 @@ describe('Pub key test', () => {
     const address = await wallet.getNewIotaAddressDetails();
 
     const nonce = getRandomNonce();
-    const userDocRef = admin.firestore().doc(`${COL.MEMBER}/${address.bech32}`);
+    const userDocRef = soonDb().doc(`${COL.MEMBER}/${address.bech32}`);
     await userDocRef.create({ uid: address.bech32, nonce });
 
     const signature = Ed25519Next.sign(
@@ -90,7 +90,7 @@ describe('Pub key test', () => {
 
     expect(result.address).toBe(address.bech32);
 
-    const user = <Member>(await userDocRef.get()).data();
+    const user = <Member>await userDocRef.get();
     expect(user.validatedAddress![network]).toBe(address.bech32);
   });
 
@@ -101,7 +101,7 @@ describe('Pub key test', () => {
       const address = await wallet.getNewIotaAddressDetails();
 
       const nonce = getRandomNonce();
-      const userDocRef = admin.firestore().doc(`${COL.MEMBER}/${address.bech32}`);
+      const userDocRef = soonDb().doc(`${COL.MEMBER}/${address.bech32}`);
       await userDocRef.create({ uid: address.bech32, nonce });
 
       const signature = Ed25519.sign(
@@ -123,7 +123,7 @@ describe('Pub key test', () => {
 
       expect(result.address).toBe(address.bech32);
 
-      const user = <Member>(await userDocRef.get()).data();
+      const user = <Member>await userDocRef.get();
       expect(user.validatedAddress![network]).toBe(address.bech32);
     },
   );

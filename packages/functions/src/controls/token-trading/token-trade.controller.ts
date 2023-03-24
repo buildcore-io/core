@@ -1,5 +1,5 @@
 import { COL, SUB_COL, Token, TokenTradeOrderType, WenError } from '@soonaverse/interfaces';
-import { soonDb } from '../../database/wrapper/soondb';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { createTokenTradeOrder } from '../../services/payment/tangle-service/token-trade.service';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { getTokenBySymbol } from '../../utils/token.utils';

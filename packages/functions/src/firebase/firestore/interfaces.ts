@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, SUB_COL } from '@soonaverse/interfaces';
+import { COL, PublicCollections, PublicSubCollections, SUB_COL } from '@soonaverse/interfaces';
 
 export interface IDatabase {
-  collection: (col: COL) => ICollection;
+  collection: (col: COL | PublicCollections) => ICollection;
   doc: (documentPath: string) => IDocument;
 
   batch: () => IBatch;
@@ -18,6 +18,8 @@ export interface ICollection {
   doc: (documentPath: string) => IDocument;
   get: <T>() => Promise<T[]>;
   where: (fieldPath: string, operator: WhereFilterOp, value: any) => IQuery;
+  limit: (value: number) => IQuery;
+  startAfter: (value?: IDocumentSnapshot | string | number | Date) => IQuery;
 }
 
 export interface IDocument {
@@ -26,10 +28,17 @@ export interface IDocument {
   set: (data: any, merge?: boolean) => Promise<void>;
   delete: () => Promise<void>;
 
-  collection: (subCol: SUB_COL) => ICollection;
+  onSnapshot: <T>(callback: (data: T) => void) => () => void;
+
+  collection: (subCol: SUB_COL | PublicSubCollections) => ICollection;
   get: <D>() => Promise<D | undefined>;
 
   getPath: () => string;
+  getSnapshot: () => Promise<IDocumentSnapshot>;
+}
+
+export interface IDocumentSnapshot {
+  readonly id: string;
 }
 
 export interface IQuery {
@@ -37,9 +46,11 @@ export interface IQuery {
   where: (fieldPath: string, operator: WhereFilterOp, value: any) => IQuery;
 
   limit: (value: number) => IQuery;
-  startAfter: (docPath: string) => IQuery;
+  startAfter: (value?: IDocumentSnapshot | string | number | Date) => IQuery;
 
   getInstance: () => any;
+
+  orderBy: (field: string, dir?: 'asc' | 'desc') => IQuery;
 }
 
 export interface IBatch {
@@ -52,10 +63,12 @@ export interface IBatch {
 
 export interface ITransaction {
   get: <T>(docRef: IDocument) => Promise<T | undefined>;
+  getAll: <T>(...docRefs: IDocument[]) => Promise<(T | undefined)[]>;
   getByQuery: <T>(query: IQuery) => Promise<T[]>;
   create: (docRef: IDocument, data: any) => void;
   update: (docRef: IDocument, data: any) => void;
   set: (docRef: IDocument, data: any, merge?: boolean) => void;
+  delete: (docRef: IDocument) => void;
 }
 
 export type WhereFilterOp =

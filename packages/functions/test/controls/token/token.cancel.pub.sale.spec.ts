@@ -6,12 +6,13 @@ import {
   Token,
   TokenDistribution,
   TokenStatus,
+  Transaction,
   TransactionCreditType,
   TransactionType,
   WEN_FUNC,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../../src/admin.config';
+import { soonDb } from '../../../src/firebase/firestore/soondb';
 import {
   cancelPublicSale,
   orderToken,
@@ -44,10 +45,10 @@ const setAvailableOrderAndCancelSale = async (
   memberAddress: string,
   miotas: number,
 ) => {
-  const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`);
-  const distributionDocRef = admin
-    .firestore()
-    .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`);
+  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
+  const distributionDocRef = soonDb().doc(
+    `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`,
+  );
   await tokenDocRef.update({
     saleLength: 86400000 * 2,
     saleStartDate: dateToTimestamp(dayjs().subtract(1, 'd').toDate()),
@@ -65,13 +66,13 @@ const setAvailableOrderAndCancelSale = async (
   );
   await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
-  const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+  const distribution = <TokenDistribution>await distributionDocRef.get();
   expect(distribution.totalDeposit).toBe(miotas * MIN_IOTA_AMOUNT);
 
   mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid });
   await testEnv.wrap(cancelPublicSale)({});
-  await wait(async () => (await tokenDocRef.get()).data()?.status === TokenStatus.AVAILABLE);
-  const tokenData = <Token>(await tokenDocRef.get()).data();
+  await wait(async () => (await tokenDocRef.get<Token>())?.status === TokenStatus.AVAILABLE);
+  const tokenData = <Token>await tokenDocRef.get();
   expect(tokenData.saleStartDate).toBeUndefined();
 };
 
@@ -111,55 +112,49 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
       termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
       access: 0,
     };
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   });
 
   it('Should cancel public sale and refund buyers twice', async () => {
-    const distributionDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`);
+    const distributionDocRef = soonDb().doc(
+      `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`,
+    );
     await setAvailableOrderAndCancelSale(token, memberAddress, 5);
     await setAvailableOrderAndCancelSale(token, memberAddress, 6);
-    const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    const distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.totalDeposit).toBe(0);
-    const creditDocs = (
-      await admin
-        .firestore()
-        .collection(COL.TRANSACTION)
-        .where('type', '==', TransactionType.CREDIT)
-        .where('payload.type', '==', TransactionCreditType.TOKEN_PURCHASE)
-        .where('member', '==', memberAddress)
-        .get()
-    ).docs;
-    expect(creditDocs.map((d) => d.data()?.payload?.amount).sort((a, b) => a - b)).toEqual([
+    const creditDocs = await soonDb()
+      .collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.CREDIT)
+      .where('payload.type', '==', TransactionCreditType.TOKEN_PURCHASE)
+      .where('member', '==', memberAddress)
+      .get<Transaction>();
+    expect(creditDocs.map((d) => d?.payload?.amount).sort((a, b) => a - b)).toEqual([
       5 * MIN_IOTA_AMOUNT,
       6 * MIN_IOTA_AMOUNT,
     ]);
   });
 
   it('Should cancel public sale and refund buyers twice, then finish sale', async () => {
-    const distributionDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`);
+    const distributionDocRef = soonDb().doc(
+      `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`,
+    );
     await setAvailableOrderAndCancelSale(token, memberAddress, 5);
     await setAvailableOrderAndCancelSale(token, memberAddress, 6);
-    let distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    let distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.totalDeposit).toBe(0);
-    const creditDocs = (
-      await admin
-        .firestore()
-        .collection(COL.TRANSACTION)
-        .where('type', '==', TransactionType.CREDIT)
-        .where('payload.type', '==', TransactionCreditType.TOKEN_PURCHASE)
-        .where('member', '==', memberAddress)
-        .get()
-    ).docs;
-    expect(creditDocs.map((d) => d.data()?.payload?.amount).sort((a, b) => a - b)).toEqual([
+    const creditDocs = await soonDb()
+      .collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.CREDIT)
+      .where('payload.type', '==', TransactionCreditType.TOKEN_PURCHASE)
+      .where('member', '==', memberAddress)
+      .get<Transaction>();
+    expect(creditDocs.map((d) => d?.payload?.amount).sort((a, b) => a - b)).toEqual([
       5 * MIN_IOTA_AMOUNT,
       6 * MIN_IOTA_AMOUNT,
     ]);
 
-    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`);
+    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
     await tokenDocRef.update({
       saleLength: 86400000 * 2,
       saleStartDate: dateToTimestamp(dayjs().subtract(1, 'd').toDate()),
@@ -178,9 +173,9 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
     await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
     await tokenDocRef.update({ status: TokenStatus.PROCESSING });
-    await wait(async () => (await tokenDocRef.get()).data()?.status === TokenStatus.PRE_MINTED);
+    await wait(async () => (await tokenDocRef.get<Token>())?.status === TokenStatus.PRE_MINTED);
 
-    distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.totalPaid).toBe(5 * MIN_IOTA_AMOUNT);
     expect(distribution.refundedAmount).toBe(2 * MIN_IOTA_AMOUNT);
     expect(distribution.tokenOwned).toBe(5);
@@ -192,8 +187,7 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
       saleLength: 86400000 * 2,
       coolDownLength: 86400000,
     };
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.TOKEN}/${token.uid}`)
       .update({
         allocations: [{ title: 'public', percentage: 100, isPublicSale: true }],
@@ -210,9 +204,7 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
     await testEnv.wrap(cancelPublicSale)({});
 
     await wait(async () => {
-      const tokenData = <Token>(
-        (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
-      );
+      const tokenData = <Token>await soonDb().doc(`${COL.TOKEN}/${token.uid}`).get();
       return tokenData.status === TokenStatus.AVAILABLE;
     });
   });

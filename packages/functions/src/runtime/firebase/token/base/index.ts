@@ -1,10 +1,12 @@
 import {
   Access,
+  MAX_AIRDROP,
   MAX_IOTA_AMOUNT,
   MAX_TOTAL_TOKEN_SUPPLY,
   MIN_IOTA_AMOUNT,
   MIN_TOKEN_START_DATE_DAY,
   MIN_TOTAL_TOKEN_SUPPLY,
+  StakeType,
   TokenAllocation,
   TRANSACTION_AUTO_EXPIRY_MS,
   TRANSACTION_MAX_EXPIRY_MS,
@@ -12,6 +14,8 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import Joi from 'joi';
+import { airdropTokenControl } from '../../../../controls/token/token.airdrop';
+import { claimAirdroppedTokenControl } from '../../../../controls/token/token.airdrop.claim';
 import { cancelPublicSaleControl } from '../../../../controls/token/token.cancel.pub.sale';
 import { createTokenControl } from '../../../../controls/token/token.create';
 import { creditTokenControl } from '../../../../controls/token/token.credit';
@@ -150,4 +154,28 @@ export const orderToken = onCall(WEN_FUNC.orderToken)(tokenUidSchema, orderToken
 export const enableTokenTrading = onCall(WEN_FUNC.enableTokenTrading)(
   uidSchema,
   enableTokenTradingControl,
+);
+
+export const airdropTokenSchema = Joi.object({
+  token: CommonJoi.uid(),
+  drops: Joi.array()
+    .required()
+    .items(
+      Joi.object().keys({
+        vestingAt: Joi.date().required(),
+        count: Joi.number().min(1).max(MAX_TOTAL_TOKEN_SUPPLY).integer().required(),
+        recipient: CommonJoi.uid(),
+        stakeType: Joi.string().equal(StakeType.STATIC, StakeType.DYNAMIC).optional(),
+      }),
+    )
+    .min(1)
+    .max(MAX_AIRDROP),
+});
+
+export const airdropToken = onCall(WEN_FUNC.airdropToken)(airdropTokenSchema, airdropTokenControl);
+
+const claimAirdroppedTokenSchema = Joi.object({ token: Joi.string().required() });
+export const claimAirdroppedToken = onCall(WEN_FUNC.claimAirdroppedToken)(
+  claimAirdroppedTokenSchema,
+  claimAirdroppedTokenControl,
 );

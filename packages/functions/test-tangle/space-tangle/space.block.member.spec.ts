@@ -1,5 +1,12 @@
-import { COL, MIN_IOTA_AMOUNT, Network, Space, TangleRequestType } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import {
+  COL,
+  MIN_IOTA_AMOUNT,
+  Network,
+  Space,
+  TangleRequestType,
+  Transaction,
+} from '@soonaverse/interfaces';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -38,12 +45,12 @@ describe('Block space member', () => {
     );
 
     await wait(async () => {
-      const snap = await helper.guardianCreditQuery.get();
-      return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+      const snap = await helper.guardianCreditQuery.get<Transaction>();
+      return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
 
-    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${helper.space.uid}`);
-    helper.space = <Space>(await spaceDocRef.get()).data();
+    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${helper.space.uid}`);
+    helper.space = <Space>await spaceDocRef.get();
     expect(helper.space.totalMembers).toBe(1);
   });
 });

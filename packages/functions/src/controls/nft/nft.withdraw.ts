@@ -1,5 +1,5 @@
 import { COL, Member, Nft, NftStatus, WenError } from '@soonaverse/interfaces';
-import { soonDb } from '../../database/wrapper/soondb';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { createNftWithdrawOrder } from '../../services/payment/tangle-service/nft-purchase.service';
 import { assertMemberHasValidAddress, getAddress } from '../../utils/address.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';

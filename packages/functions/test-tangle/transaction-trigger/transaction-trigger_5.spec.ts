@@ -8,8 +8,8 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import admin from '../../src/admin.config';
 import { retryWallet } from '../../src/cron/wallet.cron';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -48,16 +48,16 @@ describe('Transaction trigger spec', () => {
         void: false,
       },
     };
-    const docRef = admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+    const docRef = soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
     await docRef.create(billPayment);
 
     await wait(async () => {
-      const data = <Transaction>(await docRef.get()).data();
+      const data = <Transaction>await docRef.get();
       return !isEmpty(data?.payload?.walletReference?.chainReferences);
     });
 
     let retryWalletResult = await retryWallet();
-    expect(retryWalletResult.find((r) => r == docRef.id)).toBeUndefined();
+    expect(retryWalletResult.find((r) => r == billPayment.uid)).toBeUndefined();
     docRef.update({
       'payload.walletReference.processedOn': dateToTimestamp(
         dayjs().subtract(4, 'minute').toDate(),
@@ -66,17 +66,15 @@ describe('Transaction trigger spec', () => {
     });
 
     retryWalletResult = await retryWallet();
-    expect(retryWalletResult.find((r) => r == docRef.id)).toBeDefined();
+    expect(retryWalletResult.find((r) => r == billPayment.uid)).toBeDefined();
 
     await wait(async () => {
-      const data = (await docRef.get()).data();
+      const data = await docRef.get<Transaction>();
       return data?.payload?.walletReference?.confirmed;
     });
 
     await wait(async () => {
-      billPayment = <Transaction>(
-        (await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()).data()
-      );
+      billPayment = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get();
       return billPayment.payload?.walletReference?.confirmed;
     });
   });

@@ -10,7 +10,7 @@ import {
   TransactionType,
   WenError,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
@@ -41,19 +41,16 @@ describe('Tangle request spec', () => {
     const space = await createSpace(walletSpy, member);
     token = await saveToken(space.uid, member);
 
-    const memberData = <Member>(
-      (await admin.firestore().doc(`${COL.MEMBER}/${member}`).get()).data()
-    );
+    const memberData = <Member>await soonDb().doc(`${COL.MEMBER}/${member}`).get();
     rmsAddress = await rmsWallet.getAddressDetails(getAddress(memberData, Network.RMS)!);
     await requestFundsFromFaucet(Network.RMS, rmsAddress.bech32, 10 * MIN_IOTA_AMOUNT);
   });
 
   it('Should return amount, multiple users with same address', async () => {
     const member2 = await createMember(walletSpy);
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.MEMBER}/${member2}`)
-      .set({ validatedAddress: { [Network.RMS]: rmsAddress.bech32 } }, { merge: true });
+      .set({ validatedAddress: { [Network.RMS]: rmsAddress.bech32 } }, true);
 
     await rmsWallet.send(rmsAddress, tangleOrder.payload.targetAddress, 5 * MIN_IOTA_AMOUNT, {
       customMetadata: {
@@ -66,18 +63,17 @@ describe('Tangle request spec', () => {
       },
     });
 
-    const query = admin
-      .firestore()
+    const query = soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', rmsAddress.bech32)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
     await wait(async () => {
-      const snap = await query.get();
-      return snap.size > 0 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+      const snap = await query.get<Transaction>();
+      return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
     });
-    const snap = await query.get();
-    expect(snap.size).toBe(1);
-    expect(snap.docs[0].data()?.payload?.response).toEqual({
+    const snap = await query.get<Transaction>();
+    expect(snap.length).toBe(1);
+    expect(snap[0]?.payload?.response).toEqual({
       code: WenError.multiple_members_with_same_address.code,
       message: WenError.multiple_members_with_same_address.key,
       status: 'error',
@@ -98,10 +94,10 @@ describe('Tangle request spec', () => {
       },
     }));
     await rmsWallet.sendToMany(rmsAddress, requests, {});
-    const query = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', member);
+    const query = soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', member);
     await wait(async () => {
       const snap = await query.get();
-      return snap.size === 10;
+      return snap.length === 10;
     });
   });
 
@@ -110,18 +106,17 @@ describe('Tangle request spec', () => {
       customMetadata: { request: { requestType: 'wrong_request' } },
     });
 
-    const query = admin
-      .firestore()
+    const query = soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
     await wait(async () => {
-      const snap = await query.get();
-      return snap.size > 0 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+      const snap = await query.get<Transaction>();
+      return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
     });
-    const snap = await query.get();
-    expect(snap.size).toBe(1);
-    expect(snap.docs[0].data()?.payload?.response).toEqual({
+    const snap = await query.get<Transaction>();
+    expect(snap.length).toBe(1);
+    expect(snap[0]?.payload?.response).toEqual({
       code: WenError.invalid_tangle_request_type.code,
       message: WenError.invalid_tangle_request_type.key,
       status: 'error',
@@ -146,6 +141,6 @@ const saveToken = async (space: string, guardian: string) => {
       network: Network.ATOI,
     },
   };
-  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token as Token;
 };

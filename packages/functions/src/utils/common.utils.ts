@@ -5,7 +5,6 @@ import {
   OrderTransaction,
   PaymentTransaction,
 } from '@soonaverse/interfaces';
-import admin from '../admin.config';
 
 export type OrderPayBillCreditTransaction =
   | OrderTransaction
@@ -33,5 +32,3 @@ export const generateRandomAmount = () => {
 };
 
 export const getRandomElement = <T>(array: T[]) => array[Math.floor(Math.random() * array.length)];
-
-export type LastDocType = admin.firestore.QueryDocumentSnapshot<admin.firestore.DocumentData>;
