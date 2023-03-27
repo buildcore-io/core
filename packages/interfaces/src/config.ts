@@ -8,11 +8,6 @@ export class ProposalStartDateMin {
   public static value = 5 * 60 * 1000;
 }
 
-// 1d in advance.
-export class NftAvailableFromDateMin {
-  public static value = 24 * 60 * 60 * 1000;
-}
-
 export class AppCheck {
   public static enabled = true;
 }

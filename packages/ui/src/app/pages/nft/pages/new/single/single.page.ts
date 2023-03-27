@@ -17,7 +17,6 @@ import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { Units } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/nft/services/data.service';
 import {
@@ -29,7 +28,6 @@ import {
   MAX_PROPERTIES_COUNT,
   MAX_STATS_COUNT,
   MIN_IOTA_AMOUNT,
-  NftAvailableFromDateMin,
   PRICE_UNITS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
@@ -223,13 +221,7 @@ export class SinglePage implements OnInit, OnDestroy {
 
   public disabledStartDate(startValue: Date): boolean {
     // Disable past dates & today + 1day startValue
-    if (
-      startValue.getTime() <
-      dayjs()
-        .add(environment.production ? NftAvailableFromDateMin.value : 0, 'ms')
-        .toDate()
-        .getTime()
-    ) {
+    if (startValue.getTime() < dayjs().subtract(1, 'day').toDate().getTime()) {
       return true;
     }
 
@@ -245,15 +237,10 @@ export class SinglePage implements OnInit, OnDestroy {
   }
 
   public disabledDateTime(startValue: Date | Date[]): DisabledTimeConfig {
-    if (
-      !Array.isArray(startValue) &&
-      dayjs(startValue).isSame(dayjs().add(NftAvailableFromDateMin.value, 'ms'), 'day')
-    ) {
+    if (!Array.isArray(startValue) && dayjs(startValue).isSame(dayjs(), 'day')) {
       return {
-        nzDisabledHours: () =>
-          this.range(0, dayjs().add(NftAvailableFromDateMin.value, 'ms').hour()),
-        nzDisabledMinutes: () =>
-          this.range(0, dayjs().add(NftAvailableFromDateMin.value, 'ms').minute()),
+        nzDisabledHours: () => this.range(0, dayjs().hour()),
+        nzDisabledMinutes: () => this.range(0, dayjs().minute()),
         nzDisabledSeconds: () => [],
       };
     } else {
