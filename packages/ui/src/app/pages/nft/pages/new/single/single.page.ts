@@ -221,7 +221,7 @@ export class SinglePage implements OnInit, OnDestroy {
 
   public disabledStartDate(startValue: Date): boolean {
     // Disable past dates & today + 1day startValue
-    if (startValue.getTime() < dayjs().toDate().getTime()) {
+    if (startValue.getTime() < dayjs().subtract(1, 'day').toDate().getTime()) {
       return true;
     }
 
