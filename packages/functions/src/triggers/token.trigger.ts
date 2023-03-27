@@ -23,6 +23,7 @@ import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
 import admin from '../admin.config';
+import { FirestoreTransaction } from '../database/wrapper/firestore';
 import { scale } from '../scale.settings';
 import { WalletService } from '../services/wallet/wallet';
 import { getAddress } from '../utils/address.utils';
@@ -432,7 +433,7 @@ const cancelAllActiveSales = async (token: string) => {
         .filter((d) => d.data()?.status === TokenTradeOrderStatus.ACTIVE)
         .map((d) =>
           cancelTradeOrderUtil(
-            transaction,
+            new FirestoreTransaction(admin.firestore(), transaction),
             <TokenTradeOrder>d.data(),
             TokenTradeOrderStatus.CANCELLED_MINTING_TOKEN,
           ),

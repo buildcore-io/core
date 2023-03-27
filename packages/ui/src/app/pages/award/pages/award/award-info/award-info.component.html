@@ -23,11 +23,7 @@
     [routerLink]="['/', 'member', g.uid]"
     class="cursor-pointer"
   >
-    <nz-avatar
-      nzIcon="user"
-      [nzSrc]="g?.currentProfileImage | ipfsAvatar : filesizes.small"
-      class="mr-2"
-    >
+    <nz-avatar nzIcon="user" [nzSrc]="g?.avatar | resizeAvatar : filesizes.small" class="mr-2">
     </nz-avatar>
     <span>@{{ g.name || g.uid | truncate : [16] }}</span>
   </div>

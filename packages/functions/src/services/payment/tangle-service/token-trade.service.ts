@@ -30,7 +30,10 @@ import Joi from 'joi';
 import bigDecimal from 'js-big-decimal';
 import { get, set } from 'lodash';
 import admin from '../../../admin.config';
-import { tradeTokenSchema } from '../../../controls/token-trading/token-trade.controller';
+import { FirestoreTransaction } from '../../../database/wrapper/firestore';
+import { ITransaction } from '../../../database/wrapper/interfaces';
+import { soonDb } from '../../../database/wrapper/soondb';
+import { tradeTokenSchema } from '../../../runtime/firebase/token/trading';
 import { SmrWallet } from '../../../services/wallet/SmrWalletService';
 import { WalletService } from '../../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../../utils/address.utils';
@@ -93,8 +96,10 @@ export class TangleTokenTradeService {
       await assertValidationAsync(tradeTokenSchema, params);
     }
 
+    // TODO remove later
+    const trans = new FirestoreTransaction(admin.firestore(), this.transactionService.transaction);
     const { tradeOrderTransaction } = await createTokenTradeOrder(
-      this.transactionService.transaction,
+      trans,
       owner,
       token,
       params.type,
@@ -150,7 +155,7 @@ const ACCEPTED_TOKEN_STATUSES = [
   TokenStatus.BASE,
 ];
 export const createTokenTradeOrder = async (
-  transaction: admin.firestore.Transaction,
+  transaction: ITransaction,
   owner: string,
   token: Token,
   type: TokenTradeOrderType,
@@ -167,9 +172,7 @@ export const createTokenTradeOrder = async (
   assertTokenStatus(token, acceptedTokenStatuses);
 
   const [sourceNetwork, targetNetwork] = getSourceAndTargetNetwork(token, isSell);
-  const member = <Member | undefined>(
-    (await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
-  );
+  const member = await soonDb().doc(`${COL.MEMBER}/${owner}`).get<Member>();
   assertMemberHasValidAddress(member, sourceNetwork);
   assertMemberHasValidAddress(member, targetNetwork);
 
@@ -186,12 +189,9 @@ export const createTokenTradeOrder = async (
     return { tradeOrderTransaction, tradeOrder: undefined, distribution: undefined };
   }
 
-  const distributionDocRef = admin
-    .firestore()
-    .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${owner}`);
-  const distribution = <TokenDistribution | undefined>(
-    (await transaction.get(distributionDocRef)).data()
-  );
+  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
+  const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(owner);
+  const distribution = await transaction.get<TokenDistribution>(distributionDocRef);
   if (!distribution) {
     throw throwInvalidArgument(WenError.invalid_params);
   }

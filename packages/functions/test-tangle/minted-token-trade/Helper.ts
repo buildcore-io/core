@@ -14,7 +14,7 @@ import {
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import admin from '../../src/admin.config';
-import { tradeToken } from '../../src/controls/token-trading/token-trade.controller';
+import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails } from '../../src/services/wallet/wallet';

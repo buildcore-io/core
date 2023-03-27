@@ -8,7 +8,7 @@ import {
   TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { Database } from '../../database/Database';
+import { soonDb } from '../../database/wrapper/soondb';
 import { WalletService } from '../../services/wallet/wallet';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -35,6 +35,7 @@ export const depositNftControl = async (owner: string, params: Record<string, un
       void: false,
     },
   };
-  await Database.create(COL.TRANSACTION, order);
+  const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+  await orderDocRef.create(order);
   return order;
 };

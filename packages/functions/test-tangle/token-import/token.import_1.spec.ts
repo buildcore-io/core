@@ -9,7 +9,7 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
-import { importMintedToken } from '../../src/runtime/firebase/token/index';
+import { importMintedToken } from '../../src/runtime/firebase/token/minting';
 import { getAddress } from '../../src/utils/address.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -60,6 +60,7 @@ describe('Token import', () => {
     expect(migratedToken.icon).toBeDefined();
     expect(migratedToken.status).toBe(TokenStatus.MINTED);
     expect(migratedToken.access).toBe(Access.OPEN);
+    expect(migratedToken.decimals).toBe(4);
 
     expect(migratedToken.mintingData?.aliasId).toBe(helper.token.mintingData?.aliasId);
     expect(migratedToken.mintingData?.aliasStorageDeposit).toBe(

@@ -42,4 +42,5 @@ export const assertValidationAsync = async (
   }
 };
 
-export const getDefaultParams = <T>() => <T>{};
+export const cleanupParams = (obj: Record<string, unknown>) =>
+  Object.entries(obj).reduce((acc, act) => ({ ...acc, [act[0]]: act[1] || null }), {});

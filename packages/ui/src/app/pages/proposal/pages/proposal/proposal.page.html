@@ -46,7 +46,7 @@
         <div [routerLink]="['member', (data.creator$ | async)?.uid]">
           <nz-avatar
             nzIcon="user"
-            [nzSrc]="(data.creator$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
+            [nzSrc]="(data.creator$ | async)?.avatar | resizeAvatar:filesizes.small"
             class="mr-2"
           >
           </nz-avatar>

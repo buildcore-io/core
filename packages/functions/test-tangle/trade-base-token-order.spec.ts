@@ -14,9 +14,8 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import admin from '../src/admin.config';
-import { createMember } from '../src/controls/member.control';
-import { cancelTradeOrder } from '../src/controls/token-trading/token-trade-cancel.controller';
-import { tradeToken } from '../src/controls/token-trading/token-trade.controller';
+import { createMember } from '../src/runtime/firebase/member';
+import { cancelTradeOrder, tradeToken } from '../src/runtime/firebase/token/trading';
 import { AddressDetails } from '../src/services/wallet/wallet';
 import { getAddress } from '../src/utils/address.utils';
 import { serverTime } from '../src/utils/dateTime.utils';

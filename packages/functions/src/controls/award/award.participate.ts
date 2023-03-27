@@ -1,10 +1,11 @@
-import { Award, AwardParticipant, COL, SUB_COL, WenError } from '@soonaverse/interfaces';
+import { Award, COL, SUB_COL, WenError } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { Database } from '../../database/Database';
+import { soonDb } from '../../database/wrapper/soondb';
 import { throwInvalidArgument } from '../../utils/error.utils';
 
 export const awardParticipateControl = async (owner: string, params: Record<string, unknown>) => {
-  const award = await Database.getById<Award>(COL.AWARD, params.uid as string);
+  const awardDocRef = soonDb().doc(`${COL.AWARD}/${params.uid}`);
+  const award = await awardDocRef.get<Award>();
   if (!award) {
     throw throwInvalidArgument(WenError.award_does_not_exists);
   }
@@ -21,12 +22,7 @@ export const awardParticipateControl = async (owner: string, params: Record<stri
     throw throwInvalidArgument(WenError.award_is_no_longer_available);
   }
 
-  const awardParticipant = await Database.getById<AwardParticipant>(
-    COL.AWARD,
-    award.uid,
-    SUB_COL.PARTICIPANTS,
-    owner,
-  );
+  const awardParticipant = await awardDocRef.collection(SUB_COL.PARTICIPANTS).doc(owner).get();
   if (awardParticipant) {
     throw throwInvalidArgument(WenError.member_is_already_participant_of_space);
   }
@@ -38,6 +34,6 @@ export const awardParticipateControl = async (owner: string, params: Record<stri
     completed: false,
     parentCol: COL.AWARD,
   };
-  await Database.create(COL.AWARD, participant, SUB_COL.PARTICIPANTS, award.uid);
+  await awardDocRef.collection(SUB_COL.PARTICIPANTS).doc(owner).create(participant);
   return participant;
 };

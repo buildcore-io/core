@@ -1,4 +1,4 @@
-import { BaseRecord, EthAddress, FileMetedata, Timestamp, ValidatedAddress } from './base';
+import { BaseRecord, EthAddress, Timestamp, ValidatedAddress } from './base';
 
 interface MemberAwardStat {
   readonly tokenSymbol: string;
@@ -23,7 +23,8 @@ export interface Member extends BaseRecord {
   nonce?: string;
   name?: string;
   about?: string;
-  currentProfileImage?: FileMetedata;
+  avatarNft?: string;
+  avatar?: string;
   discord?: string;
   twitter?: string;
   github?: string;

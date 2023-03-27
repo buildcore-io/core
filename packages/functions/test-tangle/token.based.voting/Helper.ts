@@ -5,7 +5,6 @@ import {
   Network,
   Proposal,
   ProposalMember,
-  ProposalSubType,
   ProposalType,
   Space,
   SUB_COL,
@@ -72,6 +71,7 @@ export class Helper {
         space: this.space.uid,
         mintingData: { tokenId: MINTED_TOKEN_ID },
         status: TokenStatus.MINTED,
+        approved: true,
       });
 
     mockWalletReturnValue(this.walletSpy, this.guardian, this.proposal);
@@ -218,7 +218,6 @@ export const dummyProposal = (space: string) =>
       onlyGuardians: false,
     },
     type: ProposalType.NATIVE,
-    subType: ProposalSubType.ONE_MEMBER_ONE_VOTE,
     questions: [
       {
         text: 'Give all the funds to the HORNET developers?',

@@ -2,77 +2,47 @@ import {
   BaseProposalAnswerValue,
   COL,
   DEFAULT_NETWORK,
-  MAX_TOTAL_TOKEN_SUPPLY,
   Member,
   Proposal,
-  ProposalSubType,
   ProposalType,
   Space,
+  SpaceGuardian,
   SUB_COL,
   TokenStatus,
   Transaction,
   TransactionType,
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
-  URL_PATHS,
   VoteTransaction,
   WenError,
-  WenRequest,
-  WEN_FUNC,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions';
 import Joi from 'joi';
 import { get, startCase } from 'lodash';
 import admin from '../../admin.config';
-import { createSpaceSchema } from '../../runtime/firebase/space';
-import { scale } from '../../scale.settings';
-import { CommonJoi } from '../../services/joi/common';
-import { cOn, dateToTimestamp } from '../../utils/dateTime.utils';
+import { soonDb } from '../../database/wrapper/soondb';
+import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
-import { appCheck } from '../../utils/google.utils';
-import { assertValidationAsync, pSchema } from '../../utils/schema.utils';
+import { pSchema } from '../../utils/schema.utils';
 import { assertIsGuardian, getTokenForSpace } from '../../utils/token.utils';
-import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
+import { getRandomEthAddress } from '../../utils/wallet.utils';
 
-export const updateSpace = functions
-  .runWith({
-    minInstances: scale(WEN_FUNC.uSpace),
-  })
-  .https.onCall(async (req: WenRequest, context) => {
-    appCheck(WEN_FUNC.uSpace, context);
-    const params = await decodeAuth(req, WEN_FUNC.uSpace);
-    const owner = params.address.toLowerCase();
-
-    const schema = Joi.object({
-      ...createSpaceSchema,
-      uid: CommonJoi.uid(),
-      tokenBased: Joi.boolean().allow(false, true).optional(),
-      minStakedValue: Joi.when('tokenBased', {
-        is: Joi.exist().valid(true),
-        then: Joi.number().min(1).max(MAX_TOTAL_TOKEN_SUPPLY).integer().required(),
-        otherwise: Joi.forbidden(),
-      }),
-    });
-    await assertValidationAsync(schema, params.body);
-
-    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${params.body.uid}`);
-    const space = <Space | undefined>(await spaceDocRef.get()).data();
+export const updateSpaceControl =
+  (schema: Joi.ObjectSchema) => async (owner: string, params: Record<string, unknown>) => {
+    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${params.uid}`);
+    const space = await spaceDocRef.get<Space>();
 
     if (!space) {
       throw throwInvalidArgument(WenError.space_does_not_exists);
     }
 
-    if (params.body.tokenBased) {
+    if (params.tokenBased) {
       const token = await getTokenForSpace(space.uid);
       if (token?.status !== TokenStatus.MINTED) {
         throw throwInvalidArgument(WenError.token_not_minted);
       }
     }
 
-    if (
-      space.tokenBased &&
-      (params.body.open !== undefined || params.body.tokenBased !== undefined)
-    ) {
+    if (space.tokenBased && (params.open !== undefined || params.tokenBased !== undefined)) {
       throw throwInvalidArgument(WenError.token_based_space_access_can_not_be_edited);
     }
 
@@ -88,24 +58,23 @@ export const updateSpace = functions
       throw throwInvalidArgument(WenError.ongoing_proposal);
     }
 
-    const guardian = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data();
-    const guardians = await admin
-      .firestore()
-      .collection(`${COL.SPACE}/${params.body.uid}/${SUB_COL.GUARDIANS}`)
-      .get();
+    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
+    const guardian = await guardianDocRef.get<Member>();
+    const guardians = await spaceDocRef.collection(SUB_COL.GUARDIANS).get<SpaceGuardian>();
+
     const proposal = createUpdateSpaceProposal(
       space,
-      guardian,
-      params.body.uid,
-      guardians.size,
-      pSchema(schema, params.body),
+      guardian!,
+      space.uid,
+      guardians.length,
+      pSchema(schema, params),
     );
 
     const voteTransaction = <Transaction>{
       type: TransactionType.VOTE,
       uid: getRandomEthAddress(),
       member: owner,
-      space: params.body.uid,
+      space: params.uid,
       network: DEFAULT_NETWORK,
       payload: <VoteTransaction>{
         proposalId: proposal.uid,
@@ -116,34 +85,32 @@ export const updateSpace = functions
       linkedTransactions: [],
     };
 
-    const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
-    const memberPromisses = guardians.docs.map((doc) => {
+    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+    const memberPromisses = guardians.map((guardian) => {
       proposalDocRef
         .collection(SUB_COL.MEMBERS)
-        .doc(doc.id)
-        .set(
-          cOn({
-            uid: doc.id,
-            weight: 1,
-            voted: doc.id === owner,
-            tranId: doc.id === owner ? voteTransaction.uid : '',
-            parentId: proposal.uid,
-            parentCol: COL.PROPOSAL,
-            values: doc.id === owner ? [{ [1]: 1 }] : [],
-          }),
-        );
+        .doc(guardian.uid)
+        .set({
+          uid: guardian.uid,
+          weight: 1,
+          voted: guardian.uid === owner,
+          tranId: guardian.uid === owner ? voteTransaction.uid : '',
+          parentId: proposal.uid,
+          parentCol: COL.PROPOSAL,
+          values: guardian.uid === owner ? [{ [1]: 1 }] : [],
+        });
     });
     await Promise.all(memberPromisses);
 
     await admin
       .firestore()
       .doc(`${COL.TRANSACTION}/${voteTransaction.uid}`)
-      .create(cOn(voteTransaction));
+      .create(voteTransaction);
 
-    await proposalDocRef.create(cOn(proposal, URL_PATHS.PROPOSAL));
+    await proposalDocRef.create(proposal);
 
-    return <Proposal>(await proposalDocRef.get()).data();
-  });
+    return await proposalDocRef.get<Proposal>();
+  };
 
 const createUpdateSpaceProposal = (
   prevSpace: Space,
@@ -164,7 +131,6 @@ const createUpdateSpaceProposal = (
     space,
     description: '',
     type: ProposalType.EDIT_SPACE,
-    subType: ProposalSubType.ONE_MEMBER_ONE_VOTE,
     approved: true,
     rejected: false,
     settings: {

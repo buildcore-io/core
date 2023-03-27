@@ -12,6 +12,7 @@ import {
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
 import admin from '../../admin.config';
+import { FirestoreTransaction } from '../../database/wrapper/firestore';
 import { scale } from '../../scale.settings';
 import { getStakeForType, getTier } from '../../services/stake.service';
 import { cancelTradeOrderUtil } from '../../utils/token-trade.utils';
@@ -45,7 +46,7 @@ export const onTokenTradeOrderWrite = functions
       );
       if (tradeOrder && isActiveBuy(tradeOrder) && needsHigherBuyAmount(tradeOrder!)) {
         await cancelTradeOrderUtil(
-          transaction,
+          new FirestoreTransaction(admin.firestore(), transaction),
           tradeOrder,
           TokenTradeOrderStatus.CANCELLED_UNFULFILLABLE,
         );

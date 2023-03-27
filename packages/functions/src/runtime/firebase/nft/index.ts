@@ -12,6 +12,7 @@ import {
 import dayjs from 'dayjs';
 import Joi from 'joi';
 import { AVAILABLE_NETWORKS } from '../../../controls/common';
+import { nftBidControl } from '../../../controls/nft/nft.bid.control';
 import { createBatchNftControl, createNftControl } from '../../../controls/nft/nft.create';
 import { depositNftControl } from '../../../controls/nft/nft.deposit';
 import { orderNftControl } from '../../../controls/nft/nft.puchase.control';
@@ -41,6 +42,7 @@ const nftCreateSchema = {
   // TODO Validate.
   properties: Joi.object().optional(),
   stats: Joi.object().optional(),
+  saleAccessMembers: Joi.array().items(CommonJoi.uid(false)).optional(),
 };
 export const createNft = onCall(WEN_FUNC.cNft)(Joi.object(nftCreateSchema), createNftControl);
 
@@ -104,3 +106,6 @@ const stakeNftSchema = Joi.object({
     .required(),
 });
 export const stakeNft = onCall(WEN_FUNC.stakeNft)(stakeNftSchema, nftStakeControl);
+
+const nftBidSchema = Joi.object({ nft: CommonJoi.uid() });
+export const openBid = onCall(WEN_FUNC.openBid)(nftBidSchema, nftBidControl);

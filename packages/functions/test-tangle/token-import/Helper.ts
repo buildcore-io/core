@@ -1,6 +1,6 @@
 import { COL, Member, Network, Space, SUB_COL, Token, TokenStatus } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
-import { mintTokenOrder } from '../../src/controls/token-minting/token-mint.control';
+import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
@@ -76,6 +76,7 @@ export class Helper {
       status: TokenStatus.AVAILABLE,
       access: 0,
       icon: MEDIA,
+      decimals: 4,
     };
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
     await admin

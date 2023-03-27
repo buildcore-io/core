@@ -17,8 +17,6 @@ import {
 import dayjs from 'dayjs';
 import { tail } from 'lodash';
 import admin from '../../src/admin.config';
-import { unblockMember } from '../../src/controls/space/member.unblock.control';
-import { updateSpace } from '../../src/controls/space/space.update.control';
 import { voteOnProposal } from '../../src/runtime/firebase/proposal';
 import {
   acceptMemberSpace,
@@ -29,6 +27,8 @@ import {
   joinSpace,
   leaveSpace,
   removeGuardian,
+  unblockMember,
+  updateSpace,
 } from '../../src/runtime/firebase/space';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
@@ -662,7 +662,7 @@ describe('Token based space', () => {
     await admin
       .firestore()
       .doc(`${COL.TOKEN}/${token}`)
-      .set({ status: TokenStatus.MINTED, space: space.uid, uid: token });
+      .set({ status: TokenStatus.MINTED, space: space.uid, uid: token, approved: true });
 
     mockWalletReturnValue(walletSpy, member, { uid: space?.uid });
     await testEnv.wrap(joinSpace)({});

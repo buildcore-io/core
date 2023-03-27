@@ -12,8 +12,8 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
-import { creditToken, orderToken } from '../../src/controls/token.control';
 import { joinSpace } from '../../src/runtime/firebase/space';
+import { creditToken, orderToken } from '../../src/runtime/firebase/token/base';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../set-up';
@@ -87,6 +87,7 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
       totalAirdropped: 0,
       termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
       access: 0,
+      decimals: 6,
     };
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   });

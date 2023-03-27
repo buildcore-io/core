@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { COL, Member, Network, Token, TokenStatus } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
-import { createMember } from '../../src/controls/member.control';
+import { createMember } from '../../src/runtime/firebase/member';
 import { IotaWallet } from '../../src/services/wallet/IotaWalletService';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails } from '../../src/services/wallet/wallet';

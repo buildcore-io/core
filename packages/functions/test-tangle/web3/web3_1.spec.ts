@@ -11,8 +11,8 @@ import {
 } from '@soonaverse/interfaces';
 import { Web3Storage } from 'web3.storage';
 import admin from '../../src/admin.config';
-import { mintTokenOrder } from '../../src/controls/token-minting/token-mint.control';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
+import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { getWeb3Token } from '../../src/utils/config.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';

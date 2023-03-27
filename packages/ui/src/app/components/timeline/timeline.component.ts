@@ -28,7 +28,7 @@ export interface BadgeTimelineItemPayload {
 }
 
 export interface ListedByMemberTimelineItemPayload {
-  image?: FileMetedata;
+  image?: string;
   date?: Date;
   name: string;
   isAuction: boolean;

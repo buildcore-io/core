@@ -93,6 +93,7 @@ export class ImportMintedTokenService {
         mediaStatus: MediaStatus.PENDING_UPLOAD,
         tradingDisabled: true,
         pricePerToken: 0,
+        decimals: metadata.decimals,
       };
       const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`);
       this.transactionService.updates.push({ ref: tokenDocRef, data: token, action: 'set' });
@@ -184,4 +185,5 @@ const tokenIrc27Schema = Joi.object({
   description: Joi.string().optional(),
   uri: Joi.string().required(),
   symbol: Joi.string().required(),
+  decimals: Joi.number().integer().required(),
 });

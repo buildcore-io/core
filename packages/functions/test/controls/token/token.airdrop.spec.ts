@@ -10,7 +10,7 @@ import {
 import dayjs from 'dayjs';
 import admin from '../../../src/admin.config';
 import { airdropToken } from '../../../src/controls/token-airdrop.control';
-import { createToken } from '../../../src/controls/token.control';
+import { createToken } from '../../../src/runtime/firebase/token/base';
 import { dateToTimestamp } from '../../../src/utils/dateTime.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../../set-up';
@@ -35,6 +35,7 @@ const dummyToken = (space: string) =>
     overviewGraphics: MEDIA,
     termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
     access: 0,
+    decimals: 6,
   } as any);
 
 describe('Token airdrop test', () => {

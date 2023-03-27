@@ -22,12 +22,12 @@ import {
 import dayjs from 'dayjs';
 import { set } from 'lodash';
 import admin from '../../src/admin.config';
-import { openBid } from '../../src/controls/order.control';
 import {
   approveCollection,
   createCollection,
   mintCollection,
 } from '../../src/runtime/firebase/collection/index';
+import { openBid } from '../../src/runtime/firebase/nft';
 import { createNft, orderNft, setForSaleNft } from '../../src/runtime/firebase/nft/index';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';

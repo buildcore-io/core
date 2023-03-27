@@ -14,26 +14,25 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import bigDecimal from 'js-big-decimal';
-import admin from '../admin.config';
+import { ITransaction } from '../database/wrapper/interfaces';
+import { soonDb } from '../database/wrapper/soondb';
 import { getAddress } from './address.utils';
-import { cOn, uOn } from './dateTime.utils';
-import { memberDocRef } from './token.utils';
 import { getRandomEthAddress } from './wallet.utils';
 
-export const creditBuyer = async (
-  buy: TokenTradeOrder,
-  transaction: admin.firestore.Transaction,
-) => {
-  const member = <Member>(await memberDocRef(buy.owner).get()).data();
-  const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${buy.token}`).get()).data();
-  const order = <Transaction>(
-    (await admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get()).data()
-  );
-  const tranId = getRandomEthAddress();
+export const creditBuyer = async (transaction: ITransaction, buy: TokenTradeOrder) => {
+  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${buy.owner}`);
+  const member = (await memberDocRef.get<Member>())!;
+
+  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${buy.token}`);
+  const token = (await tokenDocRef.get<Token>())!;
+
+  const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`);
+  const order = (await orderDocRef.get<Transaction>())!;
+
   const network = order.network || DEFAULT_NETWORK;
-  const data = <Transaction>{
+  const credit = <Transaction>{
     type: TransactionType.CREDIT,
-    uid: tranId,
+    uid: getRandomEthAddress(),
     space: token.space,
     member: member.uid,
     network,
@@ -50,23 +49,23 @@ export const creditBuyer = async (
       tokenSymbol: token.symbol,
     },
   };
-  const docRef = admin.firestore().doc(`${COL.TRANSACTION}/${tranId}`);
-  transaction.create(docRef, cOn(data));
-  transaction.update(
-    admin.firestore().doc(`${COL.TOKEN_MARKET}/${buy.uid}`),
-    uOn({ creditTransactionId: tranId }),
-  );
+  const creditDocRef = soonDb().doc(`${COL.TRANSACTION}/${credit.uid}`);
+  transaction.create(creditDocRef, credit);
+
+  const tradeOrderDocRef = soonDb().doc(`${COL.TOKEN_MARKET}/${buy.uid}`);
+  transaction.update(tradeOrderDocRef, { creditTransactionId: credit.uid });
 };
 
 const creditBaseTokenSale = async (
-  transaction: admin.firestore.Transaction,
+  transaction: ITransaction,
   token: Token,
   sale: TokenTradeOrder,
 ) => {
-  const order = <Transaction>(
-    (await admin.firestore().doc(`${COL.TRANSACTION}/${sale.orderTransactionId}`).get()).data()
-  );
-  const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sale.owner}`).get()).data();
+  const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${sale.orderTransactionId}`);
+  const order = (await orderDocRef.get<Transaction>())!;
+
+  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${sale.owner}`);
+  const member = await memberDocRef.get<Member>();
   const network = order.network || DEFAULT_NETWORK;
   const data = <Transaction>{
     type: TransactionType.CREDIT,
@@ -87,30 +86,29 @@ const creditBaseTokenSale = async (
       tokenSymbol: token.symbol,
     },
   };
-  transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), cOn(data));
-  transaction.update(
-    admin.firestore().doc(`${COL.TOKEN_MARKET}/${sale.uid}`),
-    uOn({
-      creditTransactionId: data.uid,
-      balance: 0,
-    }),
-  );
+  const creditDocRef = soonDb().doc(`${COL.TRANSACTION}/${data.uid}`);
+  transaction.create(creditDocRef, data);
+
+  const tradeDocRef = soonDb().doc(`${COL.TOKEN_MARKET}/${sale.uid}`);
+  transaction.update(tradeDocRef, {
+    creditTransactionId: data.uid,
+    balance: 0,
+  });
 };
 
 export const cancelTradeOrderUtil = async (
-  transaction: admin.firestore.Transaction,
+  transaction: ITransaction,
   tradeOrder: TokenTradeOrder,
   forcedStatus?: TokenTradeOrderStatus,
 ) => {
-  const saleDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${tradeOrder.uid}`);
+  const saleDocRef = soonDb().doc(`${COL.TOKEN_MARKET}/${tradeOrder.uid}`);
   const status =
     forcedStatus ||
     (tradeOrder.fulfilled === 0
       ? TokenTradeOrderStatus.CANCELLED
       : TokenTradeOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED);
-  const token = <Token>(
-    (await admin.firestore().doc(`${COL.TOKEN}/${tradeOrder.token}`).get()).data()
-  );
+  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${tradeOrder.token}`);
+  const token = (await tokenDocRef.get<Token>())!;
 
   if (token.status === TokenStatus.BASE) {
     await creditBaseTokenSale(transaction, token, tradeOrder);
@@ -118,38 +116,31 @@ export const cancelTradeOrderUtil = async (
     if (token.status === TokenStatus.MINTED) {
       await cancelMintedSell(transaction, tradeOrder, token);
     } else {
-      const distributionDocRef = admin
-        .firestore()
-        .doc(`${COL.TOKEN}/${tradeOrder.token}/${SUB_COL.DISTRIBUTION}/${tradeOrder.owner}`);
+      const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(tradeOrder.owner);
       const leftForSale = bigDecimal.subtract(tradeOrder.count, tradeOrder.fulfilled);
-      transaction.update(
-        distributionDocRef,
-        uOn({ lockedForSale: admin.firestore.FieldValue.increment(-Number(leftForSale)) }),
-      );
+      transaction.update(distributionDocRef, { lockedForSale: soonDb().inc(-Number(leftForSale)) });
     }
   } else {
-    await creditBuyer(tradeOrder, transaction);
+    await creditBuyer(transaction, tradeOrder);
   }
-  transaction.update(saleDocRef, uOn({ status }));
+  transaction.update(saleDocRef, { status });
   return <TokenTradeOrder>{ ...tradeOrder, status };
 };
 
-const cancelMintedSell = async (
-  transaction: admin.firestore.Transaction,
-  sell: TokenTradeOrder,
-  token: Token,
-) => {
-  const order = <Transaction>(
-    (await admin.firestore().doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`).get()).data()
-  );
-  const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data();
+const cancelMintedSell = async (transaction: ITransaction, sell: TokenTradeOrder, token: Token) => {
+  const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`);
+  const order = (await orderDocRef.get<Transaction>())!;
+
+  const sellerDocRef = soonDb().doc(`${COL.MEMBER}/${sell.owner}`);
+  const seller = await sellerDocRef.get<Member>();
+
   const tokensLeft = sell.count - sell.fulfilled;
   const network = order.network || DEFAULT_NETWORK;
   const data = <Transaction>{
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: token.space,
-    member: seller.uid,
+    member: seller!.uid,
     network,
     payload: {
       reason: CreditPaymentReason.TRADE_CANCELLED,
@@ -165,9 +156,9 @@ const cancelMintedSell = async (
       tokenSymbol: token.symbol,
     },
   };
-  transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), cOn(data));
-  transaction.update(
-    admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`),
-    uOn({ creditTransactionId: data.uid }),
-  );
+  const creditDocRef = soonDb().doc(`${COL.TRANSACTION}/${data.uid}`);
+  transaction.create(creditDocRef, data);
+
+  const tradeOrderDocRef = soonDb().doc(`${COL.TOKEN_MARKET}/${sell.uid}`);
+  transaction.update(tradeOrderDocRef, { creditTransactionId: data.uid });
 };

@@ -18,9 +18,9 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
-import { openBid } from '../../src/controls/order.control';
 import { finalizeAllNftAuctions } from '../../src/cron/nft.cron';
 import { approveCollection, createCollection } from '../../src/runtime/firebase/collection/index';
+import { openBid } from '../../src/runtime/firebase/nft';
 import { createNft, orderNft, setForSaleNft } from '../../src/runtime/firebase/nft/index';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -148,6 +148,14 @@ describe('Nft controller: setForSale', () => {
     const collection = <Collection>(await collectionDocRef.get()).data();
     expect(collection.nftsOnAuction).toBe(0);
     expect(collection.nftsOnSale).toBe(1);
+  });
+
+  it('Should throw, nft set as avatar', async () => {
+    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
+    await nftDocRef.update({ setAsAvatar: true });
+
+    mockWalletReturnValue(walletSpy, memberAddress, dummySaleData(nft.uid));
+    await expectThrow(testEnv.wrap(setForSaleNft)({}), WenError.nft_set_as_avatar.key);
   });
 
   it('Should set nft for auction', async () => {

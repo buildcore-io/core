@@ -13,7 +13,7 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../../src/admin.config';
-import { createToken } from '../../../src/controls/token.control';
+import { createToken } from '../../../src/runtime/firebase/token/base';
 import * as config from '../../../src/utils/config.utils';
 import { dateToTimestamp } from '../../../src/utils/dateTime.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
@@ -41,6 +41,7 @@ const dummyToken = (space: string) =>
     overviewGraphics: MEDIA,
     termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
     access: 0,
+    decimals: 5,
   } as any);
 
 describe('Token controller: ' + WEN_FUNC.cToken, () => {
@@ -63,6 +64,7 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
     const result = await testEnv.wrap(createToken)({});
     expect(result?.uid).toBeDefined();
     expect(result.tradingDisabled).toBe(true);
+    expect(result.decimals).toBe(5);
   });
 
   it('Should throw, invalid icon url', async () => {

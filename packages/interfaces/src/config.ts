@@ -180,3 +180,6 @@ export const ALGOLIA_COLLECTIONS = [
 ];
 
 export const IMAGE_CACHE_AGE = 31536000; //  1 year in seconds
+
+export const AVATAR_COLLECTION_PROD = '0x8b1d2626248961d63460368a642329071fbbf478';
+export const AVATAR_COLLECTION_TEST = '0x439c87f97ece722312162a0b60bb27deb6908ab9';

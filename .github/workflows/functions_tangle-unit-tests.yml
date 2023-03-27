@@ -1705,9 +1705,9 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/token.based.voting/token.based.voting_5.spec.ts &&
                 npm run test-tangle:ci -- --findRelatedTests ./test-tangle/token.claim.minted.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/token.mint/token.mint_1.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/token.mint/token.mint_2.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/token.mint/token.mint_1.spec.ts 
              " --project dev --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -1758,9 +1758,9 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/token.mint/token.mint_2.spec.ts &&
                 npm run test-tangle:ci -- --findRelatedTests ./test-tangle/token.mint/token.mint_3.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/token.mint/token.mint_4.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/trade-base-token-order.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/token.mint/token.mint_4.spec.ts 
              " --project dev --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -1811,9 +1811,9 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/trade-base-token-order.spec.ts &&
                 npm run test-tangle:ci -- --findRelatedTests ./test-tangle/tran.match.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_1.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_10.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_1.spec.ts 
              " --project dev --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -1864,9 +1864,9 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_10.spec.ts &&
                 npm run test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_11.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_12.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_13.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_12.spec.ts 
              " --project dev --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -1917,9 +1917,9 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_13.spec.ts &&
                 npm run test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_2.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_3.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_4.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_3.spec.ts 
              " --project dev --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -1970,9 +1970,9 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_4.spec.ts &&
                 npm run test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_5.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_6.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_7.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_6.spec.ts 
              " --project dev --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2023,9 +2023,9 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_7.spec.ts &&
                 npm run test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_8.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_9.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/web3/web3_1.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_9.spec.ts 
              " --project dev --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2076,9 +2076,9 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/web3/web3_1.spec.ts &&
                 npm run test-tangle:ci -- --findRelatedTests ./test-tangle/web3/web3_2.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/web3/web3_3.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1_a.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/web3/web3_3.spec.ts 
              " --project dev --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2129,9 +2129,9 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1_a.spec.ts &&
                 npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1_b.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1_c.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_10_1.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1_c.spec.ts 
              " --project dev --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2182,9 +2182,9 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_10_1.spec.ts &&
                 npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_10_2.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_10_3.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_11.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_10_3.spec.ts 
              " --project dev --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2235,9 +2235,9 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_11.spec.ts &&
                 npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_12_a.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_12_b.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_13.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_12_b.spec.ts 
              " --project dev --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2288,9 +2288,9 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_13.spec.ts &&
                 npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_14.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_2.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_4.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_2.spec.ts 
              " --project dev --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2341,9 +2341,9 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_5.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_6.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_7.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_4_b.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_4.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_5.spec.ts 
              " --project dev --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2394,9 +2394,9 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_8.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_9.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/workflow-online.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_6.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_7.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_8.spec.ts 
              " --project dev --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2447,6 +2447,8 @@ jobs:
       - name: Test
         working-directory: packages/functions
         run: npm run milestone-sync & firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_9.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests ./test-tangle/workflow-online.spec.ts &&
                 npm run test-tangle:ci -- --findRelatedTests ./test-tangle/workflow.spec.ts 
              " --project dev --export-on-exit=./firestore-data
       - name: Archive firestore data

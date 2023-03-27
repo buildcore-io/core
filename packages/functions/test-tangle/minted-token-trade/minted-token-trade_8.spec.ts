@@ -2,7 +2,7 @@
 
 import { COL, MIN_IOTA_AMOUNT, TokenTradeOrderType, WenError } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
-import { tradeToken } from '../../src/controls/token-trading/token-trade.controller';
+import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
@@ -31,7 +31,7 @@ describe('Token minting', () => {
       price: MIN_IOTA_AMOUNT,
       type: TokenTradeOrderType.SELL,
     });
-    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.token_not_approved.key);
+    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.token_does_not_exist.key);
 
     // Should throw at buy, not approved, not public
     await admin
@@ -44,7 +44,7 @@ describe('Token minting', () => {
       price: MIN_IOTA_AMOUNT,
       type: TokenTradeOrderType.BUY,
     });
-    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.token_not_approved.key);
+    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.token_does_not_exist.key);
 
     // Should create sell order, not approved, but public
     await admin

@@ -9,7 +9,7 @@ import { MemberCardModule } from '@components/member/components/member-card/memb
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { ShareModule } from '@components/share/share.module';
-import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
+import { ResizeAvatarModule } from '@core/pipes/resize-avatar/resize-avatar.module';
 import { AwardInfoModule } from '@pages/award/pages/award/award-info/award-info.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
@@ -58,7 +58,7 @@ import { DataService } from './services/data.service';
     IpfsBadgeModule,
     AwardRoutingModule,
     MarkDownModule,
-    IpfsAvatarModule,
+    ResizeAvatarModule,
     ReactiveFormsModule,
     MemberCardModule,
     NzButtonModule,

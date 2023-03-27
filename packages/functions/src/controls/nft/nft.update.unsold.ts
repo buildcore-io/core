@@ -1,11 +1,12 @@
 import { COL, Nft, WenError } from '@soonaverse/interfaces';
-import { TransactionRunner } from '../../database/Database';
+import { soonDb } from '../../database/wrapper/soondb';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 
 export const updateUnsoldNftControl = async (owner: string, params: Record<string, unknown>) =>
-  TransactionRunner.runTransaction(async (transaction) => {
-    const nft = await transaction.getById<Nft>(COL.NFT, params.uid as string);
+  soonDb().runTransaction(async (transaction) => {
+    const nftDocRef = soonDb().doc(`${COL.NFT}/${params.uid}`);
+    const nft = await transaction.get<Nft>(nftDocRef);
     if (!nft) {
       throw throwInvalidArgument(WenError.nft_does_not_exists);
     }
@@ -19,6 +20,6 @@ export const updateUnsoldNftControl = async (owner: string, params: Record<strin
       throw throwInvalidArgument(WenError.hidden_nft);
     }
     await assertIsGuardian(nft.space, owner);
-    transaction.update({ col: COL.NFT, data: { uid: nft.uid, ...params }, action: 'update' });
+    transaction.update(nftDocRef, params);
     return { ...nft, ...params };
   });

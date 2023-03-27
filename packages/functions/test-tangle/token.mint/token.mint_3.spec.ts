@@ -13,9 +13,9 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
-import { mintTokenOrder } from '../../src/controls/token-minting/token-mint.control';
-import { tradeToken } from '../../src/controls/token-trading/token-trade.controller';
-import { setTokenAvailableForSale } from '../../src/controls/token.control';
+import { setTokenAvailableForSale } from '../../src/runtime/firebase/token/base';
+import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
+import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import {
   expectThrow,

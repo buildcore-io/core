@@ -12,7 +12,7 @@ import {
 import bigInt from 'big-integer';
 import admin from '../../src/admin.config';
 import { creditUnrefundable } from '../../src/runtime/firebase/credit/index';
-import { tradeToken } from '../../src/controls/token-trading/token-trade.controller';
+import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';

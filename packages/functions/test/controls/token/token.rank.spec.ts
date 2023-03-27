@@ -10,7 +10,7 @@ import {
 } from '@soonaverse/interfaces';
 import admin from '../../../src/admin.config';
 import { rankController } from '../../../src/controls/rank.control';
-import { createToken } from '../../../src/controls/token.control';
+import { createToken } from '../../../src/runtime/firebase/token/base';
 import * as config from '../../../src/utils/config.utils';
 import { cOn } from '../../../src/utils/dateTime.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
@@ -40,6 +40,7 @@ const dummyToken = (space: string) =>
     overviewGraphics: MEDIA,
     termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
     access: 0,
+    decimals: 6,
   } as any);
 
 describe('Token rank test', () => {

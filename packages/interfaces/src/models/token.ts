@@ -104,6 +104,8 @@ export interface Token extends BaseRecord {
   readonly tradingDisabled?: boolean;
 
   readonly votes?: VoteStats;
+
+  readonly decimals: number;
 }
 
 export enum TokenDropStatus {

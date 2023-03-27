@@ -16,7 +16,7 @@ import {
   cancelPublicSale,
   orderToken,
   setTokenAvailableForSale,
-} from '../../../src/controls/token.control';
+} from '../../../src/runtime/firebase/token/base/index';
 import { dateToTimestamp, serverTime } from '../../../src/utils/dateTime.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../../set-up';

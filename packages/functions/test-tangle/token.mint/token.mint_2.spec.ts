@@ -3,7 +3,7 @@
 import { addressBalance } from '@iota/iota.js-next';
 import { COL, Member, Token, TokenStatus, TransactionType, WenError } from '@soonaverse/interfaces';
 import admin from '../../src/admin.config';
-import { mintTokenOrder } from '../../src/controls/token-minting/token-mint.control';
+import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { getAddress } from '../../src/utils/address.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { expectThrow, mockWalletReturnValue, wait } from '../../test/controls/common';

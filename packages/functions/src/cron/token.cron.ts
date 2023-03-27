@@ -2,6 +2,7 @@ import { COL, TokenStatus, TokenTradeOrder, TokenTradeOrderStatus } from '@soona
 import dayjs from 'dayjs';
 import * as admin from 'firebase-admin';
 import { isEmpty } from 'lodash';
+import { FirestoreTransaction } from '../database/wrapper/firestore';
 import { guardedRerun } from '../utils/common.utils';
 import { dateToTimestamp, uOn } from '../utils/dateTime.utils';
 import { cancelTradeOrderUtil } from '../utils/token-trade.utils';
@@ -33,7 +34,13 @@ export const cancelExpiredSale = async () => {
       const promises = (isEmpty(docRefs) ? [] : await transaction.getAll(...docRefs))
         .map((d) => <TokenTradeOrder>d.data())
         .filter((d) => d.status === TokenTradeOrderStatus.ACTIVE)
-        .map((d) => cancelTradeOrderUtil(transaction, d, TokenTradeOrderStatus.EXPIRED));
+        .map((d) =>
+          cancelTradeOrderUtil(
+            new FirestoreTransaction(admin.firestore(), transaction),
+            d,
+            TokenTradeOrderStatus.EXPIRED,
+          ),
+        );
 
       return (await Promise.all(promises)).length;
     });

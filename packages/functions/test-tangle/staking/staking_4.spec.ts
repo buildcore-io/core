@@ -16,9 +16,9 @@ import {
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import admin from '../../src/admin.config';
-import { claimMintedTokenOrder } from '../../src/controls/token-minting/claim-minted-token.control';
 import { stakeRewardCronTask } from '../../src/cron/stakeReward.cron';
 import { retryWallet } from '../../src/cron/wallet.cron';
+import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';

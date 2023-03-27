@@ -337,7 +337,7 @@
                 <td [routerLink]="['/member', item.member.uid]" class="cursor-pointer">
                   <nz-avatar
                     nzIcon="user"
-                    [nzSrc]="item.member.currentProfileImage | ipfsAvatar:filesizes.small"
+                    [nzSrc]="item.member.avatar | resizeAvatar:filesizes.small"
                     class="mr-2"
                     [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 32"
                   >
@@ -594,7 +594,7 @@
       <nz-card i18n-nzTitle nzTitle="Owned by" class="mt-4" *ngIf="data.owner$ | async">
         <a [routerLink]="['/member', (data.owner$ | async)?.uid]" class="flex items-center">
           <nz-avatar
-            [nzSrc]="(data.owner$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
+            [nzSrc]="(data.owner$ | async)?.avatar | resizeAvatar:filesizes.small"
             class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-10"
             style="max-width: 32px; min-width: 32px"
             [nzSize]="32"

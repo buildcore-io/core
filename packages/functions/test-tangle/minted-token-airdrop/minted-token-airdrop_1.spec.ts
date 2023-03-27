@@ -19,8 +19,10 @@ import {
 import dayjs from 'dayjs';
 import { head } from 'lodash';
 import admin from '../../src/admin.config';
-import { airdropMintedToken } from '../../src/controls/token-minting/airdrop-minted-token';
-import { claimMintedTokenOrder } from '../../src/controls/token-minting/claim-minted-token.control';
+import {
+  airdropMintedToken,
+  claimMintedTokenOrder,
+} from '../../src/runtime/firebase/token/minting';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { expectThrow, mockWalletReturnValue, wait } from '../../test/controls/common';

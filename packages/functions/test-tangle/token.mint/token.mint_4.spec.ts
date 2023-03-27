@@ -10,8 +10,8 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
-import { mintTokenOrder } from '../../src/controls/token-minting/token-mint.control';
-import { cancelPublicSale, setTokenAvailableForSale } from '../../src/controls/token.control';
+import { cancelPublicSale, setTokenAvailableForSale } from '../../src/runtime/firebase/token/base';
+import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';

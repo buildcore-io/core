@@ -5,7 +5,6 @@ import {
   Network,
   Proposal,
   ProposalMember,
-  ProposalSubType,
   ProposalType,
   Space,
   SUB_COL,
@@ -64,6 +63,7 @@ export class Helper {
         space: this.space.uid,
         status: TokenStatus.MINTED,
         mintingData: { tokenId: MINTED_TOKEN_ID },
+        approved: true,
       });
 
     const distributionDocRef = admin
@@ -200,7 +200,6 @@ const proposalRequest = (space: string, type: ProposalType) => ({
     onlyGuardians: false,
   },
   type,
-  subType: ProposalSubType.ONE_MEMBER_ONE_VOTE,
   questions: [
     {
       text: 'Give all the funds to the HORNET developers?',

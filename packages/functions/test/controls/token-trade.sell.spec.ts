@@ -13,9 +13,8 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import admin from '../../src/admin.config';
-import { cancelTradeOrder } from '../../src/controls/token-trading/token-trade-cancel.controller';
-import { tradeToken } from '../../src/controls/token-trading/token-trade.controller';
-import { enableTokenTrading } from '../../src/controls/token.control';
+import { enableTokenTrading } from '../../src/runtime/firebase/token/base';
+import { cancelTradeOrder, tradeToken } from '../../src/runtime/firebase/token/trading';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import {
@@ -217,7 +216,7 @@ describe('Trade controller, sell token', () => {
       count: 8,
       type: TokenTradeOrderType.SELL,
     });
-    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.token_not_approved.key);
+    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.token_does_not_exist.key);
   });
 
   it('Should throw, precision too much', async () => {
