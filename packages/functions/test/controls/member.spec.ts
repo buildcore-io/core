@@ -10,14 +10,10 @@ let walletSpy: any;
 describe('MemberController: ' + WEN_FUNC.cMemberNotExists, () => {
   it('successfully create member', async () => {
     const dummyAddress = wallet.getRandomEthAddress();
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    mockWalletReturnValue(walletSpy, dummyAddress, {});
-
     const member = await testEnv.wrap(createMember)(dummyAddress);
     expect(member?.uid).toEqual(dummyAddress.toLowerCase());
     expect(member?.createdOn).toBeDefined();
     expect(member?.updatedOn).toBeDefined();
-    walletSpy.mockRestore();
   });
 });
 
