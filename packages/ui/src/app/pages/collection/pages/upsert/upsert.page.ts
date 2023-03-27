@@ -21,7 +21,6 @@ import { NavigationService } from '@core/services/navigation/navigation.service'
 import { NotificationService } from '@core/services/notification';
 import { enumToArray } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   Access,
@@ -33,7 +32,6 @@ import {
   DEFAULT_NETWORK,
   DISCORD_REGEXP,
   DiscountLine,
-  NftAvailableFromDateMin,
   Space,
   Token,
   TWITTER_REGEXP,
@@ -515,10 +513,7 @@ export class UpsertPage implements OnInit, OnDestroy {
     if (
       startValue.getTime() <
       dayjs()
-        .add(
-          environment.production ? NftAvailableFromDateMin.value : -1 * 24 * 60 * 60 * 1000,
-          'ms',
-        )
+        .subtract(24 * 60 * 60 * 1000)
         .toDate()
         .getTime()
     ) {
@@ -537,15 +532,10 @@ export class UpsertPage implements OnInit, OnDestroy {
   }
 
   public disabledDateTime(startValue: Date | Date[]): DisabledTimeConfig {
-    if (
-      !Array.isArray(startValue) &&
-      dayjs(startValue).isSame(dayjs().add(NftAvailableFromDateMin.value, 'ms'), 'day')
-    ) {
+    if (!Array.isArray(startValue) && dayjs(startValue).isSame(dayjs(), 'day')) {
       return {
-        nzDisabledHours: () =>
-          this.range(0, dayjs().add(NftAvailableFromDateMin.value, 'ms').hour()),
-        nzDisabledMinutes: () =>
-          this.range(0, dayjs().add(NftAvailableFromDateMin.value, 'ms').minute()),
+        nzDisabledHours: () => this.range(0, dayjs().hour()),
+        nzDisabledMinutes: () => this.range(0, dayjs().minute()),
         nzDisabledSeconds: () => [],
       };
     } else {
