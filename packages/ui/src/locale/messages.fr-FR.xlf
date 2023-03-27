@@ -1896,7 +1896,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.ts</context>
           <context context-type="linenumber">208</context>
         </context-group>
-        <target state="translated">Transaction en cours de traitement.</target>
+        <target state="translated">Transaction en cours de validation.</target>
       </trans-unit>
       <trans-unit id="2538082719897429511" datatype="html">
         <source>Transaction confirmed.</source>
@@ -6418,7 +6418,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">210,219</context>
         </context-group>
-        <target state="translated"> Rendements Passifs en Staking <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle             [size]=&quot;18&quot;             class=&quot;float-right ml-2 text-icons-secondary dark:text-icons-secondary-dark&quot;             nz-tooltip             i18n-nzTooltipTitle             nzTooltipTitle=&quot;Staked amount * Rewards Multiplier&quot;           &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;/d"/></target>
+        <target state="translated"> Rendements en Staking <x id="START_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;wen-icon-question-circle             [size]=&quot;18&quot;             class=&quot;float-right ml-2 text-icons-secondary dark:text-icons-secondary-dark&quot;             nz-tooltip             i18n-nzTooltipTitle             nzTooltipTitle=&quot;Staked amount * Rewards Multiplier&quot;           &gt;"/><x id="CLOSE_TAG_WEN_ICON_QUESTION_CIRCLE" ctype="x-wen_icon_question_circle" equiv-text="&lt;/d"/></target>
       </trans-unit>
       <trans-unit id="2619520312264979459" datatype="html">
         <source>Staked amount * Rewards Multiplier</source>
@@ -6686,7 +6686,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="translated">Faire un vote</target>
+        <target state="translated">Participer au Vote</target>
       </trans-unit>
       <trans-unit id="1669185263898985643" datatype="html">
         <source> Question </source>
@@ -6718,7 +6718,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">88,89</context>
         </context-group>
-        <target state="translated"> Total des jetons natifs </target>
+        <target state="translated"> Montant total de tokens natifs </target>
       </trans-unit>
       <trans-unit id="2801524532428962383" datatype="html">
         <source> Total staked tokens </source>
@@ -6734,7 +6734,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">119,120</context>
         </context-group>
-        <target state="translated"> Le vote est actif le </target>
+        <target state="translated"> Le système de vote sera opérationnel le </target>
       </trans-unit>
       <trans-unit id="4493470914915801104" datatype="html">
         <source> Your total voting weight </source>
@@ -6758,7 +6758,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">193</context>
         </context-group>
-        <target state="translated">Faire un vote</target>
+        <target state="translated">Participer aux Votes</target>
       </trans-unit>
       <trans-unit id="8582615186038213404" datatype="html">
         <source>Send Native Tokens</source>
@@ -6766,7 +6766,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.ts</context>
           <context context-type="linenumber">124</context>
         </context-group>
-        <target state="translated">Envoyer les jetons natifs</target>
+        <target state="translated">Envoyez des Tokens Natifs</target>
       </trans-unit>
       <trans-unit id="1138430762589156166" datatype="html">
         <source>Use Staked Tokens</source>
@@ -6774,7 +6774,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.ts</context>
           <context context-type="linenumber">128</context>
         </context-group>
-        <target state="translated">Utiliser les jetons stakés</target>
+        <target state="translated">Utilisez des Tokens Stakés</target>
       </trans-unit>
       <trans-unit id="5389248267529904597" datatype="html">
         <source>Vote received.</source>
@@ -6782,7 +6782,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.ts</context>
           <context context-type="linenumber">191</context>
         </context-group>
-        <target state="translated">Vote reçu.</target>
+        <target state="translated">Confirmation de Réception du Vote.</target>
       </trans-unit>
       <trans-unit id="7239551635073899682" datatype="html">
         <source>Transaction confirmed and funds refunded.</source>
@@ -6790,7 +6790,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.ts</context>
           <context context-type="linenumber">217</context>
         </context-group>
-        <target state="translated">Transaction confirmée et fonds remboursés.</target>
+        <target state="translated">Confirmation de la transaction et versements d'indemnités effectués.</target>
       </trans-unit>
       <trans-unit id="943552711706647465" datatype="html">
         <source>Token vote executed.</source>
@@ -6798,7 +6798,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.ts</context>
           <context context-type="linenumber">375</context>
         </context-group>
-        <target state="translated">Vote de jeton exécuté.</target>
+        <target state="translated">Un vote associé au token a été effectué.</target>
       </trans-unit>
       <trans-unit id="34777720354479263" datatype="html">
         <source>Token vote order created.</source>
@@ -7046,7 +7046,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award-info/award-info.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
-        <target state="translated">Infos sur la récompense</target>
+        <target state="translated">Prime : Infos</target>
       </trans-unit>
       <trans-unit id="3715596725146409911" datatype="html">
         <source>Owner</source>
@@ -7070,7 +7070,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award-info/award-info.component.ts</context>
           <context context-type="linenumber">20</context>
         </context-group>
-        <target state="translated">Période de verrouillage du badge</target>
+        <target state="translated">Durée de verrouillage du badge</target>
       </trans-unit>
       <trans-unit id="522350230764713670" datatype="html">
         <source>Award info</source>
@@ -7082,7 +7082,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">17</context>
         </context-group>
-        <target state="translated">Info Prime</target>
+        <target state="translated">Prime : Infos</target>
       </trans-unit>
       <trans-unit id="6301422640529959906" datatype="html">
         <source>Minted on:</source>
@@ -7102,7 +7102,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">121,122</context>
         </context-group>
-        <target state="translated"> Financer une récompense </target>
+        <target state="translated"> Financement de la Prime </target>
       </trans-unit>
       <trans-unit id="1941285608714830379" datatype="html">
         <source> Minting in Progress </source>
@@ -7122,7 +7122,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">210</context>
         </context-group>
-        <target state="translated">Vérifiez votre prime</target>
+        <target state="translated">Vérifier la prime</target>
       </trans-unit>
       <trans-unit id="4274407677127610120" datatype="html">
         <source>Reject Award</source>
@@ -7130,7 +7130,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">157</context>
         </context-group>
-        <target state="translated">Rejeter la récompense</target>
+        <target state="translated">Rejeter la Prime</target>
       </trans-unit>
       <trans-unit id="4207094385815311412" datatype="html">
         <source>Confirm your participation</source>
@@ -7154,7 +7154,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">180</context>
         </context-group>
-        <target state="translated">Veuillez joindre une description ou fournir un lien vers votre activité.</target>
+        <target state="translated">Veuillez joindre une description ou fournir un lien vers votre activité de travail.</target>
       </trans-unit>
       <trans-unit id="935187492052582731" datatype="html">
         <source>Submit</source>
@@ -7598,7 +7598,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">284,285</context>
         </context-group>
-        <target state="translated"> Total à financer </target>
+        <target state="translated"> Montant total destiné à être financé </target>
       </trans-unit>
       <trans-unit id="6397238972858825654" datatype="html">
         <source>Upload image that will be used as a Reward Badge.</source>
@@ -7702,7 +7702,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/participants/participants.page.ts</context>
           <context context-type="linenumber">83</context>
         </context-group>
-        <target state="translated">Récompense -</target>
+        <target state="translated">Prime -</target>
       </trans-unit>
       <trans-unit id="733041191345531116" datatype="html">
         <source>Find Participant</source>
@@ -7722,7 +7722,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.html</context>
           <context context-type="linenumber">63</context>
         </context-group>
-        <target state="translated">Recherche de Participant</target>
+        <target state="translated">Rechercher un Participant</target>
       </trans-unit>
       <trans-unit id="6157188013889386517" datatype="html">
         <source>Showing only few top records...</source>
@@ -7766,7 +7766,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/participants/participants.page.html</context>
           <context context-type="linenumber">138,139</context>
         </context-group>
-        <target state="translated"> Nouvelle Récompense </target>
+        <target state="translated"> Nouvelle récompense </target>
       </trans-unit>
       <trans-unit id="4416413576346763682" datatype="html">
         <source>Pending</source>
@@ -7818,7 +7818,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/participants/participants.page.ts</context>
           <context context-type="linenumber">257</context>
         </context-group>
-        <target state="translated">soumission déposée le</target>
+        <target state="translated">votre demande de participation a été soumise le</target>
       </trans-unit>
       <trans-unit id="8924460460059393072" datatype="html">
         <source> Make NFT’s from this collection available on decentralised network. </source>
@@ -7902,7 +7902,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">118,119</context>
         </context-group>
-        <target state="translated"> Les détenteurs d'au moins un NFT ayant été sélectionné dans chaque Collection </target>
+        <target state="translated"> Il faut détenir au moins un NFT de chaque Collection sélectionnée </target>
       </trans-unit>
       <trans-unit id="1486015525220675253" datatype="html">
         <source> (One NFT per member) </source>
@@ -7986,7 +7986,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.html</context>
           <context context-type="linenumber">73,74</context>
         </context-group>
-        <target state="translated"> Classement mondial </target>
+        <target state="translated"> Rank </target>
       </trans-unit>
       <trans-unit id="2161224914165493901" datatype="html">
         <source>Starts at</source>
@@ -7994,7 +7994,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">189</context>
         </context-group>
-        <target state="translated">Date de lancement</target>
+        <target state="translated">La vente débutera à</target>
       </trans-unit>
       <trans-unit id="7775354865820756771" datatype="html">
         <source>Deposited</source>
@@ -8002,7 +8002,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">200</context>
         </context-group>
-        <target state="translated">Déposé</target>
+        <target state="translated">Déposée</target>
       </trans-unit>
       <trans-unit id="7981718961128890730" datatype="html">
         <source>Staked</source>
@@ -8010,7 +8010,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">218</context>
         </context-group>
-        <target state="translated">Staké</target>
+        <target state="translated">Stakée</target>
       </trans-unit>
       <trans-unit id="7565716024468232322" datatype="html">
         <source>Links</source>
@@ -8058,7 +8058,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">392</context>
         </context-group>
-        <target state="translated">Annuler la collection</target>
+        <target state="translated">Supprimer la Collection</target>
       </trans-unit>
       <trans-unit id="6742195391489882590" datatype="html">
         <source>Create NFT</source>
@@ -8230,7 +8230,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">18</context>
         </context-group>
-        <target state="translated">Collection Guide Info</target>
+        <target state="translated">Collection : Infos</target>
       </trans-unit>
       <trans-unit id="1253584756816116322" datatype="html">
         <source>Name and description will be included on the Collection.</source>
@@ -8238,7 +8238,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">20</context>
         </context-group>
-        <target state="translated">Le nom et la description seront inclus dans la Collection.</target>
+        <target state="translated">La dénomination et la description seront incluses dans la Collection.</target>
       </trans-unit>
       <trans-unit id="1152217532438453452" datatype="html">
         <source>Sales info</source>
@@ -8394,7 +8394,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">257</context>
         </context-group>
-        <target state="needs-translation">Type awarded token...</target>
+        <target state="translated">Saisir le token que vous avez reçu en récompenses...</target>
       </trans-unit>
       <trans-unit id="875494721798124100" datatype="html">
         <source>Discount %</source>
@@ -10142,7 +10142,7 @@
           <context context-type="sourcefile">src/app/pages/pool/pages/market/pool.page.html</context>
           <context context-type="linenumber">20,21</context>
         </context-group>
-        <target state="translated"> Qu'est-ce qu'un Pool ? </target>
+        <target state="translated"> Qu'est-ce qu'un Pool ? </target>
       </trans-unit>
       <trans-unit id="1981478456598084810" datatype="html">
         <source> Anyone can become a liquidity provider (LP) by depositing an equivalent value of each underlying token in return for pool tokens. These tokens track pro-rata LP shares of the total reserves, and can be redeemed for the underlying assets at any time. </source>
@@ -10482,7 +10482,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
           <context context-type="linenumber">23,24</context>
         </context-group>
-        <target state="needs-translation"> Change Vote </target>
+        <target state="translated"> Modifier le Vote </target>
       </trans-unit>
       <trans-unit id="4724170629105755794" datatype="html">
         <source> Vote Now </source>
@@ -10490,7 +10490,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
           <context context-type="linenumber">26,27</context>
         </context-group>
-        <target state="needs-translation"> Vote Now </target>
+        <target state="translated"> Votez dès Maintenant </target>
       </trans-unit>
       <trans-unit id="1263780838220828223" datatype="html">
         <source>Voting starts</source>
@@ -10706,7 +10706,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.html</context>
           <context context-type="linenumber">101,102</context>
         </context-group>
-        <target state="needs-translation">(weight: <x id="INTERPOLATION" equiv-text="{{(data.proposal$ | async)?.results?.answers?.[a.value] || 0 | number :                 '1.0-2'}}"/>)</target>
+        <target state="translated">(poids : <x id="INTERPOLATION" equiv-text="{{(data.proposal$ | async)?.results?.answers?.[a.value] || 0 | number :                 '1.0-2'}}"/>)</target>
       </trans-unit>
       <trans-unit id="8944543613835375251" datatype="html">
         <source>Selected Badges</source>
@@ -12403,7 +12403,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">132,133</context>
         </context-group>
-        <target state="needs-translation"> Mint &amp; Approve Token </target>
+        <target state="translated"> Mint &amp; Validez le Token </target>
       </trans-unit>
       <trans-unit id="7505091927294166710" datatype="html">
         <source> Minting in progress </source>

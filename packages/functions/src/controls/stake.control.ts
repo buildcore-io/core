@@ -8,7 +8,6 @@ import {
   Member,
   MIN_WEEKS_TO_STAKE,
   Proposal,
-  ProposalSubType,
   ProposalType,
   REMOVE_STAKE_REWARDS_THRESHOLD_PERCENTAGE,
   StakeReward,
@@ -268,7 +267,6 @@ const createUpdateSpaceProposal = (
     additionalInfo: additionalInfo + getDescription(stakeRewards),
     space,
     type: ProposalType.REMOVE_STAKE_REWARD,
-    subType: ProposalSubType.ONE_MEMBER_ONE_VOTE,
     approved: true,
     rejected: false,
     settings: {

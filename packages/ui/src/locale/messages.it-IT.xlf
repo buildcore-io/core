@@ -1014,7 +1014,7 @@
           <context context-type="sourcefile">src/app/components/algolia/services/algolia.service.ts</context>
           <context context-type="linenumber">36</context>
         </context-group>
-        <target state="translated">Solo Membri dello Spazio</target>
+        <target state="translated">Solo i Membri dello Spazio</target>
       </trans-unit>
       <trans-unit id="4826423340795886750" datatype="html">
         <source>Members With Badge Only</source>
@@ -1528,7 +1528,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-mint-network/token-mint-network.component.html</context>
           <context context-type="linenumber">146,148</context>
         </context-group>
-        <target state="translated"> Una volta accettate le condizioni di acquisto, l'indirizzo generato rimarrà in vigore per tutto il processo di creazione. </target>
+        <target state="translated"> Una volta accettate le condizioni di acquisto, l'indirizzo generato rimarrà in vigore per tutto il processo di minting. </target>
       </trans-unit>
       <trans-unit id="2425176902066414533" datatype="html">
         <source> Use deeplink to make the transfer. Unfortunatelly no manual entry supported by Firefly. </source>
@@ -1692,7 +1692,7 @@
           <context context-type="sourcefile">src/app/components/award/components/award-mint/award-mint.component.ts</context>
           <context context-type="linenumber">83</context>
         </context-group>
-        <target state="translated">Info Predisposizione di bilancio</target>
+        <target state="translated">Info: predisposizione di bilancio</target>
       </trans-unit>
       <trans-unit id="8296987453705264149" datatype="html">
         <source>Make transaction</source>
@@ -1896,7 +1896,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.ts</context>
           <context context-type="linenumber">208</context>
         </context-group>
-        <target state="translated">La transazione è in fase di elaborazione.</target>
+        <target state="translated">Convalida della transazione in corso.</target>
       </trans-unit>
       <trans-unit id="2538082719897429511" datatype="html">
         <source>Transaction confirmed.</source>
@@ -2197,7 +2197,7 @@
           <context context-type="sourcefile">src/app/components/award/components/award-status/award-status.component.html</context>
           <context context-type="linenumber">5,6</context>
         </context-group>
-        <target state="translated">Richiesta di Finanziamento in Attesa di approvazione 
+        <target state="translated">Richiesta di Finanziamento in Attesa di Approvazione 
 </target>
       </trans-unit>
       <trans-unit id="6390262366094210912" datatype="html">
@@ -2211,7 +2211,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-status/collection-status.component.html</context>
           <context context-type="linenumber">11,12</context>
         </context-group>
-        <target state="translated">Respinto
+        <target state="translated">Declinata
 </target>
       </trans-unit>
       <trans-unit id="1161299114153631702" datatype="html">
@@ -2496,7 +2496,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">141,143</context>
         </context-group>
-        <target state="translated"> Una volta completato il processo di creazione del token, le impostazioni della collezione non potranno più essere modificate e non sarà più possibile aggiungere nuovi NFT alla collezione </target>
+        <target state="translated"> Una volta completato il processo di mint, le impostazioni della collezione non potranno più essere modificate e non sarà più possibile aggiungere un altro NFT alla collezione </target>
       </trans-unit>
       <trans-unit id="5725076132337609001" datatype="html">
         <source>By checking this box, you acknowledge that all active sales of this collection’s NFTs will be cancelled.</source>
@@ -2504,7 +2504,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">150</context>
         </context-group>
-        <target state="translated">Selezionando questa casella si acconsente alla cancellazione di tutte le attività operative di vendita di questa collezione NFT.</target>
+        <target state="translated">Selezionando questa casella si acconsente alla cancellazione di tutte le attività operative di vendita di questa collezione di NFT.</target>
       </trans-unit>
       <trans-unit id="8662905884464724150" datatype="html">
         <source> Confirm &amp; Start minting </source>
@@ -2656,7 +2656,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-mint-network/collection-mint-network.component.html</context>
           <context context-type="linenumber">318</context>
         </context-group>
-        <target state="translated">Importo Totale dei Costi di Stoccaggio</target>
+        <target state="translated">Importo Totale delle Spese di Stoccaggio</target>
       </trans-unit>
       <trans-unit id="7641106209540662730" datatype="html">
         <source>(NFTs Storage Fee + Collection Storage Fee)</source>
@@ -3044,7 +3044,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.ts</context>
           <context context-type="linenumber">44</context>
         </context-group>
-        <target state="translated">Informazioni su</target>
+        <target state="translated">A proposito di</target>
       </trans-unit>
       <trans-unit id="1013259492339547143" datatype="html">
         <source>A brief description of yourself shown on your profile.</source>
@@ -3461,7 +3461,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">61,62</context>
         </context-group>
-        <target state="translated"> Le royalties saranno versate a </target>
+        <target state="translated"> Le royalties vengono versate a </target>
       </trans-unit>
       <trans-unit id="187187500641108332" datatype="html">
         <source>
@@ -4342,7 +4342,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-fixed-price/nft-sale-fixed-price.component.html</context>
           <context context-type="linenumber">103,104</context>
         </context-group>
-        <target state="translated"> Vendita Aperta </target>
+        <target state="translated"> Asta Aperta </target>
       </trans-unit>
       <trans-unit id="5677952911661944948" datatype="html">
         <source> Specific member(s) </source>
@@ -4486,7 +4486,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-stake/nft-stake.component.html</context>
           <context context-type="linenumber">207</context>
         </context-group>
-        <target state="translated">Hai già fatto staking con questo NFT.</target>
+        <target state="translated">È già stato fatto staking con questo NFT.</target>
       </trans-unit>
       <trans-unit id="2085041511399786443" datatype="html">
         <source> See Collection </source>
@@ -4702,7 +4702,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-stake/token-stake.component.html</context>
           <context context-type="linenumber">251,252</context>
         </context-group>
-        <target state="translated"> Confermare e creare un indirizzo </target>
+        <target state="translated"> Conferma e crea un indirizzo </target>
       </trans-unit>
       <trans-unit id="3223994057392000560" datatype="html">
         <source>Claim complete. Congratulations.</source>
@@ -4814,7 +4814,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-reward-schedule/space-reward-schedule.component.html</context>
           <context context-type="linenumber">93,95</context>
         </context-group>
-        <target state="translated"> Per una pianificazione del programma delle nuove ricompense di staking, fare clic qui. A tal fine è necessario caricare un file CSV che includa le informazioni sulla distribuzione e gli indirizzi degli utenti. </target>
+        <target state="translated"> Per una pianificazione del programma delle nuove ricompense di staking clicca qui. A tal fine è necessario caricare un file Csv che includa le informazioni sulla distribuzione e gli indirizzi degli utenti. </target>
       </trans-unit>
       <trans-unit id="3604386807230411192" datatype="html">
         <source>Start Date</source>
@@ -5318,7 +5318,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel-sale/token-cancel-sale.component.html</context>
           <context context-type="linenumber">17</context>
         </context-group>
-        <target state="translated">È sicuro di volere annullare la vendita?</target>
+        <target state="translated">Sei sicuro di volere annullare la vendita?</target>
       </trans-unit>
       <trans-unit id="185671227521588375" datatype="html">
         <source> Once the sale is cancelled process will trigger automatically and all investors will be refunded immediately. </source>
@@ -5326,7 +5326,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel-sale/token-cancel-sale.component.html</context>
           <context context-type="linenumber">23,25</context>
         </context-group>
-        <target state="translated"> Un processo di rimborso automatizzato sarà attivato con la rinuncia all'acquisto al fine di consentire a tutti gli investitori di procedere a un immediato rimborso. </target>
+        <target state="translated"> Un processo di rimborso automatizzato sarà attivato con la rinuncia all'acquisto al fine di consentire il versamento immediato delle indennità a tutti gli investitori. </target>
       </trans-unit>
       <trans-unit id="960300885376951723" datatype="html">
         <source> Cancel sale </source>
@@ -5362,7 +5362,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.html</context>
           <context context-type="linenumber">66</context>
         </context-group>
-        <target state="translated"> È sicuro di volere annullare l'ordine di acquisto?</target>
+        <target state="translated"> Sei sicuro di volere annullare l'ordine di acquisto?</target>
       </trans-unit>
       <trans-unit id="2943613670345896363" datatype="html">
         <source> Are you sure you want to cancel your sell order?</source>
@@ -5370,7 +5370,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel/token-cancel.component.html</context>
           <context context-type="linenumber">69</context>
         </context-group>
-        <target state="translated"> È sicuro di volere annullare l'ordine di vendita?</target>
+        <target state="translated"> Sei sicuro di volere annullare l'ordine di vendita?</target>
       </trans-unit>
       <trans-unit id="6249484391846924804" datatype="html">
         <source> Confirm </source>
@@ -6554,7 +6554,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-trade-detail-modal/token-trade-detail-modal.component.html</context>
           <context context-type="linenumber">144</context>
         </context-group>
-        <target state="translated">Commissione di deposito e stoccaggio</target>
+        <target state="translated">Deposito e spese di stoccaggio</target>
       </trans-unit>
       <trans-unit id="3291381153613418025" datatype="html">
         <source>Fullfilment</source>
@@ -6686,7 +6686,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="translated">Trasmetti voto</target>
+        <target state="translated">Dai il Tuo Voto</target>
       </trans-unit>
       <trans-unit id="1669185263898985643" datatype="html">
         <source> Question </source>
@@ -6718,7 +6718,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">88,89</context>
         </context-group>
-        <target state="translated"> Token nativi totali </target>
+        <target state="translated"> Importo totale di token nativi </target>
       </trans-unit>
       <trans-unit id="2801524532428962383" datatype="html">
         <source> Total staked tokens </source>
@@ -6734,7 +6734,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">119,120</context>
         </context-group>
-        <target state="translated"> Votazione attiva su </target>
+        <target state="translated"> Il sistema di voto sarà operativo il </target>
       </trans-unit>
       <trans-unit id="4493470914915801104" datatype="html">
         <source> Your total voting weight </source>
@@ -6750,7 +6750,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">151,153</context>
         </context-group>
-        <target state="translated"> - Nota: i token con i quali è stato fatto staking possono essere utilizzati una sola volta per partecipare alla votazione. Il peso della tua partecipazione al voto sarà dimezzato se i token saranno già stati utilizzati per un'altra offerta. </target>
+        <target state="translated"> Nota: i token con i quali è stato fatto staking possono essere utilizzati una sola volta per partecipare alla votazione. Il peso della tua partecipazione al voto sarà dimezzato se i token con i quali è stato fatto staking saranno già stati utilizzati per un'altra offerta. </target>
       </trans-unit>
       <trans-unit id="5582494186843763678" datatype="html">
         <source>Cast Votes</source>
@@ -6758,7 +6758,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.html</context>
           <context context-type="linenumber">193</context>
         </context-group>
-        <target state="translated">Trasmetti Voti</target>
+        <target state="translated">Dai i Tuoi Voti</target>
       </trans-unit>
       <trans-unit id="8582615186038213404" datatype="html">
         <source>Send Native Tokens</source>
@@ -6774,7 +6774,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.ts</context>
           <context context-type="linenumber">128</context>
         </context-group>
-        <target state="translated">Usa token in stake</target>
+        <target state="translated">Usa Token di Staking</target>
       </trans-unit>
       <trans-unit id="5389248267529904597" datatype="html">
         <source>Vote received.</source>
@@ -6790,7 +6790,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.ts</context>
           <context context-type="linenumber">217</context>
         </context-group>
-        <target state="translated">Transazione confermata e fondi rimborsati.</target>
+        <target state="translated">Conferma della transazione e versamento dell'indennità effettuato.</target>
       </trans-unit>
       <trans-unit id="943552711706647465" datatype="html">
         <source>Token vote executed.</source>
@@ -6798,7 +6798,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-vote/token-vote.component.ts</context>
           <context context-type="linenumber">375</context>
         </context-group>
-        <target state="translated">Voto token eseguito.</target>
+        <target state="translated">Votazione token effettuata.</target>
       </trans-unit>
       <trans-unit id="34777720354479263" datatype="html">
         <source>Token vote order created.</source>
@@ -6830,7 +6830,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/manage-addresses/manage-addresses.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="translated">Gestisci indirizzi</target>
+        <target state="translated">Gestione degli indirizzi</target>
       </trans-unit>
       <trans-unit id="7761891876356262381" datatype="html">
         <source> Not yet verified</source>
@@ -6846,7 +6846,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/manage-addresses/manage-addresses.component.html</context>
           <context context-type="linenumber">66</context>
         </context-group>
-        <target state="translated"> Modifica </target>
+        <target state="translated"> Rinnovo </target>
       </trans-unit>
       <trans-unit id="1812429098722823159" datatype="html">
         <source> Verify </source>
@@ -6862,7 +6862,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">33</context>
         </context-group>
-        <target state="translated">L'invio di capitale viene richiesto al nuovo</target>
+        <target state="translated">Ti sarà chiesto di inviare capitale al nuovo</target>
       </trans-unit>
       <trans-unit id="442640129041331815" datatype="html">
         <source>address for the verification process. The address you send funds from will be linked to your</source>
@@ -6870,7 +6870,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">36,37</context>
         </context-group>
-        <target state="translated">indirizzo per il processo di approvazione. L'indirizzo dal quale viene inviato il capitale sarà collegato al tuo</target>
+        <target state="translated">indirizzo per il processo di approvazione. L'Indirizzo dal quale viene inviato il capitale sarà dotato di un link di collegamento con il tuo</target>
       </trans-unit>
       <trans-unit id="1717434159688656264" datatype="html">
         <source>space</source>
@@ -6902,7 +6902,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">55,56</context>
         </context-group>
-        <target state="translated"> Generare un nuovo indirizzo </target>
+        <target state="translated"> Genera un nuovo indirizzo </target>
       </trans-unit>
       <trans-unit id="8339972866659886806" datatype="html">
         <source>Send a small </source>
@@ -6950,7 +6950,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">174</context>
         </context-group>
-        <target state="translated">Ora puoi trattare gli NFTs e partecipare al trading dei token.</target>
+        <target state="translated">Adesso puoi scambiare NFT e partecipare al trading di token.</target>
       </trans-unit>
       <trans-unit id="2842762856463928843" datatype="html">
         <source>Your new address has been verified!</source>
@@ -6958,7 +6958,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">176</context>
         </context-group>
-        <target state="translated">Il processo di approvazione del nuovo indirizzo è stato completato!</target>
+        <target state="translated">Il processo di approvazione del tuo nuovo indirizzo è stato completato!</target>
       </trans-unit>
       <trans-unit id="2214536746976302698" datatype="html">
         <source> Finish Verification </source>
@@ -6966,7 +6966,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.html</context>
           <context context-type="linenumber">181,182</context>
         </context-group>
-        <target state="translated"> Completare La Verifica </target>
+        <target state="translated"> Completamento Processo di Approvazione </target>
       </trans-unit>
       <trans-unit id="8192132051305791752" datatype="html">
         <source>Generate address</source>
@@ -6974,7 +6974,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/verify-address/verify-address.component.ts</context>
           <context context-type="linenumber">76</context>
         </context-group>
-        <target state="translated">Generare l'indirizzo</target>
+        <target state="translated">Genera un indirizzo</target>
       </trans-unit>
       <trans-unit id="9179207171059033307" datatype="html">
         <source>Refunding your payment...</source>
@@ -6990,7 +6990,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/wallet-address.component.html</context>
           <context context-type="linenumber">4</context>
         </context-group>
-        <target state="translated">Controllo dell'indirizzo non effettuato</target>
+        <target state="translated">Indirizzo non verificato</target>
       </trans-unit>
       <trans-unit id="5836410887011743771" datatype="html">
         <source>wallet</source>
@@ -6998,7 +6998,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/wallet-address.component.html</context>
           <context context-type="linenumber">25</context>
         </context-group>
-        <target state="translated">portafogli</target>
+        <target state="translated">portafoglio digitale</target>
       </trans-unit>
       <trans-unit id="5990642021000137684" datatype="html">
         <source>Copy address</source>
@@ -7006,7 +7006,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/wallet-address.component.html</context>
           <context context-type="linenumber">30</context>
         </context-group>
-        <target state="translated">Copia indirizzo</target>
+        <target state="translated">Copia l'indirizzo</target>
       </trans-unit>
       <trans-unit id="7777716908827651954" datatype="html">
         <source>Verify your</source>
@@ -7046,7 +7046,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award-info/award-info.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
-        <target state="translated">Informazioni sulla ricompensa</target>
+        <target state="translated">Info: Premio</target>
       </trans-unit>
       <trans-unit id="3715596725146409911" datatype="html">
         <source>Owner</source>
@@ -7062,7 +7062,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award-info/award-info.component.ts</context>
           <context context-type="linenumber">18</context>
         </context-group>
-        <target state="translated">Distintivi usati / disponibili</target>
+        <target state="translated">Badge usati / disponibili</target>
       </trans-unit>
       <trans-unit id="3292810209141973314" datatype="html">
         <source>Badge lock period</source>
@@ -7070,7 +7070,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award-info/award-info.component.ts</context>
           <context context-type="linenumber">20</context>
         </context-group>
-        <target state="translated">Periodo di blocco badge</target>
+        <target state="translated">Periodo di blocco del badge</target>
       </trans-unit>
       <trans-unit id="522350230764713670" datatype="html">
         <source>Award info</source>
@@ -7082,7 +7082,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">17</context>
         </context-group>
-        <target state="translated">Info sul premio</target>
+        <target state="translated">Info: premio</target>
       </trans-unit>
       <trans-unit id="6301422640529959906" datatype="html">
         <source>Minted on:</source>
@@ -7094,7 +7094,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">47</context>
         </context-group>
-        <target state="translated">Processo di Minting effettuato il:</target>
+        <target state="translated">Processo di Minting effettuato il</target>
       </trans-unit>
       <trans-unit id="1946196451891766319" datatype="html">
         <source> Fund Award </source>
@@ -7102,7 +7102,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">121,122</context>
         </context-group>
-        <target state="translated"> Finanzia Ricompensa </target>
+        <target state="translated"> Finanziamento Premio </target>
       </trans-unit>
       <trans-unit id="1941285608714830379" datatype="html">
         <source> Minting in Progress </source>
@@ -7110,7 +7110,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">129,130</context>
         </context-group>
-        <target state="translated"> Coniazione in corso </target>
+        <target state="translated"> Processo di Minting in Corso </target>
       </trans-unit>
       <trans-unit id="1923835415820503708" datatype="html">
         <source>Check out award</source>
@@ -7122,7 +7122,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">210</context>
         </context-group>
-        <target state="translated">Verifica premio</target>
+        <target state="translated">Verifica il premio</target>
       </trans-unit>
       <trans-unit id="4274407677127610120" datatype="html">
         <source>Reject Award</source>
@@ -7130,7 +7130,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">157</context>
         </context-group>
-        <target state="translated">Rifiuta ricompensa</target>
+        <target state="translated">Rifiuta Ricompensa</target>
       </trans-unit>
       <trans-unit id="4207094385815311412" datatype="html">
         <source>Confirm your participation</source>
@@ -7154,7 +7154,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">180</context>
         </context-group>
-        <target state="translated">Fornisci descrizione o link al tuo lavoro.</target>
+        <target state="translated">Allega una descrizione o fornisci un link al tuo lavoro.</target>
       </trans-unit>
       <trans-unit id="935187492052582731" datatype="html">
         <source>Submit</source>
@@ -7242,7 +7242,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">19</context>
         </context-group>
-        <target state="translated">La descrizione e i tecnicismi saranno inclusi nel Premio. Con la data di chiusura si stabilisce la durata del Premio.</target>
+        <target state="translated">Il nome e la descrizione saranno inclusi nel Premio. Con la data di chiusura si stabilisce la durata del Premio.</target>
       </trans-unit>
       <trans-unit id="5701618810648052610" datatype="html">
         <source>Title</source>
@@ -7474,7 +7474,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">71</context>
         </context-group>
-        <target state="translated">Il titolo e la descrizione saranno inclusi nel badge.</target>
+        <target state="translated">Il nome e la descrizione saranno inclusi nel badge.</target>
       </trans-unit>
       <trans-unit id="4240771527295032523" datatype="html">
         <source>Badge description</source>
@@ -7498,7 +7498,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">205</context>
         </context-group>
-        <target state="translated">Informazioni sullo spazio</target>
+        <target state="translated">Info: Space</target>
       </trans-unit>
       <trans-unit id="469394451440055210" datatype="html">
         <source>This is the space that will list the award.</source>
@@ -7514,7 +7514,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">170</context>
         </context-group>
-        <target state="translated">Informazioni ricompense</target>
+        <target state="translated">Info: ricompensa</target>
       </trans-unit>
       <trans-unit id="1248863392331556768" datatype="html">
         <source>You need to fund this award with native token. Select which token will be used as reward.</source>
@@ -7582,7 +7582,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">338</context>
         </context-group>
-        <target state="translated">Minimo 1 e massimo 10000.</target>
+        <target state="translated">Numero minimo: 1. Numero massimo: 10000.</target>
       </trans-unit>
       <trans-unit id="1324056890449652394" datatype="html">
         <source>The amount of badges you want to make available for this award. This can also be thought of as how many awards you want to give out.</source>
@@ -7598,7 +7598,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">284,285</context>
         </context-group>
-        <target state="translated"> Totale da finanziare </target>
+        <target state="translated"> Importo totale da finanziare </target>
       </trans-unit>
       <trans-unit id="6397238972858825654" datatype="html">
         <source>Upload image that will be used as a Reward Badge.</source>
@@ -7622,7 +7622,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">334,335</context>
         </context-group>
-        <target state="translated"> Impostare un periodo di tempo durante il quale il badge sarà bloccato nel portafoglio Firefly. </target>
+        <target state="translated"> Imposta un periodo di tempo durante il quale il badge sarà bloccato nel portafoglio Firefly. </target>
       </trans-unit>
       <trans-unit id="6370171716321321620" datatype="html">
         <source> Create award </source>
@@ -7682,7 +7682,7 @@
           <context context-type="sourcefile">src/app/pages/token/services/new.service.ts</context>
           <context context-type="linenumber">202</context>
         </context-group>
-        <target state="translated">Problema apparente disconnessione membro durante la richiesta di caricamento del file.</target>
+        <target state="translated">Problema apparente di disconnessione membro durante la richiesta di caricamento del file.</target>
       </trans-unit>
       <trans-unit id="3700187992174805144" datatype="html">
         <source>Award Description</source>
@@ -7690,7 +7690,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/overview/overview.page.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
-        <target state="translated">Premio Descrizione</target>
+        <target state="translated">Descrizione Premio</target>
       </trans-unit>
       <trans-unit id="7227250464697651310" datatype="html">
         <source>Award -</source>
@@ -7722,7 +7722,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.html</context>
           <context context-type="linenumber">63</context>
         </context-group>
-        <target state="translated">Trova partecipante</target>
+        <target state="translated">Cerca Partecipante</target>
       </trans-unit>
       <trans-unit id="6157188013889386517" datatype="html">
         <source>Showing only few top records...</source>
@@ -7750,7 +7750,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.html</context>
           <context context-type="linenumber">90,91</context>
         </context-group>
-        <target state="translated"> Nessun partecipante </target>
+        <target state="translated"> Non ci sono Partecipanti </target>
       </trans-unit>
       <trans-unit id="2451851156281438935" datatype="html">
         <source> Reward </source>
@@ -7766,7 +7766,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/participants/participants.page.html</context>
           <context context-type="linenumber">138,139</context>
         </context-group>
-        <target state="translated"> Ricompensare di nuovo </target>
+        <target state="translated"> Nuova ricompensa </target>
       </trans-unit>
       <trans-unit id="4416413576346763682" datatype="html">
         <source>Pending</source>
@@ -7818,7 +7818,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/participants/participants.page.ts</context>
           <context context-type="linenumber">257</context>
         </context-group>
-        <target state="translated">applicato il</target>
+        <target state="translated">domanda inoltrata il</target>
       </trans-unit>
       <trans-unit id="8924460460059393072" datatype="html">
         <source> Make NFT’s from this collection available on decentralised network. </source>
@@ -7902,7 +7902,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">118,119</context>
         </context-group>
-        <target state="translated"> Ogni collezione selezionata necessita la proprietà di almeno un NFT </target>
+        <target state="translated"> È necessario possedere almeno un NFT per ogni Collezione selezionata </target>
       </trans-unit>
       <trans-unit id="1486015525220675253" datatype="html">
         <source> (One NFT per member) </source>
@@ -7918,7 +7918,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">175</context>
         </context-group>
-        <target state="translated">Sconti per i membri</target>
+        <target state="translated">AirDrop e sconti per i membri</target>
       </trans-unit>
       <trans-unit id="2620291274122663602" datatype="html">
         <source>discount for members with rewards from this space in total value of </source>
@@ -7934,7 +7934,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">5</context>
         </context-group>
-        <target state="translated">Sulla raccolta</target>
+        <target state="translated">A proposito della collezione</target>
       </trans-unit>
       <trans-unit id="3878151634227224405" datatype="html">
         <source> Limited edition </source>
@@ -7942,7 +7942,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">22,23</context>
         </context-group>
-        <target state="translated"> Tiratura limitata </target>
+        <target state="translated"> Limite di creazione </target>
       </trans-unit>
       <trans-unit id="2098304586917328982" datatype="html">
         <source> Publish Collection </source>
@@ -7966,7 +7966,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">313,314</context>
         </context-group>
-        <target state="translated"> Modifica collezione </target>
+        <target state="translated"> Edit Collection </target>
       </trans-unit>
       <trans-unit id="5455232222395776593" datatype="html">
         <source>Royalties goes to</source>
@@ -7974,7 +7974,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">128</context>
         </context-group>
-        <target state="translated">Cessione licenza d'uso</target>
+        <target state="translated">Le royalties vengono versate a</target>
       </trans-unit>
       <trans-unit id="3243032071112865100" datatype="html">
         <source> Rank </source>
@@ -7986,7 +7986,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.html</context>
           <context context-type="linenumber">73,74</context>
         </context-group>
-        <target state="translated"> Rango </target>
+        <target state="translated"> Rank </target>
       </trans-unit>
       <trans-unit id="2161224914165493901" datatype="html">
         <source>Starts at</source>
@@ -7994,7 +7994,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">189</context>
         </context-group>
-        <target state="translated">Apertura alle</target>
+        <target state="translated">La vendita avrà inizio alle ore</target>
       </trans-unit>
       <trans-unit id="7775354865820756771" datatype="html">
         <source>Deposited</source>
@@ -8010,7 +8010,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">218</context>
         </context-group>
-        <target state="translated">In stake</target>
+        <target state="translated">È stato fatto Staking</target>
       </trans-unit>
       <trans-unit id="7565716024468232322" datatype="html">
         <source>Links</source>
@@ -8046,7 +8046,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">376</context>
         </context-group>
-        <target state="translated">Rifiuta la collezione</target>
+        <target state="translated">Declinare la Collezione</target>
       </trans-unit>
       <trans-unit id="7832094266702948226" datatype="html">
         <source>Cancel Collection</source>
@@ -8058,7 +8058,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">392</context>
         </context-group>
-        <target state="translated">Annullare collezione</target>
+        <target state="translated">Annullare Collezione</target>
       </trans-unit>
       <trans-unit id="6742195391489882590" datatype="html">
         <source>Create NFT</source>
@@ -8142,7 +8142,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">30</context>
         </context-group>
-        <target state="translated">Filtri&amp;Ordina</target>
+        <target state="translated">Filtri&amp;Selezione</target>
       </trans-unit>
       <trans-unit id="7387129629487497351" datatype="html">
         <source>Filters&amp;sort</source>
@@ -8170,7 +8170,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">79</context>
         </context-group>
-        <target state="translated">Filtri&amp;Ordina</target>
+        <target state="translated">Filtri&amp;selezione</target>
       </trans-unit>
       <trans-unit id="7699622144571229146" datatype="html">
         <source>Sort by</source>
@@ -8198,7 +8198,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">95,94</context>
         </context-group>
-        <target state="translated">Ordina per</target>
+        <target state="translated">Seleziona per</target>
       </trans-unit>
       <trans-unit id="2028563318899266275" datatype="html">
         <source>Price range</source>
@@ -8222,7 +8222,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="translated">Modifica collezione</target>
+        <target state="translated">Edit collection</target>
       </trans-unit>
       <trans-unit id="3697791303016485919" datatype="html">
         <source>Collection info</source>
@@ -8238,7 +8238,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">20</context>
         </context-group>
-        <target state="translated">Il nome e la descrizione saranno inclusi nella Collezione.</target>
+        <target state="translated">La denominazione e la descrizione saranno inclusi nella Collezione.</target>
       </trans-unit>
       <trans-unit id="1152217532438453452" datatype="html">
         <source>Sales info</source>
@@ -8258,7 +8258,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">60</context>
         </context-group>
-        <target state="translated">Tutte le fasce di fuso orario saranno riportate nella fascia di fuso orario dell'utente. Per gli NFT e gli SFT generati, il prezzo fissato in questa zona non potrà più essere modificato sull'NFT. Il prezzo puramente indicativo della collezione classica di NFT potrà essere modificato sullo stesso NFT.</target>
+        <target state="translated">Tutte le fasce di fuso orario sono riportate nella fascia di fuso orario dell'utente. Per gli NFT e gli SFT generati, il prezzo viene fissato in questa zona e non può essere modificato sull'NFT. Il prezzo puramente indicativo della collezione classica di NFT può essere modificato sullo stesso NFT.</target>
       </trans-unit>
       <trans-unit id="2718488027163841739" datatype="html">
         <source>Royalty</source>
@@ -8274,7 +8274,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">93,95</context>
         </context-group>
-        <target state="translated"> Questa % di royalty sarà applicata sulla zecca iniziale degli NFT e su tutte le vendite secondarie. L'indirizzo IOTA che riceverà le royalties deve sempre avere un saldo minimo di 1 Mi a causa del meccanismo di protezione dalla polvere del protocollo IOTA. </target>
+        <target state="translated"> La percentuale di royalty in questione sarà applicata alla prima creazione di NFT e a tutte le vendite secondarie. L'indirizzo IOTA che trarrà beneficio dalle royalties sarà sempre soggetto a un saldo disponibile di almeno 1 Mi (a causa del meccanismo di protezione della polvere del protocollo IOTA). </target>
       </trans-unit>
       <trans-unit id="966263415095000907" datatype="html">
         <source>Royalties - Percentage fee</source>
@@ -8302,7 +8302,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">131</context>
         </context-group>
-        <target state="translated">Le royalties vanno in uno spazio diverso</target>
+        <target state="translated">Le royalties vengono versate in uno spazio distinto</target>
       </trans-unit>
       <trans-unit id="5321246944354917718" datatype="html">
         <source>Links will be included on the NFT detail. Use account usernames for Twitter and Discord (name#id).</source>
@@ -8310,7 +8310,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">155</context>
         </context-group>
-        <target state="translated">I link saranno inclusi nel dettaglio NFT. Usa i nomi utente per Twitter e Discord (nome#id).</target>
+        <target state="translated">Sul piano delle caratteristiche dell'NFT saranno inclusi dei link. Per Twitter o Discord utilizzare i nomi utente (nome#id).</target>
       </trans-unit>
       <trans-unit id="7814705431910246103" datatype="html">
         <source>Invalid URL.</source>
@@ -8318,7 +8318,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">160</context>
         </context-group>
-        <target state="translated">URL non valido.</target>
+        <target state="translated">Non è ammesso l'utilizzo dell'URL.</target>
       </trans-unit>
       <trans-unit id="2375260419993138758" datatype="html">
         <source>URL</source>
@@ -8378,7 +8378,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">217</context>
         </context-group>
-        <target state="translated">Lo sconto si applica solo ai membri che hanno guadagnato token in gioco per premi emessi in questo spazio.</target>
+        <target state="translated">Lo sconto si applica solo ai membri che hanno guadagnato token per i premi emessi in questo spazio.</target>
       </trans-unit>
       <trans-unit id="6430237919890046575" datatype="html">
         <source>Token amount higher than</source>
@@ -8394,7 +8394,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">257</context>
         </context-group>
-        <target state="needs-translation">Type awarded token...</target>
+        <target state="translated">Inserire il token ricevuto in premio...</target>
       </trans-unit>
       <trans-unit id="875494721798124100" datatype="html">
         <source>Discount %</source>
@@ -8554,7 +8554,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">545</context>
         </context-group>
-        <target state="translated">Vendita Aperta</target>
+        <target state="translated">Asta Aperta</target>
       </trans-unit>
       <trans-unit id="5730067783654077462" datatype="html">
         <source>Everyone has access to this collection.</source>
@@ -8578,7 +8578,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">576</context>
         </context-group>
-        <target state="translated">Solo i membri dello Spazio possono accedere.</target>
+        <target state="translated">L' accesso è consentito Solo ai Membri dello Spazio.</target>
       </trans-unit>
       <trans-unit id="3522726901289752467" datatype="html">
         <source>Only Space Members with badge can access.</source>
@@ -8586,7 +8586,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">589</context>
         </context-group>
-        <target state="translated">Solo i membri dello Spazio con badge possono accedere.</target>
+        <target state="translated">L' accesso è consentito Solo ai Membri dello Spazio con badge.</target>
       </trans-unit>
       <trans-unit id="8127062769761371047" datatype="html">
         <source>Collection Options</source>
@@ -8998,7 +8998,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/manage/manage.page.html</context>
           <context context-type="linenumber">27</context>
         </context-group>
-        <target state="translated">Gestisci indirizzi</target>
+        <target state="translated">Gestione Indirizzi</target>
       </trans-unit>
       <trans-unit id="7895495835242414759" datatype="html">
         <source>Export All Transactions</source>
@@ -9026,7 +9026,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/awards/awards.page.html</context>
           <context context-type="linenumber">10,11</context>
         </context-group>
-        <target state="translated"> Aperto </target>
+        <target state="translated"> In attesa </target>
       </trans-unit>
       <trans-unit id="118600598598572101" datatype="html">
         <source> Issued </source>
@@ -9334,7 +9334,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">326</context>
         </context-group>
-        <target state="translated">Staking fatto Dalla</target>
+        <target state="translated">È stato fatto Staking Dalla</target>
       </trans-unit>
       <trans-unit id="6535760418646280839" datatype="html">
         <source>Staked Until</source>
@@ -9342,7 +9342,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">327</context>
         </context-group>
-        <target state="translated">Staking fatto Fino al</target>
+        <target state="translated">È stato fatto Staking Fino al</target>
       </trans-unit>
       <trans-unit id="5493880020176468567" datatype="html">
         <source>Multiplier</source>
@@ -9382,7 +9382,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">432,433</context>
         </context-group>
-        <target state="translated"> In stake da - a </target>
+        <target state="translated"> È stato fatto Staking da - a </target>
       </trans-unit>
       <trans-unit id="7784596082876459828" datatype="html">
         <source> Amount (Multiplier) </source>
@@ -9862,7 +9862,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">198</context>
         </context-group>
-        <target state="translated">Collezione respinta!</target>
+        <target state="translated">La Collezione è stata declinata!</target>
       </trans-unit>
       <trans-unit id="7981479016519248234" datatype="html">
         <source>Sell NFT</source>
@@ -10022,7 +10022,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">685</context>
         </context-group>
-        <target state="translated">Sulla collezione</target>
+        <target state="translated">A proposito di questa collezione</target>
       </trans-unit>
       <trans-unit id="7054628444008204937" datatype="html">
         <source>Show </source>
@@ -10118,7 +10118,7 @@
           <context context-type="sourcefile">src/app/pages/nft/services/helper.service.ts</context>
           <context context-type="linenumber">145</context>
         </context-group>
-        <target state="translated">Asta di apertura</target>
+        <target state="translated">Asta di Apertura</target>
       </trans-unit>
       <trans-unit id="4747545493491400295" datatype="html">
         <source>Auction Ends</source>
@@ -10482,7 +10482,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
           <context context-type="linenumber">23,24</context>
         </context-group>
-        <target state="needs-translation"> Change Vote </target>
+        <target state="translated"> Cambiare Voto </target>
       </trans-unit>
       <trans-unit id="4724170629105755794" datatype="html">
         <source> Vote Now </source>
@@ -10490,7 +10490,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
           <context context-type="linenumber">26,27</context>
         </context-group>
-        <target state="needs-translation"> Vote Now </target>
+        <target state="translated"> Adesso Vota </target>
       </trans-unit>
       <trans-unit id="1263780838220828223" datatype="html">
         <source>Voting starts</source>
@@ -10498,7 +10498,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
           <context context-type="linenumber">38</context>
         </context-group>
-        <target state="translated">Iniziano le votazioni</target>
+        <target state="translated">Apertura delle votazioni</target>
       </trans-unit>
       <trans-unit id="51925352922836086" datatype="html">
         <source>You are not part of the vote</source>
@@ -10706,7 +10706,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.html</context>
           <context context-type="linenumber">101,102</context>
         </context-group>
-        <target state="needs-translation">(weight: <x id="INTERPOLATION" equiv-text="{{(data.proposal$ | async)?.results?.answers?.[a.value] || 0 | number :                 '1.0-2'}}"/>)</target>
+        <target state="translated">(peso: <x id="INTERPOLATION" equiv-text="{{(data.proposal$ | async)?.results?.answers?.[a.value] || 0 | number :                 '1.0-2'}}"/>)</target>
       </trans-unit>
       <trans-unit id="8944543613835375251" datatype="html">
         <source>Selected Badges</source>
@@ -10754,7 +10754,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/votes/votes.page.html</context>
           <context context-type="linenumber">24</context>
         </context-group>
-        <target state="translated">Una volta effettuato il pagamento delle indennità e liquidate le somme corrispondenti, la votazione è conclusa e la ponderazione dei voti sarà applicata secondo un sistema proporzionale. Devi votare nuovamente per poter esprimere il tuo voto.</target>
+        <target state="translated">Una volta effettuato il pagamento delle indennità e liquidate le somme corrispondenti, la votazione è considerata conclusa conferendo ai voti un peso proporzionale. Partecipa nuovamente al voto per poter esprimere il tuo voto.</target>
       </trans-unit>
       <trans-unit id="7111923952686668823" datatype="html">
         <source>One Member One Vote</source>
@@ -11262,7 +11262,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">193</context>
         </context-group>
-        <target state="translated"> valore in stake da aggiungere</target>
+        <target state="translated"> valore Aggiunto da Staking da includere</target>
       </trans-unit>
       <trans-unit id="5288210860972403382" datatype="html">
         <source>Related Links</source>
@@ -11394,7 +11394,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">17</context>
         </context-group>
-        <target state="translated">Spazio info</target>
+        <target state="translated">Info: space</target>
       </trans-unit>
       <trans-unit id="2770495182144814114" datatype="html">
         <source>Title and description will be included on the Space.</source>
@@ -12195,7 +12195,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
           <context context-type="linenumber">84</context>
         </context-group>
-        <target state="translated">URL non valido. (Inizia con http:// o https://)</target>
+        <target state="translated">Non è ammesso l'utilizzo dell'URL. (Inizia con http:// o https://)</target>
       </trans-unit>
       <trans-unit id="7518346502693747462" datatype="html">
         <source>Add link</source>
@@ -12401,7 +12401,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">132,133</context>
         </context-group>
-        <target state="needs-translation"> Mint &amp; Approve Token </target>
+        <target state="translated"> Mint &amp; Convalida Token </target>
       </trans-unit>
       <trans-unit id="7505091927294166710" datatype="html">
         <source> Minting in progress </source>

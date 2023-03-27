@@ -5,7 +5,6 @@ import {
   DISCORD_REGEXP,
   MAX_IOTA_AMOUNT,
   MIN_IOTA_AMOUNT,
-  NftAvailableFromDateMin,
   TWITTER_REGEXP,
   UnsoldMintingOptions,
   WEN_FUNC,
@@ -21,7 +20,7 @@ import { updateCollectionControl } from '../../../controls/collection/collection
 import { AVAILABLE_NETWORKS } from '../../../controls/common';
 import { onCall } from '../../../firebase/functions/onCall';
 import { CommonJoi } from '../../../services/joi/common';
-import { isProdEnv, networks } from '../../../utils/config.utils';
+import { networks } from '../../../utils/config.utils';
 import { uidSchema } from '../common';
 
 export const updateMintedCollectionSchema = {
@@ -58,13 +57,7 @@ export const updateMintedCollectionSchema = {
     otherwise: Joi.forbidden(),
   }),
   price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).optional(),
-  availableFrom: Joi.date()
-    .greater(
-      dayjs()
-        .add(isProdEnv() ? NftAvailableFromDateMin.value : -600000)
-        .toDate(),
-    )
-    .optional(),
+  availableFrom: Joi.date().greater(dayjs().subtract(600000).toDate()).optional(),
 };
 
 export const updateCollectionSchema = {
@@ -96,13 +89,7 @@ const createCollectionSchema = {
     .equal(...Object.values(Access))
     .required(),
   // On test we allow now.
-  availableFrom: Joi.date()
-    .greater(
-      dayjs()
-        .add(isProdEnv() ? NftAvailableFromDateMin.value : -600000, 'ms')
-        .toDate(),
-    )
-    .required(),
+  availableFrom: Joi.date().greater(dayjs().subtract(600000).toDate()).required(),
   category: Joi.number()
     .equal(...Object.keys(Categories))
     .required(),

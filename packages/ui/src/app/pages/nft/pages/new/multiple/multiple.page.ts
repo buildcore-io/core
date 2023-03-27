@@ -12,7 +12,6 @@ import { NotificationService } from '@core/services/notification';
 import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { download } from '@core/utils/tools.utils';
-import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/nft/services/data.service';
 import { HelperService } from '@pages/nft/services/helper.service';
@@ -23,7 +22,6 @@ import {
   FILENAME_REGEXP,
   MAX_IOTA_AMOUNT,
   MIN_IOTA_AMOUNT,
-  NftAvailableFromDateMin,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
@@ -130,12 +128,7 @@ export class MultiplePage implements OnInit {
         }
 
         const d = dayjs(value);
-        return (
-          dayjs()
-            .add(environment.production ? NftAvailableFromDateMin.value : 0, 'ms')
-            .toDate()
-            .getTime() < d.toDate().getTime()
-        );
+        return dayjs().toDate().getTime() < d.toDate().getTime();
       },
       value: () => this.availableFrom,
     },

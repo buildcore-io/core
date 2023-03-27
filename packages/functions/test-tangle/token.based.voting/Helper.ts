@@ -5,7 +5,6 @@ import {
   Network,
   Proposal,
   ProposalMember,
-  ProposalSubType,
   ProposalType,
   Space,
   SUB_COL,
@@ -219,7 +218,6 @@ export const dummyProposal = (space: string) =>
       onlyGuardians: false,
     },
     type: ProposalType.NATIVE,
-    subType: ProposalSubType.ONE_MEMBER_ONE_VOTE,
     questions: [
       {
         text: 'Give all the funds to the HORNET developers?',

@@ -7,7 +7,7 @@ import { last } from 'lodash';
 export const rollCreatedOn = async (app: App, col: COL) => {
   const db = getFirestore(app);
   let lastDoc: any | undefined = undefined;
-
+  let count = 0;
   do {
     let query = db.collection(col).limit(200);
     if (lastDoc) {
@@ -15,10 +15,14 @@ export const rollCreatedOn = async (app: App, col: COL) => {
     }
     const snap = await query.get();
     lastDoc = last(snap.docs);
-
-    for (const doc of snap.docs) {
-      await doc.ref.update({ createdOn: doc.createTime });
-    }
+    const promises = snap.docs.map((doc) => {
+      if (doc.createTime.seconds !== doc.data()?.createdOn?.seconds) {
+        ++count;
+        doc.ref.update({ createdOn: doc.createTime });
+      }
+    });
+    await Promise.all(promises);
+    console.log(count);
   } while (lastDoc);
 };
 
