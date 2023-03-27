@@ -7,13 +7,11 @@ import {
   MIN_IOTA_AMOUNT,
   Nft,
   NftAccess,
-  NftAvailableFromDateMin,
   Timestamp,
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { Database } from '../../database/Database';
-import { isProdEnv } from '../../utils/config.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -89,9 +87,7 @@ const processOneCreateNft = async (
 
   if (collection.type === CollectionType.CLASSIC) {
     const availableFrom = dayjs((params.availableFrom as Timestamp).toDate());
-    const expectedAvailableFrom = dayjs().add(
-      isProdEnv() ? NftAvailableFromDateMin.value : -NftAvailableFromDateMin.value,
-    );
+    const expectedAvailableFrom = dayjs().subtract(24 * 60 * 60 * 1000);
     if (availableFrom.isBefore(expectedAvailableFrom)) {
       throw throwInvalidArgument(WenError.available_from_must_be_in_the_future);
     }
