@@ -3,7 +3,7 @@ import { COL, CollectionType, MediaStatus, Member, NftStatus } from '@soonaverse
 import { randomBytes } from 'crypto';
 import { Wallet } from 'ethers';
 import { FieldValue } from 'firebase-admin/firestore';
-import { get, last } from 'lodash';
+import { last } from 'lodash';
 import { FirebaseApp } from '../../../src/firebase/app/app';
 import { Firestore } from '../../../src/firebase/firestore/firestore';
 import { FirebaseStorage } from '../../../src/firebase/storage/storage';
@@ -40,13 +40,12 @@ export const rollMemberAvatars = async (app: FirebaseApp) => {
 };
 
 const rollMemberAvatar = async (app: FirebaseApp, member: Member) => {
-  const currentProfileImage = get(member, 'currentProfileImage');
   const isProd = app.getName() === 'soonaverse';
   const config = isProd ? AVATAR_COLLECTION_PROD_CONFIG : AVATAR_COLLECTION_TEST_CONFIG;
 
   const uid = getRandomEthAddress();
 
-  const { avatar, fileName, metadata, original } = currentProfileImage;
+  const { avatar, fileName, metadata, original } = (member as any).currentProfileImage;
   const uri = `https://ipfs.io/ipfs/${avatar}/${fileName}.png`;
   const storage = new FirebaseStorage(app);
   const bucket = storage.bucket(getBucket());

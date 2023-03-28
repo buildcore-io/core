@@ -16,96 +16,94 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import Joi from 'joi';
 import { get, startCase } from 'lodash';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
-import { pSchema } from '../../utils/schema.utils';
+import { cleanupParams } from '../../utils/schema.utils';
 import { assertIsGuardian, getTokenForSpace } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
-export const updateSpaceControl =
-  (schema: Joi.ObjectSchema) => async (owner: string, params: Record<string, unknown>) => {
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${params.uid}`);
-    const space = await spaceDocRef.get<Space>();
+export const updateSpaceControl = async (owner: string, params: Record<string, unknown>) => {
+  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${params.uid}`);
+  const space = await spaceDocRef.get<Space>();
 
-    if (!space) {
-      throw throwInvalidArgument(WenError.space_does_not_exists);
+  if (!space) {
+    throw throwInvalidArgument(WenError.space_does_not_exists);
+  }
+
+  if (params.tokenBased) {
+    const token = await getTokenForSpace(space.uid);
+    if (token?.status !== TokenStatus.MINTED) {
+      throw throwInvalidArgument(WenError.token_not_minted);
     }
+  }
 
-    if (params.tokenBased) {
-      const token = await getTokenForSpace(space.uid);
-      if (token?.status !== TokenStatus.MINTED) {
-        throw throwInvalidArgument(WenError.token_not_minted);
-      }
-    }
+  if (space.tokenBased && (params.open !== undefined || params.tokenBased !== undefined)) {
+    throw throwInvalidArgument(WenError.token_based_space_access_can_not_be_edited);
+  }
 
-    if (space.tokenBased && (params.open !== undefined || params.tokenBased !== undefined)) {
-      throw throwInvalidArgument(WenError.token_based_space_access_can_not_be_edited);
-    }
+  await assertIsGuardian(space.uid, owner);
 
-    await assertIsGuardian(space.uid, owner);
+  const ongoingProposalSnap = await soonDb()
+    .collection(COL.PROPOSAL)
+    .where('settings.spaceUpdateData.uid', '==', space.uid)
+    .where('settings.endDate', '>=', serverTime())
+    .get();
+  if (ongoingProposalSnap.length) {
+    throw throwInvalidArgument(WenError.ongoing_proposal);
+  }
 
-    const ongoingProposalSnap = await soonDb()
-      .collection(COL.PROPOSAL)
-      .where('settings.spaceUpdateData.uid', '==', space.uid)
-      .where('settings.endDate', '>=', serverTime())
-      .get();
-    if (ongoingProposalSnap.length) {
-      throw throwInvalidArgument(WenError.ongoing_proposal);
-    }
+  const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
+  const guardian = await guardianDocRef.get<Member>();
+  const guardians = await spaceDocRef.collection(SUB_COL.GUARDIANS).get<SpaceGuardian>();
 
-    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
-    const guardian = await guardianDocRef.get<Member>();
-    const guardians = await spaceDocRef.collection(SUB_COL.GUARDIANS).get<SpaceGuardian>();
+  const proposal = createUpdateSpaceProposal(
+    space,
+    guardian!,
+    space.uid,
+    guardians.length,
+    cleanupParams(params) as Space,
+  );
 
-    const proposal = createUpdateSpaceProposal(
-      space,
-      guardian!,
-      space.uid,
-      guardians.length,
-      pSchema(schema, params),
-    );
-
-    const voteTransaction = <Transaction>{
-      type: TransactionType.VOTE,
-      uid: getRandomEthAddress(),
-      member: owner,
-      space: params.uid,
-      network: DEFAULT_NETWORK,
-      payload: <VoteTransaction>{
-        proposalId: proposal.uid,
-        weight: 1,
-        values: [1],
-        votes: [],
-      },
-      linkedTransactions: [],
-    };
-
-    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
-    const memberPromisses = guardians.map((guardian) => {
-      proposalDocRef
-        .collection(SUB_COL.MEMBERS)
-        .doc(guardian.uid)
-        .set({
-          uid: guardian.uid,
-          weight: 1,
-          voted: guardian.uid === owner,
-          tranId: guardian.uid === owner ? voteTransaction.uid : '',
-          parentId: proposal.uid,
-          parentCol: COL.PROPOSAL,
-          values: guardian.uid === owner ? [{ [1]: 1 }] : [],
-        });
-    });
-    await Promise.all(memberPromisses);
-
-    await soonDb().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`).create(voteTransaction);
-
-    await proposalDocRef.create(proposal);
-
-    return await proposalDocRef.get<Proposal>();
+  const voteTransaction = <Transaction>{
+    type: TransactionType.VOTE,
+    uid: getRandomEthAddress(),
+    member: owner,
+    space: params.uid,
+    network: DEFAULT_NETWORK,
+    payload: <VoteTransaction>{
+      proposalId: proposal.uid,
+      weight: 1,
+      values: [1],
+      votes: [],
+    },
+    linkedTransactions: [],
   };
+
+  const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  const memberPromisses = guardians.map((guardian) => {
+    proposalDocRef
+      .collection(SUB_COL.MEMBERS)
+      .doc(guardian.uid)
+      .set({
+        uid: guardian.uid,
+        weight: 1,
+        voted: guardian.uid === owner,
+        tranId: guardian.uid === owner ? voteTransaction.uid : '',
+        parentId: proposal.uid,
+        parentCol: COL.PROPOSAL,
+        values: guardian.uid === owner ? [{ [1]: 1 }] : [],
+      });
+  });
+  await Promise.all(memberPromisses);
+
+  await soonDb().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`).create(voteTransaction);
+
+  await proposalDocRef.create(proposal);
+
+  return await proposalDocRef.get<Proposal>();
+};
 
 const createUpdateSpaceProposal = (
   prevSpace: Space,

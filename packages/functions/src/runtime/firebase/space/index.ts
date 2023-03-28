@@ -84,10 +84,7 @@ const updateSpaceSchema = Joi.object({
   }),
 });
 
-export const updateSpace = onCall(WEN_FUNC.uSpace)(
-  updateSpaceSchema,
-  updateSpaceControl(updateSpaceSchema),
-);
+export const updateSpace = onCall(WEN_FUNC.uSpace)(updateSpaceSchema, updateSpaceControl);
 
 export const leaveSpace = onCall(WEN_FUNC.leaveSpace)(uidSchema, leaveSpaceControl);
 

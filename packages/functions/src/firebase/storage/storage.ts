@@ -35,7 +35,7 @@ export class FirebaseBucket implements IBucket {
   public exists = async (fileName: string) => (await this.bucket.file(fileName).exists())[0];
 
   public getFilesCount = async (directory: string) => {
-    const files = await this.bucket.getFiles({ directory: directory });
+    const files = await this.bucket.getFiles({ prefix: directory });
     return files[0].length;
   };
 }
