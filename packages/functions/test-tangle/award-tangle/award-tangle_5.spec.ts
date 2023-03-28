@@ -12,7 +12,7 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
@@ -47,8 +47,8 @@ describe('Award tangle request', () => {
 
     token = await saveBaseToken(space.uid, guardian);
 
-    const guardianDocRef = admin.firestore().doc(`${COL.MEMBER}/${guardian}`);
-    const guardianData = <Member>(await guardianDocRef.get()).data();
+    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${guardian}`);
+    const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, network);
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
   });
@@ -61,26 +61,25 @@ describe('Award tangle request', () => {
     });
     await MnemonicService.store(guardianAddress.bech32, guardianAddress.mnemonic);
 
-    const creditQuery = admin
-      .firestore()
+    const creditQuery = soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST)
       .where('member', '==', guardian);
     await wait(async () => {
       const snap = await creditQuery.get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
     let snap = await creditQuery.get();
-    let credit = snap.docs[0].data() as Transaction;
+    let credit = snap[0] as Transaction;
     await requestFundsFromFaucet(
       Network.RMS,
       credit.payload.response.address,
       credit.payload.response.amount,
     );
 
-    const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${credit.payload.response.award}`);
+    const awardDocRef = soonDb().doc(`${COL.AWARD}/${credit.payload.response.award}`);
     await wait(async () => {
-      const award = (await awardDocRef.get()).data() as Award;
+      const award = (await awardDocRef.get()) as Award;
       return award.approved;
     });
 
@@ -96,23 +95,22 @@ describe('Award tangle request', () => {
     });
 
     await wait(async () => {
-      const snap = await badgeQuery(tmp.bech32).get();
-      return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+      const snap = await badgeQuery(tmp.bech32).get<Transaction>();
+      return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
 
     await wait(async () => {
       const snap = await badgeQuery(tmp.bech32.slice(3)).get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
     snap = await badgeQuery(tmp.bech32.slice(3)).get();
-    const badge = snap.docs[0].data() as Transaction;
+    const badge = snap[0] as Transaction;
     expect(badge.payload.targetAddress).toBe('');
   });
 });
 
 const badgeQuery = (targetAddress: string) =>
-  admin
-    .firestore()
+  soonDb()
     .collection(COL.TRANSACTION)
     .where('payload.type', '==', TransactionAwardType.BADGE)
     .where('member', '==', targetAddress);

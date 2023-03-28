@@ -1,5 +1,5 @@
 import { Award, COL, SUB_COL } from '@soonaverse/interfaces';
-import { soonDb } from '../../database/wrapper/soondb';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { createAward } from '../../services/payment/tangle-service/award/award.create.service';
 
 export const createAwardControl = async (owner: string, params: Record<string, unknown>) => {

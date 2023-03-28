@@ -7,7 +7,7 @@ import {
   TransactionType,
   WenError,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { stakeNft } from '../../src/runtime/firebase/nft';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -26,14 +26,14 @@ describe('Stake nft', () => {
 
   it.each([true, false])('Should credit first then stake', async (migration: boolean) => {
     let nft = await helper.createAndOrderNft();
-    let nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
+    let nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
     await helper.mintCollection();
-    nft = <Nft>(await nftDocRef.get()).data();
+    nft = <Nft>await nftDocRef.get();
     await helper.withdrawNftAndAwait(nft.uid);
 
     if (migration) {
       await nftDocRef.delete();
-      await admin.firestore().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
+      await soonDb().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
     }
 
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
@@ -49,18 +49,17 @@ describe('Stake nft', () => {
       nft.mintingData?.nftId,
     );
 
-    const creditQuery = admin
-      .firestore()
+    const creditQuery = soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_NFT)
       .where('member', '==', helper.guardian);
     await wait(async () => {
-      const snap = await creditQuery.get();
-      return snap.size === 1 && snap.docs[0]?.data()?.payload?.walletReference?.confirmed;
+      const snap = await creditQuery.get<Transaction>();
+      return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
 
     const snap = await creditQuery.get();
-    const credit = snap.docs[0].data() as Transaction;
+    const credit = snap[0] as Transaction;
     expect(credit.payload.response.code).toBe(WenError.not_enough_base_token.code);
     expect(credit.payload.response.message).toBe(WenError.not_enough_base_token.key);
 
@@ -73,13 +72,12 @@ describe('Stake nft', () => {
       extraRequired,
     );
 
-    const stakeQuery = admin
-      .firestore()
+    const stakeQuery = soonDb()
       .collection(COL.NFT_STAKE)
       .where('nft', '==', migration ? nft.mintingData?.nftId : nft.uid);
     await wait(async () => {
       const snap = await stakeQuery.get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
   });
 });

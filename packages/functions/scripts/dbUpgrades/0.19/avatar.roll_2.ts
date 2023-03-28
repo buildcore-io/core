@@ -2,51 +2,54 @@
 import { COL, CollectionType, MediaStatus, Member, NftStatus } from '@soonaverse/interfaces';
 import { randomBytes } from 'crypto';
 import { Wallet } from 'ethers';
-import { App } from 'firebase-admin/app';
-import { FieldValue, getFirestore } from 'firebase-admin/firestore';
-import { getStorage } from 'firebase-admin/storage';
+import { FieldValue } from 'firebase-admin/firestore';
 import { get, last } from 'lodash';
+import { FirebaseApp } from '../../../src/firebase/app/app';
+import { Firestore } from '../../../src/firebase/firestore/firestore';
+import { FirebaseStorage } from '../../../src/firebase/storage/storage';
 import { getBucket } from '../../../src/utils/config.utils';
 import { migrateUriToSotrage } from '../../../src/utils/media.utils';
 import { AVATAR_COLLECTION_PROD_CONFIG, AVATAR_COLLECTION_TEST_CONFIG } from './avatar.roll_1';
 
-export const rollMemberAvatars = async (app: App) => {
-  const db = getFirestore(app);
-  let lastDoc: any | undefined = undefined;
-
+export const rollMemberAvatars = async (app: FirebaseApp) => {
+  let lastDocId = '';
+  const db = new Firestore(app);
   do {
-    let query = db.collection(COL.AVATARS).where('available', '==', false).limit(200);
-    if (lastDoc) {
-      query = query.startAfter(lastDoc);
-    }
-    const snap = await query.get();
-    lastDoc = last(snap.docs);
+    const lastDoc = lastDocId
+      ? await db.doc(`${COL.AVATARS}/${lastDocId}`).getSnapshot()
+      : undefined;
+    const snap = await db
+      .collection(COL.AVATARS)
+      .where('available', '==', false)
+      .startAfter(lastDoc)
+      .limit(200)
+      .get<Record<string, unknown>>();
+    lastDocId = (last(snap)?.uid as string) || '';
 
-    const promises = snap.docs.map(async (doc) => {
+    const promises = snap.map(async (doc) => {
       const memberSnap = await db
         .collection(COL.MEMBER)
-        .where('currentProfileImage.metadata', '==', doc.id)
-        .get();
-      if (memberSnap.size) {
-        await rollMemberAvatar(app, memberSnap.docs[0].data() as Member);
+        .where('currentProfileImage.metadata', '==', doc.uid)
+        .get<Member>();
+      if (memberSnap.length) {
+        await rollMemberAvatar(app, memberSnap[0]);
       }
     });
     await Promise.all(promises);
-  } while (lastDoc);
+  } while (lastDocId);
 };
 
-const rollMemberAvatar = async (app: App, member: Member) => {
+const rollMemberAvatar = async (app: FirebaseApp, member: Member) => {
   const currentProfileImage = get(member, 'currentProfileImage');
-  const isProd = app.options.projectId === 'soonaverse';
+  const isProd = app.getName() === 'soonaverse';
   const config = isProd ? AVATAR_COLLECTION_PROD_CONFIG : AVATAR_COLLECTION_TEST_CONFIG;
-
-  const storage = getStorage(app);
-  const bucket = storage.bucket(getBucket());
 
   const uid = getRandomEthAddress();
 
   const { avatar, fileName, metadata, original } = currentProfileImage;
   const uri = `https://ipfs.io/ipfs/${avatar}/${fileName}.png`;
+  const storage = new FirebaseStorage(app);
+  const bucket = storage.bucket(getBucket());
   const media = await migrateUriToSotrage(COL.NFT, member.uid, uid, uri, bucket);
 
   const nft = {
@@ -76,7 +79,7 @@ const rollMemberAvatar = async (app: App, member: Member) => {
     mediaStatus: MediaStatus.UPLOADED,
   };
 
-  const db = getFirestore(app);
+  const db = new Firestore(app);
   const batch = db.batch();
 
   const nftDocRef = db.doc(`${COL.NFT}/${uid}`);

@@ -8,9 +8,9 @@ import {
   TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../database/wrapper/soondb';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { WalletService } from '../../services/wallet/wallet';
-import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
+import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const depositNftControl = async (owner: string, params: Record<string, unknown>) => {
@@ -28,9 +28,7 @@ export const depositNftControl = async (owner: string, params: Record<string, un
       type: TransactionOrderType.DEPOSIT_NFT,
       targetAddress: targetAddress.bech32,
       validationType: TransactionValidationType.ADDRESS,
-      expiresOn: dateToTimestamp(
-        dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms'),
-      ),
+      expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
       reconciled: false,
       void: false,
     },

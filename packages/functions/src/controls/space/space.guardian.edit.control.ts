@@ -1,5 +1,5 @@
 import { COL, Proposal, ProposalType, SUB_COL } from '@soonaverse/interfaces';
-import { soonDb } from '../../database/wrapper/soondb';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { addRemoveGuardian } from '../../services/payment/tangle-service/space/SpaceGuardianService';
 
 export const editGuardianControl =

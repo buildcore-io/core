@@ -1,7 +1,7 @@
 import { COL, Stake, StakeReward, StakeRewardStatus, StakeType } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
 import { getStakedPerMember } from '../../src/cron/stakeReward.cron';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 
@@ -139,7 +139,7 @@ describe('Stake reward cron: getStakedPerMember', () => {
       leftCheck: expiresAt.valueOf(),
       rightCheck: createdOn.valueOf(),
     };
-    await admin.firestore().doc(`${COL.STAKE}/${stake.uid}`).create(stake);
+    await soonDb().doc(`${COL.STAKE}/${stake.uid}`).create(stake);
     return stake;
   };
 
@@ -155,7 +155,7 @@ describe('Stake reward cron: getStakedPerMember', () => {
       leftCheck: start.valueOf(),
       rightCheck: end.valueOf(),
     } as StakeReward;
-    await admin.firestore().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`).create(stakeReward);
+    await soonDb().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`).create(stakeReward);
     return stakeReward;
   };
 

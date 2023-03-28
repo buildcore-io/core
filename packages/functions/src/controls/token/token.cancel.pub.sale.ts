@@ -1,6 +1,6 @@
 import { COL, Token, TokenStatus, WenError } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../database/wrapper/soondb';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 

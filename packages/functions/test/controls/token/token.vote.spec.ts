@@ -1,7 +1,7 @@
 import { COL, Space, SUB_COL, TokenAllocation, TokenStats, WenError } from '@soonaverse/interfaces';
-import admin from '../../../src/admin.config';
-import { voteController } from '../../../src/controls/vote.control';
+import { soonDb } from '../../../src/firebase/firestore/soondb';
 import { createToken } from '../../../src/runtime/firebase/token/base';
+import { voteController } from '../../../src/runtime/firebase/vote';
 import * as config from '../../../src/utils/config.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../../set-up';
@@ -78,10 +78,8 @@ describe('Token vote test', () => {
 
   const validateStats = async (upvotes: number, downvotes: number, diff: number) => {
     await wait(async () => {
-      const statsDocRef = admin
-        .firestore()
-        .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.STATS}/${token.uid}`);
-      const stats = <TokenStats | undefined>(await statsDocRef.get()).data();
+      const statsDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.STATS}/${token.uid}`);
+      const stats = <TokenStats | undefined>await statsDocRef.get();
       return (
         stats?.votes?.upvotes === upvotes &&
         stats?.votes?.downvotes === downvotes &&

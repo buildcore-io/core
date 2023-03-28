@@ -11,7 +11,7 @@ import {
   TransactionAwardType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
@@ -60,8 +60,8 @@ describe('Create award, native', () => {
     mockWalletReturnValue(walletSpy, member, awardRequest(space.uid, token.symbol));
     award = await testEnv.wrap(createAward)({});
 
-    const guardianDocRef = admin.firestore().doc(`${COL.MEMBER}/${guardian}`);
-    const guardianData = <Member>(await guardianDocRef.get()).data();
+    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${guardian}`);
+    const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, network);
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
   });
@@ -79,12 +79,12 @@ describe('Create award, native', () => {
     );
     await MnemonicService.store(guardianAddress.bech32, guardianAddress.mnemonic);
 
-    const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${award.uid}`);
+    const awardDocRef = soonDb().doc(`${COL.AWARD}/${award.uid}`);
     await wait(async () => {
-      const award = <Award>(await awardDocRef.get()).data();
+      const award = <Award>await awardDocRef.get();
       return award.approved && award.funded;
     });
-    const awardData = <Award>(await awardDocRef.get()).data();
+    const awardData = <Award>await awardDocRef.get();
     expect(awardData.aliasBlockId).toBeDefined();
     expect(awardData.aliasId).toBeDefined();
     expect(awardData.collectionBlockId).toBeDefined();
@@ -94,19 +94,18 @@ describe('Create award, native', () => {
     mockWalletReturnValue(walletSpy, guardian, { award: award.uid, members: [member, member] });
     await testEnv.wrap(approveAwardParticipant)({});
 
-    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`);
+    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
     const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member);
-    let distribution = <TokenDistribution | undefined>(await distributionDocRef.get()).data();
+    let distribution = <TokenDistribution | undefined>await distributionDocRef.get();
     expect(distribution?.totalUnclaimedAirdrop || 0).toBe(0);
 
-    const nttQuery = admin
-      .firestore()
+    const nttQuery = soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
       .where('payload.type', '==', TransactionAwardType.BADGE);
     await wait(async () => {
       const snap = await nttQuery.get();
-      return snap.size === 2;
+      return snap.length === 2;
     });
   });
 });
@@ -146,7 +145,7 @@ const saveToken = async (space: string, guardian: string) => {
       tokenId: MINTED_TOKEN_ID,
     },
   };
-  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token as Token;
 };
 

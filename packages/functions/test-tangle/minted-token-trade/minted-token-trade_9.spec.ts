@@ -9,7 +9,7 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -47,26 +47,24 @@ describe('Token minting', () => {
       ],
     });
 
-    const query = admin
-      .firestore()
+    const query = soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.seller);
     await wait(async () => {
       const snap = await query.get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
     const snap = await query.get();
-    const credit = <Transaction>snap.docs[0].data();
+    const credit = <Transaction>snap[0];
     expect(credit.payload.amount).toBe(sellOrder.payload.amount);
     expect(credit.payload.nativeTokens[0].id).toBe(MINTED_TOKEN_ID);
     expect(credit.payload.nativeTokens[0].amount).toBe(10);
-    const sellSnap = await admin
-      .firestore()
+    const sellSnap = await soonDb()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.seller)
       .get();
-    expect(sellSnap.docs.length).toBe(0);
+    expect(sellSnap.length).toBe(0);
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
   });

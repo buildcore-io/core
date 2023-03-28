@@ -17,7 +17,7 @@ import {
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
-import { soonDb } from '../../database/wrapper/soondb';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { packBasicOutput } from '../../utils/basic-output.utils';
@@ -25,7 +25,7 @@ import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-import { TokenDropRequest } from '../token-airdrop.control';
+import { TokenDropRequest } from '../token/token.airdrop';
 
 export const airdropMintedTokenControl = async (owner: string, params: Record<string, unknown>) => {
   const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${params.token}`);

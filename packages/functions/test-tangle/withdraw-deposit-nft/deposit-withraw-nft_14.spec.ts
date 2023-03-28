@@ -8,7 +8,7 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { depositNft, withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
@@ -35,23 +35,22 @@ describe('Collection minting', () => {
     const tmpAddress = await helper.walletService!.getNewIotaAddressDetails();
     await helper.updateGuardianAddress(tmpAddress.bech32);
 
-    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
+    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, { nft: nft.uid });
     await testEnv.wrap(withdrawNft)({});
-    const query = admin
-      .firestore()
+    const query = soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.WITHDRAW_NFT)
       .where('payload.nft', '==', nft.uid);
     await wait(async () => {
-      const snap = await query.get();
-      return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+      const snap = await query.get<Transaction>();
+      return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
-    nft = <Nft>(await nftDocRef.get()).data();
+    nft = <Nft>await nftDocRef.get();
 
     const wallet = (await getWallet(helper.network)) as SmrWallet;
-    const guardianDocRef = admin.firestore().doc(`${COL.MEMBER}/${helper.guardian}`);
-    const guardianData = <Member>(await guardianDocRef.get()).data();
+    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${helper.guardian}`);
+    const guardianData = <Member>await guardianDocRef.get();
     const guardianAddress = getAddress(guardianData, helper.network!);
     const nftWallet = new NftWallet(wallet);
     const outputs = await nftWallet.getNftOutputs(undefined, guardianAddress);
@@ -69,18 +68,17 @@ describe('Collection minting', () => {
       guardianAddress,
     );
 
-    const creditQuery = admin
-      .firestore()
+    const creditQuery = soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.guardian)
       .where('type', '==', TransactionType.CREDIT_NFT);
     await wait(async () => {
       const snap = await creditQuery.get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
 
     const snap = await creditQuery.get();
-    const credit = snap.docs[0].data() as Transaction;
+    const credit = snap[0] as Transaction;
     expect(credit.payload.ignoreWallet).toBe(true);
     expect(credit.payload.ignoreWalletReason).toBe(
       TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION,

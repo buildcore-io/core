@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { COL, MIN_IOTA_AMOUNT, TokenPurchase } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { wait } from '../../test/controls/common';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { Helper } from './Helper';
@@ -22,15 +22,14 @@ describe('Token minting', () => {
     await helper.createSellTradeOrder(5, 2 * MIN_IOTA_AMOUNT);
     await helper.createBuyOrder(5, 2 * MIN_IOTA_AMOUNT);
 
-    const purchaseQuery = admin
-      .firestore()
+    const purchaseQuery = soonDb()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {
       const snap = await purchaseQuery.get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
-    const purchase = <TokenPurchase>(await purchaseQuery.get()).docs[0].data();
+    const purchase = <TokenPurchase>(await purchaseQuery.get())[0];
 
     expect(purchase.count).toBe(5);
     expect(purchase.price).toBe(MIN_IOTA_AMOUNT);

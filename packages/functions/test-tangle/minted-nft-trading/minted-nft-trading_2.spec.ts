@@ -10,7 +10,7 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { orderNft, withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { getAddress } from '../../src/utils/address.utils';
 import { Bech32AddressHelper } from '../../src/utils/bech32-address.helper';
@@ -55,25 +55,24 @@ describe('Minted nft trading', () => {
     );
 
     await wait(async () => {
-      const nft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${helper.nft!.uid}`).get()).data();
+      const nft = <Nft>await soonDb().doc(`${COL.NFT}/${helper.nft!.uid}`).get();
       return nft.owner === helper.member;
     });
 
     mockWalletReturnValue(helper.walletSpy, helper.member!, { nft: helper.nft!.uid });
     await testEnv.wrap(withdrawNft)({});
 
-    const nft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${helper.nft!.uid}`).get()).data();
+    const nft = <Nft>await soonDb().doc(`${COL.NFT}/${helper.nft!.uid}`).get();
     expect(nft.status).toBe(NftStatus.WITHDRAWN);
 
     await wait(async () => {
       const transaction = (
-        await admin
-          .firestore()
+        await soonDb()
           .collection(COL.TRANSACTION)
           .where('type', '==', TransactionType.WITHDRAW_NFT)
           .where('payload.nft', '==', helper.nft!.uid)
-          .get()
-      ).docs[0]?.data() as Transaction;
+          .get<Transaction>()
+      )[0];
       return transaction?.payload?.walletReference?.confirmed;
     });
 
@@ -90,9 +89,7 @@ describe('Minted nft trading', () => {
       'rms',
       NFT_OUTPUT_TYPE,
     );
-    const member = <Member>(
-      (await admin.firestore().doc(`${COL.MEMBER}/${helper.member}`).get()).data()
-    );
+    const member = <Member>await soonDb().doc(`${COL.MEMBER}/${helper.member}`).get();
     expect(ownerAddress).toBe(getAddress(member, Network.RMS));
   });
 });

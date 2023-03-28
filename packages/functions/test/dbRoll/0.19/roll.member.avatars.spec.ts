@@ -1,15 +1,15 @@
 import { COL, Member } from '@soonaverse/interfaces';
 import { createAvatarCollection } from '../../../scripts/dbUpgrades/0.19/avatar.roll_1';
 import { rollMemberAvatars } from '../../../scripts/dbUpgrades/0.19/avatar.roll_2';
-import admin from '../../../src/admin.config';
+import { soonApp } from '../../../src/firebase/app/soonApp';
+import { soonDb } from '../../../src/firebase/firestore/soondb';
 import { getRandomEthAddress } from '../../../src/utils/wallet.utils';
 
 describe('Member avatar roll', () => {
   it('Should roll member avatar', async () => {
-    await createAvatarCollection(admin.app());
+    await createAvatarCollection(soonApp());
 
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.AVATARS}/QmNPS2nsqu51vhyuLPkkrfngxWqNJHvJkPysSfLDNydH2u`)
       .set({ available: false });
 
@@ -26,19 +26,19 @@ describe('Member avatar roll', () => {
       { uid: getRandomEthAddress() },
     ];
     for (const member of members) {
-      const docRef = admin.firestore().doc(`${COL.MEMBER}/${member.uid}`);
+      const docRef = soonDb().doc(`${COL.MEMBER}/${member.uid}`);
       await docRef.create(member);
     }
 
-    await rollMemberAvatars(admin.app());
+    await rollMemberAvatars(soonApp());
 
-    let docRef = admin.firestore().doc(`${COL.MEMBER}/${members[0].uid}`);
-    let member = <Member>(await docRef.get()).data();
+    let docRef = soonDb().doc(`${COL.MEMBER}/${members[0].uid}`);
+    let member = <Member>await docRef.get();
     expect(member.avatar).toBeDefined();
     expect(member.avatarNft).toBeDefined();
 
-    docRef = admin.firestore().doc(`${COL.MEMBER}/${members[1].uid}`);
-    member = <Member>(await docRef.get()).data();
+    docRef = soonDb().doc(`${COL.MEMBER}/${members[1].uid}`);
+    member = <Member>await docRef.get();
     expect(member.avatar).toBeUndefined();
     expect(member.avatarNft).toBeUndefined();
   });

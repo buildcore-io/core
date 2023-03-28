@@ -1,5 +1,5 @@
 import { COL, Network, StakeType } from '@soonaverse/interfaces';
-import { soonDb } from '../../database/wrapper/soondb';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { createNftStakeOrder } from '../../services/payment/nft/nft-stake-service';
 
 export const nftStakeControl = async (owner: string, params: Record<string, unknown>) => {

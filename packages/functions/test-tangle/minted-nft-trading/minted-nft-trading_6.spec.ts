@@ -8,7 +8,7 @@ import {
   Transaction,
   TransactionType,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
@@ -46,13 +46,12 @@ describe('Minted nft trading', () => {
     await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
 
     await wait(async () => {
-      const snap = await admin
-        .firestore()
+      const snap = await soonDb()
         .collection(COL.TRANSACTION)
         .where('member', '==', address.bech32)
         .where('type', '==', TransactionType.WITHDRAW_NFT)
-        .get();
-      return snap.size > 0 && snap.docs[0]?.data()?.payload?.walletReference?.confirmed;
+        .get<Transaction>();
+      return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
     });
     const indexer = new IndexerPluginClient(helper.walletService!.client);
     const nftOutputIds = await indexer.nfts({ addressBech32: address.bech32 });

@@ -1,5 +1,5 @@
 import { COL, Proposal } from '@soonaverse/interfaces';
-import { soonDb } from '../../database/wrapper/soondb';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { getProposalApprovalData } from '../../services/payment/tangle-service/proposal/ProposalApporvalService';
 
 export const proposalApprovalControl =

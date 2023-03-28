@@ -10,7 +10,7 @@ import {
 } from '@iota/iota.js-next';
 import { COL, MIN_IOTA_AMOUNT, Network, Nft } from '@soonaverse/interfaces';
 import { cloneDeep } from 'lodash';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { depositNft } from '../../src/runtime/firebase/nft';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
@@ -49,10 +49,10 @@ describe('Collection minting', () => {
         description: 'test',
       },
     );
-    const query = admin.firestore().collection(COL.NFT).where('owner', '==', helper.guardian);
+    const query = soonDb().collection(COL.NFT).where('owner', '==', helper.guardian);
     await wait(async () => {
       const snap = await query.get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
   });
 
@@ -70,13 +70,13 @@ describe('Collection minting', () => {
         description: 'test',
       },
     );
-    const query = admin.firestore().collection(COL.NFT).where('owner', '==', helper.guardian);
+    const query = soonDb().collection(COL.NFT).where('owner', '==', helper.guardian);
     await wait(async () => {
       const snap = await query.get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
     const snap = await query.get();
-    const migratedNft = <Nft>snap.docs[0].data();
+    const migratedNft = <Nft>snap[0];
 
     await helper.claimSpaceFunc(migratedNft.space);
   });

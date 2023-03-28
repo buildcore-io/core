@@ -6,7 +6,7 @@ import {
   Transaction,
   TransactionType,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -47,7 +47,7 @@ describe('Transaction trigger spec', () => {
           void: false,
         },
       };
-      await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
+      await soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
       await wait(async () => {
         const balance = await wallet.getBalance(targetAddress.bech32);
         return balance === MIN_IOTA_AMOUNT;
@@ -55,7 +55,7 @@ describe('Transaction trigger spec', () => {
 
       await wait(async () => {
         billPayment = <Transaction>(
-          (await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()).data()
+          await soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()
         );
         return billPayment.payload?.walletReference?.confirmed;
       });

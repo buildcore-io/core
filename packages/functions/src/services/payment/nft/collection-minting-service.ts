@@ -7,7 +7,7 @@ import {
   UnsoldMintingOptions,
 } from '@soonaverse/interfaces';
 import { get } from 'lodash';
-import admin from '../../../admin.config';
+import { soonDb } from '../../../firebase/firestore/soondb';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 
 export class CollectionMintingService {
@@ -17,10 +17,8 @@ export class CollectionMintingService {
     order: TransactionOrder,
     match: TransactionMatch,
   ) => {
-    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${order.payload.collection}`);
-    const collection = <Collection>(
-      (await this.transactionService.transaction.get(collectionDocRef)).data()
-    );
+    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${order.payload.collection}`);
+    const collection = <Collection>await this.transactionService.get(collectionDocRef);
 
     const payment = await this.transactionService.createPayment(order, match);
     if (collection.status !== CollectionStatus.PRE_MINTED) {
@@ -56,6 +54,6 @@ export class CollectionMintingService {
       data.price = get(order, 'payload.newPrice', 0);
     }
 
-    this.transactionService.updates.push({ ref: collectionDocRef, data, action: 'update' });
+    this.transactionService.push({ ref: collectionDocRef, data, action: 'update' });
   };
 }

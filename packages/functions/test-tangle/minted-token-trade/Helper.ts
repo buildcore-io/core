@@ -13,7 +13,7 @@ import {
   Transaction,
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
@@ -61,9 +61,7 @@ export class Helper {
     this.token = (await saveToken(this.space.uid, this.guardian, this.walletService!)) as Token;
 
     this.seller = await createMember(this.walletSpy);
-    const sellerDoc = <Member>(
-      (await admin.firestore().doc(`${COL.MEMBER}/${this.seller}`).get()).data()
-    );
+    const sellerDoc = <Member>await soonDb().doc(`${COL.MEMBER}/${this.seller}`).get();
     this.sellerAddress = await this.walletService!.getAddressDetails(
       getAddress(sellerDoc, this.network!),
     );
@@ -76,9 +74,7 @@ export class Helper {
     );
 
     this.buyer = await createMember(this.walletSpy);
-    const buyerDoc = <Member>(
-      (await admin.firestore().doc(`${COL.MEMBER}/${this.buyer}`).get()).data()
-    );
+    const buyerDoc = <Member>await soonDb().doc(`${COL.MEMBER}/${this.buyer}`).get();
     this.buyerAddress = await this.walletService!.getAddressDetails(
       getAddress(buyerDoc, this.network),
     );
@@ -108,12 +104,11 @@ export class Helper {
         : undefined,
     });
     await wait(async () => {
-      const snap = await admin
-        .firestore()
+      const snap = await soonDb()
         .collection(COL.TOKEN_MARKET)
         .where('orderTransactionId', '==', sellOrder.uid)
         .get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
     await MnemonicService.store(
       this.sellerAddress!.bech32,
@@ -138,12 +133,11 @@ export class Helper {
       expiresAt,
     );
     await wait(async () => {
-      const snap = await admin
-        .firestore()
+      const snap = await soonDb()
         .collection(COL.TOKEN_MARKET)
         .where('orderTransactionId', '==', buyOrder.uid)
         .get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
     return buyOrder;
   };
@@ -175,7 +169,7 @@ export const saveToken = async (
     access: 0,
     icon: MEDIA,
   };
-  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token;
 };
 

@@ -1,5 +1,5 @@
 import { COL, MIN_IOTA_AMOUNT, Proposal, TangleRequestType } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { wait } from '../../test/controls/common';
 import { Helper } from './Helper';
 
@@ -38,11 +38,11 @@ describe('Proposal approval via tangle request', () => {
       );
       await wait(async () => {
         const snap = await helper.guardianCreditQuery.get();
-        return snap.size === 2;
+        return snap.length === 2;
       });
 
-      const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposalUid}`);
-      const proposal = <Proposal>(await proposalDocRef.get()).data();
+      const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposalUid}`);
+      const proposal = <Proposal>await proposalDocRef.get();
 
       expect(approve ? proposal.approved : proposal.rejected).toBe(true);
       expect(approve ? proposal.approvedBy : proposal.rejectedBy).toBe(helper.guardian);

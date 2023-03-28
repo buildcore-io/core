@@ -1,4 +1,3 @@
-import { Bucket as StorageBucket } from '@google-cloud/storage';
 import {
   Bucket,
   COL,
@@ -14,31 +13,33 @@ import fs from 'fs';
 import mime from 'mime-types';
 import os from 'os';
 import path from 'path';
+import { IBucket } from '../firebase/storage/interfaces';
 
 export const migrateUriToSotrage = async (
   col: COL,
   owner: string,
   uid: string,
   url: string,
-  bucket: StorageBucket,
+  bucket: IBucket,
 ) => {
   const workdir = `${os.tmpdir()}/${randomUUID()}`;
 
   try {
     fs.mkdirSync(workdir);
     const { fileName, contentType } = await downloadMedia(workdir, url);
-    const response = await bucket.upload(path.join(workdir, fileName), {
-      destination: `${owner}/${uid}/${fileName}`,
-      metadata: {
+    const response = await bucket.upload(
+      path.join(workdir, fileName),
+      `${owner}/${uid}/${fileName}`,
+      {
         contentType,
         cacheControl: `public,max-age=${IMAGE_CACHE_AGE}`,
       },
-    });
+    );
 
-    if (bucket.name === Bucket.DEV) {
-      return response[1].mediaLink as string;
+    if (bucket.getName() === Bucket.DEV) {
+      return response;
     }
-    return `https://${bucket.name}/${owner}/${uid}/${fileName}`;
+    return `https://${bucket.getName()}/${owner}/${uid}/${fileName}`;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     functions.logger.error(col, uid, error);

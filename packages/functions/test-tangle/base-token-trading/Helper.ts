@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { COL, Member, Network, Token, TokenStatus } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { createMember } from '../../src/runtime/firebase/member';
 import { IotaWallet } from '../../src/services/wallet/IotaWalletService';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
@@ -43,14 +43,14 @@ export class Helper {
     await testEnv.wrap(createMember)(sellerId);
     this.sellerValidateAddress[Network.ATOI] = await addValidatedAddress(Network.ATOI, sellerId);
     this.sellerValidateAddress[Network.RMS] = await addValidatedAddress(Network.RMS, sellerId);
-    this.seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sellerId}`).get()).data();
+    this.seller = <Member>await soonDb().doc(`${COL.MEMBER}/${sellerId}`).get();
 
     const buyerId = wallet.getRandomEthAddress();
     mockWalletReturnValue(this.walletSpy, buyerId, {});
     await testEnv.wrap(createMember)(buyerId);
     this.buyerValidateAddress[Network.ATOI] = await addValidatedAddress(Network.ATOI, buyerId);
     this.buyerValidateAddress[Network.RMS] = await addValidatedAddress(Network.RMS, buyerId);
-    this.buyer = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buyerId}`).get()).data();
+    this.buyer = <Member>await soonDb().doc(`${COL.MEMBER}/${buyerId}`).get();
     this.token = await this.saveToken(space.uid, guardian);
 
     this.atoiWallet = (await getWallet(Network.ATOI)) as IotaWallet;
@@ -74,7 +74,7 @@ export class Helper {
         network: Network.ATOI,
       },
     };
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
     return token as Token;
   };
 }

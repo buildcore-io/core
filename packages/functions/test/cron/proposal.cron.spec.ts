@@ -1,7 +1,7 @@
 import { COL } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
 import { markExpiredProposalCompleted } from '../../src/cron/proposal.cron';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 
@@ -11,7 +11,7 @@ describe('Set proposal completed', () => {
     const count = 600;
     const ids = Array.from(Array(count)).map(() => getRandomEthAddress());
 
-    let batch = admin.firestore().batch();
+    let batch = soonDb().batch();
     for (let i = 0; i < count; ++i) {
       const proposal = {
         uid: ids[i],
@@ -22,31 +22,29 @@ describe('Set proposal completed', () => {
         createdBy: member,
         completed: i < 550,
       };
-      const docRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+      const docRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
       batch.create(docRef, proposal);
       if (i > 0 && i % 499 === 0) {
         await batch.commit();
-        batch = admin.firestore().batch();
+        batch = soonDb().batch();
       }
     }
     await batch.commit();
 
     await markExpiredProposalCompleted();
 
-    const completed = await admin
-      .firestore()
+    const completed = await soonDb()
       .collection(COL.PROPOSAL)
       .where('createdBy', '==', member)
       .where('completed', '==', true)
       .get();
-    expect(completed.size).toBe(550);
+    expect(completed.length).toBe(550);
 
-    const inProgress = await admin
-      .firestore()
+    const inProgress = await soonDb()
       .collection(COL.PROPOSAL)
       .where('createdBy', '==', member)
       .where('completed', '==', false)
       .get();
-    expect(inProgress.size).toBe(50);
+    expect(inProgress.length).toBe(50);
   });
 });

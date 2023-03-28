@@ -8,8 +8,7 @@ import {
   Transaction,
   WenError,
 } from '@soonaverse/interfaces';
-import admin from '../../admin.config';
-import { soonDb } from '../../database/wrapper/soondb';
+import { soonDb } from '../../firebase/firestore/soondb';
 import {
   getProposal,
   getProposalMember,
@@ -32,11 +31,9 @@ export const voteOnProposalControl = async (owner: string, params: Record<string
     }
 
     if (params.voteWithStakedTokes) {
-      return await admin
-        .firestore()
-        .runTransaction(async (transaction) =>
-          voteWithStakedTokens(transaction, owner, proposal, values),
-        );
+      return await soonDb().runTransaction(async (transaction) =>
+        voteWithStakedTokens(transaction, owner, proposal, values),
+      );
     }
 
     const order = await createVoteTransactionOrder(owner, proposal, values, token);

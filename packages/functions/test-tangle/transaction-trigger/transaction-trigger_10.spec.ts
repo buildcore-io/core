@@ -7,7 +7,7 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -46,18 +46,14 @@ describe('Transaction trigger spec', () => {
       sourceAddress.bech32,
       targetAddress.bech32,
     );
-    const batch = admin.firestore().batch();
-    batch.create(admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`), credit);
-    batch.create(admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`), billPayment);
+    const batch = soonDb().batch();
+    batch.create(soonDb().doc(`${COL.TRANSACTION}/${credit.uid}`), credit);
+    batch.create(soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`), billPayment);
     await batch.commit();
 
     await wait(async () => {
-      billPayment = <Transaction>(
-        (await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()).data()
-      );
-      credit = <Transaction>(
-        (await admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`).get()).data()
-      );
+      billPayment = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get();
+      credit = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${credit.uid}`).get();
       return (
         billPayment?.payload?.walletReference?.confirmed &&
         credit?.payload?.walletReference?.confirmed

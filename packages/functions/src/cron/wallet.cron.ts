@@ -5,25 +5,23 @@ import {
   Transaction,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../admin.config';
-import { uOn } from '../utils/dateTime.utils';
+import { ITransaction } from '../firebase/firestore/interfaces';
+import { soonDb } from '../firebase/firestore/soondb';
 
 export const retryWallet = async () => {
   const snap = await getFailedTransactionsSnap();
-  const promises = snap.docs.map((doc) =>
-    admin.firestore().runTransaction(async (transaction) => {
-      const sfDoc = await transaction.get(doc.ref);
-      return await rerunTransaction(transaction, sfDoc);
+  const promises = snap.map((doc) =>
+    soonDb().runTransaction(async (transaction) => {
+      const docRef = soonDb().doc(`${COL.TRANSACTION}/${doc.uid}`);
+      const tran = (await transaction.get<Transaction>(docRef))!;
+      return await rerunTransaction(transaction, tran);
     }),
   );
   return await Promise.all(promises);
 };
 
-const rerunTransaction = async (
-  transaction: admin.firestore.Transaction,
-  doc: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>,
-) => {
-  const data = <Transaction>doc.data();
+const rerunTransaction = async (transaction: ITransaction, data: Transaction) => {
+  const docRef = soonDb().doc(`${COL.TRANSACTION}/${data.uid}`);
   const walletReference = data.payload.walletReference;
   const processedOn = dayjs(walletReference.processedOn.toDate());
   if (
@@ -33,57 +31,42 @@ const rerunTransaction = async (
     return;
   }
   if (walletReference.count === MAX_WALLET_RETRY) {
-    const sourceMnemonicDocRef = admin
-      .firestore()
-      .doc(`${COL.MNEMONIC}/${data.payload.sourceAddress}`);
-    transaction.update(
-      sourceMnemonicDocRef,
-      uOn({
+    const sourceMnemonicDocRef = soonDb().doc(`${COL.MNEMONIC}/${data.payload.sourceAddress}`);
+    transaction.update(sourceMnemonicDocRef, {
+      lockedBy: '',
+      consumedOutputIds: [],
+      consumedNftOutputIds: [],
+      consumedAliasOutputIds: [],
+    });
+    if (data.payload.storageDepositSourceAddress) {
+      const storageSourceDocRef = soonDb().doc(
+        `${COL.MNEMONIC}/${data.payload.storageDepositSourceAddress}`,
+      );
+      transaction.update(storageSourceDocRef, {
         lockedBy: '',
         consumedOutputIds: [],
         consumedNftOutputIds: [],
         consumedAliasOutputIds: [],
-      }),
-    );
-    if (data.payload.storageDepositSourceAddress) {
-      const storageSourceDocRef = admin
-        .firestore()
-        .doc(`${COL.MNEMONIC}/${data.payload.storageDepositSourceAddress}`);
-      transaction.update(
-        storageSourceDocRef,
-        uOn({
-          lockedBy: '',
-          consumedOutputIds: [],
-          consumedNftOutputIds: [],
-          consumedAliasOutputIds: [],
-        }),
-      );
+      });
     }
-    transaction.update(
-      doc.ref,
-      uOn({
-        'payload.walletReference.chainReference': null,
-        'payload.walletReference.inProgress': false,
-        'payload.walletReference.count': admin.firestore.FieldValue.increment(1),
-        shouldRetry: false,
-      }),
-    );
-  }
-  transaction.update(
-    doc.ref,
-    uOn({
+    transaction.update(docRef, {
       'payload.walletReference.chainReference': null,
-      shouldRetry: true,
-    }),
-  );
-  return doc.id;
+      'payload.walletReference.inProgress': false,
+      'payload.walletReference.count': soonDb().inc(1),
+      shouldRetry: false,
+    });
+  }
+  transaction.update(docRef, {
+    'payload.walletReference.chainReference': null,
+    shouldRetry: true,
+  });
+  return data.uid;
 };
 
 const getFailedTransactionsSnap = () =>
-  admin
-    .firestore()
+  soonDb()
     .collection(COL.TRANSACTION)
     .where('payload.walletReference.confirmed', '==', false)
     .where('payload.walletReference.inProgress', '==', true)
     .where('payload.walletReference.count', '<=', MAX_WALLET_RETRY)
-    .get();
+    .get<Transaction>();

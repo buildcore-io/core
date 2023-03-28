@@ -9,6 +9,7 @@ import {
   StakeType,
   SUB_COL,
   TokenStatus,
+  Transaction,
   TransactionType,
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
   WenError,
@@ -16,7 +17,7 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { tail } from 'lodash';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { voteOnProposal } from '../../src/runtime/firebase/proposal';
 import {
   acceptMemberSpace,
@@ -125,7 +126,7 @@ describe('SpaceController: ' + WEN_FUNC.uSpace, () => {
       twitter: 'asdasd',
       discord: 'adamkun1233',
     };
-    const owner = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${guardian}`).get()).data();
+    const owner = <Member>await soonDb().doc(`${COL.MEMBER}/${guardian}`).get();
     mockWalletReturnValue(walletSpy, guardian, updateParams);
     const proposal = <Proposal>await testEnv.wrap(updateSpace)({});
 
@@ -150,13 +151,13 @@ describe('SpaceController: ' + WEN_FUNC.uSpace, () => {
     //     'Twitter: asdasd (previously: None)<br />',
     // );
 
-    space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
+    space = <Space>await soonDb().doc(`${COL.SPACE}/${space.uid}`).get();
     const updatedOn = space.updatedOn;
     mockWalletReturnValue(walletSpy, member, { uid: proposal.uid, values: [1] });
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
-      space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
+      space = <Space>await soonDb().doc(`${COL.SPACE}/${space.uid}`).get();
       return dayjs(updatedOn?.toDate()).isBefore(dayjs(space.updatedOn?.toDate()));
     });
 
@@ -195,7 +196,7 @@ describe('SpaceController: ' + WEN_FUNC.uSpace, () => {
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
-      space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
+      space = <Space>await soonDb().doc(`${COL.SPACE}/${space.uid}`).get();
       return space.name === 'new name';
     });
   });
@@ -217,8 +218,8 @@ describe('SpaceController: member management', () => {
 
   it('successfully join space', async () => {
     await joinSpaceFunc(member, space.uid);
-    const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${member}`);
-    const memberData = <Member>(await memberDocRef.get()).data();
+    const memberDocRef = soonDb().doc(`${COL.MEMBER}/${member}`);
+    const memberData = <Member>await memberDocRef.get();
     expect((memberData.spaces || {})[space.uid].isMember).toBe(true);
   });
 
@@ -232,8 +233,8 @@ describe('SpaceController: member management', () => {
     const lSpace = await testEnv.wrap(leaveSpace)({});
     expect(lSpace).toBeDefined();
     expect(lSpace.status).toEqual('success');
-    const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${member}`);
-    const memberData = <Member>(await memberDocRef.get()).data();
+    const memberDocRef = soonDb().doc(`${COL.MEMBER}/${member}`);
+    const memberData = <Member>await memberDocRef.get();
     expect((memberData.spaces || {})[space.uid].isMember).toBe(false);
   });
 
@@ -324,7 +325,7 @@ describe('SpaceController: member management', () => {
       guardian = await createMember(walletSpy);
       member = await createMember(walletSpy);
       space = await createSpaceFunc(walletSpy, guardian);
-      await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).update({ open: false });
+      await soonDb().doc(`${COL.SPACE}/${space.uid}`).update({ open: false });
     });
 
     it('successfully join space', async () => {
@@ -366,7 +367,7 @@ describe('SpaceController: member management', () => {
       await testEnv.wrap(voteOnProposal)({});
 
       await wait(async () => {
-        space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
+        space = <Space>await soonDb().doc(`${COL.SPACE}/${space.uid}`).get();
         return space.name === name;
       });
 
@@ -393,7 +394,7 @@ describe('SpaceController: member management', () => {
       await testEnv.wrap(voteOnProposal)({});
 
       await wait(async () => {
-        space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
+        space = <Space>await soonDb().doc(`${COL.SPACE}/${space.uid}`).get();
         return space.name === name;
       });
 
@@ -465,12 +466,8 @@ describe('Add guardian', () => {
       type === ProposalType.ADD_GUARDIAN ? addGuardian : removeGuardian,
     )({});
 
-    const guardianData = <Member>(
-      (await admin.firestore().doc(`${COL.MEMBER}/${guardians[0]}`).get()).data()
-    );
-    const memberData = <Member>(
-      (await admin.firestore().doc(`${COL.MEMBER}/${member}`).get()).data()
-    );
+    const guardianData = <Member>await soonDb().doc(`${COL.MEMBER}/${guardians[0]}`).get();
+    const memberData = <Member>await soonDb().doc(`${COL.MEMBER}/${member}`).get();
 
     expect(proposal.type).toBe(type);
     expect(proposal.approved).toBe(true);
@@ -486,25 +483,19 @@ describe('Add guardian', () => {
     );
     expect(proposal.name).toBe(`${type === ProposalType.ADD_GUARDIAN ? 'Add' : 'Remove'} guardian`);
 
-    const voteTransaction = await admin
-      .firestore()
+    const voteTransaction = await soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', guardians[0])
       .where('type', '==', TransactionType.VOTE)
       .where('payload.proposalId', '==', proposal.uid)
-      .get();
-    expect(voteTransaction.size).toBe(1);
+      .get<Transaction>();
+    expect(voteTransaction.length).toBe(1);
 
     const proposalMember = <ProposalMember>(
-      (
-        await admin
-          .firestore()
-          .doc(`${COL.PROPOSAL}/${proposal.uid}/${SUB_COL.MEMBERS}/${guardians[0]}`)
-          .get()
-      ).data()
+      await soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}/${SUB_COL.MEMBERS}/${guardians[0]}`).get()
     );
     expect(proposalMember.voted).toBe(true);
-    expect((proposalMember as any).tranId).toBe(voteTransaction.docs[0].id);
+    expect((proposalMember as any).tranId).toBe(voteTransaction[0]?.uid);
 
     return proposal;
   };
@@ -522,10 +513,10 @@ describe('Add guardian', () => {
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
-      const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
-      space = <Space>(await spaceDocRef.get()).data();
+      const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space.uid}`);
+      space = <Space>await spaceDocRef.get();
       const guardian = await spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member).get();
-      return space.totalGuardians === guardianCount + 1 && guardian.exists;
+      return space.totalGuardians === guardianCount + 1 && guardian !== undefined;
     });
     mockWalletReturnValue(walletSpy, guardians[0], { uid: proposal.uid, values: [0] });
     await expectThrow(testEnv.wrap(voteOnProposal)({}), WenError.vote_is_no_longer_active.key);
@@ -538,10 +529,10 @@ describe('Add guardian', () => {
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
-      const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
-      space = <Space>(await spaceDocRef.get()).data();
+      const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space.uid}`);
+      space = <Space>await spaceDocRef.get();
       const guardian = await spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member).get();
-      return space.totalGuardians === guardianCount && !guardian.exists;
+      return space.totalGuardians === guardianCount && guardian === undefined;
     });
     mockWalletReturnValue(walletSpy, guardians[0], { uid: removeProposal.uid, values: [0] });
     await expectThrow(testEnv.wrap(voteOnProposal)({}), WenError.vote_is_no_longer_active.key);
@@ -563,10 +554,10 @@ describe('Add guardian', () => {
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
-      const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
-      space = <Space>(await spaceDocRef.get()).data();
+      const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space.uid}`);
+      space = <Space>await spaceDocRef.get();
       const guardian = await spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member).get();
-      return space.totalGuardians === guardianCount + 1 && guardian.exists;
+      return space.totalGuardians === guardianCount + 1 && guardian !== undefined;
     });
     mockWalletReturnValue(walletSpy, guardians[0], { uid: proposal.uid, values: [0] });
     await expectThrow(testEnv.wrap(voteOnProposal)({}), WenError.vote_is_no_longer_active.key);
@@ -584,10 +575,10 @@ describe('Add guardian', () => {
     await createProposal(ProposalType.ADD_GUARDIAN, 1);
 
     await wait(async () => {
-      const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
-      space = <Space>(await spaceDocRef.get()).data();
+      const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space.uid}`);
+      space = <Space>await spaceDocRef.get();
       const guardian = await spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member).get();
-      return space.totalGuardians === 2 && guardian.exists;
+      return space.totalGuardians === 2 && guardian !== undefined;
     });
   });
 
@@ -601,10 +592,10 @@ describe('Add guardian', () => {
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
-      const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
-      space = <Space>(await spaceDocRef.get()).data();
+      const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space.uid}`);
+      space = <Space>await spaceDocRef.get();
       const guardian = await spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member).get();
-      return space.totalGuardians === guardianCount + 1 && guardian.exists;
+      return space.totalGuardians === guardianCount + 1 && guardian !== undefined;
     });
 
     await expectThrow(
@@ -623,10 +614,10 @@ describe('Add guardian', () => {
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
-      const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
-      space = <Space>(await spaceDocRef.get()).data();
+      const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space.uid}`);
+      space = <Space>await spaceDocRef.get();
       const guardian = await spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member).get();
-      return space.totalGuardians === guardianCount && !guardian.exists;
+      return space.totalGuardians === guardianCount && guardian === undefined;
     });
 
     proposal = await createProposal(ProposalType.ADD_GUARDIAN, 3);
@@ -635,10 +626,10 @@ describe('Add guardian', () => {
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
-      const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
-      space = <Space>(await spaceDocRef.get()).data();
+      const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space.uid}`);
+      space = <Space>await spaceDocRef.get();
       const guardian = await spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member).get();
-      return space.totalGuardians === guardianCount + 1 && guardian.exists;
+      return space.totalGuardians === guardianCount + 1 && guardian !== undefined;
     });
   });
 });
@@ -659,8 +650,7 @@ describe('Token based space', () => {
     await addGuardianToSpace(space.uid, guardian2);
 
     token = wallet.getRandomEthAddress();
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.TOKEN}/${token}`)
       .set({ status: TokenStatus.MINTED, space: space.uid, uid: token, approved: true });
 
@@ -670,7 +660,7 @@ describe('Token based space', () => {
 
   it('Should make space token based, can not update access further but can update others', async () => {
     await wait(async () => {
-      space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
+      space = <Space>await soonDb().doc(`${COL.SPACE}/${space.uid}`).get();
       return space.totalGuardians === 2 && space.totalMembers === 3;
     });
 
@@ -686,7 +676,7 @@ describe('Token based space', () => {
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
-      space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
+      space = <Space>await soonDb().doc(`${COL.SPACE}/${space.uid}`).get();
       return space.tokenBased === true && space.minStakedValue === updateParams.minStakedValue;
     });
     expect(space.totalGuardians).toBe(1);
@@ -713,7 +703,7 @@ describe('Token based space', () => {
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
-      space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
+      space = <Space>await soonDb().doc(`${COL.SPACE}/${space.uid}`).get();
       return space.name === name;
     });
   });
@@ -731,27 +721,25 @@ describe('Token based space', () => {
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
-      space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
+      space = <Space>await soonDb().doc(`${COL.SPACE}/${space.uid}`).get();
       return space.tokenBased === true && space.minStakedValue === updateParams.minStakedValue;
     });
 
     const newMember = await createMember(walletSpy);
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.TOKEN}/${token}/${SUB_COL.DISTRIBUTION}/${newMember}`)
       .set({ stakes: { [StakeType.DYNAMIC]: { value: 200 } } });
     mockWalletReturnValue(walletSpy, newMember, { uid: space?.uid });
     await testEnv.wrap(joinSpace)({});
 
     await wait(async () => {
-      space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
+      space = <Space>await soonDb().doc(`${COL.SPACE}/${space.uid}`).get();
       return space.totalMembers === 2 && space.totalGuardians === 1;
     });
   });
 
   it('Should not remove member as it has enough stakes', async () => {
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.TOKEN}/${token}/${SUB_COL.DISTRIBUTION}/${member}`)
       .set({ stakes: { [StakeType.DYNAMIC]: { value: 200 } } });
 
@@ -767,7 +755,7 @@ describe('Token based space', () => {
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
-      space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
+      space = <Space>await soonDb().doc(`${COL.SPACE}/${space.uid}`).get();
       return space.tokenBased === true && space.minStakedValue === updateParams.minStakedValue;
     });
     expect(space.totalMembers).toBe(2);
@@ -775,12 +763,10 @@ describe('Token based space', () => {
   });
 
   it('Should not remove guardians as they have enough stakes', async () => {
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.TOKEN}/${token}/${SUB_COL.DISTRIBUTION}/${guardian}`)
       .set({ stakes: { [StakeType.DYNAMIC]: { value: 200 } } });
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.TOKEN}/${token}/${SUB_COL.DISTRIBUTION}/${guardian2}`)
       .set({ stakes: { [StakeType.DYNAMIC]: { value: 200 } } });
 
@@ -796,7 +782,7 @@ describe('Token based space', () => {
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
-      space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data();
+      space = <Space>await soonDb().doc(`${COL.SPACE}/${space.uid}`).get();
       return space.tokenBased === true && space.minStakedValue === updateParams.minStakedValue;
     });
     expect(space.totalMembers).toBe(2);

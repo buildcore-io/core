@@ -7,7 +7,7 @@ import {
   TangleRequestType,
   Transaction,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { addGuardianToSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -52,15 +52,15 @@ describe('Edit guardian space', () => {
       );
 
       await wait(async () => {
-        const snap = await helper.guardianCreditQuery.get();
-        return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+        const snap = await helper.guardianCreditQuery.get<Transaction>();
+        return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
       });
       const snap = await helper.guardianCreditQuery.get();
-      const credit = snap.docs[0].data() as Transaction;
+      const credit = snap[0] as Transaction;
       const proposalId = credit.payload.response.proposal;
 
-      const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposalId}`);
-      const proposal = <Proposal>(await proposalDocRef.get()).data();
+      const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposalId}`);
+      const proposal = <Proposal>await proposalDocRef.get();
       expect(proposal.type).toBe(
         requestType === TangleRequestType.SPACE_ADD_GUARDIAN
           ? ProposalType.ADD_GUARDIAN

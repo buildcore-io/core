@@ -21,8 +21,8 @@ import {
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import admin from '../../src/admin.config';
-import { depositStake } from '../../src/controls/stake.control';
+import { soonDb } from '../../src/firebase/firestore/soondb';
+import { depositStake } from '../../src/runtime/firebase/stake';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails } from '../../src/services/wallet/wallet';
@@ -61,18 +61,13 @@ export class Helper {
 
   public beforeEach = async () => {
     const memberId = await createMember(this.walletSpy);
-    this.member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${memberId}`).get()).data();
+    this.member = <Member>await soonDb().doc(`${COL.MEMBER}/${memberId}`).get();
     this.memberAddress = await this.walletService?.getNewIotaAddressDetails();
 
     this.space = await createSpace(this.walletSpy, memberId);
     this.token = await this.saveToken(this.space!.uid, this.member!.uid);
     this.tokenStats = <TokenStats>(
-      (
-        await admin
-          .firestore()
-          .doc(`${COL.TOKEN}/${this.token.uid}/${SUB_COL.STATS}/${this.token.uid}`)
-          .get()
-      ).data()
+      await soonDb().doc(`${COL.TOKEN}/${this.token.uid}/${SUB_COL.STATS}/${this.token.uid}`).get()
     );
     await requestFundsFromFaucet(this.network, this.memberAddress!.bech32, 10 * MIN_IOTA_AMOUNT);
     await requestMintedTokenFromFaucet(
@@ -104,7 +99,7 @@ export class Helper {
       access: 0,
       icon: MEDIA,
     };
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
     return <Token>token;
   };
 
@@ -116,12 +111,9 @@ export class Helper {
     customMetadata?: { [key: string]: string },
     memberUid?: string,
   ) => {
-    const member = <Member>(
-      await admin
-        .firestore()
-        .doc(`${COL.MEMBER}/${memberUid || this.member?.uid}`)
-        .get()
-    ).data();
+    const member = <Member>await soonDb()
+      .doc(`${COL.MEMBER}/${memberUid || this.member?.uid}`)
+      .get();
     mockWalletReturnValue(this.walletSpy, member.uid, {
       symbol: this.token?.symbol,
       weeks,
@@ -139,12 +131,12 @@ export class Helper {
       nativeTokens: [{ id: this.TOKEN_ID, amount: HexHelper.fromBigInt256(bigInt(amount)) }],
     });
     await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
-    const query = admin.firestore().collection(COL.STAKE).where('orderId', '==', order.uid);
+    const query = soonDb().collection(COL.STAKE).where('orderId', '==', order.uid);
     await wait(async () => {
       const snap = await query.get();
-      return snap.size == 1;
+      return snap.length == 1;
     });
-    const stake = (await query.get()).docs[0].data() as Stake;
+    const stake = (await query.get())[0] as Stake;
     expect(stake.amount).toBe(amount);
     expect(stake.member).toBe(member!.uid);
     expect(stake.value).toBe(Math.floor(amount * calcStakedMultiplier(weeks)));
@@ -155,12 +147,9 @@ export class Helper {
 
     await wait(async () => {
       const currTokenStats = <TokenStats | undefined>(
-        (
-          await admin
-            .firestore()
-            .doc(`${COL.TOKEN}/${this.token?.uid}/${SUB_COL.STATS}/${this.token?.uid}`)
-            .get()
-        ).data()
+        await soonDb()
+          .doc(`${COL.TOKEN}/${this.token?.uid}/${SUB_COL.STATS}/${this.token?.uid}`)
+          .get()
       );
       return (
         (currTokenStats?.stakes || {})[type || StakeType.DYNAMIC]?.totalAmount !==
@@ -168,12 +157,12 @@ export class Helper {
       );
     });
 
-    const billPaymentDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${stake.billPaymentId}`);
+    const billPaymentDocRef = soonDb().doc(`${COL.TRANSACTION}/${stake.billPaymentId}`);
     await wait(async () => {
-      const billPayment = <Transaction>(await billPaymentDocRef.get()).data();
+      const billPayment = <Transaction>await billPaymentDocRef.get();
       return billPayment.payload.walletReference?.confirmed;
     });
-    const billPayment = <Transaction>(await billPaymentDocRef.get()).data();
+    const billPayment = <Transaction>await billPaymentDocRef.get();
     expect(billPayment.payload.nativeTokens[0].amount).toBe(stake.amount);
     expect(billPayment.payload.targetAddress).toBe(address.bech32);
     expect(billPayment.payload.type).toBe(BillPaymentType.STAKE);
@@ -192,12 +181,9 @@ export class Helper {
     membersCount: number,
   ) => {
     this.tokenStats = <TokenStats>(
-      (
-        await admin
-          .firestore()
-          .doc(`${COL.TOKEN}/${this.token!.uid}/${SUB_COL.STATS}/${this.token?.uid}`)
-          .get()
-      ).data()
+      await soonDb()
+        .doc(`${COL.TOKEN}/${this.token!.uid}/${SUB_COL.STATS}/${this.token?.uid}`)
+        .get()
     );
     expect(this.tokenStats.stakes![type].amount).toBe(stakeAmount);
     expect(this.tokenStats.stakes![type].totalAmount).toBe(stakeTotalAmount);
@@ -214,14 +200,9 @@ export class Helper {
     type: StakeType,
     member?: string,
   ) => {
-    const distribution = <TokenDistribution>(
-      await admin
-        .firestore()
-        .doc(
-          `${COL.TOKEN}/${this.token!.uid}/${SUB_COL.DISTRIBUTION}/${member || this.member!.uid}`,
-        )
-        .get()
-    ).data();
+    const distribution = <TokenDistribution>await soonDb()
+      .doc(`${COL.TOKEN}/${this.token!.uid}/${SUB_COL.DISTRIBUTION}/${member || this.member!.uid}`)
+      .get();
     expect(distribution.stakes![type].amount).toBe(stakeAmount);
     expect(distribution.stakes![type].totalAmount).toBe(stakeTotalAmount);
     expect(distribution.stakes![type].value).toBe(stakeValue);
@@ -229,39 +210,38 @@ export class Helper {
   };
 
   public assertDistributionStakeExpiry = async (stake: Stake) => {
-    const distributionDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${this.token?.uid}/${SUB_COL.DISTRIBUTION}/${this.member!.uid}`);
-    const distirbution = <TokenDistribution>(await distributionDocRef.get()).data();
+    const distributionDocRef = soonDb().doc(
+      `${COL.TOKEN}/${this.token?.uid}/${SUB_COL.DISTRIBUTION}/${this.member!.uid}`,
+    );
+    const distirbution = <TokenDistribution>await distributionDocRef.get();
     expect(distirbution.stakeExpiry![stake.type][stake.expiresAt.toMillis()]).toBe(stake.value);
   };
 
   public updateStakeExpiresAt = async (stake: Stake, expiresAt: dayjs.Dayjs) => {
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.STAKE}/${stake.uid}`)
       .update({ expiresAt: dateToTimestamp(expiresAt.toDate()) });
-    const distributionDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${this.token?.uid}/${SUB_COL.DISTRIBUTION}/${this.member!.uid}`);
+    const distributionDocRef = soonDb().doc(
+      `${COL.TOKEN}/${this.token?.uid}/${SUB_COL.DISTRIBUTION}/${this.member!.uid}`,
+    );
     await distributionDocRef.set(
       {
         stakeExpiry: {
           [stake.type]: {
-            [stake.expiresAt.toMillis()]: admin.firestore.FieldValue.delete(),
+            [stake.expiresAt.toMillis()]: soonDb().deleteField(),
             [dateToTimestamp(expiresAt.toDate()).toMillis()]: stake.value,
           },
         },
       },
-      { merge: true },
+      true,
     );
   };
 
   public assertStakeExpiryCleared = async (type: StakeType) => {
-    const distributionDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${this.token?.uid}/${SUB_COL.DISTRIBUTION}/${this.member!.uid}`);
-    const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    const distributionDocRef = soonDb().doc(
+      `${COL.TOKEN}/${this.token?.uid}/${SUB_COL.DISTRIBUTION}/${this.member!.uid}`,
+    );
+    const distribution = <TokenDistribution>await distributionDocRef.get();
     expect(isEmpty(distribution.stakeExpiry![type])).toBe(true);
   };
 }

@@ -8,7 +8,7 @@ import {
   TokenDropStatus,
   TokenStatus,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { serverTime } from '../../src/utils/dateTime.utils';
@@ -39,13 +39,12 @@ export class Helper {
   };
 
   public getAirdropsForMember = async (member: string, status = TokenDropStatus.UNCLAIMED) => {
-    const snap = await admin
-      .firestore()
+    const snap = await soonDb()
       .collection(COL.AIRDROP)
       .where('member', '==', member)
       .where('status', '==', status)
       .get();
-    return snap.docs.map((d) => d.data() as TokenDrop);
+    return snap.map((d) => d as TokenDrop);
   };
 }
 
@@ -76,7 +75,7 @@ export const saveToken = async (
     access: 0,
     icon: MEDIA,
   };
-  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token;
 };
 

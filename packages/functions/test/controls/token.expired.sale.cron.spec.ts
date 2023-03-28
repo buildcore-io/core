@@ -10,8 +10,8 @@ import {
   TokenTradeOrderType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
 import { cancelExpiredSale } from '../../src/cron/token.cron';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, getRandomSymbol, wait } from './common';
@@ -36,10 +36,9 @@ describe('Expired sales cron', () => {
       status: TokenStatus.PRE_MINTED,
       approved: true,
     };
-    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).set(token);
+    await soonDb().doc(`${COL.TOKEN}/${tokenId}`).set(token);
     const distribution = <TokenDistribution>{ tokenOwned: 1000 };
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}/${seller}`)
       .set(distribution);
   });
@@ -68,8 +67,8 @@ describe('Expired sales cron', () => {
       count: number,
     ) => {
       const sells = Array.from(Array(count)).map(() => getDummySell(status, type));
-      const batch = admin.firestore().batch();
-      sells.forEach((s) => batch.create(admin.firestore().doc(`${COL.TOKEN_MARKET}/${s.uid}`), s));
+      const batch = soonDb().batch();
+      sells.forEach((s) => batch.create(soonDb().doc(`${COL.TOKEN_MARKET}/${s.uid}`), s));
       await batch.commit();
       return sells;
     };
@@ -78,14 +77,13 @@ describe('Expired sales cron', () => {
     await createSales(TokenTradeOrderStatus.SETTLED, TokenTradeOrderType.SELL, 3);
 
     await wait(async () => {
-      const snap = await admin
-        .firestore()
+      const snap = await soonDb()
         .collection(COL.TOKEN_MARKET)
         .where('owner', '==', seller)
         .where('status', '==', TokenTradeOrderStatus.ACTIVE)
-        .get();
-      const processed = snap.docs.reduce(
-        (sum, act) => sum && (<TokenTradeOrder>act.data()).updatedOn !== undefined,
+        .get<TokenTradeOrder>();
+      const processed = snap.reduce(
+        (sum, act) => sum && (<TokenTradeOrder>act).updatedOn !== undefined,
         true,
       );
       return processed;
@@ -93,12 +91,11 @@ describe('Expired sales cron', () => {
 
     await cancelExpiredSale();
 
-    const snap = await admin
-      .firestore()
+    const snap = await soonDb()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', seller)
       .where('status', '==', TokenTradeOrderStatus.EXPIRED)
       .get();
-    expect(snap.docs.length).toBe(salesCount);
+    expect(snap.length).toBe(salesCount);
   });
 });

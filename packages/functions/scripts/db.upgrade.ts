@@ -4,6 +4,7 @@ import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import fs from 'fs';
 import glob from 'glob';
+import { FirebaseApp } from '../src/firebase/app/app';
 import serviceAccount from './serviceAccountKey.json';
 
 const app = initializeApp({
@@ -26,7 +27,7 @@ const execute = async () => {
 
     console.log(`Running ${file}`);
     const func = await import(pathToImportFileName(file));
-    await func.roll(app);
+    await func.roll(new FirebaseApp(app));
     await docRef.create({});
   }
 };

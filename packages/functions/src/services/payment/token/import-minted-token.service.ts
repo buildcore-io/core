@@ -23,7 +23,8 @@ import {
 } from '@soonaverse/interfaces';
 import Joi from 'joi';
 import { get } from 'lodash';
-import admin from '../../../admin.config';
+import { soonDb } from '../../../firebase/firestore/soondb';
+import { soonStorage } from '../../../firebase/storage/soonStorage';
 import { Bech32AddressHelper } from '../../../utils/bech32-address.helper';
 import { getBucket } from '../../../utils/config.utils';
 import { migrateUriToSotrage, uriToUrl } from '../../../utils/media.utils';
@@ -38,10 +39,9 @@ export class ImportMintedTokenService {
     let error: { [key: string]: unknown } = {};
     try {
       const tokenId = order.payload.tokenId;
-      const existingTokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${tokenId}`);
-      const existingToken = <Token | undefined>(
-        (await this.transactionService.transaction.get(existingTokenDocRef)).data()
-      );
+      const existingTokenDocRef = soonDb().doc(`${COL.TOKEN}/${tokenId}`);
+      const existingToken = await this.transactionService.get<Token>(existingTokenDocRef);
+
       if (existingToken) {
         throw WenError.token_does_not_exist;
       }
@@ -55,7 +55,7 @@ export class ImportMintedTokenService {
         order.member!,
         tokenId,
         uriToUrl(metadata.uri),
-        admin.storage().bucket(getBucket()),
+        soonStorage().bucket(getBucket()),
       );
 
       const vaultAddress = await wallet.getNewIotaAddressDetails();
@@ -95,8 +95,8 @@ export class ImportMintedTokenService {
         pricePerToken: 0,
         decimals: metadata.decimals,
       };
-      const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`);
-      this.transactionService.updates.push({ ref: tokenDocRef, data: token, action: 'set' });
+      const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
+      this.transactionService.push({ ref: tokenDocRef, data: token, action: 'set' });
     } catch (err) {
       error = {
         status: 'error',

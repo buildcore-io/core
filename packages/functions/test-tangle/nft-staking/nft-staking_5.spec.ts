@@ -3,11 +3,13 @@ import {
   COL,
   MIN_IOTA_AMOUNT,
   Network,
+  Nft,
   StakeType,
+  Transaction,
   TransactionAwardType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
 import { stakeNft } from '../../src/runtime/firebase/nft';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -40,9 +42,9 @@ describe('Stake nft', () => {
     const order = await testEnv.wrap(fundAward)({});
     await requestFundsFromFaucet(Network.RMS, order.payload.targetAddress, order.payload.amount);
 
-    const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${award.uid}`);
+    const awardDocRef = soonDb().doc(`${COL.AWARD}/${award.uid}`);
     await wait(async () => {
-      award = <Award>(await awardDocRef.get()).data();
+      award = <Award>await awardDocRef.get();
       return award.approved && award.funded;
     });
 
@@ -52,14 +54,13 @@ describe('Stake nft', () => {
     });
     await testEnv.wrap(approveAwardParticipant)({});
 
-    const nttQuery = admin
-      .firestore()
+    const nttQuery = soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.guardian!)
       .where('payload.type', '==', TransactionAwardType.BADGE);
     await wait(async () => {
-      const snap = await nttQuery.get();
-      return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+      const snap = await nttQuery.get<Transaction>();
+      return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
 
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
@@ -76,19 +77,16 @@ describe('Stake nft', () => {
       MIN_IOTA_AMOUNT,
     );
 
-    const stakeQuery = admin
-      .firestore()
-      .collection(COL.NFT_STAKE)
-      .where('member', '==', helper.guardian);
+    const stakeQuery = soonDb().collection(COL.NFT_STAKE).where('member', '==', helper.guardian);
     await wait(async () => {
       const snap = await stakeQuery.get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
 
-    const nftQuery = admin.firestore().collection(COL.NFT).where('space', '==', helper.space?.uid);
-    const nftSnap = await nftQuery.get();
-    expect(nftSnap.size).toBe(1);
-    expect(nftSnap.docs[0].data()?.space).toBe(award.space);
+    const nftQuery = soonDb().collection(COL.NFT).where('space', '==', helper.space?.uid);
+    const nftSnap = await nftQuery.get<Nft>();
+    expect(nftSnap.length).toBe(1);
+    expect(nftSnap[0]?.space).toBe(award.space);
   });
 });
 

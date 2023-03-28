@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { COL, Transaction, TransactionType } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { depositNft } from '../../src/runtime/firebase/nft';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -26,17 +26,16 @@ describe('Collection minting', () => {
     const depositOrder = await testEnv.wrap(depositNft)({});
     await helper.sendNftToAddress(helper.guardianAddress!, depositOrder.payload.targetAddress);
 
-    const query = admin
-      .firestore()
+    const query = soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.guardian)
       .where('type', '==', TransactionType.CREDIT_NFT);
     await wait(async () => {
       const snap = await query.get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
     const snap = await query.get();
-    const credit = <Transaction>snap.docs[0].data();
+    const credit = <Transaction>snap[0];
     expect(credit.payload.response.code).toBe(2125);
     expect(credit.payload.response.message).toBe('Url does not point to an image or video');
     await helper.isInvalidPayment(credit.payload.sourceTransaction[0]);

@@ -6,7 +6,7 @@ import {
 } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js-next';
 import { COL, KEY_NAME_TANGLE, Network, Nft, StakeType } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { stakeNft } from '../../src/runtime/firebase/nft';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -25,14 +25,14 @@ describe('Stake nft', () => {
 
   it.each([false, true])('Should stake with tag', async (migration: boolean) => {
     let nft = await helper.createAndOrderNft();
-    let nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
+    let nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
     await helper.mintCollection();
-    nft = <Nft>(await nftDocRef.get()).data();
+    nft = <Nft>await nftDocRef.get();
     await helper.withdrawNftAndAwait(nft.uid);
 
     if (migration) {
       await nftDocRef.delete();
-      await admin.firestore().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
+      await soonDb().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
     }
 
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
@@ -62,13 +62,12 @@ describe('Stake nft', () => {
       tag,
     );
 
-    const stakeQuery = admin
-      .firestore()
+    const stakeQuery = soonDb()
       .collection(COL.NFT_STAKE)
       .where('nft', '==', migration ? nft.mintingData?.nftId : nft.uid);
     await wait(async () => {
       const snap = await stakeQuery.get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
   });
 });

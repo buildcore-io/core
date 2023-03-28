@@ -8,7 +8,7 @@ import {
   Transaction,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { stakeNft } from '../../src/runtime/firebase/nft';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -30,7 +30,7 @@ describe('Stake nft', () => {
     'Should stake nft',
     async (stakeType: StakeType) => {
       let nft = await helper.createAndOrderNft();
-      const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
+      const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
       await helper.mintCollection();
       await helper.withdrawNftAndAwait(nft.uid);
 
@@ -40,7 +40,7 @@ describe('Stake nft', () => {
         type: stakeType,
       });
       let stakeNftOrder = await testEnv.wrap(stakeNft)({});
-      nft = <Nft>(await nftDocRef.get()).data();
+      nft = <Nft>await nftDocRef.get();
       await helper.sendNftToAddress(
         helper.guardianAddress!,
         stakeNftOrder.payload.targetAddress,
@@ -48,14 +48,14 @@ describe('Stake nft', () => {
         nft.mintingData?.nftId,
       );
 
-      const stakeQuery = admin.firestore().collection(COL.NFT_STAKE).where('nft', '==', nft.uid);
+      const stakeQuery = soonDb().collection(COL.NFT_STAKE).where('nft', '==', nft.uid);
       await wait(async () => {
         const snap = await stakeQuery.get();
-        return snap.size === 1;
+        return snap.length === 1;
       });
 
       const snap = await stakeQuery.get();
-      const nftStake = snap.docs[0].data() as NftStake;
+      const nftStake = snap[0] as NftStake;
       expect(nftStake.member).toBe(helper.guardian!);
       expect(nftStake.space).toBe(nft.space);
       expect(nftStake.collection).toBe(nft.collection);
@@ -65,12 +65,12 @@ describe('Stake nft', () => {
       expect(nftStake.expirationProcessed).toBe(false);
       expect(nftStake.type).toBe(stakeType);
 
-      const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${nftStake.collection}`);
-      const collection = <Collection>(await collectionDocRef.get()).data();
+      const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nftStake.collection}`);
+      const collection = <Collection>await collectionDocRef.get();
       expect(collection.stakedNft).toBe(1);
 
-      const stakeNftOrderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${stakeNftOrder.uid}`);
-      stakeNftOrder = <Transaction>(await stakeNftOrderDocRef.get()).data();
+      const stakeNftOrderDocRef = soonDb().doc(`${COL.TRANSACTION}/${stakeNftOrder.uid}`);
+      stakeNftOrder = <Transaction>await stakeNftOrderDocRef.get();
       expect(stakeNftOrder.payload.nft).toBe(nft.uid);
       expect(stakeNftOrder.payload.collection).toBe(nft.collection);
     },

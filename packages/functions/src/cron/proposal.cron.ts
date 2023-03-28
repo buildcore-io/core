@@ -1,22 +1,23 @@
-import { COL } from '@soonaverse/interfaces';
+import { COL, Proposal } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../admin.config';
-import { uOn } from '../utils/dateTime.utils';
+import { soonDb } from '../firebase/firestore/soondb';
 
 export const markExpiredProposalCompleted = async () => {
   let size = 0;
   do {
-    const snap = await admin
-      .firestore()
+    const snap = await soonDb()
       .collection(COL.PROPOSAL)
       .where('completed', '==', false)
       .where('settings.endDate', '<', dayjs().toDate())
       .limit(500)
-      .get();
-    size = snap.size;
+      .get<Proposal>();
+    size = snap.length;
 
-    const batch = admin.firestore().batch();
-    snap.docs.forEach((doc) => batch.update(doc.ref, uOn({ completed: true })));
+    const batch = soonDb().batch();
+    snap.forEach((proposal) => {
+      const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+      batch.update(proposalDocRef, { completed: true });
+    });
     await batch.commit();
   } while (size);
 };

@@ -1,12 +1,12 @@
 import { COL, Collection, MIN_IOTA_AMOUNT, NftAccess, NftAvailable } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
 import { updateFloorPriceOnCollections } from '../../src/cron/collection.floor.price.cron';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 
 describe('Collection floor price', () => {
   it('Should set collection floor price', async () => {
     const collection = getRandomEthAddress();
-    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${collection}`);
+    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${collection}`);
     await collectionDocRef.create({ uid: collection, name: 'asd' });
 
     const promises = [
@@ -22,19 +22,19 @@ describe('Collection floor price', () => {
         saleAccess: NftAccess.OPEN,
         availablePrice: i * MIN_IOTA_AMOUNT,
       };
-      await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).create(nft);
+      await soonDb().doc(`${COL.NFT}/${nft.uid}`).create(nft);
       return nft;
     });
     const nfts = await Promise.all(promises);
 
     await updateFloorPriceOnCollections();
 
-    let collectionData = <Collection>(await collectionDocRef.get()).data();
+    let collectionData = <Collection>await collectionDocRef.get();
     expect(collectionData.floorPrice).toBe(MIN_IOTA_AMOUNT);
 
-    await admin.firestore().doc(`${COL.NFT}/${nfts[1].uid}`).delete();
+    await soonDb().doc(`${COL.NFT}/${nfts[1].uid}`).delete();
     await updateFloorPriceOnCollections();
-    collectionData = <Collection>(await collectionDocRef.get()).data();
+    collectionData = <Collection>await collectionDocRef.get();
     expect(collectionData.floorPrice).toBe(2 * MIN_IOTA_AMOUNT);
   });
 });

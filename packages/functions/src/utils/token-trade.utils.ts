@@ -14,8 +14,8 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import bigDecimal from 'js-big-decimal';
-import { ITransaction } from '../database/wrapper/interfaces';
-import { soonDb } from '../database/wrapper/soondb';
+import { ITransaction } from '../firebase/firestore/interfaces';
+import { soonDb } from '../firebase/firestore/soondb';
 import { getAddress } from './address.utils';
 import { getRandomEthAddress } from './wallet.utils';
 

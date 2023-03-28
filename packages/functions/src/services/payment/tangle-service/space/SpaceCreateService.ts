@@ -1,7 +1,8 @@
 import { COL, MediaStatus, Network, SUB_COL } from '@soonaverse/interfaces';
 import Joi from 'joi';
 import { get, set } from 'lodash';
-import admin from '../../../../admin.config';
+import { soonDb } from '../../../../firebase/firestore/soondb';
+import { soonStorage } from '../../../../firebase/storage/soonStorage';
 import { createSpaceSchema } from '../../../../runtime/firebase/space';
 import { downloadMediaAndPackCar } from '../../../../utils/car.utils';
 import { getBucket, isProdEnv } from '../../../../utils/config.utils';
@@ -23,24 +24,24 @@ export class SpaceCreateService {
 
     const { space, guardian, member } = await getCreateSpaceData(owner, request);
 
-    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
-    this.transactionService.updates.push({ ref: spaceDocRef, data: space, action: 'set' });
+    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space.uid}`);
+    this.transactionService.push({ ref: spaceDocRef, data: space, action: 'set' });
 
     const spaceGuardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(owner);
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: spaceGuardianDocRef,
       data: guardian,
       action: 'set',
     });
     const spaceMemberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner);
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: spaceMemberDocRef,
       data: guardian,
       action: 'set',
     });
 
-    const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${owner}`);
-    this.transactionService.updates.push({
+    const memberDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
+    this.transactionService.push({
       ref: memberDocRef,
       data: member,
       action: 'update',
@@ -73,7 +74,7 @@ export const getCreateSpaceData = async (owner: string, params: Record<string, u
     const metadata = spaceToIpfsMetadata(space as any);
 
     if (!isStorageUrl(bannerUrl)) {
-      const bucket = admin.storage().bucket(getBucket());
+      const bucket = soonStorage().bucket(getBucket());
       bannerUrl = await migrateUriToSotrage(
         COL.SPACE,
         owner,

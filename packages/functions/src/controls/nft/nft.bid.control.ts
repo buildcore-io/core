@@ -14,7 +14,7 @@ import {
   TransactionValidationType,
   WenError,
 } from '@soonaverse/interfaces';
-import { soonDb } from '../../database/wrapper/soondb';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress, getAddress } from '../../utils/address.utils';
 import { isProdEnv } from '../../utils/config.utils';

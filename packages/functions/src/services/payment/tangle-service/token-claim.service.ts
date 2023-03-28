@@ -16,9 +16,9 @@ import {
 import dayjs from 'dayjs';
 import Joi from 'joi';
 import { isEmpty } from 'lodash';
-import admin from '../../../admin.config';
+import { soonDb } from '../../../firebase/firestore/soondb';
 import { assertMemberHasValidAddress } from '../../../utils/address.utils';
-import { dateToTimestamp } from '../../../utils/dateTime.utils';
+import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../../utils/error.utils';
 import { assertValidationAsync } from '../../../utils/schema.utils';
 import { dropToOutput } from '../../../utils/token-minting-utils/member.utils';
@@ -40,8 +40,8 @@ export class TangleTokenClaimService {
     await assertValidationAsync(Joi.object({ symbol: CommonJoi.tokenSymbol() }), params);
 
     const order = await createMintedTokenAirdropCalimOrder(owner, params.symbol as string);
-    this.transactionService.updates.push({
-      ref: admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`),
+    this.transactionService.push({
+      ref: soonDb().doc(`${COL.TRANSACTION}/${order.uid}`),
       data: order,
       action: 'set',
     });
@@ -60,7 +60,7 @@ export const createMintedTokenAirdropCalimOrder = async (owner: string, symbol: 
     throw throwInvalidArgument(WenError.token_in_invalid_status);
   }
 
-  const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data();
+  const member = <Member>await soonDb().doc(`${COL.MEMBER}/${owner}`).get();
   assertMemberHasValidAddress(member, token.mintingData?.network!);
 
   const drops = await getClaimableDrops(token.uid, owner);
@@ -98,9 +98,9 @@ export const createMintedTokenAirdropCalimOrder = async (owner: string, symbol: 
 
 const getClaimableDrops = async (token: string, member: string) => {
   const airdops = await getUnclaimedDrops(token, member);
-  const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token}`);
+  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token}`);
   const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member);
-  const distribution = <TokenDistribution | undefined>(await distributionDocRef.get()).data();
+  const distribution = await distributionDocRef.get<TokenDistribution>();
   if (distribution?.mintedClaimedOn || !distribution?.tokenOwned) {
     return airdops;
   }
@@ -108,8 +108,8 @@ const getClaimableDrops = async (token: string, member: string) => {
     uid: getRandomEthAddress(),
     member,
     token,
-    createdOn: dateToTimestamp(dayjs()),
-    vestingAt: dateToTimestamp(dayjs()),
+    createdOn: serverTime(),
+    vestingAt: serverTime(),
     count: distribution?.tokenOwned,
     status: TokenDropStatus.UNCLAIMED,
   };

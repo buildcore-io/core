@@ -1,5 +1,5 @@
 import { COL, Transaction } from '@soonaverse/interfaces';
-import { soonDb } from '../../database/wrapper/soondb';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { createNftPuchaseOrder } from '../../services/payment/tangle-service/nft-purchase.service';
 
 export const orderNftControl = async (

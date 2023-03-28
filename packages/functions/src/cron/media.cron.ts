@@ -9,7 +9,7 @@ import {
   Token,
 } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
-import admin, { inc } from '../admin.config';
+import { soonDb } from '../firebase/firestore/soondb';
 import { awardToIpfsMetadata } from '../services/payment/award/award-service';
 import {
   collectionToIpfsMetadata,
@@ -18,7 +18,6 @@ import {
   putCar,
   tokenToIpfsMetadata,
 } from '../utils/car.utils';
-import { uOn } from '../utils/dateTime.utils';
 import { spaceToIpfsMetadata } from '../utils/space.utils';
 
 export const MEDIA_UPLOAD_BACH_SIZE = 30;
@@ -57,41 +56,46 @@ const uploadMedia = async <T>(
   if (!batchSize) {
     return { size: 0, promises: [] as Promise<void>[] };
   }
-  const snap = await pendingUploadQuery(col, batchSize).get();
-  const promises = snap.docs.map(async (d) => {
+  const snap = await pendingUploadQuery(col, batchSize).get<Record<string, unknown>>();
+  const promises = snap.map(async (data) => {
     try {
-      return await uploadFunc(<T>d.data());
+      return await uploadFunc(<T>data);
     } catch (error) {
-      await setMediaStatusToError(col, d.id, d.data()?.mediaUploadErrorCount || 0, error);
+      await setMediaStatusToError(
+        col,
+        data.uid as string,
+        (data.mediaUploadErrorCount as number) || 0,
+        error,
+      );
     }
   });
-  return { size: snap.size, promises };
+  return { size: snap.length, promises };
 };
 
 const uploadNftMedia = async (nft: Nft) => {
-  const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
-  const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${nft.collection}`);
-  const collection = <Collection>(await collectionDocRef.get()).data();
+  const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nft.collection}`);
+  const collection = (await collectionDocRef.get<Collection>())!;
   const metadata = nftToIpfsMetadata(collection, nft);
   const { car, ...ipfs } = await downloadMediaAndPackCar(nft.uid, nft.media, metadata);
   await putCar(car);
 
-  const batch = admin.firestore().batch();
-  batch.update(collectionDocRef, uOn({ 'mintingData.nftMediaToUpload': inc(-1) }));
-  batch.update(nftDocRef, uOn({ mediaStatus: MediaStatus.UPLOADED, ...ipfs }));
+  const batch = soonDb().batch();
+  batch.update(collectionDocRef, { 'mintingData.nftMediaToUpload': soonDb().inc(-1) });
+  batch.update(nftDocRef, { mediaStatus: MediaStatus.UPLOADED, ...ipfs });
   await batch.commit();
 };
 
 const uploadTokenMedia = async (token: Token) => {
-  const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`);
+  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
   const metadata = tokenToIpfsMetadata(token);
   const { car, ...ipfs } = await downloadMediaAndPackCar(token.uid, token.icon!, metadata);
   await putCar(car);
-  await tokenDocRef.update(uOn({ mediaStatus: MediaStatus.UPLOADED, ...ipfs }));
+  await tokenDocRef.update({ mediaStatus: MediaStatus.UPLOADED, ...ipfs });
 };
 
 const uploadCollectionMedia = async (collection: Collection) => {
-  const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`);
+  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${collection.uid}`);
   const metadata = collectionToIpfsMetadata(collection);
   const { car, ...ipfs } = await downloadMediaAndPackCar(
     collection.uid,
@@ -100,42 +104,38 @@ const uploadCollectionMedia = async (collection: Collection) => {
   );
   await putCar(car);
 
-  await collectionDocRef.update(uOn({ mediaStatus: MediaStatus.UPLOADED, ...ipfs }));
+  await collectionDocRef.update({ mediaStatus: MediaStatus.UPLOADED, ...ipfs });
 };
 
 const uploadAwardMedia = async (award: Award) => {
   if (!award.badge.image) {
     return;
   }
-  const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${award.uid}`);
+  const awardDocRef = soonDb().doc(`${COL.AWARD}/${award.uid}`);
   const metadata = awardToIpfsMetadata(award);
   const { car, ...ipfs } = await downloadMediaAndPackCar(award.uid, award.badge.image, metadata);
   await putCar(car);
 
-  await awardDocRef.update(uOn({ mediaStatus: MediaStatus.UPLOADED, ...ipfs }));
+  await awardDocRef.update({ mediaStatus: MediaStatus.UPLOADED, ...ipfs });
 };
 
 const uploadSpaceMedia = async (space: Space) => {
-  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
+  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space.uid}`);
   const metadata = spaceToIpfsMetadata(space);
   const { car, ...ipfs } = await downloadMediaAndPackCar(space.uid, space.bannerUrl!, metadata);
   await putCar(car);
-  await spaceDocRef.update(uOn({ mediaStatus: MediaStatus.UPLOADED, ...ipfs }));
+  await spaceDocRef.update({ mediaStatus: MediaStatus.UPLOADED, ...ipfs });
 };
 
 const pendingUploadQuery = (col: COL, batchSize: number) =>
-  admin
-    .firestore()
-    .collection(col)
-    .where('mediaStatus', '==', MediaStatus.PENDING_UPLOAD)
-    .limit(batchSize);
+  soonDb().collection(col).where('mediaStatus', '==', MediaStatus.PENDING_UPLOAD).limit(batchSize);
 
 const setMediaStatusToError = async (col: COL, uid: string, errorCount: number, error: unknown) => {
-  const data = { mediaUploadErrorCount: inc(1), mediaStatus: MediaStatus.PENDING_UPLOAD };
+  const data = { mediaUploadErrorCount: soonDb().inc(1), mediaStatus: MediaStatus.PENDING_UPLOAD };
   if (errorCount >= MAX_WALLET_RETRY) {
     data.mediaStatus = MediaStatus.ERROR;
     functions.logger.error(col, uid, 'Image upload error', error);
   }
-  const docRef = admin.firestore().doc(`${col}/${uid}`);
-  await docRef.update(uOn(data));
+  const docRef = soonDb().doc(`${col}/${uid}`);
+  await docRef.update(data);
 };

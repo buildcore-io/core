@@ -7,7 +7,7 @@ import {
   TokenTradeOrderType,
   Transaction,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -39,13 +39,12 @@ describe('Base token trading', () => {
       orders.map((o) => ({ toAddress: o.payload.targetAddress, amount: o.payload.amount })),
     );
 
-    const tradeQuery = admin
-      .firestore()
+    const tradeQuery = soonDb()
       .collection(COL.TOKEN_MARKET)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {
       const snap = await tradeQuery.get();
-      return snap.size === count;
+      return snap.length === count;
     });
 
     mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
@@ -59,11 +58,11 @@ describe('Base token trading', () => {
 
     await wait(async () => {
       const snap = await tradeQuery.get();
-      return snap.size === count + 1;
+      return snap.length === count + 1;
     });
 
     await wait(async () => {
-      const trades = (await tradeQuery.get()).docs.map((d) => <TokenTradeOrder>d.data());
+      const trades = (await tradeQuery.get()).map((d) => <TokenTradeOrder>d);
       const allFulfilled = trades.reduce(
         (acc, act) => acc && act.status === TokenTradeOrderStatus.SETTLED,
         true,

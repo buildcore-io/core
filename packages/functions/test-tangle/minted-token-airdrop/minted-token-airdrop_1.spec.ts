@@ -18,7 +18,7 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { head } from 'lodash';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import {
   airdropMintedToken,
   claimMintedTokenOrder,
@@ -64,9 +64,7 @@ describe('Minted token airdrop', () => {
     mockWalletReturnValue(helper.walletSpy, helper.member!, { symbol: helper.token!.symbol });
     await expectThrow(testEnv.wrap(claimMintedTokenOrder)({}), WenError.no_tokens_to_claim.key);
 
-    const guardian = <Member>(
-      (await admin.firestore().doc(`${COL.MEMBER}/${helper.guardian}`).get()).data()
-    );
+    const guardian = <Member>await soonDb().doc(`${COL.MEMBER}/${helper.guardian}`).get();
     const guardianAddress = await helper.walletService!.getAddressDetails(
       getAddress(guardian, helper.network),
     );
@@ -97,10 +95,10 @@ describe('Minted token airdrop', () => {
       return airdrops.length === 2;
     });
 
-    const distributionDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${helper.member}`);
-    let distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    const distributionDocRef = soonDb().doc(
+      `${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${helper.member}`,
+    );
+    let distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.totalUnclaimedAirdrop).toBe(2);
 
     mockWalletReturnValue(helper.walletSpy, helper.member!, {
@@ -122,8 +120,8 @@ describe('Minted token airdrop', () => {
     );
 
     await wait(async () => {
-      const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
-      order = <Transaction>(await orderDocRef.get()).data();
+      const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+      order = <Transaction>await orderDocRef.get();
       return order.payload.unclaimedAirdrops === 0;
     });
 
@@ -133,13 +131,12 @@ describe('Minted token airdrop', () => {
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
 
     const billPayments = (
-      await admin
-        .firestore()
+      await soonDb()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
         .where('member', '==', helper.member)
         .get()
-    ).docs.map((d) => d.data() as Transaction);
+    ).map((d) => d as Transaction);
     expect(billPayments.length).toBe(2);
     billPayments.forEach((billPayment) => {
       expect(billPayment.payload.token).toBe(helper.token!.uid);
@@ -161,21 +158,18 @@ describe('Minted token airdrop', () => {
     }
 
     await wait(async () => {
-      const snap = await admin
-        .firestore()
+      const snap = await soonDb()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
         .where('member', 'in', [helper.guardian, helper.member])
         .get();
-      return snap.size === 2;
+      return snap.length === 2;
     });
 
     const balance = await helper.walletService?.getBalance(guardianAddress.bech32);
     expect(balance).toBe(5 * MIN_IOTA_AMOUNT);
 
-    const member = <Member>(
-      (await admin.firestore().doc(`${COL.MEMBER}/${helper.member}`).get()).data()
-    );
+    const member = <Member>await soonDb().doc(`${COL.MEMBER}/${helper.member}`).get();
     const memberAddress = await helper.walletService!.getAddressDetails(
       getAddress(member, helper.network),
     );
@@ -198,19 +192,17 @@ describe('Minted token airdrop', () => {
 
     const tokenUid = helper.token?.uid;
 
-    helper.token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${tokenUid}`).get()).data();
+    helper.token = <Token>await soonDb().doc(`${COL.TOKEN}/${tokenUid}`).get();
     expect(helper.token.mintingData?.tokensInVault).toBe(0);
 
-    const statsDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${tokenUid}/${SUB_COL.STATS}/${tokenUid}`);
-    const tokenStats = <TokenStats>(await statsDocRef.get()).data();
+    const statsDocRef = soonDb().doc(`${COL.TOKEN}/${tokenUid}/${SUB_COL.STATS}/${tokenUid}`);
+    const tokenStats = <TokenStats>await statsDocRef.get();
     expect(tokenStats.stakes![stakeType]?.amount).toBe(1);
     expect(tokenStats.stakes![stakeType]?.totalAmount).toBe(1);
     expect(tokenStats.stakes![stakeType]?.value).toBe(1);
     expect(tokenStats.stakes![stakeType]?.totalValue).toBe(1);
 
-    distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.stakes![stakeType]?.amount).toBe(1);
     expect(distribution.stakes![stakeType]?.totalAmount).toBe(1);
     expect(distribution.stakes![stakeType]?.value).toBe(1);
@@ -234,13 +226,10 @@ describe('Minted token airdrop', () => {
     });
     let order = await testEnv.wrap(airdropMintedToken)({});
 
-    const airdropQuery = admin
-      .firestore()
-      .collection(COL.AIRDROP)
-      .where('member', '==', helper.member);
+    const airdropQuery = soonDb().collection(COL.AIRDROP).where('member', '==', helper.member);
     let airdropsSnap = await airdropQuery.get();
-    expect(airdropsSnap.size).toBe(1);
-    const airdrop = <TokenDrop>airdropsSnap.docs[0].data();
+    expect(airdropsSnap.length).toBe(1);
+    const airdrop = <TokenDrop>airdropsSnap[0];
     expect(airdrop.vestingAt.toDate()).toEqual(drops[0].vestingAt);
     expect(airdrop.count).toEqual(drops[0].count);
     expect(airdrop.member).toEqual(drops[0].recipient);
@@ -248,8 +237,8 @@ describe('Minted token airdrop', () => {
     expect(airdrop.token).toEqual(helper.token?.uid!);
     expect(airdrop.status).toEqual(TokenDropStatus.DEPOSIT_NEEDED);
 
-    const guardianDocRef = admin.firestore().doc(`${COL.MEMBER}/${helper.guardian}`);
-    const guardian = <Member>(await guardianDocRef.get()).data();
+    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${helper.guardian}`);
+    const guardian = <Member>await guardianDocRef.get();
     const guardianAddress = await helper.walletService!.getAddressDetails(
       getAddress(guardian, helper.network),
     );
@@ -267,10 +256,8 @@ describe('Minted token airdrop', () => {
     });
 
     await wait(async () => {
-      const airdropsSnap = await airdropQuery.get();
-      return (
-        airdropsSnap.size === 1 && airdropsSnap.docs[0].data()?.status === TokenDropStatus.UNCLAIMED
-      );
+      const airdropsSnap = await airdropQuery.get<TokenDrop>();
+      return airdropsSnap.length === 1 && airdropsSnap[0]?.status === TokenDropStatus.UNCLAIMED;
     });
 
     mockWalletReturnValue(helper.walletSpy, helper.member!, {
@@ -284,21 +271,21 @@ describe('Minted token airdrop', () => {
     );
 
     await wait(async () => {
-      const docRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
-      order = <Transaction>(await docRef.get()).data();
+      const docRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+      order = <Transaction>await docRef.get();
       return order.payload.unclaimedAirdrops === 0;
     });
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
 
-    const distributionDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${helper.member}`);
-    const distribution = <TokenDistribution | undefined>(await distributionDocRef.get()).data();
+    const distributionDocRef = soonDb().doc(
+      `${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${helper.member}`,
+    );
+    const distribution = <TokenDistribution | undefined>await distributionDocRef.get();
     expect(distribution?.stakes![stakeType].value).toBe(2);
 
     airdropsSnap = await airdropQuery.get();
-    expect(airdropsSnap.size).toBe(1);
-    expect((<TokenDrop>airdropsSnap.docs[0].data()).status).toBe(TokenDropStatus.CLAIMED);
+    expect(airdropsSnap.length).toBe(1);
+    expect((<TokenDrop>airdropsSnap[0]).status).toBe(TokenDropStatus.CLAIMED);
   });
 });

@@ -12,7 +12,7 @@ import {
   TransactionType,
   WenError,
 } from '@soonaverse/interfaces';
-import { soonDb } from '../../database/wrapper/soondb';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { getAddress } from '../../utils/address.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import {
@@ -39,7 +39,7 @@ export const creditTokenControl = async (owner: string, params: Record<string, u
     if (!token || !tokenIsInCoolDownPeriod(token) || token.status !== TokenStatus.AVAILABLE) {
       throw throwInvalidArgument(WenError.token_not_in_cool_down_period);
     }
-    const member = <Member>(await memberDocRef(owner).get()).data();
+    const member = <Member>await memberDocRef(owner).get();
     const orderDocRef = soonDb().doc(
       `${COL.TRANSACTION}/${tokenOrderTransactionDocId(owner, token)}`,
     );

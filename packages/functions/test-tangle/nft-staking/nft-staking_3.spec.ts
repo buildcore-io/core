@@ -9,7 +9,7 @@ import {
   Transaction,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { stakeNft } from '../../src/runtime/firebase/nft';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -30,13 +30,13 @@ describe('Stake nft', () => {
 
   it('Should stake nft minted outside soonaverse', async () => {
     let nft = await helper.createAndOrderNft();
-    let nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
+    let nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
     await helper.mintCollection();
     await helper.withdrawNftAndAwait(nft.uid);
 
-    nft = <Nft>(await nftDocRef.get()).data();
-    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).delete();
-    await admin.firestore().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
+    nft = <Nft>await nftDocRef.get();
+    await soonDb().doc(`${COL.NFT}/${nft.uid}`).delete();
+    await soonDb().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
 
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
       network: Network.RMS,
@@ -51,19 +51,18 @@ describe('Stake nft', () => {
       nft.mintingData?.nftId,
     );
 
-    const stakeQuery = admin
-      .firestore()
+    const stakeQuery = soonDb()
       .collection(COL.NFT_STAKE)
       .where('nft', '==', nft.mintingData?.nftId);
     await wait(async () => {
       const snap = await stakeQuery.get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
 
-    nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.mintingData?.nftId}`);
-    nft = <Nft>(await nftDocRef.get()).data();
+    nftDocRef = soonDb().doc(`${COL.NFT}/${nft.mintingData?.nftId}`);
+    nft = <Nft>await nftDocRef.get();
     const snap = await stakeQuery.get();
-    const nftStake = snap.docs[0].data() as NftStake;
+    const nftStake = snap[0] as NftStake;
     expect(nftStake.member).toBe(helper.guardian!);
     expect(nftStake.space).toBe(nft.space);
     expect(nftStake.collection).toBe(nft.collection);
@@ -81,12 +80,12 @@ describe('Stake nft', () => {
       output.unlockConditions.find((uc) => uc.type === TIMELOCK_UNLOCK_CONDITION_TYPE),
     ).toBeDefined();
 
-    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${nftStake.collection}`);
-    const collection = <Collection>(await collectionDocRef.get()).data();
+    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nftStake.collection}`);
+    const collection = <Collection>await collectionDocRef.get();
     expect(collection.stakedNft).toBe(1);
 
-    const stakeNftOrderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${stakeNftOrder.uid}`);
-    stakeNftOrder = <Transaction>(await stakeNftOrderDocRef.get()).data();
+    const stakeNftOrderDocRef = soonDb().doc(`${COL.TRANSACTION}/${stakeNftOrder.uid}`);
+    stakeNftOrder = <Transaction>await stakeNftOrderDocRef.get();
     expect(stakeNftOrder.payload.nft).toBe(nft.uid);
   });
 });

@@ -1,12 +1,12 @@
 import { PublicCollections, PublicSubCollections } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
 import { getById } from '../../src/api/getById';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 
 describe('Get by id test', () => {
   it('Should get by id', async () => {
     const uid = getRandomEthAddress();
-    await admin.firestore().doc(`${PublicCollections.MEMBER}/${uid}`).create({ name: 'asd', uid });
+    await soonDb().doc(`${PublicCollections.MEMBER}/${uid}`).create({ name: 'asd', uid });
     const req = { query: { collection: PublicCollections.MEMBER, uid: uid } } as any;
     const res = {
       send: (body: any) => {
@@ -47,8 +47,7 @@ describe('Get by id test', () => {
     const uid = getRandomEthAddress();
     const childUid = getRandomEthAddress();
 
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${PublicCollections.SPACE}/${uid}/${PublicSubCollections.MEMBERS}/${childUid}`)
       .create({ name: 'asd' });
     const req = {

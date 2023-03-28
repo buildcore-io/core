@@ -16,7 +16,7 @@ import {
   UnsoldMintingOptions,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import {
   approveCollection,
   createCollection,
@@ -85,14 +85,14 @@ export class Helper {
       collectionMintOrder.payload.amount,
       expiresAt,
     );
-    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${this.collection}`);
+    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${this.collection}`);
     await wait(async () => {
-      const data = <Collection>(await collectionDocRef.get()).data();
+      const data = <Collection>await collectionDocRef.get();
       return data.status === CollectionStatus.MINTED;
     });
 
-    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${this.nft?.uid}`);
-    this.nft = <Nft>(await nftDocRef.get()).data();
+    const nftDocRef = soonDb().doc(`${COL.NFT}/${this.nft?.uid}`);
+    this.nft = <Nft>await nftDocRef.get();
   };
 
   public createAndOrderNft = async (shouldOrder = true) => {
@@ -103,8 +103,7 @@ export class Helper {
     mockWalletReturnValue(this.walletSpy, this.guardian!, nft);
     nft = await testEnv.wrap(createNft)({});
 
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.NFT}/${nft.uid}`)
       .update({ availableFrom: dayjs().subtract(1, 'h').toDate() });
     if (shouldOrder) {
@@ -120,7 +119,7 @@ export class Helper {
       await milestoneProcessed(milestone.milestone, milestone.tranId);
     }
 
-    this.nft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
+    this.nft = <Nft>await soonDb().doc(`${COL.NFT}/${nft.uid}`).get();
     return this.nft;
   };
 
@@ -128,8 +127,7 @@ export class Helper {
     mockWalletReturnValue(this.walletSpy, this.guardian!, this.dummyAuctionData(this.nft!.uid));
     await testEnv.wrap(setForSaleNft)({});
     await wait(
-      async () =>
-        (await admin.firestore().doc(`${COL.NFT}/${this.nft!.uid}`).get()).data()?.available === 3,
+      async () => (await soonDb().doc(`${COL.NFT}/${this.nft!.uid}`).get<Nft>())?.available === 3,
     );
   };
 
@@ -137,8 +135,7 @@ export class Helper {
     mockWalletReturnValue(this.walletSpy, this.guardian!, this.dummySaleData(this.nft!.uid));
     await testEnv.wrap(setForSaleNft)({});
     await wait(
-      async () =>
-        (await admin.firestore().doc(`${COL.NFT}/${this.nft!.uid}`).get()).data()?.available === 1,
+      async () => (await soonDb().doc(`${COL.NFT}/${this.nft!.uid}`).get<Nft>())?.available === 1,
     );
   };
 

@@ -20,7 +20,7 @@ import {
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { cloneDeep, get } from 'lodash';
-import admin from '../../../admin.config';
+import { soonDb } from '../../../firebase/firestore/soondb';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';
@@ -58,15 +58,15 @@ export class NftStakeService {
         get(order, 'payload.weeks', 0),
         get(order, 'payload.stakeType', StakeType.DYNAMIC),
       );
-      const withdrawOrderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${withdrawOrder.uid}`);
-      this.transactionService.updates.push({
+      const withdrawOrderDocRef = soonDb().doc(`${COL.TRANSACTION}/${withdrawOrder.uid}`);
+      this.transactionService.push({
         ref: withdrawOrderDocRef,
         data: withdrawOrder,
         action: 'set',
       });
 
-      const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nftUpdateData.uid}`);
-      this.transactionService.updates.push({
+      const nftDocRef = soonDb().doc(`${COL.NFT}/${nftUpdateData.uid}`);
+      this.transactionService.push({
         ref: nftDocRef,
         data: nftUpdateData,
         action: 'update',
@@ -75,8 +75,8 @@ export class NftStakeService {
       await this.transactionService.createPayment(order, match);
       this.transactionService.markAsReconciled(order, match.msgId);
 
-      const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
-      this.transactionService.updates.push({
+      const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+      this.transactionService.push({
         ref: orderDocRef,
         data: { 'payload.nft': nft.uid, 'payload.collection': nft.collection },
         action: 'update',

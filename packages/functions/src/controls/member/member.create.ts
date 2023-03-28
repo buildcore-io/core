@@ -1,5 +1,5 @@
 import { COL, Member } from '@soonaverse/interfaces';
-import { soonDb } from '../../database/wrapper/soondb';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { getRandomNonce } from '../../utils/wallet.utils';
 
 export const createMemberControl = async (owner: string) => {
