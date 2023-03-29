@@ -10,10 +10,8 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { Database } from '../../database/Database';
 import { isEmpty } from 'lodash';
-import { soonDb } from '../../database/wrapper/soondb';
-import { isProdEnv } from '../../utils/config.utils';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';

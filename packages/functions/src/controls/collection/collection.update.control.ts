@@ -11,7 +11,7 @@ import {
 import dayjs from 'dayjs';
 import Joi from 'joi';
 import { isEmpty, last, set } from 'lodash';
-import { soonDb } from '../../database/wrapper/soondb';
+import { getSnapshot, soonDb } from '../../firebase/firestore/soondb';
 import {
   updateCollectionSchema,
   updateMintedCollectionSchema,
@@ -98,13 +98,14 @@ export const updateCollectionControl = async (owner: string, params: Record<stri
     for (const status of [NftStatus.PRE_MINTED, NftStatus.MINTED]) {
       let lastNftId = '';
       do {
+        const lastDoc = await getSnapshot(COL.NFT, lastNftId);
         const nfts = await soonDb()
           .collection(COL.NFT)
           .where('collection', '==', collection.uid)
           .where('isOwned', '==', false)
           .where('status', '==', status)
           .limit(500)
-          .startAfter(lastNftId ? `${COL.NFT}/${lastNftId}` : '')
+          .startAfter(lastDoc)
           .get<Nft>();
         lastNftId = last(nfts)?.uid || '';
 

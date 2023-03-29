@@ -1,5 +1,5 @@
 import { COL } from '@soonaverse/interfaces';
-import { soonDb } from '../../database/wrapper/soondb';
+import { soonDb } from '../../firebase/firestore/soondb';
 import {
   createAwardFundOrder,
   getAwardForFunding,

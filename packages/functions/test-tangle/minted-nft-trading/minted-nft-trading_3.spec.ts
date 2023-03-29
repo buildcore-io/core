@@ -5,7 +5,7 @@ import {
   UnsoldMintingOptions,
   WenError,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { mintCollection } from '../../src/runtime/firebase/collection/index';
 import { expectThrow, mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -40,7 +40,7 @@ describe('Minted nft trading', () => {
 
     await wait(async () => {
       const collection = <Collection>(
-        (await admin.firestore().doc(`${COL.COLLECTION}/${helper.collection}`).get()).data()
+        await soonDb().doc(`${COL.COLLECTION}/${helper.collection}`).get()
       );
       return collection.status === CollectionStatus.MINTING;
     });

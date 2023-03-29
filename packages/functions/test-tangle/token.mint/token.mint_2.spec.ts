@@ -2,7 +2,7 @@
 
 import { addressBalance } from '@iota/iota.js-next';
 import { COL, Member, Token, TokenStatus, TransactionType, WenError } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { getAddress } from '../../src/utils/address.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -28,15 +28,13 @@ describe('Token minting', () => {
     const order = await testEnv.wrap(mintTokenOrder)({});
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, order.payload.amount);
 
-    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${helper.token.uid}`);
+    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${helper.token.uid}`);
     await wait(async () => {
-      helper.token = <Token>(await tokenDocRef.get()).data();
+      helper.token = <Token>await tokenDocRef.get();
       return helper.token.status === TokenStatus.MINTED;
     });
 
-    const guardianData = <Member>(
-      (await admin.firestore().doc(`${COL.MEMBER}/${helper.guardian.uid}`).get()).data()
-    );
+    const guardianData = <Member>await soonDb().doc(`${COL.MEMBER}/${helper.guardian.uid}`).get();
     const guardianAddress = getAddress(guardianData, helper.network);
     await wait(async () => {
       const balance = await addressBalance(helper.walletService.client, guardianAddress);
@@ -46,7 +44,7 @@ describe('Token minting', () => {
     await helper.meltMintedToken(helper.walletService, helper.token, 250, guardianAddress);
 
     await wait(async () => {
-      helper.token = <Token>(await tokenDocRef.get()).data();
+      helper.token = <Token>await tokenDocRef.get();
       return (
         helper.token.mintingData?.meltedTokens === 250 &&
         helper.token.mintingData?.circulatingSupply === 1250
@@ -56,8 +54,7 @@ describe('Token minting', () => {
 
   it('Should create order, not approved but public', async () => {
     await helper.setup();
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.TOKEN}/${helper.token.uid}`)
       .update({ approved: false, public: true });
     mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, {
@@ -70,10 +67,7 @@ describe('Token minting', () => {
 
   it('Should throw, member has no valid address', async () => {
     await helper.setup();
-    await admin
-      .firestore()
-      .doc(`${COL.MEMBER}/${helper.guardian.uid}`)
-      .update({ validatedAddress: {} });
+    await soonDb().doc(`${COL.MEMBER}/${helper.guardian.uid}`).update({ validatedAddress: {} });
     mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, {
       token: helper.token.uid,
       network: helper.network,
@@ -95,10 +89,7 @@ describe('Token minting', () => {
 
   it('Should throw, already minted', async () => {
     await helper.setup();
-    await admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${helper.token.uid}`)
-      .update({ status: TokenStatus.MINTED });
+    await soonDb().doc(`${COL.TOKEN}/${helper.token.uid}`).update({ status: TokenStatus.MINTED });
     mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, {
       token: helper.token.uid,
       network: helper.network,
@@ -122,19 +113,18 @@ describe('Token minting', () => {
       order2.payload.amount,
     );
 
-    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${helper.token.uid}`);
+    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${helper.token.uid}`);
     await wait(async () => {
-      const snap = await tokenDocRef.get();
-      return snap.data()?.status === TokenStatus.MINTED;
+      const snap = await tokenDocRef.get<Token>();
+      return snap?.status === TokenStatus.MINTED;
     });
     await wait(async () => {
-      const snap = await admin
-        .firestore()
+      const snap = await soonDb()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
         .where('member', '==', helper.guardian.uid)
         .get();
-      return snap.size > 0;
+      return snap.length > 0;
     });
     await awaitTransactionConfirmationsForToken(helper.token.uid);
   });

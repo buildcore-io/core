@@ -4,29 +4,26 @@ import { COL, SUB_COL, Token, TokenDistribution, TokenDrop } from '@soonaverse/i
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
-import admin from '../../admin.config';
+import { getSnapshot, soonDb } from '../../firebase/firestore/soondb';
 import { packBasicOutput } from '../basic-output.utils';
-import { LastDocType } from '../common.utils';
 
 export const getOwnedTokenTotal = async (token: string) => {
   let count = 0;
-  let lastDoc: LastDocType | undefined = undefined;
+  let lastDocId = '';
+  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token}`);
   do {
-    let query = admin
-      .firestore()
-      .collection(`${COL.TOKEN}/${token}/${SUB_COL.DISTRIBUTION}`)
-      .limit(1000);
-    if (lastDoc) {
-      query = query.startAfter(lastDoc);
-    }
-    const snap = await query.get();
-    lastDoc = last(snap.docs);
+    const lastDoc = lastDocId
+      ? await getSnapshot(COL.TOKEN, token, SUB_COL.DISTRIBUTION, lastDocId)
+      : undefined;
+    const snap = await tokenDocRef
+      .collection(SUB_COL.DISTRIBUTION)
+      .startAfter(lastDoc)
+      .limit(1000)
+      .get<TokenDistribution>();
+    lastDocId = last(snap)?.uid || '';
 
-    count += snap.docs.reduce(
-      (acc, act) => acc + ((<TokenDistribution>act.data()).tokenOwned || 0),
-      0,
-    );
-  } while (lastDoc);
+    count += snap.reduce((acc, act) => acc + (act.tokenOwned || 0), 0);
+  } while (lastDocId);
   return count;
 };
 

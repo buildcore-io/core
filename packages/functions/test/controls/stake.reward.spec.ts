@@ -1,7 +1,7 @@
 import { COL, Space, StakeReward, WenError } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
-import { stakeReward } from '../../src/controls/stake.control';
+import { soonDb } from '../../src/firebase/firestore/soondb';
+import { stakeReward } from '../../src/runtime/firebase/stake';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
@@ -19,7 +19,7 @@ describe('Stake reward controller', () => {
     space = await createSpace(walletSpy, guardian);
 
     token = wallet.getRandomEthAddress();
-    await admin.firestore().doc(`${COL.TOKEN}/${token}`).create({ uid: token, space: space.uid });
+    await soonDb().doc(`${COL.TOKEN}/${token}`).create({ uid: token, space: space.uid });
   });
 
   it('Should throw, token does not exist', async () => {
@@ -36,10 +36,7 @@ describe('Stake reward controller', () => {
   });
 
   it('Should throw, not guardian', async () => {
-    await admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token}`)
-      .update({ space: wallet.getRandomEthAddress() });
+    await soonDb().doc(`${COL.TOKEN}/${token}`).update({ space: wallet.getRandomEthAddress() });
     const items = [
       {
         startDate: dayjs().valueOf(),

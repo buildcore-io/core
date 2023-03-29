@@ -6,7 +6,7 @@ import {
   Transaction,
   TransactionType,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -48,30 +48,27 @@ describe('Base token trading', () => {
       2 * (MIN_IOTA_AMOUNT + 1),
     );
 
-    const tradesQuery = admin
-      .firestore()
+    const tradesQuery = soonDb()
       .collection(COL.TOKEN_MARKET)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {
       const snap = await tradesQuery.get();
-      return snap.size === 2;
+      return snap.length === 2;
     });
 
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    const purchase = await admin
-      .firestore()
+    const purchase = await soonDb()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', helper.token!.uid)
       .get();
-    expect(purchase.size).toBe(0);
+    expect(purchase.length).toBe(0);
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
   });
 
   it('Should send dust to space', async () => {
-    const tradesQuery = admin
-      .firestore()
+    const tradesQuery = soonDb()
       .collection(COL.TOKEN_MARKET)
       .where('token', '==', helper.token!.uid);
     mockWalletReturnValue(helper.walletSpy, helper.seller!.uid, {
@@ -89,7 +86,7 @@ describe('Base token trading', () => {
 
     await wait(async () => {
       const snap = await tradesQuery.get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
 
     mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
@@ -105,26 +102,24 @@ describe('Base token trading', () => {
       2.001 * MIN_IOTA_AMOUNT,
     );
 
-    const purchaseQuery = admin
-      .firestore()
+    const purchaseQuery = soonDb()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {
       const snap = await purchaseQuery.get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
 
-    const purchase = <TokenPurchase>(await purchaseQuery.get()).docs[0].data();
+    const purchase = <TokenPurchase>(await purchaseQuery.get())[0];
     expect(purchase.price).toBe(2);
 
     const billPayments = (
-      await admin
-        .firestore()
+      await soonDb()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
         .where('payload.token', '==', helper.token!.uid)
         .get()
-    ).docs.map((d) => <Transaction>d.data());
+    ).map((d) => <Transaction>d);
 
     const billPaymentToSpaceOne = billPayments.find(
       (bp) => bp.payload.amount === MIN_IOTA_AMOUNT * 2 * 0.025 * 0.1 + 1000 + 46800,

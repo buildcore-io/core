@@ -14,7 +14,8 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
+import { IQuery } from '../../src/firebase/firestore/interfaces';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
@@ -35,7 +36,7 @@ export class Helper {
   public walletService: SmrWallet = {} as any;
   public tangleOrder: Transaction = {} as any;
   public network = Network.RMS;
-  public guardianCreditQuery: admin.firestore.Query<admin.firestore.DocumentData> = {} as any;
+  public guardianCreditQuery: IQuery = {} as any;
   public tokenId = '';
   public proposalUid = '';
 
@@ -47,16 +48,15 @@ export class Helper {
   public beforeEach = async () => {
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
     this.guardian = await createMember(this.walletSpy);
-    const guardianDocRef = admin.firestore().doc(`${COL.MEMBER}/${this.guardian}`);
-    const guardianData = <Member>(await guardianDocRef.get()).data();
+    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${this.guardian}`);
+    const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, this.network);
     this.guardianAddress = await this.walletService.getAddressDetails(guardianBech32);
 
     this.space = await createSpace(this.walletSpy, this.guardian);
 
     this.tokenId = wallet.getRandomEthAddress();
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.TOKEN}/${this.tokenId}`)
       .create({
         uid: this.tokenId,
@@ -66,16 +66,14 @@ export class Helper {
         approved: true,
       });
 
-    const distributionDocRef = admin
-      .firestore()
+    const distributionDocRef = soonDb()
       .collection(COL.TOKEN)
       .doc(this.tokenId)
       .collection(SUB_COL.DISTRIBUTION)
       .doc(this.guardian);
     await distributionDocRef.create({});
 
-    this.guardianCreditQuery = admin
-      .firestore()
+    this.guardianCreditQuery = soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST)
       .where('member', '==', this.guardian);
@@ -101,11 +99,11 @@ export class Helper {
 
     await wait(async () => {
       const snap = await this.guardianCreditQuery.get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
 
     const snap = await this.guardianCreditQuery.get();
-    const credit = snap.docs[0].data() as Transaction;
+    const credit = snap[0] as Transaction;
     expect(credit.payload.amount).toBe(MIN_IOTA_AMOUNT);
 
     expect(credit.payload.response.proposal).toBeDefined();
@@ -134,13 +132,13 @@ export class Helper {
       uid: wallet.getRandomEthAddress(),
       token: this.tokenId,
     };
-    const docRef = admin.firestore().doc(`${COL.STAKE}/${stake.uid}`);
+    const docRef = soonDb().doc(`${COL.STAKE}/${stake.uid}`);
     await docRef.create(stake);
   };
 
   public assertProposalWeights = async (total: number, voted: number) => {
-    const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${this.proposalUid}`);
-    const proposal = <Proposal>(await proposalDocRef.get()).data();
+    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${this.proposalUid}`);
+    const proposal = <Proposal>await proposalDocRef.get();
     expect(+proposal.results?.total.toFixed(0)).toBe(total);
     expect(+proposal.results?.voted.toFixed(0)).toBe(voted);
   };
@@ -150,15 +148,14 @@ export class Helper {
     weight: number,
     answer: number,
   ) => {
-    const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${this.proposalUid}`);
+    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${this.proposalUid}`);
     const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(member);
-    const proposalMember = <ProposalMember>(await proposalMemberDocRef.get()).data();
+    const proposalMember = <ProposalMember>await proposalMemberDocRef.get();
     expect(+proposalMember.weightPerAnswer![answer].toFixed(0)).toBe(weight);
   };
 
   public updatePropoasalDates = (startDate: dayjs.Dayjs, endDate: dayjs.Dayjs) =>
-    admin
-      .firestore()
+    soonDb()
       .doc(`${COL.PROPOSAL}/${this.proposalUid}`)
       .set(
         {
@@ -167,23 +164,21 @@ export class Helper {
             endDate: dateToTimestamp(endDate),
           },
         },
-        { merge: true },
+        true,
       );
 
   public updateVoteTranCreatedOn = (voteTransactionId: string, createdOn: dayjs.Dayjs) =>
-    admin
-      .firestore()
+    soonDb()
       .doc(`${COL.TRANSACTION}/${voteTransactionId}`)
       .update({ createdOn: dateToTimestamp(createdOn) });
 
   public getVoteTransactionForCredit = async (creditId: string) => {
-    const query = admin
-      .firestore()
+    const query = soonDb()
       .collection(COL.TRANSACTION)
       .where('payload.creditId', '==', creditId)
       .where('type', '==', TransactionType.VOTE);
     const voteTranSnap = await query.get();
-    return voteTranSnap.docs[0].data() as Transaction;
+    return voteTranSnap[0] as Transaction;
   };
 }
 

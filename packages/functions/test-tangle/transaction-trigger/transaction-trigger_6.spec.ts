@@ -6,7 +6,7 @@ import {
   Transaction,
   TransactionType,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -46,19 +46,19 @@ describe('Transaction trigger spec', () => {
           void: false,
         },
       };
-      const docRef = admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+      const docRef = soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
       await docRef.create(billPayment);
       await wait(async () => {
-        const doc = await docRef.get();
+        const doc = await docRef.get<Transaction>();
         return (
-          doc.data()?.payload?.walletReference?.confirmed === true &&
-          !doc.data()?.payload?.walletReference?.inProgress
+          doc?.payload?.walletReference?.confirmed === true &&
+          !doc?.payload?.walletReference?.inProgress
         );
       });
 
       await wait(async () => {
         billPayment = <Transaction>(
-          (await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()).data()
+          await soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()
         );
         return billPayment.payload?.walletReference?.confirmed;
       });

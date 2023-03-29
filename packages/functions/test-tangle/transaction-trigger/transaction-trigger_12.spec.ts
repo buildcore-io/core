@@ -14,8 +14,8 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import admin from '../../src/admin.config';
 import { retryWallet } from '../../src/cron/wallet.cron';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { IotaWallet } from '../../src/services/wallet/IotaWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
@@ -57,11 +57,11 @@ describe('Transaction trigger spec', () => {
           2 * MIN_IOTA_AMOUNT,
         ),
       };
-      const billPaymentDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+      const billPaymentDocRef = soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
       await billPaymentDocRef.create(billPayment);
 
       await wait(async () => {
-        billPayment = <Transaction>(await billPaymentDocRef.get()).data();
+        billPayment = <Transaction>await billPaymentDocRef.get();
         return !isEmpty(billPayment.payload?.walletReference?.chainReferences);
       });
 
@@ -79,7 +79,7 @@ describe('Transaction trigger spec', () => {
       expect(result.find((r) => r === billPayment.uid)).toBeDefined();
 
       await wait(async () => {
-        billPayment = <Transaction>(await billPaymentDocRef.get()).data();
+        billPayment = <Transaction>await billPaymentDocRef.get();
         return billPayment.payload?.walletReference?.confirmed;
       });
 

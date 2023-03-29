@@ -9,8 +9,8 @@ import {
   Transaction,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
 import { cancelExpiredSale } from '../../src/cron/token.cron';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -45,31 +45,29 @@ describe('Base token trading', () => {
         tradeOrder.payload.amount,
       );
 
-      const tradeQuery = admin
-        .firestore()
+      const tradeQuery = soonDb()
         .collection(COL.TOKEN_MARKET)
         .where('token', '==', helper.token!.uid);
       await wait(async () => {
         const snap = await tradeQuery.get();
-        return snap.size > 0;
+        return snap.length > 0;
       });
-      let trade = <TokenTradeOrder>(await tradeQuery.get()).docs[0].data();
-      await admin
-        .firestore()
+      let trade = <TokenTradeOrder>(await tradeQuery.get())[0];
+      await soonDb()
         .doc(`${COL.TOKEN_MARKET}/${trade.uid}`)
         .update({ expiresAt: dateToTimestamp(dayjs().subtract(1, 'd')) });
 
       await cancelExpiredSale();
 
-      trade = <TokenTradeOrder>(await tradeQuery.get()).docs[0].data();
+      trade = <TokenTradeOrder>(await tradeQuery.get())[0];
       expect(trade.status).toBe(TokenTradeOrderStatus.EXPIRED);
 
-      const creditDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${trade.creditTransactionId}`);
+      const creditDocRef = soonDb().doc(`${COL.TRANSACTION}/${trade.creditTransactionId}`);
       await wait(async () => {
-        const credit = <Transaction>(await creditDocRef.get()).data();
+        const credit = <Transaction>await creditDocRef.get();
         return credit.payload?.walletReference?.confirmed;
       });
-      const credit = <Transaction>(await creditDocRef.get()).data();
+      const credit = <Transaction>await creditDocRef.get();
       expect(credit.member).toBe(member.uid);
       expect(credit.payload.targetAddress).toBe(getAddress(member, network));
       expect(credit.payload.amount).toBe(tradeOrder.payload.amount);

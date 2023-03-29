@@ -15,11 +15,11 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
-import admin from '../../../admin.config';
+import { soonDb } from '../../../firebase/firestore/soondb';
 import { validateAddressSchema } from '../../../runtime/firebase/address';
 import { getAddress } from '../../../utils/address.utils';
 import { generateRandomAmount } from '../../../utils/common.utils';
-import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
+import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../../utils/error.utils';
 import { assertValidationAsync } from '../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../utils/token.utils';
@@ -50,8 +50,8 @@ export class TangleAddressValidationService {
     );
     set(order, 'payload.amount', tranEntry.amount);
 
-    this.transactionService.updates.push({
-      ref: admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`),
+    this.transactionService.push({
+      ref: soonDb().doc(`${COL.TRANSACTION}/${order.uid}`),
       data: order,
       action: 'set',
     });
@@ -76,8 +76,8 @@ export const createAddressValidationOrder = async (
   network: Network,
   spaceId?: string,
 ) => {
-  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${spaceId}`);
-  const space = spaceId ? <Space | undefined>(await spaceDocRef.get()).data() : undefined;
+  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${spaceId}`);
+  const space = spaceId ? <Space | undefined>await spaceDocRef.get() : undefined;
   if (spaceId && !space) {
     throw throwInvalidArgument(WenError.space_does_not_exists);
   }
@@ -106,9 +106,7 @@ export const createAddressValidationOrder = async (
       targetAddress: targetAddress.bech32,
       beneficiary: space ? 'space' : 'member',
       beneficiaryUid: space?.uid || owner,
-      expiresOn: dateToTimestamp(
-        dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms'),
-      ),
+      expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
       validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
       reconciled: false,
       void: false,

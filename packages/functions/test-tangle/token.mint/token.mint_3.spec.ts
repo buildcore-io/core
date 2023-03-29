@@ -4,6 +4,7 @@ import {
   COL,
   MIN_IOTA_AMOUNT,
   SUB_COL,
+  Token,
   TokenDistribution,
   TokenStatus,
   TokenTradeOrderStatus,
@@ -12,7 +13,7 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { setTokenAvailableForSale } from '../../src/runtime/firebase/token/base';
 import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
@@ -57,13 +58,12 @@ describe('Token minting', () => {
     await milestoneProcessed(milestone2.milestone, milestone2.tranId);
 
     await wait(async () => {
-      const buySnap = await admin
-        .firestore()
+      const buySnap = await soonDb()
         .collection(COL.TOKEN_MARKET)
         .where('type', '==', TokenTradeOrderType.BUY)
         .where('owner', '==', helper.guardian.uid)
         .get();
-      return buySnap.size === 2;
+      return buySnap.length === 2;
     });
 
     mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, {
@@ -77,31 +77,29 @@ describe('Token minting', () => {
       mintOrder.payload.amount,
     );
 
-    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${helper.token.uid}`);
+    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${helper.token.uid}`);
     await wait(async () => {
-      const snap = await tokenDocRef.get();
-      return snap.data()?.status === TokenStatus.MINTING;
+      const snap = await tokenDocRef.get<Token>();
+      return snap?.status === TokenStatus.MINTING;
     });
 
     await wait(async () => {
-      const buySnap = await admin
-        .firestore()
+      const buySnap = await soonDb()
         .collection(COL.TOKEN_MARKET)
         .where('type', '==', TokenTradeOrderType.BUY)
         .where('status', '==', TokenTradeOrderStatus.CANCELLED_MINTING_TOKEN)
         .where('owner', '==', helper.guardian.uid)
         .get();
-      return buySnap.size === 2;
+      return buySnap.length === 2;
     });
 
     await wait(async () => {
-      const creditSnap = await admin
-        .firestore()
+      const creditSnap = await soonDb()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
         .where('member', '==', helper.guardian.uid)
         .get();
-      return creditSnap.size === 2;
+      return creditSnap.length === 2;
     });
   });
 
@@ -130,28 +128,24 @@ describe('Token minting', () => {
     );
 
     await wait(async () => {
-      const snap = await admin.firestore().doc(`${COL.TOKEN}/${helper.token.uid}`).get();
-      return snap.data()?.status === TokenStatus.MINTING;
+      const snap = await soonDb().doc(`${COL.TOKEN}/${helper.token.uid}`).get<Token>();
+      return snap?.status === TokenStatus.MINTING;
     });
 
     await wait(async () => {
-      const sellSnap = await admin
-        .firestore()
+      const sellSnap = await soonDb()
         .collection(COL.TOKEN_MARKET)
         .where('type', '==', TokenTradeOrderType.SELL)
         .where('status', '==', TokenTradeOrderStatus.CANCELLED_MINTING_TOKEN)
         .where('owner', '==', helper.member)
         .get();
-      return sellSnap.size === 2;
+      return sellSnap.length === 2;
     });
 
     const distribution = <TokenDistribution>(
-      (
-        await admin
-          .firestore()
-          .doc(`${COL.TOKEN}/${helper.token.uid}/${SUB_COL.DISTRIBUTION}/${helper.member}`)
-          .get()
-      ).data()
+      await soonDb()
+        .doc(`${COL.TOKEN}/${helper.token.uid}/${SUB_COL.DISTRIBUTION}/${helper.member}`)
+        .get()
     );
     expect(distribution.lockedForSale).toBe(0);
     expect(distribution.tokenOwned).toBe(1000);
@@ -164,8 +158,7 @@ describe('Token minting', () => {
       saleLength: 86400000 * 2,
       coolDownLength: 86400000,
     };
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.TOKEN}/${helper.token.uid}`)
       .update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] });
     const updateData = { token: helper.token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };

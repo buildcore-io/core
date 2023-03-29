@@ -18,7 +18,7 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
-import { soonDb } from '../../database/wrapper/soondb';
+import { getSnapshot, soonDb } from '../../firebase/firestore/soondb';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress, assertSpaceHasValidAddress } from '../../utils/address.utils';
@@ -29,7 +29,7 @@ import {
   nftToMetadata,
 } from '../../utils/collection-minting-utils/nft.utils';
 import { isProdEnv } from '../../utils/config.utils';
-import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
+import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { createAliasOutput } from '../../utils/token-minting-utils/alias.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
@@ -114,9 +114,7 @@ export const mintCollectionOrderControl = async (
         amount: collectionStorageDeposit + nftsStorageDeposit + aliasStorageDeposit,
         targetAddress: targetAddress.bech32,
         validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
-        expiresOn: dateToTimestamp(
-          dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms'),
-        ),
+        expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
         reconciled: false,
         void: false,
         collection: collection.uid,
@@ -144,12 +142,13 @@ const getNftsTotalStorageDeposit = async (
   let nftsToMint = 0;
   let lastUid = '';
   do {
+    const lastDoc = await getSnapshot(COL.NFT, lastUid);
     const nfts = await soonDb()
       .collection(COL.NFT)
       .where('collection', '==', collection.uid)
       .where('placeholderNft', '==', false)
       .limit(500)
-      .startAfter(lastUid ? `${COL.NFT}/${lastUid}` : '')
+      .startAfter(lastDoc)
       .get<Nft>();
     lastUid = last(nfts)?.uid || '';
 

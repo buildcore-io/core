@@ -1,7 +1,7 @@
 import { GetByIdRequest, PublicCollections, PublicSubCollections } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
-import admin from '../admin.config';
+import { soonDb } from '../firebase/firestore/soondb';
 import { CommonJoi } from '../services/joi/common';
 import { getQueryParams, isHiddenNft } from './common';
 
@@ -26,8 +26,8 @@ export const getById = async (req: functions.https.Request, res: functions.Respo
     body.parentUid && body.subCollection
       ? `${body.collection}/${body.parentUid}/${body.subCollection}/${body.uid}`
       : `${body.collection}/${body.uid}`;
-  const docRef = admin.firestore().doc(docPath);
-  const data = (await docRef.get()).data();
+  const docRef = soonDb().doc(docPath);
+  const data = await docRef.get<Record<string, unknown>>();
 
   if (!data || isHiddenNft(body.collection, data)) {
     res.status(404);

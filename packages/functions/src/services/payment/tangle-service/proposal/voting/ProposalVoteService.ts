@@ -17,8 +17,7 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../../../../admin.config';
-import { Database } from '../../../../../database/Database';
+import { soonDb } from '../../../../../firebase/firestore/soondb';
 import { voteOnProposalSchema } from '../../../../../runtime/firebase/proposal';
 import { throwInvalidArgument } from '../../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../../utils/schema.utils';
@@ -84,9 +83,9 @@ export class ProposalVoteService {
     milestoneTranEntry: MilestoneTransactionEntry,
   ) => {
     const order = await createVoteTransactionOrder(owner, proposal, values, token);
-    const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
+    const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
 
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: orderDocRef,
       data: order,
       action: 'set',
@@ -106,29 +105,29 @@ export class ProposalVoteService {
     proposalMember: ProposalMember,
     values: number[],
   ) => {
-    const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
     const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(proposalMember.uid);
 
     const voteData = await executeSimpleVoting(proposalMember, proposal, values);
 
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: proposalDocRef,
       data: voteData.proposal,
       action: 'set',
       merge: true,
     });
 
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: proposalMemberDocRef,
       data: voteData.proposalMember,
       action: 'set',
       merge: true,
     });
 
-    const voteTransactionDocRef = admin
-      .firestore()
-      .doc(`${COL.TRANSACTION}/${voteData.voteTransaction.uid}`);
-    this.transactionService.updates.push({
+    const voteTransactionDocRef = soonDb().doc(
+      `${COL.TRANSACTION}/${voteData.voteTransaction.uid}`,
+    );
+    this.transactionService.push({
       ref: voteTransactionDocRef,
       data: voteData.voteTransaction,
       action: 'set',
@@ -139,7 +138,8 @@ export class ProposalVoteService {
 }
 
 export const getProposal = async (proposalUid: string) => {
-  const proposal = await Database.getById<Proposal>(COL.PROPOSAL, proposalUid);
+  const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposalUid}`);
+  const proposal = await proposalDocRef.get<Proposal>();
   if (!proposal) {
     throw throwInvalidArgument(WenError.proposal_does_not_exists);
   }
@@ -169,12 +169,9 @@ export const getProposal = async (proposalUid: string) => {
 };
 
 export const getProposalMember = async (owner: string, proposal: Proposal, value: number) => {
-  const proposalMember = await Database.getById<ProposalMember>(
-    COL.PROPOSAL,
-    proposal.uid,
-    SUB_COL.MEMBERS,
-    owner,
-  );
+  const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(owner);
+  const proposalMember = await proposalMemberDocRef.get<ProposalMember>();
   if (!proposalMember) {
     throw throwInvalidArgument(WenError.you_are_not_allowed_to_vote_on_this_proposal);
   }

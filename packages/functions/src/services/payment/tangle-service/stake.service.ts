@@ -14,10 +14,9 @@ import {
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
-import Joi from 'joi';
 import { set } from 'lodash';
-import admin from '../../../admin.config';
-import { depositStakeSchema } from '../../../controls/stake.control';
+import { soonDb } from '../../../firebase/firestore/soondb';
+import { depositStakeSchema } from '../../../runtime/firebase/stake';
 import { packBasicOutput } from '../../../utils/basic-output.utils';
 import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../../utils/error.utils';
@@ -43,8 +42,7 @@ export class TangleStakeService {
       type: request.type,
       customMetadata: request.customMetadata,
     };
-    const schema = Joi.object(depositStakeSchema);
-    await assertValidationAsync(schema, params);
+    await assertValidationAsync(depositStakeSchema, params);
 
     const order = await createStakeOrder(
       owner,
@@ -55,8 +53,8 @@ export class TangleStakeService {
     );
     set(order, 'payload.amount', tranEntry.amount);
 
-    this.transactionService.updates.push({
-      ref: admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`),
+    this.transactionService.push({
+      ref: soonDb().doc(`${COL.TRANSACTION}/${order.uid}`),
       data: order,
       action: 'set',
     });

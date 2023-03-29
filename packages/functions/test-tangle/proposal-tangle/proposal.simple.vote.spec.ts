@@ -5,7 +5,7 @@ import {
   ProposalType,
   TangleRequestType,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { approveProposal } from '../../src/runtime/firebase/proposal';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -46,11 +46,11 @@ describe('Create proposal via tangle request', () => {
     await MnemonicService.store(helper.guardianAddress.bech32, helper.guardianAddress.mnemonic);
     await wait(async () => {
       const snap = await helper.guardianCreditQuery.get();
-      return snap.size === 2;
+      return snap.length === 2;
     });
 
-    let proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposalUid}`);
-    let proposal = <Proposal>(await proposalDocRef.get()).data();
+    let proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposalUid}`);
+    let proposal = <Proposal>await proposalDocRef.get();
     expect(proposal.results.answers[1]).toBe(1);
 
     await helper.walletService.send(
@@ -70,11 +70,11 @@ describe('Create proposal via tangle request', () => {
     await MnemonicService.store(helper.guardianAddress.bech32, helper.guardianAddress.mnemonic);
     await wait(async () => {
       const snap = await helper.guardianCreditQuery.get();
-      return snap.size === 3;
+      return snap.length === 3;
     });
 
-    proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposalUid}`);
-    proposal = <Proposal>(await proposalDocRef.get()).data();
+    proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposalUid}`);
+    proposal = <Proposal>await proposalDocRef.get();
     expect(proposal.results.answers[2]).toBe(1);
     expect(proposal.results.answers[1]).toBe(0);
   });

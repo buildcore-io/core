@@ -1,5 +1,5 @@
 import { Award, COL, SUB_COL, WenError } from '@soonaverse/interfaces';
-import { soonDb } from '../../database/wrapper/soondb';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { throwInvalidArgument } from '../../utils/error.utils';
 
 export const addOwnerControl = async (owner: string, params: Record<string, unknown>) => {

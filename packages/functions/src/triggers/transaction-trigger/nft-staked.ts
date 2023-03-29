@@ -1,11 +1,10 @@
 import { COL, Nft, Transaction } from '@soonaverse/interfaces';
-import admin, { inc } from '../../admin.config';
-import { cOn, uOn } from '../../utils/dateTime.utils';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const onNftStaked = async (transaction: Transaction) => {
-  const nftDocRef = admin.firestore().doc(`${COL.NFT}/${transaction.payload.nft}`);
-  const nft = <Nft>(await nftDocRef.get()).data();
+  const nftDocRef = soonDb().doc(`${COL.NFT}/${transaction.payload.nft}`);
+  const nft = (await nftDocRef.get<Nft>())!;
 
   const nftStake = {
     uid: getRandomEthAddress(),
@@ -19,13 +18,13 @@ export const onNftStaked = async (transaction: Transaction) => {
     type: transaction.payload.stakeType,
   };
 
-  const batch = admin.firestore().batch();
+  const batch = soonDb().batch();
 
-  const nftStakeDocRef = admin.firestore().doc(`${COL.NFT_STAKE}/${nftStake.uid}`);
-  batch.create(nftStakeDocRef, cOn(nftStake));
+  const nftStakeDocRef = soonDb().doc(`${COL.NFT_STAKE}/${nftStake.uid}`);
+  batch.create(nftStakeDocRef, nftStake);
 
-  const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${nft.collection}`);
-  batch.update(collectionDocRef, uOn({ stakedNft: inc(1) }));
+  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nft.collection}`);
+  batch.update(collectionDocRef, { stakedNft: soonDb().inc(1) });
 
   await batch.commit();
 };

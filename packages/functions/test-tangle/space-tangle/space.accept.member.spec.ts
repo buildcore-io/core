@@ -6,7 +6,7 @@ import {
   TangleRequestType,
   Transaction,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { wait } from '../../test/controls/common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
@@ -23,7 +23,7 @@ describe('Join space', () => {
   });
 
   it('Should join space via tangle request', async () => {
-    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${helper.space.uid}`);
+    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${helper.space.uid}`);
     await spaceDocRef.update({ open: false });
 
     await requestFundsFromFaucet(Network.RMS, helper.memberAddress.bech32, MIN_IOTA_AMOUNT);
@@ -42,14 +42,14 @@ describe('Join space', () => {
     );
 
     await wait(async () => {
-      const snap = await helper.memberCreditQuery.get();
-      return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+      const snap = await helper.memberCreditQuery.get<Transaction>();
+      return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
     let snap = await helper.memberCreditQuery.get();
-    let credit = snap.docs[0].data() as Transaction;
+    let credit = snap[0] as Transaction;
     expect(credit.payload.response.status).toBe('success');
 
-    helper.space = <Space>(await spaceDocRef.get()).data();
+    helper.space = <Space>await spaceDocRef.get();
     expect(helper.space.totalMembers).toBe(1);
     expect(helper.space.totalPendingMembers).toBe(1);
 
@@ -70,14 +70,14 @@ describe('Join space', () => {
     );
 
     await wait(async () => {
-      const snap = await helper.guardianCreditQuery.get();
-      return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+      const snap = await helper.guardianCreditQuery.get<Transaction>();
+      return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
     snap = await helper.guardianCreditQuery.get();
-    credit = snap.docs[0].data() as Transaction;
+    credit = snap[0] as Transaction;
     expect(credit.payload.response.status).toBe('success');
 
-    helper.space = <Space>(await spaceDocRef.get()).data();
+    helper.space = <Space>await spaceDocRef.get();
     expect(helper.space.totalMembers).toBe(2);
     expect(helper.space.totalPendingMembers).toBe(0);
   });

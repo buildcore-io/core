@@ -14,11 +14,12 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
-import admin from '../src/admin.config';
+import { soonDb } from '../src/firebase/firestore/soondb';
 import { IotaWallet } from '../src/services/wallet/IotaWalletService';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
 import { WalletService } from '../src/services/wallet/wallet';
 import { getAddress } from '../src/utils/address.utils';
+import { dateToTimestamp } from '../src/utils/dateTime.utils';
 import * as wallet from '../src/utils/wallet.utils';
 import {
   createMember,
@@ -34,17 +35,17 @@ import { requestFundsFromFaucet } from './faucet';
 let walletSpy: any;
 
 const awaitMemberAddressValidation = async (memberId: string, network: Network) => {
-  const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${memberId}`);
+  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${memberId}`);
   await wait(async () => {
-    const member = <Member>(await memberDocRef.get()).data();
+    const member = <Member>await memberDocRef.get();
     return !isEmpty(getAddress(member, network));
   });
 };
 
 const awaitSpaceAddressValidation = async (space: string, network: Network) => {
-  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space}`);
+  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space}`);
   await wait(async () => {
-    const space = <Space>(await spaceDocRef.get()).data();
+    const space = <Space>await spaceDocRef.get();
     return !isEmpty(getAddress(space, network));
   });
 };
@@ -61,7 +62,7 @@ describe('Address validation', () => {
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     member = await createMember(walletSpy);
-    await admin.firestore().doc(`${COL.MEMBER}/${member}`).update({ validatedAddress: {} });
+    await soonDb().doc(`${COL.MEMBER}/${member}`).update({ validatedAddress: {} });
   });
 
   const validateMemberAddress = async (network: Network, expiresAt?: Timestamp) => {
@@ -75,8 +76,8 @@ describe('Address validation', () => {
 
     await awaitMemberAddressValidation(member, network);
 
-    const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${member}`);
-    const data = <Member>(await memberDocRef.get()).data();
+    const memberDocRef = soonDb().doc(`${COL.MEMBER}/${member}`);
+    const data = <Member>await memberDocRef.get();
     expect(data.validatedAddress![network]).toBe(faucetAddress.bech32);
   };
 
@@ -102,8 +103,8 @@ describe('Address validation', () => {
 
     await awaitSpaceAddressValidation(space, network);
 
-    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space}`);
-    const spaceData = <Space>(await spaceDocRef.get()).data();
+    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space}`);
+    const spaceData = <Space>await spaceDocRef.get();
     expect(spaceData.validatedAddress![network]).toBe(faucetAddress.bech32);
   };
 
@@ -111,14 +112,14 @@ describe('Address validation', () => {
     'Should validate space address with network',
     async (network: Network) => {
       space = (await createSpace(walletSpy, member)).uid;
-      await admin.firestore().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} });
+      await soonDb().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} });
       await validateSpace(network);
     },
   );
 
   it('Should validate space address with both network', async () => {
     space = (await createSpace(walletSpy, member)).uid;
-    await admin.firestore().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} });
+    await soonDb().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} });
     await validateSpace(Network.ATOI);
     await validateSpace(Network.RMS);
   });
@@ -126,14 +127,14 @@ describe('Address validation', () => {
   it('Should validate rms address with expiration unlock', async () => {
     const network = Network.RMS;
     const date = dayjs().add(2, 'm').millisecond(0).toDate();
-    const expiresAt = admin.firestore.Timestamp.fromDate(date) as Timestamp;
+    const expiresAt = dateToTimestamp(date);
 
     const walletService = await getWallet(network);
     const tmpAddress = await walletService.getNewIotaAddressDetails();
 
     const order = await validateMemberAddressFunc(walletSpy, member, network);
-    const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${member}`);
-    let memberData = <Member>(await memberDocRef.get()).data();
+    const memberDocRef = soonDb().doc(`${COL.MEMBER}/${member}`);
+    let memberData = <Member>await memberDocRef.get();
 
     await requestFundsFromFaucet(network, tmpAddress.bech32, order.payload.amount);
     await walletService.send(tmpAddress, order.payload.targetAddress, order.payload.amount, {
@@ -142,27 +143,25 @@ describe('Address validation', () => {
 
     await awaitMemberAddressValidation(member, network);
 
-    memberData = <Member>(await memberDocRef.get()).data();
+    memberData = <Member>await memberDocRef.get();
     expect(memberData.validatedAddress![network]).toBe(tmpAddress.bech32);
 
     const unlock = (
-      await admin
-        .firestore()
+      await soonDb()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.UNLOCK)
         .where('member', '==', member)
         .get()
-    ).docs[0].data() as Transaction;
+    )[0] as Transaction;
     expect(dayjs(unlock.payload.expiresOn.toDate()).isSame(dayjs(expiresAt.toDate()))).toBe(true);
 
     await wait(async () => {
-      const snap = await admin
-        .firestore()
+      const snap = await soonDb()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
         .where('member', '==', member)
-        .get();
-      return snap.size === 1 && snap.docs[0].data().payload?.walletReference?.confirmed;
+        .get<Transaction>();
+      return snap.length === 1 && snap[0].payload?.walletReference?.confirmed;
     });
 
     const balanace = await walletService.getBalance(tmpAddress.bech32);
@@ -177,11 +176,10 @@ describe('Address validation', () => {
 
       if (validateSpace) {
         space = (await createSpace(walletSpy, member)).uid;
-        await admin.firestore().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} });
-        await admin
-          .firestore()
+        await soonDb().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} });
+        await soonDb()
           .doc(`${COL.MEMBER}/${member}`)
-          .set({ validatedAddress: { [Network.RMS]: tmp.bech32 } }, { merge: true });
+          .set({ validatedAddress: { [Network.RMS]: tmp.bech32 } }, true);
       }
       const memberId = validateSpace ? member : tmp.bech32;
       await requestFundsFromFaucet(Network.RMS, tmp.bech32, 5 * MIN_IOTA_AMOUNT);
@@ -194,37 +192,31 @@ describe('Address validation', () => {
         customMetadata: { request },
       });
 
-      const query = admin
-        .firestore()
+      const query = soonDb()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
         .where('member', '==', memberId);
 
       await wait(async () => {
-        const snap = await query.get();
-        return snap.size > 0 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+        const snap = await query.get<Transaction>();
+        return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
       });
 
       if (validateSpace) {
-        const spaceData = <Space>(
-          (await admin.firestore().doc(`${COL.SPACE}/${space}`).get()).data()
-        );
+        const spaceData = <Space>await soonDb().doc(`${COL.SPACE}/${space}`).get();
         expect(spaceData.validatedAddress![Network.RMS]).toBe(tmp.bech32);
       } else {
-        const member = <Member>(
-          (await admin.firestore().doc(`${COL.MEMBER}/${memberId}`).get()).data()
-        );
+        const member = <Member>await soonDb().doc(`${COL.MEMBER}/${memberId}`).get();
         expect(member.validatedAddress![Network.RMS]).toBe(tmp.bech32);
         expect(member.prevValidatedAddresses).toEqual([tmp.bech32]);
       }
 
-      const snap = await admin
-        .firestore()
+      const snap = await soonDb()
         .collection(COL.TRANSACTION)
         .where('member', '==', memberId)
         .where('payload.type', '==', TransactionUnlockType.TANGLE_TRANSFER)
         .get();
-      expect(snap.size).toBe(1);
+      expect(snap.length).toBe(1);
     },
   );
 
@@ -237,11 +229,10 @@ describe('Address validation', () => {
       const atoiTmp = await atoiWallet.getNewIotaAddressDetails();
       if (validateSpace) {
         space = (await createSpace(walletSpy, member)).uid;
-        await admin.firestore().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} });
-        await admin
-          .firestore()
+        await soonDb().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} });
+        await soonDb()
           .doc(`${COL.MEMBER}/${member}`)
-          .set({ validatedAddress: { [Network.RMS]: rmsTmp.bech32 } }, { merge: true });
+          .set({ validatedAddress: { [Network.RMS]: rmsTmp.bech32 } }, true);
       }
       const memberId = validateSpace ? member : rmsTmp.bech32;
 
@@ -257,51 +248,44 @@ describe('Address validation', () => {
         customMetadata: { request },
       });
 
-      let query = admin
-        .firestore()
+      let query = soonDb()
         .collection(COL.TRANSACTION)
         .where('member', '==', memberId)
         .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
       await wait(async () => {
-        const snap = await query.get();
-        return snap.size > 0 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+        const snap = await query.get<Transaction>();
+        return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
       });
-      let snap = await query.get();
-      expect(snap.size).toBe(1);
-      const response = await getRmsSoonTangleResponse(snap.docs[0], rmsWallet);
+      let snap = await query.get<Transaction>();
+      expect(snap.length).toBe(1);
+      const response = await getRmsSoonTangleResponse(snap[0], rmsWallet);
       await atoiWallet.send(atoiTmp, response.address, response.amount, {});
 
-      query = admin
-        .firestore()
+      query = soonDb()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
         .where('member', '==', memberId);
       await wait(async () => {
-        const snap = await query.get();
-        return snap.size > 0 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+        const snap = await query.get<Transaction>();
+        return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
       });
 
       if (validateSpace) {
-        const spaceData = <Space>(
-          (await admin.firestore().doc(`${COL.SPACE}/${space}`).get()).data()
-        );
+        const spaceData = <Space>await soonDb().doc(`${COL.SPACE}/${space}`).get();
         expect(spaceData.validatedAddress![Network.ATOI]).toBe(atoiTmp.bech32);
       } else {
-        const member = <Member>(
-          (await admin.firestore().doc(`${COL.MEMBER}/${memberId}`).get()).data()
-        );
+        const member = <Member>await soonDb().doc(`${COL.MEMBER}/${memberId}`).get();
         expect(member.validatedAddress![Network.RMS]).toBe(rmsTmp.bech32);
         expect(member.validatedAddress![Network.ATOI]).toBe(atoiTmp.bech32);
         expect(member.prevValidatedAddresses).toBeUndefined();
       }
 
-      snap = await admin
-        .firestore()
+      snap = await soonDb()
         .collection(COL.TRANSACTION)
         .where('member', '==', memberId)
         .where('payload.type', '==', TransactionUnlockType.TANGLE_TRANSFER)
         .get();
-      expect(snap.size).toBe(0);
+      expect(snap.length).toBe(0);
     },
   );
 });

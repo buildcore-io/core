@@ -1,4 +1,4 @@
-import { TransactionHelper } from '@iota/iota.js-next';
+import { ITransactionPayload, TransactionHelper } from '@iota/iota.js-next';
 import {
   COL,
   Collection,
@@ -9,12 +9,12 @@ import {
   TransactionMintCollectionType,
   TransactionType,
 } from '@soonaverse/interfaces';
+import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { get } from 'lodash';
-import admin from '../../admin.config';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { getAddress } from '../../utils/address.utils';
 import { indexToString } from '../../utils/block.utils';
-import { cOn, uOn } from '../../utils/dateTime.utils';
 import { getTransactionPayloadHex } from '../../utils/smr.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -49,19 +49,18 @@ export const onCollectionMintingUpdate = async (transaction: Transaction) => {
 
 const onCollectionAliasMinted = async (transaction: Transaction) => {
   const path = transaction.payload.walletReference.milestoneTransactionPath;
-  const milestoneTransaction = (await admin.firestore().doc(path).get()).data()!;
+  const milestoneTransaction = (await soonDb().doc(path).get<Record<string, unknown>>())!;
 
-  const aliasOutputId = getTransactionPayloadHex(milestoneTransaction.payload) + indexToString(0);
-  await admin
-    .firestore()
+  const aliasOutputId =
+    getTransactionPayloadHex(milestoneTransaction.payload as ITransactionPayload) +
+    indexToString(0);
+  await soonDb()
     .doc(`${COL.COLLECTION}/${transaction.payload.collection}`)
-    .update(
-      uOn({
-        'mintingData.aliasBlockId': milestoneTransaction.blockId,
-        'mintingData.aliasId': TransactionHelper.resolveIdFromOutputId(aliasOutputId),
-        'mintingData.aliasStorageDeposit': transaction.payload.amount,
-      }),
-    );
+    .update({
+      'mintingData.aliasBlockId': milestoneTransaction.blockId,
+      'mintingData.aliasId': TransactionHelper.resolveIdFromOutputId(aliasOutputId),
+      'mintingData.aliasStorageDeposit': transaction.payload.amount,
+    });
 
   const order = <Transaction>{
     type: TransactionType.MINT_COLLECTION,
@@ -76,23 +75,25 @@ const onCollectionAliasMinted = async (transaction: Transaction) => {
       collection: transaction.payload.collection,
     },
   };
-  await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(cOn(order));
+  await soonDb().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
 };
 
 const onCollectionMinted = async (transaction: Transaction) => {
   const path = transaction.payload.walletReference.milestoneTransactionPath;
-  const milestoneTransaction = (await admin.firestore().doc(path).get()).data()!;
+  const milestoneTransaction = (await soonDb().doc(path).get<Record<string, unknown>>())!;
   const collectionOutputId =
-    getTransactionPayloadHex(milestoneTransaction.payload) + indexToString(1);
-  const collection = <Collection>(
-    (
-      await admin.firestore().doc(`${COL.COLLECTION}/${transaction.payload.collection}`).get()
-    ).data()
+    getTransactionPayloadHex(milestoneTransaction.payload as ITransactionPayload) +
+    indexToString(1);
+  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${transaction.payload.collection}`);
+  const collection = (await collectionDocRef.get<Collection>())!;
+  await saveCollectionMintingData(
+    transaction,
+    milestoneTransaction.blockId as string,
+    collectionOutputId,
   );
-  await saveCollectionMintingData(transaction, milestoneTransaction.blockId, collectionOutputId);
   if (collection.mintingData?.nftsToMint) {
     const order = createMintNftsTransaction(transaction);
-    await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(cOn(order));
+    await soonDb().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
   }
 };
 
@@ -101,56 +102,44 @@ const saveCollectionMintingData = (
   blockId: string,
   collectionOutputId: string,
 ) =>
-  admin
-    .firestore()
+  soonDb()
     .doc(`${COL.COLLECTION}/${transaction.payload.collection}`)
-    .update(
-      uOn({
-        'mintingData.blockId': blockId,
-        'mintingData.nftId': TransactionHelper.resolveIdFromOutputId(collectionOutputId),
-        'mintingData.mintedOn': admin.firestore.FieldValue.serverTimestamp(),
-      }),
-    );
+    .update({
+      'mintingData.blockId': blockId,
+      'mintingData.nftId': TransactionHelper.resolveIdFromOutputId(collectionOutputId),
+      'mintingData.mintedOn': dayjs().toDate(),
+    });
 
 const onNftMintSuccess = async (transaction: Transaction) => {
-  const collection = <Collection>(
-    (
-      await admin.firestore().doc(`${COL.COLLECTION}/${transaction.payload.collection}`).get()
-    ).data()
-  );
-  await admin
-    .firestore()
+  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${transaction.payload.collection}`);
+  const collection = <Collection>await collectionDocRef.get();
+  await soonDb()
     .doc(`${COL.COLLECTION}/${transaction.payload.collection}`)
-    .update(
-      uOn({
-        'mintingData.nftsToMint': admin.firestore.FieldValue.increment(
-          -transaction.payload.nfts.length,
-        ),
-      }),
-    );
-  const milestoneTransaction = (
-    await admin.firestore().doc(transaction.payload.walletReference.milestoneTransactionPath).get()
-  ).data()!;
+    .update({
+      'mintingData.nftsToMint': soonDb().inc(-transaction.payload.nfts.length),
+    });
+  const milestoneTransaction = (await soonDb()
+    .doc(transaction.payload.walletReference.milestoneTransactionPath)
+    .get<Record<string, unknown>>())!;
   const promises = (transaction.payload.nfts as string[]).map((nftId, i) => {
-    const outputId = getTransactionPayloadHex(milestoneTransaction.payload) + indexToString(i + 2);
-    return admin
-      .firestore()
+    const outputId =
+      getTransactionPayloadHex(milestoneTransaction.payload as ITransactionPayload) +
+      indexToString(i + 2);
+    return soonDb()
       .doc(`${COL.NFT}/${nftId}`)
-      .update(
-        uOn({
-          'mintingData.network': transaction.network,
-          'mintingData.mintedOn': admin.firestore.FieldValue.serverTimestamp(),
-          'mintingData.mintedBy': transaction.member,
-          'mintingData.blockId': milestoneTransaction.blockId,
-          'mintingData.nftId': TransactionHelper.resolveIdFromOutputId(outputId),
-          status: NftStatus.MINTED,
-        }),
-      );
+      .update({
+        'mintingData.network': transaction.network,
+        'mintingData.mintedOn': dayjs().toDate(),
+        'mintingData.mintedBy': transaction.member,
+        'mintingData.blockId': milestoneTransaction.blockId,
+        'mintingData.nftId': TransactionHelper.resolveIdFromOutputId(outputId),
+        status: NftStatus.MINTED,
+      });
   });
   await Promise.all(promises);
   if (collection.mintingData?.nftsToMint! - transaction.payload.nfts.length > 0) {
     const order = createMintNftsTransaction(transaction);
-    await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(cOn(order));
+    await soonDb().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
   }
 };
 
@@ -169,9 +158,7 @@ const createMintNftsTransaction = (transaction: Transaction) =>
   };
 
 const onCollectionLocked = async (transaction: Transaction) => {
-  const member = <Member>(
-    (await admin.firestore().doc(`${COL.MEMBER}/${transaction.member}`).get()).data()
-  );
+  const member = (await soonDb().doc(`${COL.MEMBER}/${transaction.member}`).get<Member>())!;
   const order = <Transaction>{
     type: TransactionType.MINT_COLLECTION,
     uid: getRandomEthAddress(),
@@ -186,11 +173,10 @@ const onCollectionLocked = async (transaction: Transaction) => {
       collection: transaction.payload.collection,
     },
   };
-  await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(cOn(order));
+  await soonDb().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
 };
 
 const onCollectionAliasTransfered = async (transaction: Transaction) =>
-  admin
-    .firestore()
+  soonDb()
     .doc(`${COL.COLLECTION}/${transaction.payload.collection}`)
-    .update(uOn({ status: CollectionStatus.MINTED }));
+    .update({ status: CollectionStatus.MINTED });

@@ -6,8 +6,8 @@ import {
 import { Converter } from '@iota/util.js-next';
 import { COL, Space, StakeType } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { Helper } from './Helper';
 
@@ -51,9 +51,9 @@ describe('Staking test', () => {
   it.each([StakeType.DYNAMIC, StakeType.STATIC])(
     'Should set stake amount and remove it once expired, 52 weeks',
     async (type: StakeType) => {
-      const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${helper.space?.uid}`);
+      const spaceDocRef = soonDb().doc(`${COL.SPACE}/${helper.space?.uid}`);
       await spaceDocRef.update({ tokenBased: true, minStakedValue: 10 });
-      let space = <Space>(await spaceDocRef.get()).data();
+      let space = <Space>await spaceDocRef.get();
       expect(space.totalMembers).toBe(1);
       expect(space.totalGuardians).toBe(1);
 
@@ -69,23 +69,21 @@ describe('Staking test', () => {
       await helper.validateStatsStakeAmount(30, 30, 60, 60, type, 1);
       await helper.validateMemberStakeAmount(30, 30, 60, 60, type);
 
-      await admin
-        .firestore()
+      await soonDb()
         .doc(`${COL.STAKE}/${stake2.uid}`)
         .update({ expiresAt: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
       await removeExpiredStakesFromSpace();
       await helper.validateStatsStakeAmount(10, 30, 20, 60, type, 1);
       await helper.validateMemberStakeAmount(10, 30, 20, 60, type);
 
-      await admin
-        .firestore()
+      await soonDb()
         .doc(`${COL.STAKE}/${stake1.uid}`)
         .update({ expiresAt: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
       await removeExpiredStakesFromSpace();
       await helper.validateStatsStakeAmount(0, 30, 0, 60, type, 0);
       await helper.validateMemberStakeAmount(0, 30, 0, 60, type);
 
-      space = <Space>(await spaceDocRef.get()).data();
+      space = <Space>await spaceDocRef.get();
       expect(space.totalMembers).toBe(1);
       expect(space.totalGuardians).toBe(1);
 

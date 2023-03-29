@@ -7,7 +7,7 @@ import {
   UnsoldMintingOptions,
   WenError,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { mintCollection } from '../../src/runtime/firebase/collection/index';
 import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -27,10 +27,10 @@ describe('Collection minting', () => {
   it.each([CollectionType.GENERATED, CollectionType.SFT, CollectionType.CLASSIC])(
     'Should set new price',
     async (type: CollectionType) => {
-      await admin.firestore().doc(`${COL.COLLECTION}/${helper.collection}`).update({ type });
+      await soonDb().doc(`${COL.COLLECTION}/${helper.collection}`).update({ type });
       let nft = <Nft | undefined>await helper.createAndOrderNft();
       let collectionData = <Collection>(
-        (await admin.firestore().doc(`${COL.COLLECTION}/${helper.collection}`).get()).data()
+        await soonDb().doc(`${COL.COLLECTION}/${helper.collection}`).get()
       );
       expect(collectionData.total).toBe(1);
 
@@ -47,10 +47,10 @@ describe('Collection minting', () => {
       await helper.mintCollection(UnsoldMintingOptions.SET_NEW_PRICE, 2 * MIN_IOTA_AMOUNT);
 
       collectionData = <Collection>(
-        (await admin.firestore().doc(`${COL.COLLECTION}/${helper.collection}`).get()).data()
+        await soonDb().doc(`${COL.COLLECTION}/${helper.collection}`).get()
       );
       expect(collectionData.total).toBe(1);
-      nft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft?.uid}`).get()).data();
+      nft = <Nft>await soonDb().doc(`${COL.NFT}/${nft?.uid}`).get();
       expect(nft.availablePrice).toBe(2 * MIN_IOTA_AMOUNT);
       expect(nft.price).toBe(2 * MIN_IOTA_AMOUNT);
     },

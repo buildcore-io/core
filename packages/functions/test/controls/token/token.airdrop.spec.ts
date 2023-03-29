@@ -8,9 +8,8 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../../src/admin.config';
-import { airdropToken } from '../../../src/controls/token-airdrop.control';
-import { createToken } from '../../../src/runtime/firebase/token/base';
+import { soonDb } from '../../../src/firebase/firestore/soondb';
+import { airdropToken, createToken } from '../../../src/runtime/firebase/token/base';
 import { dateToTimestamp } from '../../../src/utils/dateTime.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../../set-up';
@@ -59,11 +58,11 @@ describe('Token airdrop test', () => {
     mockWalletReturnValue(walletSpy, guardian, dummyTokenData);
     token = await testEnv.wrap(createToken)({});
     member = await createMember(walletSpy);
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true });
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true });
   });
 
   it('Should fail, token not approved', async () => {
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false });
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false });
     const airdropRequest = {
       token: token.uid,
       drops: [{ count: 900, recipient: guardian, vestingAt: dayjs().toDate() }],
@@ -196,11 +195,11 @@ describe('Token airdrop test', () => {
 });
 
 const getAirdropsForMember = async (member: string) => {
-  const snap = await admin.firestore().collection(COL.AIRDROP).where('member', '==', member).get();
-  return snap.docs.map((d) => d.data() as TokenDrop);
+  const snap = await soonDb().collection(COL.AIRDROP).where('member', '==', member).get();
+  return snap.map((d) => d as TokenDrop);
 };
 
 const getAirdropsForToken = async (token: string) => {
-  const snap = await admin.firestore().collection(COL.AIRDROP).where('token', '==', token).get();
-  return snap.docs.map((d) => d.data() as TokenDrop);
+  const snap = await soonDb().collection(COL.AIRDROP).where('token', '==', token).get();
+  return snap.map((d) => d as TokenDrop);
 };

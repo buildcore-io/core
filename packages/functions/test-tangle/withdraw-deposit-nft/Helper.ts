@@ -30,7 +30,7 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { cloneDeep } from 'lodash';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import {
   approveCollection,
   createCollection,
@@ -95,8 +95,8 @@ export class Helper {
     mockWalletReturnValue(this.walletSpy, this.guardian, { uid: this.collection });
     await testEnv.wrap(approveCollection)({});
 
-    const guardianDocRef = admin.firestore().doc(`${COL.MEMBER}/${this.guardian}`);
-    const guardianData = <Member>(await guardianDocRef.get()).data();
+    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${this.guardian}`);
+    const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, this.network!);
     this.guardianAddress = await this.walletService?.getAddressDetails(guardianBech32)!;
   };
@@ -107,8 +107,7 @@ export class Helper {
     mockWalletReturnValue(this.walletSpy, this.guardian!, nft);
     nft = await testEnv.wrap(createNft)({});
 
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.NFT}/${nft.uid}`)
       .update({ availableFrom: dayjs().subtract(1, 'h').toDate() });
 
@@ -120,7 +119,7 @@ export class Helper {
     const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
     await milestoneProcessed(milestone.milestone, milestone.tranId);
 
-    this.nft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
+    this.nft = <Nft>await soonDb().doc(`${COL.NFT}/${nft.uid}`).get();
     return this.nft;
   };
 
@@ -145,13 +144,13 @@ export class Helper {
     );
     await MnemonicService.store(this.guardianAddress!.bech32, this.guardianAddress!.mnemonic);
 
-    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${this.collection}`);
+    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${this.collection}`);
     await wait(async () => {
-      const data = <Collection>(await collectionDocRef.get()).data();
+      const data = <Collection>await collectionDocRef.get();
       return data.status === CollectionStatus.MINTED;
     });
 
-    const collectionData = <Collection>(await collectionDocRef.get()).data();
+    const collectionData = <Collection>await collectionDocRef.get();
     expect(collectionData.mintingData?.network).toBe(this.network);
     expect(collectionData.mintingData?.mintedBy).toBe(this.guardian);
     expect(collectionData.mintingData?.mintingOrderId).toBe(collectionMintOrder.uid);
@@ -159,22 +158,20 @@ export class Helper {
     expect(collectionData.mintingData?.nftsToMint).toBe(0);
 
     const ownerChangeTran = (
-      await admin
-        .firestore()
+      await soonDb()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.MINT_COLLECTION)
         .where('payload.type', '==', TransactionMintCollectionType.SEND_ALIAS_TO_GUARDIAN)
         .where('member', '==', this.guardian)
         .get()
-    ).docs.map((d) => <Transaction>d.data());
+    ).map((d) => <Transaction>d);
 
     expect(ownerChangeTran.length).toBe(1);
     expect(ownerChangeTran[0].payload?.walletReference?.confirmed).toBe(true);
   };
 
   public updateGuardianAddress = (address: string) =>
-    admin
-      .firestore()
+    soonDb()
       .doc(`${COL.MEMBER}/${this.guardian}`)
       .update({ [`validatedAddress.${this.network}`]: address });
 
@@ -199,7 +196,7 @@ export class Helper {
           nftId: nftId || '',
         },
       };
-      await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+      await soonDb().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
       return order.uid;
     }
 
@@ -263,13 +260,12 @@ export class Helper {
     mockWalletReturnValue(this.walletSpy, this.guardian!, { nft });
     await testEnv.wrap(withdrawNft)({});
     await wait(async () => {
-      const snap = await admin
-        .firestore()
+      const snap = await soonDb()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.WITHDRAW_NFT)
         .where('payload.nft', '==', nft)
-        .get();
-      return snap.docs[0].data()?.payload?.walletReference?.confirmed;
+        .get<Transaction>();
+      return snap[0]?.payload?.walletReference?.confirmed;
     });
   };
 
@@ -277,8 +273,7 @@ export class Helper {
     mockWalletReturnValue(this.walletSpy, this.guardian!, this.dummyAuctionData(this.nft!.uid));
     await testEnv.wrap(setForSaleNft)({});
     await wait(
-      async () =>
-        (await admin.firestore().doc(`${COL.NFT}/${this.nft!.uid}`).get()).data()?.available === 3,
+      async () => (await soonDb().doc(`${COL.NFT}/${this.nft!.uid}`).get<Nft>())?.available === 3,
     );
   };
 
@@ -286,8 +281,7 @@ export class Helper {
     mockWalletReturnValue(this.walletSpy, this.guardian!, this.dummySaleData(this.nft!.uid));
     await testEnv.wrap(setForSaleNft)({});
     await wait(
-      async () =>
-        (await admin.firestore().doc(`${COL.NFT}/${this.nft!.uid}`).get()).data()?.available === 1,
+      async () => (await soonDb().doc(`${COL.NFT}/${this.nft!.uid}`).get<Nft>())?.available === 1,
     );
   };
 
@@ -356,39 +350,39 @@ export class Helper {
     );
     await MnemonicService.store(this.guardianAddress!.bech32, this.guardianAddress!.mnemonic);
 
-    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${spaceId}`);
+    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${spaceId}`);
     await wait(async () => {
-      const space = <Space>(await spaceDocRef.get()).data();
+      const space = <Space>await spaceDocRef.get();
       return space.claimed || false;
     });
 
-    const space = <Space>(await spaceDocRef.get()).data();
+    const space = <Space>await spaceDocRef.get();
     expect(space.claimed).toBe(true);
     expect(space.totalMembers).toBe(1);
     expect(space.totalGuardians).toBe(1);
 
     const spaceMemberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(this.guardian!);
     const spaceMember = await spaceMemberDocRef.get();
-    expect(spaceMember.exists).toBe(true);
+    expect(spaceMember !== undefined).toBe(true);
 
     const spaceGuardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(this.guardian!);
     const spaceGuardian = await spaceGuardianDocRef.get();
-    expect(spaceGuardian.exists).toBe(true);
+    expect(spaceGuardian !== undefined).toBe(true);
 
-    const guardianDocRef = admin.firestore().doc(`${COL.MEMBER}/${this.guardian}`);
-    const guardianData = <Member>(await guardianDocRef.get()).data();
+    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${this.guardian}`);
+    const guardianData = <Member>await guardianDocRef.get();
     expect(guardianData.spaces![space.uid].isMember).toBe(true);
   };
 
   public isInvalidPayment = async (paymentId: string) => {
-    const paymentDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${paymentId}`);
-    const payment = (await paymentDocRef.get()).data()!;
+    const paymentDocRef = soonDb().doc(`${COL.TRANSACTION}/${paymentId}`);
+    const payment = (await paymentDocRef.get<Transaction>())!;
     expect(payment.payload.invalidPayment).toBe(true);
   };
 
   public mintWithCustomNftCID = async (func: (ipfsMedia: string) => string) => {
     let nft = await this.createAndOrderNft();
-    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
+    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
 
     mockWalletReturnValue(this.walletSpy, this.guardian!, {
       collection: this.collection!,
@@ -406,39 +400,38 @@ export class Helper {
     await MnemonicService.store(this.guardianAddress!.bech32, this.guardianAddress!.mnemonic);
 
     const unsubscribe = nftDocRef.onSnapshot(async (doc) => {
-      const nft = doc.data() as Nft;
+      const nft = doc as Nft;
       const ipfsMedia = func(nft.ipfsMedia || '');
       if (nft.mediaStatus === MediaStatus.PENDING_UPLOAD && nft.ipfsMedia !== ipfsMedia) {
         await nftDocRef.update({ ipfsMedia });
       }
     });
     await wait(async () => {
-      const nft = <Nft>(await nftDocRef.get()).data();
+      const nft = <Nft>await nftDocRef.get();
       return nft.mediaStatus === MediaStatus.PENDING_UPLOAD;
     });
     unsubscribe();
 
-    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${this.collection}`);
+    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${this.collection}`);
     await wait(async () => {
-      const collection = <Collection>(await collectionDocRef.get()).data();
+      const collection = <Collection>await collectionDocRef.get();
       return collection.status === CollectionStatus.MINTED;
     });
 
     mockWalletReturnValue(this.walletSpy, this.guardian!, { nft: nft.uid });
     await testEnv.wrap(withdrawNft)({});
 
-    let query = admin
-      .firestore()
+    let query = soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.WITHDRAW_NFT)
       .where('payload.nft', '==', nft.uid);
     await wait(async () => {
-      const snap = await query.get();
-      return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+      const snap = await query.get<Transaction>();
+      return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
-    nft = <Nft>(await nftDocRef.get()).data();
+    nft = <Nft>await nftDocRef.get();
 
     await nftDocRef.delete();
-    await admin.firestore().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
+    await soonDb().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
   };
 }

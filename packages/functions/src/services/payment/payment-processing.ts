@@ -13,7 +13,8 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import admin from '../../admin.config';
+import { ITransaction } from '../../firebase/firestore/interfaces';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { AddressService } from './address-service';
 import { AwardService } from './award/award-service';
@@ -45,7 +46,7 @@ export class ProcessingService {
   private tangleRequestService: TangleRequestService;
   private votingService: VotingService;
 
-  constructor(transaction: FirebaseFirestore.Transaction) {
+  constructor(transaction: ITransaction) {
     this.transactionService = new TransactionService(transaction);
     this.tokenService = new TokenService(this.transactionService);
     this.tokenMintService = new TokenMintService(this.transactionService);
@@ -71,11 +72,7 @@ export class ProcessingService {
     }
     const soonTransaction = isEmpty(tran.soonaverseTransactionId)
       ? undefined
-      : <Transaction | undefined>(
-          (
-            await admin.firestore().doc(`${COL.TRANSACTION}/${tran.soonaverseTransactionId}`).get()
-          ).data()
-        );
+      : await soonDb().doc(`${COL.TRANSACTION}/${tran.soonaverseTransactionId}`).get<Transaction>();
     for (const tranOutput of tran.outputs) {
       if (
         soonTransaction?.type !== TransactionType.UNLOCK &&
@@ -84,8 +81,8 @@ export class ProcessingService {
         continue;
       }
       const orders = await this.findAllOrdersWithAddress(tranOutput.address);
-      for (const order of orders.docs) {
-        await this.processOrderTransaction(tran, tranOutput, order.id, soonTransaction);
+      for (const order of orders) {
+        await this.processOrderTransaction(tran, tranOutput, order.uid, soonTransaction);
       }
     }
   }
@@ -96,10 +93,8 @@ export class ProcessingService {
     orderId: string,
     soonTransaction: Transaction | undefined,
   ): Promise<void> {
-    const orderRef = admin.firestore().collection(COL.TRANSACTION).doc(orderId);
-    const order = <TransactionOrder | undefined>(
-      (await this.transactionService.transaction.get(orderRef)).data()
-    );
+    const orderRef = soonDb().collection(COL.TRANSACTION).doc(orderId);
+    const order = await this.transactionService.get<TransactionOrder>(orderRef);
 
     if (!order) {
       return;
@@ -235,7 +230,7 @@ export class ProcessingService {
     }
 
     // Add linked transaction.
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: orderRef,
       data: {
         linkedTransactions: [
@@ -248,10 +243,9 @@ export class ProcessingService {
   }
 
   private findAllOrdersWithAddress = (address: IotaAddress) =>
-    admin
-      .firestore()
+    soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.ORDER)
       .where('payload.targetAddress', '==', address)
-      .get();
+      .get<Transaction>();
 }

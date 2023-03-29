@@ -1,6 +1,5 @@
 import { COL, Member, Nft, NftAvailable, NftStatus, WenError } from '@soonaverse/interfaces';
-import { soonDb } from '../../database/wrapper/soondb';
-import { uOn } from '../../utils/dateTime.utils';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { cleanupParams } from '../../utils/schema.utils';
 
@@ -29,7 +28,7 @@ export const updateMemberControl = async (owner: string, params: Record<string, 
     params.avatar = nft.media;
 
     const nftDocRef = soonDb().doc(`${COL.NFT}/${params.avatarNft}`);
-    batch.update(nftDocRef, uOn({ setAsAvatar: true }));
+    batch.update(nftDocRef, { setAsAvatar: true });
   } else if (Object.keys(params).includes('avatarNft')) {
     params.avatar = null;
   }

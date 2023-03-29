@@ -1,6 +1,6 @@
 import { COL, SUB_COL } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { approveProposal, createProposal } from '../../src/runtime/firebase/proposal';
 import { mockWalletReturnValue } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -16,8 +16,7 @@ describe('Staked oken based voting', () => {
   beforeEach(async () => {
     await helper.beforeEach();
 
-    const distributionDocRef = admin
-      .firestore()
+    const distributionDocRef = soonDb()
       .collection(COL.TOKEN)
       .doc(helper.tokenId)
       .collection(SUB_COL.DISTRIBUTION)

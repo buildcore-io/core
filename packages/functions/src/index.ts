@@ -1,11 +1,6 @@
 import { WEN_FUNC } from '@soonaverse/interfaces';
 import { algoliaTrigger } from './algolia/algolia.trigger';
-import { rankController } from './controls/rank.control';
-import { depositStake, removeStakeReward, stakeReward } from './controls/stake.control';
-import { airdropToken, claimAirdroppedToken } from './controls/token-airdrop.control';
-import { voteController } from './controls/vote.control';
 import { cron } from './cron';
-import { algoliaRoll } from './firebase/dbRoll/algolia.roll';
 import { validateAddress } from './runtime/firebase/address';
 import { generateCustomFirebaseToken } from './runtime/firebase/auth';
 import {
@@ -43,6 +38,7 @@ import {
   rejectProposal,
   voteOnProposal,
 } from './runtime/firebase/proposal';
+import { rankController } from './runtime/firebase/rank';
 import {
   acceptMemberSpace,
   addGuardian,
@@ -56,8 +52,11 @@ import {
   unblockMember,
   updateSpace,
 } from './runtime/firebase/space';
+import { depositStake, removeStakeReward, stakeReward } from './runtime/firebase/stake';
 import {
+  airdropToken,
   cancelPublicSale,
+  claimAirdroppedToken,
   createToken,
   creditToken,
   enableTokenTrading,
@@ -72,6 +71,7 @@ import {
   mintTokenOrder,
 } from './runtime/firebase/token/minting';
 import { cancelTradeOrder, tradeToken } from './runtime/firebase/token/trading';
+import { voteController } from './runtime/firebase/vote';
 import { awardUpdateTrigger } from './triggers/award.trigger';
 import { collectionStatsUpdate } from './triggers/collection.stats.trigger';
 import { collectionWrite } from './triggers/collection.trigger';
@@ -205,6 +205,3 @@ exports[WEN_FUNC.generateCustomFirebaseToken] = generateCustomFirebaseToken;
 exports[WEN_FUNC.claimSpace] = claimSpace;
 
 exports[WEN_FUNC.importMintedToken] = importMintedToken;
-
-// TODO remove after release
-exports['algolia_roll'] = algoliaRoll;

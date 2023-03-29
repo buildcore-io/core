@@ -1,7 +1,7 @@
 import { PublicCollections, PublicSubCollections, QUERY_MAX_LENGTH } from '@soonaverse/interfaces';
 import { isEmpty, last } from 'lodash';
-import admin from '../../src/admin.config';
 import { getMany } from '../../src/api/getMany';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 
 describe('Get all', () => {
@@ -14,12 +14,10 @@ describe('Get all', () => {
   it('Get all', async () => {
     const uid1 = getRandomEthAddress();
     const uid2 = getRandomEthAddress();
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${PublicCollections.MEMBER}/${uid1}`)
       .create({ name: 'asd', uid: uid1, space });
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${PublicCollections.MEMBER}/${uid2}`)
       .create({ name: 'ccc', uid: uid2, space });
     const req = {
@@ -38,9 +36,9 @@ describe('Get all', () => {
 
   it('Get all, but not more then max query', async () => {
     const uids = Array.from(Array(QUERY_MAX_LENGTH + 1)).map(() => getRandomEthAddress());
-    const batch = admin.firestore().batch();
+    const batch = soonDb().batch();
     uids.forEach((uid, i) =>
-      batch.create(admin.firestore().doc(`${PublicCollections.MEMBER}/${uid}`), {
+      batch.create(soonDb().doc(`${PublicCollections.MEMBER}/${uid}`), {
         name: 'asd' + i,
         uid,
         space,
@@ -62,9 +60,9 @@ describe('Get all', () => {
 
   it('Get all paginated', async () => {
     const uids = Array.from(Array(QUERY_MAX_LENGTH + 1)).map(() => getRandomEthAddress());
-    const batch = admin.firestore().batch();
+    const batch = soonDb().batch();
     uids.forEach((uid, i) =>
-      batch.create(admin.firestore().doc(`${PublicCollections.MEMBER}/${uid}`), {
+      batch.create(soonDb().doc(`${PublicCollections.MEMBER}/${uid}`), {
         name: 'asd' + i,
         uid,
         space,
@@ -103,8 +101,7 @@ describe('Get all', () => {
     const uids = Array.from(Array(4)).map(() => getRandomEthAddress());
 
     for (let i = 0; i < uids.length; ++i) {
-      await admin
-        .firestore()
+      await soonDb()
         .doc(`${PublicCollections.MEMBER}/${uids[i]}`)
         .create({ uid: uids[i], space, small: i < 3, age: i < 3 ? 3 : 4 });
     }
@@ -190,8 +187,7 @@ describe('Get all', () => {
 
   it('Should ge by boolean field', async () => {
     const randomFieldName = Math.random().toString().replace('0.', 'a');
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${PublicCollections.MEMBER}/${getRandomEthAddress()}`)
       .create({ [randomFieldName]: false });
 
@@ -214,14 +210,14 @@ describe('Get all', () => {
 describe('Get all sub', () => {
   it('Get all sub', async () => {
     const parentId = getRandomEthAddress();
-    await admin.firestore().doc(`${PublicCollections.SPACE}/${parentId}`).create({ name: 'space' });
+    await soonDb().doc(`${PublicCollections.SPACE}/${parentId}`).create({ name: 'space' });
     const childrenCount = QUERY_MAX_LENGTH + 1;
     const childrenUids = Array.from(Array(childrenCount)).map(() => getRandomEthAddress());
-    const batch = admin.firestore().batch();
+    const batch = soonDb().batch();
     childrenUids.forEach((uid, i) => {
-      const docRef = admin
-        .firestore()
-        .doc(`${PublicCollections.SPACE}/${parentId}/${PublicSubCollections.MEMBERS}/${uid}`);
+      const docRef = soonDb().doc(
+        `${PublicCollections.SPACE}/${parentId}/${PublicSubCollections.MEMBERS}/${uid}`,
+      );
       batch.create(docRef, { name: 'asd' + i, uid });
     });
     await batch.commit();
@@ -262,9 +258,9 @@ describe('Get all sub', () => {
 describe('Get by field name', () => {
   it.each([getRandomEthAddress(), Math.random()])('Should get by field', async (field: any) => {
     const uids = Array.from(Array(QUERY_MAX_LENGTH + 1)).map(() => getRandomEthAddress());
-    const batch = admin.firestore().batch();
+    const batch = soonDb().batch();
     uids.forEach((uid, i) =>
-      batch.create(admin.firestore().doc(`${PublicCollections.MEMBER}/${uid}`), {
+      batch.create(soonDb().doc(`${PublicCollections.MEMBER}/${uid}`), {
         field,
         name: 'asd' + i,
         uid,
@@ -305,11 +301,11 @@ describe('Get subs by field name', () => {
   it.each([getRandomEthAddress()])('Should get subs by field', async (field: any) => {
     const space = getRandomEthAddress();
     const children = Array.from(Array(2 * QUERY_MAX_LENGTH)).map(() => getRandomEthAddress());
-    const batch = admin.firestore().batch();
+    const batch = soonDb().batch();
     children.forEach((child, i) => {
-      const docRef = admin
-        .firestore()
-        .doc(`${PublicCollections.SPACE}/${space}/${PublicSubCollections.MEMBERS}/${child}`);
+      const docRef = soonDb().doc(
+        `${PublicCollections.SPACE}/${space}/${PublicSubCollections.MEMBERS}/${child}`,
+      );
       const data = i <= QUERY_MAX_LENGTH ? { field } : { field: 'asd' };
       batch.create(docRef, { ...data, uid: child });
     });

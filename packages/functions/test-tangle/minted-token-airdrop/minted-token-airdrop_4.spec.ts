@@ -14,7 +14,7 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { airdropMintedToken } from '../../src/runtime/firebase/token/minting';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { getAddress } from '../../src/utils/address.utils';
@@ -57,9 +57,7 @@ describe('Minted token airdrop tangle claim', () => {
     const airdropOrder = await testEnv.wrap(airdropMintedToken)({});
     expect(airdropOrder.payload.unclaimedAirdrops).toBe(2);
 
-    const guardian = <Member>(
-      (await admin.firestore().doc(`${COL.MEMBER}/${helper.guardian}`).get()).data()
-    );
+    const guardian = <Member>await soonDb().doc(`${COL.MEMBER}/${helper.guardian}`).get();
     const guardianAddress = await helper.walletService!.getAddressDetails(
       getAddress(guardian, helper.network),
     );
@@ -90,15 +88,13 @@ describe('Minted token airdrop tangle claim', () => {
       return airdrops.length === 2;
     });
 
-    const distributionDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${helper.member}`);
-    let distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    const distributionDocRef = soonDb().doc(
+      `${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${helper.member}`,
+    );
+    let distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.totalUnclaimedAirdrop).toBe(2);
 
-    const member = <Member>(
-      (await admin.firestore().doc(`${COL.MEMBER}/${helper.member}`).get()).data()
-    );
+    const member = <Member>await soonDb().doc(`${COL.MEMBER}/${helper.member}`).get();
     const memberAddress = await helper.walletService!.getAddressDetails(
       getAddress(member, helper.network),
     );
@@ -119,18 +115,17 @@ describe('Minted token airdrop tangle claim', () => {
     );
     await MnemonicService.store(memberAddress.bech32, memberAddress.mnemonic);
 
-    const orderQuery = admin
-      .firestore()
+    const orderQuery = soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.member)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
 
     await wait(async () => {
       const snap = await orderQuery.get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
 
-    const claimOrder = <Transaction>(await orderQuery.get()).docs[0].data();
+    const claimOrder = <Transaction>(await orderQuery.get())[0];
     await helper.walletService!.send(
       memberAddress,
       claimOrder.payload.response.address,
@@ -139,8 +134,8 @@ describe('Minted token airdrop tangle claim', () => {
     );
 
     await wait(async () => {
-      const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${airdropOrder.uid}`);
-      const order = <Transaction>(await orderDocRef.get()).data();
+      const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${airdropOrder.uid}`);
+      const order = <Transaction>await orderDocRef.get();
       return order.payload.unclaimedAirdrops === 0;
     });
 

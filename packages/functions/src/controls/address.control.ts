@@ -1,5 +1,5 @@
 import { COL, DEFAULT_NETWORK, Member, Network, WenError } from '@soonaverse/interfaces';
-import { soonDb } from '../database/wrapper/soondb';
+import { soonDb } from '../firebase/firestore/soondb';
 import { createAddressValidationOrder } from '../services/payment/tangle-service/address-validation.service';
 import { throwInvalidArgument } from '../utils/error.utils';
 

@@ -1,6 +1,6 @@
 import { Transaction } from '@soonaverse/interfaces';
 import { get } from 'lodash';
-import { soonDb } from '../../database/wrapper/soondb';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { approveAwardParticipant } from '../../services/payment/tangle-service/award/award.approve.participant.service';
 
 export const approveAwardParticipantControl = async (

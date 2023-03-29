@@ -6,11 +6,12 @@ import {
   TokenTradeOrder,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
+  Transaction,
   TransactionCreditType,
   TransactionType,
   WenError,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { cancelTradeOrder, tradeToken } from '../../src/runtime/firebase/token/trading';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
@@ -43,7 +44,7 @@ describe('Trade controller, buy token', () => {
       status: TokenStatus.AVAILABLE,
       approved: true,
     };
-    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).set(token);
+    await soonDb().doc(`${COL.TOKEN}/${tokenId}`).set(token);
   });
 
   it('Should create buy order and cancel it', async () => {
@@ -58,14 +59,13 @@ describe('Trade controller, buy token', () => {
     const milestone = await submitMilestoneFunc(order.payload.targetAddress, MIN_IOTA_AMOUNT * 5);
     await milestoneProcessed(milestone.milestone, milestone.tranId);
 
-    const buySnap = await admin
-      .firestore()
+    const buySnap = await soonDb()
       .collection(COL.TOKEN_MARKET)
       .where('type', '==', TokenTradeOrderType.BUY)
       .where('owner', '==', memberAddress)
       .get();
-    expect(buySnap.docs.length).toBe(1);
-    const buy = <TokenTradeOrder>buySnap.docs[0].data();
+    expect(buySnap.length).toBe(1);
+    const buy = <TokenTradeOrder>buySnap[0];
     expect(buy.price).toBe(MIN_IOTA_AMOUNT);
     expect(buy.count).toBe(5);
     expect(buy.type).toBe(TokenTradeOrderType.BUY);
@@ -76,15 +76,14 @@ describe('Trade controller, buy token', () => {
     const cancelled = await testEnv.wrap(cancelTradeOrder)({});
     expect(cancelled.status).toBe(TokenTradeOrderStatus.CANCELLED);
 
-    const creditSnap = await admin
-      .firestore()
+    const creditSnap = await soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', memberAddress)
       .where('payload.type', '==', TransactionCreditType.TOKEN_BUY)
-      .get();
-    expect(creditSnap.docs.length).toBe(1);
-    expect(creditSnap.docs[0].data()?.payload?.amount).toBe(5 * MIN_IOTA_AMOUNT);
+      .get<Transaction>();
+    expect(creditSnap.length).toBe(1);
+    expect(creditSnap[0]?.payload?.amount).toBe(5 * MIN_IOTA_AMOUNT);
   });
 
   it('Should not be able to pay buy order twice', async () => {
@@ -103,25 +102,23 @@ describe('Trade controller, buy token', () => {
     const milestone2 = await submitMilestoneFunc(order.payload.targetAddress, MIN_IOTA_AMOUNT * 5);
     await milestoneProcessed(milestone2.milestone, milestone2.tranId);
 
-    const buysSnap = await admin
-      .firestore()
+    const buysSnap = await soonDb()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', memberAddress)
       .get();
-    expect(buysSnap.size).toBe(1);
+    expect(buysSnap.length).toBe(1);
 
-    const creditSnap = await admin
-      .firestore()
+    const creditSnap = await soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', memberAddress)
       .where('payload.amount', '==', 5 * MIN_IOTA_AMOUNT)
       .get();
-    expect(creditSnap.size).toBe(1);
+    expect(creditSnap.length).toBe(1);
   });
 
   it('Should throw, token not approved', async () => {
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false });
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false });
     const request = {
       symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,

@@ -16,11 +16,11 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { get, head, isEmpty } from 'lodash';
-import { ITransaction } from '../../../../database/wrapper/interfaces';
-import { soonDb } from '../../../../database/wrapper/soondb';
+import { ITransaction } from '../../../../firebase/firestore/interfaces';
+import { soonDb } from '../../../../firebase/firestore/soondb';
 import { approveAwardParticipantSchema } from '../../../../runtime/firebase/award';
 import { getAddress } from '../../../../utils/address.utils';
-import { dateToTimestamp, serverTime } from '../../../../utils/dateTime.utils';
+import { serverTime } from '../../../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
@@ -122,7 +122,7 @@ export const approveAwardParticipant =
         award: award.uid,
         tokenReward: award.badge.tokenReward,
         edition: (participant?.count || 0) + 1,
-        participatedOn: participant?.createdOn || dateToTimestamp(dayjs()),
+        participatedOn: participant?.createdOn || serverTime(),
       },
     };
     const badgeTransactionDocRef = soonDb().doc(`${COL.TRANSACTION}/${badgeTransaction.uid}`);
@@ -164,7 +164,7 @@ export const approveAwardParticipant =
         member: memberId,
         token: award.badge.tokenUid,
         award: award.uid,
-        vestingAt: dateToTimestamp(dayjs()),
+        vestingAt: serverTime(),
         count: award.badge.tokenReward,
         status: TokenDropStatus.UNCLAIMED,
         sourceAddress: award.address,

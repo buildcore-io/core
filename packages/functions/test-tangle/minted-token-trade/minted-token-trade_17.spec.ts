@@ -10,7 +10,7 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { creditUnrefundable } from '../../src/runtime/firebase/credit/index';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -43,50 +43,48 @@ describe('Token minting', () => {
       ],
       storageDepositReturnAddress: helper.sellerAddress?.bech32,
     });
-    const query = admin
-      .firestore()
+    const query = soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.seller);
     await wait(async () => {
-      const snap = await query.get();
+      const snap = await query.get<Transaction>();
       return (
-        snap.size === 1 &&
-        snap.docs[0].data()!.ignoreWalletReason ===
+        snap.length === 1 &&
+        snap[0]!.ignoreWalletReason ===
           TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION &&
-        snap.docs[0].data()!.payload.targetAddress === helper.sellerAddress!.bech32
+        snap[0]!.payload.targetAddress === helper.sellerAddress!.bech32
       );
     });
-    const snap = await query.get();
+    const snap = await query.get<Transaction>();
     mockWalletReturnValue(helper.walletSpy, helper.seller!, {
-      transaction: snap.docs[0].id,
+      transaction: snap[0].uid,
     });
     const order = await testEnv.wrap(creditUnrefundable)({});
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, order.payload.amount);
 
     await wait(async () => {
-      const snap = await query.get();
-      return snap.size === 1 && snap.docs[0].data()!.payload?.walletReference?.confirmed;
+      const snap = await query.get<Transaction>();
+      return snap.length === 1 && snap[0]!.payload?.walletReference?.confirmed;
     });
     const creditStorageTran = <Transaction>(
       (
-        await admin
-          .firestore()
+        await soonDb()
           .collection(COL.TRANSACTION)
           .where('type', '==', TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED)
           .where('member', '==', helper.seller)
           .get()
-      ).docs[0].data()
+      )[0]
     );
-    const creditSnap = await query.get();
-    expect(creditSnap.docs[0].data()!.payload?.walletReference?.chainReference).toBe(
+    const creditSnap = await query.get<Transaction>();
+    expect(creditSnap[0]!.payload?.walletReference?.chainReference).toBe(
       creditStorageTran.payload.walletReference?.chainReference,
     );
-    expect(creditSnap.docs[0].data()!.payload?.walletReference?.chainReferences).toEqual(
+    expect(creditSnap[0]!.payload?.walletReference?.chainReferences).toEqual(
       creditStorageTran.payload.walletReference?.chainReferences,
     );
-    expect(creditSnap.docs[0].data()!.payload?.walletReference?.inProgress).toBe(false);
-    expect(creditSnap.docs[0].data()!.payload?.walletReference?.processedOn).toBeDefined();
+    expect(creditSnap[0]!.payload?.walletReference?.inProgress).toBe(false);
+    expect(creditSnap[0]!.payload?.walletReference?.processedOn).toBeDefined();
 
     const outputs = await helper.walletService!.getOutputs(
       helper.sellerAddress?.bech32!,
@@ -116,23 +114,22 @@ describe('Token minting', () => {
       ],
       storageDepositReturnAddress: helper.sellerAddress?.bech32,
     });
-    const query = admin
-      .firestore()
+    const query = soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.seller);
     await wait(async () => {
-      const snap = await query.get();
+      const snap = await query.get<Transaction>();
       return (
-        snap.size === 1 &&
-        snap.docs[0].data()!.ignoreWalletReason ===
+        snap.length === 1 &&
+        snap[0]!.ignoreWalletReason ===
           TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION &&
-        snap.docs[0].data()!.payload.targetAddress === helper.sellerAddress!.bech32
+        snap[0]!.payload.targetAddress === helper.sellerAddress!.bech32
       );
     });
-    const snap = await query.get();
+    const snap = await query.get<Transaction>();
     mockWalletReturnValue(helper.walletSpy, helper.seller!, {
-      transaction: snap.docs[0].id,
+      transaction: snap[0].uid,
     });
     const order = await testEnv.wrap(creditUnrefundable)({});
     const order2 = await testEnv.wrap(creditUnrefundable)({});
@@ -145,18 +142,15 @@ describe('Token minting', () => {
     );
 
     await wait(async () => {
-      const snap = await admin
-        .firestore()
+      const snap = await soonDb()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
         .where('member', '==', helper.seller)
         .get();
-      return snap.size == 2;
+      return snap.length == 2;
     });
 
-    const transaction = <Transaction>(
-      (await admin.firestore().doc(`${COL.TRANSACTION}/${snap.docs[0].id}`).get()).data()
-    );
+    const transaction = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${snap[0].uid}`).get();
     expect(transaction.payload.unlockedBy).toBeDefined();
   });
 });

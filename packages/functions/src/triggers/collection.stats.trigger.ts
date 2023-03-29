@@ -1,6 +1,6 @@
 import { COL, CollectionStats, SUB_COL, WEN_FUNC } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
-import admin from '../admin.config';
+import { soonDb } from '../firebase/firestore/soondb';
 import { scale } from '../scale.settings';
 import { getRankingThreshold } from '../utils/config.utils';
 
@@ -35,7 +35,7 @@ const rankingThresholdReached = (
 };
 
 const onRankingThresholdReached = async (collectionId: string) => {
-  await admin.firestore().doc(`${COL.COLLECTION}/${collectionId}`).update({
+  await soonDb().doc(`${COL.COLLECTION}/${collectionId}`).update({
     approved: false,
     rejected: true,
   });

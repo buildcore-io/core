@@ -9,14 +9,13 @@ import {
   CollectionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { App } from 'firebase-admin/app';
-import { FieldValue, getFirestore } from 'firebase-admin/firestore';
+import { FieldValue } from 'firebase-admin/firestore';
+import { FirebaseApp } from '../../../src/firebase/app/app';
+import { Firestore } from '../../../src/firebase/firestore/firestore';
 
-export const createAvatarCollection = async (app: App) => {
+export const createAvatarCollection = async (app: FirebaseApp) => {
   const config =
-    app.options.projectId === 'soonaverse'
-      ? AVATAR_COLLECTION_PROD_CONFIG
-      : AVATAR_COLLECTION_TEST_CONFIG;
+    app.getName() === 'soonaverse' ? AVATAR_COLLECTION_PROD_CONFIG : AVATAR_COLLECTION_TEST_CONFIG;
 
   const collection = {
     createdOn: FieldValue.serverTimestamp(),
@@ -45,9 +44,9 @@ export const createAvatarCollection = async (app: App) => {
     royaltiesSpace: config.space,
   };
 
-  const db = getFirestore(app);
+  const db = new Firestore(app);
   const docRef = db.doc(`${COL.COLLECTION}/${collection.uid}`);
-  await docRef.set(collection, { merge: true });
+  await docRef.set(collection, true);
 };
 
 export const roll = createAvatarCollection;

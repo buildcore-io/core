@@ -1,7 +1,7 @@
 import { COL, MIN_IOTA_AMOUNT, TangleRequestType, Transaction } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { approveProposal } from '../../src/runtime/firebase/proposal';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -46,19 +46,17 @@ describe('Create proposal via tangle request', () => {
 
     await wait(async () => {
       const snap = await helper.guardianCreditQuery.get();
-      return snap.size === 2;
+      return snap.length === 2;
     });
 
-    const snap = await helper.guardianCreditQuery.get();
-    const credit = snap.docs
-      .find((c) => !isEmpty(c.data()?.payload?.response?.voteTransaction))
-      ?.data() as Transaction;
+    const snap = await helper.guardianCreditQuery.get<Transaction>();
+    const credit = snap.find((c) => !isEmpty(c?.payload?.response?.voteTransaction))!;
     expect(credit.payload.amount).toBe(MIN_IOTA_AMOUNT);
 
-    const voteTransactionDocRef = admin
-      .firestore()
-      .doc(`${COL.TRANSACTION}/${credit.payload.response.voteTransaction}`);
-    const voteTransaction = <Transaction>(await voteTransactionDocRef.get()).data();
+    const voteTransactionDocRef = soonDb().doc(
+      `${COL.TRANSACTION}/${credit.payload.response.voteTransaction}`,
+    );
+    const voteTransaction = <Transaction>await voteTransactionDocRef.get();
     expect(+voteTransaction.payload.weight.toFixed(0)).toBe(150);
 
     await helper.assertProposalWeights(150, 150);

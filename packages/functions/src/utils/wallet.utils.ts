@@ -23,9 +23,8 @@ import dayjs from 'dayjs';
 import { Wallet } from 'ethers';
 import jwt from 'jsonwebtoken';
 import { get } from 'lodash';
-import admin from '../admin.config';
+import { soonDb } from '../firebase/firestore/soondb';
 import { getCustomTokenLifetime, getJwtSecretKey } from './config.utils';
-import { uOn } from './dateTime.utils';
 import { throwUnAuthenticated } from './error.utils';
 
 export const minAddressLength = 42;
@@ -72,8 +71,8 @@ const validateWithSignature = async (req: WenRequest) => {
     throw throwUnAuthenticated(WenError.invalid_signature);
   }
 
-  const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${req.address}`);
-  await memberDocRef.update(uOn({ nonce: getRandomNonce() }));
+  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${req.address}`);
+  await memberDocRef.update({ nonce: getRandomNonce() });
 };
 
 const validateWithPublicKey = async (req: WenRequest) => {
@@ -90,8 +89,8 @@ const validateWithPublicKey = async (req: WenRequest) => {
     nonce: getRandomNonce(),
     validatedAddress: { [network]: validatedAddress },
   };
-  const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${address}`);
-  await memberDocRef.set(uOn(updateData), { merge: true });
+  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${address}`);
+  await memberDocRef.set(updateData, true);
 
   return address;
 };
@@ -151,8 +150,8 @@ const validateIotaPubKey = async (req: WenRequest) => {
 };
 
 const getMember = async (address: string) => {
-  const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${address}`);
-  const member = <Member | undefined>(await memberDocRef.get()).data();
+  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${address}`);
+  const member = await memberDocRef.get<Member>();
   if (!member) {
     throw throwUnAuthenticated(WenError.failed_to_decode_token);
   }

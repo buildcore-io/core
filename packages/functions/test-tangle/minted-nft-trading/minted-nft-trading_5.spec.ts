@@ -8,7 +8,7 @@ import {
   Transaction,
   TransactionType,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { WalletService } from '../../src/services/wallet/wallet';
 import { wait } from '../../test/controls/common';
@@ -46,20 +46,19 @@ describe('Minted nft trading', () => {
     });
     await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
 
-    const creditQuery = admin
-      .firestore()
+    const creditQuery = soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', address.bech32)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
     await wait(async () => {
-      const snap = await creditQuery.get();
-      return snap.size > 0 && snap.docs[0]?.data()?.payload?.walletReference?.confirmed;
+      const snap = await creditQuery.get<Transaction>();
+      return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
     });
     const snap = await creditQuery.get();
-    const credit = snap.docs[0].data() as Transaction;
+    const credit = snap[0] as Transaction;
 
-    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${helper.nft?.collection}`);
-    const collection = <Collection>(await collectionDocRef.get()).data();
+    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${helper.nft?.collection}`);
+    const collection = <Collection>await collectionDocRef.get();
     expect(collection.availableNfts).toBe(1);
     expect(collection.nftsOnSale).toBe(0);
     expect(collection.nftsOnAuction).toBe(0);
@@ -75,17 +74,17 @@ describe('Minted nft trading', () => {
       {},
     );
 
-    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${helper.nft?.uid}`);
+    const nftDocRef = soonDb().doc(`${COL.NFT}/${helper.nft?.uid}`);
     await wait(async () => {
-      const nft = <Nft>(await nftDocRef.get()).data();
+      const nft = <Nft>await nftDocRef.get();
       return nft.sold || false;
     });
-    const nft = <Nft>(await nftDocRef.get()).data();
+    const nft = <Nft>await nftDocRef.get();
     expect(nft.owner).toBe(address.bech32);
 
     await wait(async () => {
-      const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${helper.nft?.collection}`);
-      const collection = <Collection>(await collectionDocRef.get()).data();
+      const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${helper.nft?.collection}`);
+      const collection = <Collection>await collectionDocRef.get();
       return !collection.availableNfts && !collection.nftsOnSale && !collection.nftsOnAuction;
     });
   });

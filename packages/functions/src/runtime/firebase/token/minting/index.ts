@@ -1,4 +1,4 @@
-import { MAX_AIRDROP, MAX_TOTAL_TOKEN_SUPPLY, StakeType, WEN_FUNC } from '@soonaverse/interfaces';
+import { WEN_FUNC } from '@soonaverse/interfaces';
 import Joi from 'joi';
 import { AVAILABLE_NETWORKS } from '../../../../controls/common';
 import { airdropMintedTokenControl } from '../../../../controls/token-minting/airdrop-minted-token';
@@ -8,22 +8,7 @@ import { mintTokenControl } from '../../../../controls/token-minting/token-mint.
 import { onCall } from '../../../../firebase/functions/onCall';
 import { CommonJoi } from '../../../../services/joi/common';
 import { networks } from '../../../../utils/config.utils';
-
-export const airdropTokenSchema = Joi.object({
-  token: CommonJoi.uid(),
-  drops: Joi.array()
-    .required()
-    .items(
-      Joi.object().keys({
-        vestingAt: Joi.date().required(),
-        count: Joi.number().min(1).max(MAX_TOTAL_TOKEN_SUPPLY).integer().required(),
-        recipient: CommonJoi.uid(),
-        stakeType: Joi.string().equal(StakeType.STATIC, StakeType.DYNAMIC).optional(),
-      }),
-    )
-    .min(1)
-    .max(MAX_AIRDROP),
-});
+import { airdropTokenSchema } from '../base';
 
 export const airdropMintedToken = onCall(WEN_FUNC.airdropMintedToken)(
   airdropTokenSchema,

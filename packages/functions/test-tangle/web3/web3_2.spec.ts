@@ -1,6 +1,6 @@
 import { COL, Collection, MediaStatus, Space } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { collectionToIpfsMetadata, nftToIpfsMetadata } from '../../src/utils/car.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, wait } from '../../test/controls/common';
@@ -20,10 +20,8 @@ describe('Web3 cron test', () => {
     await collectionHelper.beforeAll();
     await collectionHelper.beforeEach();
 
-    const collectionDocRef = admin
-      .firestore()
-      .doc(`${COL.COLLECTION}/${collectionHelper.collection}`);
-    const collection = <Collection>(await collectionDocRef.get()).data();
+    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${collectionHelper.collection}`);
+    const collection = <Collection>await collectionDocRef.get();
     const nft = collectionHelper.createDummyNft(collection.uid, collectionHelper.space!.uid) as any;
 
     const nftMetadata = nftToIpfsMetadata(collection, nft);
@@ -54,9 +52,9 @@ describe('Web3 cron test', () => {
 
     await uploadMediaToWeb3();
 
-    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
+    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space.uid}`);
     await wait(async () => {
-      space = <Space>(await spaceDocRef.get()).data();
+      space = <Space>await spaceDocRef.get();
       return space.mediaStatus === MediaStatus.UPLOADED;
     });
   });
@@ -68,13 +66,14 @@ describe('Web3 cron test', () => {
 
 const cleanupPendingUploads = async () => {
   for (const col of [COL.TOKEN, COL.NFT, COL.COLLECTION]) {
-    const snap = await pendingUploadsQuery(col).get();
-    const promises = snap.docs.map((d) =>
-      d.ref.update({ mediaStatus: admin.firestore.FieldValue.delete() }),
-    );
+    const snap = await pendingUploadsQuery(col).get<Record<string, unknown>>();
+    const promises = snap.map((d) => {
+      const docRef = soonDb().doc(`${col}/${d.uid}`);
+      return docRef.update({ mediaStatus: soonDb().deleteField() });
+    });
     await Promise.all(promises);
   }
 };
 
 const pendingUploadsQuery = (col: COL) =>
-  admin.firestore().collection(col).where('mediaStatus', '==', MediaStatus.PENDING_UPLOAD);
+  soonDb().collection(col).where('mediaStatus', '==', MediaStatus.PENDING_UPLOAD);

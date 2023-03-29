@@ -1,5 +1,5 @@
 import { COL, SUB_COL } from '@soonaverse/interfaces';
-import { soonDb } from '../../database/wrapper/soondb';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { getLeaveSpaceData } from '../../services/payment/tangle-service/space/SpaceLeaveService';
 
 export const leaveSpaceControl = async (owner: string, params: Record<string, unknown>) => {

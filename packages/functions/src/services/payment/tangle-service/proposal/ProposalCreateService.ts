@@ -9,8 +9,7 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import Joi from 'joi';
-import admin from '../../../../admin.config';
-import { Database } from '../../../../database/Database';
+import { soonDb } from '../../../../firebase/firestore/soondb';
 import { createProposalSchema } from '../../../../runtime/firebase/proposal';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../../../utils/error.utils';
@@ -28,11 +27,11 @@ export class ProposalCreateService {
 
     const { proposal, proposalOwner } = await createProposal(owner, request);
 
-    const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
-    this.transactionService.updates.push({ ref: proposalDocRef, data: proposal, action: 'set' });
+    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+    this.transactionService.push({ ref: proposalDocRef, data: proposal, action: 'set' });
 
     const proposalOwnerDocRef = proposalDocRef.collection(SUB_COL.OWNERS).doc(proposalOwner.uid);
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: proposalOwnerDocRef,
       data: proposalOwner,
       action: 'set',
@@ -43,12 +42,9 @@ export class ProposalCreateService {
 }
 
 export const createProposal = async (owner: string, params: Record<string, unknown>) => {
-  const spaceMember = await Database.getById<SpaceMember>(
-    COL.SPACE,
-    params.space as string,
-    SUB_COL.MEMBERS,
-    owner,
-  );
+  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${params.space}`);
+  const spaceMemberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner);
+  const spaceMember = await spaceMemberDocRef.get<SpaceMember>();
   if (!spaceMember) {
     throw throwInvalidArgument(WenError.you_are_not_part_of_space);
   }
@@ -95,16 +91,17 @@ export const createProposal = async (owner: string, params: Record<string, unkno
 
 const createProposalMembersAndGetTotalWeight = async (proposal: Proposal) => {
   const subCol = proposal.settings.onlyGuardians ? SUB_COL.GUARDIANS : SUB_COL.MEMBERS;
-  const spaceMembers = await Database.getAll<SpaceMember>(
-    COL.SPACE,
-    proposal.space as string,
-    subCol,
-  );
+  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${proposal.space}`);
+  const spaceMembers = await spaceDocRef.collection(subCol).get<SpaceMember>();
 
   const promises = spaceMembers.map(async (spaceMember) => {
     const proposalMember = await createProposalMember(proposal, spaceMember);
     if (proposalMember.weight || proposal.type === ProposalType.NATIVE) {
-      await Database.create(COL.PROPOSAL, proposalMember, SUB_COL.MEMBERS, proposal.uid);
+      const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+      await proposalDocRef
+        .collection(SUB_COL.MEMBERS)
+        .doc(proposalMember.uid)
+        .create(proposalMember);
     }
     return proposalMember.weight || 0;
   });

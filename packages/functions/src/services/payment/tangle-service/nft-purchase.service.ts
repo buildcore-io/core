@@ -24,16 +24,15 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
-import admin from '../../../admin.config';
 import { AVAILABLE_NETWORKS } from '../../../controls/common';
-import { Database } from '../../../database/Database';
+import { soonDb } from '../../../firebase/firestore/soondb';
 import { nftPurchaseSchema } from '../../../runtime/firebase/nft';
 import { assertHasAccess } from '../../../services/validators/access';
 import { WalletService } from '../../../services/wallet/wallet';
 import { getAddress } from '../../../utils/address.utils';
 import { getNftByMintingId } from '../../../utils/collection-minting-utils/nft.utils';
 import { isProdEnv } from '../../../utils/config.utils';
-import { dateToTimestamp, uOn } from '../../../utils/dateTime.utils';
+import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../../utils/error.utils';
 import { assertIpNotBlocked } from '../../../utils/ip.utils';
 import { assertValidationAsync } from '../../../utils/schema.utils';
@@ -71,8 +70,8 @@ export class TangleNftPurchaseService {
       };
     }
 
-    this.transactionService.updates.push({
-      ref: admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`),
+    this.transactionService.push({
+      ref: soonDb().doc(`${COL.TRANSACTION}/${order.uid}`),
       data: order,
       action: 'set',
     });
@@ -159,8 +158,8 @@ export const createNftPuchaseOrder = async (
 };
 
 const getCollection = async (id: string) => {
-  const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${id}`);
-  const collection = <Collection | undefined>(await collectionDocRef.get()).data();
+  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${id}`);
+  const collection = await collectionDocRef.get<Collection>();
   if (!collection) {
     throw throwInvalidArgument(WenError.collection_does_not_exists);
   }
@@ -176,13 +175,14 @@ const getCollection = async (id: string) => {
 };
 
 const getMember = async (id: string) => {
-  const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${id}`);
-  return <Member>(await memberDocRef.get()).data();
+  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${id}`);
+  return <Member>await memberDocRef.get();
 };
 
 const getNft = async (collection: Collection, nftId: string | undefined) => {
   if (nftId) {
-    const nft = (await getNftByMintingId(nftId)) || (await Database.getById(COL.NFT, nftId));
+    const docRef = soonDb().doc(`${COL.NFT}/${nftId}`);
+    const nft = (await getNftByMintingId(nftId)) || (await docRef.get<Nft>());
     if (nft) {
       return nft;
     }
@@ -196,21 +196,20 @@ const getNft = async (collection: Collection, nftId: string | undefined) => {
   const randomPosition = Math.floor(Math.random() * collection.total);
 
   const nftAbove = await getNftAbove(collection, randomPosition);
-  if (nftAbove.size) {
-    return <Nft>nftAbove.docs[0].data();
+  if (nftAbove.length) {
+    return nftAbove[0];
   }
 
   const nftBelow = await getNftBelow(collection, randomPosition);
-  if (nftBelow.size) {
-    return <Nft>nftBelow.docs[0].data();
+  if (nftBelow.length) {
+    return nftBelow[0];
   }
 
   throw throwInvalidArgument(WenError.no_more_nft_available_for_sale);
 };
 
 const getNftAbove = (collection: Collection, position: number) =>
-  admin
-    .firestore()
+  soonDb()
     .collection(COL.NFT)
     .where('sold', '==', false)
     .where('locked', '==', false)
@@ -219,11 +218,10 @@ const getNftAbove = (collection: Collection, position: number) =>
     .where('position', '>=', position)
     .orderBy('position', 'asc')
     .limit(1)
-    .get();
+    .get<Nft>();
 
 const getNftBelow = (collection: Collection, position: number) =>
-  admin
-    .firestore()
+  soonDb()
     .collection(COL.NFT)
     .where('sold', '==', false)
     .where('locked', '==', false)
@@ -232,7 +230,7 @@ const getNftBelow = (collection: Collection, position: number) =>
     .where('position', '<=', position)
     .orderBy('position', 'desc')
     .limit(1)
-    .get();
+    .get<Nft>();
 
 const assertNftCanBePurchased = async (
   space: Space,
@@ -290,22 +288,20 @@ const assertUserHasAccess = (space: Space, collection: Collection, owner: string
   );
 
 const assertUserHasOnlyOneNft = async (collection: Collection, owner: string) => {
-  const snap = await admin
-    .firestore()
+  const snap = await soonDb()
     .collection(COL.TRANSACTION)
     .where('member', '==', owner)
     .where('type', '==', TransactionType.BILL_PAYMENT)
     .where('payload.collection', '==', collection.uid)
     .where('payload.previousOwnerEntity', '==', 'space')
     .get();
-  if (snap.size) {
+  if (snap.length) {
     throw throwInvalidArgument(WenError.you_can_only_own_one_nft_from_collection);
   }
 };
 
 const assertNoOrderInProgress = async (owner: string) => {
-  const orderInProgress = await admin
-    .firestore()
+  const orderInProgress = await soonDb()
     .collection(COL.TRANSACTION)
     .where('payload.reconciled', '==', false)
     .where('payload.type', '==', TransactionOrderType.NFT_PURCHASE)
@@ -314,7 +310,7 @@ const assertNoOrderInProgress = async (owner: string) => {
     .where('payload.void', '==', false)
     .get();
 
-  if (orderInProgress.size) {
+  if (orderInProgress.length) {
     throw throwInvalidArgument(WenError.you_have_currently_another_order_in_progress);
   }
 };
@@ -344,13 +340,13 @@ const getDiscount = (collection: Collection, member: Member) => {
 };
 
 const lockNft = async (nftId: string, orderId: string) =>
-  admin.firestore().runTransaction(async (transaction) => {
-    const docRef = admin.firestore().doc(`${COL.NFT}/${nftId}`);
-    const nft = <Nft>(await transaction.get(docRef)).data();
+  soonDb().runTransaction(async (transaction) => {
+    const docRef = soonDb().doc(`${COL.NFT}/${nftId}`);
+    const nft = <Nft>await transaction.get(docRef);
     if (nft.locked) {
       throw throwInvalidArgument(WenError.nft_locked_for_sale);
     }
-    transaction.update(docRef, uOn({ locked: true, lockedBy: orderId }));
+    transaction.update(docRef, { locked: true, lockedBy: orderId });
   });
 
 const getNftFinalPrice = (nft: Nft, discount: number) => {
@@ -390,7 +386,7 @@ export const createNftWithdrawOrder = (
     uid: nft.uid,
     status: stakeType ? NftStatus.STAKED : NftStatus.WITHDRAWN,
     hidden: true,
-    depositData: admin.firestore.FieldValue.delete(),
+    depositData: soonDb().deleteField(),
     owner: null,
     isOwned: false,
   };

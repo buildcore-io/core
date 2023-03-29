@@ -14,7 +14,7 @@ import {
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { orderToken } from '../../src/runtime/firebase/token/base';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
@@ -137,7 +137,7 @@ describe('Token trigger test', () => {
       input.publicPercentage,
       guardian,
     );
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).create(token);
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).create(token);
 
     const orderPromises = input.totalDeposit.map(async (_, i) => {
       const order = await submitTokenOrderFunc(walletSpy, members[i], { token: token.uid });
@@ -153,9 +153,7 @@ describe('Token trigger test', () => {
 
     await tokenProcessed(token.uid, input.totalDeposit.length, true);
 
-    const tokenData = <Token>(
-      (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
-    );
+    const tokenData = <Token>await soonDb().doc(`${COL.TOKEN}/${token.uid}`).get();
     expect(tokenData.tokensOrdered).toBe(
       input.totalDeposit.reduce(
         (sum, act) => sum + (act * MIN_IOTA_AMOUNT) / tokenData.pricePerToken,
@@ -166,12 +164,7 @@ describe('Token trigger test', () => {
     for (let i = 0; i < input.totalDeposit.length; ++i) {
       const member = members[i];
       const distribution = <TokenDistribution>(
-        (
-          await admin
-            .firestore()
-            .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`)
-            .get()
-        ).data()
+        await soonDb().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`).get()
       );
       const refundedAmount = Number(bigDecimal.multiply(input.refundedAmount[i], MIN_IOTA_AMOUNT));
       expect(distribution.totalDeposit).toBe(
@@ -187,41 +180,33 @@ describe('Token trigger test', () => {
         expect(distribution.billPaymentId).toBeDefined();
       }
       if (distribution.billPaymentId) {
-        const paymentDoc = await admin
-          .firestore()
+        const paymentDoc = await soonDb()
           .doc(`${COL.TRANSACTION}/${distribution.billPaymentId}`)
-          .get();
-        expect(paymentDoc.exists).toBe(true);
+          .get<Transaction>();
+        expect(paymentDoc !== undefined).toBe(true);
         const paidAmount = isEmpty(input.paymentAmount)
           ? input.totalPaid[i]
           : input.paymentAmount![i];
-        expect(paymentDoc.data()?.payload?.amount).toBe(
+        expect(paymentDoc?.payload?.amount).toBe(
           Number(bigDecimal.multiply(paidAmount, MIN_IOTA_AMOUNT)),
         );
-        expect(paymentDoc.data()?.payload?.sourceAddress).toBe(orders[i].payload?.targetAddress);
-        expect(paymentDoc.data()?.payload?.targetAddress).toBe(getAddress(space, Network.IOTA));
+        expect(paymentDoc?.payload?.sourceAddress).toBe(orders[i].payload?.targetAddress);
+        expect(paymentDoc?.payload?.targetAddress).toBe(getAddress(space, Network.IOTA));
       }
       if (distribution.creditPaymentId) {
-        const creditPaymentDoc = await admin
-          .firestore()
+        const creditPaymentDoc = await soonDb()
           .doc(`${COL.TRANSACTION}/${distribution.creditPaymentId}`)
-          .get();
-        expect(creditPaymentDoc.exists).toBe(true);
+          .get<Transaction>();
+        expect(creditPaymentDoc !== undefined).toBe(true);
         const creditAmount = isEmpty(input.creditAmount)
           ? input.refundedAmount[i]
           : input.creditAmount![i];
-        expect(creditPaymentDoc.data()?.payload?.amount).toBe(
+        expect(creditPaymentDoc?.payload?.amount).toBe(
           Number(bigDecimal.multiply(creditAmount, MIN_IOTA_AMOUNT)),
         );
-        const memberData = <Member>(
-          (await admin.firestore().doc(`${COL.MEMBER}/${member}`).get()).data()
-        );
-        expect(creditPaymentDoc.data()?.payload?.sourceAddress).toBe(
-          orders[i].payload?.targetAddress,
-        );
-        expect(creditPaymentDoc.data()?.payload?.targetAddress).toBe(
-          getAddress(memberData, Network.IOTA),
-        );
+        const memberData = <Member>await soonDb().doc(`${COL.MEMBER}/${member}`).get();
+        expect(creditPaymentDoc?.payload?.sourceAddress).toBe(orders[i].payload?.targetAddress);
+        expect(creditPaymentDoc?.payload?.targetAddress).toBe(getAddress(memberData, Network.IOTA));
       }
     }
   });
@@ -229,7 +214,7 @@ describe('Token trigger test', () => {
   it('Should should create two and credit third', async () => {
     members.push(await createMember(walletSpy));
     token = dummyToken(10, space, MIN_IOTA_AMOUNT, 100, guardian);
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).create(token);
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).create(token);
 
     const orderPromises = members
       .map(() => 7)
@@ -246,14 +231,13 @@ describe('Token trigger test', () => {
     await Promise.all(orderPromises);
     await tokenProcessed(token.uid, 2, true);
 
-    const tokenData = <Token>(
-      (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
-    );
+    const tokenData = <Token>await soonDb().doc(`${COL.TOKEN}/${token.uid}`).get();
     expect(tokenData.tokensOrdered).toBe(14);
 
-    const distributions = (
-      await admin.firestore().collection(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}`).get()
-    ).docs.map((d) => <TokenDistribution>d.data());
+    const distributions = await soonDb()
+      .doc(`${COL.TOKEN}/${token.uid}`)
+      .collection(SUB_COL.DISTRIBUTION)
+      .get<TokenDistribution>();
     expect(distributions.length).toBe(2);
     distributions.forEach((d) => {
       expect(d.totalDeposit).toBe(7 * MIN_IOTA_AMOUNT);
@@ -262,15 +246,12 @@ describe('Token trigger test', () => {
       expect(d.tokenOwned).toBe(5);
     });
 
-    const credit = (
-      await admin
-        .firestore()
-        .collection(COL.TRANSACTION)
-        .where('member', 'in', members)
-        .where('type', '==', TransactionType.CREDIT)
-        .where('payload.amount', '==', 7 * MIN_IOTA_AMOUNT)
-        .get()
-    ).docs.map((d) => <Transaction>d.data());
+    const credit = await soonDb()
+      .collection(COL.TRANSACTION)
+      .where('member', 'in', members)
+      .where('type', '==', TransactionType.CREDIT)
+      .where('payload.amount', '==', 7 * MIN_IOTA_AMOUNT)
+      .get();
     expect(credit.length).toBe(1);
   });
 });

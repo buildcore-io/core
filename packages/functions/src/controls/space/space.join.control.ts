@@ -1,5 +1,5 @@
 import { COL, Space, SUB_COL, WenError } from '@soonaverse/interfaces';
-import { soonDb } from '../../database/wrapper/soondb';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { getJoinSpaceData } from '../../services/payment/tangle-service/space/SpaceJoinService';
 import { throwInvalidArgument } from '../../utils/error.utils';
 

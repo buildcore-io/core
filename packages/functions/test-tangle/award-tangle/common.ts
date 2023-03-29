@@ -6,33 +6,32 @@ import {
   TransactionAwardType,
   TransactionType,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { IQuery } from '../../src/firebase/firestore/interfaces';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { getRandomSymbol, wait } from '../../test/controls/common';
 import { MEDIA } from '../../test/set-up';
 
 export const awaitAllTransactionsForAward = async (awardId: string) => {
-  const baseTransQuery = admin
-    .firestore()
+  const baseTransQuery = soonDb()
     .collection(COL.TRANSACTION)
     .where('payload.award', '==', awardId)
     .where('type', 'in', [TransactionType.BILL_PAYMENT, TransactionType.CREDIT]);
   await allConfirmed(baseTransQuery);
 
-  const nttQuery = admin
-    .firestore()
+  const nttQuery = soonDb()
     .collection(COL.TRANSACTION)
     .where('payload.award', '==', awardId)
     .where('payload.type', '==', TransactionAwardType.BADGE);
   await allConfirmed(nttQuery);
 };
 
-const allConfirmed = (query: admin.firestore.Query<admin.firestore.DocumentData>) =>
+const allConfirmed = (query: IQuery) =>
   wait(async () => {
-    const snap = await query.get();
-    const allConfirmed = snap.docs.reduce(
-      (acc, doc) => acc && doc.data()?.payload?.walletReference?.confirmed,
+    const snap = await query.get<any>();
+    const allConfirmed = snap.reduce(
+      (acc, doc) => acc && doc?.payload?.walletReference?.confirmed,
       true,
     );
     return allConfirmed;
@@ -55,6 +54,6 @@ export const saveBaseToken = async (space: string, guardian: string) => {
       network: Network.RMS,
     },
   };
-  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token as Token;
 };

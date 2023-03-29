@@ -1,17 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, SUB_COL } from '@soonaverse/interfaces';
-import admin from '../../admin.config';
+import { COL, PublicCollections, PublicSubCollections, SUB_COL } from '@soonaverse/interfaces';
+import admin from 'firebase-admin';
+import { isEmpty } from 'lodash';
+import { FirebaseApp } from '../app/app';
 import { cOn, uOn } from './common';
-import { IBatch, ICollection, IDatabase, IDocument, IQuery, ITransaction } from './interfaces';
+import {
+  IBatch,
+  ICollection,
+  IDatabase,
+  IDocument,
+  IDocumentSnapshot,
+  IQuery,
+  ITransaction,
+} from './interfaces';
 
 export class Firestore implements IDatabase {
   private db: admin.firestore.Firestore;
 
-  constructor() {
-    this.db = admin.firestore();
+  constructor(private readonly app: FirebaseApp) {
+    this.db = this.app.getInstance().firestore();
   }
 
-  public collection = (col: COL) => new FirestoreCollection(this.db, this.db.collection(col));
+  public collection = (col: COL | PublicCollections) =>
+    new FirestoreCollection(this.db, this.db.collection(col));
 
   public doc = (documentPath: string) => new FirestoreDocument(this.db, this.db.doc(documentPath));
 
@@ -75,6 +86,15 @@ export class FirestoreTransaction implements ITransaction {
     return <T | undefined>doc.data();
   };
 
+  public getAll = async <T>(...docRefs: IDocument[]) => {
+    if (isEmpty(docRefs)) {
+      return [];
+    }
+    const refs = docRefs.map((docRef) => this.db.doc(docRef.getPath()));
+    const snap = await this.transaction.getAll(...refs);
+    return snap.map((doc) => doc.data() as T | undefined);
+  };
+
   public getByQuery = async <T>(query: IQuery) => {
     const snap = await this.transaction.get(query.getInstance());
     return snap.docs.map((d) => d.data() as T);
@@ -95,6 +115,11 @@ export class FirestoreTransaction implements ITransaction {
     const uData = merge ? uOn(data) : cOn(docRef, data);
     this.transaction.set(ref, uData, { merge });
   };
+
+  public delete = (docRef: IDocument) => {
+    const ref = this.db.doc(docRef.getPath());
+    this.transaction.delete(ref);
+  };
 }
 
 export class FirestoreCollection implements ICollection {
@@ -112,7 +137,16 @@ export class FirestoreCollection implements ICollection {
     new FirestoreDocument(this.db, this.collection.doc(documentPath));
 
   public where = (fieldPath: string, operator: admin.firestore.WhereFilterOp, value: any) =>
-    new FirestoreQuery(this.db, this.collection.where(fieldPath, operator, value));
+    new FirestoreQuery(this.collection.where(fieldPath, operator, value));
+
+  public limit = (value: number) => new FirestoreQuery(this.collection.limit(value));
+
+  public startAfter = (value?: IDocumentSnapshot | string | number | Date) => {
+    if (!value) {
+      return new FirestoreQuery(this.collection);
+    }
+    return new FirestoreQuery(this.collection.startAfter(value));
+  };
 }
 
 export class FirestoreDocument implements IDocument {
@@ -137,7 +171,12 @@ export class FirestoreDocument implements IDocument {
     await this.document.delete();
   };
 
-  public collection = (subCol: SUB_COL): ICollection =>
+  public onSnapshot = <T>(callback: (data: T) => void) =>
+    this.document.onSnapshot((snap) => {
+      callback({ ...snap.data(), uid: snap.id } as T);
+    });
+
+  public collection = (subCol: SUB_COL | PublicSubCollections): ICollection =>
     new FirestoreCollection(this.db, this.document.collection(subCol));
 
   public get = async <T>(): Promise<T | undefined> => {
@@ -146,17 +185,16 @@ export class FirestoreDocument implements IDocument {
   };
 
   public getPath = () => this.document.path;
+
+  public getSnapshot = () => this.document.get();
 }
 
 export class FirestoreQuery implements IQuery {
-  constructor(
-    private readonly db: admin.firestore.Firestore,
-    private query: admin.firestore.Query,
-  ) {}
+  constructor(private query: admin.firestore.Query) {}
 
   public get = async <T>(): Promise<T[]> => {
     const snap = await this.query.get();
-    return snap.docs.map((d) => d.data() as T);
+    return snap.docs.map((d) => ({ ...d.data(), uid: d.id } as T));
   };
 
   public where = (
@@ -173,11 +211,15 @@ export class FirestoreQuery implements IQuery {
     return this;
   };
 
-  public startAfter = (docPath: string) => {
-    if (docPath) {
-      const doc = this.db.doc(docPath);
-      this.query = this.query.startAfter(doc);
+  public startAfter = (value?: IDocumentSnapshot | string | number | Date) => {
+    if (value) {
+      this.query = this.query.startAfter(value);
     }
+    return this;
+  };
+
+  public orderBy = (field: string, dir: 'asc' | 'desc' = 'asc') => {
+    this.query = this.query.orderBy(field, dir);
     return this;
   };
 

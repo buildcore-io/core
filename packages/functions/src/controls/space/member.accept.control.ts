@@ -1,5 +1,5 @@
 import { COL, SpaceMember, SUB_COL } from '@soonaverse/interfaces';
-import { soonDb } from '../../database/wrapper/soondb';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { acceptSpaceMember } from '../../services/payment/tangle-service/space/SpaceAcceptMemberService';
 
 export const acceptSpaceMemberControl = async (owner: string, params: Record<string, unknown>) => {
