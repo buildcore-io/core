@@ -9,7 +9,8 @@ import {
   TokenTradeOrderStatus,
   TokenTradeOrderType,
 } from '@soonaverse/interfaces';
-import * as functions from 'firebase-functions';
+import * as express from 'express';
+import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
 import { head } from 'lodash';
 import { soonDb } from '../firebase/firestore/soondb';
@@ -20,7 +21,7 @@ const getTokenPriceSchema = Joi.object({
   token: CommonJoi.uid(),
 });
 
-export const getTokenPrice = async (req: functions.https.Request, res: functions.Response) => {
+export const getTokenPrice = async (req: functions.https.Request, res: express.Response) => {
   const body = getQueryParams<GetTokenPrice>(req, res, getTokenPriceSchema);
   if (!body) {
     return;

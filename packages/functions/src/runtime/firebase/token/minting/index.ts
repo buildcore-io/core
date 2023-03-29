@@ -5,19 +5,19 @@ import { airdropMintedTokenControl } from '../../../../controls/token-minting/ai
 import { claimMintedTokenControl } from '../../../../controls/token-minting/claim-minted-token.control';
 import { importMintedTokenControl } from '../../../../controls/token-minting/import-minted-token';
 import { mintTokenControl } from '../../../../controls/token-minting/token-mint.control';
-import { onCall } from '../../../../firebase/functions/onCall';
+import { onRequest } from '../../../../firebase/functions/onRequest';
 import { CommonJoi } from '../../../../services/joi/common';
 import { networks } from '../../../../utils/config.utils';
 import { airdropTokenSchema } from '../base';
 
-export const airdropMintedToken = onCall(WEN_FUNC.airdropMintedToken)(
+export const airdropMintedToken = onRequest(WEN_FUNC.airdropMintedToken)(
   airdropTokenSchema,
   airdropMintedTokenControl,
 );
 
 const symbolSchema = Joi.object({ symbol: CommonJoi.tokenSymbol() });
 
-export const claimMintedTokenOrder = onCall(WEN_FUNC.claimMintedTokenOrder)(
+export const claimMintedTokenOrder = onRequest(WEN_FUNC.claimMintedTokenOrder)(
   symbolSchema,
   claimMintedTokenControl,
 );
@@ -30,7 +30,7 @@ const mintTokenSchema = Joi.object({
     .equal(...availaibleNetworks)
     .required(),
 });
-export const mintTokenOrder = onCall(WEN_FUNC.mintTokenOrder)(mintTokenSchema, mintTokenControl);
+export const mintTokenOrder = onRequest(WEN_FUNC.mintTokenOrder)(mintTokenSchema, mintTokenControl);
 
 const importMintedTokenSchema = Joi.object({
   tokenId: CommonJoi.uid(),
@@ -40,7 +40,7 @@ const importMintedTokenSchema = Joi.object({
     .required(),
 });
 
-export const importMintedToken = onCall(WEN_FUNC.importMintedToken)(
+export const importMintedToken = onRequest(WEN_FUNC.importMintedToken)(
   importMintedTokenSchema,
   importMintedTokenControl,
 );

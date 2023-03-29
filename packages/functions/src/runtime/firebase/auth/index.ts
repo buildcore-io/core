@@ -1,8 +1,12 @@
 import { WEN_FUNC } from '@soonaverse/interfaces';
 import Joi from 'joi';
 import { generateCustomFirebaseTokenControl } from '../../../controls/auth.control';
-import { onCall } from '../../../firebase/functions/onCall';
+import { onRequest } from '../../../firebase/functions/onRequest';
 
-export const generateCustomFirebaseToken = onCall(WEN_FUNC.generateCustomFirebaseToken, undefined, {
-  allowUnknown: true,
-})(Joi.object({}), generateCustomFirebaseTokenControl);
+export const generateCustomFirebaseToken = onRequest(
+  WEN_FUNC.generateCustomFirebaseToken,
+  undefined,
+  {
+    allowUnknown: true,
+  },
+)(Joi.object({}), generateCustomFirebaseTokenControl);

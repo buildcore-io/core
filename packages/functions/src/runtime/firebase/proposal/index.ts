@@ -3,7 +3,7 @@ import Joi from 'joi';
 import { proposalApprovalControl } from '../../../controls/proposal/approve.reject.proposal';
 import { createProposalControl } from '../../../controls/proposal/create.proposal';
 import { voteOnProposalControl } from '../../../controls/proposal/vote.on.proposal';
-import { onCall } from '../../../firebase/functions/onCall';
+import { onRequest } from '../../../firebase/functions/onRequest';
 import { CommonJoi } from '../../../services/joi/common';
 import { isProdEnv } from '../../../utils/config.utils';
 import { uidSchema } from '../common';
@@ -45,14 +45,20 @@ export const createProposalSchema = {
     .required(),
 };
 
-export const createProposal = onCall(WEN_FUNC.cProposal, {
+export const createProposal = onRequest(WEN_FUNC.cProposal, {
   timeoutSeconds: 300,
-  memory: '2GB',
+  memory: '2GiB',
 })(Joi.object(createProposalSchema), createProposalControl);
 
-export const approveProposal = onCall(WEN_FUNC.aProposal)(uidSchema, proposalApprovalControl(true));
+export const approveProposal = onRequest(WEN_FUNC.aProposal)(
+  uidSchema,
+  proposalApprovalControl(true),
+);
 
-export const rejectProposal = onCall(WEN_FUNC.rProposal)(uidSchema, proposalApprovalControl(false));
+export const rejectProposal = onRequest(WEN_FUNC.rProposal)(
+  uidSchema,
+  proposalApprovalControl(false),
+);
 
 export const voteOnProposalSchema = Joi.object({
   uid: CommonJoi.uid(),
@@ -60,7 +66,7 @@ export const voteOnProposalSchema = Joi.object({
   voteWithStakedTokes: Joi.bool().optional(),
 });
 
-export const voteOnProposal = onCall(WEN_FUNC.voteOnProposal)(
+export const voteOnProposal = onRequest(WEN_FUNC.voteOnProposal)(
   voteOnProposalSchema,
   voteOnProposalControl,
 );

@@ -6,7 +6,8 @@ import {
   Network,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions';
+import * as express from 'express';
+import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
 import { get } from 'lodash';
 import { soonDb } from '../firebase/firestore/soondb';
@@ -19,7 +20,7 @@ const getAddressesSchema = Joi.object({
   createdAfter: Joi.number().min(0).max(MAX_MILLISECONDS).integer().required(),
 });
 
-export const getAddresses = async (req: functions.https.Request, res: functions.Response) => {
+export const getAddresses = async (req: functions.https.Request, res: express.Response) => {
   const body = getQueryParams<GetAddressesRequest>(req, res, getAddressesSchema);
   if (!body) {
     return;

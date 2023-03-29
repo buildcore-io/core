@@ -16,7 +16,7 @@ import { createSpaceControl } from '../../../controls/space/space.create.control
 import { editGuardianControl } from '../../../controls/space/space.guardian.edit.control';
 import { joinSpaceControl } from '../../../controls/space/space.join.control';
 import { updateSpaceControl } from '../../../controls/space/space.update.control';
-import { onCall } from '../../../firebase/functions/onCall';
+import { onRequest } from '../../../firebase/functions/onRequest';
 import { CommonJoi } from '../../../services/joi/common';
 import { uidSchema } from '../common';
 
@@ -33,7 +33,7 @@ export const createSpaceSchema = {
   bannerUrl: CommonJoi.storageUrl(false),
 };
 
-export const createSpace = onCall(WEN_FUNC.cSpace)(
+export const createSpace = onRequest(WEN_FUNC.cSpace)(
   Joi.object(createSpaceSchema),
   createSpaceControl,
 );
@@ -43,32 +43,32 @@ export const editSpaceMemberSchema = Joi.object({
   member: CommonJoi.uid(),
 });
 
-export const addGuardian = onCall(WEN_FUNC.addGuardianSpace)(
+export const addGuardian = onRequest(WEN_FUNC.addGuardianSpace)(
   editSpaceMemberSchema,
   editGuardianControl(ProposalType.ADD_GUARDIAN),
 );
 
-export const removeGuardian = onCall(WEN_FUNC.removeGuardianSpace)(
+export const removeGuardian = onRequest(WEN_FUNC.removeGuardianSpace)(
   editSpaceMemberSchema,
   editGuardianControl(ProposalType.REMOVE_GUARDIAN),
 );
 
-export const acceptMemberSpace = onCall(WEN_FUNC.acceptMemberSpace)(
+export const acceptMemberSpace = onRequest(WEN_FUNC.acceptMemberSpace)(
   editSpaceMemberSchema,
   acceptSpaceMemberControl,
 );
 
-export const blockMember = onCall(WEN_FUNC.blockMemberSpace)(
+export const blockMember = onRequest(WEN_FUNC.blockMemberSpace)(
   editSpaceMemberSchema,
   blockMemberControl,
 );
 
-export const declineMemberSpace = onCall(WEN_FUNC.declineMemberSpace)(
+export const declineMemberSpace = onRequest(WEN_FUNC.declineMemberSpace)(
   editSpaceMemberSchema,
   declineMemberControl,
 );
 
-export const unblockMember = onCall(WEN_FUNC.unblockMemberSpace)(
+export const unblockMember = onRequest(WEN_FUNC.unblockMemberSpace)(
   editSpaceMemberSchema,
   unblockMemberControl,
 );
@@ -84,13 +84,13 @@ const updateSpaceSchema = Joi.object({
   }),
 });
 
-export const updateSpace = onCall(WEN_FUNC.uSpace)(
+export const updateSpace = onRequest(WEN_FUNC.uSpace)(
   updateSpaceSchema,
   updateSpaceControl(updateSpaceSchema),
 );
 
-export const leaveSpace = onCall(WEN_FUNC.leaveSpace)(uidSchema, leaveSpaceControl);
+export const leaveSpace = onRequest(WEN_FUNC.leaveSpace)(uidSchema, leaveSpaceControl);
 
-export const joinSpace = onCall(WEN_FUNC.claimSpace)(uidSchema, joinSpaceControl);
+export const joinSpace = onRequest(WEN_FUNC.claimSpace)(uidSchema, joinSpaceControl);
 
-export const claimSpace = onCall(WEN_FUNC.claimSpace)(spaceIdSchema, claimSpaceControl);
+export const claimSpace = onRequest(WEN_FUNC.claimSpace)(spaceIdSchema, claimSpaceControl);

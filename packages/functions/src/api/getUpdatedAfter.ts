@@ -6,7 +6,8 @@ import {
   PublicSubCollections,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions';
+import * as express from 'express';
+import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
 import { isEmpty } from 'lodash';
 import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
@@ -27,7 +28,7 @@ const getUpdatedAfterSchema = Joi.object({
   startAfter: CommonJoi.uid(false),
 });
 
-export const getUpdatedAfter = async (req: functions.https.Request, res: functions.Response) => {
+export const getUpdatedAfter = async (req: functions.https.Request, res: express.Response) => {
   const body = getQueryParams<GetUpdatedAfterRequest>(req, res, getUpdatedAfterSchema);
   if (!body) {
     return;

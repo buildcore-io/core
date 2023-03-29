@@ -9,7 +9,7 @@ import { projectId, testEnv } from '../set-up';
 
 describe('Get all', () => {
   beforeEach(async () => {
-    await testEnv.firestore.clearFirestoreData(projectId);
+    await testEnv.config.firestore.clearFirestoreData(projectId);
   });
 
   it('Get all paginated', async () => {

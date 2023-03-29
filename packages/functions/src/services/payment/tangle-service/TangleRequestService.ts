@@ -9,7 +9,7 @@ import {
   TransactionOrder,
   WenError,
 } from '@soonaverse/interfaces';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { get } from 'lodash';
 import { soonDb } from '../../../firebase/firestore/soondb';
 import { getOutputMetadata } from '../../../utils/basic-output.utils';
@@ -34,7 +34,6 @@ import { SpaceLeaveService } from './space/SpaceLeaveService';
 import { TangleStakeService } from './stake.service';
 import { TangleTokenClaimService } from './token-claim.service';
 import { TangleTokenTradeService } from './token-trade.service';
-
 export class TangleRequestService {
   constructor(readonly transactionService: TransactionService) {}
 

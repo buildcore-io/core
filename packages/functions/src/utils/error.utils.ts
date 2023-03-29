@@ -1,6 +1,5 @@
-import * as functions from 'firebase-functions';
 import { FunctionsErrorCode } from 'firebase-functions/v1/https';
-
+import * as functions from 'firebase-functions/v2';
 interface Error {
   readonly key?: string;
 }

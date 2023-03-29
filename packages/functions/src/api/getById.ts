@@ -1,5 +1,6 @@
 import { GetByIdRequest, PublicCollections, PublicSubCollections } from '@soonaverse/interfaces';
-import * as functions from 'firebase-functions';
+import * as express from 'express';
+import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
 import { soonDb } from '../firebase/firestore/soondb';
 import { CommonJoi } from '../services/joi/common';
@@ -16,7 +17,7 @@ const getByIdSchema = Joi.object({
   uid: CommonJoi.uid(),
 });
 
-export const getById = async (req: functions.https.Request, res: functions.Response) => {
+export const getById = async (req: functions.https.Request, res: express.Response) => {
   const body = getQueryParams<GetByIdRequest>(req, res, getByIdSchema);
   if (!body) {
     return;

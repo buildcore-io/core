@@ -10,7 +10,7 @@ import Joi from 'joi';
 import { depositStakeControl } from '../../../controls/stake/stake.deposit';
 import { stakeRewardControl } from '../../../controls/stake/stake.reward';
 import { removeStakeRewardControl } from '../../../controls/stake/stake.reward.revoke';
-import { onCall } from '../../../firebase/functions/onCall';
+import { onRequest } from '../../../firebase/functions/onRequest';
 import { CommonJoi } from '../../../services/joi/common';
 
 export const depositStakeSchema = Joi.object({
@@ -25,7 +25,10 @@ export const depositStakeSchema = Joi.object({
     .optional(),
 });
 
-export const depositStake = onCall(WEN_FUNC.depositStake)(depositStakeSchema, depositStakeControl);
+export const depositStake = onRequest(WEN_FUNC.depositStake)(
+  depositStakeSchema,
+  depositStakeControl,
+);
 
 const stakeRewardSchema = Joi.object({
   token: CommonJoi.uid(),
@@ -52,13 +55,13 @@ const stakeRewardSchema = Joi.object({
     ),
 });
 
-export const stakeReward = onCall(WEN_FUNC.stakeReward)(stakeRewardSchema, stakeRewardControl);
+export const stakeReward = onRequest(WEN_FUNC.stakeReward)(stakeRewardSchema, stakeRewardControl);
 
 const removeStakeRewardSchema = Joi.object({
   stakeRewardIds: Joi.array().items(CommonJoi.uid()).min(1).max(450).required(),
 });
 
-export const removeStakeReward = onCall(WEN_FUNC.removeStakeReward)(
+export const removeStakeReward = onRequest(WEN_FUNC.removeStakeReward)(
   removeStakeRewardSchema,
   removeStakeRewardControl,
 );

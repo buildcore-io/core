@@ -17,12 +17,11 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { isEmpty, last } from 'lodash';
 import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
 import { serverTime } from '../utils/dateTime.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
-
 export const stakeRewardCronTask = async () => {
   const stakeRewards = await getDueStakeRewards();
 

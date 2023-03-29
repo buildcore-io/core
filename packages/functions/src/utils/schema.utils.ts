@@ -1,5 +1,5 @@
 import { WenError } from '@soonaverse/interfaces';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import Joi, { AnySchema, ValidationResult } from 'joi';
 import { get, head, toArray } from 'lodash';
 import { isStorageUrl } from '../services/joi/common';

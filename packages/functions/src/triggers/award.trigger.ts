@@ -15,7 +15,6 @@ import { soonDb } from '../firebase/firestore/soondb';
 import { scale } from '../scale.settings';
 import { getAddress } from '../utils/address.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
-
 export const awardUpdateTrigger = functions
   .runWith({
     timeoutSeconds: 540,
