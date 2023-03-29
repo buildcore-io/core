@@ -7,7 +7,7 @@ export const approveAwardParticipantControl = async (
   owner: string,
   params: Record<string, unknown>,
 ) => {
-  const members = params.members as string[];
+  const members = (params.members as string[]).map((m) => m.toLowerCase());
   const awardId = params.award as string;
   const badges: { [key: string]: Transaction } = {};
   const errors: { [key: string]: unknown } = {};
