@@ -17,6 +17,7 @@ import {
 import { soonDb } from '../../firebase/firestore/soondb';
 import { WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress, getAddress } from '../../utils/address.utils';
+import { getRestrictions } from '../../utils/common.utils';
 import { isProdEnv } from '../../utils/config.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
 import { assertIpNotBlocked } from '../../utils/ip.utils';
@@ -109,6 +110,7 @@ export const nftBidControl = async (
       chainReference: null,
       nft: nft.uid,
       collection: collection.uid,
+      restrictions: getRestrictions(collection, nft),
     },
     linkedTransactions: [],
   };

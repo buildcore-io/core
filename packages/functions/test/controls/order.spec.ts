@@ -157,6 +157,15 @@ describe('Ordering flows', () => {
       let nft: Nft = await createNftFunc(member, dummyNft(collection, price));
 
       const order = await submitOrderFunc(member, { collection: collection.uid, nft: nft.uid });
+      expect(order.payload.restrictions.collection).toEqual({
+        access: collection.access,
+        accessAwards: collection.accessAwards || [],
+        accessCollections: collection.accessCollections || [],
+      });
+      expect(order.payload.restrictions.nft).toEqual({
+        saleAccess: nft.saleAccess || null,
+        saleAccessMembers: nft.saleAccessMembers || [],
+      });
       const milestone = await submitMilestoneFunc(
         order.payload.targetAddress,
         order.payload.amount,
@@ -173,6 +182,15 @@ describe('Ordering flows', () => {
       collection = <Collection>await collectionDocRef.get();
       expect(collection.lastTradedOn).toBeDefined();
       expect(collection.totalTrades).toBe(1);
+
+      const billPayments = await soonDb()
+        .collection(COL.TRANSACTION)
+        .where('type', '==', TransactionType.BILL_PAYMENT)
+        .where('payload.nft', '==', nft.uid)
+        .get<Transaction>();
+      for (const billPayment of billPayments) {
+        expect(billPayment.payload.restrictions).toEqual(order.payload.restrictions);
+      }
     },
   );
 
@@ -496,5 +514,14 @@ describe('Ordering flows', () => {
     await soonDb().doc(`${COL.TRANSACTION}/${badge.uid}`).create(badge);
     const order = await submitOrderFunc(member, { collection: collection.uid, nft: nft.uid });
     expect(order).toBeDefined();
+    expect(order.payload.restrictions.collection).toEqual({
+      access: collection.access,
+      accessAwards: collection.accessAwards || [],
+      accessCollections: collection.accessCollections || [],
+    });
+    expect(order.payload.restrictions.nft).toEqual({
+      saleAccess: nft.saleAccess || null,
+      saleAccessMembers: nft.saleAccessMembers || [],
+    });
   });
 });

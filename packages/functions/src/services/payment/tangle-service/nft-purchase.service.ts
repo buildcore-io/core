@@ -31,6 +31,7 @@ import { assertHasAccess } from '../../../services/validators/access';
 import { WalletService } from '../../../services/wallet/wallet';
 import { getAddress } from '../../../utils/address.utils';
 import { getNftByMintingId } from '../../../utils/collection-minting-utils/nft.utils';
+import { getRestrictions } from '../../../utils/common.utils';
 import { isProdEnv } from '../../../utils/config.utils';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../../utils/error.utils';
@@ -152,6 +153,7 @@ export const createNftPuchaseOrder = async (
       chainReference: null,
       nft: nft.uid,
       collection: collection.uid,
+      restrictions: getRestrictions(collection, nft),
     },
     linkedTransactions: [],
   };
