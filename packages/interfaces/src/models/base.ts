@@ -1,4 +1,5 @@
 import { UnsoldMintingOptions } from './collection';
+import { NftAccess } from './nft';
 import { Network } from './transaction';
 
 export interface Timestamp {
@@ -177,4 +178,16 @@ export enum MediaStatus {
   PENDING_UPLOAD = 'pending_upload',
   ERROR = 'error',
   PREPARE_IPFS = 'prepare_ipfs',
+}
+
+export interface Restrictions {
+  readonly collection?: {
+    readonly access?: Access;
+    readonly accessAwards?: string[];
+    readonly accessCollections?: string[];
+  };
+  readonly nft?: {
+    readonly saleAccess?: NftAccess;
+    readonly saleAccessMembers?: string[];
+  };
 }

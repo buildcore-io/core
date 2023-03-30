@@ -163,6 +163,7 @@ export class TransactionService {
           void: false,
           collection: order.payload.collection || null,
           quantity: order.payload.quantity || null,
+          restrictions: get(order, 'payload.restrictions', {}),
         },
       };
       this.updates.push({
@@ -194,6 +195,7 @@ export class TransactionService {
           nft: order.payload.nft || null,
           collection: order.payload.collection || null,
           quantity: order.payload.quantity || null,
+          restrictions: get(order, 'payload.restrictions', {}),
         },
       };
       this.updates.push({
