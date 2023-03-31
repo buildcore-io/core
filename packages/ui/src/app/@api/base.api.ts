@@ -349,7 +349,7 @@ export class BaseApi<T> {
 
   protected request<T>(func: WEN_FUNC, req: any): Observable<T | undefined> {
     const callable = httpsCallableData(this.functions, func);
-    const data$ = callable(req);
+    const data$ = callable({ body: req });
     return data$ as Observable<T | undefined>;
   }
 }
