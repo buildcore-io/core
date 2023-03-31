@@ -8,7 +8,7 @@ import {
   Space,
   Token,
 } from '@soonaverse/interfaces';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { soonDb } from '../firebase/firestore/soondb';
 import { awardToIpfsMetadata } from '../services/payment/award/award-service';
 import {
@@ -19,7 +19,6 @@ import {
   tokenToIpfsMetadata,
 } from '../utils/car.utils';
 import { spaceToIpfsMetadata } from '../utils/space.utils';
-
 export const MEDIA_UPLOAD_BACH_SIZE = 30;
 export const uploadMediaToWeb3 = async () => {
   let batchSize = MEDIA_UPLOAD_BACH_SIZE;

@@ -4,7 +4,6 @@ import * as functions from 'firebase-functions';
 import { scaleAlgolia } from '../scale.settings';
 import { algoliaAppId, algoliaKey, isEmulatorEnv } from '../utils/config.utils';
 import { docToAlgoliaData } from './firestore.to.algolia';
-
 const client = algoliasearch(algoliaAppId(), algoliaKey());
 
 const deleteObject = async (col: COL, objectID: string) => {

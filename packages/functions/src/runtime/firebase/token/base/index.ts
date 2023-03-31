@@ -23,7 +23,7 @@ import { enableTokenTradingControl } from '../../../../controls/token/token.enab
 import { orderTokenControl } from '../../../../controls/token/token.order';
 import { setTokenAvailableForSaleControl } from '../../../../controls/token/token.set.for.sale';
 import { updateTokenControl } from '../../../../controls/token/token.update';
-import { onCall } from '../../../../firebase/functions/onCall';
+import { onRequest } from '../../../../firebase/functions/onRequest';
 import { CommonJoi } from '../../../../services/joi/common';
 import { isProdEnv } from '../../../../utils/config.utils';
 import { uidSchema } from '../../common';
@@ -99,7 +99,7 @@ const createTokenSchema = Joi.object({
   decimals: Joi.number().integer().min(0).max(20).required(),
 });
 
-export const createToken = onCall(WEN_FUNC.cToken)(createTokenSchema, createTokenControl);
+export const createToken = onRequest(WEN_FUNC.cToken)(createTokenSchema, createTokenControl);
 
 const updateTokenSchema = Joi.object({
   name: Joi.string().required().allow(null, ''),
@@ -112,7 +112,7 @@ const updateTokenSchema = Joi.object({
   pricePerToken: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).optional(),
 });
 
-export const updateToken = onCall(WEN_FUNC.uToken)(updateTokenSchema, updateTokenControl);
+export const updateToken = onRequest(WEN_FUNC.uToken)(updateTokenSchema, updateTokenControl);
 
 const setAvailableForSaleSchema = Joi.object({
   token: CommonJoi.uid(),
@@ -132,13 +132,13 @@ const setAvailableForSaleSchema = Joi.object({
   pricePerToken: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).required(),
 });
 
-export const setTokenAvailableForSale = onCall(WEN_FUNC.setTokenAvailableForSale)(
+export const setTokenAvailableForSale = onRequest(WEN_FUNC.setTokenAvailableForSale)(
   setAvailableForSaleSchema,
   setTokenAvailableForSaleControl,
 );
 
 const tokenUidSchema = Joi.object({ token: CommonJoi.uid() });
-export const cancelPublicSale = onCall(WEN_FUNC.cancelPublicSale)(
+export const cancelPublicSale = onRequest(WEN_FUNC.cancelPublicSale)(
   tokenUidSchema,
   cancelPublicSaleControl,
 );
@@ -147,11 +147,11 @@ const creditTokenSchema = Joi.object({
   token: CommonJoi.uid(),
   amount: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
 });
-export const creditToken = onCall(WEN_FUNC.creditToken)(creditTokenSchema, creditTokenControl);
+export const creditToken = onRequest(WEN_FUNC.creditToken)(creditTokenSchema, creditTokenControl);
 
-export const orderToken = onCall(WEN_FUNC.orderToken)(tokenUidSchema, orderTokenControl);
+export const orderToken = onRequest(WEN_FUNC.orderToken)(tokenUidSchema, orderTokenControl);
 
-export const enableTokenTrading = onCall(WEN_FUNC.enableTokenTrading)(
+export const enableTokenTrading = onRequest(WEN_FUNC.enableTokenTrading)(
   uidSchema,
   enableTokenTradingControl,
 );
@@ -172,10 +172,13 @@ export const airdropTokenSchema = Joi.object({
     .max(MAX_AIRDROP),
 });
 
-export const airdropToken = onCall(WEN_FUNC.airdropToken)(airdropTokenSchema, airdropTokenControl);
+export const airdropToken = onRequest(WEN_FUNC.airdropToken)(
+  airdropTokenSchema,
+  airdropTokenControl,
+);
 
 const claimAirdroppedTokenSchema = Joi.object({ token: Joi.string().required() });
-export const claimAirdroppedToken = onCall(WEN_FUNC.claimAirdroppedToken)(
+export const claimAirdroppedToken = onRequest(WEN_FUNC.claimAirdroppedToken)(
   claimAirdroppedTokenSchema,
   claimAirdroppedTokenControl,
 );

@@ -5,17 +5,14 @@ import {
   WenError,
   WEN_FUNC,
 } from '@soonaverse/interfaces';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
 import { createMemberControl } from '../../../controls/member/member.create';
 import { updateMemberControl } from '../../../controls/member/member.update';
-import { onCall } from '../../../firebase/functions/onCall';
+import { onRequest } from '../../../firebase/functions/onRequest';
 import { scale } from '../../../scale.settings';
 import { CommonJoi } from '../../../services/joi/common';
-import { throwUnAuthenticated } from '../../../utils/error.utils';
-import { appCheck } from '../../../utils/google.utils';
 import { assertValidationAsync } from '../../../utils/schema.utils';
-
 export const updateMemberSchema = Joi.object({
   name: Joi.string().allow(null, '').optional(),
   about: Joi.string().allow(null, '').optional(),
@@ -25,16 +22,17 @@ export const updateMemberSchema = Joi.object({
   avatarNft: CommonJoi.uid(false),
 });
 
-export const createMember = functions
-  .runWith({ minInstances: scale(WEN_FUNC.cMemberNotExists) })
-  .https.onCall(async (address: string, context: functions.https.CallableContext) => {
-    appCheck(WEN_FUNC.cMemberNotExists, context);
+export const createMember = functions.https.onRequest(
+  { minInstances: scale(WEN_FUNC.cMemberNotExists) },
+  async (req, res) => {
     try {
-      await assertValidationAsync(Joi.object({ address: CommonJoi.uid() }), { address });
+      await assertValidationAsync(Joi.object({ address: CommonJoi.uid() }), { address: req.body });
+      const member = await createMemberControl(req.body);
+      res.send(member);
     } catch {
-      throw throwUnAuthenticated(WenError.address_must_be_provided);
+      res.status(401).send(WenError.address_must_be_provided);
     }
-    return await createMemberControl(address);
-  });
+  },
+);
 
-export const updateMember = onCall(WEN_FUNC.uMember)(updateMemberSchema, updateMemberControl);
+export const updateMember = onRequest(WEN_FUNC.uMember)(updateMemberSchema, updateMemberControl);

@@ -8,7 +8,7 @@ import {
 } from '@soonaverse/interfaces';
 import axios from 'axios';
 import { randomUUID } from 'crypto';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import fs from 'fs';
 import mime from 'mime-types';
 import os from 'os';

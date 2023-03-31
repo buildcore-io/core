@@ -21,7 +21,7 @@ import {
 } from '@iota/iota.js-next';
 import { Award, COL, Collection, Nft, NftStatus, Space, Transaction } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { cloneDeep, get, head, isEmpty } from 'lodash';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { getAddress } from '../../utils/address.utils';
@@ -41,7 +41,6 @@ import { MnemonicService } from './mnemonic';
 import { AliasWallet } from './smr-wallets/AliasWallet';
 import { SmrParams, SmrWallet } from './SmrWalletService';
 import { AddressDetails, setConsumedOutputIds } from './wallet';
-
 interface MintNftInputParams {
   readonly aliasOutputId: string;
   readonly aliasOutput: IAliasOutput;

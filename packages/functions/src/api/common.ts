@@ -1,5 +1,6 @@
 import { PublicCollections, QUERY_MAX_LENGTH } from '@soonaverse/interfaces';
-import * as functions from 'firebase-functions';
+import * as express from 'express';
+import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
 
 export const getQueryLimit = (collection: PublicCollections) => {
@@ -17,7 +18,7 @@ export const isHiddenNft = (collection: PublicCollections, data?: Record<string,
 
 export const getQueryParams = <T>(
   req: functions.https.Request,
-  res: functions.Response,
+  res: express.Response,
   schema: Joi.ObjectSchema,
 ): T | undefined => {
   const joiResult = schema.validate(req.query);

@@ -27,7 +27,7 @@ import {
   TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { get, isEmpty, set } from 'lodash';
 import { IDocument, ITransaction } from '../../firebase/firestore/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
@@ -35,7 +35,6 @@ import { SmrMilestoneTransactionAdapter } from '../../triggers/milestone-transac
 import { getOutputMetadata } from '../../utils/basic-output.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-
 export interface TransactionMatch {
   msgId: string;
   from: MilestoneTransactionEntry;

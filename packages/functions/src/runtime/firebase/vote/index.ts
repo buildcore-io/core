@@ -1,7 +1,7 @@
 import { COL, WEN_FUNC } from '@soonaverse/interfaces';
 import Joi from 'joi';
 import { voteControl } from '../../../controls/vote.control';
-import { onCall } from '../../../firebase/functions/onCall';
+import { onRequest } from '../../../firebase/functions/onRequest';
 import { CommonJoi } from '../../../services/joi/common';
 
 const voteSchema = Joi.object({
@@ -10,4 +10,4 @@ const voteSchema = Joi.object({
   direction: Joi.number().equal(-1, 0, 1).required(),
 });
 
-export const voteController = onCall(WEN_FUNC.voteController)(voteSchema, voteControl);
+export const voteController = onRequest(WEN_FUNC.voteController)(voteSchema, voteControl);

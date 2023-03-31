@@ -18,7 +18,7 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { cloneDeep, get } from 'lodash';
 import { soonDb } from '../../../firebase/firestore/soondb';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
@@ -28,7 +28,6 @@ import { WalletService } from '../../wallet/wallet';
 import { createNftWithdrawOrder } from '../tangle-service/nft-purchase.service';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 import { NftDepositService } from './nft-deposit-service';
-
 export class NftStakeService {
   constructor(readonly transactionService: TransactionService) {}
 

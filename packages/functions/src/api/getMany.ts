@@ -6,7 +6,8 @@ import {
   PublicCollections,
   PublicSubCollections,
 } from '@soonaverse/interfaces';
-import * as functions from 'firebase-functions';
+import * as express from 'express';
+import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
 import { isEmpty } from 'lodash';
 import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
@@ -43,7 +44,7 @@ const getManySchema = Joi.object({
   startAfter: CommonJoi.uid(false),
 });
 
-export const getMany = async (req: functions.https.Request, res: functions.Response) => {
+export const getMany = async (req: functions.https.Request, res: express.Response) => {
   const body = getQueryParams<GetManyRequest>(req, res, getManySchema);
   if (!body) {
     return;

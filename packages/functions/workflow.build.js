@@ -47,7 +47,7 @@ function init(outputFile) {
   fs.appendFileSync(outputFile, '      - uses: actions/checkout@v3\n');
   fs.appendFileSync(outputFile, '      - uses: actions/setup-node@v3\n');
   fs.appendFileSync(outputFile, '        with:\n');
-  fs.appendFileSync(outputFile, '          node-version: 16\n');
+  fs.appendFileSync(outputFile, '          node-version: 16.x\n');
   fs.appendFileSync(outputFile, '      - uses: actions/cache@v3\n');
   fs.appendFileSync(outputFile, '        id: cache\n');
   fs.appendFileSync(outputFile, '        with:\n');
@@ -72,8 +72,6 @@ function job(outputFile, chunk, files, commandName) {
   fs.appendFileSync(outputFile, `    needs: npm-install\n`);
   fs.appendFileSync(outputFile, `    runs-on: ubuntu-latest\n`);
   fs.appendFileSync(outputFile, `    timeout-minutes: 20\n`);
-  fs.appendFileSync(outputFile, `    env:\n`);
-  fs.appendFileSync(outputFile, `      FIREBASE_TOKEN: \${{ secrets.FIREBASE_DEV_TOKEN }}\n`);
   fs.appendFileSync(outputFile, `    steps:\n`);
   // Foresight telemetry
   fs.appendFileSync(outputFile, '      - name: Collect Workflow Telemetry\n');
@@ -85,7 +83,7 @@ function job(outputFile, chunk, files, commandName) {
   fs.appendFileSync(outputFile, `      - uses: actions/checkout@v3\n`);
   fs.appendFileSync(outputFile, `      - uses: actions/setup-node@v3\n`);
   fs.appendFileSync(outputFile, `        with:\n`);
-  fs.appendFileSync(outputFile, `          node-version: '16'\n`);
+  fs.appendFileSync(outputFile, `          node-version: '16.x'\n`);
   fs.appendFileSync(outputFile, `      - uses: actions/cache@v3\n`);
   fs.appendFileSync(outputFile, `        with:\n`);
   fs.appendFileSync(outputFile, `          path: |\n`);
@@ -100,15 +98,18 @@ function job(outputFile, chunk, files, commandName) {
   fs.appendFileSync(outputFile, `      - name: Init\n`);
   fs.appendFileSync(outputFile, `        run: |\n`);
   fs.appendFileSync(outputFile, `          npm run build:functions\n`);
-  fs.appendFileSync(outputFile, `          npm install -g firebase-tools@11.14.1\n`);
-  fs.appendFileSync(outputFile, `          npm install -g npm-run-all\n`);
+  fs.appendFileSync(outputFile, `          npm install -g firebase-tools\n`);
 
   fs.appendFileSync(outputFile, `      - name: Test\n`);
   fs.appendFileSync(outputFile, `        working-directory: packages/functions\n`);
+
+  fs.appendFileSync(outputFile, `        run: |\n`);
   fs.appendFileSync(
     outputFile,
-    `        run: npm run milestone-sync & firebase emulators:exec "\n`,
+    `          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"\n`,
   );
+  fs.appendFileSync(outputFile, `          npm run milestone-sync &\n`);
+  fs.appendFileSync(outputFile, `          firebase emulators:exec "\n`);
   files.forEach((file, index) => {
     fs.appendFileSync(
       outputFile,
@@ -117,7 +118,10 @@ function job(outputFile, chunk, files, commandName) {
       }\n`,
     );
   });
-  fs.appendFileSync(outputFile, `             " --project dev --export-on-exit=./firestore-data\n`);
+  fs.appendFileSync(
+    outputFile,
+    `             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data\n`,
+  );
   // Test reports collection via github action.
   // fs.appendFileSync(outputFile, `      - name: Test Report\n`);
   // fs.appendFileSync(

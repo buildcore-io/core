@@ -23,7 +23,6 @@ import { getAddress } from '../../utils/address.utils';
 import { indexToString } from '../../utils/block.utils';
 import { getTransactionPayloadHex } from '../../utils/smr.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-
 export const onTokenMintingUpdate = async (transaction: Transaction) => {
   switch (transaction.payload.type) {
     case TransactionMintTokenType.MINT_ALIAS: {

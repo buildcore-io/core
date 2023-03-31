@@ -30,7 +30,7 @@ export const expectThrow = async <C, E>(call: C | Promise<C>, error: E) => {
     await call;
     fail();
   } catch (e: any) {
-    expect(e.details.key).toBe(error);
+    expect(e.key).toBe(error);
   }
 };
 
