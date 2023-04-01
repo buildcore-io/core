@@ -92,8 +92,7 @@ const markExpiredProposalCompletedCron = functions.scheduler.onSchedule(
 );
 
 export const cron = isProdOrTestEnv()
-  ? {}
-  : {
+  ? {
       retrywalletcron: retryWalletCron,
       processexpiredawardscron: processExpiredAwardsCron,
       voidexpiredorders: voidExpiredOrders,
@@ -108,4 +107,5 @@ export const cron = isProdOrTestEnv()
       removeexpirednftstakes: removeExpiredNftStakes,
       updatefloorpriceoncollectionscron: updateFloorPriceOnCollectionsCron,
       markexpiredproposalcompletedcron: markExpiredProposalCompletedCron,
-    };
+    }
+  : {};

@@ -40,7 +40,7 @@ export const rollMemberAvatars = async (app: FirebaseApp) => {
 };
 
 const rollMemberAvatar = async (app: FirebaseApp, member: Member) => {
-  const currentProfileImage = get(member, 'currentProfileImage');
+  const currentProfileImage: any = get(member, 'currentProfileImage');
   const isProd = app.getName() === 'soonaverse';
   const config = isProd ? AVATAR_COLLECTION_PROD_CONFIG : AVATAR_COLLECTION_TEST_CONFIG;
 

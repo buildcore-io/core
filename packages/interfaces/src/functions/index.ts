@@ -95,6 +95,8 @@ export const enum WEN_FUNC {
   algolia = 'algolia',
 
   resizeImg = 'resizeimg',
+
+  api = 'api',
 }
 
 export interface cMemberNotExists {
