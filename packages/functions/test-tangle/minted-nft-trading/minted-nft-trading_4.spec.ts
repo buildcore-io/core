@@ -8,6 +8,7 @@ import {
   NftStatus,
   TangleRequestType,
   Transaction,
+  TransactionOrderType,
   TransactionType,
 } from '@soonaverse/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
@@ -96,5 +97,31 @@ describe('Minted nft trading', () => {
     collection = <Collection>await collectionDocRef.get();
     expect(collection.nftsOnSale).toBe(0);
     expect(collection.nftsOnAuction).toBe(0);
+
+    const orders = await soonDb()
+      .collection(COL.TRANSACTION)
+      .where('payload.type', '==', TransactionOrderType.NFT_PURCHASE)
+      .where('payload.nft', '==', helper.nft!.uid)
+      .get<Transaction>();
+    for (const order of orders) {
+      expect(order.payload.restrictions.collection).toEqual({
+        access: collection.access,
+        accessAwards: collection.accessAwards || [],
+        accessCollections: collection.accessCollections || [],
+      });
+      expect(order.payload.restrictions.nft).toEqual({
+        saleAccess: helper.nft!.saleAccess || null,
+        saleAccessMembers: helper.nft!.saleAccessMembers || [],
+      });
+    }
+
+    const billPayments = await soonDb()
+      .collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .where('payload.nft', '==', helper.nft!.uid)
+      .get<Transaction>();
+    for (const billPayment of billPayments) {
+      expect(billPayment.payload.restrictions).toEqual(orders[0].payload.restrictions);
+    }
   });
 });

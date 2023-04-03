@@ -8,17 +8,20 @@ import {
   TEST_NETWORKS,
   TOKEN_SALE,
   TOKEN_SALE_TEST,
-  WenError,
   WEN_FUNC,
+  WenError,
 } from '@soonaverse/interfaces';
-import * as functions from 'firebase-functions';
-import { isEmpty } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import { throwInvalidArgument } from './error.utils';
 
-export const isProdEnv = () => functions.config()?.environment?.type === 'prod';
-export const getTokenSaleConfig = isProdEnv() ? TOKEN_SALE : TOKEN_SALE_TEST;
+const getProjectId = () =>
+  get(JSON.parse(process.env.FIREBASE_CONFIG || '{}'), 'projectId', 'soonaverse-dev');
+export const isProdEnv = () => getProjectId() === 'soonaverse';
+export const isTestEnv = () => getProjectId() === 'soonaverse-test';
+export const isEmulatorEnv = () => getProjectId() === 'soonaverse-dev';
+export const isProdOrTestEnv = () => isProdEnv() || isTestEnv();
 
-export const isEmulatorEnv = () => functions.config()?.environment?.type === 'emulator';
+export const getTokenSaleConfig = isProdEnv() ? TOKEN_SALE : TOKEN_SALE_TEST;
 
 export const getRoyaltyPercentage = () => Number(getTokenSaleConfig?.percentage);
 
@@ -44,25 +47,25 @@ export const getRankingSpace = (col: COL) => {
 
 export const getRankingThreshold = () => RANK_CONFIG.RANK_THRESHOLD;
 
-export const getWeb3Token = () => functions.config().web3.token;
+export const getWeb3Token = () => process.env.WEB3_TOKEN!;
 
 export const getBucket = () => {
   if (isProdEnv()) {
     return Bucket.PROD;
   }
-  if (isEmulatorEnv()) {
-    return Bucket.DEV;
+  if (isTestEnv()) {
+    return Bucket.TEST;
   }
-  return Bucket.TEST;
+  return Bucket.DEV;
 };
 
-export const getJwtSecretKey = () => functions.config().jwt.secret;
+export const getJwtSecretKey = () => process.env.JWT_SECRET!;
 
 export const getCustomTokenLifetime = (func: WEN_FUNC) => CUSTOM_TOKEN_MAX_LIFETIME[func];
 
-export const algoliaAppId = () => functions.config().algolia.appid;
-export const algoliaKey = () => functions.config().algolia.key;
+export const algoliaAppId = () => process.env.ALGOLIA_APPID!;
+export const algoliaKey = () => process.env.ALGOLIA_KEY!;
 
-export const xpTokenId = () => functions.config().xptoken.id;
-export const xpTokenUid = () => functions.config().xptoken.uid;
-export const xpTokenGuardianId = () => functions.config().xptoken.guardianid;
+export const xpTokenId = () => process.env.XPTOKEN_ID!;
+export const xpTokenUid = () => process.env.XPTOKEN_UID!;
+export const xpTokenGuardianId = () => process.env.XPTOKEN_GUARDIANID!;

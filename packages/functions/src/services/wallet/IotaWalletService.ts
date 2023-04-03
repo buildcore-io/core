@@ -16,12 +16,11 @@ import {
 import { Converter } from '@iota/util.js';
 import { KEY_NAME_TANGLE, Network } from '@soonaverse/interfaces';
 import { generateMnemonic } from 'bip39';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { isEmpty } from 'lodash';
 import { getRandomElement } from '../../utils/common.utils';
 import { MnemonicService } from './mnemonic';
 import { AddressDetails, setConsumedOutputIds, Wallet, WalletParams } from './wallet';
-
 const IOTA_API_ENDPOINTS = [
   'https://us3.svrs.io/',
   'https://us4.svrs.io/',

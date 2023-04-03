@@ -2,20 +2,17 @@ import {
   DISCORD_REGEXP,
   GITHUB_REGEXP,
   TWITTER_REGEXP,
-  WenError,
   WEN_FUNC,
+  WenError,
 } from '@soonaverse/interfaces';
-import * as functions from 'firebase-functions';
+import cors from 'cors';
+import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
 import { createMemberControl } from '../../../controls/member/member.create';
 import { updateMemberControl } from '../../../controls/member/member.update';
-import { onCall } from '../../../firebase/functions/onCall';
-import { scale } from '../../../scale.settings';
+import { getConfig, onRequest } from '../../../firebase/functions/onRequest';
 import { CommonJoi } from '../../../services/joi/common';
-import { throwUnAuthenticated } from '../../../utils/error.utils';
-import { appCheck } from '../../../utils/google.utils';
 import { assertValidationAsync } from '../../../utils/schema.utils';
-
 export const updateMemberSchema = Joi.object({
   name: Joi.string().allow(null, '').optional(),
   about: Joi.string().allow(null, '').optional(),
@@ -25,16 +22,20 @@ export const updateMemberSchema = Joi.object({
   avatarNft: CommonJoi.uid(false),
 });
 
-export const createMember = functions
-  .runWith({ minInstances: scale(WEN_FUNC.cMemberNotExists) })
-  .https.onCall(async (address: string, context: functions.https.CallableContext) => {
-    appCheck(WEN_FUNC.cMemberNotExists, context);
-    try {
-      await assertValidationAsync(Joi.object({ address: CommonJoi.uid() }), { address });
-    } catch {
-      throw throwUnAuthenticated(WenError.address_must_be_provided);
-    }
-    return await createMemberControl(address);
-  });
+export const createMember = functions.https.onRequest(
+  getConfig(WEN_FUNC.cMemberNotExists),
+  (req, res) =>
+    cors({ origin: true })(req, res, async () => {
+      try {
+        const address = req.body.data;
+        const schema = Joi.object({ address: CommonJoi.uid() });
+        await assertValidationAsync(schema, { address });
+        res.send({ data: await createMemberControl(address) });
+      } catch {
+        res.status(401);
+        res.send({ data: WenError.address_must_be_provided });
+      }
+    }),
+);
 
-export const updateMember = onCall(WEN_FUNC.uMember)(updateMemberSchema, updateMemberControl);
+export const updateMember = onRequest(WEN_FUNC.uMember)(updateMemberSchema, updateMemberControl);

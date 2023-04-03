@@ -21,7 +21,7 @@ import { get, startCase } from 'lodash';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { throwInvalidArgument } from '../../utils/error.utils';
-import { pSchema } from '../../utils/schema.utils';
+import { cleanupParams } from '../../utils/schema.utils';
 import { assertIsGuardian, getTokenForSpace } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -65,7 +65,7 @@ export const updateSpaceControl =
       guardian!,
       space.uid,
       guardians.length,
-      pSchema(schema, params),
+      cleanupParams(params) as Space,
     );
 
     const voteTransaction = <Transaction>{

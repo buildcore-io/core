@@ -2,7 +2,7 @@ import {
   STAKE_REWARD_CRON_INTERVAL_CONFIG,
   STAKE_REWARD_TEST_CRON_INTERVAL_CONFIG,
 } from '@soonaverse/interfaces';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { processExpiredAwards } from './cron/award.cron';
 import { getLatestBitfinexPricesCron } from './cron/bitfinex.cron';
 import { updateFloorPriceOnCollections } from './cron/collection.floor.price.cron';
@@ -15,78 +15,97 @@ import { removeExpiredStakesFromSpace } from './cron/stake.cron';
 import { stakeRewardCronTask } from './cron/stakeReward.cron';
 import { cancelExpiredSale, tokenCoolDownOver } from './cron/token.cron';
 import { retryWallet } from './cron/wallet.cron';
-import { isEmulatorEnv, isProdEnv } from './utils/config.utils';
+import { isProdEnv, isProdOrTestEnv } from './utils/config.utils';
 
-const processExpiredAwardsCron = functions.pubsub
-  .schedule('every 1 minutes')
-  .onRun(processExpiredAwards);
+const processExpiredAwardsCron = functions.scheduler.onSchedule(
+  'every 1 minutes',
+  processExpiredAwards,
+);
 
-const getLatestBitfinexPrices = functions.pubsub
-  .schedule('every 5 minutes')
-  .onRun(getLatestBitfinexPricesCron);
+const getLatestBitfinexPrices = functions.scheduler.onSchedule(
+  'every 5 minutes',
+  getLatestBitfinexPricesCron,
+);
 
-const retryWalletCron = functions.pubsub.schedule('every 2 minutes').onRun(retryWallet);
+const retryWalletCron = functions.scheduler.onSchedule('every 2 minutes', async () => {
+  await retryWallet();
+});
 
-const voidExpiredOrders = functions.pubsub.schedule('every 1 minutes').onRun(voidExpiredOrdersCron);
+const voidExpiredOrders = functions.scheduler.onSchedule('every 1 minutes', async () => {
+  await voidExpiredOrdersCron();
+});
 
-const finalizeAuctionNft = functions.pubsub
-  .schedule('every 1 minutes')
-  .onRun(finalizeAllNftAuctions);
+const finalizeAuctionNft = functions.scheduler.onSchedule(
+  'every 1 minutes',
+  finalizeAllNftAuctions,
+);
 
-const hidePlaceholderAfterSoldOut = functions.pubsub
-  .schedule('every 5 minutes')
-  .onRun(hidePlaceholderAfterSoldOutCron);
+const hidePlaceholderAfterSoldOut = functions.scheduler.onSchedule('every 5 minutes', async () => {
+  await hidePlaceholderAfterSoldOutCron();
+});
 
-const tokenCoolDownOverCron = functions.pubsub.schedule('every 1 minutes').onRun(tokenCoolDownOver);
+const tokenCoolDownOverCron = functions.scheduler.onSchedule('every 1 minutes', async () => {
+  await tokenCoolDownOver();
+});
 
-const cancelExpiredSaleCron = functions.pubsub.schedule('every 1 minutes').onRun(cancelExpiredSale);
+const cancelExpiredSaleCron = functions.scheduler.onSchedule('every 1 minutes', cancelExpiredSale);
 
-const stakeRewardCron = functions
-  .runWith({ timeoutSeconds: 540, memory: '1GB' })
-  .pubsub.schedule(
-    isProdEnv() ? STAKE_REWARD_CRON_INTERVAL_CONFIG : STAKE_REWARD_TEST_CRON_INTERVAL_CONFIG,
-  )
-  .onRun(stakeRewardCronTask);
+const stakeRewardCron = functions.scheduler.onSchedule(
+  {
+    timeoutSeconds: 540,
+    memory: '1GiB',
+    schedule: isProdEnv()
+      ? STAKE_REWARD_CRON_INTERVAL_CONFIG
+      : STAKE_REWARD_TEST_CRON_INTERVAL_CONFIG,
+  },
+  stakeRewardCronTask,
+);
 
-const removeExpiredStakesFromSpaceCron = functions.pubsub
-  .schedule('every 1 minutes')
-  .onRun(removeExpiredStakesFromSpace);
+const removeExpiredStakesFromSpaceCron = functions.scheduler.onSchedule(
+  'every 1 minutes',
+  removeExpiredStakesFromSpace,
+);
 
-const mediaUploadCron = functions
-  .runWith({
-    memory: '4GB',
-  })
-  .pubsub.schedule('every 1 minutes')
-  .onRun(uploadMediaToWeb3);
+const mediaUploadCron = functions.scheduler.onSchedule(
+  { memory: '4GiB', schedule: 'every 1 minutes' },
+  async () => {
+    await uploadMediaToWeb3();
+  },
+);
 
-const removeExpiredNftStakes = functions.pubsub
-  .schedule('every 1 minutes')
-  .onRun(processExpiredNftStakes);
+const removeExpiredNftStakes = functions.scheduler.onSchedule(
+  'every 1 minutes',
+  processExpiredNftStakes,
+);
 
-const updateFloorPriceOnCollectionsCron = functions
-  .runWith({ timeoutSeconds: 540 })
-  .pubsub.schedule('every 5 minutes')
-  .onRun(updateFloorPriceOnCollections);
+const updateFloorPriceOnCollectionsCron = functions.scheduler.onSchedule(
+  {
+    timeoutSeconds: 540,
+    schedule: 'every 5 minutes',
+  },
+  updateFloorPriceOnCollections,
+);
 
-const markExpiredProposalCompletedCron = functions.pubsub
-  .schedule('every 5 minutes')
-  .onRun(markExpiredProposalCompleted);
+const markExpiredProposalCompletedCron = functions.scheduler.onSchedule(
+  'every 5 minutes',
+  markExpiredProposalCompleted,
+);
 
-export const cron = isEmulatorEnv()
-  ? {}
-  : {
-      retryWalletCron,
-      processExpiredAwardsCron,
-      voidExpiredOrders,
-      finalizeAuctionNft,
-      hidePlaceholderAfterSoldOut,
-      tokenCoolDownOverCron,
-      cancelExpiredSaleCron,
-      removeExpiredStakesFromSpaceCron,
-      getLatestBitfinexPrices,
-      stakeRewardCron,
-      mediaUploadCron,
-      removeExpiredNftStakes,
-      updateFloorPriceOnCollectionsCron,
-      markExpiredProposalCompletedCron,
-    };
+export const cron = isProdOrTestEnv()
+  ? {
+      retrywalletcron: retryWalletCron,
+      processexpiredawardscron: processExpiredAwardsCron,
+      voidexpiredorders: voidExpiredOrders,
+      finalizeauctionnft: finalizeAuctionNft,
+      hideplaceholderaftersoldout: hidePlaceholderAfterSoldOut,
+      tokencooldownovercron: tokenCoolDownOverCron,
+      cancelexpiredsalecron: cancelExpiredSaleCron,
+      removeexpiredstakesfromspacecron: removeExpiredStakesFromSpaceCron,
+      getlatestbitfinexprices: getLatestBitfinexPrices,
+      stakerewardcron: stakeRewardCron,
+      mediauploadcron: mediaUploadCron,
+      removeexpirednftstakes: removeExpiredNftStakes,
+      updatefloorpriceoncollectionscron: updateFloorPriceOnCollectionsCron,
+      markexpiredproposalcompletedcron: markExpiredProposalCompletedCron,
+    }
+  : {};

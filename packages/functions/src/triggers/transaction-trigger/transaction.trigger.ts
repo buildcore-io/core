@@ -41,7 +41,6 @@ import { onProposalVoteCreditConfirmed } from './proposal.vote';
 import { onStakingConfirmed } from './staking';
 import { onTokenMintingUpdate } from './token-minting';
 import { getWalletParams } from './wallet-params';
-
 export const EXECUTABLE_TRANSACTIONS = [
   TransactionType.CREDIT,
   TransactionType.CREDIT_TANGLE_REQUEST,

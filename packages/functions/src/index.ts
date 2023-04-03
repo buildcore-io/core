@@ -1,6 +1,5 @@
 import { WEN_FUNC } from '@soonaverse/interfaces';
 import { algoliaTrigger } from './algolia/algolia.trigger';
-import { cron } from './cron';
 import { validateAddress } from './runtime/firebase/address';
 import { generateCustomFirebaseToken } from './runtime/firebase/auth';
 import {
@@ -137,8 +136,7 @@ exports[WEN_FUNC.openBid] = openBid;
 exports[WEN_FUNC.validateAddress] = validateAddress;
 
 export * from './api/index';
-// CRON Tasks
-export { cron };
+export * from './cron';
 export { milestoneTriggers as trigger };
 export { algoliaTrigger };
 

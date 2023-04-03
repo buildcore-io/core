@@ -1,5 +1,5 @@
 import { path as ffmpegPath } from '@ffmpeg-installer/ffmpeg';
-import { IMAGE_CACHE_AGE } from '@soonaverse/interfaces';
+import { IMAGE_CACHE_AGE, WEN_FUNC } from '@soonaverse/interfaces';
 import { spawn } from 'child-process-promise';
 import * as functions from 'firebase-functions';
 import fs from 'fs';
@@ -8,6 +8,7 @@ import path from 'path';
 import sharp from 'sharp';
 import { IBucket } from '../../firebase/storage/interfaces';
 import { soonStorage } from '../../firebase/storage/soonStorage';
+import { scale } from '../../scale.settings';
 import { getBucket } from '../../utils/config.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -21,7 +22,7 @@ export enum ImageWidth {
 }
 
 export const resizeImageTrigger = functions
-  .runWith({ memory: '4GB', minInstances: 10 })
+  .runWith({ memory: '4GB', minInstances: scale(WEN_FUNC.resizeImg) })
   .storage.bucket(getBucket())
   .object()
   .onFinalize(async (object: functions.storage.ObjectMetadata) => {

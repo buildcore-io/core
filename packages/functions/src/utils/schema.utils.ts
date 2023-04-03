@@ -1,20 +1,10 @@
 import { WenError } from '@soonaverse/interfaces';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import Joi, { AnySchema, ValidationResult } from 'joi';
-import { get, head, toArray } from 'lodash';
 import { isStorageUrl } from '../services/joi/common';
 import { isProdEnv } from './config.utils';
 import { throwArgument } from './error.utils';
 import { fileExists } from './storage.utils';
-
-export const pSchema = <T>(schema: Joi.ObjectSchema<T>, o: T, ignoreUnset: string[] = []) => {
-  const entries = get(schema, '_ids')?._byKey?.entries();
-  const keys = toArray(entries).map(head) as string[];
-  return keys.reduce((acc, key) => {
-    const value = get(o, key);
-    return !value && ignoreUnset.includes(key) ? acc : { ...acc, [key]: value || null };
-  }, {} as T);
-};
 
 const assertValidation = (r: ValidationResult) => {
   if (r.error) {

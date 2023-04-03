@@ -1,19 +1,19 @@
-import { ApiRoutes } from '@soonaverse/interfaces';
+import { ApiRoutes, WEN_FUNC } from '@soonaverse/interfaces';
 import cors from 'cors';
-import * as functions from 'firebase-functions';
+import * as express from 'express';
+import * as functions from 'firebase-functions/v2';
+import { getConfig } from '../firebase/functions/onRequest';
 import { getAddresses } from './getAddresses';
 import { getById } from './getById';
 import { getMany } from './getMany';
 import { getTokenPrice } from './getTokenPrice';
 import { getUpdatedAfter } from './getUpdatedAfter';
 
-export const api = functions
-  .runWith({ allowInvalidAppCheckToken: true })
-  .https.onRequest((req, res) =>
-    cors({ origin: true })(req, res, async () => {
-      getHandler(req.url)(req, res);
-    }),
-  );
+export const api = functions.https.onRequest(getConfig(WEN_FUNC.api), (req, res) =>
+  cors({ origin: true })(req, res, async () => {
+    getHandler(req.url)(req, res);
+  }),
+);
 
 const getHandler = (url: string) => {
   const route = url.replace('/api', '').split('?')[0];
@@ -33,6 +33,6 @@ const getHandler = (url: string) => {
   }
 };
 
-const invalidRoute = async (_: functions.https.Request, res: functions.Response) => {
+const invalidRoute = async (_: functions.https.Request, res: express.Response) => {
   res.sendStatus(404);
 };

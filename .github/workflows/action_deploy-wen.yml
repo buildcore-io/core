@@ -8,12 +8,17 @@ on:
 jobs:
   deploy_functions:
     runs-on: ubuntu-latest
-    environment: production
+    environment: staging
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 16
+      - name: Set env vars
+        working-directory: packages/functions
+        run: echo "$FUNCTIONS_ENV_VARS" >> .env.preview
+        env:
+          FUNCTIONS_ENV_VARS: ${{ secrets.FUNCTIONS_ENV_VARS_TEST }}
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:

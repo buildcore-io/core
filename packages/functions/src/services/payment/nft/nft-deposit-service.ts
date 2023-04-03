@@ -20,7 +20,7 @@ import {
   TransactionOrder,
   WenError,
 } from '@soonaverse/interfaces';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { head, isEmpty, set } from 'lodash';
 import { ITransaction } from '../../../firebase/firestore/interfaces';
 import { soonDb } from '../../../firebase/firestore/soondb';
@@ -42,7 +42,6 @@ import { NftWallet } from '../../wallet/NftWallet';
 import { SmrWallet } from '../../wallet/SmrWalletService';
 import { WalletService } from '../../wallet/wallet';
 import { TransactionMatch, TransactionService } from '../transaction-service';
-
 export class NftDepositService {
   constructor(readonly transactionService: TransactionService) {}
 

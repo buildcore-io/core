@@ -2,7 +2,7 @@ import { CarReader } from '@ipld/car';
 import * as dagPb from '@ipld/dag-pb';
 import { Collection, KEY_NAME_TANGLE, Nft, Token } from '@soonaverse/interfaces';
 import { randomUUID } from 'crypto';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import fs from 'fs';
 import { FsBlockStore as Blockstore } from 'ipfs-car/blockstore/fs';
 import { pack } from 'ipfs-car/pack';
@@ -12,7 +12,6 @@ import { Filelike, getFilesFromPath, Web3Storage } from 'web3.storage';
 import { propsToAttributes } from './collection-minting-utils/nft.prop.utils';
 import { getWeb3Token } from './config.utils';
 import { downloadFile } from './media.utils';
-
 const MAX_BLOCK_SIZE = 1048576;
 
 export const PLACEHOLDER_CID = 'bafybeig3zxv7cfqvfwqljktfzyyhij67pcg45eiku4dcw2fpajzu7s4xwi';

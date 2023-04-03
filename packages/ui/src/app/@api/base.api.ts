@@ -15,6 +15,7 @@ import {
 } from '@angular/fire/firestore';
 import { Functions, httpsCallableData } from '@angular/fire/functions';
 import { COL, EthAddress, SUB_COL, WEN_FUNC } from '@soonaverse/interfaces';
+import { HttpsCallableOptions } from 'firebase/functions';
 import { collection as colquery } from 'rxfire/firestore';
 import { combineLatest, map, Observable, switchMap } from 'rxjs';
 
@@ -348,7 +349,9 @@ export class BaseApi<T> {
   }
 
   protected request<T>(func: WEN_FUNC, req: any): Observable<T | undefined> {
-    const callable = httpsCallableData(this.functions, func);
+    const callable = httpsCallableData(this.functions, func, {
+      'Access-Control-Allow-Origin': '*',
+    } as HttpsCallableOptions);
     const data$ = callable(req);
     return data$ as Observable<T | undefined>;
   }

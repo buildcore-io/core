@@ -9,11 +9,11 @@ import Joi from 'joi';
 import bigDecimal from 'js-big-decimal';
 import { cancelTradeOrderControl } from '../../../../controls/token-trading/token-trade-cancel.controller';
 import { tradeTokenControl } from '../../../../controls/token-trading/token-trade.controller';
-import { onCall } from '../../../../firebase/functions/onCall';
+import { onRequest } from '../../../../firebase/functions/onRequest';
 import { CommonJoi } from '../../../../services/joi/common';
 import { uidSchema } from '../../common';
 
-export const cancelTradeOrder = onCall(WEN_FUNC.cancelTradeOrder)(
+export const cancelTradeOrder = onRequest(WEN_FUNC.cancelTradeOrder)(
   uidSchema,
   cancelTradeOrderControl,
 );
@@ -30,7 +30,7 @@ export const tradeTokenSchema = Joi.object({
   return obj;
 });
 
-export const tradeToken = onCall(WEN_FUNC.tradeToken, undefined, { convert: false })(
+export const tradeToken = onRequest(WEN_FUNC.tradeToken, undefined, { convert: false })(
   tradeTokenSchema,
   tradeTokenControl,
 );

@@ -72,6 +72,7 @@ const bidNft = async (memberId: string, amount: number) => {
   const bidOrder = await testEnv.wrap(openBid)({});
   const nftMilestone = await submitMilestoneFunc(bidOrder.payload.targetAddress, amount);
   await milestoneProcessed(nftMilestone.milestone, nftMilestone.tranId);
+  return bidOrder;
 };
 
 let memberAddress: string;
@@ -329,7 +330,17 @@ describe('Should finalize bidding', () => {
         .doc(`${COL.COLLECTION}/${collection.uid}`)
         .update({ royaltiesSpace: '', royaltiesFee: 0 });
     }
-    await bidNft(members[0], MIN_IOTA_AMOUNT);
+    const bidOrder = await bidNft(members[0], MIN_IOTA_AMOUNT);
+    expect(bidOrder.payload.restrictions.collection).toEqual({
+      access: collection.access,
+      accessAwards: collection.accessAwards || [],
+      accessCollections: collection.accessCollections || [],
+    });
+    expect(bidOrder.payload.restrictions.nft).toEqual({
+      saleAccess: nft.saleAccess || null,
+      saleAccessMembers: nft.saleAccessMembers || [],
+    });
+
     const nftData = <Nft>await soonDb().doc(`${COL.NFT}/${nft.uid}`).get();
     expect(nftData.auctionHighestBidder).toBe(members[0]);
 
@@ -368,5 +379,14 @@ describe('Should finalize bidding', () => {
     nft = <Nft>await nftDocRef.get();
     expect(nft.lastTradedOn).toBeDefined();
     expect(nft.totalTrades).toBe(2);
+
+    const billPayments = await soonDb()
+      .collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .where('payload.nft', '==', nft.uid)
+      .get<Transaction>();
+    for (const billPayment of billPayments) {
+      expect(billPayment.payload.restrictions).toEqual(bidOrder.payload.restrictions);
+    }
   });
 });
