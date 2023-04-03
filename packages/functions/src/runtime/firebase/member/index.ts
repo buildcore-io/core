@@ -2,15 +2,15 @@ import {
   DISCORD_REGEXP,
   GITHUB_REGEXP,
   TWITTER_REGEXP,
-  WenError,
   WEN_FUNC,
+  WenError,
 } from '@soonaverse/interfaces';
+import cors from 'cors';
 import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
 import { createMemberControl } from '../../../controls/member/member.create';
 import { updateMemberControl } from '../../../controls/member/member.update';
-import { onRequest } from '../../../firebase/functions/onRequest';
-import { scale } from '../../../scale.settings';
+import { getConfig, onRequest } from '../../../firebase/functions/onRequest';
 import { CommonJoi } from '../../../services/joi/common';
 import { assertValidationAsync } from '../../../utils/schema.utils';
 export const updateMemberSchema = Joi.object({
@@ -23,16 +23,19 @@ export const updateMemberSchema = Joi.object({
 });
 
 export const createMember = functions.https.onRequest(
-  { minInstances: scale(WEN_FUNC.cMemberNotExists) },
-  async (req, res) => {
-    try {
-      await assertValidationAsync(Joi.object({ address: CommonJoi.uid() }), { address: req.body });
-      const member = await createMemberControl(req.body);
-      res.send(member);
-    } catch {
-      res.status(401).send(WenError.address_must_be_provided);
-    }
-  },
+  getConfig(WEN_FUNC.cMemberNotExists),
+  (req, res) =>
+    cors({ origin: true })(req, res, async () => {
+      try {
+        const address = req.body.data;
+        const schema = Joi.object({ address: CommonJoi.uid() });
+        await assertValidationAsync(schema, { address });
+        res.send({ data: await createMemberControl(address) });
+      } catch {
+        res.status(401);
+        res.send({ data: WenError.address_must_be_provided });
+      }
+    }),
 );
 
 export const updateMember = onRequest(WEN_FUNC.uMember)(updateMemberSchema, updateMemberControl);

@@ -8,15 +8,17 @@ import {
   TEST_NETWORKS,
   TOKEN_SALE,
   TOKEN_SALE_TEST,
-  WenError,
   WEN_FUNC,
+  WenError,
 } from '@soonaverse/interfaces';
-import { isEmpty } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import { throwInvalidArgument } from './error.utils';
 
-export const isProdEnv = () => process.env.ENVIRONMENT === 'prod';
-export const isTestEnv = () => process.env.ENVIRONMENT === 'test';
-export const isEmulatorEnv = () => process.env.ENVIRONMENT === 'emulator';
+const getProjectId = () =>
+  get(JSON.parse(process.env.FIREBASE_CONFIG || '{}'), 'projectId', 'soonaverse-dev');
+export const isProdEnv = () => getProjectId() === 'soonaverse';
+export const isTestEnv = () => getProjectId() === 'soonaverse-test';
+export const isEmulatorEnv = () => getProjectId() === 'soonaverse-dev';
 export const isProdOrTestEnv = () => isProdEnv() || isTestEnv();
 
 export const getTokenSaleConfig = isProdEnv() ? TOKEN_SALE : TOKEN_SALE_TEST;
