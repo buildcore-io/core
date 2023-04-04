@@ -13,6 +13,7 @@ import { isEmpty } from 'lodash';
 import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
 import { CommonJoi } from '../services/joi/common';
 import { getQueryLimit, getQueryParams } from './common';
+import { sendLiveUpdates } from './keepAlive';
 
 const MAX_WHERE_STATEMENTS = 8;
 
@@ -42,6 +43,7 @@ const getManySchema = Joi.object({
     })
     .optional(),
   startAfter: CommonJoi.uid(false),
+  live: Joi.boolean().optional(),
 });
 
 export const getMany = async (req: functions.https.Request, res: express.Response) => {
@@ -82,6 +84,13 @@ export const getMany = async (req: functions.https.Request, res: express.Respons
       body.startAfter,
     );
     query = query.startAfter(await startAfter);
+  }
+
+  if (body.live) {
+    await sendLiveUpdates(res, query.onSnapshot, (snap: Record<string, unknown>[]) =>
+      snap.filter((d) => !isEmpty(d)).map((d) => ({ id: d.uid, ...d })),
+    );
+    return;
   }
 
   const snap = await query.get<Record<string, unknown>>();

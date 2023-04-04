@@ -8,11 +8,14 @@ import { getById } from './getById';
 import { getMany } from './getMany';
 import { getTokenPrice } from './getTokenPrice';
 import { getUpdatedAfter } from './getUpdatedAfter';
+import { keepAlive } from './keepAlive';
 
-export const api = functions.https.onRequest(getConfig(WEN_FUNC.api), (req, res) =>
-  cors({ origin: true })(req, res, async () => {
-    getHandler(req.url)(req, res);
-  }),
+export const api = functions.https.onRequest(
+  getConfig(WEN_FUNC.api, { timeoutSeconds: 60 }),
+  (req, res) =>
+    cors({ origin: true })(req, res, async () => {
+      getHandler(req.url)(req, res);
+    }),
 );
 
 const getHandler = (url: string) => {
@@ -28,6 +31,8 @@ const getHandler = (url: string) => {
       return getTokenPrice;
     case ApiRoutes.GET_ADDRESSES:
       return getAddresses;
+    case ApiRoutes.KEEP_ALIVE:
+      return keepAlive;
     default:
       return invalidRoute;
   }

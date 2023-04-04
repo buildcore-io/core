@@ -222,6 +222,10 @@ export class FirestoreQuery implements IQuery {
     this.query = this.query.orderBy(field, dir);
     return this;
   };
+  public onSnapshot = <T>(callback: (data: T[]) => void) =>
+    this.query.onSnapshot((snap) => {
+      callback(snap.docs.map((d) => ({ ...d.data(), uid: d.id } as T)));
+    });
 
   public getInstance = () => this.query;
 }

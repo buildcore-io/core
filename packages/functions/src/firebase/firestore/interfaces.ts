@@ -47,6 +47,7 @@ export interface IQuery {
 
   limit: (value: number) => IQuery;
   startAfter: (value?: IDocumentSnapshot | string | number | Date) => IQuery;
+  onSnapshot: <T>(callback: (data: T[]) => void) => () => void;
 
   getInstance: () => any;
 
