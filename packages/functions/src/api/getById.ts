@@ -5,6 +5,7 @@ import Joi from 'joi';
 import { soonDb } from '../firebase/firestore/soondb';
 import { CommonJoi } from '../services/joi/common';
 import { getQueryParams, isHiddenNft } from './common';
+import { sendLiveUpdates } from './keepAlive';
 
 const getByIdSchema = Joi.object({
   collection: Joi.string()
@@ -15,6 +16,7 @@ const getByIdSchema = Joi.object({
     .equal(...Object.values(PublicSubCollections))
     .optional(),
   uid: CommonJoi.uid(),
+  live: Joi.boolean().optional(),
 });
 
 export const getById = async (req: functions.https.Request, res: express.Response) => {
@@ -28,8 +30,18 @@ export const getById = async (req: functions.https.Request, res: express.Respons
       ? `${body.collection}/${body.parentUid}/${body.subCollection}/${body.uid}`
       : `${body.collection}/${body.uid}`;
   const docRef = soonDb().doc(docPath);
-  const data = await docRef.get<Record<string, unknown>>();
 
+  if (body.live) {
+    await sendLiveUpdates(res, docRef.onSnapshot, (data) => {
+      if (!data || isHiddenNft(body.collection, data)) {
+        return {};
+      }
+      return data;
+    });
+    return;
+  }
+
+  const data = await docRef.get<Record<string, unknown>>();
   if (!data || isHiddenNft(body.collection, data)) {
     res.status(404);
     res.send({});
