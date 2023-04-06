@@ -29,8 +29,6 @@ export const stakeRewardControl = async (owner: string, params: Record<string, u
     tokensToDistribute: item.tokensToDistribute,
     token: params.token as string,
     status: StakeRewardStatus.UNPROCESSED,
-    leftCheck: dayjs(item.startDate).valueOf(),
-    rightCheck: dayjs(item.endDate).valueOf(),
   }));
 
   const batch = soonDb().batch();

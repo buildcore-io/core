@@ -287,8 +287,6 @@ const mintedDropToStake = (order: TransactionOrder, drop: TokenDrop, billPayment
     billPaymentId: billPayment.uid,
     expirationProcessed: false,
     orderId: order.uid,
-    leftCheck: vestingAt.valueOf(),
-    rightCheck: dayjs().valueOf(),
   };
   billPayment.payload.stake = stake.uid;
   return stake;
