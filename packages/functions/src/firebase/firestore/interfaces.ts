@@ -52,6 +52,8 @@ export interface IQuery {
   getInstance: () => any;
 
   orderBy: (field: string, dir?: 'asc' | 'desc') => IQuery;
+
+  select: (...fields: string[]) => IQuery;
 }
 
 export interface IBatch {

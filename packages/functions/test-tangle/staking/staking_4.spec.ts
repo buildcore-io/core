@@ -72,9 +72,6 @@ describe('Stake reward test test', () => {
       tokensToDistribute: 9538831184,
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
-
-      leftCheck: dayjs().subtract(1, 'h').valueOf(),
-      rightCheck: dayjs().valueOf(),
     };
     const stakeRewardDocRef = soonDb().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     await stakeRewardDocRef.create(stakeReward);
@@ -122,9 +119,6 @@ describe('Stake reward test test', () => {
       tokensToDistribute: 4470,
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
-
-      leftCheck: dayjs().valueOf(),
-      rightCheck: dayjs().valueOf(),
     };
     const stakeRewardDocRef = soonDb().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     await stakeRewardDocRef.create(stakeReward);
@@ -164,9 +158,6 @@ describe('Stake reward test test', () => {
       tokensToDistribute: 149,
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
-
-      leftCheck: dayjs().subtract(1, 'h').valueOf(),
-      rightCheck: dayjs().valueOf(),
     };
     const stakeRewardDocRef = soonDb().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     await stakeRewardDocRef.create(stakeReward);
@@ -229,9 +220,6 @@ describe('Stake reward test test', () => {
       tokensToDistribute: 149,
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
-
-      leftCheck: dayjs().subtract(1, 'h').valueOf(),
-      rightCheck: dayjs().add(1, 'y').valueOf(),
     };
     const stakeRewardDocRef = soonDb().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     await stakeRewardDocRef.create(stakeReward);
@@ -318,8 +306,6 @@ describe('Stake reward test test', () => {
       .update({
         createdOn: dateToTimestamp(dayjs().subtract(3, 'h')),
         expiresAt: dateToTimestamp(dayjs().subtract(2, 'h')),
-        leftCheck: dayjs().subtract(2, 'h').valueOf(),
-        rightCheck: dayjs().subtract(3, 'h').valueOf(),
       });
     const stake2 = await helper.stakeAmount(13, 26);
     await soonDb()
@@ -327,8 +313,6 @@ describe('Stake reward test test', () => {
       .update({
         createdOn: dateToTimestamp(dayjs().add(2, 'h')),
         expiresAt: dateToTimestamp(dayjs().add(3, 'h')),
-        leftCheck: dayjs().add(3, 'h').valueOf(),
-        rightCheck: dayjs().add(2, 'h').valueOf(),
       });
 
     let stakeReward: StakeReward = {
@@ -340,9 +324,6 @@ describe('Stake reward test test', () => {
       tokensToDistribute: 111,
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
-
-      leftCheck: dayjs().valueOf(),
-      rightCheck: dayjs().valueOf(),
     };
     const stakeRewardDocRef = soonDb().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     await stakeRewardDocRef.create(stakeReward);
@@ -385,9 +366,6 @@ describe('Stake reward test test', () => {
       tokensToDistribute: 149,
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
-
-      leftCheck: dayjs().subtract(1, 'h').valueOf(),
-      rightCheck: dayjs().valueOf(),
     };
     const stakeRewardDocRef = soonDb().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     await stakeRewardDocRef.create(stakeReward);
