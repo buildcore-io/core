@@ -14,6 +14,7 @@ import { AVATAR_COLLECTION_PROD_CONFIG, AVATAR_COLLECTION_TEST_CONFIG } from './
 export const rollMemberAvatars = async (app: FirebaseApp) => {
   let lastDocId = '';
   const db = new Firestore(app);
+  let count = 0;
   do {
     const lastDoc = lastDocId
       ? await db.doc(`${COL.AVATARS}/${lastDocId}`).getSnapshot()
@@ -22,7 +23,7 @@ export const rollMemberAvatars = async (app: FirebaseApp) => {
       .collection(COL.AVATARS)
       .where('available', '==', false)
       .startAfter(lastDoc)
-      .limit(200)
+      .limit(50)
       .get<Record<string, unknown>>();
     lastDocId = (last(snap)?.uid as string) || '';
 
@@ -33,9 +34,19 @@ export const rollMemberAvatars = async (app: FirebaseApp) => {
         .get<Member>();
       if (memberSnap.length) {
         await rollMemberAvatar(app, memberSnap[0]);
+        return true;
       }
+      return false;
     });
-    await Promise.all(promises);
+    const rolled = await Promise.all(promises);
+
+    const hasUnrolled = rolled.find((a) => a);
+    if (hasUnrolled) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+
+    count += snap.length;
+    console.log(count);
   } while (lastDocId);
 };
 
