@@ -56,7 +56,7 @@ const executeStakeRewardDistribution = async (stakeReward: StakeReward) => {
 export const getStakedPerMember = async (stakeReward: StakeReward) => {
   const stakedPerMember: { [key: string]: number } = {};
   let lastDocId = '';
-
+  const rewardEndDate = stakeReward.endDate.toDate();
   do {
     const lastDoc = await getSnapshot(COL.STAKE, lastDocId);
     const snap = await soonDb()
@@ -70,11 +70,12 @@ export const getStakedPerMember = async (stakeReward: StakeReward) => {
       .select('createdOn', 'member', 'value')
       .get<Stake>();
     lastDocId = last(snap)?.uid || '';
-    snap
-      .filter((stake) => dayjs(stake.createdOn?.toDate()).isBefore(stakeReward.endDate.toDate()))
-      .forEach((stake) => {
-        stakedPerMember[stake.member] = (stakedPerMember[stake.member] || 0) + stake.value;
-      });
+    snap.forEach((stake) => {
+      if (dayjs(stake.createdOn?.toDate()).isAfter(rewardEndDate)) {
+        return;
+      }
+      stakedPerMember[stake.member] = (stakedPerMember[stake.member] || 0) + stake.value;
+    });
   } while (lastDocId);
 
   return stakedPerMember;
