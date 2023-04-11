@@ -43,7 +43,7 @@ export class AwardApproveParticipantService {
     const badges: { [key: string]: string } = {};
     const errors: { [key: string]: unknown } = {};
 
-    for (const member of params.members) {
+    for (const member of params.members.map((m) => m.toLowerCase())) {
       try {
         const badge = await soonDb().runTransaction(
           approveAwardParticipant(owner, params.award, member),
