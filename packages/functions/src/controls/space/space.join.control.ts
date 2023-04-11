@@ -1,13 +1,13 @@
 import { COL, Space, SUB_COL, WenError } from '@soonaverse/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { getJoinSpaceData } from '../../services/payment/tangle-service/space/SpaceJoinService';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 
 export const joinSpaceControl = async (owner: string, params: Record<string, unknown>) => {
   const spaceDocRef = soonDb().doc(`${COL.SPACE}/${params.uid}`);
   const space = await spaceDocRef.get<Space>();
   if (!space) {
-    throw throwInvalidArgument(WenError.space_does_not_exists);
+    throw invalidArgument(WenError.space_does_not_exists);
   }
   const { space: spaceUpdateData, spaceMember, member } = await getJoinSpaceData(owner, space);
 

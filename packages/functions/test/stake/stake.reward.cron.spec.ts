@@ -100,7 +100,7 @@ const cases = [
     expectedValue: 0,
   },
   {
-    // 'Two left, but on in',
+    // 'Two left, but one in',
     stakes: [
       { createdOn: now.subtract(3, 'd'), expiresAt: now.add(1, 'y') },
       { createdOn: now.subtract(2, 'd'), expiresAt: now.subtract(1, 'm') },
@@ -136,8 +136,6 @@ describe('Stake reward cron: getStakedPerMember', () => {
       type: StakeType.DYNAMIC,
       orderId: '',
       billPaymentId: '',
-      leftCheck: expiresAt.valueOf(),
-      rightCheck: createdOn.valueOf(),
     };
     await soonDb().doc(`${COL.STAKE}/${stake.uid}`).create(stake);
     return stake;
@@ -152,8 +150,6 @@ describe('Stake reward cron: getStakedPerMember', () => {
       tokensToDistribute: 100,
       token,
       status: StakeRewardStatus.UNPROCESSED,
-      leftCheck: start.valueOf(),
-      rightCheck: end.valueOf(),
     } as StakeReward;
     await soonDb().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`).create(stakeReward);
     return stakeReward;

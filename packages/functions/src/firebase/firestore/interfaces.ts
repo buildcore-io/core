@@ -47,10 +47,13 @@ export interface IQuery {
 
   limit: (value: number) => IQuery;
   startAfter: (value?: IDocumentSnapshot | string | number | Date) => IQuery;
+  onSnapshot: <T>(callback: (data: T[]) => void) => () => void;
 
   getInstance: () => any;
 
   orderBy: (field: string, dir?: 'asc' | 'desc') => IQuery;
+
+  select: (...fields: string[]) => IQuery;
 }
 
 export interface IBatch {

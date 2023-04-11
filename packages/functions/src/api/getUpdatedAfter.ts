@@ -13,6 +13,7 @@ import { isEmpty } from 'lodash';
 import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
 import { CommonJoi } from '../services/joi/common';
 import { getQueryLimit, getQueryParams } from './common';
+import { sendLiveUpdates } from './keepAlive';
 
 const getUpdatedAfterSchema = Joi.object({
   collection: Joi.string()
@@ -26,6 +27,7 @@ const getUpdatedAfterSchema = Joi.object({
   updatedAfter: Joi.number().min(0).max(MAX_MILLISECONDS).integer().optional(),
 
   startAfter: CommonJoi.uid(false),
+  live: Joi.boolean().optional(),
 });
 
 export const getUpdatedAfter = async (req: functions.https.Request, res: express.Response) => {
@@ -58,6 +60,13 @@ export const getUpdatedAfter = async (req: functions.https.Request, res: express
   if (body.startAfter) {
     const startAfter = await getSnapshot(baseCollectionPath as COL, body.startAfter);
     query = query.startAfter(startAfter);
+  }
+
+  if (body.live) {
+    await sendLiveUpdates(res, query.onSnapshot, (snap: Record<string, unknown>[]) =>
+      snap.filter((d) => !isEmpty(d)).map((d) => ({ id: d.uid, ...d })),
+    );
+    return;
   }
 
   const snap = await query.get<Record<string, unknown>>();

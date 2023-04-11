@@ -18,7 +18,7 @@ import { WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress, getAddress } from '../../utils/address.utils';
 import { isProdEnv } from '../../utils/config.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 import { assertIpNotBlocked } from '../../utils/ip.utils';
 import { tokenIsInPublicSalePeriod, tokenOrderTransactionDocId } from '../../utils/token.utils';
 
@@ -33,7 +33,7 @@ export const orderTokenControl = async (
 
   const token = await soonDb().doc(`${COL.TOKEN}/${params.token}`).get<Token>();
   if (!token) {
-    throw throwInvalidArgument(WenError.invalid_params);
+    throw invalidArgument(WenError.invalid_params);
   }
 
   if (isProdEnv()) {
@@ -41,7 +41,7 @@ export const orderTokenControl = async (
   }
 
   if (!tokenIsInPublicSalePeriod(token) || token.status !== TokenStatus.AVAILABLE) {
-    throw throwInvalidArgument(WenError.no_token_public_sale);
+    throw invalidArgument(WenError.no_token_public_sale);
   }
 
   const tranId = tokenOrderTransactionDocId(owner, token);

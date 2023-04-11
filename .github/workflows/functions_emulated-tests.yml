@@ -62,13 +62,13 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
-                npm run test:ci -- --findRelatedTests ./test/api/custom.get.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/api/getAddresses.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/api/getById.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/api/getMany.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/api/getTokenPrice.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/api/getUpdatedAfter.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/auth.spec.ts 
+                npm run test:ci -- --findRelatedTests test/keep-live.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/db.roll.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/auth.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/storage/resize.img.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/stake/stake.reward.cron.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/stake/delete.stake.reward.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/dbRoll/0.19/roll.member.avatars.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -119,13 +119,13 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
-                npm run test:ci -- --findRelatedTests ./test/controls/address.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/collection.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/member.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/nft-bidding.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/nft.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/order.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/proposal.spec.ts 
+                npm run test:ci -- --findRelatedTests test/dbRoll/0.19/award.completed.roll.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/dbRoll/0.19/avatar.collection.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/cron/proposal.cron.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/cron/nft-stake.cron.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/cron/floor-price.cron.only.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/controls/workflow.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/controls/workflow-online.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -176,13 +176,13 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
-                npm run test:ci -- --findRelatedTests ./test/controls/space.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/stake.reward.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/token-distribution-auto-trigger.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/token-distribution.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/token-trade.buy.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/token-trade.sell.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/token-trade.trigger.spec.ts 
+                npm run test:ci -- --findRelatedTests test/controls/token.order.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/controls/token.expired.sale.cron.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/controls/token-trade.trigger.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/controls/token-trade.sell.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/controls/token-trade.buy.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/controls/token-distribution.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/controls/token-distribution-auto-trigger.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -233,13 +233,13 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
-                npm run test:ci -- --findRelatedTests ./test/controls/token.expired.sale.cron.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/token.order.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/token/token.airdrop.claim.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/token/token.airdrop.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/token/token.cancel.pub.sale.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/token/token.create.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/token/token.order.and.claim.air.spec.ts 
+                npm run test:ci -- --findRelatedTests test/controls/stake.reward.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/controls/space.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/controls/proposal.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/controls/order.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/controls/nft.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/controls/nft-bidding.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/controls/member.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -290,13 +290,13 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
-                npm run test:ci -- --findRelatedTests ./test/controls/token/token.rank.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/token/token.set.to.sale.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/token/token.update.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/token/token.vote.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/workflow-online.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/controls/workflow.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/cron/floor-price.cron.only.spec.ts 
+                npm run test:ci -- --findRelatedTests test/controls/collection.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/controls/address.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/controls/token/token.vote.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/controls/token/token.update.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/controls/token/token.set.to.sale.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/controls/token/token.rank.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/controls/token/token.order.and.claim.air.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -347,13 +347,13 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
-                npm run test:ci -- --findRelatedTests ./test/cron/nft-stake.cron.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/cron/proposal.cron.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/db.roll.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/dbRoll/0.19/avatar.collection.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/dbRoll/0.19/roll.member.avatars.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/stake/delete.stake.reward.spec.ts &&
-                npm run test:ci -- --findRelatedTests ./test/stake/stake.reward.cron.spec.ts 
+                npm run test:ci -- --findRelatedTests test/controls/token/token.create.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/controls/token/token.cancel.pub.sale.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/controls/token/token.airdrop.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/controls/token/token.airdrop.claim.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/api/getUpdatedAfter.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/api/getTokenPrice.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/api/getMany.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -404,7 +404,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
-                npm run test:ci -- --findRelatedTests ./test/storage/resize.img.spec.ts 
+                npm run test:ci -- --findRelatedTests test/api/getById.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/api/getAddresses.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/api/custom.get.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3

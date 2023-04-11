@@ -2,7 +2,7 @@ import { COL, StakeReward, StakeRewardStatus, Token, WenError } from '@soonavers
 import dayjs from 'dayjs';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -17,7 +17,7 @@ export const stakeRewardControl = async (owner: string, params: Record<string, u
   const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${params.token}`);
   const token = await tokenDocRef.get<Token>();
   if (!token) {
-    throw throwInvalidArgument(WenError.token_does_not_exist);
+    throw invalidArgument(WenError.token_does_not_exist);
   }
   await assertIsGuardian(token.space, owner);
 
@@ -29,8 +29,6 @@ export const stakeRewardControl = async (owner: string, params: Record<string, u
     tokensToDistribute: item.tokensToDistribute,
     token: params.token as string,
     status: StakeRewardStatus.UNPROCESSED,
-    leftCheck: dayjs(item.startDate).valueOf(),
-    rightCheck: dayjs(item.endDate).valueOf(),
   }));
 
   const batch = soonDb().batch();

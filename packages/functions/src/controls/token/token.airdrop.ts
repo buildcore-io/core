@@ -11,7 +11,7 @@ import {
 import { chunk } from 'lodash';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -36,7 +36,7 @@ export const airdropTokenControl = async (owner: string, params: Record<string, 
       const token = await transaction.get<Token>(tokenDocRef);
 
       if (!token) {
-        throw throwInvalidArgument(WenError.token_does_not_exist);
+        throw invalidArgument(WenError.token_does_not_exist);
       }
 
       assertTokenApproved(token);
@@ -46,7 +46,7 @@ export const airdropTokenControl = async (owner: string, params: Record<string, 
 
       const totalDropped = chunk.reduce((sum, { count }) => sum + count, 0);
       if (!hasAvailableTokenToAirdrop(token, totalDropped)) {
-        throw throwInvalidArgument(WenError.no_tokens_available_for_airdrop);
+        throw invalidArgument(WenError.no_tokens_available_for_airdrop);
       }
 
       transaction.update(tokenDocRef, { totalAirdropped: soonDb().inc(totalDropped) });

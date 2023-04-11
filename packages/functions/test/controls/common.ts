@@ -1,12 +1,12 @@
 import {
   COL,
   Network,
-  Space,
   SUB_COL,
+  Space,
+  TOKEN_SALE_TEST,
   Token,
   TokenDistribution,
   TokenStatus,
-  TOKEN_SALE_TEST,
   TransactionOrder,
   TransactionOrderType,
   TransactionType,
@@ -20,7 +20,7 @@ import * as config from '../../src/utils/config.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as ipUtils from '../../src/utils/ip.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { getWallet, MEDIA, testEnv } from '../set-up';
+import { MEDIA, getWallet, testEnv } from '../set-up';
 
 export const mockWalletReturnValue = <T>(walletSpy: any, address: string, body: T) =>
   walletSpy.mockReturnValue(Promise.resolve({ address, body }));

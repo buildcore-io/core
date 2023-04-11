@@ -7,7 +7,6 @@ import {
   StakeRewardStatus,
   StakeType,
   SUB_COL,
-  Timestamp,
   Token,
   TokenDistribution,
   TokenDrop,
@@ -54,65 +53,33 @@ const executeStakeRewardDistribution = async (stakeReward: StakeReward) => {
   return { totalStaked, totalAirdropped };
 };
 
-// const STAKE_QUERY_LIMT = 1000;
 export const getStakedPerMember = async (stakeReward: StakeReward) => {
   const stakedPerMember: { [key: string]: number } = {};
   let lastDocId = '';
-
+  const rewardEndDate = stakeReward.endDate.toDate();
   do {
     const lastDoc = await getSnapshot(COL.STAKE, lastDocId);
     const snap = await soonDb()
       .collection(COL.STAKE)
       .where('token', '==', stakeReward.token)
       .where('type', '==', StakeType.DYNAMIC)
+      .where('expiresAt', '>=', stakeReward.startDate)
+      .orderBy('expiresAt')
       .startAfter(lastDoc)
-      .limit(500)
+      .limit(2000)
+      .select('createdOn', 'member', 'value')
       .get<Stake>();
     lastDocId = last(snap)?.uid || '';
-
-    snap
-      .filter(
-        (stake) =>
-          isBeforeOrEqual(stake.createdOn!, stakeReward.endDate) &&
-          isAfterOrEqual(stake.expiresAt, stakeReward.startDate),
-      )
-      .forEach((stake) => {
-        stakedPerMember[stake.member] = (stakedPerMember[stake.member] || 0) + stake.value;
-      });
+    snap.forEach((stake) => {
+      if (dayjs(stake.createdOn?.toDate()).isAfter(rewardEndDate)) {
+        return;
+      }
+      stakedPerMember[stake.member] = (stakedPerMember[stake.member] || 0) + stake.value;
+    });
   } while (lastDocId);
 
   return stakedPerMember;
 };
-
-// const getStartDoc = async (query: Query, stakeReward: StakeReward) => {
-//   let snap = await query
-//     .where('leftCheck', '<', stakeReward.leftCheck)
-//     .orderBy('leftCheck', 'desc')
-//     .limit(1)
-//     .get();
-//   let doc = head(snap.docs);
-//   if (doc) {
-//     return { doc, inclusive: false };
-//   }
-//   snap = await query.orderBy('createdOn').orderBy('expiresAt').limit(1).get();
-//   doc = head(snap.docs);
-//   return { doc, inclusive: true };
-// };
-
-// const getEndDoc = async (query: Query, stakeReward: StakeReward) => {
-//   let snap = await query
-//     .where('rightCheck', '>', stakeReward.rightCheck)
-//     .orderBy('rightCheck')
-//     .limit(1)
-//     .get();
-//   let doc = head(snap.docs);
-//   if (doc) {
-//     return { doc, inclusive: false };
-//   }
-//   snap = await query.orderBy('createdOn', 'desc').orderBy('expiresAt', 'desc').limit(1).get();
-//   doc = head(snap.docs);
-//   return { doc, inclusive: true };
-// };
 
 const getDueStakeRewards = () =>
   soonDb()
@@ -213,9 +180,3 @@ const createAirdrops = async (
 
   return (await Promise.all(promises)).reduce((acc, act) => acc + act, 0);
 };
-
-const isBeforeOrEqual = (a: Timestamp, b: Timestamp) =>
-  dayjs(a.toDate()).isBefore(dayjs(b.toDate())) || dayjs(a.toDate()).isSame(dayjs(b.toDate()));
-
-const isAfterOrEqual = (a: Timestamp, b: Timestamp) =>
-  dayjs(a.toDate()).isAfter(dayjs(b.toDate())) || dayjs(a.toDate()).isSame(dayjs(b.toDate()));

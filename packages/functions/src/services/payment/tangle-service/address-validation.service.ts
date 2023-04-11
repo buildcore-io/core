@@ -4,13 +4,13 @@ import {
   MilestoneTransactionEntry,
   Network,
   Space,
+  TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
   TransactionOrder,
   TransactionOrderType,
   TransactionType,
   TransactionUnlockType,
   TransactionValidationType,
-  TRANSACTION_AUTO_EXPIRY_MS,
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
@@ -20,7 +20,7 @@ import { validateAddressSchema } from '../../../runtime/firebase/address';
 import { getAddress } from '../../../utils/address.utils';
 import { generateRandomAmount } from '../../../utils/common.utils';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../../utils/error.utils';
+import { invalidArgument } from '../../../utils/error.utils';
 import { assertValidationAsync } from '../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
@@ -79,13 +79,13 @@ export const createAddressValidationOrder = async (
   const spaceDocRef = soonDb().doc(`${COL.SPACE}/${spaceId}`);
   const space = spaceId ? <Space | undefined>await spaceDocRef.get() : undefined;
   if (spaceId && !space) {
-    throw throwInvalidArgument(WenError.space_does_not_exists);
+    throw invalidArgument(WenError.space_does_not_exists);
   }
 
   if (space) {
     await assertIsGuardian(space.uid, owner);
     if (getAddress(space, network)) {
-      throw throwInvalidArgument(WenError.space_already_have_validated_address);
+      throw invalidArgument(WenError.space_already_have_validated_address);
     }
   }
 

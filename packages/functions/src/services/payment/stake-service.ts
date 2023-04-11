@@ -90,8 +90,6 @@ export class StakeService {
       orderId: order.uid,
       billPaymentId: billPayment.uid,
       customMetadata: get(order, 'payload.customMetadata', {}),
-      leftCheck: dayjs(expiresAt.toDate()).valueOf(),
-      rightCheck: dayjs().valueOf(),
     };
     billPayment.payload.stake = stake.uid;
 

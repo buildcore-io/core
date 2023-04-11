@@ -12,7 +12,7 @@ import Joi from 'joi';
 import { soonDb } from '../../../../firebase/firestore/soondb';
 import { createProposalSchema } from '../../../../runtime/firebase/proposal';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../../../utils/error.utils';
+import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getTokenForSpace } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
@@ -46,13 +46,13 @@ export const createProposal = async (owner: string, params: Record<string, unkno
   const spaceMemberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner);
   const spaceMember = await spaceMemberDocRef.get<SpaceMember>();
   if (!spaceMember) {
-    throw throwInvalidArgument(WenError.you_are_not_part_of_space);
+    throw invalidArgument(WenError.you_are_not_part_of_space);
   }
 
   if (params.type === ProposalType.NATIVE) {
     const token = await getTokenForSpace(params.space as string);
     if (token?.status !== TokenStatus.MINTED) {
-      throw throwInvalidArgument(WenError.token_not_minted);
+      throw invalidArgument(WenError.token_not_minted);
     }
     params.token = token.uid;
   }

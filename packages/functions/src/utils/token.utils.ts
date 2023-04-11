@@ -11,7 +11,7 @@ import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { last } from 'lodash';
 import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
-import { throwInvalidArgument } from './error.utils';
+import { invalidArgument } from './error.utils';
 
 export const BIG_DECIMAL_PRECISION = 1000;
 
@@ -34,7 +34,7 @@ export const assertIsGuardian = async (space: string, member: string) => {
     .doc(`${COL.SPACE}/${space}/${SUB_COL.GUARDIANS}/${member}`)
     .get();
   if (!guardianDoc) {
-    throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
+    throw invalidArgument(WenError.you_are_not_guardian_of_space);
   }
 };
 
@@ -43,7 +43,7 @@ export const assertTokenApproved = (token: Token, approvedIfPublic?: boolean) =>
     return;
   }
   if (!token.approved || token.rejected) {
-    throw throwInvalidArgument(WenError.token_not_approved);
+    throw invalidArgument(WenError.token_not_approved);
   }
 };
 
@@ -68,7 +68,7 @@ export const getTotalPublicSupply = (token: Token) => {
 
 export const assertTokenStatus = (token: Token, validStatuses: TokenStatus[]) => {
   if (!validStatuses.includes(token.status)) {
-    throw throwInvalidArgument(WenError.token_in_invalid_status);
+    throw invalidArgument(WenError.token_in_invalid_status);
   }
 };
 

@@ -10,7 +10,7 @@ import {
 import dayjs from 'dayjs';
 import { ITransaction } from '../../../../../firebase/firestore/interfaces';
 import { soonDb } from '../../../../../firebase/firestore/soondb';
-import { throwInvalidArgument } from '../../../../../utils/error.utils';
+import { invalidArgument } from '../../../../../utils/error.utils';
 import { getTokenVoteMultiplier } from '../../../voting-service';
 import { createVoteTransaction } from './ProposalVoteService';
 
@@ -39,7 +39,7 @@ export const voteWithStakedTokens = async (
   );
 
   if (!weight) {
-    throw throwInvalidArgument(WenError.not_enough_staked_tokens);
+    throw invalidArgument(WenError.not_enough_staked_tokens);
   }
 
   const voteTransaction = createVoteTransaction(

@@ -20,7 +20,7 @@ import dayjs from 'dayjs';
 import { uniq } from 'lodash';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -34,12 +34,12 @@ export const removeStakeRewardControl = async (owner: string, params: Record<str
   stakeRewards.sort((a, b) => a!.startDate.seconds - b!.startDate.seconds);
 
   if (stakeRewards.find((reward) => reward === undefined)) {
-    throw throwInvalidArgument(WenError.invalid_params);
+    throw invalidArgument(WenError.invalid_params);
   }
 
   const tokenIds = uniq(stakeRewards.map((reward) => reward!.token));
   if (tokenIds.length > 1) {
-    throw throwInvalidArgument(WenError.invalid_params);
+    throw invalidArgument(WenError.invalid_params);
   }
 
   const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${tokenIds[0]}`);
@@ -53,7 +53,7 @@ export const removeStakeRewardControl = async (owner: string, params: Record<str
     .where('settings.endDate', '>=', serverTime())
     .get();
   if (ongoingProposalSnap.length) {
-    throw throwInvalidArgument(WenError.ongoing_proposal);
+    throw invalidArgument(WenError.ongoing_proposal);
   }
 
   const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);

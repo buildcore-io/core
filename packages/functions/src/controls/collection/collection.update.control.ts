@@ -18,7 +18,7 @@ import {
 } from '../../runtime/firebase/collection';
 import { CommonJoi } from '../../services/joi/common';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 import { assertValidationAsync } from '../../utils/schema.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { populateTokenUidOnDiscounts } from './common';
@@ -27,7 +27,7 @@ export const updateCollectionControl = async (owner: string, params: Record<stri
   const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${params.uid}`);
   const collection = await collectionDocRef.get<Collection>();
   if (!collection) {
-    throw throwInvalidArgument(WenError.collection_does_not_exists);
+    throw invalidArgument(WenError.collection_does_not_exists);
   }
 
   const isMinted = collection.status === CollectionStatus.MINTED;
@@ -37,22 +37,22 @@ export const updateCollectionControl = async (owner: string, params: Record<stri
 
   const member = await soonDb().doc(`${COL.MEMBER}/${owner}`).get<Member>();
   if (!member) {
-    throw throwInvalidArgument(WenError.member_does_not_exists);
+    throw invalidArgument(WenError.member_does_not_exists);
   }
 
   if (params.availableFrom) {
     if (dayjs().isAfter(collection.availableFrom.toDate())) {
-      throw throwInvalidArgument(WenError.available_from_must_be_in_the_future);
+      throw invalidArgument(WenError.available_from_must_be_in_the_future);
     }
     params.availableFrom = dateToTimestamp(params.availableFrom as Date, true);
   }
 
   if (!collection.approved && collection.createdBy !== owner) {
-    throw throwInvalidArgument(WenError.you_must_be_the_creator_of_this_collection);
+    throw invalidArgument(WenError.you_must_be_the_creator_of_this_collection);
   }
 
   if (collection.royaltiesFee < (params.royaltiesFee as number)) {
-    throw throwInvalidArgument(WenError.royalty_fees_can_only_be_reduced);
+    throw invalidArgument(WenError.royalty_fees_can_only_be_reduced);
   }
 
   await assertIsGuardian(collection.space, owner);

@@ -1,7 +1,7 @@
 import { COL, Token, TokenStatus, WenError } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../../firebase/firestore/soondb';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 
 export const cancelPublicSaleControl = async (owner: string, params: Record<string, unknown>) => {
@@ -11,11 +11,11 @@ export const cancelPublicSaleControl = async (owner: string, params: Record<stri
     const token = await transaction.get<Token>(tokenDocRef);
 
     if (!token) {
-      throw throwInvalidArgument(WenError.invalid_params);
+      throw invalidArgument(WenError.invalid_params);
     }
 
     if (!token.coolDownEnd || dayjs().add(30, 's').isAfter(dayjs(token.coolDownEnd.toDate()))) {
-      throw throwInvalidArgument(WenError.no_token_public_sale);
+      throw invalidArgument(WenError.no_token_public_sale);
     }
 
     await assertIsGuardian(token.space, owner);

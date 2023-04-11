@@ -2,11 +2,11 @@ import { IndexerPluginClient } from '@iota/iota.js-next';
 import {
   COL,
   Network,
+  TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
   TransactionOrderType,
   TransactionType,
   TransactionValidationType,
-  TRANSACTION_AUTO_EXPIRY_MS,
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
@@ -16,7 +16,7 @@ import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { generateRandomAmount } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -27,7 +27,7 @@ export const importMintedTokenControl = async (owner: string, params: Record<str
     const existingTokenDocRef = soonDb().doc(`${COL.TOKEN}/${params.tokenId}`);
     const existingToken = await transaction.get(existingTokenDocRef);
     if (existingToken) {
-      throw throwInvalidArgument(WenError.token_already_exists_for_space);
+      throw invalidArgument(WenError.token_already_exists_for_space);
     }
 
     const wallet = (await WalletService.newWallet(params.network as Network)) as SmrWallet;
@@ -35,7 +35,7 @@ export const importMintedTokenControl = async (owner: string, params: Record<str
     const foundryResponse = await indexer.foundry(params.tokenId as string);
 
     if (isEmpty(foundryResponse.items)) {
-      throw throwInvalidArgument(WenError.token_does_not_exist);
+      throw invalidArgument(WenError.token_does_not_exist);
     }
 
     const targetAddress = await wallet.getNewIotaAddressDetails();

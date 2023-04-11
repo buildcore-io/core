@@ -1,12 +1,12 @@
 import { COL, Collection, SUB_COL, Token, Vote, WenError } from '@soonaverse/interfaces';
 import { soonDb } from '../firebase/firestore/soondb';
 import { hasStakedSoonTokens } from '../services/stake.service';
-import { throwInvalidArgument } from '../utils/error.utils';
+import { invalidArgument } from '../utils/error.utils';
 
 export const voteControl = async (owner: string, params: Record<string, unknown>) => {
   const hasStakedSoons = await hasStakedSoonTokens(owner);
   if (!hasStakedSoons) {
-    throw throwInvalidArgument(WenError.no_staked_soon);
+    throw invalidArgument(WenError.no_staked_soon);
   }
 
   const parentDocRef = soonDb().doc(`${params.collection}/${params.uid}`);
@@ -16,7 +16,7 @@ export const voteControl = async (owner: string, params: Record<string, unknown>
       params.collection === COL.COLLECTION
         ? WenError.collection_does_not_exists
         : WenError.token_does_not_exist;
-    throw throwInvalidArgument(errorMsg);
+    throw invalidArgument(errorMsg);
   }
 
   await soonDb().runTransaction(async (transaction) => {
