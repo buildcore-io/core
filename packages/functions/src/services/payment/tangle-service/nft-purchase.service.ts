@@ -4,22 +4,22 @@ import {
   CollectionStatus,
   CollectionType,
   DEFAULT_NETWORK,
+  MIN_AMOUNT_TO_TRANSFER,
   Member,
   MilestoneTransaction,
   MilestoneTransactionEntry,
-  MIN_AMOUNT_TO_TRANSFER,
   Network,
   Nft,
   NftAccess,
   NftStatus,
   Space,
   StakeType,
+  TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
   TransactionOrderType,
   TransactionType,
   TransactionUnlockType,
   TransactionValidationType,
-  TRANSACTION_AUTO_EXPIRY_MS,
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
@@ -34,7 +34,7 @@ import { getNftByMintingId } from '../../../utils/collection-minting-utils/nft.u
 import { getRestrictions } from '../../../utils/common.utils';
 import { isProdEnv } from '../../../utils/config.utils';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../../utils/error.utils';
+import { invalidArgument } from '../../../utils/error.utils';
 import { assertIpNotBlocked } from '../../../utils/ip.utils';
 import { assertValidationAsync } from '../../../utils/schema.utils';
 import { getSpace } from '../../../utils/space.utils';
@@ -163,15 +163,15 @@ const getCollection = async (id: string) => {
   const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${id}`);
   const collection = await collectionDocRef.get<Collection>();
   if (!collection) {
-    throw throwInvalidArgument(WenError.collection_does_not_exists);
+    throw invalidArgument(WenError.collection_does_not_exists);
   }
 
   if (!collection.approved) {
-    throw throwInvalidArgument(WenError.collection_must_be_approved);
+    throw invalidArgument(WenError.collection_must_be_approved);
   }
 
   if (![CollectionStatus.PRE_MINTED, CollectionStatus.MINTED].includes(collection.status!)) {
-    throw throwInvalidArgument(WenError.invalid_collection_status);
+    throw invalidArgument(WenError.invalid_collection_status);
   }
   return collection;
 };
@@ -188,11 +188,11 @@ const getNft = async (collection: Collection, nftId: string | undefined) => {
     if (nft) {
       return nft;
     }
-    throw throwInvalidArgument(WenError.nft_does_not_exists);
+    throw invalidArgument(WenError.nft_does_not_exists);
   }
 
   if (collection.type === CollectionType.CLASSIC) {
-    throw throwInvalidArgument(WenError.nft_does_not_exists);
+    throw invalidArgument(WenError.nft_does_not_exists);
   }
 
   const randomPosition = Math.floor(Math.random() * collection.total);
@@ -207,7 +207,7 @@ const getNft = async (collection: Collection, nftId: string | undefined) => {
     return nftBelow[0];
   }
 
-  throw throwInvalidArgument(WenError.no_more_nft_available_for_sale);
+  throw invalidArgument(WenError.no_more_nft_available_for_sale);
 };
 
 const getNftAbove = (collection: Collection, position: number) =>
@@ -242,23 +242,23 @@ const assertNftCanBePurchased = async (
   owner: string,
 ) => {
   if (collection.type !== CollectionType.CLASSIC && nftIdParam && !nft.owner) {
-    throw throwInvalidArgument(WenError.generated_spf_nft_must_be_sold_first);
+    throw invalidArgument(WenError.generated_spf_nft_must_be_sold_first);
   }
 
   if (!nft.availableFrom || dayjs(nft.availableFrom.toDate()).isAfter(dayjs())) {
-    throw throwInvalidArgument(WenError.nft_not_available_for_sale);
+    throw invalidArgument(WenError.nft_not_available_for_sale);
   }
 
   if (nft.owner === owner) {
-    throw throwInvalidArgument(WenError.you_cant_buy_your_nft);
+    throw invalidArgument(WenError.you_cant_buy_your_nft);
   }
 
   if (nft.locked) {
-    throw throwInvalidArgument(WenError.nft_locked_for_sale);
+    throw invalidArgument(WenError.nft_locked_for_sale);
   }
 
   if (nft.placeholderNft) {
-    throw throwInvalidArgument(WenError.nft_placeholder_cant_be_purchased);
+    throw invalidArgument(WenError.nft_placeholder_cant_be_purchased);
   }
 
   if (
@@ -266,7 +266,7 @@ const assertNftCanBePurchased = async (
     nft.saleAccess === NftAccess.MEMBERS &&
     !(nft.saleAccessMembers || []).includes(owner)
   ) {
-    throw throwInvalidArgument(WenError.you_are_not_allowed_member_to_purchase_this_nft);
+    throw invalidArgument(WenError.you_are_not_allowed_member_to_purchase_this_nft);
   }
 
   if (!nft.owner) {
@@ -298,7 +298,7 @@ const assertUserHasOnlyOneNft = async (collection: Collection, owner: string) =>
     .where('payload.previousOwnerEntity', '==', 'space')
     .get();
   if (snap.length) {
-    throw throwInvalidArgument(WenError.you_can_only_own_one_nft_from_collection);
+    throw invalidArgument(WenError.you_can_only_own_one_nft_from_collection);
   }
 };
 
@@ -313,7 +313,7 @@ const assertNoOrderInProgress = async (owner: string) => {
     .get();
 
   if (orderInProgress.length) {
-    throw throwInvalidArgument(WenError.you_have_currently_another_order_in_progress);
+    throw invalidArgument(WenError.you_have_currently_another_order_in_progress);
   }
 };
 
@@ -322,9 +322,9 @@ const assertCurrentOwnerAddress = (currentOwner: Space | Member, nft: Nft) => {
   const currentOwnerAddress = getAddress(currentOwner, network);
   if (isEmpty(currentOwnerAddress)) {
     if (nft.owner) {
-      throw throwInvalidArgument(WenError.member_must_have_validated_address);
+      throw invalidArgument(WenError.member_must_have_validated_address);
     }
-    throw throwInvalidArgument(WenError.space_must_have_validated_address);
+    throw invalidArgument(WenError.space_must_have_validated_address);
   }
 };
 
@@ -346,7 +346,7 @@ const lockNft = async (nftId: string, orderId: string) =>
     const docRef = soonDb().doc(`${COL.NFT}/${nftId}`);
     const nft = <Nft>await transaction.get(docRef);
     if (nft.locked) {
-      throw throwInvalidArgument(WenError.nft_locked_for_sale);
+      throw invalidArgument(WenError.nft_locked_for_sale);
     }
     transaction.update(docRef, { locked: true, lockedBy: orderId });
   });

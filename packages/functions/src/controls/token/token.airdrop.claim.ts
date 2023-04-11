@@ -2,13 +2,13 @@ import {
   COL,
   DEFAULT_NETWORK,
   Space,
+  TRANSACTION_AUTO_EXPIRY_MS,
   Token,
   TokenStatus,
   Transaction,
   TransactionOrderType,
   TransactionType,
   TransactionValidationType,
-  TRANSACTION_AUTO_EXPIRY_MS,
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
@@ -18,7 +18,7 @@ import { WalletService } from '../../services/wallet/wallet';
 import { getAddress } from '../../utils/address.utils';
 import { generateRandomAmount } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 import { assertTokenStatus, getUnclaimedDrops } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -29,7 +29,7 @@ export const claimAirdroppedTokenControl = async (
   const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${params.token}`);
   const token = await tokenDocRef.get<Token>();
   if (!token) {
-    throw throwInvalidArgument(WenError.invalid_params);
+    throw invalidArgument(WenError.invalid_params);
   }
 
   assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED]);
@@ -46,7 +46,7 @@ export const claimAirdroppedTokenControl = async (
   await soonDb().runTransaction(async (transaction) => {
     const claimableDrops = await getUnclaimedDrops(params.token as string, owner);
     if (isEmpty(claimableDrops)) {
-      throw throwInvalidArgument(WenError.no_airdrop_to_claim);
+      throw invalidArgument(WenError.no_airdrop_to_claim);
     }
     const quantity = claimableDrops.reduce((sum, act) => sum + act.count, 0);
 

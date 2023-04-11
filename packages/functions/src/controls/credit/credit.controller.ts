@@ -1,18 +1,18 @@
 import {
   COL,
   DEFAULT_NETWORK,
+  TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
   TransactionIgnoreWalletReason,
   TransactionOrderType,
   TransactionType,
   TransactionValidationType,
-  TRANSACTION_AUTO_EXPIRY_MS,
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { WalletService } from '../../services/wallet/wallet';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const creditUnrefundableControl = (owner: string, params: Record<string, unknown>) =>
@@ -24,10 +24,10 @@ export const creditUnrefundableControl = (owner: string, params: Record<string, 
       creditTtransaction?.ignoreWalletReason !==
       TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION
     ) {
-      throw throwInvalidArgument(WenError.can_not_credit_transaction);
+      throw invalidArgument(WenError.can_not_credit_transaction);
     }
     if (creditTtransaction.payload.unlockedBy) {
-      throw throwInvalidArgument(WenError.transaction_already_confirmed);
+      throw invalidArgument(WenError.transaction_already_confirmed);
     }
 
     const wallet = await WalletService.newWallet(creditTtransaction.network);

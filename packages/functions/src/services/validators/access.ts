@@ -1,6 +1,6 @@
 import { Access, COL, Nft, SUB_COL, TransactionAwardType, WenError } from '@soonaverse/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 
 export const assertHasAccess = async (
   spaceId: string,
@@ -15,13 +15,13 @@ export const assertHasAccess = async (
 
   if (access === Access.MEMBERS_ONLY) {
     if (!(await soonDb().doc(`${COL.SPACE}/${spaceId}/${SUB_COL.MEMBERS}/${member}`).get())) {
-      throw throwInvalidArgument(WenError.you_are_not_part_of_space);
+      throw invalidArgument(WenError.you_are_not_part_of_space);
     }
   }
 
   if (access === Access.GUARDIANS_ONLY) {
     if (!(await soonDb().doc(`${COL.SPACE}/${spaceId}/${SUB_COL.GUARDIANS}/${member}`).get())) {
-      throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
+      throw invalidArgument(WenError.you_are_not_guardian_of_space);
     }
   }
 
@@ -35,7 +35,7 @@ export const assertHasAccess = async (
         .limit(1)
         .get();
       if (!snapshot.length) {
-        throw throwInvalidArgument(WenError.you_dont_have_required_badge);
+        throw invalidArgument(WenError.you_dont_have_required_badge);
       }
     }
   }
@@ -56,7 +56,7 @@ export const assertHasAccess = async (
     }
 
     if (accessCollections.length !== includedCollections.length) {
-      throw throwInvalidArgument(WenError.you_dont_have_required_NFTs);
+      throw invalidArgument(WenError.you_dont_have_required_NFTs);
     }
   }
 };

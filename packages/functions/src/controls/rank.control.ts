@@ -3,13 +3,13 @@ import { set } from 'lodash';
 import { soonDb } from '../firebase/firestore/soondb';
 import { hasStakedSoonTokens } from '../services/stake.service';
 import { getRankingSpace } from '../utils/config.utils';
-import { throwInvalidArgument } from '../utils/error.utils';
+import { invalidArgument } from '../utils/error.utils';
 import { assertIsGuardian } from '../utils/token.utils';
 
 export const rankControl = async (owner: string, params: Record<string, unknown>) => {
   const hasStakedSoons = await hasStakedSoonTokens(owner);
   if (!hasStakedSoons) {
-    throw throwInvalidArgument(WenError.no_staked_soon);
+    throw invalidArgument(WenError.no_staked_soon);
   }
 
   const parentDocRef = soonDb().doc(`${params.collection}/${params.uid}`);
@@ -19,7 +19,7 @@ export const rankControl = async (owner: string, params: Record<string, unknown>
       params.collection === COL.COLLECTION
         ? WenError.collection_does_not_exists
         : WenError.token_does_not_exist;
-    throw throwInvalidArgument(errorMsg);
+    throw invalidArgument(errorMsg);
   }
 
   const rankingSpaceId = getRankingSpace(params.collection as COL);

@@ -3,17 +3,13 @@ import * as functions from 'firebase-functions/v2';
 import Joi, { AnySchema, ValidationResult } from 'joi';
 import { isStorageUrl } from '../services/joi/common';
 import { isProdEnv } from './config.utils';
-import { throwArgument } from './error.utils';
+import { invalidArgument } from './error.utils';
 import { fileExists } from './storage.utils';
 
 const assertValidation = (r: ValidationResult) => {
   if (r.error) {
     isProdEnv() && functions.logger.warn('invalid-argument', 'Invalid argument', { func: r.error });
-    throw throwArgument(
-      'invalid-argument',
-      WenError.invalid_params,
-      JSON.stringify(r.error.details),
-    );
+    throw invalidArgument(WenError.invalid_params, JSON.stringify(r.error.details));
   }
 };
 
@@ -28,7 +24,7 @@ export const assertValidationAsync = async (
     if (typeof value !== 'string' || !isStorageUrl(value) || (await fileExists(value))) {
       continue;
     }
-    throw throwArgument('invalid-argument', WenError.invalid_params, `${key} is an invalid url`);
+    throw invalidArgument(WenError.invalid_params, `${key} is an invalid url`);
   }
 };
 

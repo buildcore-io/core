@@ -1,7 +1,7 @@
 import { COL, Token, TokenStatus, WenError } from '@soonaverse/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
 import { getPublicSaleTimeFrames, shouldSetPublicSaleTimeFrames } from './common';
 
@@ -14,16 +14,16 @@ export const setTokenAvailableForSaleControl = async (
   await soonDb().runTransaction(async (transaction) => {
     const token = await transaction.get<Token>(tokenDocRef);
     if (!token) {
-      throw throwInvalidArgument(WenError.invalid_params);
+      throw invalidArgument(WenError.invalid_params);
     }
 
     assertTokenApproved(token);
     if (!token.public) {
-      throw throwInvalidArgument(WenError.token_must_be_public);
+      throw invalidArgument(WenError.token_must_be_public);
     }
 
     if (token.saleStartDate) {
-      throw throwInvalidArgument(WenError.public_sale_already_set);
+      throw invalidArgument(WenError.public_sale_already_set);
     }
 
     assertTokenStatus(token, [TokenStatus.AVAILABLE]);

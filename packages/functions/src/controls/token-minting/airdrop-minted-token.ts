@@ -3,6 +3,7 @@ import { HexHelper } from '@iota/util.js-next';
 import {
   COL,
   StakeType,
+  TRANSACTION_AUTO_EXPIRY_MS,
   Token,
   TokenDrop,
   TokenDropStatus,
@@ -11,7 +12,6 @@ import {
   TransactionOrderType,
   TransactionType,
   TransactionValidationType,
-  TRANSACTION_AUTO_EXPIRY_MS,
   WenError,
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
@@ -22,7 +22,7 @@ import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { packBasicOutput } from '../../utils/basic-output.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { TokenDropRequest } from '../token/token.airdrop';
@@ -33,7 +33,7 @@ export const airdropMintedTokenControl = async (owner: string, params: Record<st
     const token = await transaction.get<Token>(tokenDocRef);
 
     if (!token) {
-      throw throwInvalidArgument(WenError.invalid_params);
+      throw invalidArgument(WenError.invalid_params);
     }
     await assertIsGuardian(token.space, owner);
     assertTokenStatus(token, [TokenStatus.MINTED]);

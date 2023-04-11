@@ -21,7 +21,7 @@ import { soonDb } from '../../../../firebase/firestore/soondb';
 import { approveAwardParticipantSchema } from '../../../../runtime/firebase/award';
 import { getAddress } from '../../../../utils/address.utils';
 import { serverTime } from '../../../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../../../utils/error.utils';
+import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
@@ -66,16 +66,16 @@ export const approveAwardParticipant =
     const awardDocRef = soonDb().doc(`${COL.AWARD}/${awardId}`);
     const award = await transaction.get<Award>(awardDocRef);
     if (!award) {
-      throw throwInvalidArgument(WenError.award_does_not_exists);
+      throw invalidArgument(WenError.award_does_not_exists);
     }
     if (!award.approved) {
-      throw throwInvalidArgument(WenError.award_is_not_approved);
+      throw invalidArgument(WenError.award_is_not_approved);
     }
     if (award.issued === award.badge.total) {
-      throw throwInvalidArgument(WenError.no_more_available_badges);
+      throw invalidArgument(WenError.no_more_available_badges);
     }
     if (dayjs(award.endDate.toDate()).isBefore(dayjs())) {
-      throw throwInvalidArgument(WenError.award_is_no_longer_available);
+      throw invalidArgument(WenError.award_is_no_longer_available);
     }
     await assertIsGuardian(award.space, owner);
 

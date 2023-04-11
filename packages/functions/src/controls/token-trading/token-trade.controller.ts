@@ -1,7 +1,7 @@
 import { COL, SUB_COL, Token, TokenTradeOrderType, WenError } from '@soonaverse/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { createTokenTradeOrder } from '../../services/payment/tangle-service/token-trade.service';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 import { getTokenBySymbol } from '../../utils/token.utils';
 
 export const tradeTokenControl = async (
@@ -15,10 +15,10 @@ export const tradeTokenControl = async (
     const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token?.uid}`);
     token = await transaction.get<Token>(tokenDocRef);
     if (!token) {
-      throw throwInvalidArgument(WenError.token_does_not_exist);
+      throw invalidArgument(WenError.token_does_not_exist);
     }
     if (token.tradingDisabled) {
-      throw throwInvalidArgument(WenError.token_trading_disabled);
+      throw invalidArgument(WenError.token_trading_disabled);
     }
 
     const { tradeOrderTransaction, tradeOrder, distribution } = await createTokenTradeOrder(

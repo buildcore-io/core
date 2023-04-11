@@ -17,7 +17,7 @@ import { awardBageSchema, createAwardSchema } from '../../../../runtime/firebase
 import { downloadMediaAndPackCar } from '../../../../utils/car.utils';
 import { getBucket } from '../../../../utils/config.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../../../utils/error.utils';
+import { invalidArgument } from '../../../../utils/error.utils';
 import { migrateUriToSotrage, uriToUrl } from '../../../../utils/media.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsSpaceMember } from '../../../../utils/space.utils';
@@ -79,10 +79,10 @@ export const createAward = async (owner: string, params: Record<string, unknown>
 
   const token = await getTokenBySymbol(tokenSymbol as string);
   if (!token) {
-    throw throwInvalidArgument(WenError.token_does_not_exist);
+    throw invalidArgument(WenError.token_does_not_exist);
   }
   if (token.mintingData?.network !== params.network) {
-    throw throwInvalidArgument(WenError.invalid_network);
+    throw invalidArgument(WenError.invalid_network);
   }
   const awardUid = getRandomEthAddress();
   const badgeType = getBadgeType(token);
@@ -144,5 +144,5 @@ const getBadgeType = (token: Token) => {
   if (token.status === TokenStatus.MINTED) {
     return AwardBadgeType.NATIVE;
   }
-  throw throwInvalidArgument(WenError.token_in_invalid_status);
+  throw invalidArgument(WenError.token_in_invalid_status);
 };

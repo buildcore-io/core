@@ -1,13 +1,13 @@
 import { COL, Member, Nft, NftAvailable, NftStatus, WenError } from '@soonaverse/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 import { cleanupParams } from '../../utils/schema.utils';
 
 export const updateMemberControl = async (owner: string, params: Record<string, unknown>) => {
   const memberDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
   const member = await memberDocRef.get<Member>();
   if (!member) {
-    throw throwInvalidArgument(WenError.member_does_not_exists);
+    throw invalidArgument(WenError.member_does_not_exists);
   }
 
   if (params.name) {
@@ -17,7 +17,7 @@ export const updateMemberControl = async (owner: string, params: Record<string, 
       .where('uid', '!=', owner)
       .get();
     if (members.length > 0) {
-      throw throwInvalidArgument(WenError.member_username_exists);
+      throw invalidArgument(WenError.member_username_exists);
     }
   }
 
@@ -48,16 +48,16 @@ const getNft = async (owner: string, nftId: string) => {
   const nftDocRef = soonDb().doc(`${COL.NFT}/${nftId}`);
   const nft = await nftDocRef.get<Nft>();
   if (!nft) {
-    throw throwInvalidArgument(WenError.nft_does_not_exists);
+    throw invalidArgument(WenError.nft_does_not_exists);
   }
   if (nft.owner !== owner) {
-    throw throwInvalidArgument(WenError.you_must_be_the_owner_of_nft);
+    throw invalidArgument(WenError.you_must_be_the_owner_of_nft);
   }
   if (nft.status !== NftStatus.MINTED) {
-    throw throwInvalidArgument(WenError.nft_not_minted);
+    throw invalidArgument(WenError.nft_not_minted);
   }
   if (nft.available !== NftAvailable.UNAVAILABLE) {
-    throw throwInvalidArgument(WenError.nft_on_sale);
+    throw invalidArgument(WenError.nft_on_sale);
   }
   return nft;
 };

@@ -1,6 +1,6 @@
 import { COL, Nft, WenError } from '@soonaverse/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 
 export const updateUnsoldNftControl = async (owner: string, params: Record<string, unknown>) =>
@@ -8,16 +8,16 @@ export const updateUnsoldNftControl = async (owner: string, params: Record<strin
     const nftDocRef = soonDb().doc(`${COL.NFT}/${params.uid}`);
     const nft = await transaction.get<Nft>(nftDocRef);
     if (!nft) {
-      throw throwInvalidArgument(WenError.nft_does_not_exists);
+      throw invalidArgument(WenError.nft_does_not_exists);
     }
     if (nft.sold) {
-      throw throwInvalidArgument(WenError.nft_already_sold);
+      throw invalidArgument(WenError.nft_already_sold);
     }
     if (nft.placeholderNft) {
-      throw throwInvalidArgument(WenError.nft_placeholder_cant_be_updated);
+      throw invalidArgument(WenError.nft_placeholder_cant_be_updated);
     }
     if (nft.hidden) {
-      throw throwInvalidArgument(WenError.hidden_nft);
+      throw invalidArgument(WenError.hidden_nft);
     }
     await assertIsGuardian(nft.space, owner);
     transaction.update(nftDocRef, params);

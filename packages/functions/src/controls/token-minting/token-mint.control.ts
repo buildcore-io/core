@@ -3,13 +3,13 @@ import {
   COL,
   Member,
   Network,
+  TRANSACTION_AUTO_EXPIRY_MS,
   Token,
   TokenStatus,
   Transaction,
   TransactionOrderType,
   TransactionType,
   TransactionValidationType,
-  TRANSACTION_AUTO_EXPIRY_MS,
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
@@ -18,7 +18,7 @@ import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 import { createAliasOutput } from '../../utils/token-minting-utils/alias.utils';
 import {
   createFoundryOutput,
@@ -38,11 +38,11 @@ export const mintTokenControl = (owner: string, params: Record<string, unknown>)
     const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${params.token}`);
     const token = await transaction.get<Token>(tokenDocRef);
     if (!token) {
-      throw throwInvalidArgument(WenError.invalid_params);
+      throw invalidArgument(WenError.invalid_params);
     }
 
     if (token.coolDownEnd && dayjs().subtract(1, 'm').isBefore(dayjs(token.coolDownEnd.toDate()))) {
-      throw throwInvalidArgument(WenError.can_not_mint_in_pub_sale);
+      throw invalidArgument(WenError.can_not_mint_in_pub_sale);
     }
 
     assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED]);

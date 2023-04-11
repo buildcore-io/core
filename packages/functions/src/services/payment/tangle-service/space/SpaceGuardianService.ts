@@ -19,7 +19,7 @@ import dayjs from 'dayjs';
 import { soonDb } from '../../../../firebase/firestore/soondb';
 import { editSpaceMemberSchema } from '../../../../runtime/firebase/space';
 import { dateToTimestamp, serverTime } from '../../../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../../../utils/error.utils';
+import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
@@ -73,7 +73,7 @@ export const addRemoveGuardian = async (
     .doc(params.member as string)
     .get();
   if (!spaceMemberDoc) {
-    throw throwInvalidArgument(WenError.member_is_not_part_of_the_space);
+    throw invalidArgument(WenError.member_is_not_part_of_the_space);
   }
 
   const spaceGuardianMember = await spaceDocRef
@@ -81,9 +81,9 @@ export const addRemoveGuardian = async (
     .doc(params.member as string)
     .get();
   if (isAddGuardian && spaceGuardianMember) {
-    throw throwInvalidArgument(WenError.member_is_already_guardian_of_space);
+    throw invalidArgument(WenError.member_is_already_guardian_of_space);
   } else if (!isAddGuardian && !spaceGuardianMember) {
-    throw throwInvalidArgument(WenError.member_is_not_guardian_of_space);
+    throw invalidArgument(WenError.member_is_not_guardian_of_space);
   }
 
   const ongoingProposalSnap = await soonDb()
@@ -93,14 +93,14 @@ export const addRemoveGuardian = async (
     .get();
 
   if (ongoingProposalSnap.length) {
-    throw throwInvalidArgument(WenError.ongoing_proposal);
+    throw invalidArgument(WenError.ongoing_proposal);
   }
 
   if (!isAddGuardian) {
     await soonDb().runTransaction(async (transaction) => {
       const space = <Space>await transaction.get(spaceDocRef);
       if (space.totalGuardians < 2) {
-        throw throwInvalidArgument(WenError.at_least_one_guardian_must_be_in_the_space);
+        throw invalidArgument(WenError.at_least_one_guardian_must_be_in_the_space);
       }
     });
   }

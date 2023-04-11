@@ -8,11 +8,11 @@ import {
   Network,
   Nft,
   Space,
+  TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
   TransactionOrderType,
   TransactionType,
   TransactionValidationType,
-  TRANSACTION_AUTO_EXPIRY_MS,
   UnsoldMintingOptions,
   WenError,
 } from '@soonaverse/interfaces';
@@ -23,14 +23,14 @@ import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress, assertSpaceHasValidAddress } from '../../utils/address.utils';
 import {
+  EMPTY_NFT_ID,
   collectionToMetadata,
   createNftOutput,
-  EMPTY_NFT_ID,
   nftToMetadata,
 } from '../../utils/collection-minting-utils/nft.utils';
 import { isProdEnv } from '../../utils/config.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 import { createAliasOutput } from '../../utils/token-minting-utils/alias.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -49,29 +49,29 @@ export const mintCollectionOrderControl = async (
     const collection = await transaction.get<Collection>(collectionDocRef);
 
     if (!collection) {
-      throw throwInvalidArgument(WenError.collection_does_not_exists);
+      throw invalidArgument(WenError.collection_does_not_exists);
     }
 
     if (isProdEnv() && !collection.approved) {
-      throw throwInvalidArgument(WenError.collection_must_be_approved);
+      throw invalidArgument(WenError.collection_must_be_approved);
     }
 
     if (collection.status !== CollectionStatus.PRE_MINTED) {
-      throw throwInvalidArgument(WenError.invalid_collection_status);
+      throw invalidArgument(WenError.invalid_collection_status);
     }
 
     if (
       params.unsoldMintingOptions === UnsoldMintingOptions.SET_NEW_PRICE &&
       ![CollectionType.GENERATED, CollectionType.SFT].includes(collection.type)
     ) {
-      throw throwInvalidArgument(WenError.invalid_collection_status);
+      throw invalidArgument(WenError.invalid_collection_status);
     }
 
     if (
       params.unsoldMintingOptions === UnsoldMintingOptions.TAKE_OWNERSHIP &&
       collection.type !== CollectionType.CLASSIC
     ) {
-      throw throwInvalidArgument(WenError.invalid_collection_status);
+      throw invalidArgument(WenError.invalid_collection_status);
     }
 
     assertIsGuardian(collection.space, owner);
@@ -94,7 +94,7 @@ export const mintCollectionOrderControl = async (
       wallet.info,
     );
     if (!nftsStorageDeposit) {
-      throw throwInvalidArgument(WenError.no_nfts_to_mint);
+      throw invalidArgument(WenError.no_nfts_to_mint);
     }
     const collectionStorageDeposit = await getCollectionStorageDeposit(
       targetAddress,

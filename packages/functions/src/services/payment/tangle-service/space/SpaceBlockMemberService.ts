@@ -1,7 +1,7 @@
 import { COL, Space, SUB_COL, WenError } from '@soonaverse/interfaces';
 import { soonDb } from '../../../../firebase/firestore/soondb';
 import { editSpaceMemberSchema } from '../../../../runtime/firebase/space';
-import { throwInvalidArgument } from '../../../../utils/error.utils';
+import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { TransactionService } from '../../transaction-service';
@@ -63,24 +63,24 @@ export const getBlockMemberUpdateData = async (owner: string, spaceId: string, m
   const spaceMember = await spaceDocRef.collection(SUB_COL.MEMBERS).doc(member).get();
   const knockingMember = await spaceDocRef.collection(SUB_COL.KNOCKING_MEMBERS).doc(member).get();
   if (!spaceMember && !knockingMember) {
-    throw throwInvalidArgument(WenError.member_is_not_part_of_the_space);
+    throw invalidArgument(WenError.member_is_not_part_of_the_space);
   }
 
   const blockedMemberDocRef = spaceDocRef.collection(SUB_COL.BLOCKED_MEMBERS).doc(member);
   const blockedMemberDoc = await blockedMemberDocRef.get();
   if (blockedMemberDoc) {
-    throw throwInvalidArgument(WenError.member_is_already_blocked);
+    throw invalidArgument(WenError.member_is_already_blocked);
   }
 
   const space = <Space>await spaceDocRef.get();
   if (space.totalMembers === 1) {
-    throw throwInvalidArgument(WenError.at_least_one_member_must_be_in_the_space);
+    throw invalidArgument(WenError.at_least_one_member_must_be_in_the_space);
   }
 
   if (space.totalGuardians === 1) {
     const guardian = await spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member).get();
     if (guardian) {
-      throw throwInvalidArgument(WenError.at_least_one_guardian_must_be_in_the_space);
+      throw invalidArgument(WenError.at_least_one_guardian_must_be_in_the_space);
     }
   }
 

@@ -1,7 +1,7 @@
 import { COL, SpaceMember, SUB_COL, WenError } from '@soonaverse/interfaces';
 import { soonDb } from '../../../../firebase/firestore/soondb';
 import { editSpaceMemberSchema } from '../../../../runtime/firebase/space';
-import { throwInvalidArgument } from '../../../../utils/error.utils';
+import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { TransactionService } from '../../transaction-service';
@@ -49,7 +49,7 @@ export const acceptSpaceMember = async (owner: string, space: string, member: st
     .doc(member)
     .get<SpaceMember>();
   if (!knockingMember) {
-    throw throwInvalidArgument(WenError.member_did_not_request_to_join);
+    throw invalidArgument(WenError.member_did_not_request_to_join);
   }
 
   const spaceMember = {

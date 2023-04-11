@@ -2,13 +2,13 @@ import { HexHelper } from '@iota/util.js-next';
 import {
   COL,
   DEFAULT_NETWORK,
-  getNetworkPair,
   MAX_IOTA_AMOUNT,
   Member,
   MilestoneTransaction,
   MilestoneTransactionEntry,
   Network,
   SUB_COL,
+  TRANSACTION_MAX_EXPIRY_MS,
   Token,
   TokenDistribution,
   TokenStatus,
@@ -20,8 +20,8 @@ import {
   TransactionType,
   TransactionUnlockType,
   TransactionValidationType,
-  TRANSACTION_MAX_EXPIRY_MS,
   WenError,
+  getNetworkPair,
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
@@ -37,7 +37,7 @@ import { assertMemberHasValidAddress } from '../../../utils/address.utils';
 import { packBasicOutput } from '../../../utils/basic-output.utils';
 import { isProdEnv } from '../../../utils/config.utils';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../../utils/error.utils';
+import { invalidArgument } from '../../../utils/error.utils';
 import { assertIpNotBlocked } from '../../../utils/ip.utils';
 import { assertValidationAsync } from '../../../utils/schema.utils';
 import {
@@ -82,10 +82,10 @@ export class TangleTokenTradeService {
     const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token?.uid}`);
     token = await this.transactionService.get<Token>(tokenDocRef);
     if (!token) {
-      throw throwInvalidArgument(WenError.token_does_not_exist);
+      throw invalidArgument(WenError.token_does_not_exist);
     }
     if (token.tradingDisabled) {
-      throw throwInvalidArgument(WenError.token_trading_disabled);
+      throw invalidArgument(WenError.token_trading_disabled);
     }
 
     if (type !== TokenTradeOrderType.SELL || token.status !== TokenStatus.MINTED) {
@@ -105,7 +105,7 @@ export class TangleTokenTradeService {
     );
 
     if (!tradeOrderTransaction) {
-      throw throwInvalidArgument(WenError.invalid_params);
+      throw invalidArgument(WenError.invalid_params);
     }
 
     if (params.type === TokenTradeOrderType.SELL && token?.status === TokenStatus.MINTED) {
@@ -188,11 +188,11 @@ export const createTokenTradeOrder = async (
   const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(owner);
   const distribution = await transaction.get<TokenDistribution>(distributionDocRef);
   if (!distribution) {
-    throw throwInvalidArgument(WenError.invalid_params);
+    throw invalidArgument(WenError.invalid_params);
   }
   const tokensLeftForSale = (distribution.tokenOwned || 0) - (distribution.lockedForSale || 0);
   if (Number(count) > tokensLeftForSale) {
-    throw throwInvalidArgument(WenError.no_available_tokens_for_sale);
+    throw invalidArgument(WenError.no_available_tokens_for_sale);
   }
   const tradeOrder = <TokenTradeOrder>{
     uid: getRandomEthAddress(),

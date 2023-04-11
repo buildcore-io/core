@@ -1,12 +1,12 @@
 import { COL, Space, SUB_COL, WenError } from '@soonaverse/interfaces';
 import { soonDb } from '../firebase/firestore/soondb';
-import { throwInvalidArgument } from './error.utils';
+import { invalidArgument } from './error.utils';
 
 export const assertSpaceExists = async (spaceId: string) => {
   const spaceDocRef = soonDb().doc(`${COL.SPACE}/${spaceId}`);
   const space = await spaceDocRef.get<Space>();
   if (!space) {
-    throw throwInvalidArgument(WenError.space_does_not_exists);
+    throw invalidArgument(WenError.space_does_not_exists);
   }
 };
 
@@ -15,7 +15,7 @@ export const assertIsSpaceMember = async (space: string, member: string) => {
   const spaceMemberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(member);
   const spaceMember = await spaceMemberDocRef.get();
   if (!spaceMember) {
-    throw throwInvalidArgument(WenError.you_are_not_part_of_space);
+    throw invalidArgument(WenError.you_are_not_part_of_space);
   }
 };
 

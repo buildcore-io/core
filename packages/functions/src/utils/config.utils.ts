@@ -12,7 +12,7 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import { get, isEmpty } from 'lodash';
-import { throwInvalidArgument } from './error.utils';
+import { invalidArgument } from './error.utils';
 
 const getProjectId = () =>
   get(JSON.parse(process.env.FIREBASE_CONFIG || '{}'), 'projectId', 'soonaverse-dev');
@@ -41,7 +41,7 @@ export const getRankingSpace = (col: COL) => {
     case COL.COLLECTION:
       return RANK_CONFIG.collectionSpace;
     default:
-      throw throwInvalidArgument(WenError.invalid_params);
+      throw invalidArgument(WenError.invalid_params);
   }
 };
 
