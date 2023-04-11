@@ -11,14 +11,7 @@ import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import {
-  Award,
-  ProposalStartDateMin,
-  ProposalSubType,
-  ProposalType,
-  Space,
-  Token,
-} from '@soonaverse/interfaces';
+import { Award, ProposalStartDateMin, ProposalType, Space, Token } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
@@ -52,13 +45,8 @@ export class NewPage implements OnInit, OnDestroy {
   public startControl: FormControl = new FormControl('', Validators.required);
   public endControl: FormControl = new FormControl('', Validators.required);
   public typeControl: FormControl = new FormControl(ProposalType.NATIVE, Validators.required);
-  public subTypeControl: FormControl = new FormControl(
-    ProposalSubType.ONE_MEMBER_ONE_VOTE,
-    Validators.required,
-  );
   public votingAwardControl: FormControl = new FormControl([]);
   public additionalInfoControl: FormControl = new FormControl('', Validators.required);
-  public subTypes = ProposalSubType;
   // Questions / answers.
   public questions: FormArray;
   public proposalForm: FormGroup;
@@ -95,7 +83,6 @@ export class NewPage implements OnInit, OnDestroy {
     this.proposalForm = new FormGroup({
       space: this.spaceControl,
       type: this.typeControl,
-      subType: this.subTypeControl,
       name: this.nameControl,
       group: this.selectedGroupControl,
       start: this.startControl,
@@ -261,10 +248,6 @@ export class NewPage implements OnInit, OnDestroy {
       endDate: obj.end,
       onlyGuardians: !!(obj.group === TargetGroup.GUARDIANS),
     };
-
-    if (obj.type === ProposalType.NATIVE) {
-      obj.subType = ProposalSubType.ONE_MEMBER_ONE_VOTE;
-    }
 
     delete obj.start;
     delete obj.end;

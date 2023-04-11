@@ -8,9 +8,10 @@ import {
   NftStatus,
   TangleRequestType,
   Transaction,
+  TransactionOrderType,
   TransactionType,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
@@ -49,19 +50,18 @@ describe('Minted nft trading', () => {
     await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
 
     await wait(async () => {
-      const snap = await admin
-        .firestore()
+      const snap = await soonDb()
         .collection(COL.TRANSACTION)
         .where('member', '==', address.bech32)
         .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST)
-        .get();
-      return snap.size > 0 && snap.docs[0]?.data()?.payload?.walletReference?.confirmed;
+        .get<Transaction>();
+      return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
     });
 
     await helper.setAvailableForSale();
 
-    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${helper.nft?.collection}`);
-    let collection = <Collection>(await collectionDocRef.get()).data();
+    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${helper.nft?.collection}`);
+    let collection = <Collection>await collectionDocRef.get();
     expect(collection.nftsOnSale).toBe(1);
     expect(collection.nftsOnAuction).toBe(0);
 
@@ -75,28 +75,53 @@ describe('Minted nft trading', () => {
       },
     });
 
-    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${helper.nft?.uid}`);
+    const nftDocRef = soonDb().doc(`${COL.NFT}/${helper.nft?.uid}`);
     await wait(async () => {
-      const nft = <Nft>(await nftDocRef.get()).data();
+      const nft = <Nft>await nftDocRef.get();
       return nft.status === NftStatus.WITHDRAWN;
     });
 
     await wait(async () => {
-      const snap = await admin
-        .firestore()
+      const snap = await soonDb()
         .collection(COL.TRANSACTION)
         .where('member', '==', address.bech32)
         .where('type', '==', TransactionType.WITHDRAW_NFT)
-        .get();
-      return snap.size > 0 && snap.docs[0]?.data()?.payload?.walletReference?.confirmed;
+        .get<Transaction>();
+      return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
     });
 
     const indexer = new IndexerPluginClient(helper.walletService!.client);
     const nftOutputIds = await indexer.nfts({ addressBech32: address.bech32 });
     expect(nftOutputIds.items.length).toBe(1);
 
-    collection = <Collection>(await collectionDocRef.get()).data();
+    collection = <Collection>await collectionDocRef.get();
     expect(collection.nftsOnSale).toBe(0);
     expect(collection.nftsOnAuction).toBe(0);
+
+    const orders = await soonDb()
+      .collection(COL.TRANSACTION)
+      .where('payload.type', '==', TransactionOrderType.NFT_PURCHASE)
+      .where('payload.nft', '==', helper.nft!.uid)
+      .get<Transaction>();
+    for (const order of orders) {
+      expect(order.payload.restrictions.collection).toEqual({
+        access: collection.access,
+        accessAwards: collection.accessAwards || [],
+        accessCollections: collection.accessCollections || [],
+      });
+      expect(order.payload.restrictions.nft).toEqual({
+        saleAccess: helper.nft!.saleAccess || null,
+        saleAccessMembers: helper.nft!.saleAccessMembers || [],
+      });
+    }
+
+    const billPayments = await soonDb()
+      .collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .where('payload.nft', '==', helper.nft!.uid)
+      .get<Transaction>();
+    for (const billPayment of billPayments) {
+      expect(billPayment.payload.restrictions).toEqual(orders[0].payload.restrictions);
+    }
   });
 });

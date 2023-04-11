@@ -8,28 +8,29 @@ import {
   Network,
   Nft,
   Space,
+  TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
   TransactionOrderType,
   TransactionType,
   TransactionValidationType,
-  TRANSACTION_AUTO_EXPIRY_MS,
   UnsoldMintingOptions,
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { Database, TransactionRunner } from '../../database/Database';
+import { last } from 'lodash';
+import { getSnapshot, soonDb } from '../../firebase/firestore/soondb';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress, assertSpaceHasValidAddress } from '../../utils/address.utils';
 import {
+  EMPTY_NFT_ID,
   collectionToMetadata,
   createNftOutput,
-  EMPTY_NFT_ID,
   nftToMetadata,
 } from '../../utils/collection-minting-utils/nft.utils';
 import { isProdEnv } from '../../utils/config.utils';
-import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { dateToTimestamp } from '../../utils/dateTime.utils';
+import { invalidArgument } from '../../utils/error.utils';
 import { createAliasOutput } from '../../utils/token-minting-utils/alias.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -40,47 +41,47 @@ export const mintCollectionOrderControl = async (
 ) => {
   const network = params.network as Network;
 
-  const member = await Database.getById<Member>(COL.MEMBER, owner);
+  const member = await soonDb().doc(`${COL.MEMBER}/${owner}`).get<Member>();
   assertMemberHasValidAddress(member, network);
 
-  return await TransactionRunner.runTransaction(async (transaction) => {
-    const collection = await transaction.getById<Collection>(
-      COL.COLLECTION,
-      params.collection as string,
-    );
+  return await soonDb().runTransaction(async (transaction) => {
+    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${params.collection}`);
+    const collection = await transaction.get<Collection>(collectionDocRef);
 
     if (!collection) {
-      throw throwInvalidArgument(WenError.collection_does_not_exists);
+      throw invalidArgument(WenError.collection_does_not_exists);
     }
 
     if (isProdEnv() && !collection.approved) {
-      throw throwInvalidArgument(WenError.collection_must_be_approved);
+      throw invalidArgument(WenError.collection_must_be_approved);
     }
 
     if (collection.status !== CollectionStatus.PRE_MINTED) {
-      throw throwInvalidArgument(WenError.invalid_collection_status);
+      throw invalidArgument(WenError.invalid_collection_status);
     }
 
     if (
       params.unsoldMintingOptions === UnsoldMintingOptions.SET_NEW_PRICE &&
       ![CollectionType.GENERATED, CollectionType.SFT].includes(collection.type)
     ) {
-      throw throwInvalidArgument(WenError.invalid_collection_status);
+      throw invalidArgument(WenError.invalid_collection_status);
     }
 
     if (
       params.unsoldMintingOptions === UnsoldMintingOptions.TAKE_OWNERSHIP &&
       collection.type !== CollectionType.CLASSIC
     ) {
-      throw throwInvalidArgument(WenError.invalid_collection_status);
+      throw invalidArgument(WenError.invalid_collection_status);
     }
 
     assertIsGuardian(collection.space, owner);
 
-    const space = await Database.getById<Space>(COL.SPACE, collection.space);
+    const space = await soonDb().doc(`${COL.SPACE}/${collection.space}`).get<Space>();
     assertSpaceHasValidAddress(space, network);
 
-    const royaltySpace = await Database.getById<Space>(COL.SPACE, collection.royaltiesSpace);
+    const royaltySpace = await soonDb()
+      .doc(`${COL.SPACE}/${collection.royaltiesSpace}`)
+      .get<Space>();
     assertSpaceHasValidAddress(royaltySpace, network);
 
     const wallet = (await WalletService.newWallet(network)) as SmrWallet;
@@ -93,7 +94,7 @@ export const mintCollectionOrderControl = async (
       wallet.info,
     );
     if (!nftsStorageDeposit) {
-      throw throwInvalidArgument(WenError.no_nfts_to_mint);
+      throw invalidArgument(WenError.no_nfts_to_mint);
     }
     const collectionStorageDeposit = await getCollectionStorageDeposit(
       targetAddress,
@@ -113,9 +114,7 @@ export const mintCollectionOrderControl = async (
         amount: collectionStorageDeposit + nftsStorageDeposit + aliasStorageDeposit,
         targetAddress: targetAddress.bech32,
         validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
-        expiresOn: dateToTimestamp(
-          dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms'),
-        ),
+        expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
         reconciled: false,
         void: false,
         collection: collection.uid,
@@ -127,8 +126,8 @@ export const mintCollectionOrderControl = async (
         nftsToMint,
       },
     };
-
-    transaction.update({ col: COL.TRANSACTION, data: order, action: 'set' });
+    const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+    transaction.create(orderDocRef, order);
     return order;
   });
 };
@@ -141,10 +140,18 @@ const getNftsTotalStorageDeposit = async (
 ) => {
   let storageDeposit = 0;
   let nftsToMint = 0;
-  await Database.getManyPaginated<Nft>(COL.NFT, {
-    collection: collection.uid,
-    placeholderNft: false,
-  })(async (nfts) => {
+  let lastUid = '';
+  do {
+    const lastDoc = await getSnapshot(COL.NFT, lastUid);
+    const nfts = await soonDb()
+      .collection(COL.NFT)
+      .where('collection', '==', collection.uid)
+      .where('placeholderNft', '==', false)
+      .limit(500)
+      .startAfter(lastDoc)
+      .get<Nft>();
+    lastUid = last(nfts)?.uid || '';
+
     const promises = nfts.map(async (nft) => {
       if (unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD && !nft.sold) {
         return 0;
@@ -159,7 +166,8 @@ const getNftsTotalStorageDeposit = async (
     const amounts = await Promise.all(promises);
     storageDeposit += amounts.reduce((acc, act) => acc + act, 0);
     nftsToMint += amounts.filter((a) => a !== 0).length;
-  });
+  } while (lastUid);
+
   return { storageDeposit, nftsToMint };
 };
 

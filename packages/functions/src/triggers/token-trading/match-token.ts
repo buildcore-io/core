@@ -9,10 +9,9 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
-import { cloneDeep, isEmpty, last } from 'lodash';
-import admin from '../../admin.config';
-import { LastDocType } from '../../utils/common.utils';
-import { cOn, uOn } from '../../utils/dateTime.utils';
+import { cloneDeep, last } from 'lodash';
+import { IQuery, ITransaction } from '../../firebase/firestore/interfaces';
+import { getSnapshot, soonDb } from '../../firebase/firestore/soondb';
 import { matchBaseToken } from './match-base-token';
 import { matchMintedToken } from './match-minted-token';
 import { matchSimpleToken, updateSellLockAndDistribution } from './match-simple-token';
@@ -23,12 +22,9 @@ export interface Match {
   readonly buyerCreditId: string | undefined;
 }
 
-type Query = (
-  trade: TokenTradeOrder,
-  startAfter: LastDocType | undefined,
-) => admin.firestore.Query<admin.firestore.DocumentData>;
+type Query = (trade: TokenTradeOrder, startAfter: string) => Promise<IQuery>;
 type Matcher = (
-  transaction: admin.firestore.Transaction,
+  transaction: ITransaction,
   token: Token,
   buy: TokenTradeOrder,
   sell: TokenTradeOrder,
@@ -36,7 +32,7 @@ type Matcher = (
   triggeredBy: TokenTradeOrderType,
 ) => Promise<Match>;
 type PostMatchAction = (
-  transaction: admin.firestore.Transaction,
+  transaction: ITransaction,
   prevBuy: TokenTradeOrder,
   buy: TokenTradeOrder,
   prevSell: TokenTradeOrder,
@@ -46,38 +42,36 @@ type PostMatchAction = (
 export const TOKEN_TRADE_ORDER_FETCH_LIMIT = 20;
 
 export const matchTradeOrder = async (tradeOrder: TokenTradeOrder) => {
-  const token = <Token>(
-    (await admin.firestore().doc(`${COL.TOKEN}/${tradeOrder.token}`).get()).data()
-  );
+  const token = (await soonDb().doc(`${COL.TOKEN}/${tradeOrder.token}`).get<Token>())!;
 
   const query = getQuery(token);
   const matcher = getMatcher(token);
   const postMatchActions = getPostMatchActions(token);
 
-  let lastDoc: LastDocType | undefined = undefined;
+  let lastDocId = '';
   do {
-    lastDoc = await runTradeOrderMatching(
+    lastDocId = await runTradeOrderMatching(
       query,
       matcher,
       postMatchActions,
-      lastDoc,
+      lastDocId,
       token,
       tradeOrder.uid,
     );
-  } while (lastDoc);
+  } while (lastDocId);
 
   if (tradeOrder.type === TokenTradeOrderType.BUY) {
     do {
-      lastDoc = await runTradeOrderMatching(
+      lastDocId = await runTradeOrderMatching(
         query,
         matcher,
         postMatchActions,
-        lastDoc,
+        lastDocId,
         token,
         tradeOrder.uid,
         false,
       );
-    } while (lastDoc);
+    } while (lastDocId);
   }
 };
 
@@ -85,25 +79,25 @@ const runTradeOrderMatching = async (
   query: Query,
   matcher: Matcher,
   postMatchActions: PostMatchAction | undefined,
-  lastDoc: LastDocType | undefined,
+  lastDocId: string,
   token: Token,
   tradeOrderId: string,
   invertedPrice = true,
 ) =>
-  admin.firestore().runTransaction(async (transaction) => {
-    const tradeOrderDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${tradeOrderId}`);
-    const tradeOrder = <TokenTradeOrder>(await transaction.get(tradeOrderDocRef)).data();
+  soonDb().runTransaction(async (transaction) => {
+    const tradeOrderDocRef = soonDb().doc(`${COL.TOKEN_MARKET}/${tradeOrderId}`);
+    const tradeOrder = (await transaction.get<TokenTradeOrder>(tradeOrderDocRef))!;
     if (tradeOrder.status !== TokenTradeOrderStatus.ACTIVE) {
-      return;
+      return '';
     }
-    const docs = (await query(tradeOrder, lastDoc).get()).docs;
+    const docs = await (await query(tradeOrder, lastDocId)).get<TokenTradeOrder>();
     const trades = await getTradesSorted(transaction, docs);
 
     let update = cloneDeep(tradeOrder);
     for (const trade of trades) {
       const isSell = tradeOrder.type === TokenTradeOrderType.SELL;
-      const prevBuy = isSell ? trade : update;
-      const prevSell = isSell ? update : trade;
+      const prevBuy = isSell ? trade! : update;
+      const prevSell = isSell ? update : trade!;
       if ([prevBuy.status, prevSell.status].includes(TokenTradeOrderStatus.SETTLED)) {
         continue;
       }
@@ -129,21 +123,18 @@ const runTradeOrderMatching = async (
       }
       const sell = updateTrade(prevSell, purchase);
       const buy = updateTrade(prevBuy, purchase, buyerCreditId);
-      const docRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${trade.uid}`);
-      transaction.update(docRef, uOn(isSell ? buy : sell));
+      const docRef = soonDb().doc(`${COL.TOKEN_MARKET}/${trade!.uid}`);
+      transaction.update(docRef, isSell ? buy : sell);
 
       if (postMatchActions) {
         postMatchActions(transaction, prevBuy, buy, prevSell, sell);
       }
 
-      transaction.create(
-        admin.firestore().doc(`${COL.TOKEN_PURCHASE}/${purchase.uid}`),
-        cOn(purchase),
-      );
+      transaction.create(soonDb().doc(`${COL.TOKEN_PURCHASE}/${purchase.uid}`), purchase);
       update = isSell ? sell : buy;
     }
-    transaction.update(admin.firestore().doc(`${COL.TOKEN_MARKET}/${tradeOrder.uid}`), uOn(update));
-    return update.status === TokenTradeOrderStatus.SETTLED ? undefined : last(docs);
+    transaction.update(soonDb().doc(`${COL.TOKEN_MARKET}/${tradeOrder.uid}`), update);
+    return update.status === TokenTradeOrderStatus.SETTLED ? '' : last(docs)?.uid || '';
   });
 
 const updateTrade = (trade: TokenTradeOrder, purchase: TokenPurchase, creditTransactionId = '') => {
@@ -185,9 +176,9 @@ const getPostMatchActions = (token: Token) => {
   }
 };
 
-const getSimpleTokenQuery = (trade: TokenTradeOrder, startAfter: LastDocType | undefined) => {
-  let query = admin
-    .firestore()
+const getSimpleTokenQuery = async (trade: TokenTradeOrder, startAfter = '') => {
+  const lastDoc = await getSnapshot(COL.TOKEN_MARKET, startAfter);
+  return soonDb()
     .collection(COL.TOKEN_MARKET)
     .where(
       'type',
@@ -199,16 +190,13 @@ const getSimpleTokenQuery = (trade: TokenTradeOrder, startAfter: LastDocType | u
     .where('status', '==', TokenTradeOrderStatus.ACTIVE)
     .orderBy('price', trade.type === TokenTradeOrderType.BUY ? 'asc' : 'desc')
     .orderBy('createdOn')
+    .startAfter(lastDoc)
     .limit(TOKEN_TRADE_ORDER_FETCH_LIMIT);
-  if (startAfter) {
-    query = query.startAfter(startAfter);
-  }
-  return query;
 };
 
-const getBaseTokenTradeQuery = (trade: TokenTradeOrder, startAfter: LastDocType | undefined) => {
-  let query = admin
-    .firestore()
+const getBaseTokenTradeQuery = async (trade: TokenTradeOrder, startAfter = '') => {
+  const lastDoc = await getSnapshot(COL.TOKEN_MARKET, startAfter);
+  return soonDb()
     .collection(COL.TOKEN_MARKET)
     .where('sourceNetwork', '==', trade.targetNetwork)
     .where('token', '==', trade.token)
@@ -216,23 +204,20 @@ const getBaseTokenTradeQuery = (trade: TokenTradeOrder, startAfter: LastDocType 
     .where('status', '==', TokenTradeOrderStatus.ACTIVE)
     .orderBy('price', trade.type === TokenTradeOrderType.BUY ? 'asc' : 'desc')
     .orderBy('createdOn')
+    .startAfter(lastDoc)
     .limit(TOKEN_TRADE_ORDER_FETCH_LIMIT);
-  if (startAfter) {
-    query = query.startAfter(startAfter);
-  }
-  return query;
 };
 
-const getTradesSorted = async (
-  transaction: admin.firestore.Transaction,
-  docs: admin.firestore.QueryDocumentSnapshot<admin.firestore.DocumentData>[],
-) => {
-  const trades = isEmpty(docs)
-    ? []
-    : (await transaction.getAll(...docs.map((d) => d.ref))).map((d) => <TokenTradeOrder>d.data());
+const getTradesSorted = async (transaction: ITransaction, unsortedTrades: TokenTradeOrder[]) => {
+  const unsortedTradesDocs = unsortedTrades.map((ut) =>
+    soonDb().doc(`${COL.TOKEN_MARKET}/${ut.uid}`),
+  );
+  const trades = await transaction.getAll<TokenTradeOrder>(...unsortedTradesDocs);
   return trades.sort((a, b) => {
-    const price = a.type === TokenTradeOrderType.SELL ? a.price - b.price : b.price - a.price;
-    const createdOn = dayjs(a.createdOn?.toDate()).isBefore(dayjs(b.createdOn?.toDate())) ? -1 : 1;
+    const price = a?.type === TokenTradeOrderType.SELL ? a.price - b!.price : b!.price - a!.price;
+    const createdOn = dayjs(a!.createdOn?.toDate()).isBefore(dayjs(b!.createdOn?.toDate()))
+      ? -1
+      : 1;
     return price || createdOn;
   });
 };

@@ -1,7 +1,8 @@
-import { WenError, WEN_FUNC } from '@soonaverse/interfaces';
-import { createMember, updateMember } from '../../src/controls/member.control';
+import { COL, Nft, NftAvailable, NftStatus, WenError, WEN_FUNC } from '@soonaverse/interfaces';
+import { soonDb } from '../../src/firebase/firestore/soondb';
+import { createMember, updateMember } from '../../src/runtime/firebase/member';
 import * as wallet from '../../src/utils/wallet.utils';
-import { testEnv } from '../../test/set-up';
+import { MEDIA, testEnv } from '../../test/set-up';
 import { expectThrow, mockWalletReturnValue } from './common';
 
 let walletSpy: any;
@@ -9,43 +10,10 @@ let walletSpy: any;
 describe('MemberController: ' + WEN_FUNC.cMemberNotExists, () => {
   it('successfully create member', async () => {
     const dummyAddress = wallet.getRandomEthAddress();
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    mockWalletReturnValue(walletSpy, dummyAddress, {});
-
     const member = await testEnv.wrap(createMember)(dummyAddress);
     expect(member?.uid).toEqual(dummyAddress.toLowerCase());
     expect(member?.createdOn).toBeDefined();
     expect(member?.updatedOn).toBeDefined();
-    walletSpy.mockRestore();
-  });
-
-  it('address not provided', async () => {
-    await expectThrow(testEnv.wrap(createMember)({}), WenError.address_must_be_provided.key);
-  });
-
-  it('address is too short', async () => {
-    const dummyAddress = '0xdasdsadasd';
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    mockWalletReturnValue(walletSpy, dummyAddress, {});
-    await expectThrow(
-      testEnv.wrap(createMember)(dummyAddress),
-      WenError.address_must_be_provided.key,
-    );
-  });
-
-  it('address is too long', async () => {
-    const dummyAddress =
-      '0xdasdsadasdadasdaskljasklsdfldsflksdfhlsdfhlksdflksdflksdhflkasdasdsadasdasdasdsadsadsadsadsa' +
-      'sadasdadasdaskljasklsdfldsflksdfhlsdfhlksdflksdflksdhflkasdasdsadasdasdasdsadsadsadsadsadsadsa' +
-      'sadasdadasdaskljasklsdfldsflksdfhlsdfhlksdflksdflksdhflkasdasdsadasdasdasdsadsadsadsadsadsadsa' +
-      'sadasdadasdaskljasklsdfldsflksdfhlsdfhlksdflksdflksdhflkasdasdsadasdasdasdsadsadsadsadsadsadsa' +
-      'sadasdadasdaskljasklsdfldsflksdfhlsdfhlksdflksdflksdhflkasdasdsadasdasdasdsadsadsadsadsadsadsa';
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    mockWalletReturnValue(walletSpy, dummyAddress, {});
-    await expectThrow(
-      testEnv.wrap(createMember)(dummyAddress),
-      WenError.address_must_be_provided.key,
-    );
   });
 });
 
@@ -63,7 +31,6 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
 
   it('successfully update member', async () => {
     const updateParams = {
-      uid: dummyAddress,
       name: wallet.getRandomEthAddress(),
       about: 'He rocks',
       discord: 'adamkun#1233',
@@ -81,7 +48,7 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
   });
 
   it('fail to update member username exists already', async () => {
-    const updateParams = { uid: dummyAddress, name: 'abcd' + Math.floor(Math.random() * 1000) };
+    const updateParams = { name: 'abcd' + Math.floor(Math.random() * 1000) };
     mockWalletReturnValue(walletSpy, dummyAddress, updateParams);
     const uMember = await testEnv.wrap(updateMember)({});
     expect(uMember?.name).toEqual(updateParams.name);
@@ -91,18 +58,63 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
     const cMember = await testEnv.wrap(createMember)(dummyAddress2);
     expect(cMember?.uid).toEqual(dummyAddress2.toLowerCase());
 
-    mockWalletReturnValue(walletSpy, dummyAddress2, {
-      uid: dummyAddress2,
-      name: updateParams.name,
-    });
+    mockWalletReturnValue(walletSpy, dummyAddress2, { name: updateParams.name });
     await expectThrow(testEnv.wrap(updateMember)({}), WenError.member_username_exists.key);
   });
 
   it('unset discord', async () => {
-    const updateParams = { uid: dummyAddress, discord: undefined };
+    const updateParams = { discord: undefined };
     mockWalletReturnValue(walletSpy, dummyAddress, updateParams);
     const uMember = await testEnv.wrap(updateMember)({});
     expect(uMember?.discord).toEqual(null);
     walletSpy.mockRestore();
+  });
+
+  it('Should set nft as avatar, then unset', async () => {
+    const nft = {
+      uid: wallet.getRandomEthAddress(),
+      media: MEDIA,
+      owner: dummyAddress,
+      status: NftStatus.MINTED,
+      available: NftAvailable.UNAVAILABLE,
+    };
+    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+    await nftDocRef.create(nft);
+    const updateParams = { avatarNft: nft.uid };
+    mockWalletReturnValue(walletSpy, dummyAddress, updateParams);
+    let uMember = await testEnv.wrap(updateMember)({});
+    expect(uMember.avatarNft).toBe(nft.uid);
+    expect(uMember.avatar).toBe(MEDIA);
+
+    let nftData = await nftDocRef.get<Nft>();
+    expect(nftData?.setAsAvatar).toBe(true);
+
+    mockWalletReturnValue(walletSpy, dummyAddress, { avatarNft: undefined });
+    uMember = await testEnv.wrap(updateMember)({});
+    expect(uMember.avatarNft).toBeNull();
+    expect(uMember.avatar).toBeNull();
+
+    nftData = await nftDocRef.get();
+    expect(nftData?.setAsAvatar).toBe(false);
+  });
+
+  it('Should throw, invalid nft not nft owner', async () => {
+    mockWalletReturnValue(walletSpy, dummyAddress, { avatarNft: wallet.getRandomEthAddress() });
+    await expectThrow(testEnv.wrap(updateMember)({}), WenError.nft_does_not_exists.key);
+
+    const nft = { uid: wallet.getRandomEthAddress(), media: MEDIA };
+    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+
+    await nftDocRef.create(nft);
+    mockWalletReturnValue(walletSpy, dummyAddress, { avatarNft: nft.uid });
+    await expectThrow(testEnv.wrap(updateMember)({}), WenError.you_must_be_the_owner_of_nft.key);
+
+    await nftDocRef.update({ status: NftStatus.WITHDRAWN, owner: dummyAddress });
+    mockWalletReturnValue(walletSpy, dummyAddress, { avatarNft: nft.uid });
+    await expectThrow(testEnv.wrap(updateMember)({}), WenError.nft_not_minted.key);
+
+    await nftDocRef.update({ status: NftStatus.MINTED, available: NftAvailable.AUCTION });
+    mockWalletReturnValue(walletSpy, dummyAddress, { avatarNft: nft.uid });
+    await expectThrow(testEnv.wrap(updateMember)({}), WenError.nft_on_sale.key);
   });
 });

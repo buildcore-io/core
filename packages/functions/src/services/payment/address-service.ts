@@ -9,8 +9,8 @@ import {
   TransactionOrder,
   TransactionType,
 } from '@soonaverse/interfaces';
-import admin, { arrayUnion } from '../../admin.config';
-import { Database, TransactionRunner } from '../../database/Database';
+import { last } from 'lodash';
+import { getSnapshot, soonDb } from '../../firebase/firestore/soondb';
 import { getAddress } from '../../utils/address.utils';
 import { TransactionMatch, TransactionService } from './transaction-service';
 
@@ -44,44 +44,51 @@ export class AddressService {
   private async setValidatedAddress(credit: Transaction, type: Entity): Promise<void> {
     const collection = type === Entity.MEMBER ? COL.MEMBER : COL.SPACE;
     const id = type === Entity.MEMBER ? credit.member : credit.space;
-    const ref = admin.firestore().doc(`${collection}/${id}`);
-    const docData = (await ref.get()).data();
+    const ref = soonDb().doc(`${collection}/${id}`);
+    const docData = await ref.get<Record<string, unknown>>();
     const network = credit.network || DEFAULT_NETWORK;
     const currentAddress = getAddress(docData, network);
     const data = { [`validatedAddress.${network}`]: credit.payload.targetAddress };
     if (currentAddress) {
-      data.prevValidatedAddresses = arrayUnion(currentAddress);
+      data.prevValidatedAddresses = soonDb().arrayUnion(currentAddress);
     }
-    this.transactionService.updates.push({ ref, data, action: 'update' });
+    this.transactionService.push({ ref, data, action: 'update' });
   }
 }
 
-const claimBadges = async (member: string, memberAddress: string, network: Network) =>
-  Database.getManyPaginated<Transaction>(COL.TRANSACTION, {
-    network,
-    type: TransactionType.AWARD,
-    member,
-    ignoreWallet: true,
-    'payload.type': TransactionAwardType.BADGE,
-  })(async (data) => updateBadgeTransactions(data, memberAddress));
+const claimBadges = async (member: string, memberAddress: string, network: Network) => {
+  let lastDocId = '';
+  do {
+    const lastDoc = await getSnapshot(COL.TRANSACTION, lastDocId);
+    const snap = await soonDb()
+      .collection(COL.TRANSACTION)
+      .where('network', '==', network)
+      .where('type', '==', TransactionType.AWARD)
+      .where('member', '==', member)
+      .where('ignoreWallet', '==', true)
+      .where('payload.type', '==', TransactionAwardType.BADGE)
+      .limit(500)
+      .startAfter(lastDoc)
+      .get<Transaction>();
+    lastDocId = last(snap)?.uid || '';
 
-const updateBadgeTransactions = async (badgeTransactions: Transaction[], memberAddress: string) => {
-  const promises = badgeTransactions.map((badgeTransaction) =>
-    updateBadgeTransaction(badgeTransaction.uid, memberAddress),
-  );
-  await Promise.all(promises);
+    const promises = snap.map((badgeTransaction) =>
+      updateBadgeTransaction(badgeTransaction.uid, memberAddress),
+    );
+    await Promise.all(promises);
+  } while (lastDocId);
 };
 
 const updateBadgeTransaction = async (transactionId: string, memberAddress: string) =>
-  TransactionRunner.runTransaction(async (transaction) => {
-    const badge = await transaction.getById<Transaction>(COL.TRANSACTION, transactionId);
+  soonDb().runTransaction(async (transaction) => {
+    const badgeDocRef = soonDb().doc(`${COL.TRANSACTION}/${transactionId}`);
+    const badge = await transaction.get<Transaction>(badgeDocRef);
     if (badge?.ignoreWallet) {
       const data = {
-        uid: transactionId,
         ignoreWallet: false,
         'payload.targetAddress': memberAddress,
         shouldRetry: true,
       };
-      transaction.update({ col: COL.TRANSACTION, data, action: 'update' });
+      transaction.update(badgeDocRef, data);
     }
   });

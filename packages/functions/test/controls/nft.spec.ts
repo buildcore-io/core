@@ -6,13 +6,15 @@ import {
   Collection,
   CollectionType,
   MIN_IOTA_AMOUNT,
+  Nft,
+  NftAccess,
   NftStatus,
   Space,
   WenError,
   WEN_FUNC,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { createCollection } from '../../src/runtime/firebase/collection/index';
 import * as wallet from '../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../set-up';
@@ -41,6 +43,31 @@ describe('Nft controll: ' + WEN_FUNC.cCollection, () => {
     expect(cNft?.createdOn).toBeDefined();
     expect(cNft?.updatedOn).toBeDefined();
     expect(cNft?.status).toBe(NftStatus.PRE_MINTED);
+  });
+
+  it('successfully create NFT with sale access', async () => {
+    const nft = dummyNft(collection.uid, '', [member]);
+    mockWalletReturnValue(walletSpy, member, nft);
+    const cNft = await testEnv.wrap(createNft)({});
+
+    expect(cNft?.saleAccessMembers).toEqual([member]);
+    expect(cNft?.saleAccess).toBe(NftAccess.MEMBERS);
+    expect(cNft?.status).toBe(NftStatus.PRE_MINTED);
+
+    const nfts = [
+      dummyNft(collection.uid, '', [member]),
+      dummyNft(collection.uid, '', [member]),
+      dummyNft(collection.uid),
+    ];
+    mockWalletReturnValue(walletSpy, member, nfts);
+    const cBatchNft = await testEnv.wrap(createBatchNft)({});
+    expect(cBatchNft?.length).toBe(3);
+
+    for (let i = 0; i < nfts.length; ++i) {
+      const docRef = soonDb().doc(`${COL.NFT}/${cBatchNft[i]}`);
+      const nft = <Nft>await docRef.get();
+      expect(nft.saleAccessMembers).toEqual(i === nfts.length - 1 ? [] : [member]);
+    }
   });
 
   it('successfully create NFT', async () => {
@@ -118,21 +145,18 @@ describe('Nft controll: ' + WEN_FUNC.updateUnsoldNft, () => {
 
     mockWalletReturnValue(walletSpy, member, { uid: nft.uid, price: 50 * MIN_IOTA_AMOUNT });
 
-    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ sold: true });
+    await soonDb().doc(`${COL.NFT}/${nft.uid}`).update({ sold: true });
     await expectThrow(testEnv.wrap(updateUnsoldNft)({}), WenError.nft_already_sold.key);
 
-    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ hidden: true, sold: false });
+    await soonDb().doc(`${COL.NFT}/${nft.uid}`).update({ hidden: true, sold: false });
     await expectThrow(testEnv.wrap(updateUnsoldNft)({}), WenError.hidden_nft.key);
 
-    await admin
-      .firestore()
-      .doc(`${COL.NFT}/${nft.uid}`)
-      .update({ placeholderNft: true, hidden: false });
+    await soonDb().doc(`${COL.NFT}/${nft.uid}`).update({ placeholderNft: true, hidden: false });
     await expectThrow(
       testEnv.wrap(updateUnsoldNft)({}),
       WenError.nft_placeholder_cant_be_updated.key,
     );
-    await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).update({ placeholderNft: false });
+    await soonDb().doc(`${COL.NFT}/${nft.uid}`).update({ placeholderNft: false });
 
     const tmpMember = await createMember(walletSpy);
     mockWalletReturnValue(walletSpy, tmpMember, { uid: nft.uid, price: 50 * MIN_IOTA_AMOUNT });
@@ -157,12 +181,13 @@ const dummyCollection = (space: Space) => ({
   price: 10 * 1000 * 1000,
 });
 
-const dummyNft = (collection: string, description = 'babba') => ({
+const dummyNft = (collection: string, description = 'babba', saleAccessMembers: string[] = []) => ({
   name: 'Collection A',
   description,
   collection,
   availableFrom: dayjs().add(1, 'hour').toDate(),
   price: 10 * 1000 * 1000,
+  saleAccessMembers,
 });
 
 // TODO test invalid royalty amount

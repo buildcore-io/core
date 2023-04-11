@@ -2,19 +2,19 @@ import {
   Award,
   AwardBadgeType,
   COL,
+  TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
   TransactionOrderType,
   TransactionType,
   TransactionValidationType,
-  TRANSACTION_AUTO_EXPIRY_MS,
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
-import admin from '../../../../admin.config';
+import { soonDb } from '../../../../firebase/firestore/soondb';
 import { uidSchema } from '../../../../runtime/firebase/common';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../../../utils/error.utils';
+import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
@@ -30,8 +30,8 @@ export class AwardFundService {
 
     const award = await getAwardForFunding(owner, request.uid as string);
     const order = await createAwardFundOrder(owner, award);
-    const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
-    this.transactionService.updates.push({ ref: orderDocRef, data: order, action: 'set' });
+    const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+    this.transactionService.push({ ref: orderDocRef, data: order, action: 'set' });
 
     const response = {
       amount: order.payload.amount,
@@ -79,19 +79,19 @@ export const createAwardFundOrder = async (owner: string, award: Award) => {
 };
 
 export const getAwardForFunding = async (owner: string, awardId: string) => {
-  const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${awardId}`);
-  const award = <Award | undefined>(await awardDocRef.get()).data();
+  const awardDocRef = soonDb().doc(`${COL.AWARD}/${awardId}`);
+  const award = await awardDocRef.get<Award>();
 
   if (!award) {
-    throw throwInvalidArgument(WenError.award_does_not_exists);
+    throw invalidArgument(WenError.award_does_not_exists);
   }
 
   if (award.funded) {
-    throw throwInvalidArgument(WenError.award_is_already_approved);
+    throw invalidArgument(WenError.award_is_already_approved);
   }
 
   if (award.isLegacy) {
-    throw throwInvalidArgument(WenError.legacy_award);
+    throw invalidArgument(WenError.legacy_award);
   }
 
   await assertIsGuardian(award.space, owner);

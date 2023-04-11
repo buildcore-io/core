@@ -10,7 +10,7 @@ import {
   Transaction,
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
@@ -58,16 +58,13 @@ describe('Stake reward test test', () => {
           },
         },
       });
-      await admin
-        .firestore()
-        .doc(`${COL.MNEMONIC}/${tmp.bech32}`)
-        .update({ consumedOutputIds: [] });
+      await soonDb().doc(`${COL.MNEMONIC}/${tmp.bech32}`).update({ consumedOutputIds: [] });
 
       await wait(async () => {
-        const distributionDocRef = admin
-          .firestore()
-          .doc(`${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${tmp.bech32}`);
-        const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+        const distributionDocRef = soonDb().doc(
+          `${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${tmp.bech32}`,
+        );
+        const distribution = <TokenDistribution>await distributionDocRef.get();
         return (distribution?.stakes || {})[type]?.value === 200;
       });
     },

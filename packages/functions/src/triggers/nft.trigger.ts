@@ -1,9 +1,8 @@
 import { COL, Collection, MediaStatus, Nft, NftAvailable, WEN_FUNC } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
-import admin, { inc } from '../admin.config';
+import { soonDb } from '../firebase/firestore/soondb';
 import { scale } from '../scale.settings';
 import { downloadMediaAndPackCar, nftToIpfsMetadata } from '../utils/car.utils';
-import { uOn } from '../utils/dateTime.utils';
 
 const getNftAvailability = (nft: Nft | undefined) => {
   if (!nft || nft.placeholderNft) {
@@ -45,16 +44,14 @@ export const nftWrite = functions
       );
       const availableNfts = getAvailableNftsChange(prevAvailability, currAvailability, prev?.owner);
 
-      const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${curr.collection}`);
-      await collectionDocRef.update(
-        uOn({
-          nftsOnSale: inc(nftsOnSale),
-          nftsOnAuction: inc(nftsOnAuction),
-          availableNfts: inc(availableNfts),
-        }),
-      );
+      const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${curr.collection}`);
+      await collectionDocRef.update({
+        nftsOnSale: soonDb().inc(nftsOnSale),
+        nftsOnAuction: soonDb().inc(nftsOnAuction),
+        availableNfts: soonDb().inc(availableNfts),
+      });
 
-      await change.after.ref.update(uOn({ available: currAvailability }));
+      await change.after.ref.update({ available: currAvailability });
     }
 
     if (prev?.mediaStatus !== curr.mediaStatus && curr.mediaStatus === MediaStatus.PREPARE_IPFS) {
@@ -63,28 +60,25 @@ export const nftWrite = functions
   });
 
 const prepareNftMedia = async (nft: Nft) => {
-  const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${nft.collection}`);
-  const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
-  const batch = admin.firestore().batch();
+  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nft.collection}`);
+  const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+  const batch = soonDb().batch();
 
   if (nft.ipfsRoot) {
-    batch.update(nftDocRef, uOn({ mediaStatus: MediaStatus.PENDING_UPLOAD }));
+    batch.update(nftDocRef, { mediaStatus: MediaStatus.PENDING_UPLOAD });
   } else {
-    const collection = <Collection>(await collectionDocRef.get()).data();
+    const collection = (await collectionDocRef.get<Collection>())!;
     const metadata = nftToIpfsMetadata(collection, nft);
     const ipfs = await downloadMediaAndPackCar(nft.uid, nft.media, metadata);
-    batch.update(
-      nftDocRef,
-      uOn({
-        mediaStatus: MediaStatus.PENDING_UPLOAD,
-        ipfsMedia: ipfs.ipfsMedia,
-        ipfsMetadata: ipfs.ipfsMetadata,
-        ipfsRoot: ipfs.ipfsRoot,
-      }),
-    );
+    batch.update(nftDocRef, {
+      mediaStatus: MediaStatus.PENDING_UPLOAD,
+      ipfsMedia: ipfs.ipfsMedia,
+      ipfsMetadata: ipfs.ipfsMetadata,
+      ipfsRoot: ipfs.ipfsRoot,
+    });
   }
 
-  batch.update(collectionDocRef, uOn({ 'mintingData.nftMediaToPrepare': inc(-1) }));
+  batch.update(collectionDocRef, { 'mintingData.nftMediaToPrepare': soonDb().inc(-1) });
   await batch.commit();
 };
 

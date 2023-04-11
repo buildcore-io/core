@@ -7,7 +7,6 @@ import {
   StakeRewardStatus,
   StakeType,
   SUB_COL,
-  Timestamp,
   Token,
   TokenDistribution,
   TokenDrop,
@@ -17,25 +16,23 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { isEmpty, last } from 'lodash';
-import admin, { inc } from '../admin.config';
-import { LastDocType } from '../utils/common.utils';
-import { cOn, dateToTimestamp, uOn } from '../utils/dateTime.utils';
+import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
+import { serverTime } from '../utils/dateTime.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
-
 export const stakeRewardCronTask = async () => {
   const stakeRewards = await getDueStakeRewards();
 
   for (const stakeReward of stakeRewards) {
-    const stakeRewardDocRef = admin.firestore().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
-    await stakeRewardDocRef.update(uOn({ status: StakeRewardStatus.PROCESSED }));
+    const stakeRewardDocRef = soonDb().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+    await stakeRewardDocRef.update({ status: StakeRewardStatus.PROCESSED });
     try {
       const { totalAirdropped, totalStaked } = await executeStakeRewardDistribution(stakeReward);
-      await stakeRewardDocRef.update(uOn({ totalStaked, totalAirdropped }));
+      await stakeRewardDocRef.update({ totalStaked, totalAirdropped });
     } catch (error) {
       functions.logger.error('Stake reward error', stakeReward.uid, error);
-      await stakeRewardDocRef.update(uOn({ status: StakeRewardStatus.ERROR }));
+      await stakeRewardDocRef.update({ status: StakeRewardStatus.ERROR });
     }
   }
 };
@@ -43,97 +40,53 @@ export const stakeRewardCronTask = async () => {
 const executeStakeRewardDistribution = async (stakeReward: StakeReward) => {
   const stakedPerMember = await getStakedPerMember(stakeReward);
   if (isEmpty(stakedPerMember)) {
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`)
-      .update(uOn({ status: StakeRewardStatus.PROCESSED_NO_STAKES }));
+      .update({ status: StakeRewardStatus.PROCESSED_NO_STAKES });
     return { totalStaked: 0, totalAirdropped: 0 };
   }
 
   const totalStaked = Object.values(stakedPerMember).reduce((acc, act) => acc + act, 0);
 
-  const token = <Token>(
-    (await admin.firestore().doc(`${COL.TOKEN}/${stakeReward.token}`).get()).data()
-  );
+  const token = <Token>await soonDb().doc(`${COL.TOKEN}/${stakeReward.token}`).get();
   const totalAirdropped = await createAirdrops(token, stakeReward, totalStaked, stakedPerMember);
   return { totalStaked, totalAirdropped };
 };
 
-// const STAKE_QUERY_LIMT = 1000;
 export const getStakedPerMember = async (stakeReward: StakeReward) => {
   const stakedPerMember: { [key: string]: number } = {};
-  let lastDoc: LastDocType | undefined = undefined;
-
+  let lastDocId = '';
+  const rewardEndDate = stakeReward.endDate.toDate();
   do {
-    let query = admin
-      .firestore()
+    const lastDoc = await getSnapshot(COL.STAKE, lastDocId);
+    const snap = await soonDb()
       .collection(COL.STAKE)
       .where('token', '==', stakeReward.token)
       .where('type', '==', StakeType.DYNAMIC)
-      .limit(500);
-    if (lastDoc) {
-      query = query.startAfter(lastDoc);
-    }
-
-    const snap = await query.get();
-    lastDoc = last(snap.docs);
-
-    snap.docs
-      .filter((doc) => {
-        const stake = <Stake>doc.data();
-        return (
-          isBeforeOrEqual(stake.createdOn!, stakeReward.endDate) &&
-          isAfterOrEqual(stake.expiresAt, stakeReward.startDate)
-        );
-      })
-      .forEach((d) => {
-        const stake = d.data() as Stake;
-        stakedPerMember[stake.member] = (stakedPerMember[stake.member] || 0) + stake.value;
-      });
-  } while (lastDoc);
+      .where('expiresAt', '>=', stakeReward.startDate)
+      .orderBy('expiresAt')
+      .startAfter(lastDoc)
+      .limit(2000)
+      .select('createdOn', 'member', 'value')
+      .get<Stake>();
+    lastDocId = last(snap)?.uid || '';
+    snap.forEach((stake) => {
+      if (dayjs(stake.createdOn?.toDate()).isAfter(rewardEndDate)) {
+        return;
+      }
+      stakedPerMember[stake.member] = (stakedPerMember[stake.member] || 0) + stake.value;
+    });
+  } while (lastDocId);
 
   return stakedPerMember;
 };
 
-// const getStartDoc = async (query: Query, stakeReward: StakeReward) => {
-//   let snap = await query
-//     .where('leftCheck', '<', stakeReward.leftCheck)
-//     .orderBy('leftCheck', 'desc')
-//     .limit(1)
-//     .get();
-//   let doc = head(snap.docs);
-//   if (doc) {
-//     return { doc, inclusive: false };
-//   }
-//   snap = await query.orderBy('createdOn').orderBy('expiresAt').limit(1).get();
-//   doc = head(snap.docs);
-//   return { doc, inclusive: true };
-// };
-
-// const getEndDoc = async (query: Query, stakeReward: StakeReward) => {
-//   let snap = await query
-//     .where('rightCheck', '>', stakeReward.rightCheck)
-//     .orderBy('rightCheck')
-//     .limit(1)
-//     .get();
-//   let doc = head(snap.docs);
-//   if (doc) {
-//     return { doc, inclusive: false };
-//   }
-//   snap = await query.orderBy('createdOn', 'desc').orderBy('expiresAt', 'desc').limit(1).get();
-//   doc = head(snap.docs);
-//   return { doc, inclusive: true };
-// };
-
-const getDueStakeRewards = async () => {
-  const snap = await admin
-    .firestore()
+const getDueStakeRewards = () =>
+  soonDb()
     .collection(COL.STAKE_REWARD)
     .where('status', '==', StakeRewardStatus.UNPROCESSED)
-    .where('endDate', '<=', dateToTimestamp(dayjs()))
-    .get();
-  return snap.docs.map((d) => d.data() as StakeReward);
-};
+    .where('endDate', '<=', serverTime())
+    .get<StakeReward>();
 
 const createAirdrops = async (
   token: Token,
@@ -141,7 +94,7 @@ const createAirdrops = async (
   totalStaked: number,
   stakedPerMember: { [key: string]: number },
 ) => {
-  const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()).data();
+  const space = <Space>await soonDb().doc(`${COL.SPACE}/${token.space}`).get();
 
   const rewards = Object.entries(stakedPerMember)
     .map(([member, staked]) => ({
@@ -165,13 +118,13 @@ const createAirdrops = async (
       return 0;
     }
 
-    const distributionDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${reward.member}`);
-    const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    const distributionDocRef = soonDb().doc(
+      `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${reward.member}`,
+    );
+    const distribution = <TokenDistribution>await distributionDocRef.get();
 
     if (distribution.extraStakeRewards && distribution.extraStakeRewards > 0) {
-      await distributionDocRef.update(uOn({ extraStakeRewards: inc(-reward.value) }));
+      await distributionDocRef.update({ extraStakeRewards: soonDb().inc(-reward.value) });
 
       const billPayment = <Transaction>{
         type: TransactionType.BILL_PAYMENT,
@@ -194,7 +147,7 @@ const createAirdrops = async (
           stakeReward: stakeReward.uid,
         },
       };
-      await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
+      await soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
 
       const remainingExtra = distribution.extraStakeRewards - reward.value;
       if (remainingExtra >= 0) {
@@ -203,7 +156,7 @@ const createAirdrops = async (
       reward.value = Math.abs(remainingExtra);
     }
 
-    const batch = admin.firestore().batch();
+    const batch = soonDb().batch();
     const airdrop: TokenDrop = {
       uid: getRandomEthAddress(),
       createdBy: 'system',
@@ -216,10 +169,10 @@ const createAirdrops = async (
       stakeRewardId: stakeReward.uid,
       stakeType: StakeType.DYNAMIC,
     };
-    const airdropDocRef = admin.firestore().doc(`${COL.AIRDROP}/${airdrop.uid}`);
-    batch.create(airdropDocRef, cOn(airdrop));
+    const airdropDocRef = soonDb().doc(`${COL.AIRDROP}/${airdrop.uid}`);
+    batch.create(airdropDocRef, airdrop);
 
-    batch.set(distributionDocRef, { stakeRewards: inc(reward.value) }, { merge: true });
+    batch.set(distributionDocRef, { stakeRewards: soonDb().inc(reward.value) }, true);
     await batch.commit();
 
     return reward.value;
@@ -227,9 +180,3 @@ const createAirdrops = async (
 
   return (await Promise.all(promises)).reduce((acc, act) => acc + act, 0);
 };
-
-const isBeforeOrEqual = (a: Timestamp, b: Timestamp) =>
-  dayjs(a.toDate()).isBefore(dayjs(b.toDate())) || dayjs(a.toDate()).isSame(dayjs(b.toDate()));
-
-const isAfterOrEqual = (a: Timestamp, b: Timestamp) =>
-  dayjs(a.toDate()).isAfter(dayjs(b.toDate())) || dayjs(a.toDate()).isSame(dayjs(b.toDate()));

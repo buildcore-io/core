@@ -81,7 +81,7 @@
           <div class="flex items-center mt-2">
             <a [routerLink]="['/member', (auth.member$ | async)?.uid]" class="flex items-center">
               <nz-avatar
-                [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar : filesizes.small"
+                [nzSrc]="(auth.member$ | async)?.avatar | resizeAvatar : filesizes.small"
                 class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-10"
                 style="max-width: 32px; min-width: 32px"
                 [nzSize]="32"

@@ -8,8 +8,8 @@ import {
   Token,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { createAward, fundAward } from '../../src/runtime/firebase/award';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -51,15 +51,15 @@ describe('Create award, base', () => {
     const order = await testEnv.wrap(fundAward)({});
     await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount);
 
-    const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${award.uid}`);
+    const awardDocRef = soonDb().doc(`${COL.AWARD}/${award.uid}`);
     await wait(async () => {
-      const award = <Award>(await awardDocRef.get()).data();
+      const award = <Award>await awardDocRef.get();
       return award.approved && award.funded;
     });
 
     await uploadMediaToWeb3();
 
-    const awardData = <Award>(await awardDocRef.get()).data();
+    const awardData = <Award>await awardDocRef.get();
     expect(awardData.mediaStatus).toBe(MediaStatus.UPLOADED);
   });
 });

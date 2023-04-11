@@ -10,7 +10,7 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { get, head } from 'lodash';
-import admin, { inc } from '../../admin.config';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { getTokenForSpace } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from './transaction-service';
@@ -50,8 +50,8 @@ export class VotingService {
       return;
     }
 
-    const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposalId}`);
-    const proposal = <Proposal>(await proposalDocRef.get()).data();
+    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposalId}`);
+    const proposal = <Proposal>await proposalDocRef.get();
 
     const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(order.member!);
 
@@ -68,14 +68,14 @@ export class VotingService {
       values,
     );
 
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: proposalMemberDocRef,
       data: {
         voted: true,
-        voteTransactions: inc(1),
+        voteTransactions: soonDb().inc(1),
         tranId: voteTransaction.uid,
-        weightPerAnswer: { [values[0]]: inc(weight) },
-        values: admin.firestore.FieldValue.arrayUnion({
+        weightPerAnswer: { [values[0]]: soonDb().inc(weight) },
+        values: soonDb().arrayUnion({
           [values[0]]: weight,
           voteTransaction: voteTransaction.uid,
         }),
@@ -86,12 +86,12 @@ export class VotingService {
 
     const data = {
       results: {
-        total: inc(weight),
-        voted: inc(weight),
-        answers: { [`${values[0]}`]: inc(weight) },
+        total: soonDb().inc(weight),
+        voted: soonDb().inc(weight),
+        answers: { [`${values[0]}`]: soonDb().inc(weight) },
       },
     };
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: proposalDocRef,
       data,
       action: 'set',
@@ -126,10 +126,8 @@ export class VotingService {
       linkedTransactions: [],
     };
 
-    const voteTransactionDocRef = admin
-      .firestore()
-      .doc(`${COL.TRANSACTION}/${voteTransaction.uid}`);
-    this.transactionService.updates.push({
+    const voteTransactionDocRef = soonDb().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`);
+    this.transactionService.push({
       ref: voteTransactionDocRef,
       data: voteTransaction,
       action: 'set',

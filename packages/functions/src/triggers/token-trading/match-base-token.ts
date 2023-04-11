@@ -14,16 +14,15 @@ import {
   Transaction,
   TransactionCreditType,
   TransactionType,
-  URL_PATHS,
 } from '@soonaverse/interfaces';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
-import admin from '../../admin.config';
+import { ITransaction } from '../../firebase/firestore/interfaces';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { getAddress } from '../../utils/address.utils';
 import { packBasicOutput } from '../../utils/basic-output.utils';
-import { cOn } from '../../utils/dateTime.utils';
 import { getRoyaltyFees } from '../../utils/royalty.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Match } from './match-token';
@@ -43,9 +42,9 @@ const createIotaPayments = async (
   if (balance !== 0 && balance < MIN_IOTA_AMOUNT) {
     return [];
   }
-  const sellOrder = <Transaction>(
-    (await admin.firestore().doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`).get()).data()
-  );
+  const sellOrder = await soonDb()
+    .doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`)
+    .get<Transaction>();
   const billPayment = <Transaction>{
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
@@ -55,7 +54,7 @@ const createIotaPayments = async (
     payload: {
       type: BillPaymentType.BASE_TOKEN_TRADE,
       amount: count,
-      sourceAddress: sellOrder.payload.targetAddress,
+      sourceAddress: sellOrder!.payload.targetAddress,
       targetAddress: getAddress(buyer, sell.sourceNetwork!),
       previousOwnerEntity: Entity.MEMBER,
       previousOwner: seller.uid,
@@ -81,7 +80,7 @@ const createIotaPayments = async (
       type: TransactionCreditType.TOKEN_TRADE_FULLFILLMENT,
       dependsOnBillPayment: true,
       amount: balance,
-      sourceAddress: sellOrder.payload.targetAddress,
+      sourceAddress: sellOrder!.payload.targetAddress,
       targetAddress: getAddress(seller, sell.sourceNetwork!),
       previousOwnerEntity: Entity.MEMBER,
       previousOwner: seller.uid,
@@ -106,7 +105,7 @@ const createRoyaltyPayment = async (
   fee: number,
   info: INodeInfo,
 ) => {
-  const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${spaceId}`).get()).data();
+  const space = (await soonDb().doc(`${COL.SPACE}/${spaceId}`).get<Space>())!;
   const spaceAddress = getAddress(space, buy.sourceNetwork!);
   const sellerAddress = getAddress(seller, buy.sourceNetwork!);
   const output = packBasicOutput(spaceAddress, 0, undefined, info, sellerAddress);
@@ -149,9 +148,9 @@ const createSmrPayments = async (
 ): Promise<Transaction[]> => {
   const wallet = (await WalletService.newWallet(buy.sourceNetwork!)) as SmrWallet;
   const tmpAddress = await wallet.getNewIotaAddressDetails(false);
-  const buyOrder = <Transaction>(
-    (await admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get()).data()
-  );
+  const buyOrder = await soonDb()
+    .doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`)
+    .get<Transaction>();
 
   const fulfilled = buy.fulfilled + tokensToTrade === buy.count;
   let salePrice = Number(bigDecimal.floor(bigDecimal.multiply(price, tokensToTrade)));
@@ -175,7 +174,7 @@ const createSmrPayments = async (
   const royaltyPaymentPromises = Object.entries(royaltyFees)
     .filter((entry) => entry[1] > 0)
     .map(([space, fee]) =>
-      createRoyaltyPayment(token, buy, buyOrder, seller, space, fee, wallet.info),
+      createRoyaltyPayment(token, buy, buyOrder!, seller, space, fee, wallet.info),
     );
   const royaltyPayments = await Promise.all(royaltyPaymentPromises);
   royaltyPayments.forEach((rp) => {
@@ -196,7 +195,7 @@ const createSmrPayments = async (
     payload: {
       type: BillPaymentType.BASE_TOKEN_TRADE,
       amount: salePrice,
-      sourceAddress: buyOrder.payload.targetAddress,
+      sourceAddress: buyOrder!.payload.targetAddress,
       targetAddress: getAddress(seller, buy.sourceNetwork!),
       previousOwnerEntity: Entity.MEMBER,
       previousOwner: buy.owner,
@@ -223,7 +222,7 @@ const createSmrPayments = async (
       type: TransactionCreditType.TOKEN_TRADE_FULLFILLMENT,
       dependsOnBillPayment: true,
       amount: balanceLeft,
-      sourceAddress: buyOrder.payload.targetAddress,
+      sourceAddress: buyOrder!.payload.targetAddress,
       targetAddress: getAddress(buyer, buy.sourceNetwork!),
       previousOwnerEntity: Entity.MEMBER,
       previousOwner: buy.owner,
@@ -240,7 +239,7 @@ const createSmrPayments = async (
 };
 
 export const matchBaseToken = async (
-  transaction: admin.firestore.Transaction,
+  transaction: ITransaction,
   token: Token,
   buy: TokenTradeOrder,
   sell: TokenTradeOrder,
@@ -248,16 +247,16 @@ export const matchBaseToken = async (
   triggeredBy: TokenTradeOrderType,
 ): Promise<Match> => {
   const tokensToTrade = Math.min(sell.count - sell.fulfilled, buy.count - buy.fulfilled);
-  const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data();
-  const buyer = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buy.owner}`).get()).data();
+  const seller = await soonDb().doc(`${COL.MEMBER}/${sell.owner}`).get<Member>();
+  const buyer = await soonDb().doc(`${COL.MEMBER}/${buy.owner}`).get<Member>();
 
-  const iotaPayments = await createIotaPayments(token, sell, seller, buyer, tokensToTrade);
+  const iotaPayments = await createIotaPayments(token, sell, seller!, buyer!, tokensToTrade);
   const smrPayments = await createSmrPayments(
     token,
     sell,
     buy,
-    seller,
-    buyer,
+    seller!,
+    buyer!,
     tokensToTrade,
     price,
   );
@@ -265,8 +264,8 @@ export const matchBaseToken = async (
     return { sellerCreditId: undefined, buyerCreditId: undefined, purchase: undefined };
   }
   [...iotaPayments, ...smrPayments].forEach((payment) => {
-    const docRef = admin.firestore().doc(`${COL.TRANSACTION}/${payment.uid}`);
-    transaction.create(docRef, cOn(payment, URL_PATHS.TRANSACTION));
+    const docRef = soonDb().doc(`${COL.TRANSACTION}/${payment.uid}`);
+    transaction.create(docRef, payment);
   });
   return {
     sellerCreditId: iotaPayments.find((o) => o.type === TransactionType.CREDIT)?.uid,
@@ -290,8 +289,8 @@ export const matchBaseToken = async (
         .filter((o) => o.type === TransactionType.BILL_PAYMENT && o.payload.royalty === true)
         .map((o) => o.uid),
 
-      sellerTier: await getMemberTier(seller),
-      sellerTokenTradingFeePercentage: getTokenTradingFee(seller),
+      sellerTier: await getMemberTier(seller!),
+      sellerTokenTradingFeePercentage: getTokenTradingFee(seller!),
     },
   };
 };

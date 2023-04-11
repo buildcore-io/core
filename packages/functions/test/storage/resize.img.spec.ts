@@ -1,5 +1,5 @@
 import { Bucket } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonStorage } from '../../src/firebase/storage/soonStorage';
 import { ImageWidth } from '../../src/triggers/storage/resize.img.trigger';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { wait } from '../controls/common';
@@ -11,51 +11,40 @@ describe('Resize img test', () => {
       .map((size) => `_jpeg_${size}X${size}.webp`)
       .concat('.jpeg');
 
-    const bucket = admin.storage().bucket(Bucket.DEV);
+    const bucket = soonStorage().bucket(Bucket.DEV);
     const destination = 'nft/test/image.jpeg';
-    await bucket.upload('./test/puppy.jpeg', {
-      destination,
-      metadata: {
-        contentType: 'image/jpeg',
-      },
+    await bucket.upload('./test/puppy.jpeg', destination, {
+      contentType: 'image/jpeg',
     });
 
     for (const extension of extensions) {
-      await wait(async () => {
-        const file = admin
-          .storage()
-          .bucket(Bucket.DEV)
-          .file(name + extension);
-        return (await file.exists())[0];
-      });
+      await wait(
+        async () =>
+          await soonStorage()
+            .bucket(Bucket.DEV)
+            .exists(name + extension),
+      );
     }
   });
 
   it('Should create video preview', async () => {
     const id = getRandomEthAddress();
-    const bucket = admin.storage().bucket(Bucket.DEV);
+    const bucket = soonStorage().bucket(Bucket.DEV);
     const destination = `nft/test/${id}.mov`;
-    await bucket.upload('./test/nft_video.mov', {
-      destination,
-      metadata: {
-        contentType: 'video/quicktime',
-      },
+    await bucket.upload('./test/nft_video.mov', destination, {
+      contentType: 'video/quicktime',
     });
-    await wait(async () => {
-      const file = admin.storage().bucket(Bucket.DEV).file(`nft/test/${id}_mov_preview.webp`);
-      return (await file.exists())[0];
-    });
+    await wait(
+      async () => await soonStorage().bucket(Bucket.DEV).exists(`nft/test/${id}_mov_preview.webp`),
+    );
   });
 
   it.each(['png', 'jpeg'])('Should not override', async (extension: string) => {
     const name = 'nft/test/image';
 
-    const bucket = admin.storage().bucket(Bucket.DEV);
-    await bucket.upload('./test/puppy.jpeg', {
-      destination: 'nft/test/image.' + extension,
-      metadata: {
-        contentType: 'image/' + extension,
-      },
+    const bucket = soonStorage().bucket(Bucket.DEV);
+    await bucket.upload('./test/puppy.jpeg', 'nft/test/image.' + extension, {
+      contentType: 'image/' + extension,
     });
     const extensions = Object.values(ImageWidth)
       .map((size) => `_${extension}_${size}X${size}.webp`)
@@ -66,12 +55,11 @@ describe('Resize img test', () => {
 
 const verifyImagesExist = async (name: string, extensions: string[]) => {
   for (const extension of extensions) {
-    await wait(async () => {
-      const file = admin
-        .storage()
-        .bucket(Bucket.DEV)
-        .file(name + extension);
-      return (await file.exists())[0];
-    });
+    await wait(
+      async () =>
+        await soonStorage()
+          .bucket(Bucket.DEV)
+          .exists(name + extension),
+    );
   }
 };

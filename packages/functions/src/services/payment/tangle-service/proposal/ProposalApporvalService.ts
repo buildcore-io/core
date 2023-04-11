@@ -1,7 +1,6 @@
 import { COL, Proposal, TangleRequestType, WenError } from '@soonaverse/interfaces';
-import admin from '../../../../admin.config';
-import { Database } from '../../../../database/Database';
-import { throwInvalidArgument } from '../../../../utils/error.utils';
+import { soonDb } from '../../../../firebase/firestore/soondb';
+import { invalidArgument } from '../../../../utils/error.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { TransactionService } from '../../transaction-service';
 
@@ -15,8 +14,8 @@ export class ProposalApprovalService {
       params.uid as string,
       requestType === TangleRequestType.PROPOSAL_APPROVE,
     );
-    const docRef = admin.firestore().doc(`${COL.PROPOSAL}/${params.uid}`);
-    this.transactionService.updates.push({ ref: docRef, data, action: 'update' });
+    const docRef = soonDb().doc(`${COL.PROPOSAL}/${params.uid}`);
+    this.transactionService.push({ ref: docRef, data, action: 'update' });
 
     return { status: 'success' };
   };
@@ -27,19 +26,20 @@ export const getProposalApprovalData = async (
   proposalId: string,
   approve: boolean,
 ) => {
-  const proposal = await Database.getById<Proposal>(COL.PROPOSAL, proposalId);
+  const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposalId}`);
+  const proposal = await proposalDocRef.get<Proposal>();
   if (!proposal) {
-    throw throwInvalidArgument(WenError.proposal_does_not_exists);
+    throw invalidArgument(WenError.proposal_does_not_exists);
   }
 
   await assertIsGuardian(proposal.space, owner);
 
   if (proposal.approved) {
-    throw throwInvalidArgument(WenError.proposal_is_already_approved);
+    throw invalidArgument(WenError.proposal_is_already_approved);
   }
 
   if (proposal.rejected) {
-    throw throwInvalidArgument(WenError.proposal_is_already_rejected);
+    throw invalidArgument(WenError.proposal_is_already_rejected);
   }
 
   return approve ? { approved: true, approvedBy: owner } : { rejected: true, rejectedBy: owner };

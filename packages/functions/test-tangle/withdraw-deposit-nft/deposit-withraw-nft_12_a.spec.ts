@@ -17,7 +17,7 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import { cloneDeep } from 'lodash';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { depositNft } from '../../src/runtime/firebase/nft';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
@@ -44,17 +44,16 @@ describe('Collection minting', () => {
 
   it('Should throw, nft not irc27', async () => {
     await mintAndDeposit({ collectionName: 'test-collection' }, { name: 'test' });
-    const query = admin
-      .firestore()
+    const query = soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.guardian)
       .where('type', '==', TransactionType.CREDIT_NFT);
     await wait(async () => {
-      const snap = await query.get();
-      return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+      const snap = await query.get<Transaction>();
+      return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
     const snap = await query.get();
-    const credit = <Transaction>snap.docs[0].data();
+    const credit = <Transaction>snap[0];
     expect(credit.payload.response.code).toBe(WenError.nft_not_irc27_compilant.code);
     expect(credit.payload.response.message).toBe(WenError.nft_not_irc27_compilant.key);
     await helper.isInvalidPayment(credit.payload.sourceTransaction[0]);

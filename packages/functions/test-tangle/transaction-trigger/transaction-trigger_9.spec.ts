@@ -7,7 +7,7 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -52,36 +52,28 @@ describe('Transaction trigger spec', () => {
       sourceAddress.bech32,
       targetAddress.bech32,
     );
-    const batch = admin.firestore().batch();
-    batch.create(admin.firestore().doc(`${COL.TRANSACTION}/${billPayment1.uid}`), billPayment1);
-    batch.create(admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`), credit);
-    batch.create(admin.firestore().doc(`${COL.TRANSACTION}/${billPayment2.uid}`), billPayment2);
+    const batch = soonDb().batch();
+    batch.create(soonDb().doc(`${COL.TRANSACTION}/${billPayment1.uid}`), billPayment1);
+    batch.create(soonDb().doc(`${COL.TRANSACTION}/${credit.uid}`), credit);
+    batch.create(soonDb().doc(`${COL.TRANSACTION}/${billPayment2.uid}`), billPayment2);
     await batch.commit();
     await wait(async () => {
       billPayment1 = <Transaction>(
-        (await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment1.uid}`).get()).data()
+        await soonDb().doc(`${COL.TRANSACTION}/${billPayment1.uid}`).get()
       );
       billPayment2 = <Transaction>(
-        (await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment2.uid}`).get()).data()
+        await soonDb().doc(`${COL.TRANSACTION}/${billPayment2.uid}`).get()
       );
-      credit = <Transaction>(
-        (await admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`).get()).data()
-      );
+      credit = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${credit.uid}`).get();
       return (
         billPayment1?.payload?.walletReference?.confirmed &&
         billPayment2?.payload?.walletReference?.confirmed &&
         credit?.payload?.walletReference?.confirmed
       );
     });
-    billPayment1 = <Transaction>(
-      (await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment1.uid}`).get()).data()
-    );
-    billPayment2 = <Transaction>(
-      (await admin.firestore().doc(`${COL.TRANSACTION}/${billPayment2.uid}`).get()).data()
-    );
-    credit = <Transaction>(
-      (await admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`).get()).data()
-    );
+    billPayment1 = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${billPayment1.uid}`).get();
+    billPayment2 = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${billPayment2.uid}`).get();
+    credit = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${credit.uid}`).get();
 
     expect(
       dayjs(billPayment1?.payload?.walletReference?.processedOn?.toDate()).isBefore(

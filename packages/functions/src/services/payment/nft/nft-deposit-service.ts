@@ -20,13 +20,14 @@ import {
   TransactionOrder,
   WenError,
 } from '@soonaverse/interfaces';
-import dayjs from 'dayjs';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { head, isEmpty, set } from 'lodash';
-import admin, { inc } from '../../../admin.config';
+import { ITransaction } from '../../../firebase/firestore/interfaces';
+import { soonDb } from '../../../firebase/firestore/soondb';
+import { soonStorage } from '../../../firebase/storage/soonStorage';
 import { getNftByMintingId } from '../../../utils/collection-minting-utils/nft.utils';
 import { getBucket } from '../../../utils/config.utils';
-import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
+import { serverTime } from '../../../utils/dateTime.utils';
 import { migrateUriToSotrage, uriToUrl } from '../../../utils/media.utils';
 import {
   collectionIrc27Scheam,
@@ -41,7 +42,6 @@ import { NftWallet } from '../../wallet/NftWallet';
 import { SmrWallet } from '../../wallet/SmrWalletService';
 import { WalletService } from '../../wallet/wallet';
 import { TransactionMatch, TransactionService } from '../transaction-service';
-
 export class NftDepositService {
   constructor(readonly transactionService: TransactionService) {}
 
@@ -55,8 +55,8 @@ export class NftDepositService {
       await this.transactionService.createPayment(order, match);
       this.transactionService.markAsReconciled(order, match.msgId);
 
-      const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
-      this.transactionService.updates.push({
+      const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+      this.transactionService.push({
         ref: orderDocRef,
         data: { 'payload.nft': nft.uid },
         action: 'update',
@@ -92,10 +92,8 @@ export class NftDepositService {
     nftOutput: INftOutput,
     match: TransactionMatch,
   ) => {
-    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${nft.collection}`);
-    const collection = <Collection>(
-      (await this.transactionService.transaction.get(collectionDocRef)).data()
-    );
+    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nft.collection}`);
+    const collection = <Collection>await this.transactionService.get(collectionDocRef);
 
     if (!collection.approved) {
       throw WenError.collection_must_be_approved;
@@ -106,7 +104,7 @@ export class NftDepositService {
       depositData: {
         address: order.payload.targetAddress,
         network: order.network,
-        mintedOn: admin.firestore.FieldValue.serverTimestamp(),
+        mintedOn: serverTime(),
         mintedBy: order.member,
         blockId: match.msgId,
         nftId: nftOutput.nftId,
@@ -117,10 +115,10 @@ export class NftDepositService {
       isOwned: true,
       owner: order.member,
     };
-    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
-    this.transactionService.updates.push({ ref: nftDocRef, data, action: 'update' });
-    this.transactionService.updates.push({
-      ref: admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`),
+    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+    this.transactionService.push({ ref: nftDocRef, data, action: 'update' });
+    this.transactionService.push({
+      ref: soonDb().doc(`${COL.TRANSACTION}/${order.uid}`),
       data: {
         space: nft.space,
         'payload.amount': match.to.amount,
@@ -173,7 +171,7 @@ export class NftDepositService {
       depositData: {
         address: order.payload.targetAddress,
         network: order.network,
-        mintedOn: dateToTimestamp(dayjs()),
+        mintedOn: serverTime(),
         mintedBy: order.member,
         blockId,
         nftId: nftOutput.nftId,
@@ -210,8 +208,7 @@ export class NftDepositService {
       placeholderNft: false,
     };
 
-    const bucket = admin.storage().bucket(getBucket());
-
+    const bucket = soonStorage().bucket(getBucket());
     const nftUrl = uriToUrl(metadata.nft.uri);
     const nftMedia = await migrateUriToSotrage(COL.NFT, nft.owner!, nft.uid, nftUrl, bucket);
     set(nft, 'media', nftMedia);
@@ -233,19 +230,21 @@ export class NftDepositService {
       }
     }
 
-    const collectionDocRef = admin
-      .firestore()
-      .doc(`${COL.COLLECTION}/${(existingCollection || migratedCollection).uid}`);
-    this.transactionService.updates.push({
+    const collectionDocRef = soonDb().doc(
+      `${COL.COLLECTION}/${(existingCollection || migratedCollection).uid}`,
+    );
+    this.transactionService.push({
       ref: collectionDocRef,
-      data: existingCollection ? { total: inc(1) } : { ...migratedCollection, total: inc(1) },
+      data: existingCollection
+        ? { total: soonDb().inc(1) }
+        : { ...migratedCollection, total: soonDb().inc(1) },
       action: 'set',
       merge: true,
     });
 
     if (isNewSpace) {
-      const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
-      this.transactionService.updates.push({ ref: spaceDocRef, data: space, action: 'set' });
+      const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space.uid}`);
+      this.transactionService.push({ ref: spaceDocRef, data: space, action: 'set' });
     }
 
     if (!existingCollection && !isEmpty(metadata.collection.royalties)) {
@@ -257,8 +256,8 @@ export class NftDepositService {
         claimed: false,
         validatedAddress: { [order.network!]: royaltyAddress },
       };
-      const royaltySpaceDocRef = admin.firestore().doc(`${COL.SPACE}/${royaltySpace.uid}`);
-      this.transactionService.updates.push({
+      const royaltySpaceDocRef = soonDb().doc(`${COL.SPACE}/${royaltySpace.uid}`);
+      this.transactionService.push({
         ref: royaltySpaceDocRef,
         data: royaltySpace,
         action: 'set',
@@ -266,8 +265,8 @@ export class NftDepositService {
       });
     }
 
-    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
-    this.transactionService.updates.push({ ref: nftDocRef, data: nft, action: 'set' });
+    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+    this.transactionService.push({ ref: nftDocRef, data: nft, action: 'set' });
 
     return nft;
   };
@@ -295,18 +294,18 @@ export class NftDepositService {
   };
 }
 
-const getCollection = async (transaction: admin.firestore.Transaction, collectionId: string) => {
-  const collectionSnap = await admin
-    .firestore()
+const getCollection = async (transaction: ITransaction, collectionId: string) => {
+  const collectionSnap = await soonDb()
     .collection(COL.COLLECTION)
     .where('mintingData.nftId', '==', collectionId)
-    .get();
-  if (collectionSnap.size) {
-    return <Collection | undefined>(await transaction.get(collectionSnap.docs[0].ref)).data();
+    .get<Collection>();
+  if (collectionSnap.length) {
+    const docRef = soonDb().doc(`${COL.COLLECTION}/${collectionSnap[0].uid}`);
+    return await transaction.get<Collection>(docRef);
   }
 
-  const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${collectionId}`);
-  return <Collection | undefined>(await transaction.get(collectionDocRef)).data();
+  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${collectionId}`);
+  return await transaction.get<Collection>(collectionDocRef);
 };
 
 const getSpace = async (
@@ -315,22 +314,21 @@ const getSpace = async (
   collectionId: string,
 ) => {
   if (collection) {
-    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${collection.space}`);
-    const space = <Space>(await spaceDocRef.get()).data();
+    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${collection.space}`);
+    const space = <Space>await spaceDocRef.get();
     return { space, isNewSpace: false };
   }
 
-  const awardsSnap = await admin
-    .firestore()
+  const awardsSnap = await soonDb()
     .collection(COL.AWARD)
     .where('collectionId', '==', collectionId)
     .limit(1)
-    .get();
+    .get<Award>();
 
-  if (awardsSnap.size) {
-    const award = awardsSnap.docs[0].data() as Award;
-    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${award.space}`);
-    const space = <Space>(await spaceDocRef.get()).data();
+  if (awardsSnap.length) {
+    const award = awardsSnap[0];
+    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${award.space}`);
+    const space = <Space>await spaceDocRef.get();
     return { space, isNewSpace: false };
   }
 
@@ -378,7 +376,7 @@ const getMigratedCollection = (
     access: Access.OPEN,
     accessAwards: [],
     accessCollections: [],
-    availableFrom: dateToTimestamp(dayjs()),
+    availableFrom: serverTime(),
     price: 0,
     availablePrice: 0,
     onePerMemberOnly: false,

@@ -1,12 +1,15 @@
 import { COL, Proposal, SUB_COL } from '@soonaverse/interfaces';
-import { Database } from '../../database/Database';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { createProposal } from '../../services/payment/tangle-service/proposal/ProposalCreateService';
 
 export const createProposalControl = async (owner: string, params: Record<string, unknown>) => {
   const { proposal, proposalOwner } = await createProposal(owner, params);
 
-  await Database.create(COL.PROPOSAL, proposal);
-  await Database.create(COL.PROPOSAL, proposalOwner, SUB_COL.OWNERS, proposal.uid);
+  const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  await proposalDocRef.create(proposal);
 
-  return await Database.getById<Proposal>(COL.PROPOSAL, proposal.uid);
+  const proposalOwnerDocRef = proposalDocRef.collection(SUB_COL.OWNERS).doc(proposal.uid);
+  await proposalOwnerDocRef.create(proposalOwner);
+
+  return await proposalDocRef.get<Proposal>();
 };

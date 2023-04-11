@@ -7,7 +7,7 @@ import {
 } from '@iota/iota.js-next';
 import { COL, Member, Token, Transaction } from '@soonaverse/interfaces';
 import { cloneDeep } from 'lodash';
-import admin from '../../admin.config';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { getAddress } from '../../utils/address.utils';
 import { mergeOutputs } from '../../utils/basic-output.utils';
 import { packEssence, packPayload, submitBlock } from '../../utils/block.utils';
@@ -50,9 +50,7 @@ export class NativeTokenWallet {
     nextAliasOutput.stateIndex++;
     nextAliasOutput.foundryCounter++;
 
-    const token = <Token>(
-      (await admin.firestore().doc(`${COL.TOKEN}/${transaction.payload.token}`).get()).data()
-    );
+    const token = <Token>await soonDb().doc(`${COL.TOKEN}/${transaction.payload.token}`).get();
 
     const metadata = await tokenToFoundryMetadata(token);
     const foundryOutput = createFoundryOutput(
@@ -64,9 +62,7 @@ export class NativeTokenWallet {
 
     const totalDistributed =
       (await getOwnedTokenTotal(token.uid)) + (await getUnclaimedAirdropTotalValue(token.uid));
-    const member = <Member>(
-      (await admin.firestore().doc(`${COL.MEMBER}/${transaction.member}`).get()).data()
-    );
+    const member = <Member>await soonDb().doc(`${COL.MEMBER}/${transaction.member}`).get();
     const tokenId = TransactionHelper.constructTokenId(
       nextAliasOutput.aliasId,
       foundryOutput.serialNumber,

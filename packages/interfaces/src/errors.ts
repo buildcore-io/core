@@ -250,4 +250,12 @@ export const WenError = {
     code: 2125,
     key: 'Url does not point to an image or video',
   },
+  collection_must_be_classic: {
+    code: 2126,
+    key: 'Must be classic collection',
+  },
+  nft_set_as_avatar: {
+    code: 2127,
+    key: 'Nft is set as avatar',
+  },
 };

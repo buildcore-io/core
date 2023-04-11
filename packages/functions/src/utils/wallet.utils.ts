@@ -3,8 +3,8 @@ import { Ed25519 as Ed25519Next } from '@iota/crypto.js-next';
 import { Bech32Helper, Ed25519Address } from '@iota/iota.js';
 import {
   Bech32Helper as Bech32HelperNext,
-  Ed25519Address as Ed25519AddressNext,
   ED25519_ADDRESS_TYPE,
+  Ed25519Address as Ed25519AddressNext,
 } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js';
 import { Converter as ConverterNext, HexHelper } from '@iota/util.js-next';
@@ -14,19 +14,18 @@ import {
   DecodedToken,
   Member,
   Network,
+  WEN_FUNC,
   WenError,
   WenRequest,
-  WEN_FUNC,
 } from '@soonaverse/interfaces';
 import { randomBytes } from 'crypto';
 import dayjs from 'dayjs';
 import { Wallet } from 'ethers';
 import jwt from 'jsonwebtoken';
 import { get } from 'lodash';
-import admin from '../admin.config';
+import { soonDb } from '../firebase/firestore/soondb';
 import { getCustomTokenLifetime, getJwtSecretKey } from './config.utils';
-import { uOn } from './dateTime.utils';
-import { throwUnAuthenticated } from './error.utils';
+import { unAuthenticated } from './error.utils';
 
 export const minAddressLength = 42;
 export const maxAddressLength = 255;
@@ -39,7 +38,7 @@ const toHex = (stringToConvert: string) =>
 
 export async function decodeAuth(req: WenRequest, func: WEN_FUNC): Promise<DecodedToken> {
   if (!req) {
-    throw throwUnAuthenticated(WenError.invalid_params);
+    throw unAuthenticated(WenError.invalid_params);
   }
 
   if (req.signature && req.publicKey) {
@@ -57,7 +56,7 @@ export async function decodeAuth(req: WenRequest, func: WEN_FUNC): Promise<Decod
     return { address: req.address, body: req.body };
   }
 
-  throw throwUnAuthenticated(WenError.signature_or_custom_token_must_be_provided);
+  throw unAuthenticated(WenError.signature_or_custom_token_must_be_provided);
 }
 
 const validateWithSignature = async (req: WenRequest) => {
@@ -69,11 +68,11 @@ const validateWithSignature = async (req: WenRequest) => {
   });
 
   if (recoveredAddress !== req.address) {
-    throw throwUnAuthenticated(WenError.invalid_signature);
+    throw unAuthenticated(WenError.invalid_signature);
   }
 
-  const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${req.address}`);
-  await memberDocRef.update(uOn({ nonce: getRandomNonce() }));
+  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${req.address}`);
+  await memberDocRef.update({ nonce: getRandomNonce() });
 };
 
 const validateWithPublicKey = async (req: WenRequest) => {
@@ -82,7 +81,7 @@ const validateWithPublicKey = async (req: WenRequest) => {
   const validateFunc = getValidateFuncForNetwork(network);
   const { member, address } = await validateFunc(req);
   if (!address) {
-    throw throwUnAuthenticated(WenError.failed_to_decode_token);
+    throw unAuthenticated(WenError.failed_to_decode_token);
   }
 
   const validatedAddress = (member.validatedAddress || {})[network] || address;
@@ -90,8 +89,8 @@ const validateWithPublicKey = async (req: WenRequest) => {
     nonce: getRandomNonce(),
     validatedAddress: { [network]: validatedAddress },
   };
-  const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${address}`);
-  await memberDocRef.set(uOn(updateData), { merge: true });
+  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${address}`);
+  await memberDocRef.set(updateData, true);
 
   return address;
 };
@@ -105,7 +104,7 @@ const getValidateFuncForNetwork = (network: Network) => {
   if (iotaNnetworks.includes(network)) {
     return validateIotaPubKey;
   }
-  throw throwUnAuthenticated(WenError.invalid_network);
+  throw unAuthenticated(WenError.invalid_network);
 };
 
 const validateSmrPubKey = async (req: WenRequest) => {
@@ -123,7 +122,7 @@ const validateSmrPubKey = async (req: WenRequest) => {
 
   const verify = Ed25519Next.verify(publicKey, unsignedData, signedData);
   if (!verify) {
-    throw throwUnAuthenticated(WenError.invalid_signature);
+    throw unAuthenticated(WenError.invalid_signature);
   }
 
   return { member, address: bech32Address };
@@ -144,20 +143,20 @@ const validateIotaPubKey = async (req: WenRequest) => {
 
   const verify = Ed25519.verify(publicKey, unsignedData, signedData);
   if (!verify) {
-    throw throwUnAuthenticated(WenError.invalid_signature);
+    throw unAuthenticated(WenError.invalid_signature);
   }
 
   return { member, address: bech32Address };
 };
 
 const getMember = async (address: string) => {
-  const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${address}`);
-  const member = <Member | undefined>(await memberDocRef.get()).data();
+  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${address}`);
+  const member = await memberDocRef.get<Member>();
   if (!member) {
-    throw throwUnAuthenticated(WenError.failed_to_decode_token);
+    throw unAuthenticated(WenError.failed_to_decode_token);
   }
   if (!member.nonce) {
-    throw throwUnAuthenticated(WenError.missing_nonce);
+    throw unAuthenticated(WenError.missing_nonce);
   }
   return member;
 };
@@ -166,18 +165,18 @@ const validateWithIdToken = async (req: WenRequest, func: WEN_FUNC) => {
   const decoded = jwt.verify(req.customToken!, getJwtSecretKey());
 
   if (get(decoded, 'uid', '') !== req.address) {
-    throw throwUnAuthenticated(WenError.invalid_custom_token);
+    throw unAuthenticated(WenError.invalid_custom_token);
   }
 
   const exp = dayjs.unix(get(decoded, 'exp', 0));
   if (exp.isBefore(dayjs())) {
-    throw throwUnAuthenticated(WenError.invalid_custom_token);
+    throw unAuthenticated(WenError.invalid_custom_token);
   }
 
   const lifetime = getCustomTokenLifetime(func) || 3600;
   const iat = dayjs.unix(get(decoded, 'iat', 0)).add(lifetime, 's');
   if (iat.isBefore(dayjs())) {
-    throw throwUnAuthenticated(WenError.invalid_custom_token);
+    throw unAuthenticated(WenError.invalid_custom_token);
   }
 };
 

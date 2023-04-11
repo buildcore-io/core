@@ -45,10 +45,7 @@
       {
         title: descriptionLabels[4],
         type: descriptionItemTypes.DEFAULT_NO_TRUNCATE,
-        value: helper.getVotingTypeText(
-          (data.proposal$ | async)?.subType,
-          (data.proposal$ | async)?.type
-        ),
+        value: helper.getVotingTypeText((data.proposal$ | async)?.type),
         titleTemplate: votingTypeTooltipIcon
       },
       !helper.isNativeVote((data.proposal$ | async)?.type)

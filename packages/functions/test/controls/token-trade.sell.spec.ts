@@ -12,10 +12,9 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
-import { cancelTradeOrder } from '../../src/controls/token-trading/token-trade-cancel.controller';
-import { tradeToken } from '../../src/controls/token-trading/token-trade.controller';
-import { enableTokenTrading } from '../../src/controls/token.control';
+import { soonDb } from '../../src/firebase/firestore/soondb';
+import { enableTokenTrading } from '../../src/runtime/firebase/token/base';
+import { cancelTradeOrder, tradeToken } from '../../src/runtime/firebase/token/trading';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import {
@@ -49,10 +48,9 @@ describe('Trade controller, sell token', () => {
       approved: true,
       space: space.uid,
     };
-    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).set(token);
+    await soonDb().doc(`${COL.TOKEN}/${tokenId}`).set(token);
     const distribution = <TokenDistribution>{ tokenOwned: 10 };
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}/${memberAddress}`)
       .set(distribution);
   });
@@ -70,16 +68,13 @@ describe('Trade controller, sell token', () => {
     expect(sell.price).toBe(MIN_IOTA_AMOUNT);
     expect(sell.tokenStatus).toBe(TokenStatus.AVAILABLE);
 
-    const distribution = await admin
-      .firestore()
+    const distribution = await soonDb()
       .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`)
-      .get();
-    expect(distribution.data()?.lockedForSale).toBe(5);
+      .get<TokenDistribution>();
+    expect(distribution?.lockedForSale).toBe(5);
 
     await wait(async () => {
-      const doc = <TokenTradeOrder>(
-        (await admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`).get()).data()
-      );
+      const doc = <TokenTradeOrder>await soonDb().doc(`${COL.TOKEN_MARKET}/${sell.uid}`).get();
       return (
         doc.updatedOn !== undefined &&
         dayjs(doc.updatedOn.toDate()).isAfter(doc.createdOn!.toDate())
@@ -91,11 +86,10 @@ describe('Trade controller, sell token', () => {
     const cancelled = await testEnv.wrap(cancelTradeOrder)({});
     expect(cancelled.status).toBe(TokenTradeOrderStatus.CANCELLED);
 
-    const cancelledDistribution = await admin
-      .firestore()
+    const cancelledDistribution = await soonDb()
       .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`)
-      .get();
-    expect(cancelledDistribution.data()?.lockedForSale).toBe(0);
+      .get<TokenDistribution>();
+    expect(cancelledDistribution?.lockedForSale).toBe(0);
   });
 
   it('Should throw, not enough tokens', async () => {
@@ -165,11 +159,10 @@ describe('Trade controller, sell token', () => {
     mockWalletReturnValue(walletSpy, memberAddress, cancelRequest);
     await testEnv.wrap(cancelTradeOrder)({});
 
-    const distribution = await admin
-      .firestore()
+    const distribution = await soonDb()
       .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`)
-      .get();
-    expect(distribution.data()?.lockedForSale).toBe(5);
+      .get<TokenDistribution>();
+    expect(distribution?.lockedForSale).toBe(5);
 
     mockWalletReturnValue(walletSpy, memberAddress, {
       symbol: token.symbol,
@@ -181,9 +174,9 @@ describe('Trade controller, sell token', () => {
   });
 
   it('Should update sale lock properly', async () => {
-    const distDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`);
+    const distDocRef = soonDb().doc(
+      `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`,
+    );
     const count = 3;
     const sells = [] as any[];
     for (let i = 0; i < count; ++i) {
@@ -196,28 +189,28 @@ describe('Trade controller, sell token', () => {
       sells.push(await testEnv.wrap(tradeToken)({}));
     }
     await wait(async () => {
-      const distribution = await distDocRef.get();
-      return distribution.data()?.lockedForSale === count;
+      const distribution = await distDocRef.get<TokenDistribution>();
+      return distribution?.lockedForSale === count;
     });
 
     for (let i = 0; i < count; ++i) {
       const cancelRequest = { uid: sells[i].uid };
       mockWalletReturnValue(walletSpy, memberAddress, cancelRequest);
       await testEnv.wrap(cancelTradeOrder)({});
-      const distribution = await distDocRef.get();
-      expect(distribution.data()?.lockedForSale).toBe(count - i - 1);
+      const distribution = await distDocRef.get<TokenDistribution>();
+      expect(distribution?.lockedForSale).toBe(count - i - 1);
     }
   });
 
   it('Should throw, token not approved', async () => {
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false });
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false });
     mockWalletReturnValue(walletSpy, memberAddress, {
       symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,
       count: 8,
       type: TokenTradeOrderType.SELL,
     });
-    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.token_not_approved.key);
+    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.token_does_not_exist.key);
   });
 
   it('Should throw, precision too much', async () => {
@@ -266,10 +259,7 @@ describe('Trade controller, sell token', () => {
   });
 
   it('Should fail first, tading disabled, then succeeed', async () => {
-    await admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}`)
-      .update({ tradingDisabled: true, public: true });
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ tradingDisabled: true, public: true });
     const request = {
       symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,

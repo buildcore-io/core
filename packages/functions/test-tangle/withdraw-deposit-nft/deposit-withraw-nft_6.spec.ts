@@ -11,7 +11,7 @@ import {
   Transaction,
   TransactionType,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { depositNft, withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { getAddress } from '../../src/utils/address.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -32,43 +32,42 @@ describe('Nft depositing', () => {
     nft = await helper.createAndOrderNft();
     await helper.mintCollection();
 
-    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
+    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, { nft: nft.uid });
     await testEnv.wrap(withdrawNft)({});
 
-    const query = admin
-      .firestore()
+    const query = soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.WITHDRAW_NFT)
       .where('payload.nft', '==', nft.uid);
     await wait(async () => {
-      const snap = await query.get();
-      return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+      const snap = await query.get<Transaction>();
+      return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
-    nft = <Nft>(await nftDocRef.get()).data();
+    nft = <Nft>await nftDocRef.get();
 
-    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${nft.collection}`);
-    collection = <Collection>(await collectionDocRef.get()).data();
+    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nft.collection}`);
+    collection = <Collection>await collectionDocRef.get();
   });
 
   it('Should deposit nft minted outside soonaverse and withdraw it', async () => {
-    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
+    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
 
     await nftDocRef.delete();
-    await admin.firestore().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
+    await soonDb().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
 
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, { network: helper.network });
     let depositOrder = await testEnv.wrap(depositNft)({});
     await helper.sendNftToAddress(helper.guardianAddress!, depositOrder.payload.targetAddress);
 
-    const nftQuery = admin.firestore().collection(COL.NFT).where('owner', '==', helper.guardian);
+    const nftQuery = soonDb().collection(COL.NFT).where('owner', '==', helper.guardian);
     await wait(async () => {
       const snap = await nftQuery.get();
-      return snap.size > 0;
+      return snap.length > 0;
     });
 
     const snap = await nftQuery.get();
-    const migratedNft = <Nft>snap.docs[0].data();
+    const migratedNft = <Nft>snap[0];
 
     expect(migratedNft.uid).toBe(nft.mintingData?.nftId!);
     expect(migratedNft.name).toBe(nft.name);
@@ -86,10 +85,8 @@ describe('Nft depositing', () => {
     expect(migratedNft.properties.custom.value).toBe(1);
     expect(migratedNft.properties.customStat.value).toBe('customStat');
 
-    const migratedCollectionDocRef = admin
-      .firestore()
-      .doc(`${COL.COLLECTION}/${migratedNft.collection}`);
-    const migratedCollection = <Collection>(await migratedCollectionDocRef.get()).data();
+    const migratedCollectionDocRef = soonDb().doc(`${COL.COLLECTION}/${migratedNft.collection}`);
+    const migratedCollection = <Collection>await migratedCollectionDocRef.get();
     expect(migratedCollection.space).toBe(migratedNft.space);
     expect(migratedCollection.uid).toBe(collection.mintingData?.nftId!);
     expect(migratedCollection.name).toBe(collection.name);
@@ -103,8 +100,8 @@ describe('Nft depositing', () => {
     expect(migratedCollection.royaltiesFee).toBe(0.45);
     expect(migratedCollection.royaltiesSpace).toBe(getAddress(helper.royaltySpace!, Network.RMS));
 
-    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${migratedNft.space}`);
-    const space = <Space>(await spaceDocRef.get()).data();
+    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${migratedNft.space}`);
+    const space = <Space>await spaceDocRef.get();
     expect(space.uid).toBeDefined();
     expect(space.name).toBe(migratedCollection.name);
     expect(space.collectionId).toBe(migratedCollection.mintingData?.nftId);
@@ -114,18 +111,17 @@ describe('Nft depositing', () => {
     const nftId = nft.mintingData?.nftId;
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, { nft: nftId });
     await testEnv.wrap(withdrawNft)({});
-    const query = admin
-      .firestore()
+    const query = soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.WITHDRAW_NFT)
       .where('payload.nft', '==', nftId);
     await wait(async () => {
-      const snap = await query.get();
-      return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+      const snap = await query.get<Transaction>();
+      return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
 
-    const depositOrderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${depositOrder.uid}`);
-    depositOrder = <Transaction>(await depositOrderDocRef.get()).data();
+    const depositOrderDocRef = soonDb().doc(`${COL.TRANSACTION}/${depositOrder.uid}`);
+    depositOrder = <Transaction>await depositOrderDocRef.get();
     expect(depositOrder.payload.nft).toBe(nftId);
   });
 });

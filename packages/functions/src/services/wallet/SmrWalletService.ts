@@ -21,7 +21,7 @@ import { Converter, HexHelper } from '@iota/util.js-next';
 import { NativeToken, Network, Timestamp, Transaction } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import { generateMnemonic } from 'bip39';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { cloneDeep, head, isEmpty } from 'lodash';
 import { mergeOutputs, packBasicOutput, subtractHex } from '../../utils/basic-output.utils';
 import { Bech32AddressHelper } from '../../utils/bech32-address.helper';
@@ -30,7 +30,6 @@ import { getRandomElement } from '../../utils/common.utils';
 import { createUnlock } from '../../utils/smr.utils';
 import { MnemonicService } from './mnemonic';
 import { AddressDetails, setConsumedOutputIds, Wallet, WalletParams } from './wallet';
-
 const RMS_API_ENDPOINTS = ['https://rms1.svrs.io/'];
 
 const SMR_API_ENDPOINTS = ['https://smr1.svrs.io/', 'https://smr3.svrs.io/'];

@@ -7,10 +7,10 @@ import {
   TokenDistribution,
   WenError,
 } from '@soonaverse/interfaces';
-import admin, { inc } from '../../../../admin.config';
+import { soonDb } from '../../../../firebase/firestore/soondb';
 import { uidSchema } from '../../../../runtime/firebase/common';
 import { serverTime } from '../../../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../../../utils/error.utils';
+import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getTokenForSpace } from '../../../../utils/token.utils';
 import { getStakeForType } from '../../../stake.service';
@@ -22,10 +22,10 @@ export class SpaceJoinService {
   public handleSpaceJoinRequest = async (owner: string, request: Record<string, unknown>) => {
     await assertValidationAsync(uidSchema, request, { allowUnknown: true });
 
-    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${request.uid}`);
-    const space = <Space | undefined>(await spaceDocRef.get()).data();
+    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${request.uid}`);
+    const space = <Space | undefined>await spaceDocRef.get();
     if (!space) {
-      throw throwInvalidArgument(WenError.space_does_not_exists);
+      throw invalidArgument(WenError.space_does_not_exists);
     }
 
     const { space: spaceUpdateData, spaceMember, member } = await getJoinSpaceData(owner, space);
@@ -33,20 +33,20 @@ export class SpaceJoinService {
     const joiningMemberDocRef = spaceDocRef
       .collection(space.open || space.tokenBased ? SUB_COL.MEMBERS : SUB_COL.KNOCKING_MEMBERS)
       .doc(owner);
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: joiningMemberDocRef,
       data: spaceMember,
       action: 'set',
     });
 
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: spaceDocRef,
       data: spaceUpdateData,
       action: 'update',
     });
 
-    const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${owner}`);
-    this.transactionService.updates.push({
+    const memberDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
+    this.transactionService.push({
       ref: memberDocRef,
       data: member,
       action: 'set',
@@ -58,24 +58,24 @@ export class SpaceJoinService {
 }
 
 export const getJoinSpaceData = async (owner: string, space: Space) => {
-  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
+  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space.uid}`);
 
   const joinedMemberSnap = await spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner).get();
-  if (joinedMemberSnap.exists) {
-    throw throwInvalidArgument(WenError.you_are_already_part_of_space);
+  if (joinedMemberSnap) {
+    throw invalidArgument(WenError.you_are_already_part_of_space);
   }
 
   const blockedMemberSnap = await spaceDocRef.collection(SUB_COL.BLOCKED_MEMBERS).doc(owner).get();
-  if (blockedMemberSnap.exists) {
-    throw throwInvalidArgument(WenError.you_are_not_allowed_to_join_space);
+  if (blockedMemberSnap) {
+    throw invalidArgument(WenError.you_are_not_allowed_to_join_space);
   }
 
   const knockingMemberSnap = await spaceDocRef
     .collection(SUB_COL.KNOCKING_MEMBERS)
     .doc(owner)
     .get();
-  if (knockingMemberSnap.exists) {
-    throw throwInvalidArgument(WenError.member_already_knocking);
+  if (knockingMemberSnap) {
+    throw invalidArgument(WenError.member_already_knocking);
   }
 
   if (space.tokenBased) {
@@ -89,8 +89,8 @@ export const getJoinSpaceData = async (owner: string, space: Space) => {
     createdOn: serverTime(),
   };
   const spaceUpdateData = {
-    totalMembers: inc(space.open || space.tokenBased ? 1 : 0),
-    totalPendingMembers: inc(space.open || space.tokenBased ? 0 : 1),
+    totalMembers: soonDb().inc(space.open || space.tokenBased ? 1 : 0),
+    totalPendingMembers: soonDb().inc(space.open || space.tokenBased ? 0 : 1),
   };
 
   const member = { spaces: { [space.uid]: { uid: space.uid, isMember: true } } };
@@ -100,12 +100,12 @@ export const getJoinSpaceData = async (owner: string, space: Space) => {
 
 const assertMemberHasEnoughStakedTokens = async (space: Space, member: string) => {
   const token = await getTokenForSpace(space.uid);
-  const distributionDocRef = admin
-    .firestore()
-    .doc(`${COL.TOKEN}/${token?.uid}/${SUB_COL.DISTRIBUTION}/${member}`);
-  const distribution = <TokenDistribution | undefined>(await distributionDocRef.get()).data();
+  const distributionDocRef = soonDb().doc(
+    `${COL.TOKEN}/${token?.uid}/${SUB_COL.DISTRIBUTION}/${member}`,
+  );
+  const distribution = await distributionDocRef.get<TokenDistribution>();
   const stakeValue = getStakeForType(distribution, StakeType.DYNAMIC);
   if (stakeValue < (space.minStakedValue || 0)) {
-    throw throwInvalidArgument(WenError.not_enough_staked_tokens);
+    throw invalidArgument(WenError.not_enough_staked_tokens);
   }
 };

@@ -1,7 +1,7 @@
 import { COL, PublicCollections, TransactionType } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
 import { getById } from '../../src/api/getById';
 import { getMany } from '../../src/api/getMany';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 
 describe('Test custom constraints', () => {
@@ -16,10 +16,8 @@ describe('Test custom constraints', () => {
   it.each([PublicCollections.AVATARS, PublicCollections.BADGES])(
     'Get all should only return one for collection',
     async (collection: PublicCollections) => {
-      const batch = admin.firestore().batch();
-      uids.forEach((uid) =>
-        batch.create(admin.firestore().doc(`${collection}/${uid}`), { name: uid }),
-      );
+      const batch = soonDb().batch();
+      uids.forEach((uid) => batch.create(soonDb().doc(`${collection}/${uid}`), { name: uid }));
       await batch.commit();
       const req = { query: { collection } } as any;
       const res = {
@@ -33,9 +31,9 @@ describe('Test custom constraints', () => {
 
   it('Get all should only return none hidden nfts', async () => {
     uids = Array.from(Array(5)).map(() => getRandomEthAddress());
-    const batch = admin.firestore().batch();
+    const batch = soonDb().batch();
     uids.forEach((uid, i) =>
-      batch.create(admin.firestore().doc(`${PublicCollections.NFT}/${uid}`), {
+      batch.create(soonDb().doc(`${PublicCollections.NFT}/${uid}`), {
         name: uid,
         space,
         hidden: i > 1,
@@ -55,10 +53,7 @@ describe('Test custom constraints', () => {
 
   it('Should not return hidden nft', async () => {
     const uid = getRandomEthAddress();
-    admin
-      .firestore()
-      .doc(`${PublicCollections.NFT}/${uid}`)
-      .create({ name: uid, space, hidden: true });
+    soonDb().doc(`${PublicCollections.NFT}/${uid}`).create({ name: uid, space, hidden: true });
     const req = { query: { collection: PublicCollections.NFT, uid } } as any;
     const res = {
       status: (code: any) => {
@@ -73,9 +68,9 @@ describe('Test custom constraints', () => {
 
   it('Get all should not return order transactions', async () => {
     uids = Array.from(Array(5)).map(() => getRandomEthAddress());
-    const batch = admin.firestore().batch();
+    const batch = soonDb().batch();
     uids.forEach((uid, i) =>
-      batch.create(admin.firestore().doc(`${PublicCollections.TRANSACTION}/${uid}`), {
+      batch.create(soonDb().doc(`${PublicCollections.TRANSACTION}/${uid}`), {
         name: uid,
         space,
         type: i <= 1 ? TransactionType.BILL_PAYMENT : TransactionType.ORDER,
@@ -98,7 +93,7 @@ describe('Test custom constraints', () => {
     'Should not access restricted collections',
     async (collection: COL) => {
       const uid = getRandomEthAddress();
-      await admin.firestore().doc(`${collection}/${uid}`).create({ name: 'asd' });
+      await soonDb().doc(`${collection}/${uid}`).create({ name: 'asd' });
       const req = { query: { collection, uid } } as any;
       const res = {
         status: (code: any) => {

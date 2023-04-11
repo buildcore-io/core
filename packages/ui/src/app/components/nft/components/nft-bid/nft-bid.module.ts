@@ -8,8 +8,8 @@ import { NetworkModule } from '@components/network/network.module';
 import { TermsAndConditionsModule } from '@components/terms-and-conditions/terms-and-conditions.module';
 import { WalletDeeplinkModule } from '@components/wallet-deeplink/wallet-deeplink.module';
 import { CountdownTimeModule } from '@core/pipes/countdown-time/countdown-time.module';
-import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { RelativeTimeModule } from '@core/pipes/relative-time/relative-time.module';
+import { ResizeAvatarModule } from '@core/pipes/resize-avatar/resize-avatar.module';
 import { TimeModule } from '@core/pipes/time/time.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
@@ -43,7 +43,7 @@ import { NftBidComponent } from './nft-bid.component';
     NzNotificationModule,
     NzTableModule,
     NzAvatarModule,
-    IpfsAvatarModule,
+    ResizeAvatarModule,
     CountdownModule,
     ModalDrawerModule,
     WalletDeeplinkModule,

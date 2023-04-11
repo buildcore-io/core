@@ -1,7 +1,7 @@
 import { COL, Space, SUB_COL, WenError } from '@soonaverse/interfaces';
-import admin, { inc } from '../../../../admin.config';
+import { soonDb } from '../../../../firebase/firestore/soondb';
 import { editSpaceMemberSchema } from '../../../../runtime/firebase/space';
-import { throwInvalidArgument } from '../../../../utils/error.utils';
+import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { TransactionService } from '../../transaction-service';
@@ -19,34 +19,34 @@ export class SpaceBlockMemberService {
       member,
     );
 
-    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${request.uid}`);
+    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${request.uid}`);
     const blockedMemberDocRef = spaceDocRef.collection(SUB_COL.BLOCKED_MEMBERS).doc(member);
 
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: blockedMemberDocRef,
       data: blockedMember,
       action: 'set',
     });
 
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: spaceDocRef.collection(SUB_COL.MEMBERS).doc(member),
       data: {},
       action: 'delete',
     });
 
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: spaceDocRef.collection(SUB_COL.KNOCKING_MEMBERS).doc(member),
       data: {},
       action: 'delete',
     });
 
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member),
       data: {},
       action: 'delete',
     });
 
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: spaceDocRef,
       data: space,
       action: 'update',
@@ -57,38 +57,38 @@ export class SpaceBlockMemberService {
 }
 
 export const getBlockMemberUpdateData = async (owner: string, spaceId: string, member: string) => {
-  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${spaceId}`);
+  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${spaceId}`);
   await assertIsGuardian(spaceId, owner);
 
   const spaceMember = await spaceDocRef.collection(SUB_COL.MEMBERS).doc(member).get();
   const knockingMember = await spaceDocRef.collection(SUB_COL.KNOCKING_MEMBERS).doc(member).get();
-  if (!spaceMember && !knockingMember.exists) {
-    throw throwInvalidArgument(WenError.member_is_not_part_of_the_space);
+  if (!spaceMember && !knockingMember) {
+    throw invalidArgument(WenError.member_is_not_part_of_the_space);
   }
 
   const blockedMemberDocRef = spaceDocRef.collection(SUB_COL.BLOCKED_MEMBERS).doc(member);
   const blockedMemberDoc = await blockedMemberDocRef.get();
-  if (blockedMemberDoc.exists) {
-    throw throwInvalidArgument(WenError.member_is_already_blocked);
+  if (blockedMemberDoc) {
+    throw invalidArgument(WenError.member_is_already_blocked);
   }
 
-  const space = <Space>(await spaceDocRef.get()).data();
+  const space = <Space>await spaceDocRef.get();
   if (space.totalMembers === 1) {
-    throw throwInvalidArgument(WenError.at_least_one_member_must_be_in_the_space);
+    throw invalidArgument(WenError.at_least_one_member_must_be_in_the_space);
   }
 
   if (space.totalGuardians === 1) {
     const guardian = await spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member).get();
-    if (guardian.exists) {
-      throw throwInvalidArgument(WenError.at_least_one_guardian_must_be_in_the_space);
+    if (guardian) {
+      throw invalidArgument(WenError.at_least_one_guardian_must_be_in_the_space);
     }
   }
 
   const blockedMember = { uid: member, parentId: spaceId, parentCol: COL.SPACE };
   const spaceUpdateData = {
-    totalGuardians: inc(knockingMember.exists ? 0 : -1),
-    totalMembers: inc(knockingMember.exists ? 0 : -1),
-    totalPendingMembers: inc(knockingMember.exists ? -1 : 0),
+    totalGuardians: soonDb().inc(knockingMember ? 0 : -1),
+    totalMembers: soonDb().inc(knockingMember ? 0 : -1),
+    totalPendingMembers: soonDb().inc(knockingMember ? -1 : 0),
   };
   return { blockedMember, space: spaceUpdateData };
 };

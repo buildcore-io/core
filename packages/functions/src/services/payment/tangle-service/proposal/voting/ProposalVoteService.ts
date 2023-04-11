@@ -3,10 +3,10 @@ import {
   DEFAULT_NETWORK,
   MilestoneTransaction,
   MilestoneTransactionEntry,
+  PROPOSAL_COMMENCING_IN_DAYS,
   Proposal,
   ProposalMember,
   ProposalType,
-  PROPOSAL_COMMENCING_IN_DAYS,
   SUB_COL,
   Token,
   TokenStatus,
@@ -17,10 +17,9 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../../../../admin.config';
-import { Database } from '../../../../../database/Database';
+import { soonDb } from '../../../../../firebase/firestore/soondb';
 import { voteOnProposalSchema } from '../../../../../runtime/firebase/proposal';
-import { throwInvalidArgument } from '../../../../../utils/error.utils';
+import { invalidArgument } from '../../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../../utils/schema.utils';
 import { getTokenForSpace } from '../../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../../utils/wallet.utils';
@@ -48,7 +47,7 @@ export class ProposalVoteService {
     if (proposal.type === ProposalType.NATIVE) {
       const token = await getTokenForSpace(proposal.space);
       if (token?.status !== TokenStatus.MINTED) {
-        throw throwInvalidArgument(WenError.token_not_minted);
+        throw invalidArgument(WenError.token_not_minted);
       }
 
       if (request.voteWithStakedTokes) {
@@ -84,9 +83,9 @@ export class ProposalVoteService {
     milestoneTranEntry: MilestoneTransactionEntry,
   ) => {
     const order = await createVoteTransactionOrder(owner, proposal, values, token);
-    const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
+    const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
 
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: orderDocRef,
       data: order,
       action: 'set',
@@ -106,29 +105,29 @@ export class ProposalVoteService {
     proposalMember: ProposalMember,
     values: number[],
   ) => {
-    const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
     const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(proposalMember.uid);
 
     const voteData = await executeSimpleVoting(proposalMember, proposal, values);
 
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: proposalDocRef,
       data: voteData.proposal,
       action: 'set',
       merge: true,
     });
 
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: proposalMemberDocRef,
       data: voteData.proposalMember,
       action: 'set',
       merge: true,
     });
 
-    const voteTransactionDocRef = admin
-      .firestore()
-      .doc(`${COL.TRANSACTION}/${voteData.voteTransaction.uid}`);
-    this.transactionService.updates.push({
+    const voteTransactionDocRef = soonDb().doc(
+      `${COL.TRANSACTION}/${voteData.voteTransaction.uid}`,
+    );
+    this.transactionService.push({
       ref: voteTransactionDocRef,
       data: voteData.voteTransaction,
       action: 'set',
@@ -139,17 +138,18 @@ export class ProposalVoteService {
 }
 
 export const getProposal = async (proposalUid: string) => {
-  const proposal = await Database.getById<Proposal>(COL.PROPOSAL, proposalUid);
+  const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposalUid}`);
+  const proposal = await proposalDocRef.get<Proposal>();
   if (!proposal) {
-    throw throwInvalidArgument(WenError.proposal_does_not_exists);
+    throw invalidArgument(WenError.proposal_does_not_exists);
   }
 
   if (proposal.rejected) {
-    throw throwInvalidArgument(WenError.proposal_is_rejected);
+    throw invalidArgument(WenError.proposal_is_rejected);
   }
 
   if (!proposal.approved) {
-    throw throwInvalidArgument(WenError.proposal_is_not_approved);
+    throw invalidArgument(WenError.proposal_is_not_approved);
   }
   const isNativeProposal = proposal.type === ProposalType.NATIVE;
   const startDate = dayjs(proposal.settings.startDate.toDate()).subtract(
@@ -158,25 +158,22 @@ export const getProposal = async (proposalUid: string) => {
   );
   const endDate = dayjs(proposal.settings.endDate.toDate());
   if (dayjs().isBefore(startDate) || dayjs().isAfter(endDate)) {
-    throw throwInvalidArgument(WenError.vote_is_no_longer_active);
+    throw invalidArgument(WenError.vote_is_no_longer_active);
   }
 
   if (endDate.isBefore(startDate)) {
-    throw throwInvalidArgument(WenError.proposal_start_date_must_be_before_end_date);
+    throw invalidArgument(WenError.proposal_start_date_must_be_before_end_date);
   }
 
   return proposal;
 };
 
 export const getProposalMember = async (owner: string, proposal: Proposal, value: number) => {
-  const proposalMember = await Database.getById<ProposalMember>(
-    COL.PROPOSAL,
-    proposal.uid,
-    SUB_COL.MEMBERS,
-    owner,
-  );
+  const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(owner);
+  const proposalMember = await proposalMemberDocRef.get<ProposalMember>();
   if (!proposalMember) {
-    throw throwInvalidArgument(WenError.you_are_not_allowed_to_vote_on_this_proposal);
+    throw invalidArgument(WenError.you_are_not_allowed_to_vote_on_this_proposal);
   }
   assertAnswerIsValid(proposal, value);
 
@@ -191,7 +188,7 @@ const assertAnswerIsValid = (proposal: Proposal, answerSent: number) => {
       }
     }
   }
-  throw throwInvalidArgument(WenError.value_does_not_exists_in_proposal);
+  throw invalidArgument(WenError.value_does_not_exists_in_proposal);
 };
 
 export const createVoteTransaction = (

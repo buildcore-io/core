@@ -12,8 +12,8 @@ import {
   WEN_FUNC,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../../src/admin.config';
-import { createToken } from '../../../src/controls/token.control';
+import { soonDb } from '../../../src/firebase/firestore/soondb';
+import { createToken } from '../../../src/runtime/firebase/token/base';
 import * as config from '../../../src/utils/config.utils';
 import { dateToTimestamp } from '../../../src/utils/dateTime.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
@@ -41,6 +41,7 @@ const dummyToken = (space: string) =>
     overviewGraphics: MEDIA,
     termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
     access: 0,
+    decimals: 5,
   } as any);
 
 describe('Token controller: ' + WEN_FUNC.cToken, () => {
@@ -63,6 +64,7 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
     const result = await testEnv.wrap(createToken)({});
     expect(result?.uid).toBeDefined();
     expect(result.tradingDisabled).toBe(true);
+    expect(result.decimals).toBe(5);
   });
 
   it('Should throw, invalid icon url', async () => {
@@ -77,8 +79,7 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
   });
 
   it('Should create token, verify soon', async () => {
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.TOKEN}/${soonTokenId}/${SUB_COL.DISTRIBUTION}/${memberAddress}`)
       .create({
         stakes: {
@@ -151,10 +152,7 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
   it('Should only allow two tokens if first rejected', async () => {
     mockWalletReturnValue(walletSpy, memberAddress, token);
     const cToken = await testEnv.wrap(createToken)({});
-    await admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${cToken.uid}`)
-      .update({ approved: false, rejected: true });
+    await soonDb().doc(`${COL.TOKEN}/${cToken.uid}`).update({ approved: false, rejected: true });
     mockWalletReturnValue(walletSpy, memberAddress, dummyToken(space.uid));
     const secondToken = await testEnv.wrap(createToken)({});
     expect(secondToken.uid).toBeDefined();
@@ -186,7 +184,7 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
 
   it('Should throw, no valid space address', async () => {
     space = await createSpace(walletSpy, memberAddress);
-    await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).update({ validatedAddress: {} });
+    await soonDb().doc(`${COL.SPACE}/${space.uid}`).update({ validatedAddress: {} });
     token.space = space.uid;
     mockWalletReturnValue(walletSpy, memberAddress, token);
     await expectThrow(
@@ -286,7 +284,7 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
   it('Should not throw, token symbol not unique but prev token is rejected', async () => {
     mockWalletReturnValue(walletSpy, memberAddress, token);
     const newToken = await testEnv.wrap(createToken)({});
-    await admin.firestore().doc(`${COL.TOKEN}/${newToken.uid}`).update({ rejected: true });
+    await soonDb().doc(`${COL.TOKEN}/${newToken.uid}`).update({ rejected: true });
 
     const space = await createSpace(walletSpy, memberAddress);
     mockWalletReturnValue(walletSpy, memberAddress, {

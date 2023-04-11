@@ -1,5 +1,5 @@
 import { COL, WEN_FUNC } from '@soonaverse/interfaces';
-import { isEmulatorEnv, isProdEnv } from './utils/config.utils';
+import { isProdEnv } from './utils/config.utils';
 export const lowCold = 0;
 export const lowWarm = isProdEnv() ? 1 : lowCold;
 export const medium = isProdEnv() ? 3 : 1;
@@ -63,8 +63,9 @@ export function scale(func: WEN_FUNC): number {
   scaleSettings[WEN_FUNC.mintCollection] = lowCold;
 
   scaleSettings[WEN_FUNC.algolia] = important;
+  scaleSettings[WEN_FUNC.resizeImg] = pump;
 
-  return isEmulatorEnv() ? 0 : scaleSettings[func] || lowCold;
+  return isProdEnv() ? scaleSettings[func] || lowCold : 0;
 }
 
 export function scaleAlgolia(col: COL): number {
@@ -77,5 +78,5 @@ export function scaleAlgolia(col: COL): number {
   scaleSettings[COL.MEMBER] = medium;
   scaleSettings[COL.PROPOSAL] = lowWarm;
 
-  return isEmulatorEnv() ? 0 : scaleSettings[col] || lowWarm;
+  return isProdEnv() ? scaleSettings[col] || lowWarm : 0;
 }

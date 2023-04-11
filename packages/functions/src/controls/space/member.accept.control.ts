@@ -1,7 +1,6 @@
 import { COL, SpaceMember, SUB_COL } from '@soonaverse/interfaces';
-import admin from '../../admin.config';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { acceptSpaceMember } from '../../services/payment/tangle-service/space/SpaceAcceptMemberService';
-import { cOn, uOn } from '../../utils/dateTime.utils';
 
 export const acceptSpaceMemberControl = async (owner: string, params: Record<string, unknown>) => {
   const { spaceMember, space } = await acceptSpaceMember(
@@ -10,17 +9,17 @@ export const acceptSpaceMemberControl = async (owner: string, params: Record<str
     params.member as string,
   );
 
-  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${params.uid as string}`);
+  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${params.uid as string}`);
   const memberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(spaceMember.uid);
   const knockingMemberDocRef = spaceDocRef
     .collection(SUB_COL.KNOCKING_MEMBERS)
     .doc(spaceMember.uid);
 
-  const batch = admin.firestore().batch();
-  batch.set(memberDocRef, cOn(spaceMember));
+  const batch = soonDb().batch();
+  batch.set(memberDocRef, spaceMember);
   batch.delete(knockingMemberDocRef);
-  batch.update(spaceDocRef, uOn(space));
+  batch.update(spaceDocRef, space);
   await batch.commit();
 
-  return <SpaceMember>(await memberDocRef.get()).data();
+  return await memberDocRef.get<SpaceMember>();
 };

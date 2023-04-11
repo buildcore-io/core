@@ -9,9 +9,9 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
-import { mintTokenOrder } from '../../src/controls/token-minting/token-mint.control';
-import { cancelPublicSale, setTokenAvailableForSale } from '../../src/controls/token.control';
+import { soonDb } from '../../src/firebase/firestore/soondb';
+import { cancelPublicSale, setTokenAvailableForSale } from '../../src/runtime/firebase/token/base';
+import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
@@ -38,8 +38,7 @@ describe('Token minting', () => {
       saleLength: 86400000 * 2,
       coolDownLength: 86400000,
     };
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.TOKEN}/${helper.token.uid}`)
       .update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] });
     const updateData = { token: helper.token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };
@@ -48,16 +47,15 @@ describe('Token minting', () => {
 
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, order.payload.amount);
 
-    const creditQuery = admin
-      .firestore()
+    const creditQuery = soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.guardian.uid);
     await wait(async () => {
-      const credit = (await creditQuery.get()).docs.map((d) => <Transaction>d.data())[0];
+      const credit = (await creditQuery.get()).map((d) => <Transaction>d)[0];
       return credit?.payload?.walletReference?.confirmed;
     });
-    const credit = (await creditQuery.get()).docs.map((d) => <Transaction>d.data())[0];
+    const credit = (await creditQuery.get()).map((d) => <Transaction>d)[0];
     expect(credit?.payload?.amount).toBe(order.payload.amount);
   });
 
@@ -75,8 +73,7 @@ describe('Token minting', () => {
       saleLength: 86400000 * 2,
       coolDownLength: 86400000,
     };
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.TOKEN}/${helper.token.uid}`)
       .update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] });
     const updateData = { token: helper.token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };
@@ -85,16 +82,15 @@ describe('Token minting', () => {
 
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, order.payload.amount);
 
-    const creditQuery = admin
-      .firestore()
+    const creditQuery = soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.guardian.uid);
     await wait(async () => {
-      const credit = (await creditQuery.get()).docs.map((d) => <Transaction>d.data())[0];
+      const credit = (await creditQuery.get()).map((d) => <Transaction>d)[0];
       return credit?.payload?.walletReference?.confirmed;
     });
-    const credit = (await creditQuery.get()).docs.map((d) => <Transaction>d.data())[0];
+    const credit = (await creditQuery.get()).map((d) => <Transaction>d)[0];
     expect(credit?.payload?.amount).toBe(order.payload.amount);
 
     mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, { token: helper.token.uid });
@@ -102,9 +98,7 @@ describe('Token minting', () => {
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, order.payload.amount);
 
     await wait(async () => {
-      const tokenData = <Token>(
-        (await admin.firestore().doc(`${COL.TOKEN}/${helper.token.uid}`).get()).data()
-      );
+      const tokenData = <Token>await soonDb().doc(`${COL.TOKEN}/${helper.token.uid}`).get();
       return tokenData.status === TokenStatus.MINTED;
     });
   });

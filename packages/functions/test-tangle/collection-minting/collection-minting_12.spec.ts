@@ -1,5 +1,5 @@
 import { COL, Nft } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { CollectionMintHelper } from './Helper';
 
 describe('Collection minting', () => {
@@ -17,22 +17,16 @@ describe('Collection minting', () => {
     await helper.createAndOrderNft(true, true);
     let nft: Nft | undefined = await helper.createAndOrderNft();
     let placeholderNft = await helper.createAndOrderNft(true, false);
-    await admin
-      .firestore()
-      .doc(`${COL.NFT}/${placeholderNft.uid}`)
-      .update({ placeholderNft: true });
-    await admin
-      .firestore()
+    await soonDb().doc(`${COL.NFT}/${placeholderNft.uid}`).update({ placeholderNft: true });
+    await soonDb()
       .doc(`${COL.COLLECTION}/${helper.collection}`)
-      .update({ total: admin.firestore.FieldValue.increment(-1) });
+      .update({ total: soonDb().inc(-1) });
 
     await helper.mintCollection();
 
-    placeholderNft = <Nft>(
-      (await admin.firestore().doc(`${COL.NFT}/${placeholderNft.uid}`).get()).data()
-    );
+    placeholderNft = <Nft>await soonDb().doc(`${COL.NFT}/${placeholderNft.uid}`).get();
     expect(placeholderNft.hidden).toBe(false);
-    nft = <Nft | undefined>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
+    nft = <Nft | undefined>await soonDb().doc(`${COL.NFT}/${nft.uid}`).get();
     expect(nft).toBeDefined();
   });
 });

@@ -11,7 +11,7 @@ import {
   TransactionType,
   WenError,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { getAddress } from '../../src/utils/address.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -44,23 +44,18 @@ describe('Simple token trading', () => {
       status: TokenStatus.AVAILABLE,
       approved: true,
     };
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
-    await admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`)
-      .create({
-        parentId: token.uid,
-        parentCol: COL.TOKEN,
-        tokenOwned: 100,
-      });
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`).create({
+      parentId: token.uid,
+      parentCol: COL.TOKEN,
+      tokenOwned: 100,
+    });
 
     rmsWallet = (await getWallet(Network.RMS)) as SmrWallet;
   });
 
   it('Should credit on simple token buy', async () => {
-    const memberData = <Member>(
-      (await admin.firestore().doc(`${COL.MEMBER}/${member}`).get()).data()
-    );
+    const memberData = <Member>await soonDb().doc(`${COL.MEMBER}/${member}`).get();
     const rmsAddress = await rmsWallet.getAddressDetails(getAddress(memberData, Network.RMS)!);
     await requestFundsFromFaucet(Network.RMS, rmsAddress.bech32, 5 * MIN_IOTA_AMOUNT);
 
@@ -75,18 +70,17 @@ describe('Simple token trading', () => {
       },
     });
 
-    const query = admin
-      .firestore()
+    const query = soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
     await wait(async () => {
-      const snap = await query.get();
-      return snap.size > 0 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+      const snap = await query.get<Transaction>();
+      return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
     });
-    const snap = await query.get();
-    expect(snap.size).toBe(1);
-    expect(snap.docs[0].data()?.payload?.response).toEqual({
+    const snap = await query.get<Transaction>();
+    expect(snap.length).toBe(1);
+    expect(snap[0]?.payload?.response).toEqual({
       code: WenError.token_in_invalid_status.code,
       message: WenError.token_in_invalid_status.key,
       status: 'error',
@@ -94,9 +88,7 @@ describe('Simple token trading', () => {
   });
 
   it('Should credit on simple token sell', async () => {
-    const memberData = <Member>(
-      (await admin.firestore().doc(`${COL.MEMBER}/${member}`).get()).data()
-    );
+    const memberData = <Member>await soonDb().doc(`${COL.MEMBER}/${member}`).get();
     const rmsAddress = await rmsWallet.getAddressDetails(getAddress(memberData, Network.RMS)!);
     await requestFundsFromFaucet(Network.RMS, rmsAddress.bech32, 5 * MIN_IOTA_AMOUNT);
 
@@ -111,18 +103,17 @@ describe('Simple token trading', () => {
       },
     });
 
-    const query = admin
-      .firestore()
+    const query = soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
     await wait(async () => {
-      const snap = await query.get();
-      return snap.size > 0 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+      const snap = await query.get<Transaction>();
+      return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
     });
-    const snap = await query.get();
-    expect(snap.size).toBe(1);
-    expect(snap.docs[0].data()?.payload?.response).toEqual({
+    const snap = await query.get<Transaction>();
+    expect(snap.length).toBe(1);
+    expect(snap[0]?.payload?.response).toEqual({
       code: WenError.token_in_invalid_status.code,
       message: WenError.token_in_invalid_status.key,
       status: 'error',

@@ -6,36 +6,12 @@
         <source>Top Members</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">96</context>
+          <context context-type="linenumber">97</context>
         </context-group>
         <target state="translated">Topleden</target>
       </trans-unit>
       <trans-unit id="4911843450729688319" datatype="html">
         <source>Recent</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">97</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">115</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">132</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">146</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">164</context>
-        </context-group>
-        <target state="translated">Recent</target>
-      </trans-unit>
-      <trans-unit id="5844212965736113574" datatype="html">
-        <source>Oldest</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">98</context>
@@ -56,13 +32,37 @@
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
           <context context-type="linenumber">165</context>
         </context-group>
+        <target state="translated">Recent</target>
+      </trans-unit>
+      <trans-unit id="5844212965736113574" datatype="html">
+        <source>Oldest</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">187</context>
+          <context context-type="linenumber">99</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">206</context>
+          <context context-type="linenumber">117</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
+          <context context-type="linenumber">134</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
+          <context context-type="linenumber">148</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
+          <context context-type="linenumber">166</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
+          <context context-type="linenumber">188</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
+          <context context-type="linenumber">209</context>
         </context-group>
         <target state="translated">Oudste</target>
       </trans-unit>
@@ -70,7 +70,7 @@
         <source>Ending Soon</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">114</context>
+          <context context-type="linenumber">115</context>
         </context-group>
         <target state="translated">Eindigt binnenkort</target>
       </trans-unit>
@@ -78,7 +78,7 @@
         <source>Ending SOON</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">163</context>
+          <context context-type="linenumber">164</context>
         </context-group>
         <target state="translated">Eindigt binnenkort</target>
       </trans-unit>
@@ -86,7 +86,7 @@
         <source>Available Date</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">181</context>
+          <context context-type="linenumber">182</context>
         </context-group>
         <target state="translated">Datum beschikbaar</target>
       </trans-unit>
@@ -94,11 +94,11 @@
         <source>Recently Created</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">182</context>
+          <context context-type="linenumber">183</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">205</context>
+          <context context-type="linenumber">208</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tokens/pages/tokens/tokens.page.html</context>
@@ -110,7 +110,7 @@
         <source>Price: Low to High</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">183</context>
+          <context context-type="linenumber">184</context>
         </context-group>
         <target state="translated">Prijs: laag naar hoog</target>
       </trans-unit>
@@ -118,7 +118,7 @@
         <source>Price: High to Low</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">184</context>
+          <context context-type="linenumber">185</context>
         </context-group>
         <target state="translated">Prijs: hoog naar laag</target>
       </trans-unit>
@@ -126,11 +126,11 @@
         <source>Top Traded</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">185</context>
+          <context context-type="linenumber">186</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">203</context>
+          <context context-type="linenumber">206</context>
         </context-group>
         <target state="translated">Meest Verhandeld</target>
       </trans-unit>
@@ -138,11 +138,11 @@
         <source>Recently Traded</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">186</context>
+          <context context-type="linenumber">187</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">204</context>
+          <context context-type="linenumber">207</context>
         </context-group>
         <target state="translated">Recent Verhandeld</target>
       </trans-unit>
@@ -150,7 +150,7 @@
         <source>Public Vote</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">199</context>
+          <context context-type="linenumber">202</context>
         </context-group>
         <target state="translated">Openbare Stem</target>
       </trans-unit>
@@ -158,7 +158,7 @@
         <source>Community Rank</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">200</context>
+          <context context-type="linenumber">203</context>
         </context-group>
         <target state="translated">Community rang</target>
       </trans-unit>
@@ -166,7 +166,7 @@
         <source>SOON on Sale</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">201</context>
+          <context context-type="linenumber">204</context>
         </context-group>
         <target state="translated">Binnenkort in de uitverkoop</target>
       </trans-unit>
@@ -174,7 +174,7 @@
         <source>Recently Minted</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@core/services/filter-storage/filter-storage.service.ts</context>
-          <context context-type="linenumber">202</context>
+          <context context-type="linenumber">205</context>
         </context-group>
         <target state="translated">Recent gemint</target>
       </trans-unit>
@@ -406,7 +406,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.ts</context>
-          <context context-type="linenumber">98</context>
+          <context context-type="linenumber">100</context>
         </context-group>
         <target state="translated">Award</target>
       </trans-unit>
@@ -996,7 +996,7 @@
         <source>Open</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/algolia/services/algolia.service.ts</context>
-          <context context-type="linenumber">28</context>
+          <context context-type="linenumber">32</context>
         </context-group>
         <target state="translated">Open</target>
       </trans-unit>
@@ -1004,7 +1004,7 @@
         <source>Guardians of Space Only</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/algolia/services/algolia.service.ts</context>
-          <context context-type="linenumber">30</context>
+          <context context-type="linenumber">34</context>
         </context-group>
         <target state="translated">Alleen bewakers van de groep</target>
       </trans-unit>
@@ -1012,7 +1012,7 @@
         <source>Members of Space Only</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/algolia/services/algolia.service.ts</context>
-          <context context-type="linenumber">32</context>
+          <context context-type="linenumber">36</context>
         </context-group>
         <target state="translated">Enkel leden van de groep</target>
       </trans-unit>
@@ -1020,7 +1020,7 @@
         <source>Members With Badge Only</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/algolia/services/algolia.service.ts</context>
-          <context context-type="linenumber">34</context>
+          <context context-type="linenumber">38</context>
         </context-group>
         <target state="translated">Enkel leden met een badge</target>
       </trans-unit>
@@ -1028,7 +1028,7 @@
         <source>Members With NFT only</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/algolia/services/algolia.service.ts</context>
-          <context context-type="linenumber">36</context>
+          <context context-type="linenumber">40</context>
         </context-group>
         <target state="translated">Enkel leden met een NFT</target>
       </trans-unit>
@@ -1036,7 +1036,7 @@
         <source>Unavailable for sale</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/algolia/services/algolia.service.ts</context>
-          <context context-type="linenumber">49</context>
+          <context context-type="linenumber">53</context>
         </context-group>
         <target state="translated">Onbeschikbaar voor verkoop</target>
       </trans-unit>
@@ -1044,7 +1044,7 @@
         <source>On Auction</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/algolia/services/algolia.service.ts</context>
-          <context context-type="linenumber">51</context>
+          <context context-type="linenumber">55</context>
         </context-group>
         <target state="translated">In Veiling</target>
       </trans-unit>
@@ -1052,7 +1052,7 @@
         <source>Available</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/algolia/services/algolia.service.ts</context>
-          <context context-type="linenumber">53</context>
+          <context context-type="linenumber">57</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/award/components/award-status/award-status.component.html</context>
@@ -1084,7 +1084,7 @@
         <source>On Sale</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/algolia/services/algolia.service.ts</context>
-          <context context-type="linenumber">55</context>
+          <context context-type="linenumber">59</context>
         </context-group>
         <target state="translated">In verkoop</target>
       </trans-unit>
@@ -2358,7 +2358,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">203</context>
+          <context context-type="linenumber">207</context>
         </context-group>
         <target state="translated">Minimumprijs</target>
       </trans-unit>
@@ -2406,11 +2406,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/market/pages/market/market.page.ts</context>
-          <context context-type="linenumber">14</context>
+          <context context-type="linenumber">13</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/market/pages/market/market.page.ts</context>
-          <context context-type="linenumber">35</context>
+          <context context-type="linenumber">34</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/member/pages/member/member.page.ts</context>
@@ -7188,7 +7188,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.ts</context>
-          <context context-type="linenumber">35</context>
+          <context context-type="linenumber">41</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/new.page.ts</context>
@@ -7208,7 +7208,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.ts</context>
-          <context context-type="linenumber">99</context>
+          <context context-type="linenumber">105</context>
         </context-group>
         <target state="translated">Deelnemers</target>
       </trans-unit>
@@ -7664,7 +7664,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.ts</context>
-          <context context-type="linenumber">406</context>
+          <context context-type="linenumber">403</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.ts</context>
@@ -7680,7 +7680,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/services/new.service.ts</context>
-          <context context-type="linenumber">204</context>
+          <context context-type="linenumber">202</context>
         </context-group>
         <target state="translated">Lid lijkt uit te loggen tijdens het uploaden van bestanden.</target>
       </trans-unit>
@@ -7952,7 +7952,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">297,298</context>
+          <context context-type="linenumber">301,302</context>
         </context-group>
         <target state="translated"> Collectie publiceren </target>
       </trans-unit>
@@ -7964,7 +7964,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">309,310</context>
+          <context context-type="linenumber">313,314</context>
         </context-group>
         <target state="translated"> Collectie bewerken </target>
       </trans-unit>
@@ -7980,11 +7980,11 @@
         <source> Rank </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">166,167</context>
+          <context context-type="linenumber">170,171</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.html</context>
-          <context context-type="linenumber">69,70</context>
+          <context context-type="linenumber">73,74</context>
         </context-group>
         <target state="translated"> Rang </target>
       </trans-unit>
@@ -7992,7 +7992,7 @@
         <source>Starts at</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">185</context>
+          <context context-type="linenumber">189</context>
         </context-group>
         <target state="translated">Begint om</target>
       </trans-unit>
@@ -8000,7 +8000,7 @@
         <source>Deposited</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">196</context>
+          <context context-type="linenumber">200</context>
         </context-group>
         <target state="translated">Gestort</target>
       </trans-unit>
@@ -8008,7 +8008,7 @@
         <source>Staked</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">214</context>
+          <context context-type="linenumber">218</context>
         </context-group>
         <target state="translated">Gestaked</target>
       </trans-unit>
@@ -8016,7 +8016,7 @@
         <source>Links</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">223</context>
+          <context context-type="linenumber">227</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
@@ -8040,11 +8040,11 @@
         <source>Reject Collection</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">326</context>
+          <context context-type="linenumber">330</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">372</context>
+          <context context-type="linenumber">376</context>
         </context-group>
         <target state="translated">Collectie afwijzen</target>
       </trans-unit>
@@ -8052,11 +8052,11 @@
         <source>Cancel Collection</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">342</context>
+          <context context-type="linenumber">346</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">388</context>
+          <context context-type="linenumber">392</context>
         </context-group>
         <target state="translated">Collectie annuleren</target>
       </trans-unit>
@@ -8064,7 +8064,7 @@
         <source>Create NFT</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">409</context>
+          <context context-type="linenumber">413</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/new/new.page.html</context>
@@ -8076,7 +8076,7 @@
         <source>Rank amount must be between </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.ts</context>
-          <context context-type="linenumber">277</context>
+          <context context-type="linenumber">285</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.ts</context>
@@ -8388,13 +8388,13 @@
         </context-group>
         <target state="translated">Token aantal hoger dan</target>
       </trans-unit>
-      <trans-unit id="3777057054280092532" datatype="html">
-        <source>Select awarded token</source>
+      <trans-unit id="8504919867738493026" datatype="html">
+        <source>Type awarded token...</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">257</context>
         </context-group>
-        <target state="translated">Selecteer beloningstoken</target>
+        <target state="translated">Type toegekende token...</target>
       </trans-unit>
       <trans-unit id="875494721798124100" datatype="html">
         <source>Discount %</source>
@@ -8888,11 +8888,11 @@
         <source>Collections</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/market/pages/market/market.page.ts</context>
-          <context context-type="linenumber">13</context>
+          <context context-type="linenumber">12</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/market/pages/market/market.page.ts</context>
-          <context context-type="linenumber">34</context>
+          <context context-type="linenumber">33</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.ts</context>
@@ -10048,19 +10048,11 @@
         </context-group>
         <target state="translated">van</target>
       </trans-unit>
-      <trans-unit id="226474705784073228" datatype="html">
-        <source>Firefly does not support NFTs yet!</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">799</context>
-        </context-group>
-        <target state="translated">Firefly ondersteunt nog geen NFT's!</target>
-      </trans-unit>
       <trans-unit id="3662775196757346711" datatype="html">
         <source>Are you sure you want to withdraw NFT from Soonaverse?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">802</context>
+          <context context-type="linenumber">800</context>
         </context-group>
         <target state="translated">Weet je zeker dat je de NFT van Soonaverse wilt afhalen?</target>
       </trans-unit>
@@ -10068,7 +10060,7 @@
         <source>Once the NFT is withdrawn it won’t be available within Soonaverse and it will appear only in your wallet. You can always bring the NFT back to Soonaverse later.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">804</context>
+          <context context-type="linenumber">802</context>
         </context-group>
         <target state="translated">Zodra de NFT is opgenomen, is deze niet meer beschikbaar binnen Soonaverse en verschijnt deze alleen in je wallet. Je kunt de NFT altijd weer terug brengen naar Soonaverse.</target>
       </trans-unit>
@@ -10076,7 +10068,7 @@
         <source>Confirm with Metamask</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">806</context>
+          <context context-type="linenumber">804</context>
         </context-group>
         <target state="translated">Bevestig met Metamask</target>
       </trans-unit>
@@ -10092,7 +10084,7 @@
         <source>NFT Withdrawn.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.ts</context>
-          <context context-type="linenumber">686</context>
+          <context context-type="linenumber">688</context>
         </context-group>
         <target state="translated">NFT opgenomen.</target>
       </trans-unit>
@@ -10484,35 +10476,27 @@
         </context-group>
         <target state="translated">Voorstel - </target>
       </trans-unit>
-      <trans-unit id="6489224382379017603" datatype="html">
-        <source>Voted</source>
+      <trans-unit id="6772415110519059579" datatype="html">
+        <source> Change Vote </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
-          <context context-type="linenumber">21</context>
+          <context context-type="linenumber">23,24</context>
         </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.ts</context>
-          <context context-type="linenumber">49</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.ts</context>
-          <context context-type="linenumber">156</context>
-        </context-group>
-        <target state="translated">Gestemd</target>
+        <target state="translated"> Wijzig stem </target>
       </trans-unit>
-      <trans-unit id="4827508784071182098" datatype="html">
-        <source>Vote Now</source>
+      <trans-unit id="4724170629105755794" datatype="html">
+        <source> Vote Now </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
-          <context context-type="linenumber">32</context>
+          <context context-type="linenumber">26,27</context>
         </context-group>
-        <target state="translated">Stem nu</target>
+        <target state="translated"> Stem nu </target>
       </trans-unit>
       <trans-unit id="1263780838220828223" datatype="html">
         <source>Voting starts</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
-          <context context-type="linenumber">43</context>
+          <context context-type="linenumber">38</context>
         </context-group>
         <target state="translated">Stemmen begint</target>
       </trans-unit>
@@ -10520,7 +10504,7 @@
         <source>You are not part of the vote</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
-          <context context-type="linenumber">56</context>
+          <context context-type="linenumber">51</context>
         </context-group>
         <target state="translated">Je maakt geen deel uit van de stemming</target>
       </trans-unit>
@@ -10528,7 +10512,7 @@
         <source> In order to vote, you must be part of the space before proposal was created. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
-          <context context-type="linenumber">60</context>
+          <context context-type="linenumber">55</context>
         </context-group>
         <target state="translated"> Om te kunnen stemmen, moet je deel uitmaken van de groep voordat het voorstel werd gemaakt. </target>
       </trans-unit>
@@ -10536,7 +10520,7 @@
         <source>Log in to vote</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
-          <context context-type="linenumber">69</context>
+          <context context-type="linenumber">64</context>
         </context-group>
         <target state="translated">Log in om te stemmen</target>
       </trans-unit>
@@ -10544,7 +10528,7 @@
         <source> In order to vote, you must login first. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
-          <context context-type="linenumber">73</context>
+          <context context-type="linenumber">68</context>
         </context-group>
         <target state="translated"> Om te kunnen stemmen moet je eerst inloggen. </target>
       </trans-unit>
@@ -10552,7 +10536,7 @@
         <source>Pending Guardian Approval</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
-          <context context-type="linenumber">84</context>
+          <context context-type="linenumber">79</context>
         </context-group>
         <target state="translated">Wachtend op goedkeuring van bewaker</target>
       </trans-unit>
@@ -10560,7 +10544,7 @@
         <source> This proposal has not been approved by any Guardian yet. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
-          <context context-type="linenumber">88</context>
+          <context context-type="linenumber">83</context>
         </context-group>
         <target state="translated"> Dit voorstel is nog niet door een bewaker goedgekeurd. </target>
       </trans-unit>
@@ -10579,6 +10563,18 @@
           <context context-type="linenumber">48</context>
         </context-group>
         <target state="translated">Stem in behandeling</target>
+      </trans-unit>
+      <trans-unit id="6489224382379017603" datatype="html">
+        <source>Voted</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.ts</context>
+          <context context-type="linenumber">49</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.ts</context>
+          <context context-type="linenumber">156</context>
+        </context-group>
+        <target state="translated">Gestemd</target>
       </trans-unit>
       <trans-unit id="2431699406563305096" datatype="html">
         <source>Proposal - Participants</source>
@@ -10692,7 +10688,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.html</context>
-          <context context-type="linenumber">148</context>
+          <context context-type="linenumber">152</context>
         </context-group>
         <target state="translated">Bekijk voorstel</target>
       </trans-unit>
@@ -10704,11 +10700,19 @@
         </context-group>
         <target state="translated">Huidige resultaten</target>
       </trans-unit>
+      <trans-unit id="4443303443415275721" datatype="html">
+        <source>(weight: <x id="INTERPOLATION" equiv-text="{{(data.proposal$ | async)?.results?.answers?.[a.value] || 0 | number :                 &apos;1.0-2&apos;}}"/>)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.html</context>
+          <context context-type="linenumber">101,102</context>
+        </context-group>
+        <target state="translated">(weight: <x id="INTERPOLATION" equiv-text="{{(data.proposal$ | async)?.results?.answers?.[a.value] || 0 | number :                 '1.0-2'}}"/>)</target>
+      </trans-unit>
       <trans-unit id="8944543613835375251" datatype="html">
         <source>Selected Badges</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.html</context>
-          <context context-type="linenumber">120</context>
+          <context context-type="linenumber">124</context>
         </context-group>
         <target state="translated">Geselecteerde Badges</target>
       </trans-unit>
@@ -10716,7 +10720,7 @@
         <source>Votes</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.ts</context>
-          <context context-type="linenumber">36</context>
+          <context context-type="linenumber">42</context>
         </context-group>
         <target state="translated">Stemmen</target>
       </trans-unit>
@@ -11723,7 +11727,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
-          <context context-type="linenumber">231,232</context>
+          <context context-type="linenumber">214,215</context>
         </context-group>
         <target state="translated"> Doorgaan
 </target>
@@ -12206,22 +12210,6 @@
         </context-group>
         <target state="translated">Link toevoegen</target>
       </trans-unit>
-      <trans-unit id="5827802346803776828" datatype="html">
-        <source>Trading Options</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
-          <context context-type="linenumber">203</context>
-        </context-group>
-        <target state="translated">Handelsopties</target>
-      </trans-unit>
-      <trans-unit id="1937836085499905390" datatype="html">
-        <source>Enable trading</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
-          <context context-type="linenumber">207</context>
-        </context-group>
-        <target state="translated">Activeer handelen</target>
-      </trans-unit>
       <trans-unit id="5377078063439833222" datatype="html">
         <source> Edit </source>
         <context-group purpose="location">
@@ -12408,13 +12396,13 @@
         </context-group>
         <target state="translated">Controleer de token</target>
       </trans-unit>
-      <trans-unit id="1659910372998793136" datatype="html">
-        <source> Mint Token </source>
+      <trans-unit id="1548060219332657964" datatype="html">
+        <source> Mint &amp; Approve Token </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">132,133</context>
         </context-group>
-        <target state="translated"> Mint Token </target>
+        <target state="translated"> Mint &amp; Token goedkeuren </target>
       </trans-unit>
       <trans-unit id="7505091927294166710" datatype="html">
         <source> Minting in progress </source>

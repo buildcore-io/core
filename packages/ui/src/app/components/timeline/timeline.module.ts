@@ -3,8 +3,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CollapseModule } from '@components/collapse/collapse.module';
 import { IconModule } from '@components/icon/icon.module';
-import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { IpfsBadgeModule } from '@core/pipes/ipfs-badge/ipfs-badge.module';
+import { ResizeAvatarModule } from '@core/pipes/resize-avatar/resize-avatar.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -25,7 +25,7 @@ import { TimelineComponent } from './timeline.component';
     IpfsBadgeModule,
     NzButtonModule,
     CollapseModule,
-    IpfsAvatarModule,
+    ResizeAvatarModule,
     TruncateModule,
     RouterModule,
   ],

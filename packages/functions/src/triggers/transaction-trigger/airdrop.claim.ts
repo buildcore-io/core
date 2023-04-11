@@ -20,19 +20,20 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { head } from 'lodash';
-import admin, { inc } from '../../admin.config';
+import { ITransaction } from '../../firebase/firestore/interfaces';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { getAddress } from '../../utils/address.utils';
-import { cOn, dateToTimestamp, serverTime, uOn } from '../../utils/dateTime.utils';
+import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { dropToOutput } from '../../utils/token-minting-utils/member.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 const LOOP_SIZE = 10000;
 
 export const onAirdropClaim = async (order: Transaction) => {
-  const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`);
-  const token = <Token>(await tokenDocRef.get()).data();
+  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${order.payload.token}`);
+  const token = (await tokenDocRef.get<Token>())!;
 
   if (order.payload.type === TransactionOrderType.TOKEN_AIRDROP) {
     return await onPreMintedAirdropClaim(order, token);
@@ -49,7 +50,7 @@ const onPreMintedAirdropClaim = async (order: Transaction, token: Token) => {
     token,
     true,
   )((transaction, airdrop) => {
-    const airdropDocRef = admin.firestore().doc(`${COL.AIRDROP}/${airdrop.uid}`);
+    const airdropDocRef = soonDb().doc(`${COL.AIRDROP}/${airdrop.uid}`);
 
     const billPayment = <Transaction>{
       type: TransactionType.BILL_PAYMENT,
@@ -69,44 +70,43 @@ const onPreMintedAirdropClaim = async (order: Transaction, token: Token) => {
         tokenSymbol: token.symbol,
       },
     };
-    const billPaymentDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
-    transaction.create(billPaymentDocRef, cOn(billPayment));
+    const billPaymentDocRef = soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+    transaction.create(billPaymentDocRef, billPayment);
 
-    transaction.update(
-      airdropDocRef,
-      uOn({ status: TokenDropStatus.CLAIMED, billPaymentId: billPayment.uid }),
+    transaction.update(airdropDocRef, {
+      status: TokenDropStatus.CLAIMED,
+      billPaymentId: billPayment.uid,
+    });
+
+    const distributionDocRef = soonDb().doc(
+      `${COL.TOKEN}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`,
     );
-
-    const distributionDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`);
     transaction.set(
       distributionDocRef,
-      uOn({
+      {
         parentId: order.payload.token,
         parentCol: COL.TOKEN,
         uid: order.member,
-        tokenClaimed: inc(airdrop.count),
-        tokenOwned: inc(airdrop.count),
-        totalUnclaimedAirdrop: inc(-airdrop.count),
-      }),
-      { merge: true },
+        tokenClaimed: soonDb().inc(airdrop.count),
+        tokenOwned: soonDb().inc(airdrop.count),
+        totalUnclaimedAirdrop: soonDb().inc(-airdrop.count),
+      },
+      true,
     );
     return billPayment.payload.amount;
   });
 };
 
 const onMintedAirdropClaim = async (order: Transaction, token: Token) => {
-  const paymentsSnap = await admin
-    .firestore()
+  const paymentsSnap = await soonDb()
     .collection(COL.TRANSACTION)
     .where('type', '==', TransactionType.PAYMENT)
     .where('sourceTransaction', 'array-contains', order.uid)
-    .get();
-  const paymentsId = paymentsSnap.docs.map((d) => d.id);
+    .get<Transaction>();
+  const paymentsId = paymentsSnap.map((d) => d.uid);
 
-  const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${order.member}`);
-  const member = <Member>(await memberDocRef.get()).data();
+  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${order.member}`);
+  const member = (await memberDocRef.get<Member>())!;
 
   const wallet = (await WalletService.newWallet(token.mintingData?.network!)) as SmrWallet;
   let storageDepositUsed = await claimOwnedMintedTokens(order, paymentsId, token, member, wallet);
@@ -115,47 +115,49 @@ const onMintedAirdropClaim = async (order: Transaction, token: Token) => {
     order,
     token,
   )((transaction, airdrop) => {
-    const airdropDocRef = admin.firestore().doc(`${COL.AIRDROP}/${airdrop.uid}`);
+    const airdropDocRef = soonDb().doc(`${COL.AIRDROP}/${airdrop.uid}`);
 
     const billPayment = mintedDropToBillPayment(order, paymentsId, token, airdrop, member, wallet);
-    const billPaymentDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
-    transaction.create(billPaymentDocRef, cOn(billPayment));
+    const billPaymentDocRef = soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+    transaction.create(billPaymentDocRef, billPayment);
 
     const stake = mintedDropToStake(order, airdrop, billPayment);
     if (stake) {
-      const stakeDocRef = admin.firestore().doc(`${COL.STAKE}/${stake.uid}`);
-      transaction.create(stakeDocRef, cOn(stake));
+      const stakeDocRef = soonDb().doc(`${COL.STAKE}/${stake.uid}`);
+      transaction.create(stakeDocRef, stake);
     }
 
-    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`);
+    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
     if (!airdrop.sourceAddress) {
-      transaction.update(tokenDocRef, uOn({ 'mintingData.tokensInVault': inc(-airdrop.count) }));
+      transaction.update(tokenDocRef, {
+        'mintingData.tokensInVault': soonDb().inc(-airdrop.count),
+      });
     }
 
     if (airdrop.orderId) {
-      const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${airdrop.orderId}`);
-      transaction.update(orderDocRef, uOn({ 'payload.unclaimedAirdrops': inc(-1) }));
+      const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${airdrop.orderId}`);
+      transaction.update(orderDocRef, { 'payload.unclaimedAirdrops': soonDb().inc(-1) });
     }
 
     const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member.uid);
     transaction.set(
       distributionDocRef,
-      uOn({
+      {
         parentId: token.uid,
         parentCol: COL.TOKEN,
         uid: member.uid,
-        tokenClaimed: inc(airdrop.count),
-        tokenOwned: inc(airdrop.count),
-        totalUnclaimedAirdrop: inc(-airdrop.count),
-        mintedClaimedOn: serverTime(),
-      }),
-      { merge: true },
+        tokenClaimed: soonDb().inc(airdrop.count),
+        tokenOwned: soonDb().inc(airdrop.count),
+        totalUnclaimedAirdrop: soonDb().inc(-airdrop.count),
+        mintedClaimedOn: dayjs().toDate(),
+      },
+      true,
     );
 
-    transaction.update(
-      airdropDocRef,
-      uOn({ status: TokenDropStatus.CLAIMED, billPaymentId: billPayment.uid }),
-    );
+    transaction.update(airdropDocRef, {
+      status: TokenDropStatus.CLAIMED,
+      billPaymentId: billPayment.uid,
+    });
     return airdrop.isBaseToken ? 0 : billPayment.payload.amount;
   });
 
@@ -176,7 +178,7 @@ const onMintedAirdropClaim = async (order: Transaction, token: Token) => {
         void: false,
       },
     };
-    await admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`).create(cOn(credit));
+    await soonDb().doc(`${COL.TRANSACTION}/${credit.uid}`).create(credit);
   }
 };
 
@@ -187,12 +189,10 @@ const claimOwnedMintedTokens = (
   member: Member,
   wallet: SmrWallet,
 ) =>
-  admin.firestore().runTransaction(async (transaction) => {
-    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`);
+  soonDb().runTransaction(async (transaction) => {
+    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
     const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(order.member!);
-    const distribution = <TokenDistribution | undefined>(
-      (await transaction.get(distributionDocRef)).data()
-    );
+    const distribution = (await transaction.get<TokenDistribution>(distributionDocRef))!;
     if (distribution?.mintedClaimedOn || !distribution?.tokenOwned) {
       return 0;
     }
@@ -201,8 +201,8 @@ const claimOwnedMintedTokens = (
       uid: getRandomEthAddress(),
       member: member.uid,
       token: token.uid,
-      createdOn: dateToTimestamp(dayjs()),
-      vestingAt: dateToTimestamp(dayjs()),
+      createdOn: serverTime(),
+      vestingAt: serverTime(),
       count: distribution?.tokenOwned,
       status: TokenDropStatus.UNCLAIMED,
     };
@@ -215,16 +215,16 @@ const claimOwnedMintedTokens = (
       member,
       wallet,
     );
-    const billPaymentDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
-    transaction.create(billPaymentDocRef, cOn(billPayment));
+    const billPaymentDocRef = soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+    transaction.create(billPaymentDocRef, billPayment);
 
     const stake = mintedDropToStake(order, airdrop, billPayment);
     if (stake) {
-      const stakeDocRef = admin.firestore().doc(`${COL.STAKE}/${stake.uid}`);
-      transaction.create(stakeDocRef, cOn(stake));
+      const stakeDocRef = soonDb().doc(`${COL.STAKE}/${stake.uid}`);
+      transaction.create(stakeDocRef, stake);
     }
-    transaction.update(distributionDocRef, uOn({ mintedClaimedOn: serverTime() }));
-    transaction.update(tokenDocRef, uOn({ 'mintingData.tokensInVault': inc(-airdrop.count) }));
+    transaction.update(distributionDocRef, { mintedClaimedOn: dayjs().toDate() });
+    transaction.update(tokenDocRef, { 'mintingData.tokensInVault': soonDb().inc(-airdrop.count) });
     return billPayment.payload.amount;
   });
 
@@ -287,8 +287,6 @@ const mintedDropToStake = (order: TransactionOrder, drop: TokenDrop, billPayment
     billPaymentId: billPayment.uid,
     expirationProcessed: false,
     orderId: order.uid,
-    leftCheck: vestingAt.valueOf(),
-    rightCheck: dayjs().valueOf(),
   };
   billPayment.payload.stake = stake.uid;
   return stake;
@@ -300,14 +298,13 @@ const airdropsQuery = (
   member: string,
   isPreMintedClaim?: boolean,
 ) => {
-  let query = admin
-    .firestore()
+  let query = soonDb()
     .collection(COL.AIRDROP)
     .where('token', '==', token.uid)
     .where('member', '==', member)
     .where('status', '==', TokenDropStatus.UNCLAIMED);
   if (isPreMintedClaim) {
-    query = query.where('vestingAt', '<=', dateToTimestamp(dayjs()));
+    query = query.where('vestingAt', '<=', serverTime());
   } else {
     query = query.where('createdOn', '<=', order.createdOn).orderBy('createdOn');
   }
@@ -317,21 +314,26 @@ const airdropsQuery = (
 
 const runInAirdropLoop =
   (order: Transaction, token: Token, isPreMintedClaim?: boolean) =>
-  async (func: (transaction: admin.firestore.Transaction, airdrop: TokenDrop) => number) => {
+  async (func: (transaction: ITransaction, airdrop: TokenDrop) => number) => {
     let storageDeposit = 0;
     for (let i = 0; i < LOOP_SIZE; ++i) {
-      const snap = await airdropsQuery(order, token, order.member!, isPreMintedClaim).get();
-      if (!snap.size) {
+      const snap = await airdropsQuery(
+        order,
+        token,
+        order.member!,
+        isPreMintedClaim,
+      ).get<TokenDrop>();
+      if (!snap.length) {
         return storageDeposit;
       }
-      const refs = snap.docs.map((d) => d.ref);
-      storageDeposit += await admin.firestore().runTransaction(async (transaction) => {
+      const refs = snap.map((airdrop) => soonDb().doc(`${COL.AIRDROP}/${airdrop.uid}`));
+      storageDeposit += await soonDb().runTransaction(async (transaction) => {
         let actStorageDeposit = 0;
-        const airdrops = (await transaction.getAll(...refs))
-          .map((d) => d.data() as TokenDrop)
-          .filter((drop) => drop.status === TokenDropStatus.UNCLAIMED);
+        const airdrops = (await transaction.getAll<TokenDrop>(...refs)).filter(
+          (drop) => drop!.status === TokenDropStatus.UNCLAIMED,
+        );
         for (const airdrop of airdrops) {
-          actStorageDeposit += func(transaction, airdrop);
+          actStorageDeposit += func(transaction, airdrop!);
         }
         return actStorageDeposit;
       });

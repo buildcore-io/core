@@ -18,9 +18,9 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { cloneDeep, get } from 'lodash';
-import admin from '../../../admin.config';
+import { soonDb } from '../../../firebase/firestore/soondb';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';
@@ -28,7 +28,6 @@ import { WalletService } from '../../wallet/wallet';
 import { createNftWithdrawOrder } from '../tangle-service/nft-purchase.service';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 import { NftDepositService } from './nft-deposit-service';
-
 export class NftStakeService {
   constructor(readonly transactionService: TransactionService) {}
 
@@ -58,15 +57,15 @@ export class NftStakeService {
         get(order, 'payload.weeks', 0),
         get(order, 'payload.stakeType', StakeType.DYNAMIC),
       );
-      const withdrawOrderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${withdrawOrder.uid}`);
-      this.transactionService.updates.push({
+      const withdrawOrderDocRef = soonDb().doc(`${COL.TRANSACTION}/${withdrawOrder.uid}`);
+      this.transactionService.push({
         ref: withdrawOrderDocRef,
         data: withdrawOrder,
         action: 'set',
       });
 
-      const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nftUpdateData.uid}`);
-      this.transactionService.updates.push({
+      const nftDocRef = soonDb().doc(`${COL.NFT}/${nftUpdateData.uid}`);
+      this.transactionService.push({
         ref: nftDocRef,
         data: nftUpdateData,
         action: 'update',
@@ -75,8 +74,8 @@ export class NftStakeService {
       await this.transactionService.createPayment(order, match);
       this.transactionService.markAsReconciled(order, match.msgId);
 
-      const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
-      this.transactionService.updates.push({
+      const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+      this.transactionService.push({
         ref: orderDocRef,
         data: { 'payload.nft': nft.uid, 'payload.collection': nft.collection },
         action: 'update',

@@ -12,7 +12,7 @@ import {
   TransactionCreditType,
   TransactionType,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { wait } from '../../test/controls/common';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { Helper } from './Helper';
@@ -39,30 +39,25 @@ describe('Token minting', () => {
       buyOrder = await helper.createBuyOrder();
     }
 
-    const billPaymentsQuery = admin
-      .firestore()
+    const billPaymentsQuery = soonDb()
       .collection(COL.TRANSACTION)
       .where('member', 'in', [helper.seller, helper.buyer])
       .where('type', '==', TransactionType.BILL_PAYMENT);
     await wait(async () => {
       const snap = await billPaymentsQuery.get();
-      return snap.size === 4;
+      return snap.length === 4;
     });
 
     const trades = (
-      await admin
-        .firestore()
-        .collection(COL.TOKEN_MARKET)
-        .where('token', '==', helper.token!.uid)
-        .get()
-    ).docs.map((d) => <TokenTradeOrder>d.data());
+      await soonDb().collection(COL.TOKEN_MARKET).where('token', '==', helper.token!.uid).get()
+    ).map((d) => <TokenTradeOrder>d);
     const allHaveTokenStatus = trades.reduce(
       (acc, act) => acc && act.tokenStatus === TokenStatus.MINTED,
       true,
     );
     expect(allHaveTokenStatus).toBe(true);
 
-    const billPayments = (await billPaymentsQuery.get()).docs.map((d) => d.data() as Transaction);
+    const billPayments = (await billPaymentsQuery.get()).map((d) => d as Transaction);
 
     billPayments.forEach((billPayment) => {
       expect(billPayment.payload.token).toBe(helper.token!.uid);
@@ -97,26 +92,21 @@ describe('Token minting', () => {
     expect(paymentToBuyer.payload.storageReturn.amount).toBe(53800);
     expect(paymentToBuyer.payload.storageReturn.address).toBe(helper.sellerAddress?.bech32);
 
-    const sellerCreditSnap = await admin
-      .firestore()
+    const sellerCreditSnap = await soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller!)
       .where('type', '==', TransactionType.CREDIT)
       .get();
-    expect(sellerCreditSnap.size).toBe(1);
-    const sellerCredit = sellerCreditSnap.docs.map((d) => d.data() as Transaction)[0];
+    expect(sellerCreditSnap.length).toBe(1);
+    const sellerCredit = sellerCreditSnap.map((d) => d as Transaction)[0];
     expect(sellerCredit.payload.amount).toBe(49600);
     expect(sellerCredit.payload.token).toBe(helper.token!.uid);
     expect(sellerCredit.payload.tokenSymbol).toBe(helper.token!.symbol);
     expect(sellerCredit.payload.type).toBe(TransactionCreditType.TOKEN_TRADE_FULLFILLMENT);
 
     const purchase = (
-      await admin
-        .firestore()
-        .collection(COL.TOKEN_PURCHASE)
-        .where('token', '==', helper.token!.uid)
-        .get()
-    ).docs[0].data() as TokenPurchase;
+      await soonDb().collection(COL.TOKEN_PURCHASE).where('token', '==', helper.token!.uid).get()
+    )[0] as TokenPurchase;
     expect(purchase.triggeredBy).toBe(
       saveBuyFirst ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY,
     );

@@ -22,13 +22,13 @@ import {
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
-import admin from '../admin.config';
+import { IBatch } from '../firebase/firestore/interfaces';
+import { soonDb } from '../firebase/firestore/soondb';
 import { scale } from '../scale.settings';
 import { WalletService } from '../services/wallet/wallet';
 import { getAddress } from '../utils/address.utils';
 import { downloadMediaAndPackCar, tokenToIpfsMetadata } from '../utils/car.utils';
 import { guardedRerun } from '../utils/common.utils';
-import { cOn, uOn } from '../utils/dateTime.utils';
 import { getRoyaltyFees } from '../utils/royalty.utils';
 import { cancelTradeOrderUtil } from '../utils/token-trade.utils';
 import {
@@ -131,7 +131,7 @@ const createBillAndRoyaltyPayment = async (
   payments: Transaction[],
   order: Transaction,
   space: Space,
-  batch: admin.firestore.WriteBatch,
+  batch: IBatch,
 ) => {
   if (!distribution.totalPaid) {
     return { billPaymentId: '', royaltyBillPaymentId: '' };
@@ -139,16 +139,14 @@ const createBillAndRoyaltyPayment = async (
   let balance =
     distribution.totalPaid +
     (distribution.refundedAmount! < MIN_IOTA_AMOUNT ? distribution.refundedAmount! : 0);
-  const member = <Member>(await memberDocRef(distribution.uid!).get()).data();
+  const member = <Member>await memberDocRef(distribution.uid!).get();
   const [royaltySpaceId, fee] = Object.entries(
     await getRoyaltyFees(balance, member.tokenPurchaseFeePercentage, true),
   )[0];
 
   let royaltyPayment: Transaction | undefined = undefined;
   if (fee >= MIN_IOTA_AMOUNT && balance - fee >= MIN_IOTA_AMOUNT) {
-    const royaltySpace = <Space>(
-      (await admin.firestore().doc(`${COL.SPACE}/${royaltySpaceId}`).get()).data()
-    );
+    const royaltySpace = await soonDb().doc(`${COL.SPACE}/${royaltySpaceId}`).get<Space>();
     const network = order.network || DEFAULT_NETWORK;
     royaltyPayment = <Transaction>{
       type: TransactionType.BILL_PAYMENT,
@@ -173,10 +171,7 @@ const createBillAndRoyaltyPayment = async (
         tokenSymbol: token.symbol,
       },
     };
-    batch.create(
-      admin.firestore().collection(COL.TRANSACTION).doc(royaltyPayment.uid),
-      cOn(royaltyPayment),
-    );
+    batch.create(soonDb().collection(COL.TRANSACTION).doc(royaltyPayment.uid), royaltyPayment);
     balance -= fee;
   }
   const network = order.network || DEFAULT_NETWORK;
@@ -204,10 +199,7 @@ const createBillAndRoyaltyPayment = async (
       tokenSymbol: token.symbol,
     },
   };
-  batch.create(
-    admin.firestore().collection(COL.TRANSACTION).doc(billPayment.uid),
-    cOn(billPayment),
-  );
+  batch.create(soonDb().collection(COL.TRANSACTION).doc(billPayment.uid), billPayment);
   return { billPaymentId: billPayment.uid, royaltyBillPaymentId: royaltyPayment?.uid || '' };
 };
 
@@ -216,14 +208,14 @@ const createCredit = async (
   distribution: TokenDistribution,
   payments: Transaction[],
   order: Transaction,
-  batch: admin.firestore.WriteBatch,
+  batch: IBatch,
 ) => {
   if (!distribution.refundedAmount) {
     return '';
   }
-  const member = <Member>(await memberDocRef(distribution.uid!).get()).data();
+  const member = <Member>await memberDocRef(distribution.uid!).get();
   const tranId = getRandomEthAddress();
-  const docRef = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+  const docRef = soonDb().collection(COL.TRANSACTION).doc(tranId);
   const network = order.network || DEFAULT_NETWORK;
   const data = <Transaction>{
     type: TransactionType.CREDIT,
@@ -246,22 +238,20 @@ const createCredit = async (
     },
     ignoreWallet: distribution.refundedAmount! < MIN_IOTA_AMOUNT,
   };
-  batch.create(docRef, cOn(data));
+  batch.create(docRef, data);
   return tranId;
 };
 
 const reconcileBuyer = (token: Token) => async (distribution: TokenDistribution) => {
-  const batch = admin.firestore().batch();
-  const distributionDoc = admin
-    .firestore()
-    .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${distribution.uid}`);
+  const batch = soonDb().batch();
+  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
+  const distributionDoc = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(distribution.uid!);
 
-  const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()).data();
+  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${token.space}`);
+  const space = (await spaceDocRef.get<Space>())!;
 
-  const order = <Transaction>(await orderDocRef(distribution.uid!, token).get()).data();
-  const payments = (await allPaymentsQuery(distribution.uid!, token.uid).get()).docs.map(
-    (d) => <Transaction>d.data(),
-  );
+  const order = <Transaction>await orderDocRef(distribution.uid!, token).get();
+  const payments = await allPaymentsQuery(distribution.uid!, token.uid).get<Transaction>();
 
   const { billPaymentId, royaltyBillPaymentId } = await createBillAndRoyaltyPayment(
     token,
@@ -279,17 +269,14 @@ const reconcileBuyer = (token: Token) => async (distribution: TokenDistribution)
     batch,
   );
 
-  batch.update(
-    distributionDoc,
-    uOn({
-      ...distribution,
-      tokenOwned: admin.firestore.FieldValue.increment(distribution.totalBought || 0),
-      reconciled: true,
-      billPaymentId,
-      royaltyBillPaymentId,
-      creditPaymentId,
-    }),
-  );
+  batch.update(distributionDoc, {
+    ...distribution,
+    tokenOwned: soonDb().inc(distribution.totalBought || 0),
+    reconciled: true,
+    billPaymentId,
+    royaltyBillPaymentId,
+    creditPaymentId,
+  });
   await batch.commit();
 };
 
@@ -321,22 +308,17 @@ const distributeLeftoverTokens = (
 };
 
 const cancelPublicSale = async (token: Token) => {
-  const distributionDocs = (
-    await admin
-      .firestore()
-      .collection(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}`)
-      .where('totalDeposit', '>', 0)
-      .get()
-  ).docs;
+  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
+  const distributions = await tokenDocRef
+    .collection(SUB_COL.DISTRIBUTION)
+    .where('totalDeposit', '>', 0)
+    .get<TokenDistribution>();
 
-  const promises = distributionDocs.map(async (doc) => {
-    const distribution = <TokenDistribution>doc.data();
-    const batch = admin.firestore().batch();
+  const promises = distributions.map(async (distribution) => {
+    const batch = soonDb().batch();
 
-    const order = <Transaction>(await orderDocRef(distribution.uid!, token).get()).data();
-    const payments = (await allPaymentsQuery(distribution.uid!, token.uid).get()).docs.map(
-      (d) => <Transaction>d.data(),
-    );
+    const order = <Transaction>await orderDocRef(distribution.uid!, token).get();
+    const payments = await allPaymentsQuery(distribution.uid!, token.uid).get<Transaction>();
     const creditPaymentId = await createCredit(
       token,
       { ...distribution, refundedAmount: distribution?.totalDeposit },
@@ -345,7 +327,8 @@ const cancelPublicSale = async (token: Token) => {
       batch,
     );
 
-    batch.update(doc.ref, uOn({ creditPaymentId, totalDeposit: 0 }));
+    const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(distribution.uid!);
+    batch.update(distributionDocRef, { creditPaymentId, totalDeposit: 0 });
 
     await batch.commit();
   });
@@ -355,7 +338,7 @@ const cancelPublicSale = async (token: Token) => {
     .filter((r) => r.status === 'rejected')
     .map((r) => String((<PromiseRejectedResult>r).reason));
   const status = isEmpty(errors) ? TokenStatus.AVAILABLE : TokenStatus.ERROR;
-  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update(uOn({ status }));
+  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status });
 
   if (status === TokenStatus.ERROR) {
     functions.logger.error('Token processing error', token.uid, errors);
@@ -363,23 +346,21 @@ const cancelPublicSale = async (token: Token) => {
 };
 
 const processTokenDistribution = async (token: Token) => {
-  const distributionsSnap = await admin
-    .firestore()
-    .collection(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}`)
+  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
+  const distributionsSnap = await tokenDocRef
+    .collection(SUB_COL.DISTRIBUTION)
     .where('totalDeposit', '>', 0)
-    .get();
-  const totalBought = distributionsSnap.docs.reduce(
-    (sum, doc) => sum + getTokenCount(token, doc.data().totalDeposit),
+    .get<TokenDistribution>();
+  const totalBought = distributionsSnap.reduce(
+    (sum, doc) => sum + getTokenCount(token, doc.totalDeposit || 0),
     0,
   );
 
   const totalPublicSupply = getTotalPublicSupply(token);
 
-  const distributions = distributionsSnap.docs
-    .sort((a, b) => b.data().totalDeposit - a.data().totalDeposit)
-    .map((d) =>
-      getMemberDistribution(<TokenDistribution>d.data(), token, totalPublicSupply, totalBought),
-    );
+  const distributions = distributionsSnap
+    .sort((a, b) => (b.totalDeposit || 0) - (a.totalDeposit || 0))
+    .map((d) => getMemberDistribution(<TokenDistribution>d, token, totalPublicSupply, totalBought));
 
   if (totalBought > totalPublicSupply) {
     distributeLeftoverTokens(distributions, totalPublicSupply, token);
@@ -391,7 +372,7 @@ const processTokenDistribution = async (token: Token) => {
     .filter((r) => r.status === 'rejected')
     .map((r) => String((<PromiseRejectedResult>r).reason));
   const status = isEmpty(errors) ? TokenStatus.PRE_MINTED : TokenStatus.ERROR;
-  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update(uOn({ status }));
+  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status });
 
   if (status === TokenStatus.ERROR) {
     functions.logger.error('Token processing error', token.uid, errors);
@@ -415,27 +396,23 @@ const mintToken = async (token: Token) => {
       token: token.uid,
     },
   };
-  await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).create(cOn(order));
+  await soonDb().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
 };
 
 const cancelAllActiveSales = async (token: string) => {
   const runTransaction = () =>
-    admin.firestore().runTransaction(async (transaction) => {
-      const query = admin
-        .firestore()
+    soonDb().runTransaction(async (transaction) => {
+      const snap = soonDb()
         .collection(COL.TOKEN_MARKET)
         .where('status', '==', TokenTradeOrderStatus.ACTIVE)
         .where('token', '==', token)
-        .limit(150);
-      const docRefs = (await query.get()).docs.map((d) => d.ref);
-      const promises = (isEmpty(docRefs) ? [] : await transaction.getAll(...docRefs))
-        .filter((d) => d.data()?.status === TokenTradeOrderStatus.ACTIVE)
+        .limit(150)
+        .get<TokenTradeOrder>();
+      const docRefs = (await snap).map((to) => soonDb().doc(`${COL.TOKEN_MARKET}/${to.uid}`));
+      const promises = (await transaction.getAll<TokenTradeOrder>(...docRefs))
+        .filter((d) => d && d.status === TokenTradeOrderStatus.ACTIVE)
         .map((d) =>
-          cancelTradeOrderUtil(
-            transaction,
-            <TokenTradeOrder>d.data(),
-            TokenTradeOrderStatus.CANCELLED_MINTING_TOKEN,
-          ),
+          cancelTradeOrderUtil(transaction, d!, TokenTradeOrderStatus.CANCELLED_MINTING_TOKEN),
         );
       return (await Promise.all(promises)).length;
     });
@@ -446,36 +423,28 @@ const setIpfsData = async (token: Token) => {
   const metadata = tokenToIpfsMetadata(token);
   const ipfs = await downloadMediaAndPackCar(token.uid, token.icon!, metadata);
 
-  await admin
-    .firestore()
-    .doc(`${COL.TOKEN}/${token.uid}`)
-    .update(
-      uOn({
-        mediaStatus: MediaStatus.PENDING_UPLOAD,
-        ipfsMedia: ipfs.ipfsMedia,
-        ipfsMetadata: ipfs.ipfsMetadata,
-        ipfsRoot: ipfs.ipfsRoot,
-      }),
-    );
+  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({
+    mediaStatus: MediaStatus.PENDING_UPLOAD,
+    ipfsMedia: ipfs.ipfsMedia,
+    ipfsMetadata: ipfs.ipfsMetadata,
+    ipfsRoot: ipfs.ipfsRoot,
+  });
 };
 
 const onTokenVaultEmptied = async (token: Token) => {
   const wallet = await WalletService.newWallet(token.mintingData?.network);
   const vaultBalance = await wallet.getBalance(token.mintingData?.vaultAddress!);
-  const minter = <Member>(
-    (await admin.firestore().doc(`${COL.MEMBER}/${token.mintingData?.mintedBy}`).get()).data()
-  );
-  const paymentsSnap = await admin
-    .firestore()
+  const minter = await soonDb().doc(`${COL.MEMBER}/${token.mintingData?.mintedBy}`).get<Member>();
+  const paymentsSnap = await soonDb()
     .collection(COL.TRANSACTION)
     .where('payload.sourceTransaction', 'array-contains', token.mintingData?.vaultAddress!)
     .where('type', '==', TransactionType.PAYMENT)
-    .get();
+    .get<Transaction>();
   const credit = <Transaction>{
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: token.space,
-    member: minter.uid,
+    member: minter!.uid,
     network: token.mintingData?.network,
     payload: {
       type: TransactionCreditType.TOKEN_VAULT_EMPTIED,
@@ -483,10 +452,10 @@ const onTokenVaultEmptied = async (token: Token) => {
       amount: vaultBalance,
       sourceAddress: token.mintingData?.vaultAddress!,
       targetAddress: getAddress(minter, token.mintingData?.network!),
-      sourceTransaction: paymentsSnap.docs.map((d) => d.id),
+      sourceTransaction: paymentsSnap.map((p) => p.uid),
       token: token.uid,
       tokenSymbol: token.symbol,
     },
   };
-  await admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`).create(cOn(credit));
+  await soonDb().doc(`${COL.TRANSACTION}/${credit.uid}`).create(credit);
 };

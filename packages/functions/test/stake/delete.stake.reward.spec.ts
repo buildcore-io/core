@@ -8,9 +8,9 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
-import { removeStakeReward } from '../../src/controls/stake.control';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { voteOnProposal } from '../../src/runtime/firebase/proposal';
+import { removeStakeReward } from '../../src/runtime/firebase/stake';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import {
@@ -40,7 +40,7 @@ describe('Delete stake reward', () => {
     await addGuardianToSpace(space.uid, member);
 
     token = wallet.getRandomEthAddress();
-    await admin.firestore().doc(`${COL.TOKEN}/${token}`).create({ uid: token, space: space.uid });
+    await soonDb().doc(`${COL.TOKEN}/${token}`).create({ uid: token, space: space.uid });
   });
 
   const createStakeRewards = async () => {
@@ -66,15 +66,15 @@ describe('Delete stake reward', () => {
       },
     ];
     for (const stakeReward of stakeRewards) {
-      await admin.firestore().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`).create(stakeReward);
+      await soonDb().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`).create(stakeReward);
     }
     return stakeRewards;
   };
 
   const getStakeRewards = async (stakeRewardIds: string[]) => {
     const promises = stakeRewardIds.map(async (stakeRewardId) => {
-      const docRef = admin.firestore().doc(`${COL.STAKE_REWARD}/${stakeRewardId}`);
-      return <StakeReward>(await docRef.get()).data();
+      const docRef = soonDb().doc(`${COL.STAKE_REWARD}/${stakeRewardId}`);
+      return <StakeReward>await docRef.get();
     });
     return await Promise.all(promises);
   };
@@ -123,9 +123,7 @@ describe('Delete stake reward', () => {
       return allDeleted;
     });
 
-    proposal = <Proposal>(
-      (await admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`).get()).data()
-    );
+    proposal = <Proposal>await soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`).get();
     expect(dayjs(proposal.settings.endDate.toDate()).isBefore(dayjs())).toBe(true);
   });
 
@@ -142,10 +140,7 @@ describe('Delete stake reward', () => {
 
   it('Should throw, multiple tokens', async () => {
     const stakeRewards = await createStakeRewards();
-    await admin
-      .firestore()
-      .doc(`${COL.STAKE_REWARD}/${stakeRewards[0].uid}`)
-      .update({ token: 'asd' });
+    await soonDb().doc(`${COL.STAKE_REWARD}/${stakeRewards[0].uid}`).update({ token: 'asd' });
     const stakeRewardIds = stakeRewards.map((reward) => reward.uid);
     mockWalletReturnValue(walletSpy, guardian, { stakeRewardIds });
     await expectThrow(testEnv.wrap(removeStakeReward)({}), WenError.invalid_params.key);

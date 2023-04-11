@@ -15,7 +15,6 @@ import {
 } from '@iota/iota.js-next';
 import { Converter, HexHelper } from '@iota/util.js-next';
 import { MilestoneTransaction, MilestoneTransactionEntry, Network } from '@soonaverse/interfaces';
-import admin from '../../admin.config';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { indexToString } from '../../utils/block.utils';
@@ -29,9 +28,9 @@ export class SmrMilestoneTransactionAdapter {
   constructor(private readonly network: Network) {}
 
   public toMilestoneTransaction = async (
-    doc: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data: Record<string, any>,
   ): Promise<MilestoneTransaction> => {
-    const data = doc.data()!;
     const smrWallet = (await WalletService.newWallet(this.network)) as SmrWallet;
     const smrOutputs = (data.payload.essence.outputs as OutputTypes[])
       .filter((o) => VALID_OUTPUTS_TYPES.includes(o.type))
@@ -97,7 +96,7 @@ export class SmrMilestoneTransactionAdapter {
     const soonaverseTransactionId = await getMilestoneTransactionIdForSmr(data);
 
     return {
-      uid: doc.id,
+      uid: data.uid,
       createdOn: data.createdOn,
       messageId: data.blockId,
       milestone: data.milestone,

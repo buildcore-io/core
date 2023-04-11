@@ -1,15 +1,15 @@
 import { COL, Network } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
-import admin from '../../src/admin.config';
 import { getAddresses } from '../../src/api/getAddresses';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { projectId, testEnv } from '../set-up';
 
 describe('Get all', () => {
   beforeEach(async () => {
-    await testEnv.firestore.clearFirestoreData(projectId);
+    await testEnv.config.firestore.clearFirestoreData(projectId);
   });
 
   it('Get all paginated', async () => {
@@ -17,13 +17,13 @@ describe('Get all', () => {
     const now = dayjs();
     const addresses = Array.from(Array(count)).map(() => getRandomEthAddress());
 
-    let batch = admin.firestore().batch();
+    let batch = soonDb().batch();
     for (let i = 0; i < count; i++) {
-      const docRef = admin.firestore().doc(`${COL.MNEMONIC}/${addresses[i]}`);
+      const docRef = soonDb().doc(`${COL.MNEMONIC}/${addresses[i]}`);
       batch.create(docRef, { createdOn: dateToTimestamp(now.add(i, 'd')), network: Network.RMS });
       if (i % 499 === 0) {
         await batch.commit();
-        batch = admin.firestore().batch();
+        batch = soonDb().batch();
       }
     }
     await batch.commit();
@@ -67,7 +67,7 @@ describe('Get all', () => {
     const addresses = Array.from(Array(count)).map(() => getRandomEthAddress());
 
     for (let i = 0; i < count; i++) {
-      const docRef = admin.firestore().doc(`${COL.MNEMONIC}/${addresses[i]}`);
+      const docRef = soonDb().doc(`${COL.MNEMONIC}/${addresses[i]}`);
       await docRef.create({
         createdOn: dateToTimestamp(now),
         network: i > 5 ? Network.IOTA : Network.RMS,

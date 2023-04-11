@@ -34,7 +34,7 @@
     >
       <nz-avatar
         [nzSize]="124"
-        [nzSrc]="(data.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.large"
+        [nzSrc]="(data.member$ | async)?.avatar | resizeAvatar:filesizes.large"
       >
       </nz-avatar>
       <h3 class="max-w-full mt-6 text-left break-words whitespace-pre-wrap">
@@ -107,7 +107,7 @@
   </div>
 
   <wen-member-about
-    [avatarSrc]="(data.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.large"
+    [avatarSrc]="(data.member$ | async)?.avatar | resizeAvatar:filesizes.large"
     [loggedInMember]="loggedInMember$"
     *ngIf="deviceService.isDesktop$ | async"
   ></wen-member-about>
@@ -125,7 +125,7 @@
       </button>
 
       <wen-member-about
-        [avatarSrc]="(data.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.large"
+        [avatarSrc]="(data.member$ | async)?.avatar | resizeAvatar:filesizes.large"
         [loggedInMember]="loggedInMember$"
       ></wen-member-about>
     </div>

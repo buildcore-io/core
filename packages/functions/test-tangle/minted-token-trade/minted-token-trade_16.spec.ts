@@ -10,9 +10,8 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
-import admin from '../../src/admin.config';
-import { cancelTradeOrder } from '../../src/controls/token-trading/token-trade-cancel.controller';
-import { tradeToken } from '../../src/controls/token-trading/token-trade.controller';
+import { soonDb } from '../../src/firebase/firestore/soondb';
+import { cancelTradeOrder, tradeToken } from '../../src/runtime/firebase/token/trading';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -49,12 +48,11 @@ describe('Token minting', () => {
       },
     );
     await wait(async () => {
-      const snap = await admin
-        .firestore()
+      const snap = await soonDb()
         .collection(COL.TOKEN_MARKET)
         .where('orderTransactionId', '==', sellOrder.uid)
         .get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
     await MnemonicService.store(
       helper.sellerAddress!.bech32,
@@ -64,25 +62,23 @@ describe('Token minting', () => {
 
     const sell = <TokenTradeOrder>(
       (
-        await admin
-          .firestore()
+        await soonDb()
           .collection(COL.TOKEN_MARKET)
           .where('orderTransactionId', '==', sellOrder.uid)
           .get()
-      ).docs[0].data()
+      )[0]
     );
 
     mockWalletReturnValue(helper.walletSpy, helper.seller!, { uid: sell.uid });
     await testEnv.wrap(cancelTradeOrder)({});
 
-    const sellerCreditSnap = await admin
-      .firestore()
+    const sellerCreditSnap = await soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller)
       .where('type', '==', TransactionType.CREDIT)
       .get();
-    expect(sellerCreditSnap.size).toBe(1);
-    const sellerCredit = sellerCreditSnap.docs.map((d) => d.data() as Transaction)[0];
+    expect(sellerCreditSnap.length).toBe(1);
+    const sellerCredit = sellerCreditSnap.map((d) => d as Transaction)[0];
     expect(sellerCredit.payload.amount).toBe(12 * MIN_IOTA_AMOUNT);
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
@@ -109,12 +105,11 @@ describe('Token minting', () => {
       },
     );
     await wait(async () => {
-      const snap = await admin
-        .firestore()
+      const snap = await soonDb()
         .collection(COL.TOKEN_MARKET)
         .where('orderTransactionId', '==', sellOrder.uid)
         .get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
     await MnemonicService.store(
       helper.sellerAddress!.bech32,
@@ -123,22 +118,20 @@ describe('Token minting', () => {
     );
 
     await wait(async () => {
-      const snap = await admin
-        .firestore()
+      const snap = await soonDb()
         .collection(COL.TOKEN_PURCHASE)
         .where('token', '==', helper.token!.uid)
         .get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
 
-    const sellerCreditSnap = await admin
-      .firestore()
+    const sellerCreditSnap = await soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller)
       .where('type', '==', TransactionType.CREDIT)
       .get();
-    expect(sellerCreditSnap.size).toBe(1);
-    const sellerCredit = sellerCreditSnap.docs.map((d) => d.data() as Transaction)[0];
+    expect(sellerCreditSnap.length).toBe(1);
+    const sellerCredit = sellerCreditSnap.map((d) => d as Transaction)[0];
     expect(sellerCredit.payload.amount).toBe(12 * MIN_IOTA_AMOUNT);
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid);

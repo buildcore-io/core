@@ -1,19 +1,21 @@
 import { COL, Space, SUB_COL, WenError } from '@soonaverse/interfaces';
-import admin from '../admin.config';
-import { Database } from '../database/Database';
-import { throwInvalidArgument } from './error.utils';
+import { soonDb } from '../firebase/firestore/soondb';
+import { invalidArgument } from './error.utils';
 
 export const assertSpaceExists = async (spaceId: string) => {
-  const space = await Database.getById<Space>(COL.SPACE, spaceId);
+  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${spaceId}`);
+  const space = await spaceDocRef.get<Space>();
   if (!space) {
-    throw throwInvalidArgument(WenError.space_does_not_exists);
+    throw invalidArgument(WenError.space_does_not_exists);
   }
 };
 
 export const assertIsSpaceMember = async (space: string, member: string) => {
-  const spaceMember = await Database.getById(COL.SPACE, space, SUB_COL.MEMBERS, member);
+  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space}`);
+  const spaceMemberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(member);
+  const spaceMember = await spaceMemberDocRef.get();
   if (!spaceMember) {
-    throw throwInvalidArgument(WenError.you_are_not_part_of_space);
+    throw invalidArgument(WenError.you_are_not_part_of_space);
   }
 };
 
@@ -26,6 +28,6 @@ export const getSpace = async (space: string | undefined) => {
   if (!space) {
     return undefined;
   }
-  const docRef = admin.firestore().collection(COL.SPACE).doc(space);
-  return <Space | undefined>(await docRef.get()).data();
+  const docRef = soonDb().collection(COL.SPACE).doc(space);
+  return await docRef.get<Space>();
 };

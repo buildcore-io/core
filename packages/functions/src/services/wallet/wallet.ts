@@ -1,6 +1,5 @@
 import { COL, DEFAULT_NETWORK, Network } from '@soonaverse/interfaces';
-import admin from '../../admin.config';
-import { uOn } from '../../utils/dateTime.utils';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { getIotaClient, IotaWallet } from './IotaWalletService';
 import { getShimmerClient, SmrWallet } from './SmrWalletService';
 
@@ -63,7 +62,6 @@ export const setConsumedOutputIds = (
   consumedNftOutputIds: string[] = [],
   consumedAliasOutputIds: string[] = [],
 ) =>
-  admin
-    .firestore()
+  soonDb()
     .doc(`${COL.MNEMONIC}/${address}`)
-    .update(uOn({ consumedOutputIds, consumedNftOutputIds, consumedAliasOutputIds }));
+    .update({ consumedOutputIds, consumedNftOutputIds, consumedAliasOutputIds });

@@ -8,7 +8,7 @@ import {
   Transaction,
   TransactionType,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { wait } from '../../test/controls/common';
 import { getRmsSoonTangleResponse, getTangleOrder } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
@@ -40,27 +40,26 @@ describe('Base token trading', () => {
       },
     });
 
-    let query = admin
-      .firestore()
+    let query = soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller!.uid)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
     await wait(async () => {
-      const snap = await query.get();
-      return snap.docs[0]?.data()?.payload?.walletReference?.confirmed;
+      const snap = await query.get<Transaction>();
+      return snap[0]?.payload?.walletReference?.confirmed;
     });
 
-    let snap = await query.get();
-    const response = await getRmsSoonTangleResponse(snap.docs[0], helper.rmsWallet!);
+    let snap = await query.get<Transaction>();
+    const response = await getRmsSoonTangleResponse(snap[0], helper.rmsWallet!);
 
     await helper.atoiWallet!.send(atoiAddress, response.address, response.amount, {});
-    query = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', helper.seller!.uid);
+    query = soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', helper.seller!.uid);
     await wait(async () => {
       const snap = await query.get();
-      return snap.size > 0;
+      return snap.length > 0;
     });
-    snap = await query.get();
-    const sellOrder = <TokenTradeOrder>snap.docs[0].data();
+    const orderSnap = await query.get<TokenTradeOrder>();
+    const sellOrder = orderSnap[0];
     expect(sellOrder.owner).toBe(helper.seller!.uid);
     expect(sellOrder.price).toBe(1.5);
     expect(sellOrder.count).toBe(MIN_IOTA_AMOUNT);
@@ -87,16 +86,13 @@ describe('Base token trading', () => {
       },
     );
 
-    const query = admin
-      .firestore()
-      .collection(COL.TOKEN_MARKET)
-      .where('owner', '==', helper.buyer!.uid);
+    const query = soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer!.uid);
     await wait(async () => {
       const snap = await query.get();
-      return snap.size > 0;
+      return snap.length > 0;
     });
     const snap = await query.get();
-    const sellOrder = <TokenTradeOrder>snap.docs[0].data();
+    const sellOrder = <TokenTradeOrder>snap[0];
     expect(sellOrder.owner).toBe(helper.buyer!.uid);
     expect(sellOrder.price).toBe(1.5);
     expect(sellOrder.count).toBe(MIN_IOTA_AMOUNT);

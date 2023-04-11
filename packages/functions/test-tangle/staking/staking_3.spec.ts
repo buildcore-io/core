@@ -1,7 +1,7 @@
 import { COL, Member, MIN_IOTA_AMOUNT, Stake, StakeType } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { wait } from '../../test/controls/common';
 import { requestMintedTokenFromFaucet } from '../faucet';
@@ -20,16 +20,13 @@ describe('Staking test', () => {
 
   const validateMemberTradingFee = async (expected: number) => {
     await wait(async () => {
-      helper.member = <Member>(
-        (await admin.firestore().doc(`${COL.MEMBER}/${helper.member?.uid}`).get()).data()
-      );
+      helper.member = <Member>await soonDb().doc(`${COL.MEMBER}/${helper.member?.uid}`).get();
       return helper.member.tokenTradingFeePercentage === expected;
     });
   };
 
   const expireStakeAndValidateFee = async (stake: Stake, expectedFee: number) => {
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.STAKE}/${stake.uid}`)
       .update({ expiresAt: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
     await removeExpiredStakesFromSpace();

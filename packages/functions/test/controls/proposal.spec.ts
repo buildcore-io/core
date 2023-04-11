@@ -3,7 +3,6 @@ import {
   Network,
   Proposal,
   ProposalStartDateMin,
-  ProposalSubType,
   ProposalType,
   RelatedRecordsResponse,
   Space,
@@ -13,8 +12,7 @@ import {
   WEN_FUNC,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { set } from 'lodash';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -51,7 +49,6 @@ const dummyBody = (space: string) => ({
     onlyGuardians: false,
   },
   type: ProposalType.NATIVE,
-  subType: ProposalSubType.ONE_MEMBER_ONE_VOTE,
   questions: [
     {
       text: 'Give all the funds to the HORNET developers?',
@@ -78,10 +75,11 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
     body = dummyBody(space.uid);
 
     const tokenId = wallet.getRandomEthAddress();
-    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).create({
+    await soonDb().doc(`${COL.TOKEN}/${tokenId}`).create({
       uid: tokenId,
       space: space.uid,
       status: TokenStatus.MINTED,
+      approved: true,
     });
   });
 
@@ -194,14 +192,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     return jSpace as Space;
   };
 
-  const cProposal = (
-    address: string,
-    space: Space,
-    type: ProposalType,
-    subType: ProposalSubType,
-    addAnswers: any[] = [],
-    awards: string[] = [],
-  ) => {
+  const cProposal = (address: string, space: Space, type: ProposalType, addAnswers: any[] = []) => {
     const proposal = {
       name: 'Space Test',
       space: space.uid,
@@ -211,7 +202,6 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
         onlyGuardians: false,
       },
       type,
-      subType,
       questions: [
         {
           text: 'Questions?',
@@ -223,9 +213,6 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
         },
       ],
     };
-    if (subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
-      set(proposal, 'settings.awards', awards);
-    }
     mockWalletReturnValue(walletSpy, address, proposal);
     return testEnv.wrap(createProposal)({});
   };
@@ -270,10 +257,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     const award = await testEnv.wrap(createAward)({});
     expect(award?.uid).toBeDefined();
 
-    await admin
-      .firestore()
-      .doc(`${COL.AWARD}/${award.uid}`)
-      .update({ approved: true, address: '' });
+    await soonDb().doc(`${COL.AWARD}/${award.uid}`).update({ approved: true, address: '' });
 
     // Participate
     mockWalletReturnValue(walletSpy, address, { uid: award?.uid });
@@ -305,31 +289,12 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
   });
 
   it('create proposal ', async () => {
-    await cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.ONE_MEMBER_ONE_VOTE);
-  });
-
-  it('create proposal - invalid combination NATIVE - REPUTATION_BASED_ON_AWARDS ', async () => {
-    await expectThrow(
-      cProposal(memberId, space, ProposalType.NATIVE, ProposalSubType.REPUTATION_BASED_ON_AWARDS),
-      WenError.invalid_params.key,
-    );
-  });
-
-  it('create proposal - invalid combination NATIVE - REPUTATION_BASED_ON_SPACE ', async () => {
-    await expectThrow(
-      cProposal(memberId, space, ProposalType.NATIVE, ProposalSubType.REPUTATION_BASED_ON_SPACE),
-      WenError.invalid_params.key,
-    );
+    await cProposal(memberId, space, ProposalType.MEMBERS);
   });
 
   it('create proposal, approve & vote twice on same ', async () => {
     await giveBadge(memberId, memberId, space, token.symbol, 10);
-    let proposal: Proposal = await cProposal(
-      memberId,
-      space,
-      ProposalType.MEMBERS,
-      ProposalSubType.ONE_MEMBER_ONE_VOTE,
-    );
+    let proposal: Proposal = await cProposal(memberId, space, ProposalType.MEMBERS);
 
     await apprProposal(memberId, proposal);
 
@@ -338,20 +303,15 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     expect(vResult?.payload?.weight).toEqual(1);
     await vote(memberId, proposal, [2]);
 
-    const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
-    proposal = <Proposal>(await proposalDocRef.get()).data();
+    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+    proposal = <Proposal>await proposalDocRef.get();
 
     expect(proposal.results.answers[2]).toBe(1);
   });
 
   it('create proposal, approve & vote twice on different ', async () => {
     await giveBadge(memberId, memberId, space, token.symbol, 10);
-    let proposal: Proposal = await cProposal(
-      memberId,
-      space,
-      ProposalType.MEMBERS,
-      ProposalSubType.ONE_MEMBER_ONE_VOTE,
-    );
+    let proposal: Proposal = await cProposal(memberId, space, ProposalType.MEMBERS);
 
     await apprProposal(memberId, proposal);
 
@@ -360,90 +320,14 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     expect(vResult?.payload?.weight).toEqual(1);
     await vote(memberId, proposal, [1]);
 
-    const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
-    proposal = <Proposal>(await proposalDocRef.get()).data();
+    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+    proposal = <Proposal>await proposalDocRef.get();
 
     expect(proposal.results.answers[2]).toBe(0);
     expect(proposal.results.answers[1]).toBe(1);
   });
 
-  it('create proposal, approve & vote - REPUTATION_BASED_ON_SPACE ', async () => {
-    await giveBadge(memberId, memberId, space, token.symbol, 10);
-    const proposal = await cProposal(
-      memberId,
-      space,
-      ProposalType.MEMBERS,
-      ProposalSubType.REPUTATION_BASED_ON_SPACE,
-    );
-
-    await apprProposal(memberId, proposal);
-
-    const v = await vote(memberId, proposal, [1]);
-    expect(v?.payload).toBeDefined();
-    expect(v?.payload?.weight).toEqual(10);
-  });
-
-  it('create proposal, approve & vote - REPUTATION_BASED_ON_SPACE 2 awards', async () => {
-    await giveBadge(memberId, memberId, space, token.symbol, 10);
-    await giveBadge(memberId, memberId, space, token.symbol, 30);
-    const proposal = await cProposal(
-      memberId,
-      space,
-      ProposalType.MEMBERS,
-      ProposalSubType.REPUTATION_BASED_ON_SPACE,
-    );
-
-    await apprProposal(memberId, proposal);
-
-    const v = await vote(memberId, proposal, [1]);
-    expect(v?.payload).toBeDefined();
-    expect(v?.payload?.weight).toEqual(40);
-  });
-
-  it('create proposal, approve & vote - REPUTATION_BASED_ON_AWARDS 2 awards (using only one)', async () => {
-    const award = await giveBadge(memberId, memberId, space, token.symbol, 10);
-    await giveBadge(memberId, memberId, space, token.symbol, 30);
-    const proposal = await cProposal(
-      memberId,
-      space,
-      ProposalType.MEMBERS,
-      ProposalSubType.REPUTATION_BASED_ON_AWARDS,
-      undefined,
-      [award.uid],
-    );
-
-    await apprProposal(memberId, proposal);
-
-    const v = await vote(memberId, proposal, [1]);
-    expect(v?.payload).toBeDefined();
-    expect(v?.payload?.weight).toEqual(10);
-  });
-
-  it('create proposal, approve & vote - REPUTATION_BASED_ON_AWARDS 3 awards (using all)', async () => {
-    const award = await giveBadge(memberId, memberId, space, token.symbol, 10);
-    const award2 = await giveBadge(memberId, memberId, space, token.symbol, 20);
-    const award3 = await giveBadge(memberId, memberId, space, token.symbol, 10);
-    const proposal = await cProposal(
-      memberId,
-      space,
-      ProposalType.MEMBERS,
-      ProposalSubType.REPUTATION_BASED_ON_AWARDS,
-      undefined,
-      [award.uid, award2.uid, award3.uid],
-    );
-
-    await apprProposal(memberId, proposal);
-
-    const v = await vote(memberId, proposal, [1]);
-    expect(v?.payload).toBeDefined();
-    expect(v?.payload?.weight).toEqual(40);
-    expect(v._relatedRecs.proposal.results.voted).toEqual(40);
-    expect(v._relatedRecs.proposal.results.total).toEqual(40);
-    // Not supported yet.
-    expect(v._relatedRecs.proposal.totalWeight).toEqual(40);
-  });
-
-  it('create proposal, approve & vote - ONE_MEMBER_ONE_VOTE - 7 ppl all same', async () => {
+  it('create proposal, approve & vote - 7 ppl all same', async () => {
     const memberId = await createMember(walletSpy);
     const memberId1 = await createMember(walletSpy);
     const memberId2 = await createMember(walletSpy);
@@ -460,12 +344,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     await jSpace(memberId5, space);
     await jSpace(memberId6, space);
     await jSpace(memberId7, space);
-    const proposal = await cProposal(
-      memberId,
-      space,
-      ProposalType.MEMBERS,
-      ProposalSubType.ONE_MEMBER_ONE_VOTE,
-    );
+    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS);
 
     // Approve proposal.
     await apprProposal(memberId, proposal);
@@ -487,7 +366,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     expect(v._relatedRecs.proposal.totalWeight).toEqual(8);
   });
 
-  it('create proposal, approve & vote - ONE_MEMBER_ONE_VOTE - 7 ppl 4/3', async () => {
+  it('create proposal, approve & vote - 7 ppl 4/3', async () => {
     const memberId = await createMember(walletSpy);
     const memberId1 = await createMember(walletSpy);
     const memberId2 = await createMember(walletSpy);
@@ -504,12 +383,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     await jSpace(memberId5, space);
     await jSpace(memberId6, space);
     await jSpace(memberId7, space);
-    const proposal = await cProposal(
-      memberId,
-      space,
-      ProposalType.MEMBERS,
-      ProposalSubType.ONE_MEMBER_ONE_VOTE,
-    );
+    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS);
 
     // Approve proposal.
     await apprProposal(memberId, proposal);
@@ -532,7 +406,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     expect(v._relatedRecs.proposal.totalWeight).toEqual(8);
   });
 
-  it('create proposal, approve & vote - ONE_MEMBER_ONE_VOTE - 4 ppl badges', async () => {
+  it('create proposal, approve & vote - 4 ppl badges', async () => {
     const memberId = await createMember(walletSpy);
     const memberId1 = await createMember(walletSpy);
     const memberId2 = await createMember(walletSpy);
@@ -558,12 +432,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     await giveBadge(memberId, memberId4, space, token.symbol, 30); // 60
     await giveBadge(memberId, memberId5, space, token.symbol, 200);
 
-    const proposal = await cProposal(
-      memberId,
-      space,
-      ProposalType.MEMBERS,
-      ProposalSubType.REPUTATION_BASED_ON_SPACE,
-    );
+    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS);
 
     // Approve proposal.
     await apprProposal(memberId, proposal);
@@ -575,106 +444,12 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     await vote(memberId, proposal, [1]); // 150
     const v = await vote(memberId4, proposal, [2]); // 75
     expect(v?.payload).toBeDefined();
-    expect(v?.payload?.weight).toEqual(60);
-    expect(v._relatedRecs.proposal.results.answers['1']).toEqual(150);
-    expect(v._relatedRecs.proposal.results.answers['2']).toEqual(75);
-    expect(v._relatedRecs.proposal.results.voted).toEqual(225);
-    expect(v._relatedRecs.proposal.results.total).toEqual(425);
-    expect(v._relatedRecs.proposal.totalWeight).toEqual(425);
-  });
-
-  // TODO
-  // it('create proposal - REPUTATION_BASED_ON_AWARDS forgot badges', async () => {
-  //   const memberId = await createMember(walletSpy);
-  //   const memberId1 = await createMember(walletSpy);
-  //   const space = await cSpace(memberId);
-  //   await jSpace(memberId1, space);
-  //   (<any>expect(
-  //     cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.REPUTATION_BASED_ON_AWARDS)
-  //   )).rejects.toThrowError(WenError.invalid_params.key);
-  // });
-
-  it('create proposal, approve & vote - REPUTATION_BASED_ON_AWARDS - 2 ppl badges - unused badge', async () => {
-    const memberId = await createMember(walletSpy);
-    const memberId1 = await createMember(walletSpy);
-    const space = await cSpace(memberId);
-    await jSpace(memberId1, space);
-
-    // Distribute badges.
-    const badgeA = await giveBadge(memberId, memberId, space, token.symbol, 30);
-    await giveBadge(memberId, memberId1, space, token.symbol, 30);
-
-    const proposal = await cProposal(
-      memberId,
-      space,
-      ProposalType.MEMBERS,
-      ProposalSubType.REPUTATION_BASED_ON_AWARDS,
-      undefined,
-      [badgeA!.uid],
-    );
-
-    // Approve proposal.
-    await apprProposal(memberId, proposal);
-
-    // Let's vote.
-    // await vote(memberId1, proposal, [2]);
-    const v = await vote(memberId, proposal, [1]);
-
-    expect(v?.payload).toBeDefined();
-    expect(v?.payload?.weight).toEqual(30);
-    expect(v._relatedRecs.proposal.results.answers['1']).toEqual(30);
-    // expect(v._relatedRecs.proposal.results.answers['2']).toEqual(0);
-    expect(v._relatedRecs.proposal.results.voted).toEqual(30);
-    expect(v._relatedRecs.proposal.results.total).toEqual(30);
-    expect(v._relatedRecs.proposal.totalWeight).toEqual(30);
-  });
-
-  it('create proposal, approve & vote - REPUTATION_BASED_ON_AWARDS - 3 ppl badges across two spaces', async () => {
-    const memberId = await createMember(walletSpy);
-    const memberId1 = await createMember(walletSpy);
-    const memberId2 = await createMember(walletSpy);
-    const space = await cSpace(memberId);
-    const space2 = await cSpace(memberId1);
-    await jSpace(memberId, space2);
-    await jSpace(memberId1, space);
-    await jSpace(memberId2, space2);
-
-    // Distribute badges.
-    const badgeA = await giveBadge(memberId, memberId, space, token.symbol, 30);
-    const badgeB = await giveBadge(memberId1, memberId, space2, token.symbol, 30);
-    const badgeC = await giveBadge(memberId1, memberId1, space2, token.symbol, 30);
-    const badgeD = await giveBadge(memberId1, memberId2, space2, token.symbol, 30);
-    /*
-    memberId = 60
-    memberId1 = 30
-    memberId2 = 30
-    */
-    await giveBadge(memberId, memberId1, space, token.symbol, 30);
-
-    const proposal = await cProposal(
-      memberId,
-      space,
-      ProposalType.MEMBERS,
-      ProposalSubType.REPUTATION_BASED_ON_AWARDS,
-      undefined,
-      [badgeA!.uid, badgeB!.uid, badgeC!.uid, badgeD!.uid],
-    );
-
-    // Approve proposal.
-    await apprProposal(memberId, proposal);
-
-    // Let's vote.
-    await vote(memberId, proposal, [1]);
-    await vote(memberId1, proposal, [1]);
-    const v = await vote(memberId, proposal, [2]);
-
-    expect(v?.payload).toBeDefined();
-    expect(v?.payload?.weight).toEqual(60);
-    expect(v._relatedRecs.proposal.results.answers['1']).toEqual(30);
-    expect(v._relatedRecs.proposal.results.answers['2']).toEqual(60);
-    expect(v._relatedRecs.proposal.results.voted).toEqual(90);
-    expect(v._relatedRecs.proposal.results.total).toEqual(90);
-    expect(v._relatedRecs.proposal.totalWeight).toEqual(90);
+    expect(v?.payload?.weight).toEqual(1);
+    expect(v._relatedRecs.proposal.results.answers['1']).toEqual(2);
+    expect(v._relatedRecs.proposal.results.answers['2']).toEqual(3);
+    expect(v._relatedRecs.proposal.results.voted).toEqual(5);
+    expect(v._relatedRecs.proposal.results.total).toEqual(6);
+    expect(v._relatedRecs.proposal.totalWeight).toEqual(6);
   });
 });
 
@@ -695,6 +470,6 @@ export const saveBaseToken = async (space: string, guardian: string) => {
       network: Network.RMS,
     },
   };
-  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token as Token;
 };

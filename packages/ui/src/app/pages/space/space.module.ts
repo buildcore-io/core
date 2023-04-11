@@ -37,9 +37,9 @@ import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { AuditOneModule } from 'src/app/service-modules/audit-one/audit-one.module';
+import { ResizeAvatarModule } from '../../@core/pipes/resize-avatar/resize-avatar.module';
 import { MemberModule } from '../../components/member/member.module';
 import { ProposalCardModule } from '../../components/proposal/components/proposal-card/proposal-card.module';
-import { IpfsAvatarModule } from './../../@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { MarkDownModule } from './../../@core/pipes/markdown/markdown.module';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
 import { FixedCreateButtonModule } from './../../components/fixed-create-button/fixed-create-button.module';
@@ -78,7 +78,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     TruncateModule,
     NzInputNumberModule,
     MemberModule,
-    IpfsAvatarModule,
+    ResizeAvatarModule,
     ProposalCardModule,
     AwardCardModule,
     IconModule,

@@ -9,7 +9,7 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
-import admin from '../../admin.config';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { isProdEnv } from '../../utils/config.utils';
 
 export const getWalletParams = (transaction: Transaction, network: Network) => {
@@ -55,9 +55,7 @@ const getParams = async (transaction: Transaction) => {
     }
     if (payload.nft) {
       details.nft = payload.nft;
-      const nft = <Nft | undefined>(
-        (await admin.firestore().doc(`${COL.NFT}/${payload.nft}`).get()).data()
-      );
+      const nft = await soonDb().doc(`${COL.NFT}/${payload.nft}`).get<Nft>();
       if (nft && nft.ipfsMedia) {
         details.ipfsMedia = 'ipfs://' + nft.ipfsMedia;
       }

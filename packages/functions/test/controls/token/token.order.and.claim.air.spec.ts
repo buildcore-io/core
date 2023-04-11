@@ -9,9 +9,12 @@ import {
   TokenStatus,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../../src/admin.config';
-import { airdropToken, claimAirdroppedToken } from '../../../src/controls/token-airdrop.control';
-import { orderToken } from '../../../src/controls/token.control';
+import { soonDb } from '../../../src/firebase/firestore/soondb';
+import {
+  airdropToken,
+  claimAirdroppedToken,
+  orderToken,
+} from '../../../src/runtime/firebase/token/base';
 import { dateToTimestamp, serverTime } from '../../../src/utils/dateTime.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../../set-up';
@@ -73,8 +76,9 @@ describe('Order and claim airdropped token test', () => {
       totalAirdropped: 0,
       termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
       access: 0,
+      decimals: 6,
     };
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
 
     const airdropRequest = {
       token: token.uid,
@@ -85,10 +89,10 @@ describe('Order and claim airdropped token test', () => {
   });
 
   it('Should order and claim dropped', async () => {
-    const distributionDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`);
-    let distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    const distributionDocRef = soonDb().doc(
+      `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`,
+    );
+    let distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.totalUnclaimedAirdrop).toBe(5);
 
     const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
@@ -107,22 +111,18 @@ describe('Order and claim airdropped token test', () => {
     await milestoneProcessed(milestone.milestone, milestone.tranId);
 
     await wait(async () => {
-      const snap = await admin
-        .firestore()
+      const snap = await soonDb()
         .collection(COL.AIRDROP)
         .where('member', '==', memberAddress)
         .where('status', '==', TokenDropStatus.CLAIMED)
         .get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
 
-    await admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}`)
-      .update({ status: TokenStatus.PROCESSING });
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.PROCESSING });
     await tokenProcessed(token.uid, 1, true);
 
-    distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+    distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.tokenClaimed).toBe(5);
     expect(distribution.totalPaid).toBe(5 * token.pricePerToken);
     expect(distribution.tokenOwned).toBe(10);

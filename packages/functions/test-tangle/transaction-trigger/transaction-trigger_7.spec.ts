@@ -6,7 +6,7 @@ import {
   Transaction,
   TransactionType,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -51,26 +51,25 @@ describe('Transaction trigger spec', () => {
             void: false,
           },
         };
-        const docRef = admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+        const docRef = soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
         return docRef.create(billPayment);
       });
       await Promise.all(promises);
 
-      const query = admin
-        .firestore()
+      const query = soonDb()
         .collection(COL.TRANSACTION)
         .where('payload.sourceAddress', '==', sourceAddress.bech32);
       await wait(async () => {
-        const snap = await query.get();
-        const allConfirmed = snap.docs.reduce(
-          (acc, act) => acc && act.data()?.payload?.walletReference?.confirmed,
+        const snap = await query.get<Transaction>();
+        const allConfirmed = snap.reduce(
+          (acc, act) => acc && act?.payload?.walletReference?.confirmed,
           true,
         );
-        return snap.size === count && allConfirmed;
+        return snap.length === count && allConfirmed;
       });
-      const snap = await query.get();
-      for (const doc of snap.docs) {
-        expect(doc.data()?.payload?.walletReference?.count).toBe(1);
+      const snap = await query.get<Transaction>();
+      for (const doc of snap) {
+        expect(doc?.payload?.walletReference?.count).toBe(1);
       }
     },
   );

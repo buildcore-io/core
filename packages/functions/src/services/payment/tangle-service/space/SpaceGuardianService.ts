@@ -5,9 +5,9 @@ import {
   DEFAULT_NETWORK,
   Member,
   Proposal,
-  ProposalSubType,
   ProposalType,
   Space,
+  SpaceMember,
   SUB_COL,
   TangleRequestType,
   Transaction,
@@ -16,10 +16,10 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../../../admin.config';
+import { soonDb } from '../../../../firebase/firestore/soondb';
 import { editSpaceMemberSchema } from '../../../../runtime/firebase/space';
-import { cOn, dateToTimestamp } from '../../../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../../../utils/error.utils';
+import { dateToTimestamp, serverTime } from '../../../../utils/dateTime.utils';
+import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
@@ -37,19 +37,19 @@ export class SpaceGuardianService {
         : ProposalType.REMOVE_GUARDIAN;
     const { proposal, voteTransaction, members } = await addRemoveGuardian(owner, request, type);
 
-    const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
     const memberPromisses = members.map((member) => {
-      proposalDocRef.collection(SUB_COL.MEMBERS).doc(member.uid).set(cOn(member));
+      proposalDocRef.collection(SUB_COL.MEMBERS).doc(member.uid).set(member);
     });
     await Promise.all(memberPromisses);
 
-    const transactionDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`);
-    this.transactionService.updates.push({
+    const transactionDocRef = soonDb().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`);
+    this.transactionService.push({
       ref: transactionDocRef,
       data: voteTransaction,
       action: 'set',
     });
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: proposalDocRef,
       data: proposal,
       action: 'set',
@@ -67,59 +67,56 @@ export const addRemoveGuardian = async (
   const isAddGuardian = type === ProposalType.ADD_GUARDIAN;
   await assertIsGuardian(params.uid as string, owner);
 
-  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${params.uid}`);
+  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${params.uid}`);
   const spaceMemberDoc = await spaceDocRef
     .collection(SUB_COL.MEMBERS)
     .doc(params.member as string)
     .get();
-  if (!spaceMemberDoc.exists) {
-    throw throwInvalidArgument(WenError.member_is_not_part_of_the_space);
+  if (!spaceMemberDoc) {
+    throw invalidArgument(WenError.member_is_not_part_of_the_space);
   }
 
   const spaceGuardianMember = await spaceDocRef
     .collection(SUB_COL.GUARDIANS)
     .doc(params.member as string)
     .get();
-  if (isAddGuardian && spaceGuardianMember.exists) {
-    throw throwInvalidArgument(WenError.member_is_already_guardian_of_space);
-  } else if (!isAddGuardian && !spaceGuardianMember.exists) {
-    throw throwInvalidArgument(WenError.member_is_not_guardian_of_space);
+  if (isAddGuardian && spaceGuardianMember) {
+    throw invalidArgument(WenError.member_is_already_guardian_of_space);
+  } else if (!isAddGuardian && !spaceGuardianMember) {
+    throw invalidArgument(WenError.member_is_not_guardian_of_space);
   }
 
-  const ongoingProposalSnap = await admin
-    .firestore()
+  const ongoingProposalSnap = await soonDb()
     .collection(COL.PROPOSAL)
     .where('settings.addRemoveGuardian', '==', params.member)
-    .where('settings.endDate', '>=', dateToTimestamp(dayjs()))
+    .where('settings.endDate', '>=', serverTime())
     .get();
 
-  if (ongoingProposalSnap.size) {
-    throw throwInvalidArgument(WenError.ongoing_proposal);
+  if (ongoingProposalSnap.length) {
+    throw invalidArgument(WenError.ongoing_proposal);
   }
 
   if (!isAddGuardian) {
-    await admin.firestore().runTransaction(async (transaction) => {
-      const space = <Space>(await transaction.get(spaceDocRef)).data();
+    await soonDb().runTransaction(async (transaction) => {
+      const space = <Space>await transaction.get(spaceDocRef);
       if (space.totalGuardians < 2) {
-        throw throwInvalidArgument(WenError.at_least_one_guardian_must_be_in_the_space);
+        throw invalidArgument(WenError.at_least_one_guardian_must_be_in_the_space);
       }
     });
   }
 
-  const guardian = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data();
-  const member = <Member>(
-    (await admin.firestore().doc(`${COL.MEMBER}/${params.member}`).get()).data()
-  );
-  const guardians = await admin
-    .firestore()
-    .collection(`${COL.SPACE}/${params.uid}/${SUB_COL.GUARDIANS}`)
-    .get();
+  const guardian = <Member>await soonDb().doc(`${COL.MEMBER}/${owner}`).get();
+  const member = <Member>await soonDb().doc(`${COL.MEMBER}/${params.member}`).get();
+  const guardians = await soonDb()
+    .doc(`${COL.SPACE}/${params.uid}`)
+    .collection(SUB_COL.GUARDIANS)
+    .get<SpaceMember>();
   const proposal = getProposalData(
     guardian,
     params.uid as string,
     member,
     isAddGuardian,
-    guardians.size,
+    guardians.length,
   );
 
   const voteTransaction = <Transaction>{
@@ -137,14 +134,14 @@ export const addRemoveGuardian = async (
     linkedTransactions: [],
   };
 
-  const members = guardians.docs.map((doc) => ({
-    uid: doc.id,
+  const members = guardians.map((guardian) => ({
+    uid: guardian.uid,
     weight: 1,
-    voted: doc.id === owner,
-    tranId: doc.id === owner ? voteTransaction.uid : '',
+    voted: guardian.uid === owner,
+    tranId: guardian.uid === owner ? voteTransaction.uid : '',
     parentId: proposal.uid,
     parentCol: COL.PROPOSAL,
-    values: doc.id === owner ? [{ [1]: 1 }] : [],
+    values: guardian.uid === owner ? [{ [1]: 1 }] : [],
   }));
 
   return { proposal, voteTransaction, members };
@@ -169,7 +166,6 @@ const getProposalData = (
     space,
     description: '',
     type: isAddGuardian ? ProposalType.ADD_GUARDIAN : ProposalType.REMOVE_GUARDIAN,
-    subType: ProposalSubType.ONE_MEMBER_ONE_VOTE,
     approved: true,
     rejected: false,
     settings: {

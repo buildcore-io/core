@@ -5,23 +5,22 @@ import {
   TokenTradeOrderStatus,
   TokenTradeOrderType,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
 import { getTokenPrice } from '../../src/api/getTokenPrice';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 
 describe('Token price', () => {
   it('Should get token price', async () => {
     const token = getRandomEthAddress();
-    await admin.firestore().doc(`${COL.TICKER}/${TICKERS.SMRUSD}`).set({ price: 0.5 });
-    await admin.firestore().doc(`${COL.TOKEN_MARKET}/${getRandomEthAddress()}`).create({
+    await soonDb().doc(`${COL.TICKER}/${TICKERS.SMRUSD}`).set({ price: 0.5 });
+    await soonDb().doc(`${COL.TOKEN_MARKET}/${getRandomEthAddress()}`).create({
       token,
       status: TokenTradeOrderStatus.ACTIVE,
       type: TokenTradeOrderType.SELL,
       price: MIN_IOTA_AMOUNT,
     });
 
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.TOKEN_MARKET}/${getRandomEthAddress()}`)
       .create({
         token,

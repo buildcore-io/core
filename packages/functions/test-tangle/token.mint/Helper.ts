@@ -17,7 +17,7 @@ import { Converter, HexHelper } from '@iota/util.js-next';
 import { COL, Member, Network, Space, SUB_COL, Token, TokenStatus } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import { cloneDeep } from 'lodash';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
@@ -48,9 +48,7 @@ export class Helper {
   public setup = async (approved = true, isPublicToken?: boolean) => {
     const guardianId = await createMember(this.walletSpy);
     this.member = await createMember(this.walletSpy);
-    this.guardian = <Member>(
-      (await admin.firestore().doc(`${COL.MEMBER}/${guardianId}`).get()).data()
-    );
+    this.guardian = <Member>await soonDb().doc(`${COL.MEMBER}/${guardianId}`).get();
     this.space = await createSpace(this.walletSpy, this.guardian.uid);
     this.token = await this.saveToken(
       this.space.uid,
@@ -87,10 +85,10 @@ export class Helper {
       icon: MEDIA,
       public: isPublicToken,
       approved,
+      decimals: 5,
     };
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
-    await admin
-      .firestore()
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+    await soonDb()
       .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`)
       .set({ tokenOwned: 1000 });
     return <Token>token;

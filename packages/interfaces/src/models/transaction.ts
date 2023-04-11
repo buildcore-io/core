@@ -1,4 +1,4 @@
-import { BaseRecord, EthAddress, FileMetedata, IotaAddress, Timestamp } from './base';
+import { BaseRecord, EthAddress, FileMetedata, IotaAddress, Restrictions, Timestamp } from './base';
 import { NativeToken } from './milestone';
 
 export const TRANSACTION_AUTO_EXPIRY_MS = 4 * 60 * 1000;
@@ -195,6 +195,7 @@ export interface OrderTransaction {
   collection?: EthAddress;
   token?: EthAddress;
   quantity?: number;
+  restrictions?: Restrictions;
 }
 
 export interface PaymentTransaction {
@@ -238,6 +239,7 @@ export interface BillPaymentTransaction {
   royalty: boolean;
   collection?: EthAddress;
   delay: number;
+  restrictions?: Restrictions;
 }
 
 export enum CreditPaymentReason {

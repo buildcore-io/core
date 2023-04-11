@@ -1,16 +1,19 @@
 import {
+  COL,
   GetManyRequest,
   MAX_FIELD_NAME_LENGTH,
   MAX_FIELD_VALUE_LENGTH,
   PublicCollections,
   PublicSubCollections,
 } from '@soonaverse/interfaces';
-import * as functions from 'firebase-functions';
+import * as express from 'express';
+import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
 import { isEmpty } from 'lodash';
-import admin from '../admin.config';
+import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
 import { CommonJoi } from '../services/joi/common';
 import { getQueryLimit, getQueryParams } from './common';
+import { sendLiveUpdates } from './keepAlive';
 
 const MAX_WHERE_STATEMENTS = 8;
 
@@ -40,9 +43,10 @@ const getManySchema = Joi.object({
     })
     .optional(),
   startAfter: CommonJoi.uid(false),
+  live: Joi.boolean().optional(),
 });
 
-export const getMany = async (req: functions.https.Request, res: functions.Response) => {
+export const getMany = async (req: functions.https.Request, res: express.Response) => {
   const body = getQueryParams<GetManyRequest>(req, res, getManySchema);
   if (!body) {
     return;
@@ -52,9 +56,8 @@ export const getMany = async (req: functions.https.Request, res: functions.Respo
     body.subCollection && body.uid
       ? `${body.collection}/${body.uid}/${body.subCollection}`
       : body.collection;
-  let query = admin
-    .firestore()
-    .collection(baseCollectionPath)
+  let query = soonDb()
+    .collection(baseCollectionPath as COL)
     .limit(getQueryLimit(body.collection));
 
   if (body.fieldName && body.fieldValue != null) {
@@ -74,18 +77,23 @@ export const getMany = async (req: functions.https.Request, res: functions.Respo
   }
 
   if (body.startAfter) {
-    const path =
-      body.subCollection && body.uid
-        ? `${body.collection}/${body.uid}/${body.subCollection}/${body.startAfter}`
-        : `${body.collection}/${body.startAfter}`;
-    const startAfter = await admin.firestore().doc(path).get();
-    query = query.startAfter(startAfter);
+    const startAfter = getSnapshot(
+      body.collection,
+      body.uid || body.startAfter,
+      body.subCollection,
+      body.startAfter,
+    );
+    query = query.startAfter(await startAfter);
   }
 
-  const snap = await query.get();
-  const result = snap.docs
-    .map((d) => d.data())
-    .filter((d) => !isEmpty(d))
-    .map((d) => ({ id: d.uid, ...d }));
+  if (body.live) {
+    await sendLiveUpdates(res, query.onSnapshot, (snap: Record<string, unknown>[]) =>
+      snap.filter((d) => !isEmpty(d)).map((d) => ({ id: d.uid, ...d })),
+    );
+    return;
+  }
+
+  const snap = await query.get<Record<string, unknown>>();
+  const result = snap.filter((d) => !isEmpty(d)).map((d) => ({ id: d.uid, ...d }));
   res.send(result);
 };
