@@ -14,7 +14,7 @@ import {
 } from '@soonaverse/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { getAddress } from '../../utils/address.utils';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 import {
   getBoughtByMemberDiff,
   memberDocRef,
@@ -33,11 +33,11 @@ export const creditTokenControl = async (owner: string, params: Record<string, u
 
     const distribution = await transaction.get<TokenDistribution>(distributionDocRef);
     if (!distribution || (distribution.totalDeposit || 0) < (params.amount as number)) {
-      throw throwInvalidArgument(WenError.not_enough_funds);
+      throw invalidArgument(WenError.not_enough_funds);
     }
     const token = await tokenDocRef.get<Token>();
     if (!token || !tokenIsInCoolDownPeriod(token) || token.status !== TokenStatus.AVAILABLE) {
-      throw throwInvalidArgument(WenError.token_not_in_cool_down_period);
+      throw invalidArgument(WenError.token_not_in_cool_down_period);
     }
     const member = <Member>await memberDocRef(owner).get();
     const orderDocRef = soonDb().doc(

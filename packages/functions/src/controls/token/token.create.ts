@@ -13,7 +13,7 @@ import { hasStakedSoonTokens } from '../../services/stake.service';
 import { assertSpaceHasValidAddress } from '../../utils/address.utils';
 import { isProdEnv } from '../../utils/config.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { getPublicSaleTimeFrames, shouldSetPublicSaleTimeFrames } from './common';
@@ -21,7 +21,7 @@ import { getPublicSaleTimeFrames, shouldSetPublicSaleTimeFrames } from './common
 export const createTokenControl = async (owner: string, params: Record<string, unknown>) => {
   const hasStakedSoons = await hasStakedSoonTokens(owner);
   if (!hasStakedSoons) {
-    throw throwInvalidArgument(WenError.no_staked_soon);
+    throw invalidArgument(WenError.no_staked_soon);
   }
 
   const tokens = await soonDb()
@@ -33,7 +33,7 @@ export const createTokenControl = async (owner: string, params: Record<string, u
     true,
   );
   if (!nonOrAllRejected) {
-    throw throwInvalidArgument(WenError.token_already_exists_for_space);
+    throw invalidArgument(WenError.token_already_exists_for_space);
   }
 
   const symbolSnapshot = await soonDb()
@@ -42,7 +42,7 @@ export const createTokenControl = async (owner: string, params: Record<string, u
     .where('rejected', '==', false)
     .get<Token>();
   if (symbolSnapshot.length > 0) {
-    throw throwInvalidArgument(WenError.token_symbol_must_be_globally_unique);
+    throw invalidArgument(WenError.token_symbol_must_be_globally_unique);
   }
 
   await assertIsGuardian(params.space as string, owner);

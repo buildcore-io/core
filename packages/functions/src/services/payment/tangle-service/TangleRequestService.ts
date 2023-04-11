@@ -13,7 +13,7 @@ import * as functions from 'firebase-functions/v2';
 import { get } from 'lodash';
 import { soonDb } from '../../../firebase/firestore/soondb';
 import { getOutputMetadata } from '../../../utils/basic-output.utils';
-import { throwInvalidArgument } from '../../../utils/error.utils';
+import { invalidArgument } from '../../../utils/error.utils';
 import { getRandomNonce } from '../../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 import { TangleAddressValidationService } from './address-validation.service';
@@ -177,7 +177,7 @@ export class TangleRequestService {
         return await service.handleSpaceCreateRequest(owner, request);
       }
       default:
-        throw throwInvalidArgument(WenError.invalid_tangle_request_type);
+        throw invalidArgument(WenError.invalid_tangle_request_type);
     }
   };
 
@@ -188,7 +188,7 @@ export class TangleRequestService {
       .get<Member>();
 
     if (snap.length > 1) {
-      throw throwInvalidArgument(WenError.multiple_members_with_same_address);
+      throw invalidArgument(WenError.multiple_members_with_same_address);
     }
 
     if (snap.length === 1) {

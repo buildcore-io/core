@@ -1,6 +1,6 @@
 import { DiscountLine, WenError } from '@soonaverse/interfaces';
 import { uniq } from 'lodash';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 import { getTokenBySymbol } from '../../utils/token.utils';
 
 export const populateTokenUidOnDiscounts = async (discounts: DiscountLine[]) => {
@@ -10,7 +10,7 @@ export const populateTokenUidOnDiscounts = async (discounts: DiscountLine[]) => 
   return discounts.map((discount) => {
     const token = tokens.find((t) => t?.symbol === discount.tokenSymbol);
     if (!token) {
-      throw throwInvalidArgument(WenError.token_does_not_exist);
+      throw invalidArgument(WenError.token_does_not_exist);
     }
     return { ...discount, tokenUid: token.uid };
   });

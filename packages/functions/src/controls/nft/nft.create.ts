@@ -13,7 +13,7 @@ import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const createNftControl = async (owner: string, params: Record<string, unknown>) => {
@@ -33,23 +33,23 @@ const getCollection = async (owner: string, collectionId: string) => {
   const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${collectionId}`);
   const collection = await collectionDocRef.get<Collection>();
   if (!collection) {
-    throw throwInvalidArgument(WenError.collection_does_not_exists);
+    throw invalidArgument(WenError.collection_does_not_exists);
   }
 
   if ((collection.status || CollectionStatus.PRE_MINTED) !== CollectionStatus.PRE_MINTED) {
-    throw throwInvalidArgument(WenError.invalid_collection_status);
+    throw invalidArgument(WenError.invalid_collection_status);
   }
 
   if (collection.rejected) {
-    throw throwInvalidArgument(WenError.collection_is_already_rejected);
+    throw invalidArgument(WenError.collection_is_already_rejected);
   }
 
   if (collection.approved === true && collection.limitedEdition) {
-    throw throwInvalidArgument(WenError.this_is_limited_addition_collection);
+    throw invalidArgument(WenError.this_is_limited_addition_collection);
   }
 
   if (collection.createdBy !== owner) {
-    throw throwInvalidArgument(WenError.you_must_be_the_creator_of_this_collection);
+    throw invalidArgument(WenError.you_must_be_the_creator_of_this_collection);
   }
 
   return collection;
@@ -68,7 +68,7 @@ const processOneCreateNft = async (
     !collection.availableFrom ||
     dayjs(collection.availableFrom.toDate()).isAfter(dayjs(params.availableFrom as Date), 'minutes')
   ) {
-    throw throwInvalidArgument(
+    throw invalidArgument(
       WenError.nft_date_must_be_after_or_same_with_collection_available_from_date,
     );
   }
@@ -77,12 +77,12 @@ const processOneCreateNft = async (
     const availableFrom = dayjs((params.availableFrom as Timestamp).toDate());
     const expectedAvailableFrom = dayjs().subtract(24 * 60 * 60 * 1000);
     if (availableFrom.isBefore(expectedAvailableFrom)) {
-      throw throwInvalidArgument(WenError.available_from_must_be_in_the_future);
+      throw invalidArgument(WenError.available_from_must_be_in_the_future);
     }
   }
 
   if (!isEmpty(params.saleAccessMembers) && collection.type !== CollectionType.CLASSIC) {
-    throw throwInvalidArgument(WenError.collection_must_be_classic);
+    throw invalidArgument(WenError.collection_must_be_classic);
   }
 
   if (collection.type === CollectionType.GENERATED || collection.type === CollectionType.SFT) {

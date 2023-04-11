@@ -10,7 +10,7 @@ import {
 import { soonDb } from '../../../../firebase/firestore/soondb';
 import { uidSchema } from '../../../../runtime/firebase/common';
 import { serverTime } from '../../../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../../../utils/error.utils';
+import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getTokenForSpace } from '../../../../utils/token.utils';
 import { getStakeForType } from '../../../stake.service';
@@ -25,7 +25,7 @@ export class SpaceJoinService {
     const spaceDocRef = soonDb().doc(`${COL.SPACE}/${request.uid}`);
     const space = <Space | undefined>await spaceDocRef.get();
     if (!space) {
-      throw throwInvalidArgument(WenError.space_does_not_exists);
+      throw invalidArgument(WenError.space_does_not_exists);
     }
 
     const { space: spaceUpdateData, spaceMember, member } = await getJoinSpaceData(owner, space);
@@ -62,12 +62,12 @@ export const getJoinSpaceData = async (owner: string, space: Space) => {
 
   const joinedMemberSnap = await spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner).get();
   if (joinedMemberSnap) {
-    throw throwInvalidArgument(WenError.you_are_already_part_of_space);
+    throw invalidArgument(WenError.you_are_already_part_of_space);
   }
 
   const blockedMemberSnap = await spaceDocRef.collection(SUB_COL.BLOCKED_MEMBERS).doc(owner).get();
   if (blockedMemberSnap) {
-    throw throwInvalidArgument(WenError.you_are_not_allowed_to_join_space);
+    throw invalidArgument(WenError.you_are_not_allowed_to_join_space);
   }
 
   const knockingMemberSnap = await spaceDocRef
@@ -75,7 +75,7 @@ export const getJoinSpaceData = async (owner: string, space: Space) => {
     .doc(owner)
     .get();
   if (knockingMemberSnap) {
-    throw throwInvalidArgument(WenError.member_already_knocking);
+    throw invalidArgument(WenError.member_already_knocking);
   }
 
   if (space.tokenBased) {
@@ -106,6 +106,6 @@ const assertMemberHasEnoughStakedTokens = async (space: Space, member: string) =
   const distribution = await distributionDocRef.get<TokenDistribution>();
   const stakeValue = getStakeForType(distribution, StakeType.DYNAMIC);
   if (stakeValue < (space.minStakedValue || 0)) {
-    throw throwInvalidArgument(WenError.not_enough_staked_tokens);
+    throw invalidArgument(WenError.not_enough_staked_tokens);
   }
 };

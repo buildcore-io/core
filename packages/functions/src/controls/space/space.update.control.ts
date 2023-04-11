@@ -19,7 +19,7 @@ import dayjs from 'dayjs';
 import { get, startCase } from 'lodash';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 import { cleanupParams } from '../../utils/schema.utils';
 import { assertIsGuardian, getTokenForSpace } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -29,18 +29,18 @@ export const updateSpaceControl = async (owner: string, params: Record<string, u
   const space = await spaceDocRef.get<Space>();
 
   if (!space) {
-    throw throwInvalidArgument(WenError.space_does_not_exists);
+    throw invalidArgument(WenError.space_does_not_exists);
   }
 
   if (params.tokenBased) {
     const token = await getTokenForSpace(space.uid);
     if (token?.status !== TokenStatus.MINTED) {
-      throw throwInvalidArgument(WenError.token_not_minted);
+      throw invalidArgument(WenError.token_not_minted);
     }
   }
 
   if (space.tokenBased && (params.open !== undefined || params.tokenBased !== undefined)) {
-    throw throwInvalidArgument(WenError.token_based_space_access_can_not_be_edited);
+    throw invalidArgument(WenError.token_based_space_access_can_not_be_edited);
   }
 
   await assertIsGuardian(space.uid, owner);
@@ -51,7 +51,7 @@ export const updateSpaceControl = async (owner: string, params: Record<string, u
     .where('settings.endDate', '>=', serverTime())
     .get();
   if (ongoingProposalSnap.length) {
-    throw throwInvalidArgument(WenError.ongoing_proposal);
+    throw invalidArgument(WenError.ongoing_proposal);
   }
 
   const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);

@@ -16,7 +16,7 @@ import {
 import { executeSimpleVoting } from '../../services/payment/tangle-service/proposal/voting/simple.voting';
 import { voteWithStakedTokens } from '../../services/payment/tangle-service/proposal/voting/staked.token.voting';
 import { createVoteTransactionOrder } from '../../services/payment/tangle-service/proposal/voting/token.voting';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 import { getTokenForSpace } from '../../utils/token.utils';
 
 export const voteOnProposalControl = async (owner: string, params: Record<string, unknown>) => {
@@ -27,7 +27,7 @@ export const voteOnProposalControl = async (owner: string, params: Record<string
   if (proposal.type === ProposalType.NATIVE) {
     const token = await getTokenForSpace(proposal.space);
     if (token?.status !== TokenStatus.MINTED) {
-      throw throwInvalidArgument(WenError.token_not_minted);
+      throw invalidArgument(WenError.token_not_minted);
     }
 
     if (params.voteWithStakedTokes) {

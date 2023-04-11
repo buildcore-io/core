@@ -15,30 +15,30 @@ import { soonDb } from '../../firebase/firestore/soondb';
 import { hasStakedSoonTokens } from '../../services/stake.service';
 import { assertSpaceHasValidAddress } from '../../utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { populateTokenUidOnDiscounts } from './common';
 
 export const createCollectionControl = async (owner: string, params: Record<string, unknown>) => {
   const hasStakedSoons = await hasStakedSoonTokens(owner);
   if (!hasStakedSoons) {
-    throw throwInvalidArgument(WenError.no_staked_soon);
+    throw invalidArgument(WenError.no_staked_soon);
   }
   const spaceDocRef = soonDb().doc(`${COL.SPACE}/${params.space}`);
   const space = await spaceDocRef.get<Space>();
   if (!space) {
-    throw throwInvalidArgument(WenError.space_does_not_exists);
+    throw invalidArgument(WenError.space_does_not_exists);
   }
   assertSpaceHasValidAddress(space, DEFAULT_NETWORK);
 
   const spaceMember = await spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner).get<Member>();
   if (!spaceMember) {
-    throw throwInvalidArgument(WenError.you_are_not_part_of_space);
+    throw invalidArgument(WenError.you_are_not_part_of_space);
   }
 
   const royaltySpace = await soonDb().doc(`${COL.SPACE}/${params.royaltiesSpace}`).get<Space>();
   if (!royaltySpace) {
-    throw throwInvalidArgument(WenError.space_does_not_exists);
+    throw invalidArgument(WenError.space_does_not_exists);
   }
   assertSpaceHasValidAddress(royaltySpace, DEFAULT_NETWORK);
 
