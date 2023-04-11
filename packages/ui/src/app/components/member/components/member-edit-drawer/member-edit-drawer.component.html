@@ -59,38 +59,27 @@
           nz-typography
           class="mb-6 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
           i18n
-          >Customise your Soonaverse identity.</span
+          >Customise your Soonaverse identity. Set NFT as your profile image. Only minted NFT are
+          supported.</span
         >
-        <div
-          class="flex p-4 space-x-4 bg-backgrounds-item-hover dark:bg-backgrounds-item-hover-dark text-foregrounds-primary dark:text-foregrounds-primary-dark"
-          *ngIf="!currentProfileImageControl.value"
-        >
-          <nz-avatar
-            class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark min-w-max"
-            [nzSize]="48"
-            nzSrc="/assets/mocks/no_avatar.png"
-          >
-          </nz-avatar>
-          <span i18n
-            >Generate a free unique avatar for your profile picture. <br /><br />
-            New super rare premium avatar species and avatar collectibles/accessories that can all
-            be traded are coming SOON.
-          </span>
-          <button nz-button nzSize="small" nzType="primary" type="button" (click)="mint()">
-            Generate Avatar
-          </button>
-        </div>
-        <div
-          class="flex p-4 space-x-4 bg-accent-selected dark:bg-accent-selected-dark text-foregrounds-primary dark:text-foregrounds-primary-dark"
-          *ngIf="currentProfileImageControl.value"
-        >
-          <nz-avatar
-            class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark min-w-max"
-            [nzSize]="48"
-            [nzSrc]="currentProfileImageControl.value | resizeAvatar : filesizes.small"
-          ></nz-avatar>
-          <span i18n>WOW! Looks like yours is the prettiest avatar of all. Congratulations. </span>
-        </div>
+        <nz-form-item class="mt-4">
+          <nz-form-control>
+            <nz-select
+              class="w-full"
+              nzSize="large"
+              nzMode="default"
+              [nzOptions]="(filteredNfts$ | async) || []"
+              [nzServerSearch]="true"
+              nzShowSearch
+              nzAllowClear
+              i18n-nzPlaceHolder
+              nzPlaceHolder="Type nft name..."
+              (nzOnSearch)="searchNft($event)"
+              [formControl]="avatarNftControl"
+            >
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
       </nz-form-item>
 
       <div class="space-y-4">

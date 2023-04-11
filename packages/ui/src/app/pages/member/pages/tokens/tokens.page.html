@@ -314,57 +314,60 @@
           </div>
         </ng-template>
 
-        <nz-table
-          class="block"
-          [nzData]="(filteredStakes$ | async) || []"
-          [nzShowPagination]="false"
-        >
-          <thead>
-            <tr>
-              <th i18n>Item</th>
-              <th i18n>Type</th>
-              <th i18n>Staked From</th>
-              <th i18n>Staked Until</th>
-              <th i18n>Amount</th>
-              <th i18n>Multiplier</th>
-              <th i18n>Staked Value</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let t of filteredStakes$ | async">
-              <td
-                [routerLink]="helper.preMinted(t.tokenRec) ? ['/token', t.token, 'trade'] : ['/token', t.token]"
-                class="cursor-pointer"
-              >
-                <div class="flex items-center">
-                  <nz-avatar
-                    [nzSrc]="previewImageService.getTokenSize(t.tokenRec.icon)"
-                    class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
-                    nzShape="circle"
-                    [nzSize]="32"
-                  >
-                  </nz-avatar>
-                  <div
-                    class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark"
-                  >
-                    {{ t.tokenRec.name }}
+        <div class="overflow-scroll">
+          <nz-table
+            class="block"
+            [nzData]="(filteredStakes$ | async) || []"
+            [nzShowPagination]="false"
+          >
+            <thead>
+              <tr>
+                <th i18n>Item</th>
+                <th i18n>Type</th>
+                <th i18n>Staked From</th>
+                <th i18n>Staked Until</th>
+                <th i18n>Amount</th>
+                <th i18n>Multiplier</th>
+                <th i18n>Staked Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let t of filteredStakes$ | async">
+                <td
+                  [routerLink]="helper.preMinted(t.tokenRec) ? ['/token', t.token, 'trade'] : ['/token', t.token]"
+                  class="cursor-pointer"
+                >
+                  <div class="flex items-center">
+                    <nz-avatar
+                      [nzSrc]="previewImageService.getTokenSize(t.tokenRec.icon)"
+                      class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
+                      nzShape="circle"
+                      [nzSize]="32"
+                    >
+                    </nz-avatar>
+                    <div
+                      class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark"
+                    >
+                      {{ t.tokenRec.name }}
+                    </div>
                   </div>
-                </div>
-              </td>
-              <td class="right">{{ t.type | uppercase }}</td>
-              <td class="font-medium">{{ t.createdOn?.toDate() | date:'short' }}</td>
-              <td class="font-medium">{{ t.expiresAt?.toDate() | date:'short' }}</td>
-              <td class="right">
-                {{ unitsService.format(t.amount, undefined, true, false) + ' ' + t.tokenRec.symbol
-                }}
-              </td>
-              <td>{{ calcMult(t.weeks) | number: '1.0-2'}}</td>
-              <td class="right">
-                {{ unitsService.format(t.value, undefined, true, false) + ' ' + t.tokenRec.symbol }}
-              </td>
-            </tr>
-          </tbody>
-        </nz-table>
+                </td>
+                <td class="right">{{ t.type | uppercase }}</td>
+                <td class="font-medium">{{ t.createdOn?.toDate() | date:'short' }}</td>
+                <td class="font-medium">{{ t.expiresAt?.toDate() | date:'short' }}</td>
+                <td class="right">
+                  {{ unitsService.format(t.amount, undefined, true, false) + ' ' + t.tokenRec.symbol
+                  }}
+                </td>
+                <td>{{ calcMult(t.weeks) | number: '1.0-2'}}</td>
+                <td class="right">
+                  {{ unitsService.format(t.value, undefined, true, false) + ' ' + t.tokenRec.symbol
+                  }}
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </div>
       </nz-card>
 
       <!-- MOBILE VIEW -->

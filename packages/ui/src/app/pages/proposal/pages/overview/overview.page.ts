@@ -8,7 +8,7 @@ import { HelperService } from '@pages/proposal/services/helper.service';
 import { Proposal, StakeType, Timestamp } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, interval, map, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription, interval, map } from 'rxjs';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { DataService } from './../../services/data.service';
@@ -112,7 +112,7 @@ export class OverviewPage implements OnInit {
       return;
     }
 
-    if (!(this.voteControl.value > 0)) {
+    if (!(this.voteControl.value > -1)) {
       this.nzNotification.error('', 'Please select option first!');
       return;
     }

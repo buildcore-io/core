@@ -22,7 +22,7 @@
   *ngIf="!(data.proposal$ | async)?.rejected && helper.isComplete(data.proposal$ | async) === false"
 >
   <ng-container *ngFor="let q of (data.proposal$ | async)?.questions">
-    <nz-card [nzTitle]="q.text">
+    <nz-card [nzTitle]="titleText">
       <span [innerHtml]="q.additionalInfo | markdown"></span>
       <nz-radio-group
         class="w-full mb-4 mt-9"
@@ -41,6 +41,10 @@
         (wenOnVote)="vote()"
       >
       </wen-proposal-vote-action>
+
+      <ng-template #titleText>
+        <span class="whitespace-normal">{{ q.text }}</span>
+      </ng-template>
     </nz-card>
 
     <nz-radio-group
