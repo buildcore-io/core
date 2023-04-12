@@ -9,11 +9,12 @@ import {
 import {
   COL,
   DEFAULT_NETWORK,
+  MIN_AMOUNT_TO_TRANSFER,
   MilestoneTransaction,
   MilestoneTransactionEntry,
-  MIN_AMOUNT_TO_TRANSFER,
-  StorageReturn,
   SUB_COL,
+  StorageReturn,
+  TRANSACTION_AUTO_EXPIRY_MS,
   Timestamp,
   Token,
   Transaction,
@@ -24,7 +25,6 @@ import {
   TransactionType,
   TransactionUnlockType,
   TransactionValidationType,
-  TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions/v2';
@@ -340,9 +340,9 @@ export class TransactionService {
         nftId: tran.to.nftOutput?.nftId,
         invalidPayment: payment.payload.invalidPayment,
         response,
-        ignoreWallet: !isEmpty(ignoreWalletReason),
-        ignoreWalletReason,
       },
+      ignoreWallet: !isEmpty(ignoreWalletReason),
+      ignoreWalletReason,
     };
     this.updates.push({
       ref: soonDb().doc(`${COL.TRANSACTION}/${transaction.uid}`),
