@@ -1,11 +1,14 @@
 import { COL } from '@soonaverse/interfaces';
 import crypto from 'crypto';
+import dotenv from 'dotenv';
 import admin from 'firebase-admin';
 import { getFirestore } from 'firebase-admin/firestore';
 import fs from 'fs';
 import glob from 'glob';
 import { FirebaseApp } from '../src/firebase/app/app';
 import serviceAccount from './serviceAccountKey.json';
+
+dotenv.config({ path: '../.env' });
 
 const app = admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as any),
