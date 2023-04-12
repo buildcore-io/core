@@ -4,8 +4,8 @@ import {
   Space,
   TokenAllocation,
   TokenStatus,
-  WenError,
   WEN_FUNC,
+  WenError,
 } from '@soonaverse/interfaces';
 import { soonDb } from '../../../src/firebase/firestore/soondb';
 import { createToken, updateToken } from '../../../src/runtime/firebase/token/base';
@@ -95,7 +95,7 @@ describe('Token controller: ' + WEN_FUNC.uToken, () => {
     await expectThrow(testEnv.wrap(updateToken)({}), WenError.you_are_not_guardian_of_space.key);
   });
 
-  it('Should throw, invalid staus', async () => {
+  it('Should throw, not guardian', async () => {
     const updateData = {
       ...data,
       name: 'TokenName2',
@@ -114,17 +114,23 @@ describe('Token controller: ' + WEN_FUNC.uToken, () => {
     await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.CANCEL_SALE });
     await expectThrow(testEnv.wrap(updateToken)({}), WenError.token_in_invalid_status.key);
 
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.PRE_MINTED });
-    await expectThrow(testEnv.wrap(updateToken)({}), WenError.token_in_invalid_status.key);
-
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.MINTED });
-    await expectThrow(testEnv.wrap(updateToken)({}), WenError.token_in_invalid_status.key);
-
     await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.BASE });
     await expectThrow(testEnv.wrap(updateToken)({}), WenError.token_in_invalid_status.key);
 
     await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.AVAILABLE });
     const result = await testEnv.wrap(updateToken)({});
     expect(result.name).toBe(token.name);
+  });
+
+  it('Should throw, token minted', async () => {
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.MINTED });
+    const updateData = {
+      ...data,
+      name: 'TokenName2',
+      uid: token.uid,
+      title: 'title',
+    };
+    mockWalletReturnValue(walletSpy, memberAddress, updateData);
+    await expectThrow(testEnv.wrap(updateToken)({}), WenError.invalid_params.key);
   });
 });

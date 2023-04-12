@@ -101,8 +101,7 @@ const createTokenSchema = Joi.object({
 
 export const createToken = onRequest(WEN_FUNC.cToken)(createTokenSchema, createTokenControl);
 
-const updateTokenSchema = Joi.object({
-  name: Joi.string().required().allow(null, ''),
+export const uptdateMintedTokenSchema = {
   title: Joi.string().required().allow(null, ''),
   description: Joi.string().required().allow(null, ''),
   shortDescriptionTitle: Joi.string().required().allow(null, ''),
@@ -110,9 +109,14 @@ const updateTokenSchema = Joi.object({
   links: Joi.array().min(0).items(Joi.string().uri()),
   uid: CommonJoi.uid(),
   pricePerToken: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).optional(),
-});
+};
 
-export const updateToken = onRequest(WEN_FUNC.uToken)(updateTokenSchema, updateTokenControl);
+export const updateTokenSchema = {
+  name: Joi.string().required().allow(null, ''),
+  ...uptdateMintedTokenSchema,
+};
+
+export const updateToken = onRequest(WEN_FUNC.uToken)(uidSchema, updateTokenControl, true);
 
 const setAvailableForSaleSchema = Joi.object({
   token: CommonJoi.uid(),
