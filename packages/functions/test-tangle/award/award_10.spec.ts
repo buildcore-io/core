@@ -2,11 +2,11 @@ import { HexHelper } from '@iota/util.js-next';
 import { Award, COL, Member, Network, Space, Token, TokenStatus } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
 import { joinSpace } from '../../src/runtime/firebase/space';
-import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
+import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
@@ -51,8 +51,8 @@ describe('Create award, native', () => {
     mockWalletReturnValue(walletSpy, member, awardRequest(space.uid, token.symbol));
     award = await testEnv.wrap(createAward)({});
 
-    const guardianDocRef = admin.firestore().doc(`${COL.MEMBER}/${guardian}`);
-    const guardianData = <Member>(await guardianDocRef.get()).data();
+    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${guardian}`);
+    const guardianData = await guardianDocRef.get<Member>();
     const guardianBech32 = getAddress(guardianData, network);
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
   });
@@ -74,9 +74,9 @@ describe('Create award, native', () => {
     });
     await MnemonicService.store(guardianAddress.bech32, guardianAddress.mnemonic);
 
-    const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${award.uid}`);
+    const awardDocRef = soonDb().doc(`${COL.AWARD}/${award.uid}`);
     await wait(async () => {
-      const award = <Award>(await awardDocRef.get()).data();
+      const award = <Award>await awardDocRef.get();
       return award.approved && award.funded;
     });
 
@@ -86,12 +86,8 @@ describe('Create award, native', () => {
     });
     await testEnv.wrap(approveAwardParticipant)({});
 
-    const snap = await admin
-      .firestore()
-      .collection(COL.AIRDROP)
-      .where('member', '==', member)
-      .get();
-    expect(snap.size).toBe(1);
+    const snap = await soonDb().collection(COL.AIRDROP).where('member', '==', member).get();
+    expect(snap.length).toBe(1);
   });
 });
 
@@ -130,7 +126,7 @@ const saveToken = async (space: string, guardian: string) => {
       tokenId: MINTED_TOKEN_ID,
     },
   };
-  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token as Token;
 };
 

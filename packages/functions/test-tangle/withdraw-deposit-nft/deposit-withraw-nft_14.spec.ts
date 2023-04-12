@@ -79,8 +79,8 @@ describe('Collection minting', () => {
 
     const snap = await creditQuery.get();
     const credit = snap[0] as Transaction;
-    expect(credit.payload.ignoreWallet).toBe(true);
-    expect(credit.payload.ignoreWalletReason).toBe(
+    expect(credit.ignoreWallet).toBe(true);
+    expect(credit.ignoreWalletReason).toBe(
       TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION,
     );
   });
