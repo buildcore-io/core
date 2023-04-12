@@ -5,18 +5,14 @@ import { Firestore } from '../../../src/firebase/firestore/firestore';
 
 export const ignoreWalletRoll = async (app: FirebaseApp) => {
   const db = new Firestore(app);
-  let lastDocId = '';
-
+  let size = 0;
   do {
-    const lastDoc = lastDocId
-      ? await db.doc(`${COL.TRANSACTION}/${lastDocId}`).getSnapshot()
-      : undefined;
     const snap = await db
       .collection(COL.TRANSACTION)
       .where('payload.ignoreWallet', 'in', [true, false])
-      .startAfter(lastDoc)
       .limit(500)
       .get<Transaction>();
+    size = snap.length;
 
     const batch = db.batch();
     snap.forEach((transaction) => {
@@ -29,7 +25,7 @@ export const ignoreWalletRoll = async (app: FirebaseApp) => {
       });
     });
     await batch.commit();
-  } while (lastDocId);
+  } while (size);
 };
 
 export const roll = ignoreWalletRoll;

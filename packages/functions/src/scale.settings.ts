@@ -70,13 +70,13 @@ export function scale(func: WEN_FUNC): number {
 
 export function scaleAlgolia(col: COL): number {
   const scaleSettings = {} as { [key: string]: number };
-  scaleSettings[COL.SPACE] = lowWarm;
-  scaleSettings[COL.TOKEN] = lowWarm;
-  scaleSettings[COL.AWARD] = lowWarm;
-  scaleSettings[COL.NFT] = medium;
-  scaleSettings[COL.COLLECTION] = important;
-  scaleSettings[COL.MEMBER] = medium;
-  scaleSettings[COL.PROPOSAL] = lowWarm;
+  scaleSettings[COL.SPACE] = medium;
+  scaleSettings[COL.TOKEN] = medium;
+  scaleSettings[COL.AWARD] = medium;
+  scaleSettings[COL.NFT] = important;
+  scaleSettings[COL.COLLECTION] = pump;
+  scaleSettings[COL.MEMBER] = important;
+  scaleSettings[COL.PROPOSAL] = medium;
 
   return isProdEnv() ? scaleSettings[col] || lowWarm : 0;
 }
