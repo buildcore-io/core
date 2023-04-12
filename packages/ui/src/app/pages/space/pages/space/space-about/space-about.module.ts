@@ -10,6 +10,7 @@ import { TokenClaimModule } from '@components/token/components/token-claim/token
 import { TokenInfoDescriptionModule } from '@components/token/components/token-info/token-info-description.module';
 import { TokenStakeModule } from '@components/token/components/token-stake/token-stake.module';
 import { WalletAddressModule } from '@components/wallet-address/wallet-address.module';
+import { FormatTokenModule } from '@core/pipes/formatToken/format-token.module';
 import { ResizeAvatarModule } from '@core/pipes/resize-avatar/resize-avatar.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
@@ -35,6 +36,7 @@ import { SpaceAboutComponent } from './space-about.component';
     NzCardModule,
     IconModule,
     NzAvatarModule,
+    FormatTokenModule,
     RouterModule,
     NzTagModule,
     TruncateModule,

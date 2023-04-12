@@ -86,7 +86,7 @@
                   </td>
                   <td class="font-medium" i18n>Owned</td>
                   <td class="font-medium">
-                    {{ unitsService.format(t.distribution.tokenOwned, undefined, undefined, false) +
+                    {{ (t.distribution.tokenOwned | formatToken: t.uid:false:false | async) +
                     ' ' + (t?.symbol === 'IOTA' ? 'M' : '') + t.symbol }}
                   </td>
                   <td class="right"></td>
@@ -123,7 +123,7 @@
                       </div>
                     </td>
                     <td class="font-medium">
-                      {{ unitsService.format(drop.count, undefined, undefined, false) + ' ' +
+                      {{ (drop.count | formatToken: t.uid: false: false | async) + ' ' +
                       (t?.symbol === 'IOTA' ? 'M' : '') + t.symbol }}
                     </td>
                     <td class="right">
@@ -173,9 +173,9 @@
                     </div>
                   </td>
                   <td class="font-medium">
-                    {{ unitsService.format((!t.distribution.mintedClaimedOn ?
-                    (t.distribution.tokenOwned || 0) : 0) + (t.distribution.tokenDrops?.[0]?.count
-                    || 0), undefined, undefined, false) + ' ' + (t?.symbol === 'IOTA' ? 'M' : '') +
+                    {{ ( (!t.distribution.mintedClaimedOn ?
+                      (t.distribution.tokenOwned || 0) : 0) + (t.distribution.tokenDrops?.[0]?.count
+                      || 0) | formatToken: t?.uid:false:false | async) + ' ' + (t?.symbol === 'IOTA' ? 'M' : '') +
                     t.symbol }}
                   </td>
                   <td class="right">
@@ -213,7 +213,7 @@
                   </div>
                 </td>
                 <td class="font-medium" i18n>Deposit for purchase</td>
-                <td class="font-medium">{{ unitsService.format(t.distribution.totalDeposit) }}</td>
+                <td class="font-medium">{{ t.distribution.totalDeposit | formatToken }}</td>
                 <td class="right">
                   <button
                     *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid) && helper.isInCooldown(t)"
@@ -356,12 +356,12 @@
                 <td class="font-medium">{{ t.createdOn?.toDate() | date:'short' }}</td>
                 <td class="font-medium">{{ t.expiresAt?.toDate() | date:'short' }}</td>
                 <td class="right">
-                  {{ unitsService.format(t.amount, undefined, true, false) + ' ' + t.tokenRec.symbol
+                  {{ (t.amount | formatToken: t.tokenRec.uid:true:false | async) + ' ' + t.tokenRec.symbol
                   }}
                 </td>
                 <td>{{ calcMult(t.weeks) | number: '1.0-2'}}</td>
                 <td class="right">
-                  {{ unitsService.format(t.value, undefined, true, false) + ' ' + t.tokenRec.symbol
+                  {{ (t.value | formatToken: t.tokenRec.uid:true:false | async) + ' ' + t.tokenRec.symbol
                   }}
                 </td>
               </tr>
@@ -448,7 +448,7 @@
                 Amount (Multiplier)
               </div>
               <div class="mt-0.5">
-                {{ unitsService.format(t.amount, undefined, true, false) + ' ' + t.tokenRec.symbol
+                {{ (t.amount | formatToken: t.tokenRec.uid:true:false | async) + ' ' + t.tokenRec.symbol
                 }} ({{ calcMult(t.weeks) | number: '1.0-2'}}x)
               </div>
             </div>
@@ -460,7 +460,7 @@
                 Staked Value
               </div>
               <div class="mt-0.5">
-                {{ unitsService.format(t.value, undefined, true, false) + ' ' + t.tokenRec.symbol }}
+                {{ (t.value | formatToken: t.tokenRec.uid:true:false | async) + ' ' + t.tokenRec.symbol }}
               </div>
             </div>
           </div>

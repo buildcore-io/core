@@ -52,7 +52,7 @@
         title: 'Token price',
         titleIcon: coinIcon,
         type: descriptionItemTypes.DEFAULT_NO_TRUNCATE,
-        value: unitsService.format((token?.pricePerToken || 0) * 1000 * 1000)
+        value: (token?.pricePerToken || 0) * 1000 * 1000 | formatToken | async
       }
     ]"
   ></wen-description>
@@ -141,7 +141,7 @@
       class="flex items-center justify-between flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14"
     >
       <div class="mt-1">
-        {{ getResultAmount() }}
+        {{ getResultAmount() | async }}
       </div>
       <div class="mt-1">
         {{ isAmountInput ? unitsService.label() : token?.symbol }}
@@ -164,7 +164,7 @@
     class="block w-full"
     [targetAddress]="targetAddress"
     [formattedAmount]="
-      unitsService.format(amountControl.value * 1000 * 1000 * (token?.pricePerToken || 0))
+      ({ value: amountControl.value * (token?.pricePerToken || 0), exponents: token?.decimals} | formatToken: token?.uid | async)
     "
   >
   </wen-send-funds>
@@ -190,7 +190,7 @@
     class="block w-full"
     [targetAddress]="targetAddress"
     [formattedAmount]="
-      unitsService.format(amountControl.value * 1000 * 1000 * (token?.pricePerToken || 0))
+    ({ value: amountControl.value * (token?.pricePerToken || 0), exponents: token?.decimals} | formatToken: token?.uid | async)
     "
   >
   </wen-send-funds>
@@ -259,7 +259,7 @@
       >
         Price
       </div>
-      <div class="mt-2 text-lg font-bold" i18n>{{ unitsService.format(purchasedAmount) }}</div>
+      <div class="mt-2 text-lg font-bold" i18n>{{ purchasedAmount | formatToken | async }}</div>
     </div>
   </div>
 

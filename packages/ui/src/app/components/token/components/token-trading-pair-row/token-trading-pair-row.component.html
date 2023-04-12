@@ -52,11 +52,11 @@
       </div>
       <div class="mt-0.5 text-right">
         {{
-          unitsService.format(
-            ((listenAvgPrice$ | async) || 0) * 1000 * 1000,
-            token?.mintingData?.networkFormat || token?.mintingData?.network,
-            false,
-            false
+          (
+            {value: ((listenAvgPrice$ | async) || 0), exponents: token?.decimals} | formatToken:
+            token?.uid:
+            false:
+            false | async
           ) | unknownIfZero
         }}
       </div>
@@ -149,7 +149,7 @@
         </div>
         <div class="mt-0.5 lg:w-full lg:text-rights whitespace-nowrap">
           {{
-            unitsService.format(listenVolume24h$ | async, undefined, false, false, 0)
+            listenVolume24h$ | async | formatToken: token?.uid:false:false:0|async
               | unknownIfZero
           }}
         </div>

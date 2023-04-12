@@ -25,7 +25,7 @@ export class MobileHeaderComponent {
   @Input() enableCreateAwardProposal = true;
   @Input() notifications: Notification[] = [];
   @Input() unreadNotificationCount = 0;
-  @Input() getNotificationDetails!: (not: Notification) => NotificationContent;
+  @Input() getNotificationDetails!: (not: Notification) => Promise<NotificationContent>;
   @Output() wenOnVisibleChange = new EventEmitter<boolean>();
   @Output() wenOnNotificationVisibleChange = new EventEmitter<boolean>();
 

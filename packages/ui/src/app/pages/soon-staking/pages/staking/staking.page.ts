@@ -18,7 +18,6 @@ import { UnitsService } from '@core/services/units';
 import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
-  calcStakedMultiplier,
   MAX_WEEKS_TO_STAKE,
   MIN_WEEKS_TO_STAKE,
   SOON_SPACE,
@@ -28,11 +27,12 @@ import {
   Space,
   StakeReward,
   StakeType,
-  tiers,
   Token,
   TokenStats,
+  calcStakedMultiplier,
+  tiers,
 } from '@soonaverse/interfaces';
-import { BehaviorSubject, map, merge, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription, map, merge, of } from 'rxjs';
 
 interface Rewards {
   key: string;
@@ -198,16 +198,20 @@ export class StakingPage implements OnInit, OnDestroy {
     }
   }
 
+  public pInt(v: string): number {
+    return parseInt(v);
+  }
+
   public listOfData: Rewards[] = [
     {
       key: '1',
       category: 'Requirements',
       category_extra: 'Staked value', // auth.memberLevel$ | async
-      level0: this.unitService.format(tiers[0], undefined, false, false, 0),
-      level1: this.unitService.format(tiers[1], undefined, false, false, 0),
-      level2: this.unitService.format(tiers[2], undefined, false, false, 0),
-      level3: this.unitService.format(tiers[3], undefined, false, false, 0),
-      level4: this.unitService.format(tiers[4], undefined, false, false, 0),
+      level0: tiers[0].toString(),
+      level1: tiers[1].toString(),
+      level2: tiers[2].toString(),
+      level3: tiers[3].toString(),
+      level4: tiers[4].toString(),
     },
     {
       key: '2',

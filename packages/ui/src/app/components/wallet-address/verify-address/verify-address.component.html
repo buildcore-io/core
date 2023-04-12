@@ -63,7 +63,7 @@
       class="max-w-md mt-10 text-lg font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
     >
       <span *ngIf="!isExpired(transaction$ | async)">
-        <span i18n>Send a small </span>{{ unitsService.format(targetAmount, network) }}
+        <span i18n>Send a small </span>{{ (targetAmount | formatToken: network | async) }}
         <span i18n>amount to validate your address. This expires in </span
         >{{ expiryTicker$ | async | countdownTime }}.
       </span>
@@ -82,7 +82,7 @@
       class="block w-full"
       *ngIf="!isExpired(transaction$ | async)"
       [targetAddress]="targetAddress"
-      [formattedAmount]="unitsService.format(targetAmount, network)"
+      [formattedAmount]="(targetAmount | formatToken: network | async)"
     >
     </wen-send-funds>
 

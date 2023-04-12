@@ -12,14 +12,14 @@
         {
           title: descriptionLabels[0],
           type: descriptionItemTypes.DEFAULT_NO_TRUNCATE,
-          value: unitsService.format(memberDistribution?.totalDeposit || 0),
+          value: ((memberDistribution?.totalDeposit || 0) | formatToken: undefined:true:false | async),
           backgroundClass: 'dark:bg-tags-available-dark'
         },
         {
           title: descriptionLabels[1],
           type: descriptionItemTypes.DEFAULT_NO_TRUNCATE,
           value:
-            unitsService.format(getPotentialTokens(), undefined, true, false) + ' ' + token?.symbol,
+            (getPotentialTokens() | formatToken: undefined:true:false | async) + ' ' + token?.symbol,
           backgroundClass: 'bg-tags-available dark:bg-tags-available-dark'
         }
       ]"
@@ -99,7 +99,7 @@
           {
             title: descriptionLabels[3],
             type: descriptionItemTypes.DEFAULT_NO_TRUNCATE,
-            value: unitsService.format(token?.totalDeposit)
+            value: (token?.totalDeposit | formatToken: token?.uid) | async
           },
           {
             title: descriptionLabels[4],

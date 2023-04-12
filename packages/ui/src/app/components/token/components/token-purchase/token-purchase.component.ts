@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import { OrderApi } from '@api/order.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DescriptionItemType } from '@components/description/description.component';
+import { FormatTokenPipe } from '@core/pipes/formatToken/format-token.pipe';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
@@ -23,7 +24,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Space, Timestamp, Token, Transaction, TransactionType } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
-import { BehaviorSubject, filter, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, filter } from 'rxjs';
 
 export enum StepType {
   CONFIRM = 'Confirm',
@@ -83,6 +84,7 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
     public unitsService: UnitsService,
+    public formatToken: FormatTokenPipe,
     public transactionService: TransactionService,
     private auth: AuthService,
     private notification: NotificationService,
@@ -342,7 +344,12 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
     return bigDecimal.divide(
       bigDecimal.floor(
         bigDecimal.multiply(
-          Number(this.amountControl.value * 1000 * 1000),
+          Number(
+            this.formatToken.multiValue({
+              value: this.amountControl.value,
+              exponents: this.token?.decimals,
+            }),
+          ),
           Number(this.token?.pricePerToken || 0),
         ),
       ),
@@ -351,15 +358,18 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
     );
   }
 
-  public getResultAmount(): string {
+  public async getResultAmount(): Promise<string> {
     return this.isAmountInput
-      ? this.unitsService.format(
-          this.amountControl.value * 1000 * 1000 * (this.token?.pricePerToken || 0),
-          undefined,
+      ? this.formatToken.transform(
+          {
+            value: this.amountControl.value * (this.token?.pricePerToken || 0),
+            exponents: this.token?.decimals,
+          },
+          this.token?.uid,
           false,
           false,
         )
-      : this.unitsService.format(this.amountControl.value * 1000 * 1000, undefined, false, false);
+      : this.formatToken.transform(this.amountControl.value * 1000 * 1000, undefined, false, false);
   }
 
   public ngOnDestroy(): void {

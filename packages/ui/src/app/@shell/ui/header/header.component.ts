@@ -13,16 +13,16 @@ import { NftApi } from '@api/nft.api';
 import { NotificationApi } from '@api/notification.api';
 import { OrderApi } from '@api/order.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { FormatTokenPipe } from '@core/pipes/formatToken/format-token.pipe';
 import { CheckoutService } from '@core/services/checkout';
 import { DeviceService } from '@core/services/device';
 import { RouterService } from '@core/services/router';
-import { UnitsService } from '@core/services/units';
 import {
+  StorageItem,
   getItem,
   getNotificationItem,
   removeItem,
   setNotificationItem,
-  StorageItem,
 } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -33,19 +33,19 @@ import {
   Nft,
   Notification,
   NotificationType,
-  TransactionOrder,
   TRANSACTION_AUTO_EXPIRY_MS,
+  TransactionOrder,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { NzNotificationRef, NzNotificationService } from 'ng-zorro-antd/notification';
 import {
   BehaviorSubject,
+  Subscription,
   debounceTime,
   firstValueFrom,
   fromEvent,
   interval,
   skip,
-  Subscription,
 } from 'rxjs';
 import { MemberApi } from './../../../@api/member.api';
 
@@ -92,7 +92,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     public auth: AuthService,
     public deviceService: DeviceService,
     public routerService: RouterService,
-    public unitsService: UnitsService,
+    public formatToken: FormatTokenPipe,
     private router: Router,
     private memberApi: MemberApi,
     private orderApi: OrderApi,
@@ -329,7 +329,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     );
   }
 
-  public getNotificationDetails(not: Notification): NotificationContent {
+  public async getNotificationDetails(not: Notification): Promise<NotificationContent> {
     if (not.type === NotificationType.WIN_BID) {
       const title = $localize`You won the NFT`;
       const contentYour = $localize`You are a proud owner of a new NFT. Congratulations!`;
@@ -362,7 +362,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
           ' ' +
           titleFor +
           ' ' +
-          this.unitsService.format(not.params.amount),
+          (await this.formatToken.transform(not.params.amount)),
         content:
           contentYour +
           ' ' +
@@ -370,7 +370,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
           ' ' +
           contentReceived +
           ' ' +
-          this.unitsService.format(not.params.amount),
+          (await this.formatToken.transform(not.params.amount)),
       };
     } else {
       return {

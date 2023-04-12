@@ -58,11 +58,11 @@
         </td>
         <td class="font-medium">{{ transactionService.getTitle(t) }}</td>
         <td class="font-medium" *ngIf="t.payload.nativeTokens?.[0]?.amount">
-          {{ unitsService.format(t.payload.nativeTokens[0].amount, undefined, false, false) }}
+          {{ t.payload.nativeTokens[0].amount| formatToken: t.payload.token:false:false }}
           &nbsp;{{ t.payload.tokenSymbol || 'Tokens' }}
         </td>
         <td class="font-medium" *ngIf="!t.payload.nativeTokens?.[0]?.amount">
-          {{ unitsService.format(t.payload.amount, t.network) }}
+          {{ t.payload.amount | formatToken: t.network }}
         </td>
         <td class="right">
           <a

@@ -18,7 +18,7 @@
               </div>
               <p>
                 <b
-                  >{{ unitsService.format( getTotalStaked() | async, undefined, false, false, 2 ) }}
+                  >{{ ( getTotalStaked() | async | formatToken: (token$ | async)?.uid: false: false: 2 | async) }}
                   {{(token$ | async)?.symbol | uppercase}}</b
                 >
               </p>
@@ -26,8 +26,8 @@
                 class="flex text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                 i18n
               >
-                Staking Value: {{ unitsService.format( getTotalStakedValue() | async, undefined,
-                false, false, 2 ) }}
+                Staking Value: {{ ( (getTotalStakedValue() | async) | formatToken: (token$ | async)?.uid:
+                false: false: 2 | async) }}
                 <wen-icon-question-circle
                   [size]="16"
                   class="ml-1 text-icons-secondary dark:text-icons-secondary-dark"
@@ -48,7 +48,7 @@
               </div>
               <a [routerLink]="['../tokens']">
                 <b
-                  >{{ unitsService.format( getTotalUnclaimed() | async, undefined, false, false, 2 )
+                  >{{ ( getTotalUnclaimed() | async | formatToken:(token$ | async)?.uid:false:false: 2 | async)
                   }} {{(token$ | async)?.symbol | uppercase}}</b
                 >
               </a>

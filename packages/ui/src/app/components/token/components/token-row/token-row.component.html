@@ -50,13 +50,11 @@
       </div>
       <div class="mt-0.5">
         {{
-          unitsService.format(
-            ((listenAvgPrice$ | async) || (!tradable() ? token?.pricePerToken : 0) || 0 || 0) *
-              1000 *
-              1000,
-            token?.mintingData?.networkFormat || token?.mintingData?.network,
-            false,
-            false
+          (
+            {value:((listenAvgPrice$ | async) || (!tradable() ? token?.pricePerToken : 0) || 0 || 0), exponents: token?.decimals} | formatToken:
+            token?.uid:
+            false:
+            false | async
           )
         }}
       </div>
@@ -152,7 +150,7 @@
           }})
         </div>
         <div class="mt-0.5 lg:w-full lg:text-rights whitespace-nowrap">
-          {{ unitsService.format(listenVolume24h$ | async, undefined, true, false) }}
+          {{ listenVolume24h$ | async | formatToken:undefined: true: false | async }}
         </div>
       </ng-container>
     </div>
@@ -182,12 +180,12 @@
         <ng-template #noValue> - </ng-template>
 
         {{
-          unitsService.format(
-            (this.token?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0),
-            token?.mintingData?.networkFormat || token?.mintingData?.network,
-            false,
-            false,
-            0
+          (
+            (this.token?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0) | formatToken:
+            token?.uid:
+            false:
+            false:
+            0 | async
           ) | unknownIfZero
         }}
       </div>

@@ -6,6 +6,7 @@ import { IconModule } from '@components/icon/icon.module';
 import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module';
 import { TermsAndConditionsModule } from '@components/terms-and-conditions/terms-and-conditions.module';
 import { WalletDeeplinkModule } from '@components/wallet-deeplink/wallet-deeplink.module';
+import { FormatTokenModule } from '@core/pipes/formatToken/format-token.module';
 import { UsdBelowTwoDecimalsModule } from '@core/pipes/usd-below-two-decimals/usd-below-two-decimals.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -26,6 +27,7 @@ import { TokenOfferComponent } from './token-offer.component';
     NzCheckboxModule,
     NzAvatarModule,
     NzInputModule,
+    FormatTokenModule,
     FormsModule,
     ReactiveFormsModule,
     UsdBelowTwoDecimalsModule,

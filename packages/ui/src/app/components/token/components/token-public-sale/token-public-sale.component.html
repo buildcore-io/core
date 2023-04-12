@@ -73,7 +73,7 @@
         title: allocationInfoLabels[1],
         type: descriptionItemTypes.DEFAULT_NO_TRUNCATE,
         value: publicAllocation(token?.allocations)?.percentage + '%',
-        extraValue: '(' + unitsService.format(percentageMarketCap()) + ')'
+        extraValue: '(' + (percentageMarketCap() | formatToken | async) + ')'
       }
     ]"
   ></wen-description>
