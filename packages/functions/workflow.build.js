@@ -47,7 +47,7 @@ function init(outputFile) {
   fs.appendFileSync(outputFile, '      - uses: actions/checkout@v3\n');
   fs.appendFileSync(outputFile, '      - uses: actions/setup-node@v3\n');
   fs.appendFileSync(outputFile, '        with:\n');
-  fs.appendFileSync(outputFile, '          node-version: 16.x\n');
+  fs.appendFileSync(outputFile, '          node-version: 18.x\n');
   fs.appendFileSync(outputFile, '      - uses: actions/cache@v3\n');
   fs.appendFileSync(outputFile, '        id: cache\n');
   fs.appendFileSync(outputFile, '        with:\n');
@@ -83,7 +83,7 @@ function job(outputFile, chunk, files, commandName) {
   fs.appendFileSync(outputFile, `      - uses: actions/checkout@v3\n`);
   fs.appendFileSync(outputFile, `      - uses: actions/setup-node@v3\n`);
   fs.appendFileSync(outputFile, `        with:\n`);
-  fs.appendFileSync(outputFile, `          node-version: '16.x'\n`);
+  fs.appendFileSync(outputFile, `          node-version: '18.x'\n`);
   fs.appendFileSync(outputFile, `      - uses: actions/cache@v3\n`);
   fs.appendFileSync(outputFile, `        with:\n`);
   fs.appendFileSync(outputFile, `          path: |\n`);
