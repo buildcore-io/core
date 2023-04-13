@@ -164,7 +164,9 @@
     class="block w-full"
     [targetAddress]="targetAddress"
     [formattedAmount]="
-      ({ value: amountControl.value * (token?.pricePerToken || 0), exponents: token?.decimals} | formatToken: token?.uid | async)
+      { value: amountControl.value * (token?.pricePerToken || 0), exponents: token?.decimals }
+        | formatToken : token?.uid
+        | async
     "
   >
   </wen-send-funds>
@@ -190,7 +192,9 @@
     class="block w-full"
     [targetAddress]="targetAddress"
     [formattedAmount]="
-    ({ value: amountControl.value * (token?.pricePerToken || 0), exponents: token?.decimals} | formatToken: token?.uid | async)
+      { value: amountControl.value * (token?.pricePerToken || 0), exponents: token?.decimals }
+        | formatToken : token?.uid
+        | async
     "
   >
   </wen-send-funds>

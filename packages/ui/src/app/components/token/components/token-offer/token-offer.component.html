@@ -35,7 +35,7 @@
     Your Balance
   </div>
   <div class="font-medium">
-    {{ memberDistribution?.tokenOwned | formatToken: token?.uid: true: false | async }}
+    {{ memberDistribution?.tokenOwned | formatToken : token?.uid : true : false | async }}
     {{ token?.symbol }}
   </div>
 
@@ -64,7 +64,12 @@
       Offered amount of tokens
     </div>
     <div class="font-bold whitespace-nowrap">
-      {{ ({ value: amount, exponents: token?.decimals} | formatToken: token?.uid: true: false) }} {{ token?.symbol }}
+      {{
+        { value: amount, exponents: token?.decimals }
+          | formatToken : token?.uid : true : false
+          | async
+      }}
+      {{ token?.symbol }}
     </div>
   </div>
 
@@ -75,11 +80,9 @@
     <div class="text-right">
       <div class="font-bold whitespace-nowrap">
         {{
-          (
-            { value: getTargetAmount(), exponents: token?.decimals} | formatToken:
-            token?.uid:
-            true | async
-          )
+          { value: getTargetAmount(), exponents: token?.decimals }
+            | formatToken : token?.uid : true
+            | async
         }}
       </div>
       <span

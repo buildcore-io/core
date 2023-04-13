@@ -78,15 +78,13 @@
             *ngIf="discount() < 1 && currentStep === stepType.CONFIRM"
           >
             <div class="mr-2 font-bold line-through text-foregrounds-tertiary">
-              {{ unitsService.format(targetPrice, collection?.mintingData?.network, true) }}
+              {{ targetPrice | formatToken : collection?.mintingData?.network : true | async }}
             </div>
             <div class="mr-2 font-bold truncate">
               {{
-                unitsService.format(
-                  calc(targetPrice, discount()),
-                  collection?.mintingData?.network,
-                  true
-                )
+                calc(targetPrice, discount())
+                  | formatToken : collection?.mintingData?.network : true
+                  | async
               }}
             </div>
           </div>
@@ -96,11 +94,9 @@
           >
             <div class="mr-2 font-bold truncate">
               {{
-                unitsService.format(
-                  currentStep !== stepType.CONFIRM ? targetAmount : targetPrice,
-                  collection?.mintingData?.network,
-                  true
-                )
+                currentStep !== stepType.CONFIRM
+                  ? targetAmount
+                  : (targetPrice | formatToken : collection?.mintingData?.network : true | async)
               }}
             </div>
           </div>
@@ -189,7 +185,9 @@
       class="block w-full"
       *ngIf="!helper.isExpired(transaction$ | async)"
       [targetAddress]="targetAddress"
-      [formattedAmount]="unitsService.format(targetAmount, collection?.mintingData?.network, true)"
+      [formattedAmount]="
+        targetAmount | formatToken : collection?.mintingData?.network : true | async
+      "
     >
     </wen-send-funds>
 

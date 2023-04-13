@@ -88,7 +88,7 @@
                   <div class="text-base font-medium">{{ nft.name | truncate:[12] }}</div>
                 </td>
                 <td>
-                  <div class="text-base font-medium">{{ unitsService.format(nft.price) }}</div>
+                  <div class="text-base font-medium">{{ (nft.price | formatToken) }}</div>
                 </td>
                 <td class="w-0">
                   <wen-icon-eye

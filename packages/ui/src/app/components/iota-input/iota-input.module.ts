@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormatTokenModule } from '@core/pipes/formatToken/format-token.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -14,6 +15,7 @@ import { IotaInputComponent } from './iota-input.component';
   imports: [
     CommonModule,
     NzInputModule,
+    FormatTokenModule,
     NzInputNumberModule,
     NzFormModule,
     NzToolTipModule,

@@ -52,12 +52,10 @@
       </div>
       <div class="mt-0.5 text-right">
         {{
-          (
-            {value: ((listenAvgPrice$ | async) || 0), exponents: token?.decimals} | formatToken:
-            token?.uid:
-            false:
-            false | async
-          ) | unknownIfZero
+          { value: (listenAvgPrice$ | async) || 0, exponents: token?.decimals }
+            | formatToken : token?.uid : false : false
+            | async
+            | unknownIfZero
         }}
       </div>
       <div
@@ -149,7 +147,10 @@
         </div>
         <div class="mt-0.5 lg:w-full lg:text-rights whitespace-nowrap">
           {{
-            listenVolume24h$ | async | formatToken: token?.uid:false:false:0|async
+            listenVolume24h$
+              | async
+              | formatToken : token?.uid : false : false : 0
+              | async
               | unknownIfZero
           }}
         </div>

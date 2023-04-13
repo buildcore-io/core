@@ -47,12 +47,9 @@
             class="ml-4 text-xs font-medium font-bold text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
           >
             {{
-              unitsService.format(
-                (award?.badge?.total || 0) * (award?.badge?.tokenReward || 0),
-                award?.network,
-                true,
-                false
-              )
+              (award?.badge?.total || 0) * (award?.badge?.tokenReward || 0)
+                | formatToken : award?.badge?.tokenUid : true : false
+                | async
             }}
           </div>
         </div>

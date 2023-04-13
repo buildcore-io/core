@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { CollapseModule } from '@components/collapse/collapse.module';
 import { DescriptionModule } from '@components/description/description.module';
 import { IconModule } from '@components/icon/icon.module';
+import { FormatTokenModule } from '@core/pipes/formatToken/format-token.module';
 import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
 import { ResizeAvatarModule } from '@core/pipes/resize-avatar/resize-avatar.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
@@ -28,6 +29,7 @@ import { NftPreviewComponent } from './nft-preview.component';
     ResizeAvatarModule,
     MarkDownModule,
     CollapseModule,
+    FormatTokenModule,
     NzToolTipModule,
     DescriptionModule,
   ],

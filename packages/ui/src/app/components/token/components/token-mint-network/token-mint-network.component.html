@@ -92,7 +92,7 @@
           Tokens to migrate
         </div>
         <div class="font-bold">
-          {{ unitsService.format(token?.totalSupply, undefined, undefined, false) }}
+          {{ token?.totalSupply | formatToken : token?.uid : false : false | async }}
           {{ token?.symbol }}
         </div>
       </div>
@@ -107,7 +107,7 @@
           Locked public tokens
         </div>
         <div class="font-bold">
-          {{ unitsService.format(lockedPublicTokens, undefined, undefined, false) }}
+          {{ lockedPublicTokens | formatToken : token?.uid : false : false | async }}
           {{ token?.symbol }}
         </div>
       </div>
@@ -174,7 +174,7 @@
         </div>
 
         <div class="font-bold">
-          {{ unitsService.format(token?.totalSupply, undefined, undefined, false) }}
+          {{ token?.totalSupply | formatToken : token?.uid : false : false | async }}
           {{ token?.symbol }}
         </div>
       </div>
@@ -190,7 +190,7 @@
         </div>
 
         <div class="font-bold">
-          {{ unitsService.format(lockedPublicTokens, undefined, undefined, false) }}
+          {{ lockedPublicTokens | formatToken : token?.uid : undefined : false | async }}
           {{ token?.symbol }}
         </div>
       </div>
@@ -212,7 +212,7 @@
         class="block w-full"
         *ngIf="!isExpired(transaction$ | async)"
         [targetAddress]="targetAddress"
-        [formattedAmount]="unitsService.format(targetAmount, selectedNetwork, false)"
+        [formattedAmount]="targetAmount | formatToken : selectedNetwork : false | async"
       >
       </wen-send-funds>
 

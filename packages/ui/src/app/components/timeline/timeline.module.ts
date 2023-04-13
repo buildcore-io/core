@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CollapseModule } from '@components/collapse/collapse.module';
 import { IconModule } from '@components/icon/icon.module';
+import { FormatTokenModule } from '@core/pipes/formatToken/format-token.module';
 import { IpfsBadgeModule } from '@core/pipes/ipfs-badge/ipfs-badge.module';
 import { ResizeAvatarModule } from '@core/pipes/resize-avatar/resize-avatar.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
@@ -25,6 +26,7 @@ import { TimelineComponent } from './timeline.component';
     IpfsBadgeModule,
     NzButtonModule,
     CollapseModule,
+    FormatTokenModule,
     ResizeAvatarModule,
     TruncateModule,
     RouterModule,

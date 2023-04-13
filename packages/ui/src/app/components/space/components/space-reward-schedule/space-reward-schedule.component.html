@@ -159,7 +159,7 @@
           <td>{{ t.endDate.toDate() | date : 'short' }}</td>
           <td>{{ t.tokenVestingDate.toDate() | date : 'short' }}</td>
           <td>
-            {{ unitsService.format(t.tokensToDistribute, undefined, false, false) }}
+            {{ t.tokensToDistribute | formatToken : token?.uid : false : false | async }}
             {{ token?.symbol }}
           </td>
           <td>{{ t.status }}</td>

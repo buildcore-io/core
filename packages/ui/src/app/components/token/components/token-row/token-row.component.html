@@ -50,12 +50,12 @@
       </div>
       <div class="mt-0.5">
         {{
-          (
-            {value:((listenAvgPrice$ | async) || (!tradable() ? token?.pricePerToken : 0) || 0 || 0), exponents: token?.decimals} | formatToken:
-            token?.uid:
-            false:
-            false | async
-          )
+          {
+            value: (listenAvgPrice$ | async) || (!tradable() ? token?.pricePerToken : 0) || 0 || 0,
+            exponents: token?.decimals
+          }
+            | formatToken : token?.uid : false : false
+            | async
         }}
       </div>
     </div>
@@ -150,7 +150,7 @@
           }})
         </div>
         <div class="mt-0.5 lg:w-full lg:text-rights whitespace-nowrap">
-          {{ listenVolume24h$ | async | formatToken:undefined: true: false | async }}
+          {{ listenVolume24h$ | async | formatToken : undefined : true : false | async }}
         </div>
       </ng-container>
     </div>
@@ -180,13 +180,10 @@
         <ng-template #noValue> - </ng-template>
 
         {{
-          (
-            (this.token?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0) | formatToken:
-            token?.uid:
-            false:
-            false:
-            0 | async
-          ) | unknownIfZero
+          (this.token?.totalSupply || 0) * ((listenAvgPrice$ | async) || 0)
+            | formatToken : token?.uid : false : false : 0
+            | async
+            | unknownIfZero
         }}
       </div>
     </div>

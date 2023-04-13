@@ -257,7 +257,11 @@
         Total staked
       </div>
       <div class="mt-1 text-lg font-bold">
-        {{ ({value:amountControl.value,exponents:token?.decimals} | formatToken: token?.uid:false:false|async) }}
+        {{
+          { value: amountControl.value, exponents: token?.decimals }
+            | formatToken : token?.uid : false : false
+            | async
+        }}
       </div>
     </div>
   </div>
@@ -292,7 +296,9 @@
     *ngIf="!helper.isExpired(transaction$ | async)"
     [targetAddress]="targetAddress"
     [formattedAmount]="
-      ({value:amountControl.value,exponents:token?.decimals} | formatToken: token?.uid:true:false|async) +
+      ({ value: amountControl.value, exponents: token?.decimals }
+        | formatToken : token?.uid : true : false
+        | async) +
       ' ' +
       token?.symbol
     "

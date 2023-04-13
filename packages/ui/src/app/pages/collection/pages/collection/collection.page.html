@@ -206,8 +206,8 @@
         >
           <div class="text-xs font-medium text-foregrounds-secondary" i18n>Floor Price</div>
           <div class="text-lg font-bold truncate">
-            {{ (data.collection$ | async)?.floorPrice ? unitsService.format((data.collection$ |
-            async)?.floorPrice,(data.collection$ | async)?.mintingData?.network, false, true, 2) :
+            {{ (data.collection$ | async)?.floorPrice ? ((data.collection$ | async)?.floorPrice |
+            formatToken: (data.collection$ | async)?.mintingData?.network: false: true: 2 | async) :
             '-'}}
           </div>
         </div>

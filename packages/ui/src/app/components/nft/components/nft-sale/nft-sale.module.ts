@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IconModule } from '@components/icon/icon.module';
 import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module';
 import { RadioModule } from '@components/radio/radio.module';
+import { FormatTokenModule } from '@core/pipes/formatToken/format-token.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
@@ -31,6 +32,7 @@ import { NftSaleComponent } from './nft-sale.component';
   imports: [
     CommonModule,
     NzDrawerModule,
+    FormatTokenModule,
     NzModalModule,
     IconModule,
     NzToolTipModule,

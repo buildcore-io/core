@@ -45,7 +45,9 @@
           nzShape="circle"
         ></nz-avatar>
         <nz-tag class="wen-xp-tag" *ngIf="award.badge.tokenReward">{{
-          unitsService.format(award.badge.tokenReward || 0, award.network, true, false) +
+          (award.badge.tokenReward || 0
+            | formatToken : award.badge.tokenUid : true : false
+            | async) +
             ' ' +
             (award.badge.type === awardBadgeTypes.BASE ? award.network : award.badge.tokenSymbol)
             | uppercase

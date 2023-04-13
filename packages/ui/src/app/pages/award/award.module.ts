@@ -9,6 +9,7 @@ import { MemberCardModule } from '@components/member/components/member-card/memb
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { ShareModule } from '@components/share/share.module';
+import { FormatTokenModule } from '@core/pipes/formatToken/format-token.module';
 import { ResizeAvatarModule } from '@core/pipes/resize-avatar/resize-avatar.module';
 import { AwardInfoModule } from '@pages/award/pages/award/award-info/award-info.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
@@ -55,6 +56,7 @@ import { DataService } from './services/data.service';
     TruncateModule,
     LayoutModule,
     InfiniteScrollModule,
+    FormatTokenModule,
     IpfsBadgeModule,
     AwardRoutingModule,
     MarkDownModule,

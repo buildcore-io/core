@@ -21,7 +21,7 @@
       }})
     </div>
     <div class="font-bold">
-      {{ unitsService.format((tradeOrder?.price || 0) * 1000 * 1000, token?.mintingData?.network) }}
+      {{ (tradeOrder?.price || 0) * 1000 * 1000 | formatToken : token?.mintingData?.network }}
     </div>
   </div>
 
@@ -34,12 +34,9 @@
       </div>
       <div class="mt-2 text-lg font-bold">
         {{
-          unitsService.format(
-            (tradeOrder?.count || 0) - (tradeOrder?.fulfilled || 0),
-            undefined,
-            false,
-            false
-          )
+          (tradeOrder?.count || 0) - (tradeOrder?.fulfilled || 0)
+            | formatToken : token?.uid : false : false
+            | async
         }}
       </div>
     </div>

@@ -8,6 +8,7 @@ import { NetworkModule } from '@components/network/network.module';
 import { TermsAndConditionsModule } from '@components/terms-and-conditions/terms-and-conditions.module';
 import { WalletDeeplinkModule } from '@components/wallet-deeplink/wallet-deeplink.module';
 import { CountdownTimeModule } from '@core/pipes/countdown-time/countdown-time.module';
+import { FormatTokenModule } from '@core/pipes/formatToken/format-token.module';
 import { RelativeTimeModule } from '@core/pipes/relative-time/relative-time.module';
 import { ResizeAvatarModule } from '@core/pipes/resize-avatar/resize-avatar.module';
 import { TimeModule } from '@core/pipes/time/time.module';
@@ -27,6 +28,7 @@ import { NftBidComponent } from './nft-bid.component';
   declarations: [NftBidComponent],
   imports: [
     RouterModule,
+    FormatTokenModule,
     CommonModule,
     NzDrawerModule,
     NzModalModule,

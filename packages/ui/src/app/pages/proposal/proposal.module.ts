@@ -13,6 +13,7 @@ import { RadioModule } from '@components/radio/radio.module';
 import { ShareModule } from '@components/share/share.module';
 import { TabsModule } from '@components/tabs/tabs.module';
 import { TokenVoteModule } from '@components/token/components/token-vote/token-vote.module';
+import { FormatTokenModule } from '@core/pipes/formatToken/format-token.module';
 import { ResizeAvatarModule } from '@core/pipes/resize-avatar/resize-avatar.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
@@ -95,6 +96,7 @@ import { DataService } from './services/data.service';
     NzSkeletonModule,
     NzTypographyModule,
     NzProgressModule,
+    FormatTokenModule,
     NzTableModule,
     NzTagModule,
     NzInputNumberModule,

@@ -7,6 +7,7 @@ import { TermsAndConditionsModule } from '@components/terms-and-conditions/terms
 import { TransactionStepsModule } from '@components/transaction-steps/transaction-steps.module';
 import { WalletDeeplinkModule } from '@components/wallet-deeplink/wallet-deeplink.module';
 import { CountdownTimeModule } from '@core/pipes/countdown-time/countdown-time.module';
+import { FormatTokenModule } from '@core/pipes/formatToken/format-token.module';
 import { TimeModule } from '@core/pipes/time/time.module';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
@@ -20,6 +21,7 @@ import { TokenAirdropNetworkComponent } from './token-airdrop-network.component'
     ModalDrawerModule,
     NzButtonModule,
     IconModule,
+    FormatTokenModule,
     WalletDeeplinkModule,
     TermsAndConditionsModule,
     NzAlertModule,

@@ -142,8 +142,8 @@
         *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async)  && (data.space$ | async)!.tokenBased && (userStakedEnoughToJoin$() | async) === false"
       >
         <ng-container i18n>Stake </ng-container>
-        {{ '&nbsp;' + unitsService.format((data.space$ | async)?.minStakedValue, undefined, true,
-        false, 2) + ' ' + (data.token$ | async)?.symbol + '&nbsp;' }}
+        {{ '&nbsp;' + ((data.space$ | async)?.minStakedValue | formatToken: (data.token$ |
+        async)?.uid: true: false: 2 | async) + ' ' + (data.token$ | async)?.symbol + '&nbsp;' }}
         <ng-container i18n> to Join</ng-container>
       </button>
 

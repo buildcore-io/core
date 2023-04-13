@@ -89,7 +89,7 @@
     </div>
     <div class="font-bold whitespace-nowrap">
       {{
-        (this.amountControl.value | formatToken: token?.uid: true: false | async) +
+        (this.amountControl.value | formatToken : token?.uid : true : false | async) +
           ' ' +
           (token?.symbol === 'IOTA' ? 'M' : '') +
           token?.symbol
@@ -106,7 +106,7 @@
     </div>
     <div class="font-bold whitespace-nowrap">
       {{
-        (totalStaked | formatToken: token?.uid: true: false | async) +
+        (totalStaked | formatToken : token?.uid : true : false | async) +
           ' ' +
           (token?.symbol === 'IOTA' ? 'M' : '') +
           token?.symbol
@@ -132,7 +132,7 @@
     </div>
     <div class="font-bold whitespace-nowrap">
       {{
-        (getWeight() | formatToken: token?.uid: true: false | async) +
+        (getWeight() | formatToken : token?.uid : true : false | async) +
           ' ' +
           (token?.symbol === 'IOTA' ? 'M' : '') +
           token?.symbol
@@ -228,9 +228,9 @@
     *ngIf="!helper.isExpired(transaction$ | async)"
     [targetAddress]="targetAddress"
     [formattedAmount]="
-      (
-        {value: this.amountControl.value, exponents: token?.decimals} | formatToken: token?.uid: true: false | async
-      ) +
+      ({ value: this.amountControl.value, exponents: token?.decimals }
+        | formatToken : token?.uid : true : false
+        | async) +
       ' ' +
       token?.symbol
     "

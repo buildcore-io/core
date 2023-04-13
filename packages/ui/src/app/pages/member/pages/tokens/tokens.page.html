@@ -86,8 +86,8 @@
                   </td>
                   <td class="font-medium" i18n>Owned</td>
                   <td class="font-medium">
-                    {{ (t.distribution.tokenOwned | formatToken: t.uid:false:false | async) +
-                    ' ' + (t?.symbol === 'IOTA' ? 'M' : '') + t.symbol }}
+                    {{ (t.distribution.tokenOwned | formatToken: t.uid:false:false | async) + ' ' +
+                    (t?.symbol === 'IOTA' ? 'M' : '') + t.symbol }}
                   </td>
                   <td class="right"></td>
                 </tr>
@@ -123,8 +123,8 @@
                       </div>
                     </td>
                     <td class="font-medium">
-                      {{ (drop.count | formatToken: t.uid: false: false | async) + ' ' +
-                      (t?.symbol === 'IOTA' ? 'M' : '') + t.symbol }}
+                      {{ (drop.count | formatToken: t.uid: false: false | async) + ' ' + (t?.symbol
+                      === 'IOTA' ? 'M' : '') + t.symbol }}
                     </td>
                     <td class="right">
                       <button
@@ -173,10 +173,9 @@
                     </div>
                   </td>
                   <td class="font-medium">
-                    {{ ( (!t.distribution.mintedClaimedOn ?
-                      (t.distribution.tokenOwned || 0) : 0) + (t.distribution.tokenDrops?.[0]?.count
-                      || 0) | formatToken: t?.uid:false:false | async) + ' ' + (t?.symbol === 'IOTA' ? 'M' : '') +
-                    t.symbol }}
+                    {{ ( (!t.distribution.mintedClaimedOn ? (t.distribution.tokenOwned || 0) : 0) +
+                    (t.distribution.tokenDrops?.[0]?.count || 0) | formatToken: t?.uid:false:false |
+                    async) + ' ' + (t?.symbol === 'IOTA' ? 'M' : '') + t.symbol }}
                   </td>
                   <td class="right">
                     <button
@@ -356,13 +355,13 @@
                 <td class="font-medium">{{ t.createdOn?.toDate() | date:'short' }}</td>
                 <td class="font-medium">{{ t.expiresAt?.toDate() | date:'short' }}</td>
                 <td class="right">
-                  {{ (t.amount | formatToken: t.tokenRec.uid:true:false | async) + ' ' + t.tokenRec.symbol
-                  }}
+                  {{ (t.amount | formatToken: t.tokenRec.uid:true:false | async) + ' ' +
+                  t.tokenRec.symbol }}
                 </td>
                 <td>{{ calcMult(t.weeks) | number: '1.0-2'}}</td>
                 <td class="right">
-                  {{ (t.value | formatToken: t.tokenRec.uid:true:false | async) + ' ' + t.tokenRec.symbol
-                  }}
+                  {{ (t.value | formatToken: t.tokenRec.uid:true:false | async) + ' ' +
+                  t.tokenRec.symbol }}
                 </td>
               </tr>
             </tbody>
@@ -448,8 +447,8 @@
                 Amount (Multiplier)
               </div>
               <div class="mt-0.5">
-                {{ (t.amount | formatToken: t.tokenRec.uid:true:false | async) + ' ' + t.tokenRec.symbol
-                }} ({{ calcMult(t.weeks) | number: '1.0-2'}}x)
+                {{ (t.amount | formatToken: t.tokenRec.uid:true:false | async) + ' ' +
+                t.tokenRec.symbol }} ({{ calcMult(t.weeks) | number: '1.0-2'}}x)
               </div>
             </div>
             <div class="w-full px-6 mt-6 font-medium lg:w-2/12 lg:px-0 lg:mt-0">
@@ -460,7 +459,8 @@
                 Staked Value
               </div>
               <div class="mt-0.5">
-                {{ (t.value | formatToken: t.tokenRec.uid:true:false | async) + ' ' + t.tokenRec.symbol }}
+                {{ (t.value | formatToken: t.tokenRec.uid:true:false | async) + ' ' +
+                t.tokenRec.symbol }}
               </div>
             </div>
           </div>

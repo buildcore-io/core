@@ -172,11 +172,9 @@
                         <span i18n>Purchased by</span> @{{ item.payload.name }}
                         <span i18n>for</span>
                         {{
-                          unitsService.format(
-                            castAsOrderPayload(item.payload).amount,
-                            item.payload.network,
-                            true
-                          )
+                          castAsOrderPayload(item.payload).amount
+                            | formatToken : item.payload.network : true
+                            | async
                         }}
                       </div>
                       <a class="inline text-sm wen-btn-link">
@@ -224,7 +222,7 @@
                           <div
                             class="text-sm font-bold text-foregrounds-primary dark:text-foregrounds-primary"
                           >
-                            {{ unitsService.format(tt.payload.amount, tt.network) }}
+                            {{ tt.payload.amount | formatToken : tt.network | async }}
                           </div>
 
                           <a

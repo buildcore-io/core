@@ -22,9 +22,9 @@
         i18n-nzTooltipTitle
         [nzTooltipTitle]="
           'Minimum price is ' +
-          unitsService.format(min, collection?.mintingData?.network) +
+          (min | formatToken : collection?.mintingData?.network | async) +
           ' and Maximum price is ' +
-          unitsService.format(max, collection?.mintingData?.network)
+          (max | formatToken : collection?.mintingData?.network | async)
         "
       ></i>
     </nz-input-group>

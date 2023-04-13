@@ -152,8 +152,8 @@
   <button nz-button nzType="primary" nzSize="large" (click)="submit()" nzBlock>
     <span *ngIf="!amountControl.value">Start Staking</span>
     <span *ngIf="amountControl.value"
-      >Stake {{ { value: amountControl.value, exponents: 0} | formatToken: (token$ | async)?.uid:true:false:2}}
-      {{(token$ | async)?.symbol | uppercase}}</span
+      >Stake {{ { value: amountControl.value, exponents: 0} | formatToken: (token$ |
+      async)?.uid:true:false:2}} {{(token$ | async)?.symbol | uppercase}}</span
     >
   </button>
   <div class="mt-10 lg:mt-16" *ngIf="isSoonSpace() | async">
@@ -248,10 +248,18 @@
             <td>{{data.category}}</td>
             <td>{{data.category_extra}}</td>
             <td>{{(pInt(data.level0) | formatToken: undefined:false:false:0)}}</td>
-            <td [ngClass]="(getLevelClass(1) | async)">{{(pInt(data.level1) | formatToken: undefined:false:false:0)}}</td>
-            <td [ngClass]="(getLevelClass(2) | async)">{{(pInt(data.level2) | formatToken: undefined:false:false:0)}}</td>
-            <td [ngClass]="(getLevelClass(3) | async)">{{(pInt(data.level3) | formatToken: undefined:false:false:0)}}</td>
-            <td [ngClass]="(getLevelClass(4) | async)">{{(pInt(data.level4) | formatToken: undefined:false:false:0)}}</td>
+            <td [ngClass]="(getLevelClass(1) | async)">
+              {{(pInt(data.level1) | formatToken: undefined:false:false:0 | async)}}
+            </td>
+            <td [ngClass]="(getLevelClass(2) | async)">
+              {{(pInt(data.level2) | formatToken: undefined:false:false:0 | async)}}
+            </td>
+            <td [ngClass]="(getLevelClass(3) | async)">
+              {{(pInt(data.level3) | formatToken: undefined:false:false:0 | async)}}
+            </td>
+            <td [ngClass]="(getLevelClass(4) | async)">
+              {{(pInt(data.level4) | formatToken: undefined:false:false:0 | async)}}
+            </td>
           </ng-container>
         </tr>
       </tbody>

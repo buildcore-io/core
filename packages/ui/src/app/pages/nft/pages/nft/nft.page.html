@@ -76,15 +76,16 @@
                 class="mr-2 text-xs font-medium line-through truncate text-foregrounds-secondary"
                 *ngIf="discount(data.collection$ | async, data.nft$ | async) < 1"
               >
-                {{unitsService.format(((data.nft$ | async)?.availablePrice || (data.nft$ |
-                async)?.price), (data.nft$ | async)?.placeholderNft ? (data.collection$ |
-                async)?.mintingData?.network : (data.nft$ | async)?.mintingData?.network, true)}}
+                {{(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price) |
+                formatToken: ((data.nft$ | async)?.placeholderNft ? (data.collection$ |
+                async)?.mintingData?.network : (data.nft$ | async)?.mintingData?.network): true |
+                async)}}
               </div>
               <div class="text-lg font-bold truncate">
-                {{unitsService.format(calc(((data.nft$ | async)?.availablePrice || (data.nft$ |
-                async)?.price), discount(data.collection$ | async, data.nft$ | async)), (data.nft$ |
+                {{(calc(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price),
+                discount(data.collection$ | async, data.nft$ | async)) | formatToken: ((data.nft$ |
                 async)?.placeholderNft ? (data.collection$ | async)?.mintingData?.network :
-                (data.nft$ | async)?.mintingData?.network, true)}}
+                (data.nft$ | async)?.mintingData?.network): true | async)}}
               </div>
             </ng-container>
             <ng-template #noPrice>
@@ -118,9 +119,9 @@
           </div>
           <div class="flex items-center mt-2 text-lg">
             <div class="mr-2 font-bold truncate">
-              {{ unitsService.format((data.nft$ | async)?.auctionHighestBid || 0, (data.nft$ |
-              async)?.mintingData?.network) || unitsService.format((data.nft$ |
-              async)?.auctionFloorPrice, (data.nft$ | async)?.mintingData?.network, true)}}
+              {{ ((data.nft$ | async)?.auctionHighestBid || 0 | formatToken: (data.nft$ |
+              async)?.mintingData?.network | async) || ((data.nft$ | async)?.auctionFloorPrice |
+              formatToken: (data.nft$ | async)?.mintingData?.network: true | async)}}
             </div>
           </div>
         </div>
@@ -346,8 +347,8 @@
                 </td>
                 <td>{{ item.transaction.createdOn?.toDate() | date:'short' }}</td>
                 <td>
-                  {{ unitsService.format(item.transaction.payload.amount, item.transaction.network)
-                  }}
+                  {{ (item.transaction.payload.amount | formatToken: item.transaction.network |
+                  async) }}
                 </td>
                 <td class="text-right">
                   <a
@@ -398,7 +399,7 @@
               <tr *ngFor="let item of data.pastBidTransactions$ | async">
                 <td>{{ item.createdOn?.toDate() | date:'short' }}</td>
                 <td>{{ item.type }}</td>
-                <td>{{ unitsService.format(item.payload.amount, item.network) }}</td>
+                <td>{{ (item.payload.amount | formatToken: item.network | async) }}</td>
                 <td class="text-right">
                   <a
                     class="text-sm font-medium underline wen-btn-link"
@@ -448,7 +449,7 @@
               <tr *ngFor="let item of data.myBidTransactions$ | async">
                 <td>{{ item.createdOn?.toDate() | date:'short' }}</td>
                 <td>{{ item.type }}</td>
-                <td>{{ unitsService.format(item.payload.amount, item.network) }}</td>
+                <td>{{ (item.payload.amount | formatToken: item.network | async) }}</td>
                 <td class="text-right">
                   <a
                     class="text-sm font-medium underline wen-btn-link"
