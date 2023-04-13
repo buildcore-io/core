@@ -32,7 +32,7 @@ export class FormatTokenPipe implements PipeTransform {
 
     let tokenUid: string | undefined = undefined;
     if (tokenUidOrNetwork) {
-      if (Object.keys(Network).includes(tokenUidOrNetwork)) {
+      if (Object.keys(Network).includes(tokenUidOrNetwork.toUpperCase())) {
         network = <Network>tokenUidOrNetwork;
       } else {
         tokenUid = tokenUidOrNetwork;
@@ -40,6 +40,7 @@ export class FormatTokenPipe implements PipeTransform {
     }
 
     if (tokenUid) {
+      // TODO Do we need to handle failed retrieval.
       const token = await lastValueFrom(this.cache.getToken(tokenUid));
       if (!token) {
         // Unable to get token.

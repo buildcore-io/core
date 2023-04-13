@@ -329,7 +329,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     );
   }
 
-  public async getNotificationDetails(not: Notification): Promise<NotificationContent> {
+  public getNotificationDetails(not: Notification): NotificationContent {
     if (not.type === NotificationType.WIN_BID) {
       const title = $localize`You won the NFT`;
       const contentYour = $localize`You are a proud owner of a new NFT. Congratulations!`;
@@ -348,29 +348,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
         content: contentYour + ' ' + not.params.nft.name + ' ' + contentReceived,
       };
     } else if (not.type === NotificationType.NEW_BID) {
-      const titleOffered = $localize`just offered`;
-      const titleFor = $localize`for`;
+      const titleOffered = $localize`just made an offer.`;
       const contentYour = $localize`Your`;
-      const contentReceived = $localize`has received a new bid for`;
+      const contentReceived = $localize`has received a new bid.`;
 
       return {
-        title:
-          '@' +
-          not.params.member.name +
-          ' ' +
-          titleOffered +
-          ' ' +
-          titleFor +
-          ' ' +
-          (await this.formatToken.transform(not.params.amount)),
-        content:
-          contentYour +
-          ' ' +
-          not.params.nft.name +
-          ' ' +
-          contentReceived +
-          ' ' +
-          (await this.formatToken.transform(not.params.amount)),
+        title: '@' + not.params.member.name + ' ' + titleOffered,
+        content: contentYour + ' ' + not.params.nft.name + ' ' + contentReceived,
       };
     } else {
       return {
