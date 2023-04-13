@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   collection,
@@ -10,7 +11,6 @@ import {
   QueryConstraint,
   where,
 } from '@angular/fire/firestore';
-import { Functions } from '@angular/fire/functions';
 import {
   COL,
   Member,
@@ -21,8 +21,8 @@ import {
   TransactionOrderType,
   TransactionPayment,
   TransactionType,
-  WenRequest,
   WEN_FUNC,
+  WenRequest,
 } from '@soonaverse/interfaces';
 import { firstValueFrom, Observable, switchMap } from 'rxjs';
 import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
@@ -44,8 +44,8 @@ export interface OffersHistory {
 export class NftApi extends BaseApi<Nft> {
   public collection = COL.NFT;
 
-  constructor(protected firestore: Firestore, protected functions: Functions) {
-    super(firestore, functions);
+  constructor(protected firestore: Firestore, protected httpClient: HttpClient) {
+    super(firestore, httpClient);
   }
 
   public create(req: WenRequest): Observable<Nft | undefined> {

@@ -1,7 +1,7 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { doc, docData, Firestore } from '@angular/fire/firestore';
-import { Functions } from '@angular/fire/functions';
-import { COL, Member, Space, SUB_COL, WenRequest, WEN_FUNC } from '@soonaverse/interfaces';
+import { COL, Member, Space, SUB_COL, WEN_FUNC, WenRequest } from '@soonaverse/interfaces';
 import { map, Observable, of } from 'rxjs';
 import { BaseApi } from './base.api';
 
@@ -11,8 +11,8 @@ import { BaseApi } from './base.api';
 export class SpaceApi extends BaseApi<Space> {
   public collection = COL.SPACE;
 
-  constructor(protected firestore: Firestore, protected functions: Functions) {
-    super(firestore, functions);
+  constructor(protected firestore: Firestore, protected httpClient: HttpClient) {
+    super(firestore, httpClient);
   }
 
   public isMemberWithinSpace(spaceId: string, memberId: string): Observable<boolean> {

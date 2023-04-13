@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   collection,
@@ -8,7 +9,6 @@ import {
   query,
   where,
 } from '@angular/fire/firestore';
-import { Functions } from '@angular/fire/functions';
 import {
   Award,
   COL,
@@ -16,8 +16,8 @@ import {
   Member,
   SUB_COL,
   Timestamp,
-  WenRequest,
   WEN_FUNC,
+  WenRequest,
 } from '@soonaverse/interfaces';
 import { map, Observable, of } from 'rxjs';
 import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
@@ -42,8 +42,8 @@ export enum AwardFilter {
 export class AwardApi extends BaseApi<Award> {
   public collection = COL.AWARD;
 
-  constructor(protected firestore: Firestore, protected functions: Functions) {
-    super(firestore, functions);
+  constructor(protected firestore: Firestore, protected httpClient: HttpClient) {
+    super(firestore, httpClient);
   }
 
   public listen(id: EthAddress): Observable<Award | undefined> {
