@@ -28,13 +28,7 @@
       "public": "packages/ui/dist",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
-        {
-          "source": "/api/**",
-          "run": {
-            "serviceId": "api",
-            "region": "us-central1"
-          }
-        },
+        { "source": "/api/**", "function": "api" },
         {
           "source": "**",
           "destination": "/index.html"
@@ -46,13 +40,7 @@
       "public": "packages/ui/dist",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
-        {
-          "source": "/api/**",
-          "run": {
-            "serviceId": "api",
-            "region": "us-central1"
-          }
-        },
+        { "source": "/api/**", "function": "api" },
         {
           "source": "**",
           "destination": "/index.html"
