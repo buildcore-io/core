@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
       - name: Set env vars
         working-directory: packages/functions
         run: echo "$FUNCTIONS_ENV_VARS" >> .env.preview
@@ -32,7 +32,7 @@ jobs:
       run:
         working-directory: packages/ui
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install Dependencies
         run: npx lerna bootstrap --scope=@soonaverse/ui
       - name: Build
@@ -58,7 +58,7 @@ jobs:
           fetch-depth: '10'
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
       - name: Install dependencies
         run: |
           npx lerna bootstrap --scope=@soonaverse/functions
