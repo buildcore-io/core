@@ -15,7 +15,7 @@ import {
   SUB_COL,
   TokenDistribution,
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
-  WEN_FUNC,
+  WEN_FUNC_TRIGGER,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
@@ -30,7 +30,7 @@ import { getTokenForSpace } from '../utils/token.utils';
 
 export const onProposalUpdated = functions
   .runWith({
-    minInstances: scale(WEN_FUNC.onProposalUpdated),
+    minInstances: scale(WEN_FUNC_TRIGGER.onProposalUpdated),
   })
   .firestore.document(COL.PROPOSAL + '/{proposalId}')
   .onWrite(async (change) => {

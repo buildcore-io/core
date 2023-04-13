@@ -2,7 +2,7 @@ import { ITransactionPayload } from '@iota/iota.js';
 import { ITransactionPayload as ITransactionPayloadNext } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js';
 import { Converter as ConverterNext } from '@iota/util.js-next';
-import { COL, Network, Transaction, WEN_FUNC } from '@soonaverse/interfaces';
+import { COL, Network, Transaction, WEN_FUNC_TRIGGER } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { soonDb } from '../../firebase/firestore/soondb';
@@ -12,7 +12,7 @@ import { WalletService } from '../../services/wallet/wallet';
 
 export const milestoneTriggerConfig = {
   timeoutSeconds: 300,
-  minInstances: scale(WEN_FUNC.milestoneTransactionWrite),
+  minInstances: scale(WEN_FUNC_TRIGGER.milestoneTransactionWrite),
 };
 
 export const confirmTransaction = async (

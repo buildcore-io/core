@@ -8,8 +8,8 @@ import {
   Space,
   Token,
   TokenStatus,
-  WenError,
   WEN_FUNC,
+  WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../../src/firebase/firestore/soondb';
@@ -61,7 +61,7 @@ const dummyBody = (space: string) => ({
   ],
 });
 
-describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
+describe('ProposalController: ' + WEN_FUNC.rejectProposal + ' NATIVE', () => {
   let member: string;
   let space: Space;
   let body: any;
@@ -173,7 +173,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' NATIVE', () => {
   });
 });
 
-describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
+describe('ProposalController: ' + WEN_FUNC.createProposal + ' MEMBERS', () => {
   let memberId: string;
   let space: Space;
   let token: Token;

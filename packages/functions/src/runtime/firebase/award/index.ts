@@ -32,13 +32,13 @@ export const createAwardSchema = (badgeSchema = awardBageSchema) =>
       .equal(...AVAILABLE_NETWORKS)
       .required(),
   });
-export const createAward = onRequest(WEN_FUNC.cAward)(createAwardSchema(), createAwardControl);
+export const createAward = onRequest(WEN_FUNC.createAward)(createAwardSchema(), createAwardControl);
 
 const addOwnerSchema = Joi.object({ uid: CommonJoi.uid(), member: CommonJoi.uid() });
 export const addOwnerAward = onRequest(WEN_FUNC.addOwnerAward)(addOwnerSchema, addOwnerControl);
 
 export const fundAward = onRequest(WEN_FUNC.fundAward)(uidSchema, fundAwardControl);
-export const rejectAward = onRequest(WEN_FUNC.rAward)(uidSchema, rejectAwardControl);
+export const rejectAward = onRequest(WEN_FUNC.rejectAward)(uidSchema, rejectAwardControl);
 export const cancelAward = onRequest(WEN_FUNC.cancelAward)(uidSchema, cancelAwardControl);
 
 const awardParticipateSchema = Joi.object({
@@ -54,7 +54,7 @@ export const approveAwardParticipantSchema = Joi.object({
   award: CommonJoi.uid(),
   members: Joi.array().items(CommonJoi.uid()).min(1).max(1000).required(),
 });
-export const approveAwardParticipant = onRequest(WEN_FUNC.aParticipantAward, {
+export const approveAwardParticipant = onRequest(WEN_FUNC.approveParticipantAward, {
   timeoutSeconds: 540,
   memory: '4GiB',
 })(approveAwardParticipantSchema, approveAwardParticipantControl);

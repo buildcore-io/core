@@ -35,7 +35,7 @@ const dummyToken = (space: string) =>
     decimals: 6,
   } as any);
 
-describe('Token controller: ' + WEN_FUNC.uToken, () => {
+describe('Token controller: ' + WEN_FUNC.updateToken, () => {
   let memberAddress: string;
   let space: Space;
   let token: any;

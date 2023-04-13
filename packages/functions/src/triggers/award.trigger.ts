@@ -8,7 +8,7 @@ import {
   TransactionAwardType,
   TransactionCreditType,
   TransactionType,
-  WEN_FUNC,
+  WEN_FUNC_TRIGGER,
 } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import { soonDb } from '../firebase/firestore/soondb';
@@ -18,7 +18,7 @@ import { getRandomEthAddress } from '../utils/wallet.utils';
 export const awardUpdateTrigger = functions
   .runWith({
     timeoutSeconds: 540,
-    minInstances: scale(WEN_FUNC.awardTrigger),
+    minInstances: scale(WEN_FUNC_TRIGGER.awardTrigger),
   })
   .firestore.document(COL.AWARD + '/{awardId}')
   .onUpdate(async (change) => {

@@ -99,7 +99,7 @@ const createTokenSchema = Joi.object({
   decimals: Joi.number().integer().min(0).max(20).required(),
 });
 
-export const createToken = onRequest(WEN_FUNC.cToken)(createTokenSchema, createTokenControl);
+export const createToken = onRequest(WEN_FUNC.createToken)(createTokenSchema, createTokenControl);
 
 export const uptdateMintedTokenSchema = {
   title: Joi.string().required().allow(null, ''),
@@ -116,7 +116,7 @@ export const updateTokenSchema = {
   ...uptdateMintedTokenSchema,
 };
 
-export const updateToken = onRequest(WEN_FUNC.uToken)(uidSchema, updateTokenControl, true);
+export const updateToken = onRequest(WEN_FUNC.updateToken)(uidSchema, updateTokenControl, true);
 
 const setAvailableForSaleSchema = Joi.object({
   token: CommonJoi.uid(),

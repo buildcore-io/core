@@ -33,7 +33,7 @@ export const createSpaceSchema = {
   bannerUrl: CommonJoi.storageUrl(false),
 };
 
-export const createSpace = onRequest(WEN_FUNC.cSpace)(
+export const createSpace = onRequest(WEN_FUNC.createSpace)(
   Joi.object(createSpaceSchema),
   createSpaceControl,
 );
@@ -84,7 +84,7 @@ const updateSpaceSchema = Joi.object({
   }),
 });
 
-export const updateSpace = onRequest(WEN_FUNC.uSpace)(updateSpaceSchema, updateSpaceControl);
+export const updateSpace = onRequest(WEN_FUNC.updateSpace)(updateSpaceSchema, updateSpaceControl);
 
 export const leaveSpace = onRequest(WEN_FUNC.leaveSpace)(uidSchema, leaveSpaceControl);
 
