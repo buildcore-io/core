@@ -145,11 +145,11 @@ export class SpaceApi extends BaseApi<Space> {
   }
 
   public create(req: WenRequest): Observable<Space | undefined> {
-    return this.request(WEN_FUNC.cSpace, req);
+    return this.request(WEN_FUNC.createSpace, req);
   }
 
   public save(req: WenRequest): Observable<Space | undefined> {
-    return this.request(WEN_FUNC.uSpace, req);
+    return this.request(WEN_FUNC.updateSpace, req);
   }
 
   public join(req: WenRequest): Observable<Space | undefined> {
@@ -189,6 +189,6 @@ export class SpaceApi extends BaseApi<Space> {
   }
 
   public update(req: WenRequest): Observable<Space | undefined> {
-    return this.request(WEN_FUNC.uSpace, req);
+    return this.request(WEN_FUNC.updateSpace, req);
   }
 }

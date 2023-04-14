@@ -1,5 +1,5 @@
 import { path as ffmpegPath } from '@ffmpeg-installer/ffmpeg';
-import { IMAGE_CACHE_AGE, WEN_FUNC } from '@soonaverse/interfaces';
+import { IMAGE_CACHE_AGE, WEN_FUNC_TRIGGER } from '@soonaverse/interfaces';
 import { spawn } from 'child-process-promise';
 import * as functions from 'firebase-functions';
 import fs from 'fs';
@@ -22,7 +22,7 @@ export enum ImageWidth {
 }
 
 export const resizeImageTrigger = functions
-  .runWith({ memory: '4GB', minInstances: scale(WEN_FUNC.resizeImg) })
+  .runWith({ memory: '4GB', minInstances: scale(WEN_FUNC_TRIGGER.resizeImg) })
   .storage.bucket(getBucket())
   .object()
   .onFinalize(async (object: functions.storage.ObjectMetadata) => {

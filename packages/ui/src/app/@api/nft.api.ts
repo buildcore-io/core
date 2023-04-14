@@ -49,11 +49,11 @@ export class NftApi extends BaseApi<Nft> {
   }
 
   public create(req: WenRequest): Observable<Nft | undefined> {
-    return this.request(WEN_FUNC.cNft, req);
+    return this.request(WEN_FUNC.createNft, req);
   }
 
   public batchCreate(req: WenRequest): Observable<string[] | undefined> {
-    return this.request(WEN_FUNC.cBatchNft, req);
+    return this.request(WEN_FUNC.createBatchNft, req);
   }
 
   public setForSaleNft(req: WenRequest): Observable<Nft | undefined> {

@@ -89,7 +89,7 @@ describe('Pub key test', () => {
       body: {},
     };
 
-    const result = await decodeAuth(request, WEN_FUNC.aProposal);
+    const result = await decodeAuth(request, WEN_FUNC.approveProposal);
 
     expect(result.address).toBe(address.bech32);
 
@@ -122,7 +122,7 @@ describe('Pub key test', () => {
         body: {},
       };
 
-      const result = await decodeAuth(request, WEN_FUNC.aProposal);
+      const result = await decodeAuth(request, WEN_FUNC.approveProposal);
 
       expect(result.address).toBe(address.bech32);
 
@@ -158,7 +158,7 @@ describe('Pub key test', () => {
       body: {},
     };
     try {
-      await decodeAuth(request, WEN_FUNC.aProposal);
+      await decodeAuth(request, WEN_FUNC.approveProposal);
       fail();
     } catch (error: any) {
       expect(error.details.key).toBe(WenError.failed_to_decode_token.key);
@@ -187,7 +187,7 @@ describe('Pub key test', () => {
       body: {},
     };
 
-    const result = await decodeAuth(request, WEN_FUNC.aProposal);
+    const result = await decodeAuth(request, WEN_FUNC.approveProposal);
 
     expect(result.address).toBe(address.bech32);
 
@@ -212,7 +212,7 @@ describe('Pub key test', () => {
       body: {},
     };
 
-    const result = await decodeAuth(request, WEN_FUNC.aProposal);
+    const result = await decodeAuth(request, WEN_FUNC.approveProposal);
     expect(result.address).toBe(address);
 
     const user = await userDocRef.get<Member>();
@@ -234,7 +234,7 @@ describe('Pub key test', () => {
       body: {},
     };
     try {
-      await decodeAuth(request, WEN_FUNC.aProposal);
+      await decodeAuth(request, WEN_FUNC.approveProposal);
       fail();
     } catch (error: any) {
       expect(error.details.key).toBe(WenError.invalid_signature.key);

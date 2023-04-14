@@ -34,11 +34,11 @@ export class TokenApi extends BaseApi<Token> {
   }
 
   public create(req: WenRequest): Observable<Token | undefined> {
-    return this.request(WEN_FUNC.cToken, req);
+    return this.request(WEN_FUNC.createToken, req);
   }
 
   public update(req: WenRequest): Observable<Token | undefined> {
-    return this.request(WEN_FUNC.uToken, req);
+    return this.request(WEN_FUNC.updateToken, req);
   }
 
   public setTokenAvailableForSale(req: WenRequest): Observable<Token | undefined> {

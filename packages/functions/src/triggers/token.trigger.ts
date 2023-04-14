@@ -17,7 +17,7 @@ import {
   TransactionCreditType,
   TransactionMintTokenType,
   TransactionType,
-  WEN_FUNC,
+  WEN_FUNC_TRIGGER,
 } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
@@ -44,7 +44,7 @@ export const onTokenStatusUpdate = functions
   .runWith({
     timeoutSeconds: 540,
     memory: '4GB',
-    minInstances: scale(WEN_FUNC.onTokenStatusUpdate),
+    minInstances: scale(WEN_FUNC_TRIGGER.onTokenStatusUpdate),
   })
   .firestore.document(COL.TOKEN + '/{tokenId}')
   .onUpdate(async (change) => {

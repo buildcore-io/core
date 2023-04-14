@@ -96,12 +96,12 @@ const createCollectionSchema = {
   limitedEdition: Joi.boolean().optional(),
 };
 
-export const createCollection = onRequest(WEN_FUNC.cCollection)(
+export const createCollection = onRequest(WEN_FUNC.createCollection)(
   Joi.object(createCollectionSchema),
   createCollectionControl,
 );
 
-export const updateCollection = onRequest(WEN_FUNC.uCollection)(
+export const updateCollection = onRequest(WEN_FUNC.updateCollection)(
   uidSchema,
   updateCollectionControl,
   true,

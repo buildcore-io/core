@@ -14,8 +14,8 @@ import {
   TransactionOrderType,
   TransactionType,
   TransactionUnlockType,
+  WEN_FUNC_TRIGGER,
   WalletResult,
-  WEN_FUNC,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
@@ -25,8 +25,8 @@ import { soonDb } from '../../firebase/firestore/soondb';
 import { scale } from '../../scale.settings';
 import { NativeTokenWallet } from '../../services/wallet/NativeTokenWallet';
 import { NftWallet } from '../../services/wallet/NftWallet';
-import { AliasWallet } from '../../services/wallet/smr-wallets/AliasWallet';
 import { SmrParams, SmrWallet } from '../../services/wallet/SmrWalletService';
+import { AliasWallet } from '../../services/wallet/smr-wallets/AliasWallet';
 import { WalletService } from '../../services/wallet/wallet';
 import { getAddress } from '../../utils/address.utils';
 import { isEmulatorEnv } from '../../utils/config.utils';
@@ -57,7 +57,7 @@ export const EXECUTABLE_TRANSACTIONS = [
 export const transactionWrite = functions
   .runWith({
     timeoutSeconds: 540,
-    minInstances: scale(WEN_FUNC.transactionWrite),
+    minInstances: scale(WEN_FUNC_TRIGGER.transactionWrite),
     memory: '4GB',
   })
   .firestore.document(COL.TRANSACTION + '/{tranId}')
