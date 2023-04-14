@@ -3,7 +3,7 @@ name: Action | Deploy to WEN
 on:
   push:
     branches:
-      - fix/switchToHttp
+      - develop
 
 jobs:
   deploy_functions:
