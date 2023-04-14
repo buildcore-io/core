@@ -22,17 +22,6 @@
   },
   "hosting": [
     {
-      "headers": [
-        {
-          "source": "**",
-          "headers": [
-            {
-              "key": "Access-Control-Allow-Origin",
-              "value": "*"
-            }
-          ]
-        }
-      ],
       "predeploy": ["cd packages/functions && ts-node set.rewrites.ts"],
       "target": "5d1024cf-d55e-4b10-9d27-eccc37e80161",
       "public": "packages/ui/dist",
@@ -104,12 +93,10 @@
         },
         { "source": "/api/**", "function": "api" },
         { "source": "**", "destination": "/index.html" }
-      ]
-    },
-    {
+      ],
       "headers": [
         {
-          "source": "**",
+          "source": "/api/**",
           "headers": [
             {
               "key": "Access-Control-Allow-Origin",
@@ -117,7 +104,9 @@
             }
           ]
         }
-      ],
+      ]
+    },
+    {
       "predeploy": ["cd packages/functions && ts-node set.rewrites.ts"],
       "target": "def-host",
       "public": "packages/ui/dist",
@@ -189,6 +178,17 @@
         },
         { "source": "/api/**", "function": "api" },
         { "source": "**", "destination": "/index.html" }
+      ],
+      "headers": [
+        {
+          "source": "/api/**",
+          "headers": [
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            }
+          ]
+        }
       ]
     }
   ],

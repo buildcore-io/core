@@ -20,7 +20,7 @@ export const onRequest =
     validateOnlyUid = false,
   ) =>
     functions.https.onRequest(getConfig(funcName, runtimeOptions), (req, res) =>
-      cors({ origin: '*' })(req, res, async () => {
+      cors({ origin: true })(req, res, async () => {
         try {
           const params = await decodeAuth(req.body.data, funcName);
           const owner = params.address.toLowerCase();

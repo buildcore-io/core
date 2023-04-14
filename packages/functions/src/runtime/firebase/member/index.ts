@@ -25,7 +25,7 @@ export const updateMemberSchema = Joi.object({
 export const createMember = functions.https.onRequest(
   getConfig(WEN_FUNC.createMember),
   (req, res) =>
-    cors({ origin: '*' })(req, res, async () => {
+    cors({ origin: true })(req, res, async () => {
       try {
         const address = req.body.data;
         const schema = Joi.object({ address: CommonJoi.uid() });
