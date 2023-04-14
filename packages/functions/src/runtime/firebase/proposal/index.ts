@@ -45,17 +45,17 @@ export const createProposalSchema = {
     .required(),
 };
 
-export const createProposal = onRequest(WEN_FUNC.cProposal, {
+export const createProposal = onRequest(WEN_FUNC.createProposal, {
   timeoutSeconds: 300,
   memory: '2GiB',
 })(Joi.object(createProposalSchema), createProposalControl);
 
-export const approveProposal = onRequest(WEN_FUNC.aProposal)(
+export const approveProposal = onRequest(WEN_FUNC.approveProposal)(
   uidSchema,
   proposalApprovalControl(true),
 );
 
-export const rejectProposal = onRequest(WEN_FUNC.rProposal)(
+export const rejectProposal = onRequest(WEN_FUNC.rejectProposal)(
   uidSchema,
   proposalApprovalControl(false),
 );

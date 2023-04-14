@@ -1,12 +1,29 @@
 import { EthAddress } from '../models/base';
-export const enum WEN_FUNC {
+
+export enum WEN_FUNC_TRIGGER {
+  onProposalUpdated = 'onproposalupdated',
+  awardTrigger = 'awardtrigger',
+  collectionWrite = 'collectionwrite',
+  onTokenStatusUpdate = 'ontokenstatusupdate',
+  onTokenTradeOrderWrite = 'ontokentradeorderwrite',
+  onTokenPurchaseCreated = 'ontokenpurchasecreated',
+  milestoneTransactionWrite = 'milestonetransactionwrite',
+  nftWrite = 'nftwrite',
+  transactionWrite = 'transactionwrite',
+  mnemonicWrite = 'mnemonicwrite',
+  collectionStatsUpdate = 'collectionstatsupdate',
+  algolia = 'algolia',
+  resizeImg = 'resizeimg',
+}
+
+export enum WEN_FUNC {
   // Member functions.
-  cMemberNotExists = 'cmembernotexists',
-  uMember = 'umember',
+  createMember = 'cmembernotexists',
+  updateMember = 'umember',
 
   // Space functions.
-  cSpace = 'cspace',
-  uSpace = 'uspace',
+  createSpace = 'cspace',
+  updateSpace = 'uspace',
   joinSpace = 'joinspace',
   leaveSpace = 'leavespace',
   blockMemberSpace = 'blockmemberspace',
@@ -18,32 +35,29 @@ export const enum WEN_FUNC {
   claimSpace = 'claimspace',
 
   // Award functions
-  cAward = 'caward',
+  createAward = 'caward',
   fundAward = 'fundaward',
-  rAward = 'raward',
+  rejectAward = 'raward',
   addOwnerAward = 'addowneraward',
   participateAward = 'participateaward',
-  aParticipantAward = 'aparticipantaward', // Approve.
-  onProposalUpdated = 'onproposalupdated',
-  awardTrigger = 'awardtrigger',
+  approveParticipantAward = 'aparticipantaward',
   cancelAward = 'cancelaward',
 
-  cProposal = 'cproposal',
-  aProposal = 'aproposal', // Approve
-  rProposal = 'rproposal', // Reject
+  createProposal = 'cproposal',
+  approveProposal = 'aproposal',
+  rejectProposal = 'rproposal',
   voteOnProposal = 'voteonproposal',
 
   // Collection functions.
-  cCollection = 'ccollection',
-  uCollection = 'ucollection',
+  createCollection = 'ccollection',
+  updateCollection = 'ucollection',
   approveCollection = 'approvecollection',
   rejectCollection = 'rejectcollection',
-  collectionWrite = 'collectionwrite',
   mintCollection = 'mintcollection',
 
   // NFT functions.
-  cNft = 'cnft',
-  cBatchNft = 'cbatchnft',
+  createNft = 'cnft',
+  createBatchNft = 'cbatchnft',
   setForSaleNft = 'setforsalenft',
   withdrawNft = 'withdrawnft',
   depositNft = 'depositnft',
@@ -56,8 +70,8 @@ export const enum WEN_FUNC {
   validateAddress = 'validateaddress',
 
   // TOKEN functions
-  cToken = 'ctoken',
-  uToken = 'utoken',
+  createToken = 'ctoken',
+  updateToken = 'utoken',
   setTokenAvailableForSale = 'settokenavailableforsale',
   cancelPublicSale = 'cancelpublicsale',
   orderToken = 'ordertoken',
@@ -66,35 +80,23 @@ export const enum WEN_FUNC {
   claimAirdroppedToken = 'claimairdroppedtoken',
   tradeToken = 'tradetoken',
   cancelTradeOrder = 'canceltradeorder',
-  onTokenStatusUpdate = 'ontokenstatusupdate',
-  onTokenTradeOrderWrite = 'ontokentradeorderwrite',
-  onTokenPurchaseCreated = 'ontokenpurchasecreated',
+
   mintTokenOrder = 'minttokenorder',
   claimMintedTokenOrder = 'claimmintedtokenorder',
   airdropMintedToken = 'airdropmintedtoken',
   enableTokenTrading = 'enabletokentrading',
   importMintedToken = 'importmintedtoken',
 
-  milestoneTransactionWrite = 'milestonetransactionwrite',
-  nftWrite = 'nftwrite',
-  transactionWrite = 'transactionwrite',
-  mnemonicWrite = 'mnemonicwrite',
-
   creditUnrefundable = 'creditunrefundable',
   depositStake = 'depositstake',
 
   voteController = 'votecontroller',
   rankController = 'rankcontroller',
-  collectionStatsUpdate = 'collectionstatsupdate',
 
   stakeReward = 'stakereward',
   removeStakeReward = 'removestakereward',
 
   generateCustomFirebaseToken = 'generatecustomfirebasetoken',
-
-  algolia = 'algolia',
-
-  resizeImg = 'resizeimg',
 
   api = 'api',
 }

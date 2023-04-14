@@ -1,4 +1,4 @@
-import { COL, Nft, NftAvailable, NftStatus, WenError, WEN_FUNC } from '@soonaverse/interfaces';
+import { COL, Nft, NftAvailable, NftStatus, WEN_FUNC, WenError } from '@soonaverse/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { createMember, updateMember } from '../../src/runtime/firebase/member';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -7,7 +7,7 @@ import { expectThrow, mockWalletReturnValue } from './common';
 
 let walletSpy: any;
 
-describe('MemberController: ' + WEN_FUNC.cMemberNotExists, () => {
+describe('MemberController: ' + WEN_FUNC.createMember, () => {
   it('successfully create member', async () => {
     const dummyAddress = wallet.getRandomEthAddress();
     const member = await testEnv.wrap(createMember)(dummyAddress);
@@ -17,7 +17,7 @@ describe('MemberController: ' + WEN_FUNC.cMemberNotExists, () => {
   });
 });
 
-describe('MemberController: ' + WEN_FUNC.uMember, () => {
+describe('MemberController: ' + WEN_FUNC.updateMember, () => {
   let dummyAddress: any;
   let doc: any;
 

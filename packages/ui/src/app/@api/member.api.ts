@@ -433,11 +433,11 @@ export class MemberApi extends BaseApi<Member> {
   }
 
   public createIfNotExists(address: string): Observable<Member | undefined> {
-    return this.request(WEN_FUNC.cMemberNotExists, address);
+    return this.request(WEN_FUNC.createMember, address);
   }
 
   public updateMember(req: WenRequest): Observable<Member | undefined> {
-    return this.request(WEN_FUNC.uMember, req);
+    return this.request(WEN_FUNC.updateMember, req);
   }
 
   public generateAuthToken(req: WenRequest): Observable<string | undefined> {

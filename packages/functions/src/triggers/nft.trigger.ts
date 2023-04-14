@@ -1,4 +1,11 @@
-import { COL, Collection, MediaStatus, Nft, NftAvailable, WEN_FUNC } from '@soonaverse/interfaces';
+import {
+  COL,
+  Collection,
+  MediaStatus,
+  Nft,
+  NftAvailable,
+  WEN_FUNC_TRIGGER,
+} from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import { soonDb } from '../firebase/firestore/soondb';
 import { scale } from '../scale.settings';
@@ -22,7 +29,7 @@ const getNftAvailability = (nft: Nft | undefined) => {
 
 export const nftWrite = functions
   .runWith({
-    minInstances: scale(WEN_FUNC.nftWrite),
+    minInstances: scale(WEN_FUNC_TRIGGER.nftWrite),
     timeoutSeconds: 540,
     memory: '512MB',
   })

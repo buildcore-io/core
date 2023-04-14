@@ -7,7 +7,7 @@ import {
   TokenTradeOrder,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
-  WEN_FUNC,
+  WEN_FUNC_TRIGGER,
 } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
@@ -21,7 +21,7 @@ import { matchTradeOrder } from './match-token';
 const runParams = {
   timeoutSeconds: 540,
   memory: '512MB',
-  minInstances: scale(WEN_FUNC.onTokenTradeOrderWrite),
+  minInstances: scale(WEN_FUNC_TRIGGER.onTokenTradeOrderWrite),
 } as functions.RuntimeOptions;
 
 export const onTokenTradeOrderWrite = functions

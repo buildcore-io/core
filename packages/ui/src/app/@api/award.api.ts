@@ -166,7 +166,7 @@ export class AwardApi extends BaseApi<Award> {
   }
 
   public create(req: WenRequest): Observable<Award | undefined> {
-    return this.request(WEN_FUNC.cAward, req);
+    return this.request(WEN_FUNC.createAward, req);
   }
 
   public participate(req: WenRequest): Observable<Award | undefined> {
@@ -174,7 +174,7 @@ export class AwardApi extends BaseApi<Award> {
   }
 
   public approveParticipant(req: WenRequest): Observable<Award | undefined> {
-    return this.request(WEN_FUNC.aParticipantAward, req);
+    return this.request(WEN_FUNC.approveParticipantAward, req);
   }
 
   public approve(req: WenRequest): Observable<Award | undefined> {
@@ -182,7 +182,7 @@ export class AwardApi extends BaseApi<Award> {
   }
 
   public reject(req: WenRequest): Observable<Award | undefined> {
-    return this.request(WEN_FUNC.rAward, req);
+    return this.request(WEN_FUNC.rejectAward, req);
   }
 
   public fundAndMint(req: WenRequest): Observable<Award | undefined> {

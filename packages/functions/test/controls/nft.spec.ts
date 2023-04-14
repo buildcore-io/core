@@ -1,8 +1,8 @@
 import {
   Access,
   Bucket,
-  Categories,
   COL,
+  Categories,
   Collection,
   CollectionType,
   MIN_IOTA_AMOUNT,
@@ -10,8 +10,8 @@ import {
   NftAccess,
   NftStatus,
   Space,
-  WenError,
   WEN_FUNC,
+  WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../../src/firebase/firestore/soondb';
@@ -23,7 +23,7 @@ import { createMember, createSpace, expectThrow, mockWalletReturnValue } from '.
 
 let walletSpy: any;
 
-describe('Nft controll: ' + WEN_FUNC.cCollection, () => {
+describe('Nft controll: ' + WEN_FUNC.createCollection, () => {
   let space: Space;
   let collection: Collection;
   let member: string;

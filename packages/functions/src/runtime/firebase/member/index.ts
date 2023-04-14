@@ -23,7 +23,7 @@ export const updateMemberSchema = Joi.object({
 });
 
 export const createMember = functions.https.onRequest(
-  getConfig(WEN_FUNC.cMemberNotExists),
+  getConfig(WEN_FUNC.createMember),
   (req, res) =>
     cors({ origin: true })(req, res, async () => {
       try {
@@ -38,4 +38,7 @@ export const createMember = functions.https.onRequest(
     }),
 );
 
-export const updateMember = onRequest(WEN_FUNC.uMember)(updateMemberSchema, updateMemberControl);
+export const updateMember = onRequest(WEN_FUNC.updateMember)(
+  updateMemberSchema,
+  updateMemberControl,
+);

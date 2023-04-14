@@ -108,11 +108,11 @@ export class CollectionApi extends BaseApi<Collection> {
   }
 
   public create(req: WenRequest): Observable<Collection | undefined> {
-    return this.request(WEN_FUNC.cCollection, req);
+    return this.request(WEN_FUNC.createCollection, req);
   }
 
   public update(req: WenRequest): Observable<Collection | undefined> {
-    return this.request(WEN_FUNC.uCollection, req);
+    return this.request(WEN_FUNC.updateCollection, req);
   }
 
   public approve(req: WenRequest): Observable<Collection | undefined> {

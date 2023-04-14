@@ -220,15 +220,15 @@ export class ProposalApi extends BaseApi<Proposal> {
   }
 
   public create(req: WenRequest): Observable<Proposal | undefined> {
-    return this.request(WEN_FUNC.cProposal, req);
+    return this.request(WEN_FUNC.createProposal, req);
   }
 
   public approve(req: WenRequest): Observable<Proposal | undefined> {
-    return this.request(WEN_FUNC.aProposal, req);
+    return this.request(WEN_FUNC.approveProposal, req);
   }
 
   public reject(req: WenRequest): Observable<Proposal | undefined> {
-    return this.request(WEN_FUNC.rProposal, req);
+    return this.request(WEN_FUNC.rejectProposal, req);
   }
 
   public vote(req: WenRequest): Observable<Proposal | undefined> {
