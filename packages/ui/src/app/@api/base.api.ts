@@ -363,7 +363,7 @@ export class BaseApi<T> {
       url = SOON_TEST_ADDRESS_API;
     }
 
-    let functionKey = Object.entries(WEN_FUNC).find((v) => {
+    const functionKey = Object.entries(WEN_FUNC).find((v) => {
       return v[1] === <any>func;
     });
 
