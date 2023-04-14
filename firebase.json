@@ -93,6 +93,17 @@
         },
         { "source": "/api/**", "function": "api" },
         { "source": "**", "destination": "/index.html" }
+      ],
+      "headers": [
+        {
+          "source": "/api/**",
+          "headers": [
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            }
+          ]
+        }
       ]
     },
     {
@@ -167,6 +178,17 @@
         },
         { "source": "/api/**", "function": "api" },
         { "source": "**", "destination": "/index.html" }
+      ],
+      "headers": [
+        {
+          "source": "/api/**",
+          "headers": [
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            }
+          ]
+        }
       ]
     }
   ],
