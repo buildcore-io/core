@@ -21,7 +21,7 @@ export class NotificationService {
         },
         error: (obj: any) => {
           // Error
-          if (obj.message) {
+          if (obj?.error?.data?.message) {
             this.notification.error(obj.message, '');
           } else {
             this.notification.error('Failed due random error.', '');

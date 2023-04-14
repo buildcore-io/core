@@ -21,9 +21,6 @@ export const onRequest =
   ) =>
     functions.https.onRequest(getConfig(funcName, runtimeOptions), (req, res) =>
       cors({ origin: true })(req, res, async () => {
-        // Set cors.
-        res.set('Access-Control-Allow-Origin', '*');
-
         try {
           const params = await decodeAuth(req.body.data, funcName);
           const owner = params.address.toLowerCase();

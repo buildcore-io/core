@@ -26,9 +26,6 @@ export const createMember = functions.https.onRequest(
   getConfig(WEN_FUNC.createMember),
   (req, res) =>
     cors({ origin: true })(req, res, async () => {
-      // Set cors.
-      res.set('Access-Control-Allow-Origin', '*');
-
       try {
         const address = req.body.data;
         const schema = Joi.object({ address: CommonJoi.uid() });

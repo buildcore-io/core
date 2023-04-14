@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {
   Firestore,
   QueryConstraint,
@@ -370,17 +370,9 @@ export class BaseApi<T> {
     // Add function
     url += `post${functionKey![0][0].toUpperCase() + functionKey![0].slice(1)}`;
     return this.httpClient
-      .post(
-        url,
-        {
-          data: req,
-        },
-        {
-          headers: new HttpHeaders({
-            'Access-Control-Allow-Origin': '*',
-          }),
-        },
-      )
+      .post(url, {
+        data: req,
+      })
       .pipe(
         map((b: any) => {
           return b.data;

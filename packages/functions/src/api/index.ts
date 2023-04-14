@@ -14,9 +14,6 @@ export const api = functions.https.onRequest(
   getConfig(WEN_FUNC.api, { timeoutSeconds: 60 }),
   (req, res) =>
     cors({ origin: true })(req, res, async () => {
-      // Set cors.
-      res.set('Access-Control-Allow-Origin', '*');
-
       getHandler(req.url)(req, res);
     }),
 );
