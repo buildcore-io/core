@@ -21,10 +21,10 @@ export class NotificationService {
         },
         error: (obj: any) => {
           // Error
-          if (obj?.error?.data?.message) {
-            this.notification.error(obj.message, '');
+          if (obj?.error?.data?.key) {
+            this.notification.error(obj.key, '');
           } else {
-            this.notification.error('Failed due random error.', '');
+            this.notification.error('Failed due internal error.', '');
           }
 
           // Pass it.
