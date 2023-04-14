@@ -9,10 +9,8 @@ import { HttpClientModule } from '@angular/common/http';
 // import zh from '@angular/common/locales/zh';
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { getApp, initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { initializeAppCheck, provideAppCheck, ReCaptchaV3Provider } from '@angular/fire/app-check';
-import { connectAuthEmulator, getAuth, provideAuth } from '@angular/fire/auth';
+import { ReCaptchaV3Provider, initializeAppCheck, provideAppCheck } from '@angular/fire/app-check';
 import { connectFirestoreEmulator, getFirestore, provideFirestore } from '@angular/fire/firestore';
-import { connectFunctionsEmulator, getFunctions, provideFunctions } from '@angular/fire/functions';
 import { connectStorageEmulator, getStorage, provideStorage } from '@angular/fire/storage';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -44,26 +42,12 @@ export const imports: any[] = [
   BrowserAnimationsModule,
   NzIconModule.forRoot(icons),
   provideFirebaseApp(() => initializeApp(environment.fbConfig)),
-  provideAuth(() => {
-    const auth = getAuth(getApp());
-    if (environment.useEmulators) {
-      connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
-    }
-    return auth;
-  }),
   provideFirestore(() => {
     const firestore = getFirestore();
     if (environment.useEmulators) {
       connectFirestoreEmulator(firestore, 'localhost', 8080);
     }
     return firestore;
-  }),
-  provideFunctions(() => {
-    const functions = getFunctions();
-    if (environment.useEmulators) {
-      connectFunctionsEmulator(functions, 'localhost', 5001);
-    }
-    return functions;
   }),
   provideStorage(() => {
     const storage = getStorage();

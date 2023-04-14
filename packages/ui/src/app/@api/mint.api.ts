@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   collection,
@@ -7,7 +8,6 @@ import {
   query,
   where,
 } from '@angular/fire/firestore';
-import { Functions } from '@angular/fire/functions';
 import { COL } from '@soonaverse/interfaces';
 import { Observable } from 'rxjs';
 
@@ -15,7 +15,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class MintApi {
-  constructor(protected firestore: Firestore, protected functions: Functions) {
+  constructor(protected firestore: Firestore, protected httpClient: HttpClient) {
     // none.
   }
 

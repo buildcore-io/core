@@ -1,15 +1,15 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Firestore, where } from '@angular/fire/firestore';
-import { Functions } from '@angular/fire/functions';
 import {
   COL,
   TokenTradeOrder,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
-  WenRequest,
   WEN_FUNC,
+  WenRequest,
 } from '@soonaverse/interfaces';
-import { combineLatest, map, Observable } from 'rxjs';
+import { Observable, combineLatest, map } from 'rxjs';
 import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 
 @Injectable({
@@ -18,8 +18,8 @@ import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
   public collection = COL.TOKEN_MARKET;
 
-  constructor(protected firestore: Firestore, protected functions: Functions) {
-    super(firestore, functions);
+  constructor(protected firestore: Firestore, protected httpClient: HttpClient) {
+    super(firestore, httpClient);
   }
 
   private getBuyOrders = (tokenId: string) => [

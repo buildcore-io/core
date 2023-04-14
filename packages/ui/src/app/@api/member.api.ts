@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   collection,
@@ -15,7 +16,6 @@ import {
   startAfter,
   where,
 } from '@angular/fire/firestore';
-import { Functions } from '@angular/fire/functions';
 import { environment } from '@env/environment';
 import {
   Award,
@@ -65,8 +65,8 @@ export interface StakeWithTokenRec extends Stake {
 export class MemberApi extends BaseApi<Member> {
   public collection = 'member';
 
-  constructor(protected firestore: Firestore, protected functions: Functions) {
-    super(firestore, functions);
+  constructor(protected firestore: Firestore, protected httpClient: HttpClient) {
+    super(firestore, httpClient);
   }
 
   public listen(id: EthAddress): Observable<Member | undefined> {

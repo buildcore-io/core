@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   collection,
@@ -11,7 +12,6 @@ import {
   QueryConstraint,
   where,
 } from '@angular/fire/firestore';
-import { Functions } from '@angular/fire/functions';
 import {
   COL,
   EthAddress,
@@ -21,8 +21,8 @@ import {
   Timestamp,
   Transaction,
   TransactionType,
-  WenRequest,
   WEN_FUNC,
+  WenRequest,
 } from '@soonaverse/interfaces';
 import { map, Observable, of, switchMap } from 'rxjs';
 import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
@@ -54,8 +54,8 @@ export interface TransactionWithFullMember extends Transaction {
 export class ProposalApi extends BaseApi<Proposal> {
   public collection = COL.PROPOSAL;
 
-  constructor(protected firestore: Firestore, protected functions: Functions) {
-    super(firestore, functions);
+  constructor(protected firestore: Firestore, protected httpClient: HttpClient) {
+    super(firestore, httpClient);
   }
 
   public listen(id: EthAddress): Observable<Proposal | undefined> {

@@ -1,15 +1,15 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Firestore, where } from '@angular/fire/firestore';
-import { Functions } from '@angular/fire/functions';
 import {
   COL,
   EthAddress,
   Transaction,
   TransactionType,
-  WenRequest,
   WEN_FUNC,
+  WenRequest,
 } from '@soonaverse/interfaces';
-import { combineLatest, map, Observable } from 'rxjs';
+import { Observable, combineLatest, map } from 'rxjs';
 import { BaseApi, WHERE_IN_BATCH } from './base.api';
 
 @Injectable({
@@ -18,8 +18,8 @@ import { BaseApi, WHERE_IN_BATCH } from './base.api';
 export class OrderApi extends BaseApi<Transaction> {
   public collection = COL.TRANSACTION;
 
-  constructor(protected firestore: Firestore, protected functions: Functions) {
-    super(firestore, functions);
+  constructor(protected firestore: Firestore, protected httpClient: HttpClient) {
+    super(firestore, httpClient);
   }
 
   public orderNft(req: WenRequest): Observable<Transaction | undefined> {
