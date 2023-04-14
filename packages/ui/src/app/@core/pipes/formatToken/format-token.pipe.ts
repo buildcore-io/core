@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { CacheService } from '@core/services/cache/cache.service';
 import { NETWORK_DETAIL } from '@core/services/units';
 import { Network } from '@soonaverse/interfaces';
-import { lastValueFrom } from 'rxjs';
+import { firstValueFrom, skipWhile } from 'rxjs';
 
 const DEF_DECIMALS = 6;
 export interface ConvertValue {
@@ -40,8 +40,13 @@ export class FormatTokenPipe implements PipeTransform {
     }
 
     if (tokenUid) {
-      // TODO Do we need to handle failed retrieval.
-      const token = await lastValueFrom(this.cache.getToken(tokenUid));
+      const token = await firstValueFrom(
+        this.cache.getToken(tokenUid).pipe(
+          skipWhile((t) => {
+            return !t;
+          }),
+        ),
+      );
       if (!token) {
         // Unable to get token.
         return '-';
@@ -70,7 +75,7 @@ export class FormatTokenPipe implements PipeTransform {
     if (value.exponents === 0) {
       return value.value!;
     } else {
-      return Math.pow(value.value! * 10, value.exponents || 6);
+      return value.value! * Math.pow(10, value.exponents || 6);
     }
   }
 }

@@ -543,7 +543,7 @@
         <div class="text-lg font-bold lg:mt-2">
           {{ ((listenAvgPrice$ | async) || 0) === 0 ? '-' : ( { value: ((listenAvgPrice$ | async) ||
           0), exponents: 6 } | formatToken :( (data.token$ | async)?.mintingData?.networkFormat ||
-          (data.token$ | async)?.mintingData?.network):false:false) }}
+          (data.token$ | async)?.mintingData?.network):false:false | async) }}
           <span
             class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
             i18n
@@ -697,8 +697,9 @@
               {{ item.amount | formatToken: undefined:false:false | async }}
             </td>
             <td class="z-10 border-0 right">
-              {{ (item.price * item.amount) | formatToken: (data.token$ | async)?.uid:false:false:2
-              | async }}
+              {{ (item.price * item.amount) | formatToken: ( (data.token$ |
+              async)?.mintingData?.networkFormat || (data.token$ |
+              async)?.mintingData?.network):false:false:2 | async }}
             </td>
           </tr>
           <div
@@ -759,8 +760,9 @@
               {{ item.amount | formatToken: undefined:false:false | async}}
             </td>
             <td class="z-10 border-0 right">
-              {{ (item.price * item.amount) | formatToken: (data.token$ | async)?.uid:false:false:2
-              | async}}
+              {{ (item.price * item.amount) | formatToken: ( (data.token$ |
+              async)?.mintingData?.networkFormat || (data.token$ |
+              async)?.mintingData?.network):false:false:2 | async}}
             </td>
           </tr>
           <div

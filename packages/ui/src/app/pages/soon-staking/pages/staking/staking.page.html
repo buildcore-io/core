@@ -247,7 +247,7 @@
           <ng-container *ngIf="data.key === '1'">
             <td>{{data.category}}</td>
             <td>{{data.category_extra}}</td>
-            <td>{{(pInt(data.level0) | formatToken: undefined:false:false:0)}}</td>
+            <td>{{(pInt(data.level0) | formatToken: undefined:false:false:0 | async)}}</td>
             <td [ngClass]="(getLevelClass(1) | async)">
               {{(pInt(data.level1) | formatToken: undefined:false:false:0 | async)}}
             </td>

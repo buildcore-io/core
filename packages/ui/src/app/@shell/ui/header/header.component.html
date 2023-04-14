@@ -218,12 +218,12 @@
         <nz-badge [nzDot]="index < unreadNotificationCount()">
           <a [routerLink]="['/', 'nft', nt.params.nft.uid]">
             <div class="font-bold break-words line-clamp-1">
-              {{ (getNotificationDetails(nt)).title }}
+              {{ getNotificationDetails(nt).title }}
             </div>
             <div
               class="max-w-sm mt-1 text-sm font-medium break-words text-foregrounds-secondary line-clamp-2"
             >
-              {{ (getNotificationDetails(nt)).content }}
+              {{ getNotificationDetails(nt).content }}
             </div>
           </a>
         </nz-badge>
