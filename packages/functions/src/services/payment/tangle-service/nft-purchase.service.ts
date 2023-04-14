@@ -4,22 +4,22 @@ import {
   CollectionStatus,
   CollectionType,
   DEFAULT_NETWORK,
+  MIN_AMOUNT_TO_TRANSFER,
   Member,
   MilestoneTransaction,
   MilestoneTransactionEntry,
-  MIN_AMOUNT_TO_TRANSFER,
   Network,
   Nft,
   NftAccess,
   NftStatus,
   Space,
   StakeType,
+  TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
   TransactionOrderType,
   TransactionType,
   TransactionUnlockType,
   TransactionValidationType,
-  TRANSACTION_AUTO_EXPIRY_MS,
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
@@ -60,6 +60,12 @@ export class TangleNftPurchaseService {
     );
     set(order, 'payload.tanglePuchase', true);
 
+    this.transactionService.updates.push({
+      ref: admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`),
+      data: order,
+      action: 'set',
+    });
+
     const isMintedNft = AVAILABLE_NETWORKS.includes(order.network!);
 
     if (isMintedNft && tranEntry.amount !== order.payload.amount) {
@@ -68,14 +74,9 @@ export class TangleNftPurchaseService {
         status: 'error',
         code: WenError.invalid_base_token_amount.code,
         message: WenError.invalid_base_token_amount.key,
+        address: order.payload.targetAddress,
       };
     }
-
-    this.transactionService.updates.push({
-      ref: admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`),
-      data: order,
-      action: 'set',
-    });
 
     if (!isMintedNft) {
       return {
