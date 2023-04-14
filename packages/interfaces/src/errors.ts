@@ -258,4 +258,8 @@ export const WenError = {
     code: 2127,
     key: 'Nft is set as avatar',
   },
+  stake_reward_started: {
+    code: 2128,
+    key: 'Stake reward already started',
+  },
 };
