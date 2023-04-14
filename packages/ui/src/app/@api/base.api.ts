@@ -1,22 +1,30 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {
+  Firestore,
+  QueryConstraint,
   collection as coll,
   collectionData,
   collectionGroup,
   doc,
   docData,
-  Firestore,
   getDocs,
   limit,
   orderBy as ordBy,
   query,
-  QueryConstraint,
   startAfter,
   where,
 } from '@angular/fire/firestore';
-import { COL, EthAddress, SUB_COL, WEN_FUNC } from '@soonaverse/interfaces';
+import { environment } from '@env/environment';
+import {
+  COL,
+  EthAddress,
+  SOON_PROD_ADDRESS_API,
+  SOON_TEST_ADDRESS_API,
+  SUB_COL,
+  WEN_FUNC,
+} from '@soonaverse/interfaces';
 import { collection as colquery } from 'rxfire/firestore';
-import { combineLatest, map, Observable, switchMap } from 'rxjs';
+import { Observable, combineLatest, map, switchMap } from 'rxjs';
 
 export const DEFAULT_LIST_SIZE = 50;
 export const WHERE_IN_BATCH = 10;
@@ -348,18 +356,29 @@ export class BaseApi<T> {
   }
 
   protected request<T>(func: WEN_FUNC, req: any): Observable<T | undefined> {
-    // DEMO before we have URL rewrites
-    const tt = 'https://cmembernotexists-4466xgfgda-uc.a.run.app';
+    let url = '';
+    if (environment.production) {
+      url = SOON_PROD_ADDRESS_API;
+    } else {
+      url = SOON_TEST_ADDRESS_API;
+    }
+
+    let functionKey = Object.entries(WEN_FUNC).find((v) => {
+      return v[1] === <any>func;
+    });
+
+    // Add function
+    url += `post${functionKey![0][0].toUpperCase() + functionKey![0].slice(1)}`;
     return this.httpClient
       .post(
-        tt,
+        url,
         {
-          // data: req,
+          data: req,
         },
         {
-          headers: {
+          headers: new HttpHeaders({
             'Access-Control-Allow-Origin': '*',
-          },
+          }),
         },
       )
       .pipe(

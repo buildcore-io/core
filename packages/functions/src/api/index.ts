@@ -13,7 +13,7 @@ import { keepAlive } from './keepAlive';
 export const api = functions.https.onRequest(
   getConfig(WEN_FUNC.api, { timeoutSeconds: 60 }),
   (req, res) =>
-    cors({ origin: true })(req, res, async () => {
+    cors({ origin: '*' })(req, res, async () => {
       getHandler(req.url)(req, res);
     }),
 );
