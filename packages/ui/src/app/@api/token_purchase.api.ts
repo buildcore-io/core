@@ -1,9 +1,9 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Firestore, QueryConstraint, where } from '@angular/fire/firestore';
-import { Functions } from '@angular/fire/functions';
 import { COL, TokenPurchase, TokenStatus, TokenTradeOrderType } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { map, Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { BaseApi, FULL_TODO_MOVE_TO_PROTOCOL } from './base.api';
 
 const TRADE_HISTORY_SIZE = 100;
@@ -14,8 +14,8 @@ const TRADE_HISTORY_SIZE = 100;
 export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
   public collection = COL.TOKEN_PURCHASE;
 
-  constructor(protected firestore: Firestore, protected functions: Functions) {
-    super(firestore, functions);
+  constructor(protected firestore: Firestore, protected httpClient: HttpClient) {
+    super(firestore, httpClient);
   }
 
   private getPurchases = (tokenId: string, tokenStatus: TokenStatus[], millis?: number) => {

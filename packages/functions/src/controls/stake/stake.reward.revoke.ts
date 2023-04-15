@@ -37,6 +37,11 @@ export const removeStakeRewardControl = async (owner: string, params: Record<str
     throw invalidArgument(WenError.invalid_params);
   }
 
+  const proposalEndDate = stakeRewards[0]!.startDate;
+  if (dayjs().isAfter(dayjs(proposalEndDate.toDate()))) {
+    throw invalidArgument(WenError.stake_reward_started);
+  }
+
   const tokenIds = uniq(stakeRewards.map((reward) => reward!.token));
   if (tokenIds.length > 1) {
     throw invalidArgument(WenError.invalid_params);
@@ -68,7 +73,7 @@ export const removeStakeRewardControl = async (owner: string, params: Record<str
     token.space,
     guardians.length,
     stakeRewards as StakeReward[],
-    stakeRewards[0]!.startDate,
+    proposalEndDate,
   );
 
   const voteTransaction = <Transaction>{

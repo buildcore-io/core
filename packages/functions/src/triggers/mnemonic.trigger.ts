@@ -4,7 +4,7 @@ import {
   Mnemonic,
   Transaction,
   TransactionType,
-  WEN_FUNC,
+  WEN_FUNC_TRIGGER,
 } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';
@@ -15,7 +15,7 @@ import { EXECUTABLE_TRANSACTIONS } from './transaction-trigger/transaction.trigg
 export const mnemonicWrite = functions
   .runWith({
     timeoutSeconds: 540,
-    minInstances: scale(WEN_FUNC.mnemonicWrite),
+    minInstances: scale(WEN_FUNC_TRIGGER.mnemonicWrite),
     memory: '512MB',
   })
   .firestore.document(COL.MNEMONIC + '/{address}')

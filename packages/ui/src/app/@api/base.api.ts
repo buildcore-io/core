@@ -1,23 +1,30 @@
+import { HttpClient } from '@angular/common/http';
 import {
+  Firestore,
+  QueryConstraint,
   collection as coll,
   collectionData,
   collectionGroup,
   doc,
   docData,
-  Firestore,
   getDocs,
   limit,
   orderBy as ordBy,
   query,
-  QueryConstraint,
   startAfter,
   where,
 } from '@angular/fire/firestore';
-import { Functions, httpsCallableData } from '@angular/fire/functions';
-import { COL, EthAddress, SUB_COL, WEN_FUNC } from '@soonaverse/interfaces';
-import { HttpsCallableOptions } from 'firebase/functions';
+import { environment } from '@env/environment';
+import {
+  COL,
+  EthAddress,
+  SOON_PROD_ADDRESS_API,
+  SOON_TEST_ADDRESS_API,
+  SUB_COL,
+  WEN_FUNC,
+} from '@soonaverse/interfaces';
 import { collection as colquery } from 'rxfire/firestore';
-import { combineLatest, map, Observable, switchMap } from 'rxjs';
+import { Observable, combineLatest, map, switchMap } from 'rxjs';
 
 export const DEFAULT_LIST_SIZE = 50;
 export const WHERE_IN_BATCH = 10;
@@ -66,7 +73,7 @@ export class BaseApi<T> {
   // Collection is always defined on above.
   public collection = '';
 
-  constructor(protected firestore: Firestore, protected functions: Functions) {}
+  constructor(protected firestore: Firestore, protected httpClient: HttpClient) {}
 
   public listen(id: string): Observable<T | undefined> {
     return docData(doc(this.firestore, this.collection, id.toLowerCase())) as Observable<
@@ -349,10 +356,27 @@ export class BaseApi<T> {
   }
 
   protected request<T>(func: WEN_FUNC, req: any): Observable<T | undefined> {
-    const callable = httpsCallableData(this.functions, func, {
-      'Access-Control-Allow-Origin': '*',
-    } as HttpsCallableOptions);
-    const data$ = callable(req);
-    return data$ as Observable<T | undefined>;
+    let url = '';
+    if (environment.production) {
+      url = SOON_PROD_ADDRESS_API;
+    } else {
+      url = SOON_TEST_ADDRESS_API;
+    }
+
+    const functionKey = Object.entries(WEN_FUNC).find((v) => {
+      return v[1] === <any>func;
+    });
+
+    // Add function
+    url += `post${functionKey![0][0].toUpperCase() + functionKey![0].slice(1)}`;
+    return this.httpClient
+      .post(url, {
+        data: req,
+      })
+      .pipe(
+        map((b: any) => {
+          return b.data;
+        }),
+      );
   }
 }

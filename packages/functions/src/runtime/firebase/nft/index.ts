@@ -44,10 +44,13 @@ const nftCreateSchema = {
   stats: Joi.object().optional(),
   saleAccessMembers: Joi.array().items(CommonJoi.uid(false)).optional(),
 };
-export const createNft = onRequest(WEN_FUNC.cNft)(Joi.object(nftCreateSchema), createNftControl);
+export const createNft = onRequest(WEN_FUNC.createNft)(
+  Joi.object(nftCreateSchema),
+  createNftControl,
+);
 
 const createBatchNftSchema = Joi.array().items(Joi.object().keys(nftCreateSchema)).min(1).max(500);
-export const createBatchNft = onRequest(WEN_FUNC.cBatchNft, {
+export const createBatchNft = onRequest(WEN_FUNC.createBatchNft, {
   timeoutSeconds: 300,
   memory: '4GiB',
 })(createBatchNftSchema, createBatchNftControl);

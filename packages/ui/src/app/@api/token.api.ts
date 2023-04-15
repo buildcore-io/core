@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   collection,
@@ -8,7 +9,6 @@ import {
   query,
   where,
 } from '@angular/fire/firestore';
-import { Functions } from '@angular/fire/functions';
 import {
   COL,
   SUB_COL,
@@ -17,8 +17,8 @@ import {
   TokenStats,
   TokenStatus,
   Transaction,
-  WenRequest,
   WEN_FUNC,
+  WenRequest,
 } from '@soonaverse/interfaces';
 import { Observable, of } from 'rxjs';
 import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
@@ -29,16 +29,16 @@ import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 export class TokenApi extends BaseApi<Token> {
   public collection = COL.TOKEN;
 
-  constructor(protected firestore: Firestore, protected functions: Functions) {
-    super(firestore, functions);
+  constructor(protected firestore: Firestore, protected httpClient: HttpClient) {
+    super(firestore, httpClient);
   }
 
   public create(req: WenRequest): Observable<Token | undefined> {
-    return this.request(WEN_FUNC.cToken, req);
+    return this.request(WEN_FUNC.createToken, req);
   }
 
   public update(req: WenRequest): Observable<Token | undefined> {
-    return this.request(WEN_FUNC.uToken, req);
+    return this.request(WEN_FUNC.updateToken, req);
   }
 
   public setTokenAvailableForSale(req: WenRequest): Observable<Token | undefined> {

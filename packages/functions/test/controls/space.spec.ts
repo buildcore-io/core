@@ -61,7 +61,7 @@ const joinSpaceFunc = async (member: string, uid: string) => {
  * TODO
  * at_least_one_guardian_must_be_in_the_space
  */
-describe('SpaceController: ' + WEN_FUNC.cSpace, () => {
+describe('SpaceController: ' + WEN_FUNC.createSpace, () => {
   it('successfully create space', async () => {
     const dummyAddress = wallet.getRandomEthAddress();
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
@@ -104,7 +104,7 @@ describe('SpaceController: ' + WEN_FUNC.cSpace, () => {
   });
 });
 
-describe('SpaceController: ' + WEN_FUNC.uSpace, () => {
+describe('SpaceController: ' + WEN_FUNC.updateSpace, () => {
   let guardian: string;
   let member: string;
   let space: Space;

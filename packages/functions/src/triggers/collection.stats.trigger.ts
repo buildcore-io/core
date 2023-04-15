@@ -1,4 +1,4 @@
-import { COL, CollectionStats, SUB_COL, WEN_FUNC } from '@soonaverse/interfaces';
+import { COL, CollectionStats, SUB_COL, WEN_FUNC_TRIGGER } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import { soonDb } from '../firebase/firestore/soondb';
 import { scale } from '../scale.settings';
@@ -6,7 +6,7 @@ import { getRankingThreshold } from '../utils/config.utils';
 
 export const collectionStatsUpdate = functions
   .runWith({
-    minInstances: scale(WEN_FUNC.collectionStatsUpdate),
+    minInstances: scale(WEN_FUNC_TRIGGER.collectionStatsUpdate),
   })
   .firestore.document(`${COL.COLLECTION}/{collectionId}/${SUB_COL.STATS}/{subDocId}`)
   .onWrite(async (change, context) => {

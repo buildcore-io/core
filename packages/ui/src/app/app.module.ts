@@ -11,7 +11,6 @@ import { LOCALE_ID, NgModule } from '@angular/core';
 import { getApp, initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { ReCaptchaV3Provider, initializeAppCheck, provideAppCheck } from '@angular/fire/app-check';
 import { connectFirestoreEmulator, getFirestore, provideFirestore } from '@angular/fire/firestore';
-import { connectFunctionsEmulator, getFunctions, provideFunctions } from '@angular/fire/functions';
 import { connectStorageEmulator, getStorage, provideStorage } from '@angular/fire/storage';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -49,13 +48,6 @@ export const imports: any[] = [
       connectFirestoreEmulator(firestore, 'localhost', 8080);
     }
     return firestore;
-  }),
-  provideFunctions(() => {
-    const functions = getFunctions();
-    if (environment.useEmulators) {
-      connectFunctionsEmulator(functions, 'localhost', 5001);
-    }
-    return functions;
   }),
   provideStorage(() => {
     const storage = getStorage();

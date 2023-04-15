@@ -1,6 +1,6 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { doc, docData, Firestore } from '@angular/fire/firestore';
-import { Functions } from '@angular/fire/functions';
 import { COL, Ticker } from '@soonaverse/interfaces';
 import { Observable } from 'rxjs';
 import { BaseApi } from './base.api';
@@ -11,8 +11,8 @@ import { BaseApi } from './base.api';
 export class TickerApi extends BaseApi<Ticker> {
   public collection = COL.TICKER;
 
-  constructor(protected firestore: Firestore, protected functions: Functions) {
-    super(firestore, functions);
+  constructor(protected firestore: Firestore, protected httpClient: HttpClient) {
+    super(firestore, httpClient);
   }
 
   public listen(id: string): Observable<Ticker | undefined> {

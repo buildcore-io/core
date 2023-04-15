@@ -1,26 +1,26 @@
 import {
   Access,
   Bucket,
-  Categories,
   COL,
+  Categories,
   Collection,
   CollectionStats,
   CollectionStatus,
   CollectionType,
-  Member,
   MIN_IOTA_AMOUNT,
+  Member,
   Nft,
   NftStatus,
   RANKING_TEST,
+  SUB_COL,
   Space,
   StakeType,
-  SUB_COL,
   Token,
   Transaction,
   TransactionOrderType,
   TransactionType,
-  WenError,
   WEN_FUNC,
+  WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
@@ -72,7 +72,7 @@ const dummyCollection: any = (spaceId: string, royaltiesFee: number) => ({
   price: 10 * 1000 * 1000,
 });
 
-describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
+describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
   let dummyAddress: string;
   let space: any;
   let member: Member;

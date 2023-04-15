@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   collection,
@@ -15,7 +16,6 @@ import {
   startAfter,
   where,
 } from '@angular/fire/firestore';
-import { Functions } from '@angular/fire/functions';
 import { environment } from '@env/environment';
 import {
   Award,
@@ -36,8 +36,8 @@ import {
   Transaction,
   TransactionAwardType,
   TransactionType,
-  WenRequest,
   WEN_FUNC,
+  WenRequest,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { combineLatest, filter, map, Observable, switchMap } from 'rxjs';
@@ -65,8 +65,8 @@ export interface StakeWithTokenRec extends Stake {
 export class MemberApi extends BaseApi<Member> {
   public collection = 'member';
 
-  constructor(protected firestore: Firestore, protected functions: Functions) {
-    super(firestore, functions);
+  constructor(protected firestore: Firestore, protected httpClient: HttpClient) {
+    super(firestore, httpClient);
   }
 
   public listen(id: EthAddress): Observable<Member | undefined> {
@@ -433,11 +433,11 @@ export class MemberApi extends BaseApi<Member> {
   }
 
   public createIfNotExists(address: string): Observable<Member | undefined> {
-    return this.request(WEN_FUNC.cMemberNotExists, address);
+    return this.request(WEN_FUNC.createMember, address);
   }
 
   public updateMember(req: WenRequest): Observable<Member | undefined> {
-    return this.request(WEN_FUNC.uMember, req);
+    return this.request(WEN_FUNC.updateMember, req);
   }
 
   public generateAuthToken(req: WenRequest): Observable<string | undefined> {

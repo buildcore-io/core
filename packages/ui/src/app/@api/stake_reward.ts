@@ -1,6 +1,6 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Firestore } from '@angular/fire/firestore';
-import { Functions } from '@angular/fire/functions';
 import {
   COL,
   MIN_AMOUNT_TO_TRANSFER,
@@ -8,8 +8,8 @@ import {
   StakeRewardStatus,
   StakeType,
   TokenStats,
-  WenRequest,
   WEN_FUNC,
+  WenRequest,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { where } from 'firebase/firestore';
@@ -22,8 +22,8 @@ import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 export class StakeRewardApi extends BaseApi<StakeReward> {
   public collection = COL.STAKE_REWARD;
 
-  constructor(protected firestore: Firestore, protected functions: Functions) {
-    super(firestore, functions);
+  constructor(protected firestore: Firestore, protected httpClient: HttpClient) {
+    super(firestore, httpClient);
   }
 
   /**

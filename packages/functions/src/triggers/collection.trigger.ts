@@ -10,7 +10,7 @@ import {
   TransactionMintCollectionType,
   TransactionType,
   UnsoldMintingOptions,
-  WEN_FUNC,
+  WEN_FUNC_TRIGGER,
 } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import { last } from 'lodash';
@@ -23,7 +23,7 @@ import { getRandomEthAddress } from '../utils/wallet.utils';
 export const collectionWrite = functions
   .runWith({
     timeoutSeconds: 540,
-    minInstances: scale(WEN_FUNC.collectionWrite),
+    minInstances: scale(WEN_FUNC_TRIGGER.collectionWrite),
     memory: '1GB',
   })
   .firestore.document(COL.COLLECTION + '/{collectionId}')

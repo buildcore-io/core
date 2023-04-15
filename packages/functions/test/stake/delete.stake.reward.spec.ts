@@ -155,4 +155,16 @@ describe('Delete stake reward', () => {
     mockWalletReturnValue(walletSpy, guardian, { stakeRewardIds });
     await expectThrow(testEnv.wrap(removeStakeReward)({}), WenError.ongoing_proposal.key);
   });
+
+  it('Should throw, stake reward expired', async () => {
+    const stakeRewards = await createStakeRewards();
+    const docRef = soonDb().doc(`${COL.STAKE_REWARD}/${stakeRewards[1].uid}`);
+    await docRef.update({ startDate: dateToTimestamp(dayjs().subtract(1, 'm')) });
+
+    const stakeRewardIds = stakeRewards.map((reward) => reward.uid);
+    mockWalletReturnValue(walletSpy, guardian, {
+      stakeRewardIds,
+    });
+    await expectThrow(testEnv.wrap(removeStakeReward)({}), WenError.stake_reward_started.key);
+  });
 });

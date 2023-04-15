@@ -1,11 +1,11 @@
-import { WEN_PROD_ADDRESS, WEN_TEST_ADDRESS } from '@soonaverse/interfaces';
+import { SOON_PROD_ADDRESS, SOON_TEST_ADDRESS } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { get } from 'lodash';
 import { isProdEnv } from '../../utils/config.utils';
 import { IDocument } from './interfaces';
 
 export const cOn = <T>(doc: IDocument, data: T) => {
-  const url = isProdEnv() ? WEN_PROD_ADDRESS : WEN_TEST_ADDRESS;
+  const url = isProdEnv() ? SOON_PROD_ADDRESS : SOON_TEST_ADDRESS;
   return {
     ...data,
     wenUrl: url + doc.getPath(),
