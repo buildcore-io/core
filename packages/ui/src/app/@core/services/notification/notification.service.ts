@@ -22,7 +22,7 @@ export class NotificationService {
         error: (obj: any) => {
           // Error
           if (obj?.error?.data?.key) {
-            this.notification.error(obj.key, '');
+            this.notification.error(obj.error.data.key, '');
           } else {
             this.notification.error('Failed due internal error.', '');
           }

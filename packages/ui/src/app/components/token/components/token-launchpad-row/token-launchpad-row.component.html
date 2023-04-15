@@ -127,12 +127,9 @@
     </div>
     <div class="mt-0.5">
       {{
-        unitsService.format(
-          (token?.pricePerToken || 0 || 0) * 1000 * 1000,
-          token?.mintingData?.network,
-          false,
-          false
-        )
+        { value: token?.pricePerToken || 0 || 0, exponents: token?.decimals }
+          | formatToken : token?.mintingData?.network : false : false
+          | async
       }}
     </div>
   </div>

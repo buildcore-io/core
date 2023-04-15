@@ -130,11 +130,9 @@
           <div class="flex items-center mt-2 text-lg">
             <div class="mr-2 font-bold truncate">
               {{
-                unitsService.format(
-                  getRecord()?.auctionHighestBid || getRecord()?.auctionFloorPrice || 0,
-                  getRecord()?.mintingData?.network,
-                  true
-                )
+                getRecord()?.auctionHighestBid || getRecord()?.auctionFloorPrice || 0
+                  | formatToken : getRecord()?.mintingData?.network : true
+                  | async
               }}
             </div>
             <a
@@ -298,7 +296,7 @@
           <td class="text-sm font-medium">{{ item.createdOn?.toDate() | date : 'mediumTime' }}</td>
           <td class="text-sm font-medium">{{ item.type }}</td>
           <td class="text-sm font-medium">
-            {{ unitsService.format(item.payload.amount, item.network) }}
+            {{ item.payload.amount | formatToken : item.network | async }}
           </td>
           <td class="text-right">
             <a

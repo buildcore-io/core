@@ -18,6 +18,7 @@ import { RadioModule } from '@components/radio/radio.module';
 import { ShareModule } from '@components/share/share.module';
 import { TabsModule } from '@components/tabs/tabs.module';
 import { TimelineModule } from '@components/timeline/timeline.module';
+import { FormatTokenModule } from '@core/pipes/formatToken/format-token.module';
 import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
 import { ResizeAvatarModule } from '@core/pipes/resize-avatar/resize-avatar.module';
 import { StripMarkDownModule } from '@core/pipes/strip-markdown/strip-markdown.module';
@@ -84,6 +85,7 @@ import { DataService } from './services/data.service';
     NftPreviewModule,
     CollapseModule,
     NzTableModule,
+    FormatTokenModule,
     TruncateModule,
     NzModalModule,
     ShareModule,

@@ -13,16 +13,16 @@ import { NftApi } from '@api/nft.api';
 import { NotificationApi } from '@api/notification.api';
 import { OrderApi } from '@api/order.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { FormatTokenPipe } from '@core/pipes/formatToken/format-token.pipe';
 import { CheckoutService } from '@core/services/checkout';
 import { DeviceService } from '@core/services/device';
 import { RouterService } from '@core/services/router';
-import { UnitsService } from '@core/services/units';
 import {
+  StorageItem,
   getItem,
   getNotificationItem,
   removeItem,
   setNotificationItem,
-  StorageItem,
 } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -33,19 +33,19 @@ import {
   Nft,
   Notification,
   NotificationType,
-  TransactionOrder,
   TRANSACTION_AUTO_EXPIRY_MS,
+  TransactionOrder,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { NzNotificationRef, NzNotificationService } from 'ng-zorro-antd/notification';
 import {
   BehaviorSubject,
+  Subscription,
   debounceTime,
   firstValueFrom,
   fromEvent,
   interval,
   skip,
-  Subscription,
 } from 'rxjs';
 import { MemberApi } from './../../../@api/member.api';
 
@@ -92,7 +92,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     public auth: AuthService,
     public deviceService: DeviceService,
     public routerService: RouterService,
-    public unitsService: UnitsService,
+    public formatToken: FormatTokenPipe,
     private router: Router,
     private memberApi: MemberApi,
     private orderApi: OrderApi,
@@ -348,29 +348,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
         content: contentYour + ' ' + not.params.nft.name + ' ' + contentReceived,
       };
     } else if (not.type === NotificationType.NEW_BID) {
-      const titleOffered = $localize`just offered`;
-      const titleFor = $localize`for`;
+      const titleOffered = $localize`just made an offer.`;
       const contentYour = $localize`Your`;
-      const contentReceived = $localize`has received a new bid for`;
+      const contentReceived = $localize`has received a new bid.`;
 
       return {
-        title:
-          '@' +
-          not.params.member.name +
-          ' ' +
-          titleOffered +
-          ' ' +
-          titleFor +
-          ' ' +
-          this.unitsService.format(not.params.amount),
-        content:
-          contentYour +
-          ' ' +
-          not.params.nft.name +
-          ' ' +
-          contentReceived +
-          ' ' +
-          this.unitsService.format(not.params.amount),
+        title: '@' + not.params.member.name + ' ' + titleOffered,
+        content: contentYour + ' ' + not.params.nft.name + ' ' + contentReceived,
       };
     } else {
       return {

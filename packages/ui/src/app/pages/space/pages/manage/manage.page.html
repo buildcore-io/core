@@ -3,7 +3,7 @@
     <ng-container *ngTemplateOutlet="contentSpace"></ng-container>
   </nz-card>
 
-  <nz-card i18n-nzTitle nzTitle="Token Options" class="overflow-hidden" *ngIf="data.token$ | async">
+  <nz-card i18n-nzTitle nzTitle="Token Options" class="overflow-hidden">
     <ng-container *ngTemplateOutlet="contentToken"></ng-container>
   </nz-card>
 
@@ -95,7 +95,13 @@
     <nz-list>
       <div nz-row class="px-8">
         <div nz-col [nzLg]="12" [nzXs]="24" class="flex flex-col space-y-2">
-          <nz-list-item>
+          <nz-list-item *ngIf="!(data.token$ | async)?.uid">
+            <a nz-button nzType="default" nzSize="small">
+              <div class="text-xs mr-0.5" i18n>Import minted token</div>
+              <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+            </a>
+          </nz-list-item>
+          <nz-list-item *ngIf="data.token$ | async">
             <a
               nz-button
               nzType="default"
@@ -106,7 +112,7 @@
               <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
             </a>
           </nz-list-item>
-          <nz-list-item *ngIf="!(data.token$ | async)?.mintingData">
+          <nz-list-item *ngIf="(data.token$ | async) && !(data.token$ | async)?.mintingData">
             <a
               nz-button
               nzType="default"
@@ -117,7 +123,7 @@
               <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
             </a>
           </nz-list-item>
-          <nz-list-item>
+          <nz-list-item *ngIf="data.token$ | async">
             <a
               nz-button
               nzType="default"
@@ -130,13 +136,13 @@
           </nz-list-item>
         </div>
         <div nz-col [nzLg]="12" [nzXs]="24" class="flex flex-col space-y-2">
-          <nz-list-item>
+          <nz-list-item *ngIf="data.token$ | async">
             <a nz-button nzType="default" nzSize="small" (click)="stakingRewardSchedule()">
               <div class="text-xs mr-0.5" i18n>Staking Reward Schedule</div>
               <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
             </a>
           </nz-list-item>
-          <nz-list-item>
+          <nz-list-item *ngIf="data.token$ | async">
             <a nz-button nzType="default" nzSize="small" (click)="exportCurrentStakers()">
               <div class="text-xs mr-0.5" i18n>Export Current Stakers</div>
               <wen-icon-angle-right [size]="18"></wen-icon-angle-right>

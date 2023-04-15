@@ -8,7 +8,7 @@ import { copyToClipboard } from '@core/utils/tools.utils';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SendFundsComponent {
-  @Input() public formattedAmount?: string;
+  @Input() public formattedAmount?: string | null;
   @Input() public targetAddress?: string;
   @Input() public targetText?: string;
   public isCopied = false;

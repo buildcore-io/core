@@ -6,6 +6,8 @@ import { IconModule } from '@components/icon/icon.module';
 import { MenuModule } from '@components/menu/menu.module';
 import { NftCheckoutModule } from '@components/nft/components/nft-checkout/nft-checkout.module';
 import { CountdownTimeModule } from '@core/pipes/countdown-time/countdown-time.module';
+import { FormatTokenModule } from '@core/pipes/formatToken/format-token.module';
+import { FormatTokenPipe } from '@core/pipes/formatToken/format-token.pipe';
 import { ResizeAvatarModule } from '@core/pipes/resize-avatar/resize-avatar.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
@@ -24,11 +26,13 @@ import { HeaderComponent } from './header.component';
 
 @NgModule({
   declarations: [HeaderComponent],
+  providers: [FormatTokenPipe],
   imports: [
     CommonModule,
     TruncateModule,
     NzModalModule,
     AuthModule,
+    FormatTokenModule,
     RouterModule,
     ResizeAvatarModule,
     NzToolTipModule,

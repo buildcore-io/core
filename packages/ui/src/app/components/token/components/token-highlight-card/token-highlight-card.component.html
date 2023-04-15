@@ -30,12 +30,10 @@
         <td class="border-0">
           <div class="text-sm font-medium">
             {{
-              unitsService.format(
-                ((listenAvgPrice[i] | async) || 0) * 1000 * 1000,
-                undefined,
-                undefined,
-                false
-              ) | unknownIfZero
+              { value: (listenAvgPrice[i] | async) || 0, exponents: token?.decimals }
+                | formatToken : token?.uid : false : false
+                | async
+                | unknownIfZero
             }}
             {{
               unitsService.label(token?.mintingData?.networkFormat || token?.mintingData?.network)

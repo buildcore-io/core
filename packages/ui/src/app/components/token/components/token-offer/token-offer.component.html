@@ -35,7 +35,7 @@
     Your Balance
   </div>
   <div class="font-medium">
-    {{ unitsService.format(memberDistribution?.tokenOwned, undefined, true, false) }}
+    {{ memberDistribution?.tokenOwned | formatToken : token?.uid : true : false | async }}
     {{ token?.symbol }}
   </div>
 
@@ -64,7 +64,12 @@
       Offered amount of tokens
     </div>
     <div class="font-bold whitespace-nowrap">
-      {{ unitsService.format(amount * 1000 * 1000, undefined, true, false) }} {{ token?.symbol }}
+      {{
+        { value: amount, exponents: token?.decimals }
+          | formatToken : token?.uid : true : false
+          | async
+      }}
+      {{ token?.symbol }}
     </div>
   </div>
 
@@ -75,11 +80,9 @@
     <div class="text-right">
       <div class="font-bold whitespace-nowrap">
         {{
-          unitsService.format(
-            getTargetAmount() * 1000 * 1000,
-            token?.mintingData?.networkFormat || token?.mintingData?.network,
-            true
-          )
+          { value: getTargetAmount(), exponents: token?.decimals }
+            | formatToken : token?.uid : true
+            | async
         }}
       </div>
       <span
@@ -98,7 +101,7 @@
         class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
         *ngIf="(auth.member$ | async)?.tokenTradingFeePercentage !== 0"
       >
-        <ng-container i18n>Fee</ng-container> {{ exchangeFee }}% ( {{ getFee() }})
+        <ng-container i18n>Fee</ng-container> {{ exchangeFee }}% ( {{ getFee() | async }})
       </div>
       <div
         class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"

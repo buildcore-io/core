@@ -68,9 +68,8 @@
           <div class="text-xs font-medium text-foregrounds-secondary" i18n>Current price</div>
           <div class="flex items-center mt-2">
             <div class="text-lg font-bold truncate">
-              {{ unitsService.format(nft.price, nft.mintingData?.network) }}
+              {{ nft.price | formatToken : nft.mintingData?.network | async }}
             </div>
-            <!-- <div class="ml-2 text-xs font-medium truncate text-foregrounds-secondary">{{ '100 $' }}</div> -->
           </div>
         </div>
 

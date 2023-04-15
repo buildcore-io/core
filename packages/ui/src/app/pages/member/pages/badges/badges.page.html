@@ -56,7 +56,7 @@
               <td class="padding-left-0" *ngIf="!first">&nbsp;</td>
               <td class="text-sm font-medium right">{{ t.completedAwards }}</td>
               <td class="right padding-right-0">
-                {{ unitsService.format(t.totalTokenRewards, null, false, false, 0) + ' ' +
+                {{ (t.totalTokenRewards | formatToken: t.uid: false: false: 0 | async) + ' ' +
                 (cache.getToken(t.uid) | async)?.symbol }}
                 <nz-avatar
                   [nzSize]="24"
@@ -101,7 +101,7 @@
                 {{ r.completedAwards }}
               </td>
               <td class="right padding-right-0" style="border-bottom: 0">
-                {{ unitsService.format(r.totalTokenRewards, null, false, false, 0) + ' ' +
+                {{ (r.totalTokenRewards| formatToken: r.uid: false: false: 0 | async) + ' ' +
                 (cache.getToken(r.uid) | async)?.symbol }}
                 <nz-avatar
                   [nzSize]="24"

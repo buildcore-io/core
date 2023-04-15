@@ -2,8 +2,8 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { CollectionApi } from '@api/collection.api';
 import { TickerApi } from '@api/ticker.api';
 import { TokenApi } from '@api/token.api';
-import { Collection, Space, Ticker, TICKERS, Token } from '@soonaverse/interfaces';
-import { BehaviorSubject, Observable, of, Subscription, timer } from 'rxjs';
+import { Collection, Space, TICKERS, Ticker, Token } from '@soonaverse/interfaces';
+import { BehaviorSubject, Observable, Subscription, of, timer } from 'rxjs';
 import { SpaceApi } from './../../../@api/space.api';
 
 export type CacheObject<T> = {

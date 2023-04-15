@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { UnitsService } from '@core/services/units';
 import {
   Network,
+  TRANSACTION_AUTO_EXPIRY_MS,
   Token,
   TokenDrop,
   TokenStatus,
@@ -9,7 +10,6 @@ import {
   TokenTradeOrderStatus,
   Transaction,
   TransactionType,
-  TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
@@ -22,15 +22,11 @@ dayjs.extend(duration);
 export class HelperService {
   constructor(public unitsService: UnitsService) {}
 
-  public percentageMarketCap(percentage: number, token?: Token): string {
+  public percentageMarketCap(percentage: number, token?: Token): number {
     if (!token) {
-      return '';
+      return 0;
     }
-    return this.unitsService.format(
-      Math.floor(token?.pricePerToken * ((token?.totalSupply * percentage) / 100)),
-      undefined,
-      true,
-    );
+    return Math.floor(token?.pricePerToken * ((token?.totalSupply * percentage) / 100));
   }
 
   public formatTokenBest(amount?: number | null, decimals = 6): string {

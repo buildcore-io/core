@@ -11,28 +11,29 @@ import {
 import { OrderApi } from '@api/order.api';
 import { TokenMarketApi } from '@api/token_market.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { FormatTokenPipe } from '@core/pipes/formatToken/format-token.pipe';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
-import { getItem, setItem, StorageItem } from '@core/utils';
+import { StorageItem, getItem, setItem } from '@core/utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
   Network,
   SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
   Space,
+  TRANSACTION_AUTO_EXPIRY_MS,
   Timestamp,
   Token,
   TokenTradeOrderType,
   Transaction,
   TransactionType,
-  TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
-import { BehaviorSubject, interval, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, interval } from 'rxjs';
 
 export enum StepType {
   CONFIRM = 'Confirm',
@@ -109,6 +110,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     public previewImageService: PreviewImageService,
     public helper: HelperService,
     public unitsService: UnitsService,
+    public formatToken: FormatTokenPipe,
     public transactionService: TransactionService,
     public auth: AuthService,
     private notification: NotificationService,
@@ -383,8 +385,8 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     return SERVICE_MODULE_FEE_TOKEN_EXCHANGE;
   }
 
-  public getFee(): string {
-    return this.unitsService.format(
+  public async getFee(): Promise<string> {
+    return this.formatToken.transform(
       Number(bigDecimal.multiply(this.getTargetAmount(), this.exchangeFee * 100 * 100)),
       this.token?.mintingData?.network,
       true,

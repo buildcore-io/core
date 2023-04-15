@@ -15,7 +15,7 @@ import {
 import dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
-import { BehaviorSubject, of, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, of } from 'rxjs';
 
 export const MAX_ALLOCATIONS_COUNT = 100;
 export const MAX_DESCRIPTIONS_COUNT = 5;
@@ -54,6 +54,7 @@ export class NewService {
   public descriptionControl: FormControl = new FormControl('', Validators.required);
   public shortTitleControl: FormControl = new FormControl('');
   public shortDescriptionControl: FormControl = new FormControl('');
+  public decimalsControl: FormControl = new FormControl(6, [Validators.min(0), Validators.max(20)]);
   public distributionControl: FormControl = new FormControl(
     TokenDistributionType.FIXED,
     Validators.required,
@@ -93,6 +94,7 @@ export class NewService {
       termsAndConditionsLink: this.termsAndConditionsLinkControl,
       shortDescription: this.shortDescriptionControl,
       shortTitle: this.shortTitleControl,
+      decimals: this.decimalsControl,
     });
 
     this.addAllocation();

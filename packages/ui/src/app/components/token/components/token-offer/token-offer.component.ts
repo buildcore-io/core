@@ -9,6 +9,7 @@ import {
 import { OrderApi } from '@api/order.api';
 import { TokenMarketApi } from '@api/token_market.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { FormatTokenPipe } from '@core/pipes/formatToken/format-token.pipe';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
@@ -66,6 +67,7 @@ export class TokenOfferComponent {
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
     public unitsService: UnitsService,
+    public formatToken: FormatTokenPipe,
     private notification: NotificationService,
     private cd: ChangeDetectorRef,
   ) {}
@@ -110,8 +112,8 @@ export class TokenOfferComponent {
     return SERVICE_MODULE_FEE_TOKEN_EXCHANGE;
   }
 
-  public getFee(): string {
-    return this.unitsService.format(
+  public async getFee(): Promise<string> {
+    return this.formatToken.transform(
       Number(bigDecimal.multiply(this.getTargetAmount(), this.exchangeFee * 100 * 100)),
       this.token?.mintingData?.network,
       true,

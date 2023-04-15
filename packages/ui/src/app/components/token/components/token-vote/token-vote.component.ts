@@ -17,7 +17,7 @@ import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
-import { getItem, setItem, StorageItem } from '@core/utils';
+import { StorageItem, getItem, setItem } from '@core/utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService as HelperServiceProposal } from '@pages/proposal/services/helper.service';
 import { HelperService } from '@pages/token/services/helper.service';
@@ -27,15 +27,14 @@ import {
   ProposalAnswer,
   SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
   Space,
+  TRANSACTION_AUTO_EXPIRY_MS,
   Timestamp,
   Token,
   Transaction,
   TransactionType,
-  TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import bigDecimal from 'js-big-decimal';
-import { BehaviorSubject, interval, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, interval } from 'rxjs';
 
 export enum VoteType {
   NATIVE_TOKEN = 0,
@@ -439,15 +438,6 @@ export class TokenVoteComponent implements OnInit, OnDestroy {
 
   public get exchangeFee(): number {
     return SERVICE_MODULE_FEE_TOKEN_EXCHANGE;
-  }
-
-  public getFee(): string {
-    return this.unitsService.format(
-      Number(bigDecimal.multiply(this.getTargetAmount(), this.exchangeFee * 100 * 100)),
-      this.token?.mintingData?.network,
-      true,
-      true,
-    );
   }
 
   public ngOnDestroy(): void {

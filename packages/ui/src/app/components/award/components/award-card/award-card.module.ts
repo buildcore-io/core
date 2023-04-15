@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { FormatTokenModule } from '@core/pipes/formatToken/format-token.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzTagModule } from 'ng-zorro-antd/tag';
@@ -19,6 +20,7 @@ import { AwardCardComponent } from './award-card.component';
   declarations: [AwardCardComponent],
   imports: [
     CommonModule,
+    FormatTokenModule,
     RouterModule,
     ParentTitleModule,
     IpfsBadgeModule,

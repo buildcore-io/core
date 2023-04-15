@@ -31,12 +31,9 @@
 
     <div class="font-bold">
       {{
-        unitsService.format(
-          tradeDetailOrder?.count || tradeDetailPurchases[0].count,
-          token?.mintingData?.networkFormat || token?.mintingData?.network,
-          true,
-          false
-        )
+        tradeDetailOrder?.count || tradeDetailPurchases[0].count
+          | formatToken : token?.uid : true : false
+          | async
       }}
       {{ (token?.symbol === 'IOTA' ? 'M' : '') + token?.symbol }}
     </div>
@@ -51,11 +48,12 @@
     <div class="text-right">
       <div class="font-bold">
         {{
-          unitsService.format(
-            (tradeDetailOrder?.price || tradeDetailPurchases[0].price || 0) * 1000 * 1000,
-            token?.mintingData?.networkFormat || token?.mintingData?.network,
-            true
-          )
+          {
+            value: tradeDetailOrder?.price || tradeDetailPurchases[0].price || 0,
+            exponents: token?.decimals
+          }
+            | formatToken : token?.uid : true
+            | async
         }}
       </div>
       <span
@@ -128,12 +126,9 @@
             *ngIf="(billPaymentTransactions$[i] | async)?.payload.nativeTokens?.[0]?.amount"
           >
             {{
-              unitsService.format(
-                (billPaymentTransactions$[i] | async)?.payload.nativeTokens[0].amount,
-                undefined,
-                true,
-                false
-              )
+              (billPaymentTransactions$[i] | async)?.payload.nativeTokens[0].amount
+                | formatToken : (billPaymentTransactions$[i] | async)?.payload.token : true : false
+                | async
             }}
             {{ (token?.symbol === 'IOTA' ? 'M' : '') + token?.symbol }}
 
@@ -144,11 +139,9 @@
               nzTooltipTitle="Storage deposit fee"
             >
               ({{
-                unitsService.format(
-                  (billPaymentTransactions$[i] | async)?.payload.amount,
-                  (billPaymentTransactions$[i] | async)?.network,
-                  true
-                )
+                (billPaymentTransactions$[i] | async)?.payload.amount
+                  | formatToken : (billPaymentTransactions$[i] | async)?.network : true
+                  | async
               }})
             </span>
           </td>
@@ -157,11 +150,9 @@
             *ngIf="!(billPaymentTransactions$[i] | async)?.payload.nativeTokens?.[0]?.amount"
           >
             {{
-              unitsService.format(
-                (billPaymentTransactions$[i] | async)?.payload.amount,
-                (billPaymentTransactions$[i] | async)?.network,
-                true
-              )
+              (billPaymentTransactions$[i] | async)?.payload.amount
+                | formatToken : (billPaymentTransactions$[i] | async)?.network : true
+                | async
             }}
           </td>
           <td class="text-sm font-medium">
@@ -219,12 +210,12 @@
             *ngIf="(buyerBillPaymentTransactions$[i] | async)?.payload.nativeTokens?.[0]?.amount"
           >
             {{
-              unitsService.format(
-                (buyerBillPaymentTransactions$[i] | async)?.payload.nativeTokens[0].amount,
-                undefined,
-                true,
-                false
-              )
+              (buyerBillPaymentTransactions$[i] | async)?.payload.nativeTokens[0].amount
+                | formatToken
+                  : (buyerBillPaymentTransactions$[i] | async)?.payload?.token
+                  : true
+                  : false
+                | async
             }}
             {{ (token?.symbol === 'IOTA' ? 'M' : '') + token?.symbol }}
           </td>
@@ -233,11 +224,9 @@
             *ngIf="!(buyerBillPaymentTransactions$[i] | async)?.payload.nativeTokens?.[0]?.amount"
           >
             {{
-              unitsService.format(
-                (buyerBillPaymentTransactions$[i] | async)?.payload.amount,
-                (buyerBillPaymentTransactions$[i] | async)?.network,
-                true
-              )
+              (buyerBillPaymentTransactions$[i] | async)?.payload.amount
+                | formatToken : (buyerBillPaymentTransactions$[i] | async)?.network : true
+                | async
             }}
           </td>
           <td class="text-sm font-medium">
@@ -291,7 +280,7 @@
             {{ item?.createdOn?.toDate() | date : 'medium' }}
           </td>
           <td class="text-sm font-medium">
-            {{ unitsService.format(item?.payload.amount, item?.network, true) }}
+            {{ item?.payload.amount | formatToken : item?.network : true | async }}
           </td>
           <td class="text-sm font-medium">
             <a class="wen-btn-link" target="_blank" [routerLink]="['/', spacePath, item.space]">
@@ -326,11 +315,9 @@
           </td>
           <td class="text-sm font-medium">
             {{
-              unitsService.format(
-                (creditTransactions$[i] | async)?.payload.amount,
-                (creditTransactions$[i] | async)?.network,
-                true
-              )
+              (creditTransactions$[i] | async)?.payload.amount
+                | formatToken : (creditTransactions$[i] | async)?.network : true
+                | async
             }}
           </td>
           <td class="text-sm font-medium" i18n>Credit</td>
