@@ -19,7 +19,7 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
-import { set } from 'lodash';
+import { get, set } from 'lodash';
 import { soonDb } from '../firebase/firestore/soondb';
 import { scale } from '../scale.settings';
 import { getStakeForType } from '../services/stake.service';
@@ -129,11 +129,18 @@ const onEditSpaceProposalApproved = async (proposal: Proposal) => {
   const updateData = spaceUpdateData.open
     ? { ...spaceUpdateData, totalPendingMembers: 0 }
     : spaceUpdateData;
-  await spaceDocRef.update({
-    ...updateData,
-    totalMembers: soonDb().inc(-removedMembers),
-    totalGuardians: soonDb().inc(-removedGuardians),
-  });
+  const prevValidatedAddresses = get(updateData, 'prevValidatedAddresses');
+  if (prevValidatedAddresses) {
+    set(updateData, 'prevValidatedAddresses', soonDb().arrayUnion(prevValidatedAddresses));
+  }
+  await spaceDocRef.set(
+    {
+      ...updateData,
+      totalMembers: soonDb().inc(-removedMembers),
+      totalGuardians: soonDb().inc(-removedGuardians),
+    },
+    true,
+  );
   await soonDb()
     .doc(`${COL.PROPOSAL}/${proposal.uid}`)
     .update({

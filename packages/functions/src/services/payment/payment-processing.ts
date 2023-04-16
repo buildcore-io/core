@@ -149,7 +149,7 @@ export class ProcessingService {
           );
           break;
         case TransactionOrderType.SPACE_ADDRESS_VALIDATION:
-          await this.addressService.handleAddressValidationRequest(order, match, Entity.SPACE);
+          await this.addressService.handleSpaceAddressValidationRequest(order, match);
           break;
         case TransactionOrderType.MEMBER_ADDRESS_VALIDATION:
           await this.addressService.handleAddressValidationRequest(order, match, Entity.MEMBER);

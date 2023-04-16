@@ -17,11 +17,11 @@ import dayjs from 'dayjs';
 import { set } from 'lodash';
 import { soonDb } from '../../../firebase/firestore/soondb';
 import { validateAddressSchema } from '../../../runtime/firebase/address';
-import { getAddress } from '../../../utils/address.utils';
 import { generateRandomAmount } from '../../../utils/common.utils';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../utils/error.utils';
 import { assertValidationAsync } from '../../../utils/schema.utils';
+import { hasActiveEditProposal } from '../../../utils/space.utils';
 import { assertIsGuardian } from '../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { WalletService } from '../../wallet/wallet';
@@ -84,8 +84,8 @@ export const createAddressValidationOrder = async (
 
   if (space) {
     await assertIsGuardian(space.uid, owner);
-    if (getAddress(space, network)) {
-      throw invalidArgument(WenError.space_already_have_validated_address);
+    if (await hasActiveEditProposal(space.uid)) {
+      throw invalidArgument(WenError.ongoing_proposal);
     }
   }
 

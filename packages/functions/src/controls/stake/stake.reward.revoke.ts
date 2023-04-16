@@ -123,7 +123,7 @@ const createUpdateSpaceProposal = (
   endDate: Timestamp,
 ) => {
   const additionalInfo =
-    `${owner.name} wants to remove stake rewards. ` +
+    `${owner.name || owner.uid} wants to remove stake rewards. ` +
     `Request created on ${dayjs().format('MM/DD/YYYY')}.` +
     `${REMOVE_STAKE_REWARDS_THRESHOLD_PERCENTAGE} % must agree for this action to proceed <br /><br />`;
   return <Proposal>{
