@@ -33,7 +33,13 @@ export const onRequest =
           res.send({ data: result || {} });
         } catch (error) {
           res.status(get(error, 'httpErrorCode.status', 400));
-          res.send({ data: get(error, 'details', 'internal') });
+          res.send({
+            data: {
+              code: get(error, 'details.code', 0),
+              key: get(error, 'details.key', ''),
+              message: get(error, 'message', ''),
+            },
+          });
         }
       }),
     );
