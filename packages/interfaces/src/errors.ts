@@ -2,7 +2,7 @@ import { TangleRequestType } from './models/tangleRequest';
 
 export const WenError = {
   unknown: { code: 1000, key: 'Unknown error' },
-  invalid_params: { code: 1001, key: 'Validation failed: ' },
+  invalid_params: { code: 1001, key: 'Invalid params' },
   address_must_be_provided: { code: 1002, key: 'Address must be provided.' },
   signature_must_be_provided: { code: 1003, key: 'Signature must be provided.' },
   invalid_signature: { code: 1003, key: 'Invalid signature.' },
