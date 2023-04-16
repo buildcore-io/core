@@ -11,6 +11,7 @@ import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module'
 import { RadioModule } from '@components/radio/radio.module';
 import { SpaceRewardScheduleModule } from '@components/space/components/space-reward-schedule/space-reward-schedule.module';
 import { TokenCardModule } from '@components/token/components/token-card/token-card.module';
+import { TokenImportModule } from '@components/token/components/token-import/token-import.module';
 import { TokenStakeModule } from '@components/token/components/token-stake/token-stake.module';
 import { FormatTokenModule } from '@core/pipes/formatToken/format-token.module';
 import { SpaceAboutModule } from '@pages/space/pages/space/space-about/space-about.module';
@@ -103,6 +104,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     NzTagModule,
     NzAlertModule,
     DescriptionModule,
+    TokenImportModule,
     NzUploadModule,
     NzAvatarModule,
     LayoutModule,

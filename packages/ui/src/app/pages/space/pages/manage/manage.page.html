@@ -96,7 +96,12 @@
       <div nz-row class="px-8">
         <div nz-col [nzLg]="12" [nzXs]="24" class="flex flex-col space-y-2">
           <nz-list-item *ngIf="!(data.token$ | async)?.uid">
-            <a nz-button nzType="default" nzSize="small">
+            <a
+              nz-button
+              nzType="default"
+              nzSize="small"
+              (click)="isImportTokenVisible = !isImportTokenVisible"
+            >
               <div class="text-xs mr-0.5" i18n>Import minted token</div>
               <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
             </a>
@@ -161,3 +166,10 @@
   [entity]="(data.space$ | async)?.uid"
   (wenOnClose)="closeAuditOneModal()"
 ></wen-audit-one-modal>
+
+<wen-token-import
+  *ngIf="isImportTokenVisible"
+  [isOpen]="isImportTokenVisible"
+  [space]="(data.space$ | async) || undefined"
+  (wenOnClose)="isImportTokenVisible = false"
+></wen-token-import>

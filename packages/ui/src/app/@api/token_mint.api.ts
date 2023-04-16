@@ -18,4 +18,8 @@ export class TokenMintApi extends BaseApi<Token> {
   public mintToken(req: WenRequest): Observable<Transaction | undefined> {
     return this.request(WEN_FUNC.mintTokenOrder, req);
   }
+
+  public importToken(req: WenRequest): Observable<Transaction | undefined> {
+    return this.request(WEN_FUNC.importMintedToken, req);
+  }
 }
