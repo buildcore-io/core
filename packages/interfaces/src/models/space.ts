@@ -26,6 +26,7 @@ export interface Space extends BaseRecord {
   totalMembers: number;
   totalPendingMembers: number;
   validatedAddress?: ValidatedAddress;
+  prevValidatedAddresses?: string[];
   vaultAddress?: string;
   guardians: {
     // Owner / from date

@@ -1,4 +1,4 @@
-import { COL, Member, Network, WenError } from '@soonaverse/interfaces';
+import { COL, Member, Network, Space, WenError } from '@soonaverse/interfaces';
 import { isEmpty } from 'lodash';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { validateAddress } from '../../src/runtime/firebase/address';
@@ -45,10 +45,33 @@ describe('Address validation test', () => {
   });
 
   it('Should validate space address', async () => {
-    const order = await validateSpaceAddressFunc(walletSpy, member, space);
+    let order = await validateSpaceAddressFunc(walletSpy, member, space);
     const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
     await milestoneProcessed(milestone.milestone, milestone.tranId);
+
+    const proposalQuery = soonDb().collection(COL.PROPOSAL).where('space', '==', space);
+    await wait(async () => {
+      const snap = await proposalQuery.get();
+      return snap.length > 0;
+    });
+
     await waitForAddressValidation(space, COL.SPACE);
+
+    order = await validateSpaceAddressFunc(walletSpy, member, space);
+    const milestone2 = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
+    await milestoneProcessed(milestone2.milestone, milestone2.tranId);
+
+    await wait(async () => {
+      const snap = await proposalQuery.get();
+      return snap.length === 2;
+    });
+
+    await wait(async () => {
+      const spaceData = await soonDb().doc(`${COL.SPACE}/${space}`).get<Space>();
+      return getAddress(spaceData, order.network!) === milestone2.fromAdd;
+    });
+    const spaceData = await soonDb().doc(`${COL.SPACE}/${space}`).get<Space>();
+    expect(spaceData?.prevValidatedAddresses).toEqual([milestone.fromAdd]);
   });
 
   it('Should throw, not guardian', async () => {
@@ -93,16 +116,5 @@ describe('Address validation test', () => {
     const updatedMemberData = <Member>await docRef.get();
     expect(updatedMemberData.prevValidatedAddresses?.length).toBe(1);
     expect(updatedMemberData.prevValidatedAddresses![0]).toBe(getAddress(memberData, Network.IOTA));
-  });
-
-  it('Should throw,space already has valid address', async () => {
-    await soonDb()
-      .doc(`${COL.SPACE}/${space}`)
-      .update({ validatedAddress: { [Network.IOTA]: 'someaddress' } });
-    mockWalletReturnValue(walletSpy, member, { space });
-    await expectThrow(
-      testEnv.wrap(validateAddress)({}),
-      WenError.space_already_have_validated_address.key,
-    );
   });
 });

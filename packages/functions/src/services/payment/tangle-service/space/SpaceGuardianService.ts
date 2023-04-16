@@ -155,7 +155,9 @@ const getProposalData = (
   guardiansCount: number,
 ) => {
   const additionalInfo =
-    `${owner.name} wants to ${isAddGuardian ? 'add' : 'remove'} ${member.name} as guardian. ` +
+    `${owner.name || owner.uid} wants to ${isAddGuardian ? 'add' : 'remove'} ${
+      member.name
+    } as guardian. ` +
     `Request created on ${dayjs().format('MM/DD/YYYY')}. ` +
     `${ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE} % must agree for this action to proceed`;
   return <Proposal>{

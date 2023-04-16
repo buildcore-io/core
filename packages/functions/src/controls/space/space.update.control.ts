@@ -18,9 +18,10 @@ import {
 import dayjs from 'dayjs';
 import { get, startCase } from 'lodash';
 import { soonDb } from '../../firebase/firestore/soondb';
-import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
+import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { cleanupParams } from '../../utils/schema.utils';
+import { hasActiveEditProposal } from '../../utils/space.utils';
 import { assertIsGuardian, getTokenForSpace } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -45,12 +46,7 @@ export const updateSpaceControl = async (owner: string, params: Record<string, u
 
   await assertIsGuardian(space.uid, owner);
 
-  const ongoingProposalSnap = await soonDb()
-    .collection(COL.PROPOSAL)
-    .where('settings.spaceUpdateData.uid', '==', space.uid)
-    .where('settings.endDate', '>=', serverTime())
-    .get();
-  if (ongoingProposalSnap.length) {
+  if (await hasActiveEditProposal(space.uid)) {
     throw invalidArgument(WenError.ongoing_proposal);
   }
 
@@ -113,7 +109,7 @@ const createUpdateSpaceProposal = (
   spaceUpdateData: Space,
 ) => {
   const additionalInfo =
-    `${owner.name} wants to edit the space. ` +
+    `${owner.name || owner.uid} wants to edit the space. ` +
     `Request created on ${dayjs().format('MM/DD/YYYY')}. ` +
     `${UPDATE_SPACE_THRESHOLD_PERCENTAGE} % must agree for this action to proceed`;
   return <Proposal>{

@@ -1,5 +1,6 @@
 import { COL, Space, SUB_COL, WenError } from '@soonaverse/interfaces';
 import { soonDb } from '../firebase/firestore/soondb';
+import { serverTime } from './dateTime.utils';
 import { invalidArgument } from './error.utils';
 
 export const assertSpaceExists = async (spaceId: string) => {
@@ -30,4 +31,13 @@ export const getSpace = async (space: string | undefined) => {
   }
   const docRef = soonDb().collection(COL.SPACE).doc(space);
   return await docRef.get<Space>();
+};
+
+export const hasActiveEditProposal = async (space: string) => {
+  const ongoingProposalSnap = await soonDb()
+    .collection(COL.PROPOSAL)
+    .where('settings.spaceUpdateData.uid', '==', space)
+    .where('settings.endDate', '>=', serverTime())
+    .get();
+  return ongoingProposalSnap.length > 0;
 };

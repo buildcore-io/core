@@ -16,19 +16,14 @@ import {
   Space,
   StakeType,
   Token,
-  Transaction,
-  TransactionOrderType,
-  TransactionType,
   WEN_FUNC,
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
 import { soonDb } from '../../src/firebase/firestore/soondb';
-import { validateAddress } from '../../src/runtime/firebase/address';
 import { createNft, orderNft } from '../../src/runtime/firebase/nft';
 import { rankController } from '../../src/runtime/firebase/rank';
-import { createSpace } from '../../src/runtime/firebase/space';
 import { voteController } from '../../src/runtime/firebase/vote';
 import * as config from '../../src/utils/config.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -79,25 +74,12 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
   let soonTokenId: string;
 
   beforeEach(async () => {
-    dummyAddress = wallet.getRandomEthAddress();
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     isProdSpy = jest.spyOn(config, 'isProdEnv');
-    mockWalletReturnValue(walletSpy, dummyAddress, {});
-
+    dummyAddress = await createMemberFunc(walletSpy);
     member = await testEnv.wrap(createMember)(dummyAddress);
     expect(member?.uid).toEqual(dummyAddress.toLowerCase());
-
-    space = await testEnv.wrap(createSpace)({});
-    expect(space?.uid).toBeDefined();
-
-    mockWalletReturnValue(walletSpy, dummyAddress, { space: space!.uid });
-    const order: Transaction = await testEnv.wrap(validateAddress)({});
-    expect(order?.type).toBe(TransactionType.ORDER);
-    expect(order?.payload.type).toBe(TransactionOrderType.SPACE_ADDRESS_VALIDATION);
-
-    const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
-    await milestoneProcessed(milestone.milestone, milestone.tranId);
-
+    space = await createSpaceFunc(walletSpy, dummyAddress);
     soonTokenId = await saveSoon();
   });
 
