@@ -50,13 +50,15 @@ export class ImportMintedTokenService {
       const { foundry, alias } = await this.getFoundryOutput(wallet, order, match);
       const metadata = this.getTokenMetadata(foundry);
 
-      const icon = await migrateUriToSotrage(
-        COL.TOKEN,
-        order.member!,
-        tokenId,
-        uriToUrl(metadata.uri),
-        soonStorage().bucket(getBucket()),
-      );
+      const icon = metadata.logoUrl
+        ? await migrateUriToSotrage(
+            COL.TOKEN,
+            order.member!,
+            tokenId,
+            uriToUrl(metadata.logoUrl),
+            soonStorage().bucket(getBucket()),
+          )
+        : '';
 
       const vaultAddress = await wallet.getNewIotaAddressDetails();
       const totalSupply = Number(foundry.tokenScheme.maximumSupply);
@@ -90,7 +92,7 @@ export class ImportMintedTokenService {
           meltedTokens: Number(foundry.tokenScheme.meltedTokens),
           circulatingSupply: totalSupply - Number(foundry.tokenScheme.meltedTokens),
         },
-        mediaStatus: MediaStatus.PENDING_UPLOAD,
+        mediaStatus: icon ? MediaStatus.PENDING_UPLOAD : MediaStatus.UPLOADED,
         tradingDisabled: true,
         pricePerToken: 0,
         decimals: metadata.decimals,
@@ -154,9 +156,9 @@ export class ImportMintedTokenService {
     );
     const decoded = Converter.hexToUtf8(metadataFeature?.data || '{}');
     const metadata = JSON.parse(decoded) || {};
-    const result = tokenIrc27Schema.validate(metadata, { allowUnknown: true });
+    const result = tokenIrc30Schema.validate(metadata, { allowUnknown: true });
     if (result.error) {
-      throw WenError.token_not_irc27_compilant;
+      throw WenError.token_not_irc30_compilant;
     }
     return metadata;
   };
@@ -180,10 +182,10 @@ const isAliasGovernor = (alias: IAliasOutput, address: string, hrp: string) => {
   return false;
 };
 
-const tokenIrc27Schema = Joi.object({
+const tokenIrc30Schema = Joi.object({
   name: Joi.string().required(),
   description: Joi.string().optional(),
-  uri: Joi.string().required(),
+  logoUrl: Joi.string().optional(),
   symbol: Joi.string().required(),
   decimals: Joi.number().integer().required(),
 });

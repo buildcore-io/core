@@ -238,9 +238,9 @@ export const WenError = {
     code: 2122,
     key: 'Your are not the governor of the alias.',
   },
-  token_not_irc27_compilant: {
+  token_not_irc30_compilant: {
     code: 2123,
-    key: 'Token metedata not irc27 compilant',
+    key: 'Token metedata not irc30 compilant',
   },
   token_must_be_public: {
     code: 2124,

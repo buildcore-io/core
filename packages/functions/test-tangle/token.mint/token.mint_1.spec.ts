@@ -125,7 +125,7 @@ describe('Token minting', () => {
     expect(metadata.standard).toBe('IRC30');
     expect(metadata.type).toBe('image/png');
     expect(metadata.name).toBe(helper.token.name);
-    expect(metadata.uri).toBeDefined();
+    expect(metadata.logoUrl).toBeDefined();
     expect(metadata.issuerName).toBe(KEY_NAME_TANGLE);
     expect(metadata.soonaverseId).toBe(helper.token.uid);
     expect(metadata.symbol).toBe(helper.token.symbol.toLowerCase());

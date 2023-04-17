@@ -68,7 +68,7 @@ export const tokenToFoundryMetadata = async (token: Token) => {
     standard: 'IRC30',
     type: await getContentType(token.icon),
     name: token.name,
-    uri: 'ipfs://' + (token.ipfsMedia || PLACEHOLDER_CID),
+    logoUrl: 'ipfs://' + (token.ipfsMedia || PLACEHOLDER_CID),
     issuerName: KEY_NAME_TANGLE,
     soonaverseId: token.uid,
     symbol: token.symbol.toLowerCase(),
