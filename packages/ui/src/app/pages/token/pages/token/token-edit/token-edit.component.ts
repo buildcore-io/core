@@ -12,7 +12,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification';
 import { getUrlValidator } from '@core/utils/form-validation.utils';
 import { MAX_LINKS_COUNT } from '@pages/token/services/new.service';
-import { MAX_IOTA_AMOUNT, Token } from '@soonaverse/interfaces';
+import { MAX_IOTA_AMOUNT, Token, TokenStatus } from '@soonaverse/interfaces';
 
 @Component({
   selector: 'wen-token-edit',
@@ -126,9 +126,12 @@ export class TokenEditComponent {
     const params = {
       ...this.form.value,
       uid: this.token?.uid,
-      name: this.token?.name,
       links: this.links.controls.map((c) => c.value.url),
     };
+
+    if (this.token?.status !== TokenStatus.MINTED) {
+      params.name = this.token?.name;
+    }
 
     await this.auth.sign(params, (sc, finish) => {
       this.notification
