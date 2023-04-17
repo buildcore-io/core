@@ -60,6 +60,12 @@ export class TangleNftPurchaseService {
     );
     set(order, 'payload.tanglePuchase', true);
 
+    this.transactionService.push({
+      ref: soonDb().doc(`${COL.TRANSACTION}/${order.uid}`),
+      data: order,
+      action: 'set',
+    });
+
     const isMintedNft = AVAILABLE_NETWORKS.includes(order.network!);
 
     if (isMintedNft && tranEntry.amount !== order.payload.amount) {
@@ -68,14 +74,9 @@ export class TangleNftPurchaseService {
         status: 'error',
         code: WenError.invalid_base_token_amount.code,
         message: WenError.invalid_base_token_amount.key,
+        address: order.payload.targetAddress,
       };
     }
-
-    this.transactionService.push({
-      ref: soonDb().doc(`${COL.TRANSACTION}/${order.uid}`),
-      data: order,
-      action: 'set',
-    });
 
     if (!isMintedNft) {
       return {
