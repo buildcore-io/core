@@ -28,6 +28,7 @@ import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
   DEFAULT_NETWORK,
+  DEFAULT_NETWORK_DECIMALS,
   FILE_SIZES,
   Member,
   NETWORK_DETAIL,
@@ -645,7 +646,7 @@ export class TradePage implements OnInit, OnDestroy {
       this.currentTradeFormState$.value === TradeFormState.SELL &&
       this.memberDistribution$?.value?.tokenOwned !== null &&
       (this.memberDistribution$?.value?.tokenOwned || 0) *
-        Math.pow(10, this.data.token$.value?.decimals || 6) <
+        Math.pow(10, this.data.token$.value?.decimals || DEFAULT_NETWORK_DECIMALS) <
         this.amountControl.value
     );
   }
@@ -766,9 +767,15 @@ export class TradePage implements OnInit, OnDestroy {
     this.currentTradeFormState$.next(
       state === TradeFormState.BUY ? TradeFormState.SELL : TradeFormState.BUY,
     );
-    this.amountControl.setValue(item.amount / Math.pow(10, this.data.token$.value?.decimals || 6));
+    this.amountControl.setValue(
+      item.amount / Math.pow(10, this.data.token$.value?.decimals || DEFAULT_NETWORK_DECIMALS),
+    );
     this.priceOption$.next(PriceOptionType.LIMIT);
     this.priceControl.setValue(bigDecimal.round(item.price, 3));
+  }
+
+  public getDefaultNetworkDecimals(): number {
+    return DEFAULT_NETWORK_DECIMALS;
   }
 
   public tradeHistoryClick(item: TokenPurchase): void {

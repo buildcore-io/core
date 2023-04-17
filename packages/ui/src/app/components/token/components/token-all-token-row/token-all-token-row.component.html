@@ -84,7 +84,7 @@
     </div>
     <div class="mt-0.5">
       {{
-        { value: (listenAvgPrice$ | async) || 0, exponents: 6 }
+        { value: (listenAvgPrice$ | async) || 0, exponents: getDefaultNetworkDecimals() }
           | formatToken
             : token?.mintingData?.networkFormat || token?.mintingData?.network
             : false

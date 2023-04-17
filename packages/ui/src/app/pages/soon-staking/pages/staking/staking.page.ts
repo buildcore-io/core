@@ -18,6 +18,7 @@ import { UnitsService } from '@core/services/units';
 import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
+  DEFAULT_NETWORK_DECIMALS,
   MAX_WEEKS_TO_STAKE,
   MIN_WEEKS_TO_STAKE,
   SOON_SPACE,
@@ -121,7 +122,7 @@ export class StakingPage implements OnInit, OnDestroy {
       this.stakeControl.setValue(val.toFixed(2));
       const newTotal =
         (this.auth.memberSoonDistribution$.value?.stakes?.[StakeType.DYNAMIC]?.value || 0) +
-        Math.pow(10, this.token$.value?.decimals || 6) * val;
+        Math.pow(10, this.token$.value?.decimals || DEFAULT_NETWORK_DECIMALS) * val;
       let l = -1;
       tiers.forEach((a) => {
         if (newTotal >= a) {
@@ -139,7 +140,8 @@ export class StakingPage implements OnInit, OnDestroy {
         this.earnControl.setValue(
           this.stakeRewardsApi.calcApy(
             this.tokenStats$.value,
-            this.stakeControl.value * Math.pow(10, this.token$.value?.decimals || 6),
+            this.stakeControl.value *
+              Math.pow(10, this.token$.value?.decimals || DEFAULT_NETWORK_DECIMALS),
             this.stakeRewards$.value,
           ),
         );

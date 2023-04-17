@@ -18,6 +18,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/collection/services/helper.service';
 import { DataService, SpaceAction } from '@pages/space/services/data.service';
 import {
+  DEFAULT_NETWORK_DECIMALS,
   FILE_SIZES,
   Member,
   SOON_SPACE,
@@ -73,7 +74,9 @@ export class SpaceAboutComponent implements OnInit, OnDestroy {
     return FILE_SIZES;
   }
   public openStakeModal(amount?: number): void {
-    this.amount = amount ? amount / Math.pow(10, this.data.token$.value?.decimals || 6) : undefined;
+    this.amount = amount
+      ? amount / Math.pow(10, this.data.token$.value?.decimals || DEFAULT_NETWORK_DECIMALS)
+      : undefined;
     this.openTokenStake = true;
     this.cd.markForCheck();
   }

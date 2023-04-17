@@ -22,6 +22,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
   DEFAULT_NETWORK,
+  DEFAULT_NETWORK_DECIMALS,
   NETWORK_DETAIL,
   Network,
   SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
@@ -340,7 +341,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
 
     const params: any = {
       symbol: this.token.symbol,
-      count: Number(this.amount * Math.pow(10, this.token?.decimals || 6)),
+      count: Number(this.amount * Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS)),
       price: Number(this.price),
       type: TokenTradeOrderType.SELL,
     };
@@ -376,7 +377,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
       bigDecimal.divide(
         bigDecimal.floor(
           bigDecimal.multiply(
-            Number(this.amount * Math.pow(10, this.token?.decimals || 6)),
+            Number(this.amount * Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS)),
             Number(this.price),
           ),
         ),

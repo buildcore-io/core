@@ -159,6 +159,8 @@ export const NETWORK_DETAIL = {
   },
 };
 
+export const DEFAULT_NETWORK_DECIMALS = 6;
+
 export type Units = 'Pi' | 'Ti' | 'Gi' | 'Mi' | 'Ki' | 'i';
 
 export const getNetworkPair = (network: Network) => {

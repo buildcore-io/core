@@ -23,6 +23,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   DEFAULT_NETWORK,
+  DEFAULT_NETWORK_DECIMALS,
   NETWORK_DETAIL,
   Network,
   Space,
@@ -375,7 +376,7 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
           false,
         )
       : this.formatToken.transform(
-          this.amountControl.value * Math.pow(10, this.token?.decimals || 6),
+          this.amountControl.value * Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS),
           undefined,
           false,
           false,

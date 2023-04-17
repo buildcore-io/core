@@ -17,6 +17,7 @@ import { UnitsService } from '@core/services/units';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import {
   DEFAULT_NETWORK,
+  DEFAULT_NETWORK_DECIMALS,
   NETWORK_DETAIL,
   SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
   Space,
@@ -96,7 +97,7 @@ export class TokenOfferComponent {
 
     const params: any = {
       symbol: this.token.symbol,
-      count: Number(this.amount * Math.pow(10, this.token?.decimals || 6)),
+      count: Number(this.amount * Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS)),
       price: Number(this.price),
       type: TokenTradeOrderType.SELL,
     };
@@ -128,7 +129,7 @@ export class TokenOfferComponent {
       bigDecimal.divide(
         bigDecimal.floor(
           bigDecimal.multiply(
-            Number(this.amount * Math.pow(10, this.token?.decimals || 6)),
+            Number(this.amount * Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS)),
             Number(this.price),
           ),
         ),

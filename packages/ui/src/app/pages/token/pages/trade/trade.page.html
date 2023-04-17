@@ -229,9 +229,9 @@
               async }}
             </td>
             <td class="z-10 border-0 right">
-              {{ { value: item.price, exponents: 6} | formatToken: ( (data.token$ |
-              async)?.mintingData?.networkFormat || (data.token$ | async)?.mintingData?.network) :
-              false:false | async}}
+              {{ { value: item.price, exponents: getDefaultNetworkDecimals()} | formatToken: (
+              (data.token$ | async)?.mintingData?.networkFormat || (data.token$ |
+              async)?.mintingData?.network) : false:false | async}}
             </td>
             <td class="z-10 border-0 right">{{ helper.getTradeOrderStatus(item) }}</td>
             <td class="z-10 border-0 right">
@@ -302,9 +302,9 @@
               async}}
             </td>
             <td class="z-10 border-0 right">
-              {{ { value: item.price, exponents: 6} | formatToken: ( (data.token$ |
-              async)?.mintingData?.networkFormat || (data.token$ | async)?.mintingData?.network) :
-              false:false | async}}
+              {{ { value: item.price, exponents: getDefaultNetworkDecimals()} | formatToken: (
+              (data.token$ | async)?.mintingData?.networkFormat || (data.token$ |
+              async)?.mintingData?.network) : false:false | async}}
             </td>
             <td class="z-10 border-0 right">
               <ng-container
@@ -393,8 +393,9 @@
               item?.targetNetwork : item?.sourceNetwork):false:true: 2 | async }}
             </td>
             <td class="z-10 border-0 right">
-              {{ {value: item.price, exponents: 6 }| formatToken: (item.type ===
-              tokenTradeOrderTypes.SELL ? item?.targetNetwork : item?.sourceNetwork) | async }}
+              {{ {value: item.price, exponents: getDefaultNetworkDecimals() }| formatToken:
+              (item.type === tokenTradeOrderTypes.SELL ? item?.targetNetwork : item?.sourceNetwork)
+              | async }}
             </td>
             <td class="z-10 border-0 right">
               <ng-container *ngIf="item.status === bidAskStatuses.SETTLED" i18n>
@@ -542,8 +543,9 @@
         </div>
         <div class="text-lg font-bold lg:mt-2">
           {{ ((listenAvgPrice$ | async) || 0) === 0 ? '-' : ( { value: ((listenAvgPrice$ | async) ||
-          0), exponents: 6 } | formatToken :( (data.token$ | async)?.mintingData?.networkFormat ||
-          (data.token$ | async)?.mintingData?.network):false:false | async) }}
+          0), exponents: getDefaultNetworkDecimals() } | formatToken :( (data.token$ |
+          async)?.mintingData?.networkFormat || (data.token$ |
+          async)?.mintingData?.network):false:false | async) }}
           <span
             class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
             i18n
@@ -688,8 +690,8 @@
             <td class="z-10 flex items-center border-0 padding-left-5 trade-history-order__sell">
               <div *ngIf="item.isOwner" class="w-2 h-2 mr-2 rounded-full bg-[#28B16F]"></div>
               <div>
-                {{ {value: item.price, exponents: 6} | formatToken: ( (data.token$ |
-                async)?.mintingData?.networkFormat || (data.token$ |
+                {{ {value: item.price, exponents: getDefaultNetworkDecimals()} | formatToken: (
+                (data.token$ | async)?.mintingData?.networkFormat || (data.token$ |
                 async)?.mintingData?.network):false:false | async }}
               </div>
             </td>
@@ -717,8 +719,9 @@
       class="flex items-center w-full py-3 pl-5 pr-4 text-sm font-bold bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark border-y border-foregrounds-separator dark:border-foregrounds-separator-dark"
     >
       {{ ((listenAvgPrice$ | async) || 0) === 0 ? '-' : { value: ((listenAvgPrice$ | async) || 0),
-      exponents: 6} | formatToken: ((data.token$ | async)?.mintingData?.networkFormat ||
-      (data.token$ | async)?.mintingData?.network) :false:false | async }}
+      exponents: getDefaultNetworkDecimals()} | formatToken: ((data.token$ |
+      async)?.mintingData?.networkFormat || (data.token$ | async)?.mintingData?.network)
+      :false:false | async }}
       <span
         class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
         i18n
@@ -751,8 +754,8 @@
             <td class="z-10 flex items-center border-0 padding-left-5 trade-history-order__buy">
               <div *ngIf="item.isOwner" class="w-2 h-2 mr-2 rounded-full bg-[#28B16F]"></div>
               <div>
-                {{ { value: item.price, exponents: 6 } | formatToken: ((data.token$ |
-                async)?.mintingData?.networkFormat || (data.token$ |
+                {{ { value: item.price, exponents: getDefaultNetworkDecimals() } | formatToken:
+                ((data.token$ | async)?.mintingData?.networkFormat || (data.token$ |
                 async)?.mintingData?.network):false:false | async }}
               </div>
             </td>
@@ -863,8 +866,8 @@
           'trade-history-order__sell': item.triggeredBy === tokenTradeOrderTypes.SELL
         }"
         >
-          {{ { value: item.price, exponents: 6 } | formatToken: ((data.token$ |
-          async)?.mintingData?.networkFormat || (data.token$ |
+          {{ { value: item.price, exponents: getDefaultNetworkDecimals() } | formatToken:
+          ((data.token$ | async)?.mintingData?.networkFormat || (data.token$ |
           async)?.mintingData?.network):false:false | async }}
         </td>
         <td class="z-10 border-0 right">

@@ -8,6 +8,7 @@ import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
+  DEFAULT_NETWORK_DECIMALS,
   GITHUB_REGEXP,
   MAX_TOTAL_TOKEN_SUPPLY,
   Space,
@@ -109,7 +110,7 @@ export class UpsertPage implements OnInit {
                   untilDestroyed(this),
                 )
                 .subscribe((t) => {
-                  this.tokenDividedBy = Math.pow(10, t.decimals || 6);
+                  this.tokenDividedBy = Math.pow(10, t.decimals || DEFAULT_NETWORK_DECIMALS);
                   if (o.minStakedValue && o.tokenBased) {
                     this.minStakedValue.setValue(o.minStakedValue / this.tokenDividedBy);
                     this.disableAccessChange = true;

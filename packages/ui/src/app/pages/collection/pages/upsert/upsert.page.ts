@@ -30,6 +30,7 @@ import {
   Collection,
   CollectionType,
   DEFAULT_NETWORK,
+  DEFAULT_NETWORK_DECIMALS,
   DISCORD_REGEXP,
   DiscountLine,
   Space,
@@ -232,7 +233,9 @@ export class UpsertPage implements OnInit, OnDestroy {
 
                   this.addDiscount(
                     v.tokenReward
-                      ? (v.tokenReward / Math.pow(10, token?.decimals || 6)).toString()
+                      ? (
+                          v.tokenReward / Math.pow(10, token?.decimals || DEFAULT_NETWORK_DECIMALS)
+                        ).toString()
                       : '0',
                     token?.uid || '',
                     token?.symbol || '',
@@ -365,7 +368,7 @@ export class UpsertPage implements OnInit, OnDestroy {
           const token = r as unknown as Token;
           this.tokenCache[token.uid] = {
             symbol: token.symbol,
-            decimals: token.decimals || 6,
+            decimals: token.decimals || DEFAULT_NETWORK_DECIMALS,
           };
           return {
             label: token.name + ' ( ' + token.symbol + ' )',

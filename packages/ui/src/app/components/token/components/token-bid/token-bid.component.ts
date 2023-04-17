@@ -20,6 +20,7 @@ import { StorageItem, getItem, setItem } from '@core/utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
+  DEFAULT_NETWORK_DECIMALS,
   Network,
   Space,
   TRANSACTION_AUTO_EXPIRY_MS,
@@ -334,7 +335,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
 
     const params: any = {
       symbol: this.token.symbol,
-      count: Number(this.amount * Math.pow(10, this.token?.decimals || 6)),
+      count: Number(this.amount * Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS)),
       price: Number(this.price),
       type: TokenTradeOrderType.BUY,
     };
@@ -361,16 +362,20 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     return StepType;
   }
 
+  public getDefaultNetworkDecimals(): number {
+    return DEFAULT_NETWORK_DECIMALS;
+  }
+
   public getTargetAmount(divideBy = false): number {
     return Number(
       bigDecimal.divide(
         bigDecimal.floor(
           bigDecimal.multiply(
-            Number(this.amount * Math.pow(10, this.token?.decimals || 6)),
+            Number(this.amount * Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS)),
             Number(this.price),
           ),
         ),
-        divideBy ? Math.pow(10, this.token?.decimals || 6) : 1,
+        divideBy ? Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS) : 1,
         6,
       ),
     );

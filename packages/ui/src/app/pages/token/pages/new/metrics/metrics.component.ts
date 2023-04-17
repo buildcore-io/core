@@ -16,7 +16,13 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
 import { NewService } from '@pages/token/services/new.service';
-import { DEFAULT_NETWORK, NETWORK_DETAIL, Token, TokenAllocation } from '@soonaverse/interfaces';
+import {
+  DEFAULT_NETWORK,
+  DEFAULT_NETWORK_DECIMALS,
+  NETWORK_DETAIL,
+  Token,
+  TokenAllocation,
+} from '@soonaverse/interfaces';
 import { merge } from 'rxjs';
 import { StepType } from '../new.page';
 
@@ -97,7 +103,7 @@ export class NewMetricsComponent implements OnInit {
           type: DescriptionItemType.DEFAULT_NO_TRUNCATE,
           value: this.decimalPipe.transform(
             Number(this.newService.totalSupplyControl?.value) *
-              Math.pow(10, this.newService.decimalsControl?.value || 6),
+              Math.pow(10, this.newService.decimalsControl?.value || DEFAULT_NETWORK_DECIMALS),
             '1.0-2',
           ),
         },

@@ -50,7 +50,7 @@
     <div class="text-right">
       <div class="font-bold whitespace-nowrap">
         {{
-          { value: amount, exponents: 6 }
+          { value: amount, exponents: getDefaultNetworkDecimals() }
             | formatToken : token?.mintingData?.networkFormat || token?.mintingData?.network : true
             | async
         }}

@@ -1,6 +1,11 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { CacheService } from '@core/services/cache/cache.service';
-import { DEFAULT_NETWORK, NETWORK_DETAIL, Network } from '@soonaverse/interfaces';
+import {
+  DEFAULT_NETWORK,
+  DEFAULT_NETWORK_DECIMALS,
+  NETWORK_DETAIL,
+  Network,
+} from '@soonaverse/interfaces';
 import { firstValueFrom, skipWhile } from 'rxjs';
 
 const DEF_DECIMALS = 6;
@@ -74,7 +79,7 @@ export class FormatTokenPipe implements PipeTransform {
     if (value.exponents === 0) {
       return value.value!;
     } else {
-      return value.value! * Math.pow(10, value.exponents || 6);
+      return value.value! * Math.pow(10, value.exponents || DEFAULT_NETWORK_DECIMALS);
     }
   }
 }

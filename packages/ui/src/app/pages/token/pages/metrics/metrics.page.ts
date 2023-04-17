@@ -10,7 +10,7 @@ import { TOKEN_METRICS_INITIAL_COLORS, getRandomColor } from '@core/utils/colors
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
-import { Token, TokenAllocation } from '@soonaverse/interfaces';
+import { DEFAULT_NETWORK_DECIMALS, Token, TokenAllocation } from '@soonaverse/interfaces';
 import { ChartConfiguration, ChartType } from 'chart.js';
 
 @UntilDestroy()
@@ -59,7 +59,7 @@ export class MetricsPage implements OnInit {
           type: DescriptionItemType.DEFAULT_NO_TRUNCATE,
           value:
             this.decimalPipe.transform(
-              (token?.totalSupply || 0) / Math.pow(10, token?.decimals || 6),
+              (token?.totalSupply || 0) / Math.pow(10, token?.decimals || DEFAULT_NETWORK_DECIMALS),
               '1.0-2',
             ) +
             ' ' +
@@ -96,7 +96,8 @@ export class MetricsPage implements OnInit {
           type: DescriptionItemType.DEFAULT_NO_TRUNCATE,
           value:
             this.decimalPipe.transform(
-              (token?.mintingData?.meltedTokens || 0) / Math.pow(10, token?.decimals || 6),
+              (token?.mintingData?.meltedTokens || 0) /
+                Math.pow(10, token?.decimals || DEFAULT_NETWORK_DECIMALS),
               '1.0-2',
             ) +
             ' ' +
@@ -135,7 +136,8 @@ export class MetricsPage implements OnInit {
     return (
       this.decimalPipe.transform(
         (
-          ((token.totalSupply / Math.pow(10, token?.decimals || 6)) * Number(a.percentage)) /
+          ((token.totalSupply / Math.pow(10, token?.decimals || DEFAULT_NETWORK_DECIMALS)) *
+            Number(a.percentage)) /
           100
         ).toFixed(2),
         '1.0-2',
