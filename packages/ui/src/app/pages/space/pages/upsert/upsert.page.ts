@@ -46,7 +46,7 @@ export class UpsertPage implements OnInit {
   public editMode = false;
   public disableAccessChange = false;
   public spaceId?: number;
-  public tokenDividedBy: number = 6;
+  public tokenDividedBy = 6;
 
   constructor(
     private auth: AuthService,

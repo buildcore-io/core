@@ -371,7 +371,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     return StepType;
   }
 
-  public getTargetAmount(divideBy: boolean = false): number {
+  public getTargetAmount(divideBy = false): number {
     return Number(
       bigDecimal.divide(
         bigDecimal.floor(
