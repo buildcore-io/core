@@ -15,11 +15,18 @@ import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { download } from '@core/utils/tools.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Space, StakeReward, StakeRewardStatus, Token } from '@soonaverse/interfaces';
+import {
+  DEFAULT_NETWORK,
+  NETWORK_DETAIL,
+  Space,
+  StakeReward,
+  StakeRewardStatus,
+  Token,
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { NzUploadFile } from 'ng-zorro-antd/upload';
 import Papa from 'papaparse';
-import { BehaviorSubject, map, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, map } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -92,7 +99,9 @@ export class SpaceRewardScheduleComponent implements OnInit {
             startDate: dayjs(v.StartDate),
             endDate: dayjs(v.EndDate),
             tokenVestingDate: dayjs(v.TokenVestingDate),
-            tokensToDistribute: v.TokensToDistribute * 1000 * 1000,
+            tokensToDistribute:
+              v.TokensToDistribute *
+              NETWORK_DETAIL[this.token?.mintingData?.network || DEFAULT_NETWORK].divideBy,
           };
         });
         this.uploadStage = 2;

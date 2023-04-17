@@ -121,7 +121,7 @@ export class StakingPage implements OnInit, OnDestroy {
       this.stakeControl.setValue(val.toFixed(2));
       const newTotal =
         (this.auth.memberSoonDistribution$.value?.stakes?.[StakeType.DYNAMIC]?.value || 0) +
-        1000 * 1000 * val;
+        Math.pow(10, this.token$.value?.decimals || 6) * val;
       let l = -1;
       tiers.forEach((a) => {
         if (newTotal >= a) {
@@ -139,7 +139,7 @@ export class StakingPage implements OnInit, OnDestroy {
         this.earnControl.setValue(
           this.stakeRewardsApi.calcApy(
             this.tokenStats$.value,
-            this.stakeControl.value * 1000 * 1000,
+            this.stakeControl.value * Math.pow(10, this.token$.value?.decimals || 6),
             this.stakeRewards$.value,
           ),
         );

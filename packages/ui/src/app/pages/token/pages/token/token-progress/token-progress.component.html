@@ -37,7 +37,7 @@
           title: descriptionLabels[2],
           type: descriptionItemTypes.DEFAULT_NO_TRUNCATE,
           value:
-            (helper.formatTokenBest(memberDistribution?.tokenOwned) || 0 | number : '1.0-6') +
+            (memberDistribution?.tokenOwned | formatToken : token?.uid : false : false | async) +
             ' ' +
             token?.symbol,
           backgroundClass: 'bg-tags-available dark:bg-tags-available-dark'
@@ -75,12 +75,12 @@
         </div>
         <div class="w-2/3 text-right break-words line-clamp-2 grow">
           <span class="text-foregrounds-primary dark:text-foregroundss-primary-dark">
-            {{ helper.formatTokenBest(getTotalPotentialTokens()) | number : '1.0-2' }}
+            {{ getTotalPotentialTokens() | formatToken : token?.uid : false : false | async }}
             {{ token?.symbol }}
           </span>
           <span> / </span>
           <span class="text-foregrounds-primary dark:text-foregroundss-primary-dark" i18n>
-            {{ helper.formatTokenBest(getPublicSaleSupply()) | number : '1.0-2' }}
+            {{ getPublicSaleSupply() | formatToken : token?.uid : false : false | async }}
             {{ token?.symbol }}
           </span>
         </div>

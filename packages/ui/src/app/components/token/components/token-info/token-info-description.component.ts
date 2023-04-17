@@ -45,14 +45,6 @@ export class TokenInfoDescriptionComponent {
     return DescriptionItemType;
   }
 
-  public formatTokenBest(amount?: number | null): string {
-    if (!amount) {
-      return '0';
-    }
-
-    return (amount / 1000 / 1000).toFixed(2).toString();
-  }
-
   public downloadCurrentDistribution(): void {
     this.tokenApi
       .getDistributions(this.token?.uid)

@@ -13,8 +13,10 @@ import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/nft/services/helper.service';
 import {
+  DEFAULT_NETWORK,
   MAX_IOTA_AMOUNT,
   MIN_IOTA_AMOUNT,
+  NETWORK_DETAIL,
   Nft,
   NftAccess,
   TRANSACTION_DEFAULT_AUCTION,
@@ -45,7 +47,10 @@ export class NftSaleAuctionComponent implements OnInit {
       this.buyerControl.setValue(this._nft.saleAccessMembers || []);
 
       if (this._nft.auctionFloorPrice) {
-        this.floorPriceControl.setValue(this._nft.auctionFloorPrice / 1000 / 1000);
+        this.floorPriceControl.setValue(
+          this._nft.auctionFloorPrice /
+            NETWORK_DETAIL[this.nft?.mintingData?.network || DEFAULT_NETWORK].divideBy,
+        );
       }
 
       if (this.nft?.auctionFrom && dayjs(this.nft.auctionFrom.toDate()).isAfter(dayjs())) {
@@ -68,8 +73,12 @@ export class NftSaleAuctionComponent implements OnInit {
   public form: FormGroup;
   public floorPriceControl: FormControl = new FormControl('', [
     Validators.required,
-    Validators.min(MIN_IOTA_AMOUNT / 1000 / 1000),
-    Validators.max(MAX_IOTA_AMOUNT / 1000 / 1000),
+    Validators.min(
+      MIN_IOTA_AMOUNT / NETWORK_DETAIL[this.nft?.mintingData?.network || DEFAULT_NETWORK].divideBy,
+    ),
+    Validators.max(
+      MAX_IOTA_AMOUNT / NETWORK_DETAIL[this.nft?.mintingData?.network || DEFAULT_NETWORK].divideBy,
+    ),
   ]);
   public availableFromControl: FormControl = new FormControl('', Validators.required);
   public lengthFromControl: FormControl = new FormControl(3);
@@ -150,7 +159,9 @@ export class NftSaleAuctionComponent implements OnInit {
       type: SaleType.FIXED_PRICE,
       auctionFrom: this.availableFromControl.value,
       auctionLength: length,
-      auctionFloorPrice: this.floorPriceControl.value * 1000 * 1000,
+      auctionFloorPrice:
+        this.floorPriceControl.value *
+        NETWORK_DETAIL[this.nft?.mintingData?.network || DEFAULT_NETWORK].divideBy,
       access: this.selectedAccessControl.value,
     };
 

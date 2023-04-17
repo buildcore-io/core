@@ -58,7 +58,10 @@ export class MetricsPage implements OnInit {
           title: $localize`Total token supply`,
           type: DescriptionItemType.DEFAULT_NO_TRUNCATE,
           value:
-            this.decimalPipe.transform(this.helper.formatTokenBest(token?.totalSupply), '1.0-2') +
+            this.decimalPipe.transform(
+              (token?.totalSupply || 0) / Math.pow(10, token?.decimals || 6),
+              '1.0-2',
+            ) +
             ' ' +
             token?.symbol,
           extraValue: `(${await this.formatToken.transform(
@@ -93,7 +96,7 @@ export class MetricsPage implements OnInit {
           type: DescriptionItemType.DEFAULT_NO_TRUNCATE,
           value:
             this.decimalPipe.transform(
-              this.helper.formatTokenBest(token?.mintingData?.meltedTokens),
+              (token?.mintingData?.meltedTokens || 0) / Math.pow(10, token?.decimals || 6),
               '1.0-2',
             ) +
             ' ' +
@@ -131,7 +134,10 @@ export class MetricsPage implements OnInit {
     if (!token) return '';
     return (
       this.decimalPipe.transform(
-        (((token.totalSupply / 1000 / 1000) * Number(a.percentage)) / 100).toFixed(2),
+        (
+          ((token.totalSupply / Math.pow(10, token?.decimals || 6)) * Number(a.percentage)) /
+          100
+        ).toFixed(2),
         '1.0-2',
       ) +
       ' ' +

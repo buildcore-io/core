@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { SeoService } from '@core/services/seo';
@@ -11,10 +12,11 @@ import {
   MAX_TOTAL_TOKEN_SUPPLY,
   Space,
   TWITTER_REGEXP,
+  Token,
 } from '@soonaverse/interfaces';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
-import { first, Observable, of, Subscription } from 'rxjs';
+import { Observable, Subscription, first, map, of } from 'rxjs';
 import { FileApi } from '../../../../@api/file.api';
 import { SpaceApi } from '../../../../@api/space.api';
 import { NotificationService } from '../../../../@core/services/notification/notification.service';
@@ -44,12 +46,14 @@ export class UpsertPage implements OnInit {
   public editMode = false;
   public disableAccessChange = false;
   public spaceId?: number;
+  public tokenDividedBy: number = 6;
 
   constructor(
     private auth: AuthService,
     private router: Router,
     private route: ActivatedRoute,
     private spaceApi: SpaceApi,
+    private tokenApi: TokenApi,
     private fileApi: FileApi,
     private notification: NotificationService,
     private nzNotification: NzNotificationService,
@@ -92,15 +96,26 @@ export class UpsertPage implements OnInit {
               this.nameControl.setValue(o.name);
               this.aboutControl.setValue(o.about);
               this.openControl.setValue(o.tokenBased ? 2 : o.open ? 0 : 1);
-              if (o.minStakedValue && o.tokenBased) {
-                this.minStakedValue.setValue(o.minStakedValue / 1000 / 1000);
-                this.disableAccessChange = true;
-              }
               this.discordControl.setValue(o.discord);
               this.twitterControl.setValue(o.twitter);
               this.githubControl.setValue(o.github);
               this.avatarControl.setValue(o.avatarUrl);
               this.bannerControl.setValue(o.bannerUrl);
+
+              this.tokenApi
+                .space(o.uid)
+                .pipe(
+                  map((tokens: Token[] | undefined) => (tokens || [])?.[0] || null),
+                  untilDestroyed(this),
+                )
+                .subscribe((t) => {
+                  this.tokenDividedBy = Math.pow(10, t.decimals || 6);
+                  if (o.minStakedValue && o.tokenBased) {
+                    this.minStakedValue.setValue(o.minStakedValue / this.tokenDividedBy);
+                    this.disableAccessChange = true;
+                  }
+                });
+
               this.cd.markForCheck();
             }
           });
@@ -190,7 +205,7 @@ export class UpsertPage implements OnInit {
 
     if (data.open === 2) {
       delete data.open;
-      data.minStakedValue = data.minStakedValue * 1000 * 1000;
+      data.minStakedValue = data.minStakedValue * this.tokenDividedBy;
       data.tokenBased = true;
     } else {
       data.open = data.open === 0 ? true : false;

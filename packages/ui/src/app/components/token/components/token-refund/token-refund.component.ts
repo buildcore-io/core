@@ -72,7 +72,7 @@ export class TokenRefundComponent {
   public async confirm(): Promise<void> {
     const data = {
       token: this.token?.uid,
-      amount: Number(this.amountControl.value) * 1000 * 1000,
+      amount: Number(this.amountControl.value) * Math.pow(10, this.token?.decimals || 6),
     };
     await this.auth.sign(data, (sc, finish) => {
       this.notification

@@ -14,15 +14,17 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/nft/services/helper.service';
 import {
   COL,
+  DEFAULT_NETWORK,
   MAX_IOTA_AMOUNT,
-  Member,
   MIN_IOTA_AMOUNT,
+  Member,
+  NETWORK_DETAIL,
   Nft,
   NftAccess,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { NzSelectOptionInterface } from 'ng-zorro-antd/select';
-import { BehaviorSubject, from, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, from } from 'rxjs';
 import { SaleType, UpdateEvent } from '../nft-sale.component';
 
 export enum TimeSaleOptionType {
@@ -47,7 +49,10 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
       this.buyerControl.setValue(this._nft.saleAccessMembers || []);
       this.targetAccessOption$.next(this._nft.saleAccess || NftAccess.OPEN);
       if (this._nft.availablePrice) {
-        this.priceControl.setValue(this._nft.availablePrice / 1000 / 1000);
+        this.priceControl.setValue(
+          this._nft.availablePrice /
+            NETWORK_DETAIL[this.nft?.mintingData?.network || DEFAULT_NETWORK].divideBy,
+        );
       }
     }
   }
@@ -60,8 +65,12 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public priceControl: FormControl = new FormControl('', [
     Validators.required,
-    Validators.min(MIN_IOTA_AMOUNT / 1000 / 1000),
-    Validators.max(MAX_IOTA_AMOUNT / 1000 / 1000),
+    Validators.min(
+      MIN_IOTA_AMOUNT / NETWORK_DETAIL[this.nft?.mintingData?.network || DEFAULT_NETWORK].divideBy,
+    ),
+    Validators.max(
+      MAX_IOTA_AMOUNT / NETWORK_DETAIL[this.nft?.mintingData?.network || DEFAULT_NETWORK].divideBy,
+    ),
   ]);
   public availableFromControl: FormControl = new FormControl('', Validators.required);
   public selectedAccessControl: FormControl = new FormControl(NftAccess.OPEN, Validators.required);
@@ -161,7 +170,9 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
     const obj: any = {
       type: SaleType.FIXED_PRICE,
       availableFrom: this.availableFromControl.value,
-      price: this.priceControl.value * 1000 * 1000,
+      price:
+        this.priceControl.value *
+        NETWORK_DETAIL[this.nft?.mintingData?.network || DEFAULT_NETWORK].divideBy,
       access: this.selectedAccessControl.value,
     };
 

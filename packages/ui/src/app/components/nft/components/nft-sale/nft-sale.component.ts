@@ -12,10 +12,10 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
-import { Units, UnitsService } from '@core/services/units';
+import { UnitsService } from '@core/services/units';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/nft/services/helper.service';
-import { Collection, Nft, NftAccess, PRICE_UNITS, Timestamp } from '@soonaverse/interfaces';
+import { Collection, Nft, NftAccess, PRICE_UNITS, Timestamp, Units } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { take } from 'rxjs';
 

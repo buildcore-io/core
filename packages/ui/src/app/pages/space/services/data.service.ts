@@ -207,14 +207,6 @@ export class DataService implements OnDestroy {
     );
   }
 
-  public formatTokenBest(amount?: number | null): string {
-    if (!amount) {
-      return '0';
-    }
-
-    return (amount / 1000 / 1000).toFixed(2).toString();
-  }
-
   public listenToRejectedProposals(spaceId: string): void {
     if (this.rejectedProposalsOn === true) {
       return;

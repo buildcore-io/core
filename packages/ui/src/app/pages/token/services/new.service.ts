@@ -5,9 +5,11 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
 import { getUrlValidator } from '@core/utils/form-validation.utils';
 import {
+  DEFAULT_NETWORK,
   MAX_IOTA_AMOUNT,
   MAX_TOTAL_TOKEN_SUPPLY,
   MIN_TOTAL_TOKEN_SUPPLY,
+  NETWORK_DETAIL,
   Space,
   TokenAllocation,
   TokenDistributionType,
@@ -41,7 +43,7 @@ export class NewService {
   public priceControl: FormControl = new FormControl('1', [
     Validators.required,
     Validators.min(0),
-    Validators.max(MAX_IOTA_AMOUNT / 1000 / 1000),
+    Validators.max(MAX_IOTA_AMOUNT / NETWORK_DETAIL[DEFAULT_NETWORK].divideBy),
   ]);
   public totalSupplyControl: FormControl = new FormControl('', [
     Validators.required,

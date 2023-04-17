@@ -311,7 +311,7 @@
     [network]="token?.mintingData?.network"
     [tokenId]="token?.mintingData?.tokenId"
     [tokenAmount]="amountControl.value"
-    [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()"
+    [targetAmount]="(targetAmount || 0).toString()"
   ></wen-wallet-deeplink>
 
   <div

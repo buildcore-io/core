@@ -19,7 +19,7 @@ import {
   Token,
   TokenStatus,
 } from '@soonaverse/interfaces';
-import { BehaviorSubject, of, Subscription, switchMap } from 'rxjs';
+import { BehaviorSubject, Subscription, of, switchMap } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { AwardApi } from './../../../../@api/award.api';
 import { MemberApi } from './../../../../@api/member.api';
@@ -215,7 +215,7 @@ export class NewPage implements OnInit, OnDestroy {
     obj.badge = {
       description: obj.badgeDescription,
       name: obj.badgeName,
-      tokenReward: obj.badgeToken * 1000 * 1000,
+      tokenReward: obj.badgeToken * Math.pow(10, this.getCurrentToken()?.decimals || 6),
       total: obj.badgeCount,
       image: obj.image,
       tokenSymbol: this.getCurrentToken()?.symbol,

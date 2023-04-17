@@ -16,7 +16,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
 import { NewService } from '@pages/token/services/new.service';
-import { Token, TokenAllocation } from '@soonaverse/interfaces';
+import { DEFAULT_NETWORK, NETWORK_DETAIL, Token, TokenAllocation } from '@soonaverse/interfaces';
 import { merge } from 'rxjs';
 import { StepType } from '../new.page';
 
@@ -96,9 +96,8 @@ export class NewMetricsComponent implements OnInit {
           title: $localize`Total token supply`,
           type: DescriptionItemType.DEFAULT_NO_TRUNCATE,
           value: this.decimalPipe.transform(
-            this.helper.formatTokenBest(
-              Number(this.newService.totalSupplyControl?.value) * 1000 * 1000,
-            ),
+            Number(this.newService.totalSupplyControl?.value) *
+              Math.pow(10, this.newService.decimalsControl?.value || 6),
             '1.0-2',
           ),
         },
@@ -114,7 +113,9 @@ export class NewMetricsComponent implements OnInit {
             type: DescriptionItemType.DEFAULT_NO_TRUNCATE,
             value: a.percentage + '%',
             extraValue: `(${this.helper.percentageMarketCap(a.percentage, {
-              pricePerToken: Number(this.newService.priceControl?.value) * 1000 * 1000,
+              pricePerToken:
+                Number(this.newService.priceControl?.value) *
+                NETWORK_DETAIL[DEFAULT_NETWORK].divideBy,
               totalSupply: this.newService.totalSupplyControl?.value,
             } as Token)})`,
           })),

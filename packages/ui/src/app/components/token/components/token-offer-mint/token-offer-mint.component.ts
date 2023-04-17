@@ -21,6 +21,8 @@ import { StorageItem, getItem, setItem } from '@core/utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
+  DEFAULT_NETWORK,
+  NETWORK_DETAIL,
   Network,
   SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
   Space,
@@ -338,7 +340,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
 
     const params: any = {
       symbol: this.token.symbol,
-      count: Number(this.amount * 1000 * 1000),
+      count: Number(this.amount * Math.pow(10, this.token?.decimals || 6)),
       price: Number(this.price),
       type: TokenTradeOrderType.SELL,
     };
@@ -369,13 +371,16 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     return StepType;
   }
 
-  public getTargetAmount(): number {
+  public getTargetAmount(divideBy: boolean = false): number {
     return Number(
       bigDecimal.divide(
         bigDecimal.floor(
-          bigDecimal.multiply(Number(this.amount * 1000 * 1000), Number(this.price)),
+          bigDecimal.multiply(
+            Number(this.amount * Math.pow(10, this.token?.decimals || 6)),
+            Number(this.price),
+          ),
         ),
-        1000 * 1000,
+        divideBy ? NETWORK_DETAIL[this.token?.mintingData?.network || DEFAULT_NETWORK].divideBy : 1,
         6,
       ),
     );

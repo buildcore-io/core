@@ -1139,7 +1139,7 @@
     *ngIf="getResultAmount() < 1 && !amountControl.pristine"
     class="mt-1 text-xs font-medium text-inputs-error dark:text-inputs-error-dark"
   >
-    <ng-container i18n>Minimum total has to be at least</ng-container> {{getMinTotal()}} {{
+    <ng-container i18n>Minimum total has to be at least 1</ng-container> {{
     helper.getPairFrom(data.token$ | async) }}
   </div>
 

@@ -47,14 +47,6 @@ export class TokenCardComponent {
     return TokenCardType;
   }
 
-  public formatTokenBest(amount?: number | null): string {
-    if (!amount) {
-      return '0';
-    }
-
-    return (amount / 1000 / 1000).toFixed(2);
-  }
-
   public getStartDate(): dayjs.Dayjs {
     return dayjs(this.token?.saleStartDate?.toDate());
   }

@@ -12,7 +12,13 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification';
 import { getUrlValidator } from '@core/utils/form-validation.utils';
 import { MAX_LINKS_COUNT } from '@pages/token/services/new.service';
-import { MAX_IOTA_AMOUNT, Token, TokenStatus } from '@soonaverse/interfaces';
+import {
+  DEFAULT_NETWORK,
+  MAX_IOTA_AMOUNT,
+  NETWORK_DETAIL,
+  Token,
+  TokenStatus,
+} from '@soonaverse/interfaces';
 
 @Component({
   selector: 'wen-token-edit',
@@ -45,7 +51,10 @@ export class TokenEditComponent {
   public priceControl: FormControl = new FormControl('1', [
     Validators.required,
     Validators.min(0),
-    Validators.max(MAX_IOTA_AMOUNT / 1000 / 1000),
+    Validators.max(
+      MAX_IOTA_AMOUNT /
+        NETWORK_DETAIL[this.token?.mintingData?.network || DEFAULT_NETWORK].divideBy,
+    ),
   ]);
   public shortDescriptionTitleControl: FormControl = new FormControl('', Validators.required);
   public shortDescriptionControl: FormControl = new FormControl('', Validators.required);

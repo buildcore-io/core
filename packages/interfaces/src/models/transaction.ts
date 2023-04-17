@@ -136,6 +136,31 @@ export enum Network {
   RMS = 'rms',
 }
 
+export const NETWORK_DETAIL = {
+  [Network.IOTA]: {
+    label: 'MIOTA',
+    divideBy: 1000 * 1000,
+    decimals: 6,
+  },
+  [Network.ATOI]: {
+    label: 'MATOI',
+    divideBy: 1000 * 1000,
+    decimals: 6,
+  },
+  [Network.SMR]: {
+    label: Network.SMR.toUpperCase(),
+    divideBy: 1000 * 1000,
+    decimals: 6,
+  },
+  [Network.RMS]: {
+    label: Network.RMS.toUpperCase(),
+    divideBy: 1000 * 1000,
+    decimals: 6,
+  },
+};
+
+export type Units = 'Pi' | 'Ti' | 'Gi' | 'Mi' | 'Ki' | 'i';
+
 export const getNetworkPair = (network: Network) => {
   switch (network) {
     case Network.IOTA:

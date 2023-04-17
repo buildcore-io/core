@@ -74,7 +74,7 @@
     <div class="text-right">
       <div class="font-bold whitespace-nowrap">
         {{
-          { value: getTargetAmount(), exponents: token?.decimals }
+          getTargetAmount()
             | formatToken : token?.mintingData?.networkFormat || token?.mintingData?.network : true
             | async
         }}
@@ -84,7 +84,7 @@
         i18n
         >~{{
           unitsService.getUsd(
-            getTargetAmount(),
+            getTargetAmount(true),
             token?.mintingData?.networkFormat || token?.mintingData?.network
           )
             | async

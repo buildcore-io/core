@@ -22,7 +22,6 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService as HelperServiceProposal } from '@pages/proposal/services/helper.service';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
-  MIN_AMOUNT_TO_TRANSFER,
   Proposal,
   ProposalAnswer,
   SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
@@ -111,10 +110,7 @@ export class TokenVoteComponent implements OnInit, OnDestroy {
   public voteTypeControl: FormControl = new FormControl(VoteType.NATIVE_TOKEN, [
     Validators.required,
   ]);
-  public amountControl: FormControl = new FormControl(null, [
-    Validators.required,
-    Validators.min(MIN_AMOUNT_TO_TRANSFER / 1000 / 1000),
-  ]);
+  public amountControl: FormControl = new FormControl(null, [Validators.required]);
   public voteTypeOptions: {
     label: string;
     value: VoteType;
@@ -409,7 +405,7 @@ export class TokenVoteComponent implements OnInit, OnDestroy {
   public getWeight(): number {
     let amount;
     if (this.voteTypeControl.value === VoteType.NATIVE_TOKEN) {
-      amount = this.amountControl.value * 1000 * 1000;
+      amount = this.amountControl.value * Math.pow(10, this.token?.decimals || 6);
     } else {
       amount = this.totalStaked || 0;
     }
@@ -433,7 +429,7 @@ export class TokenVoteComponent implements OnInit, OnDestroy {
   }
 
   public getTargetAmount(): number {
-    return this.amount;
+    return this.amount * Math.pow(10, this.token?.decimals || 6);
   }
 
   public get exchangeFee(): number {

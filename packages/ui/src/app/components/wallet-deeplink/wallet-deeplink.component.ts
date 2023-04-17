@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { Network, WEN_NAME } from '@soonaverse/interfaces';
+import { CacheService } from '@core/services/cache/cache.service';
+import { DEFAULT_NETWORK, NETWORK_DETAIL, Network, WEN_NAME } from '@soonaverse/interfaces';
+import { firstValueFrom, skipWhile } from 'rxjs';
 
 @Component({
   selector: 'wen-wallet-deeplink',
@@ -80,14 +82,14 @@ export class WalletDeeplinkComponent {
   private _tokenId?: string;
   private _tokenAmount?: number;
 
-  constructor(private sanitizer: DomSanitizer) {}
+  constructor(private sanitizer: DomSanitizer, private cache: CacheService) {}
 
-  private setLinks(): void {
-    this.fireflyDeepLink = this.getFireflyDeepLink();
-    this.tanglePayDeepLink = this.getTanglePayDeepLink();
+  private async setLinks(): Promise<void> {
+    this.fireflyDeepLink = await this.getFireflyDeepLink();
+    this.tanglePayDeepLink = await this.getTanglePayDeepLink();
   }
 
-  private getFireflyDeepLink(): SafeUrl {
+  private async getFireflyDeepLink(): Promise<SafeUrl> {
     if (!this.targetAddress || !this.targetAmount) {
       return '';
     }
@@ -95,6 +97,13 @@ export class WalletDeeplinkComponent {
     // We want to round to maximum 6 digits.
     if (this.network === Network.RMS || this.network === Network.SMR) {
       const walletType = this.network === Network.SMR ? 'firefly' : 'firefly-alpha';
+      const token = await firstValueFrom(
+        this.cache.getToken(this.tokenId).pipe(
+          skipWhile((t) => {
+            return !t;
+          }),
+        ),
+      );
       if (this.tokenId && this.tokenAmount) {
         return this.sanitizer.bypassSecurityTrustUrl(
           walletType +
@@ -104,11 +113,9 @@ export class WalletDeeplinkComponent {
             this.tokenId +
             '&disableToggleGift=true&disableChangeExpiration=true' +
             '&amount=' +
-            (Number(this.tokenAmount) * 1000 * 1000).toFixed(0) +
+            Number(this.tokenAmount).toFixed(0) +
             '&tag=soonaverse&giftStorageDeposit=true' +
-            (this.surplus
-              ? '&surplus=' + (Number(this.targetAmount) * 1000 * 1000).toFixed(0)
-              : ''),
+            (this.surplus ? '&surplus=' + Number(this.targetAmount).toFixed(0) : ''),
         );
       } else {
         return this.sanitizer.bypassSecurityTrustUrl(
@@ -117,7 +124,7 @@ export class WalletDeeplinkComponent {
             this.targetAddress +
             '&disableToggleGift=true&disableChangeExpiration=true' +
             '&amount=' +
-            (Number(this.targetAmount) * 1000 * 1000).toFixed(0) +
+            Number(this.targetAmount).toFixed(0) +
             '&tag=soonaverse&giftStorageDeposit=true',
         );
       }
@@ -126,13 +133,15 @@ export class WalletDeeplinkComponent {
         'iota://wallet/send/' +
           this.targetAddress +
           '?amount=' +
-          +Number(this.targetAmount).toFixed(6).replace(/,/g, '.') +
+          +(Number(this.targetAmount) / NETWORK_DETAIL[this.network || DEFAULT_NETWORK].divideBy)
+            .toFixed(6)
+            .replace(/,/g, '.') +
           '&unit=Mi',
       );
     }
   }
 
-  private getTanglePayDeepLink(): SafeUrl {
+  private async getTanglePayDeepLink(): Promise<SafeUrl> {
     if (!this.targetAddress || !this.targetAmount) {
       return '';
     }
@@ -140,11 +149,18 @@ export class WalletDeeplinkComponent {
     // We want to round to maximum 6 digits.
     if (this.network === Network.RMS || this.network === Network.SMR) {
       if (this.tokenId && this.tokenAmount) {
+        const token = await firstValueFrom(
+          this.cache.getToken(this.tokenId).pipe(
+            skipWhile((t) => {
+              return !t;
+            }),
+          ),
+        );
         return this.sanitizer.bypassSecurityTrustUrl(
           'tanglepay://iota_sendTransaction/' +
             this.targetAddress +
             '?value=' +
-            (Number(this.tokenAmount) * 1000 * 1000).toFixed(0) +
+            Number(this.tokenAmount).toFixed(0) +
             '&network=shimmer&assetId=' +
             this.tokenId +
             '&tag=' +
@@ -155,7 +171,9 @@ export class WalletDeeplinkComponent {
           'tanglepay://send/' +
             this.targetAddress +
             '?value=' +
-            +Number(this.targetAmount).toFixed(6).replace(/,/g, '.') +
+            +(Number(this.targetAmount) / NETWORK_DETAIL[this.network].divideBy)
+              .toFixed(6)
+              .replace(/,/g, '.') +
             '&unit=SMR' +
             '&tag=' +
             WEN_NAME.toLowerCase(),
@@ -166,7 +184,9 @@ export class WalletDeeplinkComponent {
         'tanglepay://send/' +
           this.targetAddress +
           '?value=' +
-          +Number(this.targetAmount).toFixed(6).replace(/,/g, '.') +
+          +(Number(this.targetAmount) / NETWORK_DETAIL[this.network || DEFAULT_NETWORK].divideBy)
+            .toFixed(6)
+            .replace(/,/g, '.') +
           '&unit=Mi' +
           '&tag=' +
           WEN_NAME.toLowerCase(),
