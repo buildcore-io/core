@@ -15,8 +15,8 @@ import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
-import { Token, TokenStatus } from '@soonaverse/interfaces';
-import { BehaviorSubject, first, Subscription } from 'rxjs';
+import { DEFAULT_NETWORK_DECIMALS, Token, TokenStatus } from '@soonaverse/interfaces';
+import { BehaviorSubject, Subscription, first } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -88,6 +88,10 @@ export class TokenAllTokenRowComponent implements OnInit, OnDestroy {
         .pipe(untilDestroyed(this))
         .subscribe(this.listenChangePrice24h$),
     );
+  }
+
+  public getDefaultNetworkDecimals(): number {
+    return DEFAULT_NETWORK_DECIMALS;
   }
 
   public getPublicSaleSupply(): number {

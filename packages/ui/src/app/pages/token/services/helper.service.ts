@@ -29,14 +29,6 @@ export class HelperService {
     return Math.floor(token?.pricePerToken * ((token?.totalSupply * percentage) / 100));
   }
 
-  public formatTokenBest(amount?: number | null, decimals = 6): string {
-    if (!amount) {
-      return '0';
-    }
-
-    return (amount / 1000 / 1000).toFixed(decimals);
-  }
-
   public getPairFrom(token?: Token | null): string {
     let from = '';
     const net = token?.mintingData?.networkFormat || token?.mintingData?.network;

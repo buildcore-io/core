@@ -126,23 +126,15 @@
         nzMessage="We received invalid amount. Try again."
       ></nz-alert>
 
-      <!-- <wen-send-funds
-        class="block w-full"
-        *ngIf="!isExpired(transaction$ | async)"
-        [targetAddress]="targetAddress"
-        [formattedAmount]="unitsService.format(targetAmount, award?.network, false)"
-      >
-      </wen-send-funds> -->
-
       <wen-wallet-deeplink
         *ngIf="!isExpired(transaction$ | async)"
         class="mt-6"
         [targetAddress]="targetAddress"
         [network]="award?.network"
         [tokenId]="token?.mintingData?.tokenId"
-        [tokenAmount]="(transaction$ | async)?.payload.nativeTokens?.[0]?.amount / 1000 / 1000"
+        [tokenAmount]="(transaction$ | async)?.payload.nativeTokens?.[0]?.amount"
         [surplus]="true"
-        [targetAmount]="((transaction$ | async)?.payload.amount / 1000 / 1000).toString()"
+        [targetAmount]="((transaction$ | async)?.payload.amount).toString()"
       >
       </wen-wallet-deeplink>
     </div>

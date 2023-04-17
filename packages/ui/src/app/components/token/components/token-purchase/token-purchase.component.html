@@ -52,7 +52,10 @@
         title: 'Token price',
         titleIcon: coinIcon,
         type: descriptionItemTypes.DEFAULT_NO_TRUNCATE,
-        value: (token?.pricePerToken || 0) * 1000 * 1000 | formatToken | async
+        value:
+          (token?.pricePerToken || 0) * getDecimalsPerNetwork(token?.mintingData?.network)
+          | formatToken
+          | async
       }
     ]"
   ></wen-description>
@@ -175,7 +178,7 @@
     class="mt-6"
     [targetAddress]="targetAddress"
     [network]="token?.mintingData?.network"
-    [targetAmount]="(amountControl.value * (token?.pricePerToken || 0) || 0).toString()"
+    [targetAmount]="getTargetAmount()"
   >
   </wen-wallet-deeplink>
 </ng-template>
@@ -248,7 +251,9 @@
       </div>
       <div class="mt-2 text-lg font-bold" i18n>
         {{
-          (formatTokenBest(purchasedAmount / (token?.pricePerToken || 0)) | number : '1.0-6') +
+          (purchasedAmount / (token?.pricePerToken || 0)
+            | formatToken : token?.uid : false : false
+            | async) +
             ' ' +
             token?.symbol
         }}

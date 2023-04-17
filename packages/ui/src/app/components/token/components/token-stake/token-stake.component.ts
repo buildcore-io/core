@@ -19,34 +19,35 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import {
+  StorageItem,
   getItem,
   getTokenStakeItem,
   removeStakeTokenItem,
   setItem,
   setTokenStakeItem,
-  StorageItem,
 } from '@core/utils';
 import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
-  calcStakedMultiplier,
+  DEFAULT_NETWORK_DECIMALS,
   MAX_WEEKS_TO_STAKE,
   MIN_WEEKS_TO_STAKE,
   SOON_TOKEN,
   SOON_TOKEN_TEST,
   StakeReward,
   StakeType,
-  tiers,
+  TRANSACTION_AUTO_EXPIRY_MS,
   Timestamp,
   Token,
   TokenStats,
   Transaction,
   TransactionType,
-  TRANSACTION_AUTO_EXPIRY_MS,
+  calcStakedMultiplier,
+  tiers,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { BehaviorSubject, interval, merge, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, interval, merge } from 'rxjs';
 
 export enum StepType {
   CONFIRM = 'Confirm',
@@ -154,7 +155,7 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
           this.stakeControl.setValue(val.toFixed(2));
           const newTotal =
             (this.auth.memberSoonDistribution$.value?.stakes?.[StakeType.DYNAMIC]?.value || 0) +
-            1000 * 1000 * val;
+            Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS) * val;
           let l = 0;
           tiers.forEach((a) => {
             if (newTotal >= a) {
@@ -172,7 +173,8 @@ export class TokenStakeComponent implements OnInit, OnDestroy {
             this.earnControl.setValue(
               this.stakeRewardApi.calcApy(
                 this.tokenStats,
-                this.stakeControl.value * 1000 * 1000,
+                this.stakeControl.value *
+                  Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS),
                 this.rewards,
               ),
             );

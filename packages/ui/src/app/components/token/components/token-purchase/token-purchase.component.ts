@@ -21,7 +21,17 @@ import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Space, Timestamp, Token, Transaction, TransactionType } from '@soonaverse/interfaces';
+import {
+  DEFAULT_NETWORK,
+  DEFAULT_NETWORK_DECIMALS,
+  NETWORK_DETAIL,
+  Network,
+  Space,
+  Timestamp,
+  Token,
+  Transaction,
+  TransactionType,
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { BehaviorSubject, Subscription, filter } from 'rxjs';
@@ -268,14 +278,6 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
     this.wenOnClose.next();
   }
 
-  public formatTokenBest(amount?: number | null): string {
-    if (!amount) {
-      return '0';
-    }
-
-    return (amount / 1000 / 1000).toFixed(6).toString();
-  }
-
   public getEndDate(): dayjs.Dayjs {
     return dayjs(this.token?.saleStartDate?.toDate()).add(this.token?.saleLength || 0, 'ms');
   }
@@ -340,6 +342,10 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
     });
   }
 
+  public getDecimalsPerNetwork(v?: Network): number {
+    return NETWORK_DETAIL[v || DEFAULT_NETWORK].divideBy;
+  }
+
   public getTargetAmount(): string {
     return bigDecimal.divide(
       bigDecimal.floor(
@@ -369,7 +375,12 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
           false,
           false,
         )
-      : this.formatToken.transform(this.amountControl.value * 1000 * 1000, undefined, false, false);
+      : this.formatToken.transform(
+          this.amountControl.value * Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS),
+          undefined,
+          false,
+          false,
+        );
   }
 
   public ngOnDestroy(): void {

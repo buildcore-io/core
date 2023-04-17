@@ -16,22 +16,23 @@ import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
-import { getItem, setItem, StorageItem } from '@core/utils';
+import { StorageItem, getItem, setItem } from '@core/utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
+  DEFAULT_NETWORK_DECIMALS,
   Network,
   Space,
+  TRANSACTION_AUTO_EXPIRY_MS,
   Timestamp,
   Token,
   TokenTradeOrderType,
   Transaction,
   TransactionType,
-  TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
-import { BehaviorSubject, interval, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, interval } from 'rxjs';
 
 export enum StepType {
   CONFIRM = 'Confirm',
@@ -334,7 +335,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
 
     const params: any = {
       symbol: this.token.symbol,
-      count: Number(this.amount * 1000 * 1000),
+      count: Number(this.amount * Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS)),
       price: Number(this.price),
       type: TokenTradeOrderType.BUY,
     };
@@ -361,13 +362,20 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     return StepType;
   }
 
-  public getTargetAmount(): number {
+  public getDefaultNetworkDecimals(): number {
+    return DEFAULT_NETWORK_DECIMALS;
+  }
+
+  public getTargetAmount(divideBy = false): number {
     return Number(
       bigDecimal.divide(
         bigDecimal.floor(
-          bigDecimal.multiply(Number(this.amount * 1000 * 1000), Number(this.price)),
+          bigDecimal.multiply(
+            Number(this.amount * Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS)),
+            Number(this.price),
+          ),
         ),
-        1000 * 1000,
+        divideBy ? Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS) : 1,
         6,
       ),
     );

@@ -21,7 +21,10 @@
       }})
     </div>
     <div class="font-bold">
-      {{ (tradeOrder?.price || 0) * 1000 * 1000 | formatToken : token?.mintingData?.network }}
+      {{
+        (tradeOrder?.price || 0) * getMulti(token?.mintingData?.network)
+          | formatToken : token?.mintingData?.network
+      }}
     </div>
   </div>
 

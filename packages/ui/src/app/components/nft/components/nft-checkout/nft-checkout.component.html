@@ -196,7 +196,7 @@
       class="mt-6"
       [targetAddress]="targetAddress"
       [network]="collection?.mintingData?.network"
-      [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()"
+      [targetAmount]="(targetAmount || 0).toString()"
     >
     </wen-wallet-deeplink>
   </div>

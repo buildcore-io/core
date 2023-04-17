@@ -1,7 +1,11 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { CacheService } from '@core/services/cache/cache.service';
-import { NETWORK_DETAIL } from '@core/services/units';
-import { Network } from '@soonaverse/interfaces';
+import {
+  DEFAULT_NETWORK,
+  DEFAULT_NETWORK_DECIMALS,
+  NETWORK_DETAIL,
+  Network,
+} from '@soonaverse/interfaces';
 import { firstValueFrom, skipWhile } from 'rxjs';
 
 const DEF_DECIMALS = 6;
@@ -21,7 +25,7 @@ export class FormatTokenPipe implements PipeTransform {
     showUnit = true,
     defDecimals = DEF_DECIMALS,
   ): Promise<string> {
-    let network = Network.IOTA;
+    let network = DEFAULT_NETWORK;
     if (typeof value === 'object') {
       if (value?.value) {
         value = this.multiValue(value);
@@ -53,7 +57,7 @@ export class FormatTokenPipe implements PipeTransform {
       }
 
       // We default to IOTA if it's not minted yet.
-      network = token.mintingData?.networkFormat || token.mintingData?.network || Network.IOTA;
+      network = token.mintingData?.networkFormat || token.mintingData?.network || DEFAULT_NETWORK;
       if (defDecimals > token.decimals) {
         defDecimals = token.decimals;
       }
@@ -75,7 +79,7 @@ export class FormatTokenPipe implements PipeTransform {
     if (value.exponents === 0) {
       return value.value!;
     } else {
-      return value.value! * Math.pow(10, value.exponents || 6);
+      return value.value! * Math.pow(10, value.exponents || DEFAULT_NETWORK_DECIMALS);
     }
   }
 }

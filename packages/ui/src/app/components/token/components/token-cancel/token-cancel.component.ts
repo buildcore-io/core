@@ -4,7 +4,14 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
-import { Token, TokenTradeOrder, TokenTradeOrderType } from '@soonaverse/interfaces';
+import {
+  DEFAULT_NETWORK,
+  NETWORK_DETAIL,
+  Network,
+  Token,
+  TokenTradeOrder,
+  TokenTradeOrderType,
+} from '@soonaverse/interfaces';
 import bigDecimal from 'js-big-decimal';
 
 @Component({
@@ -65,9 +72,13 @@ export class TokenCancelComponent {
           Number(this.tradeOrder?.price || 0),
         ),
       ),
-      1000 * 1000,
+      NETWORK_DETAIL[this.token?.mintingData?.network || DEFAULT_NETWORK].divideBy,
       6,
     );
+  }
+
+  public getMulti(v?: Network): number {
+    return NETWORK_DETAIL[v || DEFAULT_NETWORK].divideBy;
   }
 
   public get tokenTradeOrderTypes(): typeof TokenTradeOrderType {

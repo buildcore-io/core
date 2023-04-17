@@ -50,7 +50,7 @@
     <div class="text-right">
       <div class="font-bold whitespace-nowrap">
         {{
-          { value: amount, exponents: 6 }
+          { value: amount, exponents: getDefaultNetworkDecimals() }
             | formatToken : token?.mintingData?.networkFormat || token?.mintingData?.network : true
             | async
         }}
@@ -77,7 +77,7 @@
     <div class="text-right">
       <div class="font-bold whitespace-nowrap">
         {{
-          { value: getTargetAmount(), exponents: 6 }
+          getTargetAmount(false)
             | formatToken : token?.mintingData?.networkFormat || token?.mintingData?.network : true
             | async
         }}
@@ -87,7 +87,7 @@
         i18n
         >~{{
           unitsService.getUsd(
-            getTargetAmount(),
+            getTargetAmount(true),
             token?.mintingData?.networkFormat || token?.mintingData?.network
           )
             | async
@@ -189,7 +189,7 @@
     *ngIf="!helper.isExpired(transaction$ | async)"
     [targetAddress]="targetAddress"
     [formattedAmount]="
-      { value: getTargetAmount(), exponents: 6 }
+      getTargetAmount(false)
         | formatToken : token?.mintingData?.networkFormat || token?.mintingData?.network : true
         | async
     "
@@ -200,7 +200,7 @@
     class="mt-6"
     [targetAddress]="targetAddress"
     [network]="token?.mintingData?.networkFormat || token?.mintingData?.network"
-    [targetAmount]="getTargetAmount() + ''"
+    [targetAmount]="getTargetAmount(false) + ''"
   >
   </wen-wallet-deeplink>
 

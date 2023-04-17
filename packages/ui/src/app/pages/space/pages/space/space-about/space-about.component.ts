@@ -18,6 +18,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/collection/services/helper.service';
 import { DataService, SpaceAction } from '@pages/space/services/data.service';
 import {
+  DEFAULT_NETWORK_DECIMALS,
   FILE_SIZES,
   Member,
   SOON_SPACE,
@@ -26,7 +27,7 @@ import {
   StakeType,
 } from '@soonaverse/interfaces';
 import Papa from 'papaparse';
-import { combineLatest, first, map, Observable, skip, Subscription } from 'rxjs';
+import { Observable, Subscription, combineLatest, first, map, skip } from 'rxjs';
 import { SpaceApi } from './../../../../../@api/space.api';
 import { EntityType } from './../../../../../components/wallet-address/wallet-address.component';
 
@@ -73,7 +74,9 @@ export class SpaceAboutComponent implements OnInit, OnDestroy {
     return FILE_SIZES;
   }
   public openStakeModal(amount?: number): void {
-    this.amount = amount ? amount / 1000 / 1000 : undefined;
+    this.amount = amount
+      ? amount / Math.pow(10, this.data.token$.value?.decimals || DEFAULT_NETWORK_DECIMALS)
+      : undefined;
     this.openTokenStake = true;
     this.cd.markForCheck();
   }

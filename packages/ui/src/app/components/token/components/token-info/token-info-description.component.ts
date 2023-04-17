@@ -25,6 +25,7 @@ export class TokenInfoDescriptionComponent {
     $localize`Icon`,
     $localize`Name`,
     $localize`Symbol`,
+    $localize`Decimals`,
     $localize`Launchpad Price`,
     $localize`Network`,
     $localize`Total supply`,
@@ -43,14 +44,6 @@ export class TokenInfoDescriptionComponent {
 
   public get descriptionItemTypes(): typeof DescriptionItemType {
     return DescriptionItemType;
-  }
-
-  public formatTokenBest(amount?: number | null): string {
-    if (!amount) {
-      return '0';
-    }
-
-    return (amount / 1000 / 1000).toFixed(2).toString();
   }
 
   public downloadCurrentDistribution(): void {

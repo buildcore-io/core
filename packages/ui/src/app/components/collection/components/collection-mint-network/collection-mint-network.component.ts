@@ -23,6 +23,7 @@ import { HelperService } from '@pages/collection/services/helper.service';
 import {
   Collection,
   CollectionType,
+  NETWORK_DETAIL,
   Network,
   TRANSACTION_AUTO_EXPIRY_MS,
   Timestamp,
@@ -308,7 +309,7 @@ export class CollectionMintNetworkComponent implements OnInit {
     };
 
     if (this.unsoldControl.value === UnsoldMintingOptions.SET_NEW_PRICE) {
-      params.price = Number(this.newPrice.value) * 1000 * 1000;
+      params.price = Number(this.newPrice.value) * NETWORK_DETAIL[this.selectedNetwork].divideBy;
     }
 
     await this.auth.sign(params, (sc, finish) => {

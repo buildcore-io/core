@@ -221,7 +221,7 @@
         class="w-full mt-6 lg:w-auto"
         [targetAddress]="targetAddress"
         [network]="selectedNetwork"
-        [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()"
+        [targetAmount]="(targetAmount || 0).toString()"
       >
       </wen-wallet-deeplink>
     </div>
