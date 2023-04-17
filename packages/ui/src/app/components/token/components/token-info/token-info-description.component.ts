@@ -25,6 +25,7 @@ export class TokenInfoDescriptionComponent {
     $localize`Icon`,
     $localize`Name`,
     $localize`Symbol`,
+    $localize`Decimals`,
     $localize`Launchpad Price`,
     $localize`Network`,
     $localize`Total supply`,

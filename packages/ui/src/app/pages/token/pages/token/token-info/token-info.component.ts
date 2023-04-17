@@ -20,16 +20,6 @@ export class TokenInfoComponent {
     $localize`Sale ends`,
     $localize`Cooldown ends`,
   ];
-  public tokenInfoLabels: string[] = [
-    $localize`Icon`,
-    $localize`Name`,
-    $localize`Symbol`,
-    $localize`Initial Price`,
-    $localize`Network`,
-    $localize`Total supply`,
-    $localize`Current distribution`,
-    $localize`Type`,
-  ];
 
   constructor(
     public previewImageService: PreviewImageService,
