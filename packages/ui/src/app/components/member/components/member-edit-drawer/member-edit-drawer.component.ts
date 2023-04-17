@@ -81,6 +81,10 @@ export class MemberEditDrawerComponent implements OnInit {
         this.setFormValues(obj);
       }
     });
+
+    setTimeout(() => {
+      this.subscribeNftList();
+    }, 2000);
   }
 
   public get filesizes(): typeof FILE_SIZES {
@@ -115,7 +119,7 @@ export class MemberEditDrawerComponent implements OnInit {
     this.nftsSubscription?.unsubscribe();
     this.nftsSubscription = from(
       this.algoliaService.searchClient.initIndex(COL.NFT).search(search || '', {
-        length: 5,
+        length: 10,
         offset: 0,
         filters: 'owner:' + this.auth.member$.value!.uid + ' AND ' + 'status:minted',
       }),
