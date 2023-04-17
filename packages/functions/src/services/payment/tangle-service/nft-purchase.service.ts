@@ -383,6 +383,7 @@ export const createNftWithdrawOrder = (
       vestingAt: dateToTimestamp(dayjs().add(weeks, 'weeks')),
       stakeType: stakeType || null,
       weeks,
+      nftId: nft.mintingData?.nftId || '',
     },
   };
   const nftUpdateData = {
