@@ -52,7 +52,6 @@ export class FormatTokenPipe implements PipeTransform {
     if (tokenUidOrNetwork) {
       if (Object.keys(Network).includes(tokenUidOrNetwork.toUpperCase())) {
         network = <Network>tokenUidOrNetwork;
-        value = value / NETWORK_DETAIL[network].divideBy;
       } else {
         tokenUid = tokenUidOrNetwork;
       }
@@ -77,6 +76,8 @@ export class FormatTokenPipe implements PipeTransform {
         defDecimals = token.decimals;
       }
       value = value / Math.pow(10, token.decimals || DEFAULT_NETWORK_DECIMALS);
+    } else {
+      value = value / NETWORK_DETAIL[network].divideBy;
     }
 
     const parts = (removeZeroes ? value : value.toFixed(defDecimals)).toString().split('.');

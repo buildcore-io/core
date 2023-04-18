@@ -95,7 +95,7 @@
             <div class="mr-2 font-bold truncate">
               {{
                 currentStep !== stepType.CONFIRM
-                  ? targetAmount
+                  ? (targetAmount | formatToken : collection?.mintingData?.network : true | async)
                   : (targetPrice | formatToken : collection?.mintingData?.network : true | async)
               }}
             </div>

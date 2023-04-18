@@ -87,7 +87,7 @@
         i18n
         >~{{
           unitsService.getUsd(
-            (amount * price),
+            amount * price,
             token?.mintingData?.networkFormat || token?.mintingData?.network
           )
             | async
