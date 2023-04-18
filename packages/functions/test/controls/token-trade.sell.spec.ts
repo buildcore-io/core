@@ -103,7 +103,7 @@ describe('Trade controller, sell token', () => {
     await expectThrow(testEnv.wrap(tradeToken)({}), WenError.no_available_tokens_for_sale.key);
   });
 
-  it('Should throw, total price too low', async () => {
+  it('Should create, total price too low', async () => {
     const request = {
       symbol: token.symbol,
       price: MIN_IOTA_AMOUNT / 2,
@@ -111,7 +111,8 @@ describe('Trade controller, sell token', () => {
       type: TokenTradeOrderType.SELL,
     };
     mockWalletReturnValue(walletSpy, memberAddress, request);
-    await expectThrow(testEnv.wrap(tradeToken)({}), WenError.invalid_params.key);
+    const sellOrder = await testEnv.wrap(tradeToken)({});
+    expect(sellOrder.price).toBe(MIN_IOTA_AMOUNT / 2);
   });
 
   it('Should throw on one, not enough tokens', async () => {
