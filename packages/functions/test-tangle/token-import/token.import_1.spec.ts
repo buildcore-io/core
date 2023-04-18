@@ -86,5 +86,10 @@ describe('Token import', () => {
     });
     const snap = await creditQuery.get<Transaction>();
     expect(snap[0]?.payload.amount).toBe(2 * MIN_IOTA_AMOUNT);
+
+    const payment = await soonDb()
+      .doc(`${COL.TRANSACTION}/${snap[0].payload.sourceTransaction[0]}`)
+      .get<Transaction>();
+    expect(payment?.payload.invalidPayment).toBe(false);
   });
 });
