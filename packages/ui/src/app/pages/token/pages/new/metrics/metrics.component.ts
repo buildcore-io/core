@@ -16,13 +16,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
 import { NewService } from '@pages/token/services/new.service';
-import {
-  DEFAULT_NETWORK,
-  DEFAULT_NETWORK_DECIMALS,
-  NETWORK_DETAIL,
-  Token,
-  TokenAllocation,
-} from '@soonaverse/interfaces';
+import { DEFAULT_NETWORK_DECIMALS, Token, TokenAllocation } from '@soonaverse/interfaces';
 import { merge } from 'rxjs';
 import { StepType } from '../new.page';
 
@@ -63,6 +57,7 @@ export class NewMetricsComponent implements OnInit {
     merge(
       this.newService.allocations?.valueChanges,
       this.newService.priceControl?.valueChanges,
+      this.newService.decimalsControl?.valueChanges,
       this.newService.totalSupplyControl?.valueChanges,
     )
       .pipe(untilDestroyed(this))
@@ -99,7 +94,7 @@ export class NewMetricsComponent implements OnInit {
     } else {
       this.breakdownData = [
         {
-          title: $localize`Total token supply`,
+          title: $localize`Total token supply (no decimals)`,
           type: DescriptionItemType.DEFAULT_NO_TRUNCATE,
           value: this.decimalPipe.transform(
             Number(this.newService.totalSupplyControl?.value) *
@@ -119,11 +114,9 @@ export class NewMetricsComponent implements OnInit {
             type: DescriptionItemType.DEFAULT_NO_TRUNCATE,
             value: a.percentage + '%',
             extraValue: `(${this.helper.percentageMarketCap(a.percentage, {
-              pricePerToken:
-                Number(this.newService.priceControl?.value) *
-                NETWORK_DETAIL[DEFAULT_NETWORK].divideBy,
+              pricePerToken: Number(this.newService.priceControl?.value),
               totalSupply: this.newService.totalSupplyControl?.value,
-            } as Token)})`,
+            } as Token)} Mi)`,
           })),
       ];
     }

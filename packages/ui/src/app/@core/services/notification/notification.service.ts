@@ -16,7 +16,7 @@ export class NotificationService {
         next: (obj) => {
           // Success
           this.notification.success(msg, '');
-          cb();
+          cb(true);
           observe.next(obj);
         },
         error: (obj: any) => {
@@ -28,7 +28,7 @@ export class NotificationService {
           }
 
           // Pass it.
-          cb();
+          cb(false);
           observe.error(obj);
         },
       });

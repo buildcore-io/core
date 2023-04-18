@@ -16,8 +16,7 @@ import { UnitsService } from '@core/services/units';
 import { download } from '@core/utils/tools.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
-  DEFAULT_NETWORK,
-  NETWORK_DETAIL,
+  DEFAULT_NETWORK_DECIMALS,
   Space,
   StakeReward,
   StakeRewardStatus,
@@ -100,8 +99,7 @@ export class SpaceRewardScheduleComponent implements OnInit {
             endDate: dayjs(v.EndDate),
             tokenVestingDate: dayjs(v.TokenVestingDate),
             tokensToDistribute:
-              v.TokensToDistribute *
-              NETWORK_DETAIL[this.token?.mintingData?.network || DEFAULT_NETWORK].divideBy,
+              v.TokensToDistribute * Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS),
           };
         });
         this.uploadStage = 2;

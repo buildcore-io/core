@@ -143,7 +143,7 @@ export class SpaceAboutComponent implements OnInit, OnDestroy {
       .pipe(skip(1), first())
       .subscribe((members) => {
         this.exportingMembers = false;
-        const fields = ['', 'EthAddress'];
+        const fields = ['', 'address'];
         const csv = Papa.unparse({
           fields,
           data: members.map((m) => [m.uid]),

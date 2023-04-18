@@ -81,13 +81,13 @@
           class="floating-title"
           [ngClass]="newService.totalSupplyControl.value ? 'value' : ''"
         >
-          <nz-form-label i18n>Total token supply (up to 6 decimals are supported)</nz-form-label>
+          <nz-form-label i18n>Total token supply</nz-form-label>
           <nz-form-control i18n-nzErrorTip nzErrorTip="Total supply is invalid.">
             <input
               nz-input
               type="number"
               i18n-placeholder
-              placeholder="Total token supply (up to 6 decimals are supported)"
+              placeholder="Total token supply"
               nzSize="large"
               [formControl]="newService.totalSupplyControl"
             />

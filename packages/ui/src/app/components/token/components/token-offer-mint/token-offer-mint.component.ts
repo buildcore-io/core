@@ -262,9 +262,13 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
         this.agreeTermsConditions = true;
         this.agreeTokenTermsConditions = true;
         // Hide while we're waiting.
-        this.proceedWithOffer(() => {
-          this.isOpen = true;
-          this.cd.markForCheck();
+        this.proceedWithOffer((s: boolean) => {
+          if (s) {
+            this.isOpen = true;
+            this.cd.markForCheck();
+          } else {
+            this.close();
+          }
         }).catch(() => {
           this.close();
         });
@@ -346,13 +350,20 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
 
     const r = await this.auth.sign(params, (sc, finish) => {
       this.notification
-        .processRequest(this.tokenMarketApi.tradeToken(sc), $localize`Offer order created.`, finish)
+        .processRequest(
+          this.tokenMarketApi.tradeToken(sc),
+          $localize`Offer order created.`,
+          (success: boolean) => {
+            cb(success);
+            finish();
+          },
+        )
         .subscribe((val: any) => {
           this.transSubscription?.unsubscribe();
           this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
           this.pushToHistory(val, val.uid, dayjs(), $localize`Waiting for transaction...`);
           if (cb) {
-            cb();
+            cb(true);
           }
         });
     });

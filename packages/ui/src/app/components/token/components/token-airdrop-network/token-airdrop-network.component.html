@@ -180,7 +180,7 @@
         [targetAddress]="targetAddress"
         [network]="token?.mintingData?.network"
         [tokenId]="token?.mintingData?.tokenId"
-        [tokenAmount]="(getTotalToDrop() | convertToken : token?.uid | async) || undefined"
+        [tokenAmount]="getTotalToDrop()"
         [targetAmount]="targetAmount?.toString()"
       >
       </wen-wallet-deeplink>

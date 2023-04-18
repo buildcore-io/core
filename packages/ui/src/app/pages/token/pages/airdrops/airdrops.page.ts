@@ -36,7 +36,7 @@ export interface AirdropItem {
 })
 export class AirdropsPage {
   public tableConfig = [
-    { label: `EthAddress`, key: 'address' },
+    { label: `Address`, key: 'address' },
     { label: `Amount`, key: 'amount' },
     { label: `StakeType`, key: 'stakeType' },
     { label: `VestingAt`, key: 'vestingAt' },
