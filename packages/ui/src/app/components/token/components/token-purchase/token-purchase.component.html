@@ -144,7 +144,17 @@
       class="flex items-center justify-between flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14"
     >
       <div class="mt-1">
-        {{ getResultAmount() | async }}
+        {{
+          isAmountInput
+            ? (
+                getResultAmount()
+                | convertToken : token?.mintingData?.network
+                | async
+                | formatToken : token?.mintingData?.network : false : false
+                | async
+              )?.toString() || undefined
+            : (getResultAmount() | formatToken : token?.uid : false : false | async)
+        }}
       </div>
       <div class="mt-1">
         {{ isAmountInput ? unitsService.label() : token?.symbol }}
@@ -178,7 +188,10 @@
     class="mt-6"
     [targetAddress]="targetAddress"
     [network]="token?.mintingData?.network"
-    [targetAmount]="getTargetAmount()"
+    [targetAmount]="
+      (getTargetAmount() | convertToken : token?.mintingData?.network | async)?.toString() ||
+      undefined
+    "
   >
   </wen-wallet-deeplink>
 </ng-template>
@@ -206,7 +219,10 @@
     class="mt-6"
     [targetAddress]="targetAddress"
     [network]="token?.mintingData?.network"
-    [targetAmount]="getTargetAmount()"
+    [targetAmount]="
+      (getTargetAmount() | convertToken : token?.mintingData?.network | async)?.toString() ||
+      undefined
+    "
   >
   </wen-wallet-deeplink>
 
@@ -314,10 +330,5 @@
     >
       Close checkout
     </button>
-    <!--
-        <button nz-button nzType="default" (click)="goToToken()"
-            nzSize="large" class="w-full mb-6 lg:w-auto lg:mb-0 lg:mt-1" i18n>
-            Show my Tokens
-        </button> -->
   </div>
 </ng-template>

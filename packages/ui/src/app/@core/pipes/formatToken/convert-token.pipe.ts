@@ -22,7 +22,7 @@ export class ConvertTokenPipe implements PipeTransform {
     value: number,
     tokenUidOrNetwork: string | null | Network = DEFAULT_NETWORK,
   ): Promise<number> {
-    if (tokenUidOrNetwork === null) {
+    if (tokenUidOrNetwork === null || tokenUidOrNetwork === undefined) {
       tokenUidOrNetwork = DEFAULT_NETWORK;
     }
 

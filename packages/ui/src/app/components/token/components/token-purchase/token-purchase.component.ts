@@ -13,7 +13,6 @@ import { Router } from '@angular/router';
 import { OrderApi } from '@api/order.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DescriptionItemType } from '@components/description/description.component';
-import { FormatTokenPipe } from '@core/pipes/formatToken/format-token.pipe';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
@@ -33,7 +32,6 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import bigDecimal from 'js-big-decimal';
 import { BehaviorSubject, Subscription, filter } from 'rxjs';
 
 export enum StepType {
@@ -94,7 +92,6 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
     public unitsService: UnitsService,
-    public formatToken: FormatTokenPipe,
     public transactionService: TransactionService,
     private auth: AuthService,
     private notification: NotificationService,
@@ -346,41 +343,14 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
     return NETWORK_DETAIL[v || DEFAULT_NETWORK].divideBy;
   }
 
-  public getTargetAmount(): string {
-    return bigDecimal.divide(
-      bigDecimal.floor(
-        bigDecimal.multiply(
-          Number(
-            this.formatToken.multiValue({
-              value: this.amountControl.value,
-              exponents: this.token?.decimals,
-            }),
-          ),
-          Number(this.token?.pricePerToken || 0),
-        ),
-      ),
-      1,
-      6,
-    );
+  public getTargetAmount(): number {
+    return this.amountControl.value * (this.token?.pricePerToken || 0);
   }
 
-  public async getResultAmount(): Promise<string> {
+  public getResultAmount(): number {
     return this.isAmountInput
-      ? this.formatToken.transform(
-          {
-            value: this.amountControl.value * (this.token?.pricePerToken || 0),
-            exponents: this.token?.decimals,
-          },
-          this.token?.uid,
-          false,
-          false,
-        )
-      : this.formatToken.transform(
-          this.amountControl.value * Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS),
-          undefined,
-          false,
-          false,
-        );
+      ? this.amountControl.value * (this.token?.pricePerToken || 0)
+      : this.amountControl.value * Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS);
   }
 
   public ngOnDestroy(): void {
