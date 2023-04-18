@@ -1,14 +1,13 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { CacheService } from '@core/services/cache/cache.service';
 import {
-  DEFAULT_NETWORK,
-  DEFAULT_NETWORK_DECIMALS,
-  NETWORK_DETAIL,
-  Network,
+    DEFAULT_NETWORK,
+    NETWORK_DETAIL,
+    Network,
+    getDefDecimalIfNotSet,
 } from '@soonaverse/interfaces';
 import { firstValueFrom, skipWhile } from 'rxjs';
 
-const DEF_DECIMALS = 6;
 export interface ConvertValue {
   value: number | null | undefined;
   exponents: number | null | undefined; // DEFAULT TO SIX
@@ -45,7 +44,7 @@ export class ConvertTokenPipe implements PipeTransform {
         return 0;
       }
 
-      value = value * Math.pow(10, token.decimals || DEFAULT_NETWORK_DECIMALS);
+      value = value * Math.pow(10, getDefDecimalIfNotSet(token.decimals));
     }
 
     return value;

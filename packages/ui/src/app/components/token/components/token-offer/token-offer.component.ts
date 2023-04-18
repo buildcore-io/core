@@ -16,13 +16,13 @@ import { UnitsService } from '@core/services/units';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import {
   DEFAULT_NETWORK,
-  DEFAULT_NETWORK_DECIMALS,
   NETWORK_DETAIL,
   SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
   Space,
   Token,
   TokenDistribution,
   TokenTradeOrderType,
+  getDefDecimalIfNotSet,
 } from '@soonaverse/interfaces';
 import bigDecimal from 'js-big-decimal';
 
@@ -95,7 +95,7 @@ export class TokenOfferComponent {
 
     const params: any = {
       symbol: this.token.symbol,
-      count: Number(this.amount * Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS)),
+      count: Number(this.amount * Math.pow(10, getDefDecimalIfNotSet(this.token?.decimals))),
       price: Number(this.price),
       type: TokenTradeOrderType.SELL,
     };
@@ -132,8 +132,9 @@ export class TokenOfferComponent {
         bigDecimal.floor(bigDecimal.multiply(Number(this.amount), Number(this.price))),
         Math.pow(
           10,
-          NETWORK_DETAIL[this.token?.mintingData?.network || DEFAULT_NETWORK].decimals ||
-            DEFAULT_NETWORK_DECIMALS,
+          getDefDecimalIfNotSet(
+            NETWORK_DETAIL[this.token?.mintingData?.network || DEFAULT_NETWORK].decimals,
+          ),
         ),
         6,
       ),

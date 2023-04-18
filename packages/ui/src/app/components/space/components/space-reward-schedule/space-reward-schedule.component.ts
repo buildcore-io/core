@@ -16,11 +16,11 @@ import { UnitsService } from '@core/services/units';
 import { download } from '@core/utils/tools.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
-  DEFAULT_NETWORK_DECIMALS,
   Space,
   StakeReward,
   StakeRewardStatus,
   Token,
+  getDefDecimalIfNotSet,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { NzUploadFile } from 'ng-zorro-antd/upload';
@@ -99,7 +99,7 @@ export class SpaceRewardScheduleComponent implements OnInit {
             endDate: dayjs(v.EndDate),
             tokenVestingDate: dayjs(v.TokenVestingDate),
             tokensToDistribute:
-              v.TokensToDistribute * Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS),
+              v.TokensToDistribute * Math.pow(10, getDefDecimalIfNotSet(this.token?.decimals)),
           };
         });
         this.uploadStage = 2;

@@ -22,7 +22,6 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService as HelperServiceProposal } from '@pages/proposal/services/helper.service';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
-  DEFAULT_NETWORK_DECIMALS,
   Proposal,
   ProposalAnswer,
   SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
@@ -32,6 +31,7 @@ import {
   Token,
   Transaction,
   TransactionType,
+  getDefDecimalIfNotSet,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { BehaviorSubject, Subscription, interval } from 'rxjs';
@@ -406,8 +406,7 @@ export class TokenVoteComponent implements OnInit, OnDestroy {
   public getWeight(): number {
     let amount;
     if (this.voteTypeControl.value === VoteType.NATIVE_TOKEN) {
-      amount =
-        this.amountControl.value * Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS);
+      amount = this.amountControl.value * Math.pow(10, getDefDecimalIfNotSet(this.token?.decimals));
     } else {
       amount = this.totalStaked || 0;
     }
@@ -431,7 +430,7 @@ export class TokenVoteComponent implements OnInit, OnDestroy {
   }
 
   public getTargetAmount(): number {
-    return this.amount * Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS);
+    return this.amount * Math.pow(10, getDefDecimalIfNotSet(this.token?.decimals));
   }
 
   public get exchangeFee(): number {

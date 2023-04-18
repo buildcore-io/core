@@ -31,6 +31,7 @@ import {
   TokenTradeOrderType,
   Transaction,
   TransactionType,
+  getDefDecimalIfNotSet,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
@@ -341,7 +342,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
 
     const params: any = {
       symbol: this.token.symbol,
-      count: Number(this.amount * Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS)),
+      count: Number(this.amount * Math.pow(10, getDefDecimalIfNotSet(this.token?.decimals))),
       price: Number(this.price),
       type: TokenTradeOrderType.BUY,
     };
@@ -362,6 +363,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
           this.pushToHistory(val, val.uid, dayjs(), $localize`Waiting for transaction...`);
           if (cb) {
             cb(true);
+            finish();
           }
         });
     });
@@ -385,8 +387,9 @@ export class TokenBidComponent implements OnInit, OnDestroy {
         bigDecimal.floor(bigDecimal.multiply(Number(this.amount), Number(this.price))),
         Math.pow(
           10,
-          NETWORK_DETAIL[this.token?.mintingData?.network || DEFAULT_NETWORK].decimals ||
-            DEFAULT_NETWORK_DECIMALS,
+          getDefDecimalIfNotSet(
+            NETWORK_DETAIL[this.token?.mintingData?.network || DEFAULT_NETWORK].decimals,
+          ),
         ),
         6,
       ),

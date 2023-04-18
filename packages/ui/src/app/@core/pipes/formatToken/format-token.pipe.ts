@@ -2,9 +2,9 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { CacheService } from '@core/services/cache/cache.service';
 import {
   DEFAULT_NETWORK,
-  DEFAULT_NETWORK_DECIMALS,
   NETWORK_DETAIL,
   Network,
+  getDefDecimalIfNotSet,
 } from '@soonaverse/interfaces';
 import { firstValueFrom, skipWhile } from 'rxjs';
 
@@ -75,7 +75,8 @@ export class FormatTokenPipe implements PipeTransform {
       if (defDecimals > token.decimals) {
         defDecimals = token.decimals;
       }
-      value = value / Math.pow(10, token.decimals || DEFAULT_NETWORK_DECIMALS);
+
+      value = value / Math.pow(10, getDefDecimalIfNotSet(token.decimals));
     } else {
       value = value / NETWORK_DETAIL[network].divideBy;
     }
@@ -90,7 +91,7 @@ export class FormatTokenPipe implements PipeTransform {
     if (value.exponents === 0) {
       return value.value!;
     } else {
-      return value.value! * Math.pow(10, value.exponents || DEFAULT_NETWORK_DECIMALS);
+      return value.value! * Math.pow(10, getDefDecimalIfNotSet(value.exponents));
     }
   }
 }

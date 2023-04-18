@@ -161,6 +161,10 @@ export const NETWORK_DETAIL = {
 
 export const DEFAULT_NETWORK_DECIMALS = 6;
 
+export const getDefDecimalIfNotSet = (v?: number | null) => {
+  return v !== undefined && v !== null && v > -1 ? v : DEFAULT_NETWORK_DECIMALS;
+};
+
 export type Units = 'Pi' | 'Ti' | 'Gi' | 'Mi' | 'Ki' | 'i';
 
 export const getNetworkPair = (network: Network) => {

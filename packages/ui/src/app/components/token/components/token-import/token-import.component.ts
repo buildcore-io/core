@@ -173,21 +173,6 @@ export class TokenImportComponent implements OnInit {
         }, 2000);
       }
 
-      if (
-        val &&
-        val.type === TransactionType.CREDIT &&
-        val.payload.reconciled === true &&
-        val.ignoreWallet === false &&
-        !val.payload?.walletReference?.chainReference
-      ) {
-        this.pushToHistory(
-          val,
-          val.uid + '_false',
-          val.createdOn,
-          $localize`Invalid amount received. Refunding transaction...`,
-        );
-      }
-
       const markInvalid = () => {
         setTimeout(() => {
           this.currentStep = StepType.TRANSACTION;
@@ -200,15 +185,33 @@ export class TokenImportComponent implements OnInit {
         val &&
         val.type === TransactionType.CREDIT &&
         val.payload.reconciled === true &&
+        val.payload.invalidPayment === true &&
+        val.ignoreWallet === false &&
+        !val.payload?.walletReference?.chainReference
+      ) {
+        this.pushToHistory(
+          val,
+          val.uid + '_credit_back',
+          dayjs(),
+          $localize`Invalid amount received. Refunding transaction...`,
+        );
+      }
+
+      if (
+        val &&
+        val.type === TransactionType.CREDIT &&
+        val.payload.reconciled === true &&
+        val.payload.invalidPayment === true &&
         val.ignoreWallet === true &&
         !val.payload?.walletReference?.chainReference
       ) {
         this.pushToHistory(
           val,
-          val.uid + '_false',
-          val.createdOn,
+          val.uid + '_credit_back',
+          dayjs(),
           $localize`Invalid transaction.You must gift storage deposit.`,
         );
+
         markInvalid();
       }
 
@@ -216,18 +219,29 @@ export class TokenImportComponent implements OnInit {
         val &&
         val.type === TransactionType.CREDIT &&
         val.payload.reconciled === true &&
-        val.payload?.walletReference?.chainReference
+        val.payload.invalidPayment === false &&
+        !val.payload?.walletReference?.chainReference
       ) {
         this.pushToHistory(
           val,
-          val.uid + '_true',
+          val.uid + '_credit_back',
           dayjs(),
-          $localize`Invalid payment refunded.`,
-          val.payload?.walletReference?.chainReference,
+          $localize`Refunding your payment...`,
         );
+      }
 
-        // Let's go back to wait. With slight delay so they can see this.
-        markInvalid();
+      // Credit
+      if (
+        val &&
+        val.type === TransactionType.CREDIT &&
+        val.payload.reconciled === true &&
+        val.payload?.walletReference?.chainReference
+      ) {
+        this.pushToHistory(val, val.uid + '_refund_complete', dayjs(), 'Payment refunded.');
+
+        if (val.payload.invalidPayment) {
+          markInvalid();
+        }
       }
 
       this.cd.markForCheck();

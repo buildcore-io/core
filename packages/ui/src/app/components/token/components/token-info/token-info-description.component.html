@@ -2,7 +2,7 @@
   [items]="[
     { title: tokenInfoLabels[1], value: token?.name },
     { title: tokenInfoLabels[2], value: token?.symbol },
-    { title: tokenInfoLabels[3], value: token?.decimals },
+    { title: tokenInfoLabels[3], value: token?.decimals?.toString()},
     !helper.isMinted(token)
       ? {
           title: tokenInfoLabels[4],

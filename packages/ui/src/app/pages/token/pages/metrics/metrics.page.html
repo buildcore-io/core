@@ -20,7 +20,7 @@
       >
         <span class="font-bold"
           >{{ (data.token$ | async)?.totalSupply | formatToken:(data.token$ |
-          async)?.uid:false:false }}</span
+          async)?.uid:false:false | async }}</span
         >
         <span>{{ ' ' + (data.token$ | async)?.symbol }}</span>
       </div>

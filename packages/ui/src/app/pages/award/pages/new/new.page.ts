@@ -19,7 +19,7 @@ import {
   Token,
   TokenStatus,
 } from '@soonaverse/interfaces';
-import { BehaviorSubject, Subscription, of, switchMap } from 'rxjs';
+import { BehaviorSubject, of, Subscription, switchMap } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { AwardApi } from './../../../../@api/award.api';
 import { MemberApi } from './../../../../@api/member.api';
@@ -28,7 +28,7 @@ import { NotificationService } from './../../../../@core/services/notification/n
 import { AuthService } from './../../../../components/auth/services/auth.service';
 
 import { FileApi } from '@api/file.api';
-import { DEFAULT_NETWORK_DECIMALS, Network } from '@soonaverse/interfaces';
+import { getDefDecimalIfNotSet, Network } from '@soonaverse/interfaces';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 
@@ -216,7 +216,7 @@ export class NewPage implements OnInit, OnDestroy {
       description: obj.badgeDescription,
       name: obj.badgeName,
       tokenReward:
-        obj.badgeToken * Math.pow(10, this.getCurrentToken()?.decimals || DEFAULT_NETWORK_DECIMALS),
+        obj.badgeToken * Math.pow(10, getDefDecimalIfNotSet(this.getCurrentToken()?.decimals)),
       total: obj.badgeCount,
       image: obj.image,
       tokenSymbol: this.getCurrentToken()?.symbol,

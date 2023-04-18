@@ -6,11 +6,7 @@ import { NotificationService } from '@core/services/notification';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { download } from '@core/utils/tools.utils';
 import { DataService } from '@pages/token/services/data.service';
-import {
-  DEFAULT_NETWORK_DECIMALS,
-  MAX_TOTAL_TOKEN_SUPPLY,
-  StakeType,
-} from '@soonaverse/interfaces';
+import { MAX_TOTAL_TOKEN_SUPPLY, StakeType, getDefDecimalIfNotSet } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { NzUploadFile } from 'ng-zorro-antd/upload';
 import Papa from 'papaparse';
@@ -109,8 +105,7 @@ export class AirdropsPage {
       drops: this.airdropData.map((r) => ({
         recipient: r.address,
         count: Math.floor(
-          Number(r.amount) *
-            Math.pow(10, this.data.token$.value?.decimals || DEFAULT_NETWORK_DECIMALS),
+          Number(r.amount) * Math.pow(10, getDefDecimalIfNotSet(this.data.token$.value?.decimals)),
         ),
         vestingAt: dayjs(r.vestingAt).toISOString(),
         stakeType: r.stakeType ? r.stakeType.toLocaleLowerCase() : StakeType.STATIC,

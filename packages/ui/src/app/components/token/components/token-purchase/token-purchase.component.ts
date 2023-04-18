@@ -22,7 +22,6 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   DEFAULT_NETWORK,
-  DEFAULT_NETWORK_DECIMALS,
   NETWORK_DETAIL,
   Network,
   Space,
@@ -30,6 +29,7 @@ import {
   Token,
   Transaction,
   TransactionType,
+  getDefDecimalIfNotSet,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { BehaviorSubject, Subscription, filter } from 'rxjs';
@@ -350,7 +350,7 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
   public getResultAmount(): number {
     return this.isAmountInput
       ? this.amountControl.value * (this.token?.pricePerToken || 0)
-      : this.amountControl.value * Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS);
+      : this.amountControl.value * Math.pow(10, getDefDecimalIfNotSet(this.token?.decimals));
   }
 
   public ngOnDestroy(): void {

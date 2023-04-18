@@ -30,13 +30,13 @@ import {
   Collection,
   CollectionType,
   DEFAULT_NETWORK,
-  DEFAULT_NETWORK_DECIMALS,
   DISCORD_REGEXP,
   DiscountLine,
   Space,
   TWITTER_REGEXP,
   Token,
   URL_REGEXP,
+  getDefDecimalIfNotSet,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { DisabledTimeConfig } from 'ng-zorro-antd/date-picker';
@@ -234,7 +234,7 @@ export class UpsertPage implements OnInit, OnDestroy {
                   this.addDiscount(
                     v.tokenReward
                       ? (
-                          v.tokenReward / Math.pow(10, token?.decimals || DEFAULT_NETWORK_DECIMALS)
+                          v.tokenReward / Math.pow(10, getDefDecimalIfNotSet(token?.decimals))
                         ).toString()
                       : '0',
                     token?.uid || '',
@@ -368,7 +368,7 @@ export class UpsertPage implements OnInit, OnDestroy {
           const token = r as unknown as Token;
           this.tokenCache[token.uid] = {
             symbol: token.symbol,
-            decimals: token.decimals || DEFAULT_NETWORK_DECIMALS,
+            decimals: getDefDecimalIfNotSet(token.decimals),
           };
           return {
             label: token.name + ' ( ' + token.symbol + ' )',

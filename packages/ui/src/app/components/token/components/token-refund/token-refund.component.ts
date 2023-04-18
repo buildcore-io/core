@@ -12,7 +12,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
-import { DEFAULT_NETWORK_DECIMALS, Token, TokenDistribution } from '@soonaverse/interfaces';
+import { Token, TokenDistribution, getDefDecimalIfNotSet } from '@soonaverse/interfaces';
 
 @Component({
   selector: 'wen-token-refund',
@@ -74,7 +74,7 @@ export class TokenRefundComponent {
       token: this.token?.uid,
       amount:
         Number(this.amountControl.value) *
-        Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS),
+        Math.pow(10, getDefDecimalIfNotSet(this.token?.decimals)),
     };
     await this.auth.sign(data, (sc, finish) => {
       this.notification

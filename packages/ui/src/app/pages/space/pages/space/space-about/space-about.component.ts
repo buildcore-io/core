@@ -18,13 +18,13 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/collection/services/helper.service';
 import { DataService, SpaceAction } from '@pages/space/services/data.service';
 import {
-  DEFAULT_NETWORK_DECIMALS,
   FILE_SIZES,
   Member,
   SOON_SPACE,
   SOON_SPACE_TEST,
   Space,
   StakeType,
+  getDefDecimalIfNotSet,
 } from '@soonaverse/interfaces';
 import Papa from 'papaparse';
 import { Observable, Subscription, combineLatest, first, map, skip } from 'rxjs';
@@ -75,7 +75,7 @@ export class SpaceAboutComponent implements OnInit, OnDestroy {
   }
   public openStakeModal(amount?: number): void {
     this.amount = amount
-      ? amount / Math.pow(10, this.data.token$.value?.decimals || DEFAULT_NETWORK_DECIMALS)
+      ? amount / Math.pow(10, getDefDecimalIfNotSet(this.data.token$.value?.decimals))
       : undefined;
     this.openTokenStake = true;
     this.cd.markForCheck();
