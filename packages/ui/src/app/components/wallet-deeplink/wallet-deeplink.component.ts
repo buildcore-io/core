@@ -1,8 +1,6 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { CacheService } from '@core/services/cache/cache.service';
 import { DEFAULT_NETWORK, NETWORK_DETAIL, Network, WEN_NAME } from '@soonaverse/interfaces';
-import { firstValueFrom, skipWhile } from 'rxjs';
 
 @Component({
   selector: 'wen-wallet-deeplink',
@@ -82,14 +80,14 @@ export class WalletDeeplinkComponent {
   private _tokenId?: string;
   private _tokenAmount?: number;
 
-  constructor(private sanitizer: DomSanitizer, private cache: CacheService) {}
+  constructor(private sanitizer: DomSanitizer, private cd: ChangeDetectorRef) {}
 
-  private async setLinks(): Promise<void> {
-    this.fireflyDeepLink = await this.getFireflyDeepLink();
-    this.tanglePayDeepLink = await this.getTanglePayDeepLink();
+  private setLinks(): void {
+    this.fireflyDeepLink = this.getFireflyDeepLink();
+    this.tanglePayDeepLink = this.getTanglePayDeepLink();
   }
 
-  private async getFireflyDeepLink(): Promise<SafeUrl> {
+  private getFireflyDeepLink(): SafeUrl {
     if (!this.targetAddress || !this.targetAmount) {
       return '';
     }
@@ -97,13 +95,6 @@ export class WalletDeeplinkComponent {
     // We want to round to maximum 6 digits.
     if (this.network === Network.RMS || this.network === Network.SMR) {
       const walletType = this.network === Network.SMR ? 'firefly' : 'firefly-alpha';
-      const token = await firstValueFrom(
-        this.cache.getToken(this.tokenId).pipe(
-          skipWhile((t) => {
-            return !t;
-          }),
-        ),
-      );
       if (this.tokenId && this.tokenAmount) {
         return this.sanitizer.bypassSecurityTrustUrl(
           walletType +
@@ -141,7 +132,7 @@ export class WalletDeeplinkComponent {
     }
   }
 
-  private async getTanglePayDeepLink(): Promise<SafeUrl> {
+  private getTanglePayDeepLink(): SafeUrl {
     if (!this.targetAddress || !this.targetAmount) {
       return '';
     }
@@ -149,13 +140,6 @@ export class WalletDeeplinkComponent {
     // We want to round to maximum 6 digits.
     if (this.network === Network.RMS || this.network === Network.SMR) {
       if (this.tokenId && this.tokenAmount) {
-        const token = await firstValueFrom(
-          this.cache.getToken(this.tokenId).pipe(
-            skipWhile((t) => {
-              return !t;
-            }),
-          ),
-        );
         return this.sanitizer.bypassSecurityTrustUrl(
           'tanglepay://iota_sendTransaction/' +
             this.targetAddress +

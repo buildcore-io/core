@@ -247,18 +247,20 @@
           <ng-container *ngIf="data.key === '1'">
             <td>{{data.category}}</td>
             <td>{{data.category_extra}}</td>
-            <td>{{(pInt(data.level0) | formatToken: undefined:false:false:0 | async)}}</td>
+            <td>
+              {{(pInt(data.level0) | formatToken: (token$ | async)?.uid:false:false:0 | async)}}
+            </td>
             <td [ngClass]="(getLevelClass(1) | async)">
-              {{(pInt(data.level1) | formatToken: undefined:false:false:0 | async)}}
+              {{(pInt(data.level1) | formatToken: (token$ | async)?.uid:false:false:0 | async)}}
             </td>
             <td [ngClass]="(getLevelClass(2) | async)">
-              {{(pInt(data.level2) | formatToken: undefined:false:false:0 | async)}}
+              {{(pInt(data.level2) | formatToken: (token$ | async)?.uid:false:false:0 | async)}}
             </td>
             <td [ngClass]="(getLevelClass(3) | async)">
-              {{(pInt(data.level3) | formatToken: undefined:false:false:0 | async)}}
+              {{(pInt(data.level3) | formatToken: (token$ | async)?.uid:false:false:0 | async)}}
             </td>
             <td [ngClass]="(getLevelClass(4) | async)">
-              {{(pInt(data.level4) | formatToken: undefined:false:false:0 | async)}}
+              {{(pInt(data.level4) | formatToken: (token$ | async)?.uid:false:false:0 | async)}}
             </td>
           </ng-container>
         </tr>

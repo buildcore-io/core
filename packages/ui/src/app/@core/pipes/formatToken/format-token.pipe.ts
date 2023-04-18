@@ -18,6 +18,16 @@ export interface ConvertValue {
 })
 export class FormatTokenPipe implements PipeTransform {
   public constructor(private cache: CacheService) {}
+  public async transformTest(
+    _value: number | null | undefined | ConvertValue,
+    _tokenUidOrNetwork?: string | null,
+    _removeZeroes = false,
+    _showUnit = true,
+    _defDecimals = DEF_DECIMALS,
+  ): Promise<string> {
+    return '';
+  }
+
   public async transform(
     value: number | null | undefined | ConvertValue,
     tokenUidOrNetwork?: string | null,
@@ -32,6 +42,10 @@ export class FormatTokenPipe implements PipeTransform {
       } else {
         value = 0;
       }
+    }
+
+    if (!value) {
+      value = 0;
     }
 
     let tokenUid: string | undefined = undefined;
@@ -61,13 +75,10 @@ export class FormatTokenPipe implements PipeTransform {
       if (defDecimals > token.decimals) {
         defDecimals = token.decimals;
       }
+      value = value / Math.pow(10, token.decimals || DEFAULT_NETWORK_DECIMALS);
+    } else {
+      value = value / NETWORK_DETAIL[network].divideBy;
     }
-
-    if (!value) {
-      value = 0;
-    }
-
-    value = value / NETWORK_DETAIL[network].divideBy;
 
     const parts = (removeZeroes ? value : value.toFixed(defDecimals)).toString().split('.');
     const formattedValue =

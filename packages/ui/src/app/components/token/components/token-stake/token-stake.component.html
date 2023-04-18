@@ -310,7 +310,7 @@
     [targetAddress]="targetAddress"
     [network]="token?.mintingData?.network"
     [tokenId]="token?.mintingData?.tokenId"
-    [tokenAmount]="amountControl.value"
+    [tokenAmount]="(amountControl.value | convertToken : token?.uid | async) || undefined"
     [targetAmount]="(targetAmount || 0).toString()"
   ></wen-wallet-deeplink>
 

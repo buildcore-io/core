@@ -20,7 +20,9 @@ import { StorageItem, getItem, setItem } from '@core/utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
+  DEFAULT_NETWORK,
   DEFAULT_NETWORK_DECIMALS,
+  NETWORK_DETAIL,
   Network,
   Space,
   TRANSACTION_AUTO_EXPIRY_MS,
@@ -368,14 +370,13 @@ export class TokenBidComponent implements OnInit, OnDestroy {
 
   public getTargetAmount(divideBy = false): number {
     return Number(
-      bigDecimal.divide(
-        bigDecimal.floor(
-          bigDecimal.multiply(
-            Number(this.amount * Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS)),
-            Number(this.price),
-          ),
+      bigDecimal[divideBy ? 'divide' : 'multiply'](
+        bigDecimal.floor(bigDecimal.multiply(Number(this.amount), Number(this.price))),
+        Math.pow(
+          10,
+          NETWORK_DETAIL[this.token?.mintingData?.network || DEFAULT_NETWORK].decimals ||
+            DEFAULT_NETWORK_DECIMALS,
         ),
-        divideBy ? Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS) : 1,
         6,
       ),
     );

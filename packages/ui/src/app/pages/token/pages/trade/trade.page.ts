@@ -635,8 +635,10 @@ export class TradePage implements OnInit, OnDestroy {
   public openTradeModal(): void {
     if (this.currentTradeFormState$.value === TradeFormState.BUY) {
       this.isBidTokenOpen = true;
+      this.isAskTokenOpen = false;
     } else {
       this.isAskTokenOpen = true;
+      this.isBidTokenOpen = false;
     }
     this.cd.markForCheck();
   }

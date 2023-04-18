@@ -244,7 +244,7 @@ export const WenError = {
   },
   token_must_be_public: {
     code: 2124,
-    key: 'Token must be public',
+    key: 'Token must be public. Complete KYC.',
   },
   url_not_img_or_video: {
     code: 2125,
