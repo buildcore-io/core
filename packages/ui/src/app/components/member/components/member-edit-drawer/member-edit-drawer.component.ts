@@ -50,10 +50,14 @@ export class MemberEditDrawerComponent implements OnInit {
   public minted = false;
   public maxAboutCharacters = maxAboutCharacters;
   public memberForm: FormGroup;
-  private nftsSubscription?: Subscription;
-  // Improve
-  private nftCache: any = {};
+  public nftCache: {
+    [propName: string]: {
+      name: string;
+      media: string;
+    };
+  } = {};
 
+  private nftsSubscription?: Subscription;
   constructor(
     private auth: AuthService,
     private memberApi: MemberApi,
@@ -110,6 +114,10 @@ export class MemberEditDrawerComponent implements OnInit {
                 value: nft.uid,
               },
             ]);
+            this.nftCache[nft.uid] = {
+              name: nft.name,
+              media: nft.media,
+            };
           }
         });
     }
@@ -126,11 +134,14 @@ export class MemberEditDrawerComponent implements OnInit {
     ).subscribe((r) => {
       this.filteredNfts$.next(
         r.hits.map((r) => {
-          const token = r as unknown as Nft;
-          this.nftCache[token.uid] = token.name;
+          const nft = r as unknown as Nft;
+          this.nftCache[nft.uid] = {
+            name: nft.name,
+            media: nft.media,
+          };
           return {
-            label: token.name,
-            value: token.uid,
+            label: nft.name,
+            value: nft.uid,
           };
         }),
       );
