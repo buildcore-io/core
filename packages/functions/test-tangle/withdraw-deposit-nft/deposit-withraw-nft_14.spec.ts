@@ -47,6 +47,8 @@ describe('Collection minting', () => {
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
     nft = <Nft>await nftDocRef.get();
+    let snap = await query.get<Transaction>();
+    expect(snap[0].payload.nftId).toBe(nft.mintingData?.nftId);
 
     const wallet = (await getWallet(helper.network)) as SmrWallet;
     const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${helper.guardian}`);
@@ -77,7 +79,7 @@ describe('Collection minting', () => {
       return snap.length === 1;
     });
 
-    const snap = await creditQuery.get();
+    snap = await creditQuery.get();
     const credit = snap[0] as Transaction;
     expect(credit.ignoreWallet).toBe(true);
     expect(credit.ignoreWalletReason).toBe(

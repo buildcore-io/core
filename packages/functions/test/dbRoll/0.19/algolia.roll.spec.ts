@@ -1,6 +1,6 @@
 import { ALGOLIA_COLLECTIONS } from '@soonaverse/interfaces';
 import algoliasearch from 'algoliasearch';
-import { algoliaRoll } from '../../../scripts/dbUpgrades/0.19/algolia.roll';
+import { algoliaRoll } from '../../../scripts/dbUpgrades/0.19/w_algolia.roll';
 import { soonApp } from '../../../src/firebase/app/soonApp';
 import { soonDb } from '../../../src/firebase/firestore/soondb';
 import { algoliaAppId, algoliaKey } from '../../../src/utils/config.utils';
