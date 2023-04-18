@@ -22,7 +22,7 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import Joi from 'joi';
-import { get } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import { soonDb } from '../../../firebase/firestore/soondb';
 import { soonStorage } from '../../../firebase/storage/soonStorage';
 import { Bech32AddressHelper } from '../../../utils/bech32-address.helper';
@@ -106,11 +106,7 @@ export class ImportMintedTokenService {
         message: get(err, 'key', 'none'),
       };
     } finally {
-      const payment = await this.transactionService.createPayment(
-        order,
-        match,
-        error !== undefined,
-      );
+      const payment = await this.transactionService.createPayment(order, match, !isEmpty(error));
       await this.transactionService.createCredit(
         TransactionCreditType.IMPORT_TOKEN,
         payment,
