@@ -1,9 +1,9 @@
 import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    OnDestroy,
-    OnInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
 } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -27,40 +27,40 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
-    DEFAULT_NETWORK,
-    DEFAULT_NETWORK_DECIMALS,
-    FILE_SIZES,
-    Member,
-    NETWORK_DETAIL,
-    SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
-    Space,
-    Timestamp,
-    Token,
-    TokenDistribution,
-    TokenPurchase,
-    TokenStatus,
-    TokenTradeOrder,
-    TokenTradeOrderStatus,
-    TokenTradeOrderType,
-    getDefDecimalIfNotSet,
+  DEFAULT_NETWORK,
+  DEFAULT_NETWORK_DECIMALS,
+  FILE_SIZES,
+  Member,
+  NETWORK_DETAIL,
+  SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
+  Space,
+  Timestamp,
+  Token,
+  TokenDistribution,
+  TokenPurchase,
+  TokenStatus,
+  TokenTradeOrder,
+  TokenTradeOrderStatus,
+  TokenTradeOrderType,
+  getDefDecimalIfNotSet,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import updateLocale from 'dayjs/plugin/updateLocale';
 import bigDecimal from 'js-big-decimal';
 import {
-    BehaviorSubject,
-    Observable,
-    Subscription,
-    combineLatest,
-    filter,
-    first,
-    interval,
-    map,
-    merge,
-    of,
-    skip,
-    take,
+  BehaviorSubject,
+  Observable,
+  Subscription,
+  combineLatest,
+  filter,
+  first,
+  interval,
+  map,
+  merge,
+  of,
+  skip,
+  take,
 } from 'rxjs';
 
 dayjs.extend(relativeTime);

@@ -1,10 +1,10 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { CacheService } from '@core/services/cache/cache.service';
 import {
-    DEFAULT_NETWORK,
-    NETWORK_DETAIL,
-    Network,
-    getDefDecimalIfNotSet,
+  DEFAULT_NETWORK,
+  NETWORK_DETAIL,
+  Network,
+  getDefDecimalIfNotSet,
 } from '@soonaverse/interfaces';
 import { firstValueFrom, skipWhile } from 'rxjs';
 
