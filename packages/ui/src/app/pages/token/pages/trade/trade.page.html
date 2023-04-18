@@ -222,7 +222,7 @@
           >
             <td class="z-10 border-0 left">{{ item.createdOn?.toDate() | date:"short" }}</td>
             <td class="z-10 border-0 right">
-              {{ item.count | formatToken: undefined:false:false | async }}
+              {{ item.count | formatToken: (data.token$ | async)?.uid:false:false | async }}
             </td>
             <td class="z-10 border-0 right">
               {{ (item.price * item.count) | formatToken: (data.token$ | async)?.uid:false:false:2 |
@@ -295,7 +295,7 @@
           >
             <td class="z-10 border-0 left">{{ item.createdOn?.toDate() | date:"short" }}</td>
             <td class="z-10 border-0 right">
-              {{ item.count | formatToken: undefined:false:false | async }}
+              {{ item.count | formatToken: (data.token$ | async)?.uid:false:false | async }}
             </td>
             <td class="z-10 border-0 right">
               {{ (item.price * item.count) | formatToken: (data.token$ | async)?.uid:false:false:2 |
@@ -386,7 +386,7 @@
               <ng-container *ngIf="item.type === tokenTradeOrderTypes.SELL" i18n>Sell</ng-container>
             </td>
             <td class="z-10 border-0 right">
-              {{ item.count | formatToken: undefined:false:false | async }}
+              {{ item.count | formatToken: (data.token$ | async)?.uid:false:false | async }}
             </td>
             <td class="z-10 border-0 right">
               {{ (item.price * item.count) | formatToken: (item.type === tokenTradeOrderTypes.SELL ?
@@ -696,7 +696,7 @@
               </div>
             </td>
             <td class="z-10 border-0 right">
-              {{ item.amount | formatToken: undefined:false:false | async }}
+              {{ item.amount | formatToken: (data.token$ | async)?.uid:false:false | async }}
             </td>
             <td class="z-10 border-0 right">
               {{ (item.price * item.amount) | formatToken: ( (data.token$ |
@@ -760,7 +760,7 @@
               </div>
             </td>
             <td class="z-10 border-0 right">
-              {{ item.amount | formatToken: undefined:false:false | async}}
+              {{ item.amount | formatToken: (data.token$ | async)?.uid:false:false | async}}
             </td>
             <td class="z-10 border-0 right">
               {{ (item.price * item.amount) | formatToken: ( (data.token$ |
@@ -871,7 +871,7 @@
           async)?.mintingData?.network):false:false | async }}
         </td>
         <td class="z-10 border-0 right">
-          {{ item.count | formatToken: undefined:false:false | async }}
+          {{ item.count | formatToken: (data.token$ | async)?.uid:false:false | async }}
         </td>
         <td class="z-10 flex items-center justify-end border-0 right">
           <div>{{ item.createdOn?.toDate() | date: 'mediumTime' }}</div>

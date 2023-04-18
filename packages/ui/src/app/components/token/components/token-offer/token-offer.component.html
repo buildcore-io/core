@@ -101,7 +101,9 @@
         class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
         *ngIf="(auth.member$ | async)?.tokenTradingFeePercentage !== 0"
       >
-        <ng-container i18n>Fee</ng-container> {{ exchangeFee }}% ( {{ getFee() | async }})
+        <ng-container i18n>Fee</ng-container> {{ exchangeFee }}% ( {{ getFee() | formatToken:this.token?.mintingData?.network:
+          true:
+          true | async }})
       </div>
       <div
         class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"

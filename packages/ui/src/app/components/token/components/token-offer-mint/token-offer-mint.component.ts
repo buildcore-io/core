@@ -11,7 +11,6 @@ import {
 import { OrderApi } from '@api/order.api';
 import { TokenMarketApi } from '@api/token_market.api';
 import { AuthService } from '@components/auth/services/auth.service';
-import { FormatTokenPipe } from '@core/pipes/formatToken/format-token.pipe';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
@@ -113,7 +112,6 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     public previewImageService: PreviewImageService,
     public helper: HelperService,
     public unitsService: UnitsService,
-    public formatToken: FormatTokenPipe,
     public transactionService: TransactionService,
     public auth: AuthService,
     private notification: NotificationService,
@@ -374,14 +372,13 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
 
   public getTargetAmount(divideBy = false): number {
     return Number(
-      bigDecimal.divide(
-        bigDecimal.floor(
-          bigDecimal.multiply(
-            Number(this.amount * Math.pow(10, this.token?.decimals || DEFAULT_NETWORK_DECIMALS)),
-            Number(this.price),
-          ),
+      bigDecimal[divideBy ? 'divide' : 'multiply'](
+        bigDecimal.floor(bigDecimal.multiply(Number(this.amount), Number(this.price))),
+        Math.pow(
+          10,
+          NETWORK_DETAIL[this.token?.mintingData?.network || DEFAULT_NETWORK].decimals ||
+            DEFAULT_NETWORK_DECIMALS,
         ),
-        divideBy ? NETWORK_DETAIL[this.token?.mintingData?.network || DEFAULT_NETWORK].divideBy : 1,
         6,
       ),
     );
@@ -391,12 +388,16 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     return SERVICE_MODULE_FEE_TOKEN_EXCHANGE;
   }
 
-  public async getFee(): Promise<string> {
-    return this.formatToken.transform(
-      Number(bigDecimal.multiply(this.getTargetAmount(), this.exchangeFee * 100 * 100)),
-      this.token?.mintingData?.network,
-      true,
-      true,
+  public getFee(): number {
+    return Number(
+      bigDecimal.multiply(
+        bigDecimal.divide(
+          this.getTargetAmount(false),
+          NETWORK_DETAIL[this.token?.mintingData?.network || DEFAULT_NETWORK].divideBy,
+          6,
+        ),
+        this.exchangeFee * 100 * 100,
+      ),
     );
   }
 
