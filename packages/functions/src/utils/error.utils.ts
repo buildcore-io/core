@@ -5,7 +5,7 @@ interface Error {
 }
 
 const throwArgument = (type: FunctionsErrorCode, err: Error, append = '') =>
-  new functions.https.HttpsError(type, err.key + ' ' + append, err);
+  new functions.https.HttpsError(type, err.key + '. ' + append, err);
 
 export const invalidArgument = (err: Error, append = '') =>
   throwArgument('invalid-argument', err, append);

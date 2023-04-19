@@ -1,6 +1,7 @@
 import { WenError } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions/v2';
 import Joi, { AnySchema, ValidationResult } from 'joi';
+import { head } from 'lodash';
 import { isStorageUrl } from '../services/joi/common';
 import { isProdEnv } from './config.utils';
 import { invalidArgument } from './error.utils';
@@ -8,8 +9,12 @@ import { fileExists } from './storage.utils';
 
 const assertValidation = (r: ValidationResult) => {
   if (r.error) {
+    const detail = head(r.error.details);
     isProdEnv() && functions.logger.warn('invalid-argument', 'Invalid argument', { func: r.error });
-    throw invalidArgument(WenError.invalid_params, JSON.stringify(r.error.details));
+    throw invalidArgument(
+      WenError.invalid_params,
+      detail ? `${detail.message || ''}. ${detail.context?.message || ''}` : '',
+    );
   }
 };
 

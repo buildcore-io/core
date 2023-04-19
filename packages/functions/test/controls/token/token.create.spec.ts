@@ -4,12 +4,12 @@ import {
   COL,
   MAX_TOTAL_TOKEN_SUPPLY,
   MIN_IOTA_AMOUNT,
+  SUB_COL,
   Space,
   StakeType,
-  SUB_COL,
   TokenAllocation,
-  WenError,
   WEN_FUNC,
+  WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../../../src/firebase/firestore/soondb';
@@ -161,7 +161,11 @@ describe('Token controller: ' + WEN_FUNC.createToken, () => {
   it('Should throw, no name', async () => {
     delete token.name;
     mockWalletReturnValue(walletSpy, memberAddress, token);
-    await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key);
+    await expectThrow(
+      testEnv.wrap(createToken)({}),
+      WenError.invalid_params.key,
+      'Invalid params. "name" is required. ',
+    );
   });
 
   it('Should throw, no terms and conditions', async () => {
@@ -211,7 +215,11 @@ describe('Token controller: ' + WEN_FUNC.createToken, () => {
       { title: 'ccc', percentage: 40 },
     ];
     mockWalletReturnValue(walletSpy, memberAddress, token);
-    await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key);
+    await expectThrow(
+      testEnv.wrap(createToken)({}),
+      WenError.invalid_params.key,
+      'Invalid params. "allocations" contains an invalid value. Allocations percentage sum must be 100',
+    );
   });
 
   it('Should throw, more then one public sale', async () => {
@@ -220,7 +228,11 @@ describe('Token controller: ' + WEN_FUNC.createToken, () => {
       { title: 'ccc', percentage: 50, isPublicSale: true },
     ];
     mockWalletReturnValue(walletSpy, memberAddress, token);
-    await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key);
+    await expectThrow(
+      testEnv.wrap(createToken)({}),
+      WenError.invalid_params.key,
+      'Invalid params. "allocations" contains a duplicate value. Only one public sale is allowed',
+    );
   });
 
   it('Should throw, past start date', async () => {

@@ -66,7 +66,10 @@ export class ImportMintedTokenService {
         createdBy: order.member,
         uid: tokenId,
         name: metadata.name,
+        title: metadata.name,
         description: metadata.description || '',
+        shortDescriptionTitle: metadata.name,
+        shortDescription: metadata.description || '',
         symbol: (metadata.symbol as string).toUpperCase(),
         space: order.space || '',
         totalSupply,
@@ -74,7 +77,7 @@ export class ImportMintedTokenService {
         approved: true,
         rejected: false,
         public: false,
-        links: [],
+        links: metadata.url ? [metadata.url] : [],
         icon,
         status: TokenStatus.MINTED,
         totalDeposit: 0,
@@ -180,8 +183,9 @@ const isAliasGovernor = (alias: IAliasOutput, address: string, hrp: string) => {
 
 const tokenIrc30Schema = Joi.object({
   name: Joi.string().required(),
-  description: Joi.string().optional(),
-  logoUrl: Joi.string().optional(),
+  description: Joi.string().allow('').optional(),
+  logoUrl: Joi.string().allow('').optional(),
+  url: Joi.string().allow('').optional(),
   symbol: Joi.string().required(),
   decimals: Joi.number().integer().required(),
 });

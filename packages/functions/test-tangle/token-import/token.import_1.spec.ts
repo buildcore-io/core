@@ -50,6 +50,10 @@ describe('Token import', () => {
     expect(migratedToken.createdBy).toBe(helper.guardian.uid);
     expect(migratedToken.uid).toBe(helper.token.mintingData?.tokenId);
     expect(migratedToken.name).toBe(helper.token.name);
+    expect(migratedToken.title).toBe(helper.token.name);
+    expect(migratedToken.description).toBe(helper.token.description);
+    expect(migratedToken.shortDescription).toBe(helper.token.description);
+    expect(migratedToken.shortDescriptionTitle).toBe(helper.token.name);
     expect(migratedToken.symbol).toBe(helper.token.symbol);
     expect(migratedToken.space).toBe(helper.importSpace.uid);
     expect(migratedToken.totalSupply).toBe(helper.token.totalSupply);

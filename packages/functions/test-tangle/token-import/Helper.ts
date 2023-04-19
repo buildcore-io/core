@@ -73,6 +73,7 @@ export class Helper {
       name: 'MyToken',
       status: TokenStatus.AVAILABLE,
       access: 0,
+      description: 'myrandomtoken',
       icon: MEDIA,
       decimals: 4,
     };
