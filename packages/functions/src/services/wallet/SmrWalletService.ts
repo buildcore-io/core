@@ -1,21 +1,22 @@
 import { Bip32Path } from '@iota/crypto.js-next';
 import {
-  addressBalance,
+  ADDRESS_UNLOCK_CONDITION_TYPE,
   BASIC_OUTPUT_TYPE,
   Bech32Helper,
+  ED25519_ADDRESS_TYPE,
   Ed25519Address,
   Ed25519Seed,
-  ED25519_ADDRESS_TYPE,
   IAliasOutput,
   IBasicOutput,
   IFoundryOutput,
-  IndexerPluginClient,
   INftOutput,
   INodeInfo,
+  IndexerPluginClient,
   REFERENCE_UNLOCK_TYPE,
   SingleNodeClient,
   TransactionHelper,
   UnlockTypes,
+  addressBalance,
 } from '@iota/iota.js-next';
 import { Converter, HexHelper } from '@iota/util.js-next';
 import { NativeToken, Network, Timestamp, Transaction } from '@soonaverse/interfaces';
@@ -28,8 +29,9 @@ import { Bech32AddressHelper } from '../../utils/bech32-address.helper';
 import { packEssence, packPayload, submitBlock } from '../../utils/block.utils';
 import { getRandomElement } from '../../utils/common.utils';
 import { createUnlock } from '../../utils/smr.utils';
+import { NftWallet } from './NftWallet';
 import { MnemonicService } from './mnemonic';
-import { AddressDetails, setConsumedOutputIds, Wallet, WalletParams } from './wallet';
+import { AddressDetails, Wallet, WalletParams, setConsumedOutputIds } from './wallet';
 const RMS_API_ENDPOINTS = ['https://rms1.svrs.io/'];
 
 const SMR_API_ENDPOINTS = ['https://smr1.svrs.io/', 'https://smr3.svrs.io/'];
@@ -302,16 +304,35 @@ export class SmrWallet implements Wallet<SmrParams> {
   };
 
   public creditLocked = async (credit: Transaction, params: SmrParams) => {
-    const prevSourceConsumedOutputIds =
-      (await MnemonicService.getData(credit.payload.sourceAddress)).consumedOutputIds || [];
+    const mnemonicData = await MnemonicService.getData(credit.payload.sourceAddress);
+    const prevSourceConsumedOutputIds = mnemonicData.consumedOutputIds || [];
     const sourceConsumedOutputs = await this.getOutputs(
       credit.payload.sourceAddress,
       prevSourceConsumedOutputIds,
       true,
     );
-    const sourceOutputs = Object.values(sourceConsumedOutputs).map((o) =>
+
+    const sourceBasicOutputs = Object.values(sourceConsumedOutputs).map((o) =>
       packBasicOutput(credit.payload.targetAddress, Number(o.amount), o.nativeTokens, this.info),
     );
+
+    const nftWallet = new NftWallet(this);
+    const sourceConsumedNftOutputs = await nftWallet.getNftOutputs(
+      undefined,
+      credit.payload.sourceAddress,
+      mnemonicData.consumedNftOutputIds,
+    );
+    const targetAddress = Bech32Helper.addressFromBech32(
+      credit.payload.targetAddress,
+      this.info.protocol.bech32Hrp,
+    );
+    const sourceNftOutputs = Object.values(sourceConsumedNftOutputs).map((nftOutput) => {
+      const output = cloneDeep(nftOutput);
+      output.unlockConditions = [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: targetAddress }];
+      return output;
+    });
+
+    const sourceOutputs = [...sourceBasicOutputs, ...sourceNftOutputs];
 
     const prevStorageDepConsumedOutputIds =
       (await MnemonicService.getData(credit.payload.storageDepositSourceAddress))
@@ -327,10 +348,12 @@ export class SmrWallet implements Wallet<SmrParams> {
 
     const inputs = [
       ...Object.keys(sourceConsumedOutputs),
+      ...Object.keys(sourceConsumedNftOutputs),
       ...Object.keys(storageDepConsumedOutputs),
     ].map(TransactionHelper.inputFromOutputId);
     const inputsCommitment = TransactionHelper.getInputsCommitment([
       ...Object.values(sourceConsumedOutputs),
+      ...Object.values(sourceConsumedNftOutputs),
       ...Object.values(storageDepConsumedOutputs),
     ]);
 
@@ -347,7 +370,7 @@ export class SmrWallet implements Wallet<SmrParams> {
       credit.payload.storageDepositSourceAddress,
     );
 
-    const sourceUnlocks: UnlockTypes[] = Object.keys(sourceConsumedOutputs).map((_, i) =>
+    const sourceUnlocks: UnlockTypes[] = Object.keys(sourceOutputs).map((_, i) =>
       i
         ? { type: REFERENCE_UNLOCK_TYPE, reference: 0 }
         : createUnlock(essence, sourceAddress.keyPair),
@@ -358,7 +381,11 @@ export class SmrWallet implements Wallet<SmrParams> {
           ? { type: REFERENCE_UNLOCK_TYPE, reference: sourceUnlocks.length }
           : createUnlock(essence, storageDepositAddess.keyPair),
     );
-    await setConsumedOutputIds(sourceAddress.bech32, Object.keys(sourceConsumedOutputs));
+    await setConsumedOutputIds(
+      sourceAddress.bech32,
+      Object.keys(sourceConsumedOutputs),
+      Object.keys(sourceConsumedNftOutputs),
+    );
     await setConsumedOutputIds(storageDepositAddess.bech32, Object.keys(storageDepConsumedOutputs));
     return await submitBlock(
       this,
