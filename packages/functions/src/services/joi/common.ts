@@ -14,7 +14,7 @@ export class CommonJoi {
       if (isStorageUrl(url)) {
         return url;
       }
-      return helpers.error('Invalid url');
+      return helpers.error('string.uri');
     });
     return required ? base.required() : base.allow(null, '').optional();
   }

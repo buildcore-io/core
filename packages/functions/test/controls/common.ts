@@ -25,12 +25,15 @@ import { MEDIA, getWallet, testEnv } from '../set-up';
 export const mockWalletReturnValue = <T>(walletSpy: any, address: string, body: T) =>
   walletSpy.mockReturnValue(Promise.resolve({ address, body }));
 
-export const expectThrow = async <C, E>(call: C | Promise<C>, error: E) => {
+export const expectThrow = async <C, E>(call: C | Promise<C>, error: E, message?: string) => {
   try {
     await call;
     fail();
   } catch (e: any) {
     expect(e.key).toBe(error);
+    if (message) {
+      expect(e.message).toBe(message);
+    }
   }
 };
 

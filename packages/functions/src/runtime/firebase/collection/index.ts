@@ -38,7 +38,7 @@ export const updateMintedCollectionSchema = {
     .custom((discounts: { tokenReward: number }[], helpers) => {
       const unique = uniq(discounts.map((d) => d.tokenReward));
       if (unique.length !== discounts.length) {
-        return helpers.error('Token reward must me unique');
+        return helpers.error('array.unique', { message: 'Token reward must me unique' });
       }
       return discounts;
     }),

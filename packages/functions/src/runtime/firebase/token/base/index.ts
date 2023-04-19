@@ -56,11 +56,11 @@ const createTokenSchema = Joi.object({
     .custom((allocations: TokenAllocation[], helpers) => {
       const publicSaleCount = allocations.filter((a) => a.isPublicSale).length;
       if (publicSaleCount > 1) {
-        return helpers.error('Only one public sale is allowed');
+        return helpers.error('array.unique', { message: 'Only one public sale is allowed' });
       }
       const total = allocations.reduce((acc, act) => acc + act.percentage, 0);
       if (total !== 100) {
-        return helpers.error('Allocations percentage sum must be 100');
+        return helpers.error('any.invalid', { message: 'Allocations percentage sum must be 100' });
       }
       return allocations;
     }),
