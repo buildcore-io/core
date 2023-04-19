@@ -129,7 +129,7 @@ export class TokenOfferComponent {
   public getTargetAmount(divideBy = false): number {
     return Number(
       bigDecimal[divideBy ? 'divide' : 'multiply'](
-        bigDecimal.floor(bigDecimal.multiply(Number(this.amount), Number(this.price))),
+        bigDecimal.multiply(Number(this.amount), Number(this.price)),
         Math.pow(
           10,
           getDefDecimalIfNotSet(
