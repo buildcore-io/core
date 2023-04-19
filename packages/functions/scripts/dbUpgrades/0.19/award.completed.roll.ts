@@ -3,6 +3,7 @@ import { SingleNodeClient, addressBalance } from '@iota/iota.js-next';
 import { COL, Transaction, TransactionCreditType, TransactionType } from '@soonaverse/interfaces';
 import { FirebaseApp } from '../../../src/firebase/app/app';
 import { Firestore } from '../../../src/firebase/firestore/firestore';
+import serviceAccount from '../../serviceAccountKey.json';
 
 const RMS_API_ENDPOINT = 'https://rms1.svrs.io/';
 const SMR_API_ENDPOINT = 'https://smr1.svrs.io/';
@@ -17,8 +18,8 @@ export const awardCompletedCreditRoll = async (app: FirebaseApp) => {
     .where('payload.walletReference.confirmed', '==', false)
     .get<Transaction>();
 
-  console.log(app.getName());
-  const endpoint = app.getName() === 'soonaverse' ? SMR_API_ENDPOINT : RMS_API_ENDPOINT;
+  console.log(serviceAccount.project_id);
+  const endpoint = serviceAccount.project_id === 'soonaverse' ? SMR_API_ENDPOINT : RMS_API_ENDPOINT;
   const client = new SingleNodeClient(endpoint);
 
   const promises = transactions.map(async (tran) => {
