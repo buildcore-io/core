@@ -2,6 +2,7 @@
 import {
   COL,
   Member,
+  Network,
   Nft,
   Transaction,
   TransactionIgnoreWalletReason,
@@ -9,6 +10,7 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../../src/firebase/firestore/soondb';
+import { creditUnrefundable } from '../../src/runtime/firebase/credit/index';
 import { depositNft, withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
@@ -16,8 +18,8 @@ import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { getWallet, testEnv } from '../../test/set-up';
+import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
-
 describe('Collection minting', () => {
   const helper = new Helper();
 
@@ -85,5 +87,14 @@ describe('Collection minting', () => {
     expect(credit.ignoreWalletReason).toBe(
       TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION,
     );
+
+    mockWalletReturnValue(helper.walletSpy, helper.guardian!, { transaction: credit.uid });
+    const order = await testEnv.wrap(creditUnrefundable)({});
+    await requestFundsFromFaucet(Network.RMS, order.payload.targetAddress, order.payload.amount);
+
+    await wait(async () => {
+      const snap = await creditQuery.get<Transaction>();
+      return snap[0]?.payload?.walletReference?.confirmed;
+    });
   });
 });
