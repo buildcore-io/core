@@ -47,53 +47,103 @@
       </div>
 
       <nz-card *ngIf="deviceService.isDesktop$ | async" nzTitle="Tokens" i18n-nzTitle>
-        <nz-table
-          class="block"
-          [nzData]="(modifiedTokens$ | async) || []"
-          [nzShowPagination]="false"
-        >
-          <thead>
-            <tr>
-              <th i18n>Item</th>
-              <th i18n>Type</th>
-              <th i18n>Total</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <ng-container *ngFor="let t of modifiedTokens$ | async">
-              <ng-container *ngIf="!helper.isMinted(t)">
-                <!-- PRE MINTED  -->
-                <tr *ngIf="t.distribution.tokenOwned">
-                  <td
-                    [routerLink]="helper.preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]"
-                    class="cursor-pointer"
-                  >
-                    <div class="flex items-center">
-                      <nz-avatar
-                        [nzSrc]="previewImageService.getTokenSize(t.icon)"
-                        class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
-                        nzShape="circle"
-                        [nzSize]="32"
-                      >
-                      </nz-avatar>
-                      <div
-                        class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark"
-                      >
-                        {{ t.name }}
+        <div class="overflow-x-auto">
+          <nz-table
+            class="block"
+            [nzData]="(modifiedTokens$ | async) || []"
+            [nzShowPagination]="false"
+          >
+            <thead>
+              <tr>
+                <th i18n>Item</th>
+                <th i18n>Type</th>
+                <th i18n>Total</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let t of modifiedTokens$ | async">
+                <ng-container *ngIf="!helper.isMinted(t)">
+                  <!-- PRE MINTED  -->
+                  <tr *ngIf="t.distribution.tokenOwned">
+                    <td
+                      [routerLink]="helper.preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]"
+                      class="cursor-pointer"
+                    >
+                      <div class="flex items-center">
+                        <nz-avatar
+                          [nzSrc]="previewImageService.getTokenSize(t.icon)"
+                          class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
+                          nzShape="circle"
+                          [nzSize]="32"
+                        >
+                        </nz-avatar>
+                        <div
+                          class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark"
+                        >
+                          {{ t.name }}
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td class="font-medium" i18n>Owned</td>
-                  <td class="font-medium">
-                    {{ unitsService.format(t.distribution.tokenOwned, undefined, undefined, false) +
-                    ' ' + (t?.symbol === 'IOTA' ? 'M' : '') + t.symbol }}
-                  </td>
-                  <td class="right"></td>
-                </tr>
+                    </td>
+                    <td class="font-medium" i18n>Owned</td>
+                    <td class="font-medium">
+                      {{ (t.distribution.tokenOwned | formatToken: t.uid:false:false | async) + ' '
+                      + (t?.symbol === 'IOTA' ? 'M' : '') + t.symbol }}
+                    </td>
+                    <td class="right"></td>
+                  </tr>
 
-                <ng-container *ngIf="t.distribution.tokenDrops?.length">
-                  <tr *ngFor="let drop of t.distribution.tokenDrops">
+                  <ng-container *ngIf="t.distribution.tokenDrops?.length">
+                    <tr *ngFor="let drop of t.distribution.tokenDrops">
+                      <td
+                        [routerLink]="helper.preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]"
+                        class="cursor-pointer"
+                      >
+                        <div class="flex items-center">
+                          <nz-avatar
+                            [nzSrc]="previewImageService.getTokenSize(t.icon)"
+                            class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
+                            nzShape="circle"
+                            [nzSize]="32"
+                          >
+                          </nz-avatar>
+                          <div
+                            class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark"
+                          >
+                            {{ t.name }}
+                          </div>
+                        </div>
+                      </td>
+                      <td class="font-medium">
+                        <div class="flex items-center">
+                          <ng-container i18n>Airdropped</ng-container>
+                          <ng-container *ngIf="helper.vestingInFuture(drop)">
+                            (<ng-container i18n>from</ng-container> {{ drop.vestingAt.toDate() |
+                            date: 'shortDate' }})
+                          </ng-container>
+                        </div>
+                      </td>
+                      <td class="font-medium">
+                        {{ (drop.count | formatToken: t.uid: false: false | async) + ' ' +
+                        (t?.symbol === 'IOTA' ? 'M' : '') + t.symbol }}
+                      </td>
+                      <td class="right">
+                        <button
+                          *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
+                          class="font-medium underline wen-btn-link"
+                          (click)="claim(t)"
+                        >
+                          {{ tokenActionTypeLabels[tokenItemTypes.CLAIM] }}
+                        </button>
+                      </td>
+                    </tr>
+                  </ng-container>
+                </ng-container>
+
+                <ng-container
+                  *ngIf="helper.isMinted(t) && ((!t.distribution.mintedClaimedOn && (t.distribution.tokenOwned || 0) > 0) || ((t.distribution.tokenDrops?.[0]?.count || 0) > 0))"
+                >
+                  <tr>
                     <td
                       [routerLink]="helper.preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]"
                       class="cursor-pointer"
@@ -115,16 +165,19 @@
                     </td>
                     <td class="font-medium">
                       <div class="flex items-center">
-                        <ng-container i18n>Airdropped</ng-container>
-                        <ng-container *ngIf="helper.vestingInFuture(drop)">
-                          (<ng-container i18n>from</ng-container> {{ drop.vestingAt.toDate() | date:
-                          'shortDate' }})
-                        </ng-container>
+                        <ng-container
+                          i18n
+                          *ngIf="(!t.distribution.mintedClaimedOn && (t.distribution.tokenOwned || 0) > 0); else droptitle"
+                          >Owned</ng-container
+                        >
+                        <ng-template i18n #droptitle>Airdropped</ng-template>
                       </div>
                     </td>
                     <td class="font-medium">
-                      {{ unitsService.format(drop.count, undefined, undefined, false) + ' ' +
-                      (t?.symbol === 'IOTA' ? 'M' : '') + t.symbol }}
+                      {{ ( (!t.distribution.mintedClaimedOn ? (t.distribution.tokenOwned || 0) : 0)
+                      + (t.distribution.tokenDrops?.[0]?.count || 0) | formatToken:
+                      t?.uid:false:false | async) + ' ' + (t?.symbol === 'IOTA' ? 'M' : '') +
+                      t.symbol }}
                     </td>
                     <td class="right">
                       <button
@@ -137,12 +190,10 @@
                     </td>
                   </tr>
                 </ng-container>
-              </ng-container>
 
-              <ng-container
-                *ngIf="helper.isMinted(t) && ((!t.distribution.mintedClaimedOn && (t.distribution.tokenOwned || 0) > 0) || ((t.distribution.tokenDrops?.[0]?.count || 0) > 0))"
-              >
-                <tr>
+                <tr
+                  *ngIf="helper.salesInProgressOrUpcoming(t) && t.distribution.totalDeposit && !helper.isMinted(t)"
+                >
                   <td
                     [routerLink]="helper.preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]"
                     class="cursor-pointer"
@@ -162,71 +213,22 @@
                       </div>
                     </div>
                   </td>
-                  <td class="font-medium">
-                    <div class="flex items-center">
-                      <ng-container
-                        i18n
-                        *ngIf="(!t.distribution.mintedClaimedOn && (t.distribution.tokenOwned || 0) > 0); else droptitle"
-                        >Owned</ng-container
-                      >
-                      <ng-template i18n #droptitle>Airdropped</ng-template>
-                    </div>
-                  </td>
-                  <td class="font-medium">
-                    {{ unitsService.format((!t.distribution.mintedClaimedOn ?
-                    (t.distribution.tokenOwned || 0) : 0) + (t.distribution.tokenDrops?.[0]?.count
-                    || 0), undefined, undefined, false) + ' ' + (t?.symbol === 'IOTA' ? 'M' : '') +
-                    t.symbol }}
-                  </td>
+                  <td class="font-medium" i18n>Deposit for purchase</td>
+                  <td class="font-medium">{{ t.distribution.totalDeposit | formatToken }}</td>
                   <td class="right">
                     <button
-                      *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
+                      *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid) && helper.isInCooldown(t)"
                       class="font-medium underline wen-btn-link"
-                      (click)="claim(t)"
+                      (click)="openTokenRefund = t"
                     >
-                      {{ tokenActionTypeLabels[tokenItemTypes.CLAIM] }}
+                      {{ tokenActionTypeLabels[tokenItemTypes.REFUND] }}
                     </button>
                   </td>
                 </tr>
               </ng-container>
-
-              <tr
-                *ngIf="helper.salesInProgressOrUpcoming(t) && t.distribution.totalDeposit && !helper.isMinted(t)"
-              >
-                <td
-                  [routerLink]="helper.preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]"
-                  class="cursor-pointer"
-                >
-                  <div class="flex items-center">
-                    <nz-avatar
-                      [nzSrc]="previewImageService.getTokenSize(t.icon)"
-                      class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
-                      nzShape="circle"
-                      [nzSize]="32"
-                    >
-                    </nz-avatar>
-                    <div
-                      class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark"
-                    >
-                      {{ t.name }}
-                    </div>
-                  </div>
-                </td>
-                <td class="font-medium" i18n>Deposit for purchase</td>
-                <td class="font-medium">{{ unitsService.format(t.distribution.totalDeposit) }}</td>
-                <td class="right">
-                  <button
-                    *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid) && helper.isInCooldown(t)"
-                    class="font-medium underline wen-btn-link"
-                    (click)="openTokenRefund = t"
-                  >
-                    {{ tokenActionTypeLabels[tokenItemTypes.REFUND] }}
-                  </button>
-                </td>
-              </tr>
-            </ng-container>
-          </tbody>
-        </nz-table>
+            </tbody>
+          </nz-table>
+        </div>
       </nz-card>
 
       <div class="mt-3" *ngIf="deviceService.isMobile$ | async">
@@ -314,57 +316,60 @@
           </div>
         </ng-template>
 
-        <nz-table
-          class="block"
-          [nzData]="(filteredStakes$ | async) || []"
-          [nzShowPagination]="false"
-        >
-          <thead>
-            <tr>
-              <th i18n>Item</th>
-              <th i18n>Type</th>
-              <th i18n>Staked From</th>
-              <th i18n>Staked Until</th>
-              <th i18n>Amount</th>
-              <th i18n>Multiplier</th>
-              <th i18n>Staked Value</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let t of filteredStakes$ | async">
-              <td
-                [routerLink]="helper.preMinted(t.tokenRec) ? ['/token', t.token, 'trade'] : ['/token', t.token]"
-                class="cursor-pointer"
-              >
-                <div class="flex items-center">
-                  <nz-avatar
-                    [nzSrc]="previewImageService.getTokenSize(t.tokenRec.icon)"
-                    class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
-                    nzShape="circle"
-                    [nzSize]="32"
-                  >
-                  </nz-avatar>
-                  <div
-                    class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark"
-                  >
-                    {{ t.tokenRec.name }}
+        <div class="overflow-x-auto">
+          <nz-table
+            class="block"
+            [nzData]="(filteredStakes$ | async) || []"
+            [nzShowPagination]="false"
+          >
+            <thead>
+              <tr>
+                <th i18n>Item</th>
+                <th i18n>Type</th>
+                <th i18n>Staked From</th>
+                <th i18n>Staked Until</th>
+                <th i18n>Amount</th>
+                <th i18n>Multiplier</th>
+                <th i18n>Staked Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let t of filteredStakes$ | async">
+                <td
+                  [routerLink]="helper.preMinted(t.tokenRec) ? ['/token', t.token, 'trade'] : ['/token', t.token]"
+                  class="cursor-pointer"
+                >
+                  <div class="flex items-center">
+                    <nz-avatar
+                      [nzSrc]="previewImageService.getTokenSize(t.tokenRec.icon)"
+                      class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
+                      nzShape="circle"
+                      [nzSize]="32"
+                    >
+                    </nz-avatar>
+                    <div
+                      class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark"
+                    >
+                      {{ t.tokenRec.name }}
+                    </div>
                   </div>
-                </div>
-              </td>
-              <td class="right">{{ t.type | uppercase }}</td>
-              <td class="font-medium">{{ t.createdOn?.toDate() | date:'short' }}</td>
-              <td class="font-medium">{{ t.expiresAt?.toDate() | date:'short' }}</td>
-              <td class="right">
-                {{ unitsService.format(t.amount, undefined, true, false) + ' ' + t.tokenRec.symbol
-                }}
-              </td>
-              <td>{{ calcMult(t.weeks) | number: '1.0-2'}}</td>
-              <td class="right">
-                {{ unitsService.format(t.value, undefined, true, false) + ' ' + t.tokenRec.symbol }}
-              </td>
-            </tr>
-          </tbody>
-        </nz-table>
+                </td>
+                <td class="right">{{ t.type | uppercase }}</td>
+                <td class="font-medium">{{ t.createdOn?.toDate() | date:'short' }}</td>
+                <td class="font-medium">{{ t.expiresAt?.toDate() | date:'short' }}</td>
+                <td class="right">
+                  {{ (t.amount | formatToken: t.tokenRec.uid:true:false | async) + ' ' +
+                  t.tokenRec.symbol }}
+                </td>
+                <td>{{ calcMult(t.weeks) | number: '1.0-2'}}</td>
+                <td class="right">
+                  {{ (t.value | formatToken: t.tokenRec.uid:true:false | async) + ' ' +
+                  t.tokenRec.symbol }}
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </div>
       </nz-card>
 
       <!-- MOBILE VIEW -->
@@ -445,8 +450,8 @@
                 Amount (Multiplier)
               </div>
               <div class="mt-0.5">
-                {{ unitsService.format(t.amount, undefined, true, false) + ' ' + t.tokenRec.symbol
-                }} ({{ calcMult(t.weeks) | number: '1.0-2'}}x)
+                {{ (t.amount | formatToken: t.tokenRec.uid:true:false | async) + ' ' +
+                t.tokenRec.symbol }} ({{ calcMult(t.weeks) | number: '1.0-2'}}x)
               </div>
             </div>
             <div class="w-full px-6 mt-6 font-medium lg:w-2/12 lg:px-0 lg:mt-0">
@@ -457,7 +462,8 @@
                 Staked Value
               </div>
               <div class="mt-0.5">
-                {{ unitsService.format(t.value, undefined, true, false) + ' ' + t.tokenRec.symbol }}
+                {{ (t.value | formatToken: t.tokenRec.uid:true:false | async) + ' ' +
+                t.tokenRec.symbol }}
               </div>
             </div>
           </div>

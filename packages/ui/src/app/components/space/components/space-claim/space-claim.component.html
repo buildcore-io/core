@@ -40,7 +40,7 @@
       class="mt-2"
       nzType="warning"
       nzShowIcon
-      nzMessage="Make sure you are sending the confirmation despoit from the same wallet that owns the alias collection was minted with."
+      nzMessage="Make sure you are sending the confirmation deposit from the same wallet that owns the alias collection was minted with."
     ></nz-alert>
 
     <button
@@ -62,7 +62,7 @@
       class="mt-2"
       nzType="warning"
       nzShowIcon
-      nzMessage="Make sure you are sending the confirmation despoit from the same wallet that owns the alias collection was minted with."
+      nzMessage="Make sure you are sending the confirmation deposit from the same wallet that owns the alias collection was minted with."
     ></nz-alert>
   </div>
 
@@ -95,7 +95,7 @@
     class="block w-full"
     *ngIf="!helper.isExpired(transaction$ | async)"
     [targetAddress]="targetAddress"
-    [formattedAmount]="unitsService.format(targetAmount, network)"
+    [formattedAmount]="targetAmount | formatToken : network | async"
   >
   </wen-send-funds>
 
@@ -103,7 +103,7 @@
     class="mt-6"
     [targetAddress]="targetAddress"
     [network]="network"
-    [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()"
+    [targetAmount]="(targetAmount || 0).toString()"
   >
   </wen-wallet-deeplink>
 

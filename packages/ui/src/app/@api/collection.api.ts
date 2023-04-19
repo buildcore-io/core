@@ -1,14 +1,14 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { doc, docData, Firestore, where } from '@angular/fire/firestore';
-import { Functions } from '@angular/fire/functions';
 import {
   COL,
   Collection,
   CollectionStats,
   SUB_COL,
   Transaction,
-  WenRequest,
   WEN_FUNC,
+  WenRequest,
 } from '@soonaverse/interfaces';
 import { Observable, of } from 'rxjs';
 import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
@@ -26,8 +26,8 @@ export enum CollectionFilter {
 export class CollectionApi extends BaseApi<Collection> {
   public collection = COL.COLLECTION;
 
-  constructor(protected firestore: Firestore, protected functions: Functions) {
-    super(firestore, functions);
+  constructor(protected firestore: Firestore, protected httpClient: HttpClient) {
+    super(firestore, httpClient);
   }
 
   public mintCollection(req: WenRequest): Observable<Transaction | undefined> {
@@ -108,11 +108,11 @@ export class CollectionApi extends BaseApi<Collection> {
   }
 
   public create(req: WenRequest): Observable<Collection | undefined> {
-    return this.request(WEN_FUNC.cCollection, req);
+    return this.request(WEN_FUNC.createCollection, req);
   }
 
   public update(req: WenRequest): Observable<Collection | undefined> {
-    return this.request(WEN_FUNC.uCollection, req);
+    return this.request(WEN_FUNC.updateCollection, req);
   }
 
   public approve(req: WenRequest): Observable<Collection | undefined> {

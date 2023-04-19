@@ -84,12 +84,13 @@
     </div>
     <div class="mt-0.5">
       {{
-        unitsService.format(
-          ((listenAvgPrice$ | async) || 0) * 1000 * 1000,
-          token?.mintingData?.networkFormat || token?.mintingData?.network,
-          false,
-          false
-        ) | unknownIfZero
+        { value: (listenAvgPrice$ | async) || 0, exponents: getDefaultNetworkDecimals() }
+          | formatToken
+            : token?.mintingData?.networkFormat || token?.mintingData?.network
+            : false
+            : false
+          | async
+          | unknownIfZero
       }}
     </div>
   </div>
@@ -157,7 +158,11 @@
       </div>
       <div class="mt-0.5 lg:w-full whitespace-nowrap">
         {{
-          unitsService.format(listenVolume24h$ | async, undefined, false, false, 0) | unknownIfZero
+          listenVolume24h$
+            | async
+            | formatToken : token?.uid : false : false : 0
+            | async
+            | unknownIfZero
         }}
       </div>
     </ng-container>

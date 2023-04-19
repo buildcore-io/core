@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { UnitsService } from '@core/services/units';
 import {
   Network,
+  TRANSACTION_AUTO_EXPIRY_MS,
   Token,
   TokenDrop,
   TokenStatus,
@@ -9,7 +10,6 @@ import {
   TokenTradeOrderStatus,
   Transaction,
   TransactionType,
-  TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
@@ -22,23 +22,11 @@ dayjs.extend(duration);
 export class HelperService {
   constructor(public unitsService: UnitsService) {}
 
-  public percentageMarketCap(percentage: number, token?: Token): string {
+  public percentageMarketCap(percentage: number, token?: Token): number {
     if (!token) {
-      return '';
+      return 0;
     }
-    return this.unitsService.format(
-      Math.floor(token?.pricePerToken * ((token?.totalSupply * percentage) / 100)),
-      undefined,
-      true,
-    );
-  }
-
-  public formatTokenBest(amount?: number | null, decimals = 6): string {
-    if (!amount) {
-      return '0';
-    }
-
-    return (amount / 1000 / 1000).toFixed(decimals);
+    return Math.floor(token?.pricePerToken * ((token?.totalSupply * percentage) / 100));
   }
 
   public getPairFrom(token?: Token | null): string {
@@ -129,11 +117,11 @@ export class HelperService {
 
   public getExplorerUrl(token?: Token | null): string {
     if (token?.mintingData?.network === Network.RMS) {
-      return 'https://explorer.shimmer.network/testnet/block/' + token.mintingData.blockId;
+      return 'https://explorer.shimmer.network/testnet/foundry/' + token.mintingData.tokenId;
     } else if (token?.mintingData?.network === Network.IOTA) {
       return 'https://thetangle.org/search/' + token.mintingData.blockId;
     } else if (token?.mintingData?.network === Network.SMR) {
-      return 'https://explorer.shimmer.network/shimmer/block/' + token.mintingData.blockId;
+      return 'https://explorer.shimmer.network/shimmer/foundry/' + token.mintingData.tokenId;
     } else if (token?.mintingData?.network === Network.ATOI) {
       return 'https://explorer.iota.org/devnet/search/' + token.mintingData.blockId;
     } else {

@@ -6,6 +6,7 @@ export interface GetByIdRequest {
   readonly uid: string;
   readonly parentUid?: string;
   readonly subCollection?: PublicSubCollections;
+  readonly live?: boolean;
 }
 
 export interface GetManyRequest {
@@ -18,6 +19,8 @@ export interface GetManyRequest {
   readonly fieldValue?: string | number | boolean | (string | number | boolean)[];
 
   readonly startAfter?: string;
+
+  readonly live?: boolean;
 }
 
 export interface GetUpdatedAfterRequest {
@@ -30,6 +33,7 @@ export interface GetUpdatedAfterRequest {
   readonly updatedAfter?: number;
 
   readonly startAfter?: string;
+  readonly live?: boolean;
 }
 
 export interface GetTokenPrice {
@@ -39,4 +43,9 @@ export interface GetTokenPrice {
 export interface GetAddressesRequest {
   readonly network: Network;
   readonly createdAfter?: number;
+  readonly live?: boolean;
+}
+
+export interface KeepAliveRequest {
+  readonly instanceId: string;
 }

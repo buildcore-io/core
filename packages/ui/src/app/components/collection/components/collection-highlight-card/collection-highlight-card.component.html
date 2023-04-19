@@ -23,7 +23,7 @@
         <td class="border-0">
           <div class="text-sm font-medium text-right">
             <span *ngIf="collection?.floorPrice">
-              {{ unitsService.format(collection?.floorPrice, collection?.mintingData?.network) }}
+              {{ collection?.floorPrice | formatToken : collection?.mintingData?.network | async }}
             </span>
             <span *ngIf="!collection?.floorPrice"> - </span>
           </div>

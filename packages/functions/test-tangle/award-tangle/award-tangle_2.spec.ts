@@ -11,7 +11,7 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
@@ -46,8 +46,8 @@ describe('Award tangle request', () => {
 
     token = await saveBaseToken(space.uid, guardian);
 
-    const guardianDocRef = admin.firestore().doc(`${COL.MEMBER}/${guardian}`);
-    const guardianData = <Member>(await guardianDocRef.get()).data();
+    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${guardian}`);
+    const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, network);
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
   });
@@ -69,17 +69,16 @@ describe('Award tangle request', () => {
       },
     );
 
-    const creditQuery = admin
-      .firestore()
+    const creditQuery = soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST)
       .where('member', '==', guardian);
     await wait(async () => {
       const snap = await creditQuery.get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
     const snap = await creditQuery.get();
-    const credit = snap.docs[0].data() as Transaction;
+    const credit = snap[0] as Transaction;
     expect(credit.payload.amount).toBe(5 * MIN_IOTA_AMOUNT);
 
     await requestFundsFromFaucet(
@@ -88,9 +87,9 @@ describe('Award tangle request', () => {
       credit.payload.response.amount,
     );
 
-    const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${credit.payload.response.award}`);
+    const awardDocRef = soonDb().doc(`${COL.AWARD}/${credit.payload.response.award}`);
     await wait(async () => {
-      const award = (await awardDocRef.get()).data() as Award;
+      const award = (await awardDocRef.get()) as Award;
       return award.funded;
     });
   });
@@ -108,19 +107,18 @@ describe('Award tangle request', () => {
     });
     await MnemonicService.store(guardianAddress.bech32, guardianAddress.mnemonic);
 
-    const creditQuery = admin
-      .firestore()
+    const creditQuery = soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST)
       .where('member', '==', guardian);
     await wait(async () => {
       const snap = await creditQuery.get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
-    let snap = await creditQuery.get();
-    let credit = snap.docs[0].data() as Transaction;
+    let snap = await creditQuery.get<Transaction>();
+    let credit = snap[0] as Transaction;
     expect(credit.payload.amount).toBe(MIN_IOTA_AMOUNT);
-    const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${credit.payload.response.award}`);
+    const awardDocRef = soonDb().doc(`${COL.AWARD}/${credit.payload.response.award}`);
 
     await walletService.send(guardianAddress, tangleOrder.payload.targetAddress, MIN_IOTA_AMOUNT, {
       customMetadata: {
@@ -132,12 +130,10 @@ describe('Award tangle request', () => {
     });
     await wait(async () => {
       const snap = await creditQuery.get();
-      return snap.size === 2;
+      return snap.length === 2;
     });
-    snap = await creditQuery.get();
-    credit = snap.docs
-      .find((doc) => doc.data()?.payload?.response?.award === undefined)
-      ?.data() as Transaction;
+    snap = await creditQuery.get<Transaction>();
+    credit = snap.find((doc) => doc?.payload?.response?.award === undefined)!;
     await requestFundsFromFaucet(
       Network.RMS,
       credit.payload.response.address,
@@ -145,7 +141,7 @@ describe('Award tangle request', () => {
     );
 
     await wait(async () => {
-      const award = (await awardDocRef.get()).data() as Award;
+      const award = (await awardDocRef.get()) as Award;
       return award.funded;
     });
   });

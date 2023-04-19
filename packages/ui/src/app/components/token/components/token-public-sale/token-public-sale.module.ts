@@ -5,6 +5,7 @@ import { DescriptionModule } from '@components/description/description.module';
 import { IconModule } from '@components/icon/icon.module';
 import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module';
 import { RadioModule } from '@components/radio/radio.module';
+import { FormatTokenModule } from '@core/pipes/formatToken/format-token.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { NzFormModule } from 'ng-zorro-antd/form';
@@ -24,6 +25,7 @@ import { TokenPublicSaleComponent } from './token-public-sale.component';
     FormsModule,
     ReactiveFormsModule,
     DescriptionModule,
+    FormatTokenModule,
     NzButtonModule,
     RadioModule,
     NzRadioModule,

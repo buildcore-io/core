@@ -1,5 +1,5 @@
 import { COL, Nft } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { CollectionMintHelper } from './Helper';
 
 describe('Collection minting', () => {
@@ -16,20 +16,14 @@ describe('Collection minting', () => {
   it('Should hide placeholder nft, all are sold before mint', async () => {
     await helper.createAndOrderNft(true, true);
     let placeholderNft = await helper.createAndOrderNft(true, false);
-    await admin
-      .firestore()
-      .doc(`${COL.NFT}/${placeholderNft.uid}`)
-      .update({ placeholderNft: true });
-    await admin
-      .firestore()
+    await soonDb().doc(`${COL.NFT}/${placeholderNft.uid}`).update({ placeholderNft: true });
+    await soonDb()
       .doc(`${COL.COLLECTION}/${helper.collection}`)
-      .update({ total: admin.firestore.FieldValue.increment(-1) });
+      .update({ total: soonDb().inc(-1) });
 
     await helper.mintCollection();
 
-    placeholderNft = <Nft>(
-      (await admin.firestore().doc(`${COL.NFT}/${placeholderNft.uid}`).get()).data()
-    );
+    placeholderNft = <Nft>await soonDb().doc(`${COL.NFT}/${placeholderNft.uid}`).get();
     expect(placeholderNft.hidden).toBe(true);
   });
 });

@@ -25,8 +25,9 @@ import { TokenRefundModule } from '@components/token/components/token-refund/tok
 import { TokenTradeDetailModalModule } from '@components/token/components/token-trade-detail-modal/token-trade-detail-modal.module';
 import { TokenTradingPairsTableModule } from '@components/token/components/token-trading-pairs-table/token-trading-pairs-table.module';
 import { TradingViewModule } from '@components/trading-view/components/trading-view/trading-view.module';
-import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
+import { FormatTokenModule } from '@core/pipes/formatToken/format-token.module';
 import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
+import { ResizeAvatarModule } from '@core/pipes/resize-avatar/resize-avatar.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { UnknownIfZeroModule } from '@core/pipes/unknown-if-zero/unknown-if-zero.module';
 import { UsdBelowTwoDecimalsModule } from '@core/pipes/usd-below-two-decimals/usd-below-two-decimals.module';
@@ -111,6 +112,7 @@ import { TokenRoutingModule } from './token-routing.module';
     MarkDownModule,
     NgChartsModule,
     TokenPurchaseModule,
+    FormatTokenModule,
     UsdBelowTwoDecimalsModule,
     NzUploadModule,
     NzIconModule,
@@ -136,7 +138,7 @@ import { TokenRoutingModule } from './token-routing.module';
     TokenOfferModule,
     ModalDrawerModule,
     NgChartsModule,
-    IpfsAvatarModule,
+    ResizeAvatarModule,
     TokenInfoDescriptionModule,
     TokenCancelSaleModule,
     TokenMintNetworkModule,

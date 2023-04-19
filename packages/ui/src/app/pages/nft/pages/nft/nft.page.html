@@ -76,15 +76,16 @@
                 class="mr-2 text-xs font-medium line-through truncate text-foregrounds-secondary"
                 *ngIf="discount(data.collection$ | async, data.nft$ | async) < 1"
               >
-                {{unitsService.format(((data.nft$ | async)?.availablePrice || (data.nft$ |
-                async)?.price), (data.nft$ | async)?.placeholderNft ? (data.collection$ |
-                async)?.mintingData?.network : (data.nft$ | async)?.mintingData?.network, true)}}
+                {{(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price) |
+                formatToken: ((data.nft$ | async)?.placeholderNft ? (data.collection$ |
+                async)?.mintingData?.network : (data.nft$ | async)?.mintingData?.network): true |
+                async)}}
               </div>
               <div class="text-lg font-bold truncate">
-                {{unitsService.format(calc(((data.nft$ | async)?.availablePrice || (data.nft$ |
-                async)?.price), discount(data.collection$ | async, data.nft$ | async)), (data.nft$ |
+                {{(calc(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price),
+                discount(data.collection$ | async, data.nft$ | async)) | formatToken: ((data.nft$ |
                 async)?.placeholderNft ? (data.collection$ | async)?.mintingData?.network :
-                (data.nft$ | async)?.mintingData?.network, true)}}
+                (data.nft$ | async)?.mintingData?.network): true | async)}}
               </div>
             </ng-container>
             <ng-template #noPrice>
@@ -118,9 +119,9 @@
           </div>
           <div class="flex items-center mt-2 text-lg">
             <div class="mr-2 font-bold truncate">
-              {{ unitsService.format((data.nft$ | async)?.auctionHighestBid || 0, (data.nft$ |
-              async)?.mintingData?.network) || unitsService.format((data.nft$ |
-              async)?.auctionFloorPrice, (data.nft$ | async)?.mintingData?.network, true)}}
+              {{ ((data.nft$ | async)?.auctionHighestBid || 0 | formatToken: (data.nft$ |
+              async)?.mintingData?.network | async) || ((data.nft$ | async)?.auctionFloorPrice |
+              formatToken: (data.nft$ | async)?.mintingData?.network: true | async)}}
             </div>
           </div>
         </div>
@@ -337,7 +338,7 @@
                 <td [routerLink]="['/member', item.member.uid]" class="cursor-pointer">
                   <nz-avatar
                     nzIcon="user"
-                    [nzSrc]="item.member.currentProfileImage | ipfsAvatar:filesizes.small"
+                    [nzSrc]="item.member.avatar | resizeAvatar:filesizes.small"
                     class="mr-2"
                     [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 32"
                   >
@@ -346,8 +347,8 @@
                 </td>
                 <td>{{ item.transaction.createdOn?.toDate() | date:'short' }}</td>
                 <td>
-                  {{ unitsService.format(item.transaction.payload.amount, item.transaction.network)
-                  }}
+                  {{ (item.transaction.payload.amount | formatToken: item.transaction.network |
+                  async) }}
                 </td>
                 <td class="text-right">
                   <a
@@ -398,7 +399,7 @@
               <tr *ngFor="let item of data.pastBidTransactions$ | async">
                 <td>{{ item.createdOn?.toDate() | date:'short' }}</td>
                 <td>{{ item.type }}</td>
-                <td>{{ unitsService.format(item.payload.amount, item.network) }}</td>
+                <td>{{ (item.payload.amount | formatToken: item.network | async) }}</td>
                 <td class="text-right">
                   <a
                     class="text-sm font-medium underline wen-btn-link"
@@ -448,7 +449,7 @@
               <tr *ngFor="let item of data.myBidTransactions$ | async">
                 <td>{{ item.createdOn?.toDate() | date:'short' }}</td>
                 <td>{{ item.type }}</td>
-                <td>{{ unitsService.format(item.payload.amount, item.network) }}</td>
+                <td>{{ (item.payload.amount | formatToken: item.network | async) }}</td>
                 <td class="text-right">
                   <a
                     class="text-sm font-medium underline wen-btn-link"
@@ -594,7 +595,7 @@
       <nz-card i18n-nzTitle nzTitle="Owned by" class="mt-4" *ngIf="data.owner$ | async">
         <a [routerLink]="['/member', (data.owner$ | async)?.uid]" class="flex items-center">
           <nz-avatar
-            [nzSrc]="(data.owner$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
+            [nzSrc]="(data.owner$ | async)?.avatar | resizeAvatar:filesizes.small"
             class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-10"
             style="max-width: 32px; min-width: 32px"
             [nzSize]="32"

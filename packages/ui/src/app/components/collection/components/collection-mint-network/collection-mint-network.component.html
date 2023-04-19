@@ -227,7 +227,7 @@
         class="block w-full"
         *ngIf="!isExpired(transaction$ | async)"
         [targetAddress]="targetAddress"
-        [formattedAmount]="unitsService.format(targetAmount, selectedNetwork)"
+        [formattedAmount]="targetAmount | formatToken : selectedNetwork | async"
       >
       </wen-send-funds>
 
@@ -236,7 +236,7 @@
         class="w-full mt-6 lg:w-auto"
         [targetAddress]="targetAddress"
         [network]="selectedNetwork"
-        [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()"
+        [targetAmount]="(targetAmount || 0).toString()"
       >
       </wen-wallet-deeplink>
     </div>
@@ -321,7 +321,7 @@
 
     <div>
       <div class="font-bold text-right">
-        {{ unitsService.format(targetAmount, selectedNetwork, true) }}
+        {{ targetAmount | formatToken : selectedNetwork : true | async }}
       </div>
     </div>
   </div>

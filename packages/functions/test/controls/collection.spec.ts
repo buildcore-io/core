@@ -1,46 +1,41 @@
 import {
   Access,
   Bucket,
-  Categories,
   COL,
+  Categories,
   Collection,
   CollectionStats,
   CollectionStatus,
   CollectionType,
-  Member,
   MIN_IOTA_AMOUNT,
+  Member,
   Nft,
   NftStatus,
   RANKING_TEST,
+  SUB_COL,
   Space,
   StakeType,
-  SUB_COL,
   Token,
-  Transaction,
-  TransactionOrderType,
-  TransactionType,
-  WenError,
   WEN_FUNC,
+  WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
-import admin from '../../src/admin.config';
-import { rankController } from '../../src/controls/rank.control';
-import { voteController } from '../../src/controls/vote.control';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { createNft, orderNft } from '../../src/runtime/firebase/nft';
-import { createSpace } from '../../src/runtime/firebase/space';
+import { rankController } from '../../src/runtime/firebase/rank';
+import { voteController } from '../../src/runtime/firebase/vote';
 import * as config from '../../src/utils/config.utils';
-import { cOn, dateToTimestamp } from '../../src/utils/dateTime.utils';
+import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
-import { validateAddress } from './../../src/controls/address.control';
-import { createMember } from './../../src/controls/member.control';
 import {
   approveCollection,
   createCollection,
   rejectCollection,
   updateCollection,
 } from './../../src/runtime/firebase/collection/index';
+import { createMember } from './../../src/runtime/firebase/member';
 import {
   addGuardianToSpace,
   createMember as createMemberFunc,
@@ -72,32 +67,19 @@ const dummyCollection: any = (spaceId: string, royaltiesFee: number) => ({
   price: 10 * 1000 * 1000,
 });
 
-describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
+describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
   let dummyAddress: string;
   let space: any;
   let member: Member;
   let soonTokenId: string;
 
   beforeEach(async () => {
-    dummyAddress = wallet.getRandomEthAddress();
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     isProdSpy = jest.spyOn(config, 'isProdEnv');
-    mockWalletReturnValue(walletSpy, dummyAddress, {});
-
+    dummyAddress = await createMemberFunc(walletSpy);
     member = await testEnv.wrap(createMember)(dummyAddress);
     expect(member?.uid).toEqual(dummyAddress.toLowerCase());
-
-    space = await testEnv.wrap(createSpace)({});
-    expect(space?.uid).toBeDefined();
-
-    mockWalletReturnValue(walletSpy, dummyAddress, { space: space!.uid });
-    const order: Transaction = await testEnv.wrap(validateAddress)({});
-    expect(order?.type).toBe(TransactionType.ORDER);
-    expect(order?.payload.type).toBe(TransactionOrderType.SPACE_ADDRESS_VALIDATION);
-
-    const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
-    await milestoneProcessed(milestone.milestone, milestone.tranId);
-
+    space = await createSpaceFunc(walletSpy, dummyAddress);
     soonTokenId = await saveSoon();
   });
 
@@ -136,8 +118,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
   });
 
   it('Should create collection, soon check', async () => {
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.TOKEN}/${soonTokenId}/${SUB_COL.DISTRIBUTION}/${dummyAddress}`)
       .create({
         stakes: {
@@ -230,12 +211,12 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     await milestoneProcessed(milestone.milestone, milestone.tranId);
 
     await wait(async () => {
-      const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nfts[0].uid}`);
-      const nft = <Nft>(await nftDocRef.get()).data();
+      const nftDocRef = soonDb().doc(`${COL.NFT}/${nfts[0].uid}`);
+      const nft = <Nft>await nftDocRef.get();
       return (nft.isOwned || false) && nft.availablePrice === null;
     });
 
-    admin.firestore().doc(`${COL.NFT}/${nfts[1].uid}`).update({ status: NftStatus.WITHDRAWN });
+    soonDb().doc(`${COL.NFT}/${nfts[1].uid}`).update({ status: NftStatus.WITHDRAWN });
 
     const availableFrom = dayjs().add(1, 'd');
     mockWalletReturnValue(walletSpy, dummyAddress, {
@@ -253,8 +234,8 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     expect(uCollection?.availablePrice).toBe(15 * MIN_IOTA_AMOUNT);
 
     for (let i = 0; i < 4; ++i) {
-      const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nfts[i].uid}`);
-      const nftData = <Nft>(await nftDocRef.get()).data();
+      const nftDocRef = soonDb().doc(`${COL.NFT}/${nfts[i].uid}`);
+      const nftData = <Nft>await nftDocRef.get();
       const price = i === 0 ? null : i < 2 ? MIN_IOTA_AMOUNT : 15 * MIN_IOTA_AMOUNT;
       expect(nftData.price).toBe(price || MIN_IOTA_AMOUNT);
       expect(nftData.availablePrice).toBe(price);
@@ -273,8 +254,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     const collection = dummyCollection(space.uid, 0.6);
     mockWalletReturnValue(walletSpy, dummyAddress, collection);
     const cCollection = await testEnv.wrap(createCollection)({});
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.COLLECTION}/${cCollection.uid}`)
       .update({ status: CollectionStatus.MINTED });
 
@@ -317,8 +297,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     const collection = { ...dummyCollection(space.uid, 0.6), type: CollectionType.SFT };
     mockWalletReturnValue(walletSpy, dummyAddress, collection);
     const cCollection = await testEnv.wrap(createCollection)({});
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.COLLECTION}/${cCollection.uid}`)
       .update({ status: CollectionStatus.MINTED });
 
@@ -354,8 +333,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     const collection = dummyCollection(space.uid, 0.6);
     mockWalletReturnValue(walletSpy, dummyAddress, collection);
     const cCollection = await testEnv.wrap(createCollection)({});
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.COLLECTION}/${cCollection.uid}`)
       .update({ status: CollectionStatus.MINTED });
 
@@ -431,68 +409,62 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
 describe('Collection trigger test', () => {
   it('Should set approved&reject properly on nfts', async () => {
     const collection = { ...dummyCollection('', 0.1), uid: wallet.getRandomEthAddress() };
-    await admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`).create(collection);
+    await soonDb().doc(`${COL.COLLECTION}/${collection.uid}`).create(collection);
 
     const nftIds = Array.from(Array(1000));
     const chunks = chunk(nftIds, 500);
     for (let chunkIndex = 0; chunkIndex < chunks.length; ++chunkIndex) {
-      const batch = admin.firestore().batch();
+      const batch = soonDb().batch();
       chunks[chunkIndex].forEach((_, index) => {
         const id = wallet.getRandomEthAddress();
         batch.create(
-          admin.firestore().doc(`${COL.NFT}/${id}`),
+          soonDb().doc(`${COL.NFT}/${id}`),
           dummyNft(chunkIndex * 500 + index, id, collection.uid),
         );
       });
       await batch.commit();
     }
 
-    await admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`).update({
+    await soonDb().doc(`${COL.COLLECTION}/${collection.uid}`).update({
       approved: true,
     });
 
     await wait(async () => {
-      const snap = await admin
-        .firestore()
+      const snap = await soonDb()
         .collection(COL.NFT)
         .where('collection', '==', collection.uid)
-        .get();
-      const allHaveUpdated = snap.docs.reduce((acc, act) => acc && act.data().approved, true);
+        .get<Nft>();
+      const allHaveUpdated = snap.reduce((acc, act) => acc && act.approved, true);
       return allHaveUpdated;
     });
 
-    await admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`).update({
+    await soonDb().doc(`${COL.COLLECTION}/${collection.uid}`).update({
       approved: false,
     });
-    await admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`).update({
+    await soonDb().doc(`${COL.COLLECTION}/${collection.uid}`).update({
       approved: true,
     });
 
     await wait(async () => {
-      const snap = await admin
-        .firestore()
+      const snap = await soonDb()
         .collection(COL.NFT)
         .where('collection', '==', collection.uid)
-        .get();
-      const allHaveUpdated = snap.docs.reduce((acc, act) => acc && act.data().approved, true);
+        .get<Nft>();
+      const allHaveUpdated = snap.reduce((acc, act) => acc && act.approved, true);
       return allHaveUpdated;
     });
 
-    await admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`).update({
+    await soonDb().doc(`${COL.COLLECTION}/${collection.uid}`).update({
       approved: false,
       rejected: true,
     });
 
     await wait(async () => {
-      const snap = await admin
-        .firestore()
+      const snap = await soonDb()
         .collection(COL.NFT)
         .where('collection', '==', collection.uid)
-        .get();
-      const allHaveUpdated = snap.docs.reduce(
-        (acc, act) => acc && !act.data().approved && act.data().rejected,
-        true,
-      );
+        .get<Nft>();
+      const allHaveUpdated = snap.reduce((acc, act) => acc && !act.approved && act.rejected, true);
       return allHaveUpdated;
     });
   });
@@ -555,10 +527,10 @@ describe('Collection vote test', () => {
 
   const validateStats = async (upvotes: number, downvotes: number, diff: number) => {
     await wait(async () => {
-      const statsDocRef = admin
-        .firestore()
-        .doc(`${COL.COLLECTION}/${collection.uid}/${SUB_COL.STATS}/${collection.uid}`);
-      const stats = <CollectionStats | undefined>(await statsDocRef.get()).data();
+      const statsDocRef = soonDb().doc(
+        `${COL.COLLECTION}/${collection.uid}/${SUB_COL.STATS}/${collection.uid}`,
+      );
+      const stats = await statsDocRef.get<CollectionStats>();
       return (
         stats?.votes?.upvotes === upvotes &&
         stats?.votes?.downvotes === downvotes &&
@@ -617,16 +589,13 @@ describe('Collection rank test', () => {
 
     await saveSoon();
 
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.SPACE}/${RANKING_TEST.collectionSpace}/${SUB_COL.GUARDIANS}/${member}`)
-      .set(
-        cOn({
-          uid: member,
-          parentId: RANKING_TEST.collectionSpace,
-          parentCol: COL.SPACE,
-        }),
-      );
+      .set({
+        uid: member,
+        parentId: RANKING_TEST.collectionSpace,
+        parentCol: COL.SPACE,
+      });
   });
 
   it('Should throw, no collection', async () => {
@@ -659,8 +628,7 @@ describe('Collection rank test', () => {
   });
 
   it('Should throw, not space member', async () => {
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.SPACE}/${RANKING_TEST.collectionSpace}/${SUB_COL.GUARDIANS}/${member}`)
       .delete();
 
@@ -674,15 +642,15 @@ describe('Collection rank test', () => {
 
   const validateStats = async (count: number, sum: number) => {
     await wait(async () => {
-      const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`);
+      const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${collection.uid}`);
       const statsDocRef = collectionDocRef.collection(SUB_COL.STATS).doc(collection.uid);
-      const stats = <CollectionStats | undefined>(await statsDocRef.get()).data();
+      const stats = <CollectionStats | undefined>await statsDocRef.get();
       const statsAreCorrect =
         stats?.ranks?.count === count &&
         stats?.ranks?.sum === sum &&
         stats?.ranks?.avg === Number((stats?.ranks?.sum! / stats?.ranks?.count!).toFixed(3));
 
-      collection = <Collection>(await collectionDocRef.get()).data();
+      collection = <Collection>await collectionDocRef.get();
       return (
         statsAreCorrect &&
         collection.rankCount === count &&
@@ -713,24 +681,19 @@ describe('Collection rank test', () => {
     await validateStats(1, -100);
 
     const secondMember = await createMemberFunc(walletSpy);
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.SPACE}/${RANKING_TEST.collectionSpace}/${SUB_COL.GUARDIANS}/${secondMember}`)
-      .set(
-        cOn({
-          uid: secondMember,
-          parentId: RANKING_TEST.collectionSpace,
-          parentCol: COL.SPACE,
-        }),
-      );
+      .set({
+        uid: secondMember,
+        parentId: RANKING_TEST.collectionSpace,
+        parentCol: COL.SPACE,
+      });
 
     await sendRank(-50, secondMember);
     await validateStats(2, -150);
 
     await wait(async () => {
-      const doc = <Collection>(
-        (await admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`).get()).data()
-      );
+      const doc = <Collection>await soonDb().doc(`${COL.COLLECTION}/${collection.uid}`).get();
       return !doc.approved && doc.rejected;
     });
   });
@@ -744,6 +707,6 @@ const saveToken = async (space: string) => {
     space,
     name: 'MyToken',
   };
-  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return <Token>token;
 };

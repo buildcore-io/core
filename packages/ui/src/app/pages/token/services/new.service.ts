@@ -5,9 +5,11 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
 import { getUrlValidator } from '@core/utils/form-validation.utils';
 import {
+  DEFAULT_NETWORK,
   MAX_IOTA_AMOUNT,
   MAX_TOTAL_TOKEN_SUPPLY,
   MIN_TOTAL_TOKEN_SUPPLY,
+  NETWORK_DETAIL,
   Space,
   TokenAllocation,
   TokenDistributionType,
@@ -15,7 +17,7 @@ import {
 import dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
-import { BehaviorSubject, of, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, of } from 'rxjs';
 
 export const MAX_ALLOCATIONS_COUNT = 100;
 export const MAX_DESCRIPTIONS_COUNT = 5;
@@ -41,7 +43,7 @@ export class NewService {
   public priceControl: FormControl = new FormControl('1', [
     Validators.required,
     Validators.min(0),
-    Validators.max(MAX_IOTA_AMOUNT / 1000 / 1000),
+    Validators.max(MAX_IOTA_AMOUNT / NETWORK_DETAIL[DEFAULT_NETWORK].divideBy),
   ]);
   public totalSupplyControl: FormControl = new FormControl('', [
     Validators.required,
@@ -54,6 +56,7 @@ export class NewService {
   public descriptionControl: FormControl = new FormControl('', Validators.required);
   public shortTitleControl: FormControl = new FormControl('');
   public shortDescriptionControl: FormControl = new FormControl('');
+  public decimalsControl: FormControl = new FormControl(6, [Validators.min(0), Validators.max(20)]);
   public distributionControl: FormControl = new FormControl(
     TokenDistributionType.FIXED,
     Validators.required,
@@ -93,6 +96,7 @@ export class NewService {
       termsAndConditionsLink: this.termsAndConditionsLinkControl,
       shortDescription: this.shortDescriptionControl,
       shortTitle: this.shortTitleControl,
+      decimals: this.decimalsControl,
     });
 
     this.addAllocation();

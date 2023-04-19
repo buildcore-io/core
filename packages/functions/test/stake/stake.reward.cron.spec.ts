@@ -1,7 +1,7 @@
 import { COL, Stake, StakeReward, StakeRewardStatus, StakeType } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
 import { getStakedPerMember } from '../../src/cron/stakeReward.cron';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 
@@ -100,7 +100,7 @@ const cases = [
     expectedValue: 0,
   },
   {
-    // 'Two left, but on in',
+    // 'Two left, but one in',
     stakes: [
       { createdOn: now.subtract(3, 'd'), expiresAt: now.add(1, 'y') },
       { createdOn: now.subtract(2, 'd'), expiresAt: now.subtract(1, 'm') },
@@ -136,10 +136,8 @@ describe('Stake reward cron: getStakedPerMember', () => {
       type: StakeType.DYNAMIC,
       orderId: '',
       billPaymentId: '',
-      leftCheck: expiresAt.valueOf(),
-      rightCheck: createdOn.valueOf(),
     };
-    await admin.firestore().doc(`${COL.STAKE}/${stake.uid}`).create(stake);
+    await soonDb().doc(`${COL.STAKE}/${stake.uid}`).create(stake);
     return stake;
   };
 
@@ -152,10 +150,8 @@ describe('Stake reward cron: getStakedPerMember', () => {
       tokensToDistribute: 100,
       token,
       status: StakeRewardStatus.UNPROCESSED,
-      leftCheck: start.valueOf(),
-      rightCheck: end.valueOf(),
     } as StakeReward;
-    await admin.firestore().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`).create(stakeReward);
+    await soonDb().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`).create(stakeReward);
     return stakeReward;
   };
 

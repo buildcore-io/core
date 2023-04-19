@@ -16,12 +16,12 @@ import {
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import bigDecimal from 'js-big-decimal';
-import admin from '../../admin.config';
+import { ITransaction } from '../../firebase/firestore/interfaces';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { getAddress } from '../../utils/address.utils';
 import { packBasicOutput } from '../../utils/basic-output.utils';
-import { cOn } from '../../utils/dateTime.utils';
 import { getRoyaltyFees } from '../../utils/royalty.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Match } from './match-token';
@@ -43,7 +43,7 @@ const createRoyaltyBillPayments = async (
   const promises = Object.entries(royaltyFees)
     .filter((entry) => entry[1] > 0)
     .map(async ([spaceId, fee]) => {
-      const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${spaceId}`).get()).data();
+      const space = await soonDb().doc(`${COL.SPACE}/${spaceId}`).get<Space>();
       const spaceAddress = getAddress(space, token.mintingData?.network!);
       const sellerAddress = getAddress(seller, token.mintingData?.network!);
       const output = packBasicOutput(spaceAddress, 0, undefined, info, sellerAddress);
@@ -229,7 +229,7 @@ const createCreditToBuyer = (
 };
 
 export const matchMintedToken = async (
-  transaction: admin.firestore.Transaction,
+  transaction: ITransaction,
   token: Token,
   buy: TokenTradeOrder,
   sell: TokenTradeOrder,
@@ -238,15 +238,15 @@ export const matchMintedToken = async (
 ): Promise<Match> => {
   const wallet = (await WalletService.newWallet(token.mintingData?.network!)) as SmrWallet;
 
-  const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data();
-  const buyer = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buy.owner}`).get()).data();
+  const seller = (await soonDb().doc(`${COL.MEMBER}/${sell.owner}`).get<Member>())!;
+  const buyer = (await soonDb().doc(`${COL.MEMBER}/${buy.owner}`).get<Member>())!;
 
-  const buyOrderTran = <Transaction>(
-    (await admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get()).data()
-  );
-  const sellOrderTran = <Transaction>(
-    (await admin.firestore().doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`).get()).data()
-  );
+  const buyOrderTran = (await soonDb()
+    .doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`)
+    .get<Transaction>())!;
+  const sellOrderTran = (await soonDb()
+    .doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`)
+    .get<Transaction>())!;
 
   const tokensToTrade = Math.min(sell.count - sell.fulfilled, buy.count - buy.fulfilled);
   const buyIsFulfilled = buy.fulfilled + tokensToTrade === buy.count;
@@ -329,9 +329,7 @@ export const matchMintedToken = async (
     creditToBuyer,
   ]
     .filter((t) => t !== undefined)
-    .forEach((data) =>
-      transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data!.uid}`), cOn(data!)),
-    );
+    .forEach((data) => transaction.create(soonDb().doc(`${COL.TRANSACTION}/${data!.uid}`), data!));
 
   return {
     purchase: <TokenPurchase>{

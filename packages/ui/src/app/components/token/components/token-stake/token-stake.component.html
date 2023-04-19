@@ -229,11 +229,6 @@
       <div class="info-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
         <div i18n>You will earn</div>
         <div class="mt-1">VIP LEVEL {{ levelControl.value }}</div>
-
-        <!-- <div i18n>You can earn (APY)</div>
-        <div class="mt-1">
-          {{ earnControl.value | percent: '1.2-2' }}
-        </div> -->
       </div>
     </div>
   </div>
@@ -262,7 +257,11 @@
         Total staked
       </div>
       <div class="mt-1 text-lg font-bold">
-        {{ unitsService.format(amountControl.value * 1000 * 1000, undefined, undefined, false) }}
+        {{
+          { value: amountControl.value, exponents: token?.decimals }
+            | formatToken : token?.uid : false : false
+            | async
+        }}
       </div>
     </div>
   </div>
@@ -297,7 +296,9 @@
     *ngIf="!helper.isExpired(transaction$ | async)"
     [targetAddress]="targetAddress"
     [formattedAmount]="
-      unitsService.format(amountControl.value * 1000 * 1000, undefined, true, false) +
+      ({ value: amountControl.value, exponents: token?.decimals }
+        | formatToken : token?.uid : true : false
+        | async) +
       ' ' +
       token?.symbol
     "
@@ -309,8 +310,8 @@
     [targetAddress]="targetAddress"
     [network]="token?.mintingData?.network"
     [tokenId]="token?.mintingData?.tokenId"
-    [tokenAmount]="amountControl.value"
-    [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()"
+    [tokenAmount]="(amountControl.value | convertToken : token?.uid | async) || undefined"
+    [targetAmount]="(targetAmount || 0).toString()"
   ></wen-wallet-deeplink>
 
   <div

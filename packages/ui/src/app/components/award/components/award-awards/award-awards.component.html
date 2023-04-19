@@ -15,12 +15,9 @@
   <div class="flex flex-row flex-wrap items-center space-x-4">
     <ng-container *ngIf="(data.award$ | async)?.badge?.tokenReward">
       <nz-tag class="wen-xp-tag">{{
-        unitsService.format(
-          (data.award$ | async)?.badge?.tokenReward || 0,
-          (data.token$ | async)?.mintingData?.network,
-          true,
-          false
-        ) +
+        ((data.award$ | async)?.badge?.tokenReward || 0
+          | formatToken : (data.token$ | async)?.uid : true : false
+          | async) +
           ' ' +
           (data.token$ | async)?.symbol | uppercase
       }}</nz-tag>

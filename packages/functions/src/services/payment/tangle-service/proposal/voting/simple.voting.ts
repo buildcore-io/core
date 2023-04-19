@@ -1,6 +1,6 @@
 import { Proposal, ProposalMember } from '@soonaverse/interfaces';
 import { head } from 'lodash';
-import { Database } from '../../../../../database/Database';
+import { soonDb } from '../../../../../firebase/firestore/soondb';
 import { createVoteTransaction } from './ProposalVoteService';
 
 export const executeSimpleVoting = async (
@@ -36,12 +36,12 @@ const getProposalUpdateDataAfterVote = (
   const data = {
     uid: proposalMember.parentId,
     results: {
-      voted: Database.inc(proposalMember.voted ? 0 : weight),
-      answers: { [`${values[0]}`]: Database.inc(weight) },
+      voted: soonDb().inc(proposalMember.voted ? 0 : weight),
+      answers: { [`${values[0]}`]: soonDb().inc(weight) },
     },
   };
   if (prevAnswer) {
-    data.results.answers[prevAnswer] = Database.inc(-weight);
+    data.results.answers[prevAnswer] = soonDb().inc(-weight);
   }
   return data;
 };

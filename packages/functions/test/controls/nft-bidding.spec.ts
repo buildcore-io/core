@@ -17,10 +17,10 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
-import { openBid } from '../../src/controls/order.control';
 import { finalizeAllNftAuctions } from '../../src/cron/nft.cron';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { approveCollection, createCollection } from '../../src/runtime/firebase/collection/index';
+import { openBid } from '../../src/runtime/firebase/nft';
 import { createNft, orderNft, setForSaleNft } from '../../src/runtime/firebase/nft/index';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -72,6 +72,7 @@ const bidNft = async (memberId: string, amount: number) => {
   const bidOrder = await testEnv.wrap(openBid)({});
   const nftMilestone = await submitMilestoneFunc(bidOrder.payload.targetAddress, amount);
   await milestoneProcessed(nftMilestone.milestone, nftMilestone.tranId);
+  return bidOrder;
 };
 
 let memberAddress: string;
@@ -108,9 +109,9 @@ beforeEach(async () => {
   mockWalletReturnValue(walletSpy, memberAddress, { media: MEDIA, ...dummyNft(collection.uid) });
   nft = await testEnv.wrap(createNft)({});
 
-  const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${collection.uid}`);
+  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${collection.uid}`);
   await wait(async () => {
-    collection = <Collection>(await collectionDocRef.get()).data();
+    collection = <Collection>await collectionDocRef.get();
     return collection.availableNfts === 1;
   });
 
@@ -124,7 +125,7 @@ beforeEach(async () => {
   );
   await milestoneProcessed(nftMilestone.milestone, nftMilestone.tranId);
   await wait(async () => {
-    collection = <Collection>(await collectionDocRef.get()).data();
+    collection = <Collection>await collectionDocRef.get();
     return collection.availableNfts === 0;
   });
 });
@@ -134,40 +135,48 @@ describe('Nft controller: setForSale', () => {
     mockWalletReturnValue(walletSpy, memberAddress, dummySaleData(nft.uid));
     await testEnv.wrap(setForSaleNft)({});
 
-    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
+    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
     await wait(async () => {
-      const nft = <Nft>(await nftDocRef.get()).data();
+      const nft = <Nft>await nftDocRef.get();
       return nft.available === 1;
     });
 
-    const saleNft = <Nft>(await nftDocRef.get()).data();
+    const saleNft = <Nft>await nftDocRef.get();
     expect(saleNft.available).toBe(1);
     expect(saleNft.availableFrom).toBeDefined();
 
-    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${saleNft.collection}`);
-    const collection = <Collection>(await collectionDocRef.get()).data();
+    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${saleNft.collection}`);
+    const collection = <Collection>await collectionDocRef.get();
     expect(collection.nftsOnAuction).toBe(0);
     expect(collection.nftsOnSale).toBe(1);
+  });
+
+  it('Should throw, nft set as avatar', async () => {
+    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+    await nftDocRef.update({ setAsAvatar: true });
+
+    mockWalletReturnValue(walletSpy, memberAddress, dummySaleData(nft.uid));
+    await expectThrow(testEnv.wrap(setForSaleNft)({}), WenError.nft_set_as_avatar.key);
   });
 
   it('Should set nft for auction', async () => {
     mockWalletReturnValue(walletSpy, memberAddress, dummyAuctionData(nft.uid));
     await testEnv.wrap(setForSaleNft)({});
 
-    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
+    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
     await wait(async () => {
-      const nft = <Nft>(await nftDocRef.get()).data();
+      const nft = <Nft>await nftDocRef.get();
       return nft.available === 3;
     });
 
-    const auctionNft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
+    const auctionNft = <Nft>await soonDb().doc(`${COL.NFT}/${nft.uid}`).get();
     expect(auctionNft.available).toBe(3);
     expect(auctionNft.auctionFrom).toBeDefined();
     expect(auctionNft.auctionTo).toBeDefined();
     expect(auctionNft.auctionLength).toBeDefined();
 
-    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${auctionNft.collection}`);
-    const collection = <Collection>(await collectionDocRef.get()).data();
+    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${auctionNft.collection}`);
+    const collection = <Collection>await collectionDocRef.get();
     expect(collection.nftsOnAuction).toBe(1);
     expect(collection.nftsOnSale).toBe(1);
   });
@@ -201,21 +210,19 @@ describe('Nft bidding', () => {
     mockWalletReturnValue(walletSpy, memberAddress, dummyAuctionData(nft.uid));
     await testEnv.wrap(setForSaleNft)({});
     await wait(
-      async () =>
-        (await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data()?.available === 3,
+      async () => (await soonDb().doc(`${COL.NFT}/${nft.uid}`).get<Nft>())?.available === 3,
     );
   });
 
   it('Should create bid request', async () => {
     await bidNft(members[0], MIN_IOTA_AMOUNT);
-    const snap = await admin
-      .firestore()
+    const snap = await soonDb()
       .collection(COL.TRANSACTION)
       .where('payload.type', '==', TransactionOrderType.NFT_BID)
       .where('member', '==', members[0])
       .get();
-    expect(snap.docs.length).toBe(1);
-    const tran = <Transaction>snap.docs[0].data();
+    expect(snap.length).toBe(1);
+    const tran = <Transaction>snap[0];
     expect(tran.payload.beneficiary).toBe('member');
     expect(tran.payload.beneficiaryUid).toBe(memberAddress);
     expect(tran.payload.royaltiesFee).toBe(collection.royaltiesFee);
@@ -226,42 +233,41 @@ describe('Nft bidding', () => {
     expect(tran.payload.nft).toBe(nft.uid);
     expect(tran.payload.collection).toBe(collection.uid);
 
-    const nftDocRef = admin.firestore().collection(COL.NFT).doc(nft.uid);
-    nft = <Nft>(await nftDocRef.get()).data();
+    const nftDocRef = soonDb().collection(COL.NFT).doc(nft.uid);
+    nft = <Nft>await nftDocRef.get();
     expect(nft.lastTradedOn).toBeDefined();
     expect(nft.totalTrades).toBe(1);
 
-    const collectionDocRef = admin.firestore().collection(COL.COLLECTION).doc(nft.collection);
-    collection = <Collection>(await collectionDocRef.get()).data();
+    const collectionDocRef = soonDb().collection(COL.COLLECTION).doc(nft.collection);
+    collection = <Collection>await collectionDocRef.get();
     expect(collection.lastTradedOn).toBeDefined();
     expect(collection.totalTrades).toBe(1);
   });
 
   it('Should bid and send amount', async () => {
     await bidNft(members[0], MIN_IOTA_AMOUNT);
-    const nftData = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
+    const nftData = <Nft>await soonDb().doc(`${COL.NFT}/${nft.uid}`).get();
     expect(nftData.auctionHighestBidder).toBe(members[0]);
   });
 
   it('Should credit lowest bidder', async () => {
     mockWalletReturnValue(walletSpy, members[0], { nft: nft.uid });
     await bidNft(members[0], 2 * MIN_IOTA_AMOUNT);
-    const nftData = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
+    const nftData = <Nft>await soonDb().doc(`${COL.NFT}/${nft.uid}`).get();
     expect(nftData.auctionHighestBidder).toBe(members[0]);
 
     await bidNft(members[1], 3 * MIN_IOTA_AMOUNT);
-    const updated = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
+    const updated = <Nft>await soonDb().doc(`${COL.NFT}/${nft.uid}`).get();
     expect(updated.auctionHighestBidder).toBe(members[1]);
 
-    const snap = await admin
-      .firestore()
+    const snap = await soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', members[0])
       .where('payload.nft', '==', nft.uid)
       .get();
-    expect(snap.docs.length).toBe(1);
-    const tran = <Transaction>snap.docs[0].data();
+    expect(snap.length).toBe(1);
+    const tran = <Transaction>snap[0];
 
     expect(tran.payload.amount).toBe(2 * MIN_IOTA_AMOUNT);
     expect(tran.payload.nft).toBe(nft.uid);
@@ -273,21 +279,20 @@ describe('Nft bidding', () => {
 
   it('Should reject smaller bid', async () => {
     await bidNft(members[0], 2 * MIN_IOTA_AMOUNT);
-    const nftData = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
+    const nftData = <Nft>await soonDb().doc(`${COL.NFT}/${nft.uid}`).get();
     expect(nftData.auctionHighestBidder).toBe(members[0]);
 
     await bidNft(members[1], MIN_IOTA_AMOUNT);
-    const updated = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
+    const updated = <Nft>await soonDb().doc(`${COL.NFT}/${nft.uid}`).get();
     expect(updated.auctionHighestBidder).toBe(members[0]);
 
-    const snap = await admin
-      .firestore()
+    const snap = await soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', members[1])
       .where('payload.nft', '==', nft.uid)
       .get();
-    expect(snap.docs.length).toBe(1);
+    expect(snap.length).toBe(1);
   });
 
   it('Should bid in parallel', async () => {
@@ -297,17 +302,16 @@ describe('Nft bidding', () => {
       bidNft(members[2], MIN_IOTA_AMOUNT),
     ];
     await Promise.all(bidPromises);
-    const nftData = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
+    const nftData = <Nft>await soonDb().doc(`${COL.NFT}/${nft.uid}`).get();
     expect(nftData.auctionHighestBidder).toBe(members[1]);
 
-    const transactionSnap = await admin
-      .firestore()
+    const transactionSnap = await soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', 'in', [members[0], members[2]])
       .where('payload.nft', '==', nft.uid)
       .get();
-    expect(transactionSnap.docs.length).toBe(2);
+    expect(transactionSnap.length).toBe(2);
   });
 });
 
@@ -316,58 +320,73 @@ describe('Should finalize bidding', () => {
     mockWalletReturnValue(walletSpy, memberAddress, dummyAuctionData(nft.uid));
     await testEnv.wrap(setForSaleNft)({});
     await wait(
-      async () =>
-        (await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data()?.available === 3,
+      async () => (await soonDb().doc(`${COL.NFT}/${nft.uid}`).get<Nft>())?.available === 3,
     );
   });
 
   it.each([false, true])('Should bid and finalize it', async (noRoyaltySpace: boolean) => {
     if (noRoyaltySpace) {
-      await admin
-        .firestore()
+      await soonDb()
         .doc(`${COL.COLLECTION}/${collection.uid}`)
         .update({ royaltiesSpace: '', royaltiesFee: 0 });
     }
-    await bidNft(members[0], MIN_IOTA_AMOUNT);
-    const nftData = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data();
+    const bidOrder = await bidNft(members[0], MIN_IOTA_AMOUNT);
+    expect(bidOrder.payload.restrictions.collection).toEqual({
+      access: collection.access,
+      accessAwards: collection.accessAwards || [],
+      accessCollections: collection.accessCollections || [],
+    });
+    expect(bidOrder.payload.restrictions.nft).toEqual({
+      saleAccess: nft.saleAccess || null,
+      saleAccessMembers: nft.saleAccessMembers || [],
+    });
+
+    const nftData = <Nft>await soonDb().doc(`${COL.NFT}/${nft.uid}`).get();
     expect(nftData.auctionHighestBidder).toBe(members[0]);
 
-    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${nftData.collection}`);
-    collection = <Collection>(await collectionDocRef.get()).data();
+    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nftData.collection}`);
+    collection = <Collection>await collectionDocRef.get();
     expect(collection.nftsOnAuction).toBe(1);
 
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.NFT}/${nft.uid}`)
       .update({ auctionTo: dateToTimestamp(dayjs().subtract(1, 'minute')) });
 
     await finalizeAllNftAuctions();
 
-    const nftDocRef = admin.firestore().doc(`${COL.NFT}/${nft.uid}`);
+    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
     await wait(async () => {
-      const updatedNft = <Nft>(await nftDocRef.get()).data();
+      const updatedNft = <Nft>await nftDocRef.get();
       return updatedNft.available === NftAvailable.UNAVAILABLE;
     });
-    const updatedNft = <Nft>(await nftDocRef.get()).data();
+    const updatedNft = <Nft>await nftDocRef.get();
     expect(updatedNft.owner).toBe(members[0]);
     expect(updatedNft.auctionFrom).toBeNull();
     expect(updatedNft.auctionTo).toBeNull();
 
-    const snap = await admin
-      .firestore()
+    const snap = await soonDb()
       .collection(COL.NOTIFICATION)
       .where('member', '==', members[0])
       .where('type', '==', NotificationType.WIN_BID)
       .get();
-    expect(snap.docs.length).toBe(1);
+    expect(snap.length).toBe(1);
 
-    collection = <Collection>(await collectionDocRef.get()).data();
+    collection = <Collection>await collectionDocRef.get();
     expect(collection.nftsOnAuction).toBe(0);
     expect(collection.lastTradedOn).toBeDefined();
     expect(collection.totalTrades).toBe(2);
 
-    nft = <Nft>(await nftDocRef.get()).data();
+    nft = <Nft>await nftDocRef.get();
     expect(nft.lastTradedOn).toBeDefined();
     expect(nft.totalTrades).toBe(2);
+
+    const billPayments = await soonDb()
+      .collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .where('payload.nft', '==', nft.uid)
+      .get<Transaction>();
+    for (const billPayment of billPayments) {
+      expect(billPayment.payload.restrictions).toEqual(bidOrder.payload.restrictions);
+    }
   });
 });

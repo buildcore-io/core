@@ -1,11 +1,14 @@
 import {
+  Access,
   BillPaymentTransaction,
+  Collection,
   CreditPaymentTransaction,
   MIN_AMOUNT_TO_TRANSFER,
+  Nft,
   OrderTransaction,
   PaymentTransaction,
+  Restrictions,
 } from '@soonaverse/interfaces';
-import admin from '../admin.config';
 
 export type OrderPayBillCreditTransaction =
   | OrderTransaction
@@ -34,4 +37,26 @@ export const generateRandomAmount = () => {
 
 export const getRandomElement = <T>(array: T[]) => array[Math.floor(Math.random() * array.length)];
 
-export type LastDocType = admin.firestore.QueryDocumentSnapshot<admin.firestore.DocumentData>;
+export const getRestrictions = (collection?: Collection, nft?: Nft): Restrictions => {
+  let restrictions = {};
+  if (collection) {
+    restrictions = {
+      ...restrictions,
+      collection: {
+        access: collection.access || Access.OPEN,
+        accessAwards: collection.accessAwards || [],
+        accessCollections: collection.accessCollections || [],
+      },
+    };
+  }
+
+  if (nft) {
+    const nftRestrictions = {
+      saleAccess: nft.saleAccess || null,
+      saleAccessMembers: nft.saleAccessMembers || [],
+    };
+    restrictions = { ...restrictions, nft: nftRestrictions };
+  }
+
+  return restrictions;
+};

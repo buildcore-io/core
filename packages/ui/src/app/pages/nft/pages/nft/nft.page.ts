@@ -22,7 +22,7 @@ import { SeoService } from '@core/services/seo';
 import { ThemeList, ThemeService } from '@core/services/theme';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
-import { getItem, StorageItem } from '@core/utils';
+import { StorageItem, getItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -30,9 +30,11 @@ import { HelperService } from '@pages/nft/services/helper.service';
 import {
   Collection,
   CollectionType,
+  DEFAULT_NETWORK,
   FILE_SIZES,
   IPFS_GATEWAY,
   MIN_AMOUNT_TO_TRANSFER,
+  NETWORK_DETAIL,
   Network,
   Nft,
   Space,
@@ -42,7 +44,7 @@ import {
 import { ChartConfiguration, ChartType } from 'chart.js';
 import dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, combineLatest, interval, map, skip, Subscription, take } from 'rxjs';
+import { BehaviorSubject, Subscription, combineLatest, interval, map, skip, take } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { DataService } from '../../services/data.service';
 
@@ -611,7 +613,10 @@ export class NFTPage implements OnInit, OnDestroy {
     if (data?.length) {
       const sortedData = data.sort((a, b) => a[0] - b[0]);
       for (let i = 0; i < sortedData.length; i++) {
-        dataToShow.data.push(sortedData[i][1] / 1000 / 1000);
+        dataToShow.data.push(
+          sortedData[i][1] /
+            NETWORK_DETAIL[this.data.nft$.value?.mintingData?.network || DEFAULT_NETWORK].divideBy,
+        );
         dataToShow.labels.push(dayjs(sortedData[i][0]).format('MMM D'));
       }
     }
@@ -638,7 +643,7 @@ export class NFTPage implements OnInit, OnDestroy {
       orders?.map((order) => ({
         type: TimelineItemType.ORDER,
         payload: {
-          image: order.newMember.currentProfileImage,
+          image: order.newMember.avatar,
           date: order.order.createdOn?.toDate(),
           name: order.newMember.name || order.newMember.uid,
           amount: order.order.payload.amount,
@@ -651,7 +656,7 @@ export class NFTPage implements OnInit, OnDestroy {
       res.unshift({
         type: TimelineItemType.LISTED_BY_MEMBER,
         payload: {
-          image: this.data.owner$.value?.currentProfileImage,
+          image: this.data.owner$.value?.avatar,
           date: (nft?.availableFrom || nft?.auctionFrom)?.toDate(),
           isAuction: !!(!nft?.availableFrom && nft?.auctionFrom),
           name: this.data.owner$.value?.name || this.data.owner$.value?.uid || '',

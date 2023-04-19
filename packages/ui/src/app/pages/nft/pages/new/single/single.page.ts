@@ -15,7 +15,6 @@ import { SelectCollectionOption } from '@components/collection/components/select
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
-import { Units } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/nft/services/data.service';
@@ -29,6 +28,7 @@ import {
   MAX_STATS_COUNT,
   MIN_IOTA_AMOUNT,
   PRICE_UNITS,
+  Units,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { DisabledTimeConfig } from 'ng-zorro-antd/date-picker';
@@ -40,7 +40,7 @@ import {
   NzUploadXHRArgs,
   UploadFilter,
 } from 'ng-zorro-antd/upload';
-import { BehaviorSubject, from, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription, from, of } from 'rxjs';
 
 @UntilDestroy()
 @Component({

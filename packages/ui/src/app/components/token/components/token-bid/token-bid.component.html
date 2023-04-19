@@ -34,7 +34,11 @@
       Token amount to buy
     </div>
     <div class="font-bold whitespace-nowrap">
-      {{ unitsService.format(amount * 1000 * 1000, undefined, true, false) }}
+      {{
+        { value: amount, exponents: token?.decimals }
+          | formatToken : token?.uid : true : false
+          | async
+      }}
       {{ (token?.symbol === 'IOTA' ? 'M' : '') + token?.symbol }}
     </div>
   </div>
@@ -46,11 +50,9 @@
     <div class="text-right">
       <div class="font-bold whitespace-nowrap">
         {{
-          unitsService.format(
-            price * 1000 * 1000,
-            token?.mintingData?.networkFormat || token?.mintingData?.network,
-            true
-          )
+          { value: price, exponents: getDefaultNetworkDecimals() }
+            | formatToken : token?.mintingData?.networkFormat || token?.mintingData?.network : true
+            | async
         }}
       </div>
       <span
@@ -75,11 +77,9 @@
     <div class="text-right">
       <div class="font-bold whitespace-nowrap">
         {{
-          unitsService.format(
-            getTargetAmount() * 1000 * 1000,
-            token?.mintingData?.networkFormat || token?.mintingData?.network,
-            true
-          )
+          getTargetAmount(false)
+            | formatToken : token?.mintingData?.networkFormat || token?.mintingData?.network : true
+            | async
         }}
       </div>
       <span
@@ -87,7 +87,7 @@
         i18n
         >~{{
           unitsService.getUsd(
-            getTargetAmount(),
+            amount * price,
             token?.mintingData?.networkFormat || token?.mintingData?.network
           )
             | async
@@ -189,11 +189,9 @@
     *ngIf="!helper.isExpired(transaction$ | async)"
     [targetAddress]="targetAddress"
     [formattedAmount]="
-      unitsService.format(
-        getTargetAmount() * 1000 * 1000,
-        token?.mintingData?.networkFormat || token?.mintingData?.network,
-        true
-      )
+      getTargetAmount(false)
+        | formatToken : token?.mintingData?.networkFormat || token?.mintingData?.network : true
+        | async
     "
   >
   </wen-send-funds>
@@ -202,7 +200,7 @@
     class="mt-6"
     [targetAddress]="targetAddress"
     [network]="token?.mintingData?.networkFormat || token?.mintingData?.network"
-    [targetAmount]="getTargetAmount() + ''"
+    [targetAmount]="getTargetAmount(false) + ''"
   >
   </wen-wallet-deeplink>
 

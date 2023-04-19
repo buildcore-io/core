@@ -51,7 +51,7 @@
       </div>
 
       <div
-        class="absolute z-10 top-4 right-4 flex"
+        class="absolute z-10 flex top-4 right-4"
         *ngIf="
           collection?.access !== targetAccess.OPEN ||
           collection?.status !== collectionStatuses.MINTED
@@ -63,7 +63,7 @@
           nzTooltipPlacement="bottom"
           i18n-nzTooltipTitle
           nzTooltipTitle="NFT is not yet migrated to the decentralized network."
-          class="bg-alerts-warning dark:bg-alerts-warning-dark w-8 h-8 rounded-full flex items-center justify-center"
+          class="flex items-center justify-center w-8 h-8 rounded-full bg-alerts-warning dark:bg-alerts-warning-dark"
         >
           <wen-icon-link-broken
             class="text-foregrounds-primary dark:text-foregrounds-primary"
@@ -126,7 +126,13 @@
     </div>
 
     <div class="relative flex flex-col w-full px-4 py-3 grow lg:py-4">
-      <h3 class="mb-1 text-base font-bold truncate lg:text-lg">{{ nft?.name || nft?.uid }}</h3>
+      <h3
+        nz-tooltip
+        [nzTooltipTitle]="nft?.name || nft?.uid"
+        class="mb-1 text-base font-bold truncate lg:text-lg"
+      >
+        {{ nft?.name || nft?.uid }}
+      </h3>
 
       <div
         class="mt-1 mb-3 text-sm font-medium break-words line-clamp-2 text-foregrounds-primary dark:text-foregrounds-primary-dark"
@@ -141,11 +147,13 @@
             class="text-sm font-medium truncate text-foregrounds-primary dark:text-foregrounds-primary-dark"
           >
             {{
-              unitsService.format(
-                applyDiscount(nft?.availablePrice || nft?.price),
-                nft?.placeholderNft ? collection?.mintingData?.network : nft?.mintingData?.network,
-                true
-              )
+              applyDiscount(nft?.availablePrice || nft?.price)
+                | formatToken
+                  : (nft?.placeholderNft
+                      ? collection?.mintingData?.network
+                      : nft?.mintingData?.network)
+                  : true
+                | async
             }}
           </div>
         </div>
@@ -161,11 +169,13 @@
             class="text-sm font-medium truncate text-foregrounds-primary dark:text-foregrounds-primary-dark"
           >
             {{
-              unitsService.format(
-                nft?.auctionHighestBid || nft?.auctionFloorPrice,
-                nft?.placeholderNft ? collection?.mintingData?.network : nft?.mintingData?.network,
-                true
-              )
+              nft?.auctionHighestBid || nft?.auctionFloorPrice
+                | formatToken
+                  : (nft?.placeholderNft
+                      ? collection?.mintingData?.network
+                      : nft?.mintingData?.network)
+                  : true
+                | async
             }}
           </div>
         </div>
@@ -181,7 +191,7 @@
           (click)="$event.stopPropagation()"
         >
           <nz-avatar
-            [nzSrc]="(owner$ | async)?.currentProfileImage | ipfsAvatar : filesizes.small"
+            [nzSrc]="(owner$ | async)?.avatar | resizeAvatar : filesizes.small"
             class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-10"
             style="max-width: 32px; min-width: 32px"
             [nzSize]="32"

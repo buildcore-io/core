@@ -1,29 +1,35 @@
 import { COL, Network, SUB_COL } from '@soonaverse/interfaces';
+import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
-import admin from '../../admin.config';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { ProcessingService } from '../../services/payment/payment-processing';
-import { uOn } from '../../utils/dateTime.utils';
 import { confirmTransaction, milestoneTriggerConfig } from './common';
 import { processConsumedVoteOutputs } from './consumed.vote.outputs';
 import { SmrMilestoneTransactionAdapter } from './SmrMilestoneTransactionAdapter';
 import { updateTokenSupplyData } from './token.foundry';
 
 const handleMilestoneTransactionWrite =
-  (network: Network) => async (change: functions.Change<functions.firestore.DocumentSnapshot>) => {
+  (network: Network) =>
+  async (
+    change: functions.Change<functions.firestore.DocumentSnapshot>,
+    context: functions.EventContext,
+  ) => {
     if (!change.after.data()) {
       return;
     }
-    return admin.firestore().runTransaction(async (transaction) => {
-      const doc = await transaction.get(change.after.ref);
-      const data = doc.data();
+    return soonDb().runTransaction(async (transaction) => {
+      const docRef = soonDb().doc(change.after.ref.path);
+      const data = await transaction.get<Record<string, unknown>>(docRef);
       if (!data || data.processed) {
         return;
       }
-      await confirmTransaction(doc, network);
-      await updateTokenSupplyData(doc);
-
+      await confirmTransaction(change.after.ref.path, data, network);
+      await updateTokenSupplyData(data);
       const adapter = new SmrMilestoneTransactionAdapter(network);
-      const milestoneTransaction = await adapter.toMilestoneTransaction(doc);
+      const milestoneTransaction = await adapter.toMilestoneTransaction({
+        ...data,
+        uid: context.params.tranId,
+      });
       const service = new ProcessingService(transaction);
       await service.processMilestoneTransactions(milestoneTransaction);
       service.submit();
@@ -33,10 +39,7 @@ const handleMilestoneTransactionWrite =
         milestoneTransaction.inputs.map((i) => i.outputId!),
       );
 
-      return transaction.update(
-        change.after.ref,
-        uOn({ processed: true, processedOn: admin.firestore.FieldValue.serverTimestamp() }),
-      );
+      return transaction.update(docRef, { processed: true, processedOn: dayjs().toDate() });
     });
   };
 

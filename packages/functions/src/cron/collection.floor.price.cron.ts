@@ -1,39 +1,34 @@
-import { COL, Collection, NftAccess, NftAvailable } from '@soonaverse/interfaces';
+import { COL, Collection, Nft, NftAccess, NftAvailable } from '@soonaverse/interfaces';
 import { last } from 'lodash';
-import admin from '../admin.config';
-import { LastDocType } from '../utils/common.utils';
-import { uOn } from '../utils/dateTime.utils';
+import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
 
 export const updateFloorPriceOnCollections = async () => {
-  let lastDoc: LastDocType | undefined = undefined;
+  let lastUid = '';
   do {
-    let query = admin.firestore().collection(COL.COLLECTION).limit(500);
-    if (lastDoc) {
-      query = query.startAfter(lastDoc);
-    }
-    const snap = await query.get();
-    lastDoc = last(snap.docs);
+    const lastDoc = await getSnapshot(COL.COLLECTION, lastUid);
+    const query = soonDb().collection(COL.COLLECTION).limit(500).startAfter(lastDoc);
+    const snap = await query.get<Collection>();
+    lastUid = last(snap)?.uid || '';
 
-    for (const doc of snap.docs) {
-      await updateCollectionFloorPrice(doc.data() as Collection);
+    for (const collection of snap) {
+      await updateCollectionFloorPrice(collection);
     }
-  } while (lastDoc);
+  } while (lastUid);
 };
 
 const updateCollectionFloorPrice = async (colletion: Collection) => {
-  const snap = await admin
-    .firestore()
+  const snap = await soonDb()
     .collection(COL.NFT)
     .where('collection', '==', colletion.uid)
     .where('saleAccess', '==', NftAccess.OPEN)
     .where('available', 'in', [NftAvailable.SALE, NftAvailable.AUCTION_AND_SALE])
     .orderBy('availablePrice')
     .limit(1)
-    .get();
-  if (!snap.size) {
+    .get<Nft>();
+  if (!snap.length) {
     return;
   }
 
-  const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${colletion.uid}`);
-  await collectionDocRef.update(uOn({ floorPrice: snap.docs[0].data().availablePrice }));
+  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${colletion.uid}`);
+  await collectionDocRef.update({ floorPrice: snap[0].availablePrice });
 };

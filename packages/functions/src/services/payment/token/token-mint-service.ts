@@ -7,15 +7,15 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { get } from 'lodash';
-import admin from '../../../admin.config';
+import { soonDb } from '../../../firebase/firestore/soondb';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 
 export class TokenMintService {
   constructor(readonly transactionService: TransactionService) {}
 
   public handleMintingRequest = async (order: TransactionOrder, match: TransactionMatch) => {
-    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`);
-    const token = <Token>(await this.transactionService.transaction.get(tokenDocRef)).data();
+    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${order.payload.token}`);
+    const token = <Token>await this.transactionService.get(tokenDocRef);
 
     const payment = await this.transactionService.createPayment(order, match);
     if (![TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED].includes(token.status)) {
@@ -38,7 +38,7 @@ export class TokenMintService {
 
     this.transactionService.markAsReconciled(order, match.msgId);
 
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: tokenDocRef,
       data: {
         status: TokenStatus.MINTING,

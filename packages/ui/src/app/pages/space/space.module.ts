@@ -11,7 +11,9 @@ import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module'
 import { RadioModule } from '@components/radio/radio.module';
 import { SpaceRewardScheduleModule } from '@components/space/components/space-reward-schedule/space-reward-schedule.module';
 import { TokenCardModule } from '@components/token/components/token-card/token-card.module';
+import { TokenImportModule } from '@components/token/components/token-import/token-import.module';
 import { TokenStakeModule } from '@components/token/components/token-stake/token-stake.module';
+import { FormatTokenModule } from '@core/pipes/formatToken/format-token.module';
 import { SpaceAboutModule } from '@pages/space/pages/space/space-about/space-about.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
@@ -37,9 +39,9 @@ import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { AuditOneModule } from 'src/app/service-modules/audit-one/audit-one.module';
+import { ResizeAvatarModule } from '../../@core/pipes/resize-avatar/resize-avatar.module';
 import { MemberModule } from '../../components/member/member.module';
 import { ProposalCardModule } from '../../components/proposal/components/proposal-card/proposal-card.module';
-import { IpfsAvatarModule } from './../../@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { MarkDownModule } from './../../@core/pipes/markdown/markdown.module';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
 import { FixedCreateButtonModule } from './../../components/fixed-create-button/fixed-create-button.module';
@@ -78,7 +80,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     TruncateModule,
     NzInputNumberModule,
     MemberModule,
-    IpfsAvatarModule,
+    ResizeAvatarModule,
     ProposalCardModule,
     AwardCardModule,
     IconModule,
@@ -98,9 +100,11 @@ import { SpaceRoutingModule } from './space-routing.module';
     NzSelectModule,
     NzToolTipModule,
     NzIconModule,
+    FormatTokenModule,
     NzTagModule,
     NzAlertModule,
     DescriptionModule,
+    TokenImportModule,
     NzUploadModule,
     NzAvatarModule,
     LayoutModule,

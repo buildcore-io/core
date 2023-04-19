@@ -25,24 +25,25 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   Access,
   Award,
-  Categories,
   COL,
+  Categories,
   Collection,
   CollectionType,
   DEFAULT_NETWORK,
   DISCORD_REGEXP,
   DiscountLine,
   Space,
-  Token,
   TWITTER_REGEXP,
+  Token,
   URL_REGEXP,
+  getDefDecimalIfNotSet,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { DisabledTimeConfig } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzSelectOptionInterface } from 'ng-zorro-antd/select';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
-import { BehaviorSubject, firstValueFrom, from, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription, firstValueFrom, from, of } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { SelectSpaceOption } from '../../../../components/space/components/select-space/select-space.component';
 
@@ -104,7 +105,12 @@ export class UpsertPage implements OnInit, OnDestroy {
   private awardsSubscription?: Subscription;
   private tokensSubscription?: Subscription;
   // Improve
-  private tokenCache: any = {};
+  private tokenCache: {
+    [propName: string]: {
+      symbol: string;
+      decimals: number;
+    };
+  } = {};
 
   constructor(
     public cache: CacheService,
@@ -226,7 +232,11 @@ export class UpsertPage implements OnInit, OnDestroy {
                   }
 
                   this.addDiscount(
-                    v.tokenReward ? (v.tokenReward / 1000 / 1000).toString() : '0',
+                    v.tokenReward
+                      ? (
+                          v.tokenReward / Math.pow(10, getDefDecimalIfNotSet(token?.decimals))
+                        ).toString()
+                      : '0',
                     token?.uid || '',
                     token?.symbol || '',
                     v.amount ? (v.amount * 100).toString() : '',
@@ -356,7 +366,10 @@ export class UpsertPage implements OnInit, OnDestroy {
       this.filteredTokens$.next(
         r.hits.map((r) => {
           const token = r as unknown as Token;
-          this.tokenCache[token.uid] = token.symbol;
+          this.tokenCache[token.uid] = {
+            symbol: token.symbol,
+            decimals: getDefDecimalIfNotSet(token.decimals),
+          };
           return {
             label: token.name + ' ( ' + token.symbol + ' )',
             value: token.uid,
@@ -552,8 +565,8 @@ export class UpsertPage implements OnInit, OnDestroy {
     data.discounts.forEach((v: DiscountLine) => {
       if (v.amount > 0) {
         discounts.push({
-          tokenReward: (v.tokenReward || 0) * 1000 * 1000,
-          tokenSymbol: this.tokenCache[v.tokenUid],
+          tokenReward: (v.tokenReward || 0) * Math.pow(10, this.tokenCache[v.tokenUid].decimals),
+          tokenSymbol: this.tokenCache[v.tokenUid].symbol,
           amount: v.amount / 100,
         });
       }

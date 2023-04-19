@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs';
 export class ManagePage implements OnDestroy {
   private subscriptions$: Subscription[] = [];
   public isAuditOneModalOpen = false;
-
+  public isImportTokenVisible = false;
   constructor(
     public data: DataService,
     public deviceService: DeviceService,

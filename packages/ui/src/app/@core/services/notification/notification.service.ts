@@ -16,19 +16,19 @@ export class NotificationService {
         next: (obj) => {
           // Success
           this.notification.success(msg, '');
-          cb();
+          cb(true);
           observe.next(obj);
         },
         error: (obj: any) => {
           // Error
-          if (obj.message) {
-            this.notification.error(obj.message, '');
+          if (obj?.error?.data?.message || obj?.error?.data?.key) {
+            this.notification.error(obj.error.data.message || obj.error.data.key, '');
           } else {
-            this.notification.error('Failed due random error.', '');
+            this.notification.error('Failed due internal error.', '');
           }
 
           // Pass it.
-          cb();
+          cb(false);
           observe.error(obj);
         },
       });

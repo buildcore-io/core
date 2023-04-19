@@ -21,9 +21,10 @@ import { TokenStakeModule } from '@components/token/components/token-stake/token
 import { TokenTradingPairsTableModule } from '@components/token/components/token-trading-pairs-table/token-trading-pairs-table.module';
 import { TransactionCardModule } from '@components/transaction/components/transaction-card/transaction-card.module';
 import { OnVisibleModule } from '@core/directives/on-visible/on-visible.module';
-import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
-import { IpfsAvatarPipe } from '@core/pipes/ipfs-avatar/ipfs-avatar.pipe';
+import { FormatTokenModule } from '@core/pipes/formatToken/format-token.module';
 import { IpfsBadgeModule } from '@core/pipes/ipfs-badge/ipfs-badge.module';
+import { ResizeAvatarModule } from '@core/pipes/resize-avatar/resize-avatar.module';
+import { ResizeAvatarPipe } from '@core/pipes/resize-avatar/resize-avatar.pipe';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -72,13 +73,13 @@ import { DataService } from './services/data.service';
     TokensPage,
     TransactionsPage,
   ],
-  providers: [DataService, IpfsAvatarPipe],
+  providers: [DataService, ResizeAvatarPipe],
   imports: [
     CommonModule,
     BadgeModule,
     AwardCardModule,
     TabsModule,
-    IpfsAvatarModule,
+    ResizeAvatarModule,
     MemberAboutModule,
     TruncateModule,
     LockedTokenClaimModule,
@@ -97,6 +98,7 @@ import { DataService } from './services/data.service';
     NzListModule,
     IconModule,
     LayoutModule,
+    FormatTokenModule,
     NzModalModule,
     DrawerToggleModule,
     NzCheckboxModule,

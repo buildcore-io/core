@@ -13,8 +13,8 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { isEqual } from 'lodash';
-import admin from '../../src/admin.config';
-import { mintTokenOrder } from '../../src/controls/token-minting/token-mint.control';
+import { soonDb } from '../../src/firebase/firestore/soondb';
+import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -45,13 +45,13 @@ describe('Token minting', () => {
       expiresAt,
     );
 
-    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${helper.token.uid}`);
+    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${helper.token.uid}`);
     await wait(async () => {
-      const snap = await tokenDocRef.get();
-      return snap.data()?.status === TokenStatus.MINTED;
+      const snap = await tokenDocRef.get<Token>();
+      return snap?.status === TokenStatus.MINTED;
     });
 
-    helper.token = <Token>(await tokenDocRef.get()).data();
+    helper.token = <Token>await tokenDocRef.get();
     expect(helper.token.status).toBe(TokenStatus.MINTED);
     expect(helper.token.mintingData?.tokenId).toBeDefined();
     expect(helper.token.mintingData?.aliasId).toBeDefined();
@@ -76,9 +76,7 @@ describe('Token minting', () => {
       );
       return Number(Object.values(balance.nativeTokens)[0]) === 1000;
     });
-    const guardianData = <Member>(
-      (await admin.firestore().doc(`${COL.MEMBER}/${helper.guardian.uid}`).get()).data()
-    );
+    const guardianData = <Member>await soonDb().doc(`${COL.MEMBER}/${helper.guardian.uid}`).get();
     await wait(async () => {
       const balance = await addressBalance(
         helper.walletService.client,
@@ -97,13 +95,12 @@ describe('Token minting', () => {
     });
 
     const mintTransactions = (
-      await admin
-        .firestore()
+      await soonDb()
         .collection(COL.TRANSACTION)
         .where('payload.token', '==', helper.token.uid)
         .where('type', '==', TransactionType.MINT_TOKEN)
         .get()
-    ).docs.map((d) => <Transaction>d.data());
+    ).map((d) => <Transaction>d);
     const aliasTran = mintTransactions.find(
       (t) => t.payload.type === TransactionMintTokenType.MINT_ALIAS,
     );
@@ -128,10 +125,10 @@ describe('Token minting', () => {
     expect(metadata.standard).toBe('IRC30');
     expect(metadata.type).toBe('image/png');
     expect(metadata.name).toBe(helper.token.name);
-    expect(metadata.uri).toBeDefined();
+    expect(metadata.logoUrl).toBeDefined();
     expect(metadata.issuerName).toBe(KEY_NAME_TANGLE);
     expect(metadata.soonaverseId).toBe(helper.token.uid);
     expect(metadata.symbol).toBe(helper.token.symbol.toLowerCase());
-    expect(metadata.decimals).toBe(6);
+    expect(metadata.decimals).toBe(5);
   });
 });

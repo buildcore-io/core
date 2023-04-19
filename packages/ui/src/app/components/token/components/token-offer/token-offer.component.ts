@@ -15,11 +15,14 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import {
+  DEFAULT_NETWORK,
+  NETWORK_DETAIL,
   SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
   Space,
   Token,
   TokenDistribution,
   TokenTradeOrderType,
+  getDefDecimalIfNotSet,
 } from '@soonaverse/interfaces';
 import bigDecimal from 'js-big-decimal';
 
@@ -92,7 +95,7 @@ export class TokenOfferComponent {
 
     const params: any = {
       symbol: this.token.symbol,
-      count: Number(this.amount * 1000 * 1000),
+      count: Number(this.amount * Math.pow(10, getDefDecimalIfNotSet(this.token?.decimals))),
       price: Number(this.price),
       type: TokenTradeOrderType.SELL,
     };
@@ -110,22 +113,29 @@ export class TokenOfferComponent {
     return SERVICE_MODULE_FEE_TOKEN_EXCHANGE;
   }
 
-  public getFee(): string {
-    return this.unitsService.format(
-      Number(bigDecimal.multiply(this.getTargetAmount(), this.exchangeFee * 100 * 100)),
-      this.token?.mintingData?.network,
-      true,
-      true,
+  public getFee(): number {
+    return Number(
+      bigDecimal.multiply(
+        bigDecimal.divide(
+          this.getTargetAmount(false),
+          NETWORK_DETAIL[this.token?.mintingData?.network || DEFAULT_NETWORK].divideBy,
+          6,
+        ),
+        this.exchangeFee * 100 * 100,
+      ),
     );
   }
 
-  public getTargetAmount(): number {
+  public getTargetAmount(divideBy = false): number {
     return Number(
-      bigDecimal.divide(
-        bigDecimal.floor(
-          bigDecimal.multiply(Number(this.amount * 1000 * 1000), Number(this.price)),
+      bigDecimal[divideBy ? 'divide' : 'multiply'](
+        bigDecimal.floor(bigDecimal.multiply(Number(this.amount), Number(this.price))),
+        Math.pow(
+          10,
+          getDefDecimalIfNotSet(
+            NETWORK_DETAIL[this.token?.mintingData?.network || DEFAULT_NETWORK].decimals,
+          ),
         ),
-        1000 * 1000,
         6,
       ),
     );

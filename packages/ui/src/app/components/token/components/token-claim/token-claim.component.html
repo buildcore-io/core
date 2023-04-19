@@ -42,12 +42,9 @@
         <div i18n>Total available tokens to claim as of today</div>
         <div class="mt-1">
           {{
-            unitsService.format(
-              sumVested(memberDistribution?.tokenDrops || []),
-              undefined,
-              undefined,
-              false
-            )
+            sumVested(memberDistribution?.tokenDrops || [])
+              | formatToken : token?.uid : false : false
+              | async
           }}
           {{ token?.symbol }}
         </div>
@@ -56,13 +53,10 @@
         <div i18n>Total available tokens to claim as of today</div>
         <div class="mt-1">
           {{
-            unitsService.format(
-              sumVested(memberDistribution?.tokenDrops || []) +
-                (!memberDistribution?.mintedClaimedOn ? memberDistribution?.tokenOwned || 0 : 0),
-              undefined,
-              undefined,
-              false
-            )
+            sumVested(memberDistribution?.tokenDrops || []) +
+              (!memberDistribution?.mintedClaimedOn ? memberDistribution?.tokenOwned || 0 : 0)
+              | formatToken : token?.uid : false : false
+              | async
           }}
           {{ token?.symbol }}
         </div>
@@ -77,22 +71,19 @@
         {{ drop.vestingAt.toDate() | date : 'shortDate' }}
       </div>
       <div class="mt-1">
-        {{ unitsService.format(drop.count, undefined, undefined, false) }} {{ token?.symbol }}
+        {{ drop.count | formatToken : token?.uid : false : false | async }} {{ token?.symbol }}
       </div>
     </div>
     <div class="info-item">
       <div i18n>Total tokens to claim</div>
       <div class="mt-1 font-bold">
         {{
-          unitsService.format(
-            sum(memberDistribution?.tokenDrops || []) +
-              (helper.isMinted(token) && !memberDistribution?.mintedClaimedOn
-                ? memberDistribution?.tokenOwned || 0
-                : 0),
-            undefined,
-            undefined,
-            false
-          )
+          sum(memberDistribution?.tokenDrops || []) +
+            (helper.isMinted(token) && !memberDistribution?.mintedClaimedOn
+              ? memberDistribution?.tokenOwned || 0
+              : 0)
+            | formatToken : token?.uid : false : false
+            | async
         }}
         {{ token?.symbol }}
       </div>
@@ -159,12 +150,9 @@
         </div>
         <div class="mt-1 text-lg font-bold">
           {{
-            unitsService.format(
-              sumVested(memberDistribution?.tokenDrops || []),
-              undefined,
-              undefined,
-              false
-            )
+            sumVested(memberDistribution?.tokenDrops || [])
+              | formatToken : token?.uid : false : false
+              | async
           }}
         </div>
       </ng-container>
@@ -174,13 +162,10 @@
         </div>
         <div class="mt-1 text-lg font-bold">
           {{
-            unitsService.format(
-              sum(memberDistribution?.tokenDrops || []) +
-                (!memberDistribution?.mintedClaimedOn ? memberDistribution?.tokenOwned || 0 : 0),
-              undefined,
-              undefined,
-              false
-            )
+            sum(memberDistribution?.tokenDrops || []) +
+              (!memberDistribution?.mintedClaimedOn ? memberDistribution?.tokenOwned || 0 : 0)
+              | formatToken : token?.uid : false : false
+              | async
           }}
         </div>
       </ng-container>
@@ -216,7 +201,7 @@
     class="block w-full"
     *ngIf="!helper.isExpired(transaction$ | async)"
     [targetAddress]="targetAddress"
-    [formattedAmount]="unitsService.format(targetAmount, token?.mintingData?.network)"
+    [formattedAmount]="targetAmount | formatToken : token?.mintingData?.network | async"
   >
   </wen-send-funds>
 
@@ -224,7 +209,7 @@
     class="mt-6"
     [targetAddress]="targetAddress"
     [network]="token?.mintingData?.network"
-    [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()"
+    [targetAmount]="(targetAmount || 0).toString()"
   >
   </wen-wallet-deeplink>
 

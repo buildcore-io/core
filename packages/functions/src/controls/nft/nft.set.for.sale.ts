@@ -10,32 +10,38 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { Database } from '../../database/Database';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 
 export const setForSaleNftControl = async (owner: string, params: Record<string, unknown>) => {
-  const member = await Database.getById<Member>(COL.MEMBER, owner);
+  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
+  const member = await memberDocRef.get<Member>();
   if (!member) {
-    throw throwInvalidArgument(WenError.member_does_not_exists);
+    throw invalidArgument(WenError.member_does_not_exists);
   }
 
-  const nft = await Database.getById<Nft>(COL.NFT, params.nft as string);
+  const nftDocRef = soonDb().doc(`${COL.NFT}/${params.nft}`);
+  const nft = await nftDocRef.get<Nft>();
   if (!nft) {
-    throw throwInvalidArgument(WenError.nft_does_not_exists);
+    throw invalidArgument(WenError.nft_does_not_exists);
+  }
+
+  if (nft.setAsAvatar) {
+    throw invalidArgument(WenError.nft_set_as_avatar);
   }
 
   if (nft.hidden) {
-    throw throwInvalidArgument(WenError.hidden_nft);
+    throw invalidArgument(WenError.hidden_nft);
   }
 
   if (nft.placeholderNft) {
-    throw throwInvalidArgument(WenError.nft_placeholder_cant_be_updated);
+    throw invalidArgument(WenError.nft_placeholder_cant_be_updated);
   }
 
   if (nft.owner !== owner) {
-    throw throwInvalidArgument(WenError.you_must_be_the_owner_of_nft);
+    throw invalidArgument(WenError.you_must_be_the_owner_of_nft);
   }
 
   assertMemberHasValidAddress(member, nft.mintingData?.network || DEFAULT_NETWORK);
@@ -49,16 +55,17 @@ export const setForSaleNftControl = async (owner: string, params: Record<string,
   }
 
   if (params.auctionFrom && nft.auctionFrom && dayjs(nft.auctionFrom.toDate()).isBefore(dayjs())) {
-    throw throwInvalidArgument(WenError.nft_auction_already_in_progress);
+    throw invalidArgument(WenError.nft_auction_already_in_progress);
   }
 
-  const collection = await Database.getById<Collection>(COL.COLLECTION, nft.collection);
+  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nft.collection}`);
+  const collection = await collectionDocRef.get<Collection>();
   if (![CollectionStatus.PRE_MINTED, CollectionStatus.MINTED].includes(collection?.status!)) {
-    throw throwInvalidArgument(WenError.invalid_collection_status);
+    throw invalidArgument(WenError.invalid_collection_status);
   }
 
-  await Database.update(COL.NFT, { uid: nft.uid, ...getNftUpdateData(params) });
-  return await Database.getById<Nft>(COL.NFT, nft.uid);
+  await nftDocRef.update(getNftUpdateData(params));
+  return await nftDocRef.get<Nft>();
 };
 
 const getNftUpdateData = (params: Record<string, unknown>) => {

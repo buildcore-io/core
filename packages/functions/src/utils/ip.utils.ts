@@ -1,8 +1,6 @@
 import { BLOCKED_COUNTRIES, WenError } from '@soonaverse/interfaces';
-import * as functions from 'firebase-functions';
 import IPinfoWrapper from 'node-ipinfo';
-import { throwInvalidArgument } from './error.utils';
-
+import { invalidArgument } from './error.utils';
 /**
  * Key value pair for blocked country codes
  * key - any entity id (nft id, token id, etc). Default key is 'default'.
@@ -10,7 +8,7 @@ import { throwInvalidArgument } from './error.utils';
  */
 export const getBlockedCountries = () => (BLOCKED_COUNTRIES || {}) as { [key: string]: string[] };
 
-export const getIpInfoToken = () => functions.config()?.ip_info?.token || '';
+export const getIpInfoToken = () => process.env.IP_INFO_TOKEN || '';
 
 export const getIpInfo = (ipInfoToken: string, ipAddress: string) =>
   new IPinfoWrapper(ipInfoToken).lookupIp(ipAddress);
@@ -39,6 +37,6 @@ export const assertIpNotBlocked = async (
   const ipInfo = await getIpInfo(ipInfoToken, ipAddress);
   const blockedCountryCodes = getBlockedCountriesForEntity(blockedCountries, entityId, entityType);
   if (blockedCountryCodes.includes(ipInfo.countryCode)) {
-    throw throwInvalidArgument(WenError.blocked_country);
+    throw invalidArgument(WenError.blocked_country);
   }
 };

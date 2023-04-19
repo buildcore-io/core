@@ -6,7 +6,7 @@ import {
   TangleRequestType,
   Transaction,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { wait } from '../../test/controls/common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
@@ -41,13 +41,13 @@ describe('Create space', () => {
     );
 
     await wait(async () => {
-      const snap = await helper.memberCreditQuery.get();
-      return snap.size === 1 && snap.docs[0].data()?.payload?.walletReference?.confirmed;
+      const snap = await helper.memberCreditQuery.get<Transaction>();
+      return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
     const snap = await helper.memberCreditQuery.get();
-    const credit = snap.docs[0].data() as Transaction;
-    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${credit.payload.response.space}`);
-    const space = <Space>(await spaceDocRef.get()).data();
+    const credit = snap[0] as Transaction;
+    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${credit.payload.response.space}`);
+    const space = <Space>await spaceDocRef.get();
     expect(space.name).toBe('Space A');
   });
 });

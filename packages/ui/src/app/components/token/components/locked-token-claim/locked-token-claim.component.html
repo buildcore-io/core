@@ -29,11 +29,11 @@
       <div i18n>Total available tokens to refund</div>
       <div class="mt-1">
         {{
-          unitsService.format(
-            this.transaction?.payload.nativeTokens?.[0].amount,
-            undefined,
-            undefined,
-            false
+          (
+            this.transaction?.payload.nativeTokens?.[0].amount| formatToken:
+            this.transaction?.payload.token:
+            false:
+            false | async
           )
         }}
       </div>
@@ -64,11 +64,11 @@
       </div>
       <div class="mt-1 text-lg font-bold">
         {{
-          unitsService.format(
-            this.transaction?.payload.nativeTokens?.[0].amount,
-            undefined,
-            undefined,
-            false
+          (
+            this.transaction?.payload.nativeTokens?.[0].amount | formatToken:
+            this.transaction?.payload.token:
+            false:
+            false | async
           )
         }}
       </div>
@@ -104,7 +104,7 @@
     class="block w-full"
     *ngIf="!helper.isExpired(transaction$ | async)"
     [targetAddress]="targetAddress"
-    [formattedAmount]="unitsService.format(targetAmount, transaction?.network)"
+    [formattedAmount]="targetAmount | formatToken : transaction?.network | async"
   >
   </wen-send-funds>
 
@@ -112,7 +112,7 @@
     class="mt-6"
     [targetAddress]="targetAddress"
     [network]="transaction?.network"
-    [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()"
+    [targetAmount]="(targetAmount || 0).toString()"
   >
   </wen-wallet-deeplink>
 

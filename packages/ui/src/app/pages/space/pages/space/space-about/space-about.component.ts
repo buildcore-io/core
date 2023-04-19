@@ -24,9 +24,10 @@ import {
   SOON_SPACE_TEST,
   Space,
   StakeType,
+  getDefDecimalIfNotSet,
 } from '@soonaverse/interfaces';
 import Papa from 'papaparse';
-import { combineLatest, first, map, Observable, skip, Subscription } from 'rxjs';
+import { Observable, Subscription, combineLatest, first, map, skip } from 'rxjs';
 import { SpaceApi } from './../../../../../@api/space.api';
 import { EntityType } from './../../../../../components/wallet-address/wallet-address.component';
 
@@ -73,7 +74,9 @@ export class SpaceAboutComponent implements OnInit, OnDestroy {
     return FILE_SIZES;
   }
   public openStakeModal(amount?: number): void {
-    this.amount = amount ? amount / 1000 / 1000 : undefined;
+    this.amount = amount
+      ? amount / Math.pow(10, getDefDecimalIfNotSet(this.data.token$.value?.decimals))
+      : undefined;
     this.openTokenStake = true;
     this.cd.markForCheck();
   }
@@ -140,7 +143,7 @@ export class SpaceAboutComponent implements OnInit, OnDestroy {
       .pipe(skip(1), first())
       .subscribe((members) => {
         this.exportingMembers = false;
-        const fields = ['', 'EthAddress'];
+        const fields = ['', 'address'];
         const csv = Papa.unparse({
           fields,
           data: members.map((m) => [m.uid]),

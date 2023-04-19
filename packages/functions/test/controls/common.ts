@@ -1,34 +1,39 @@
 import {
   COL,
   Network,
-  Space,
   SUB_COL,
-  TokenStatus,
+  Space,
   TOKEN_SALE_TEST,
+  Token,
+  TokenDistribution,
+  TokenStatus,
   TransactionOrder,
   TransactionOrderType,
   TransactionType,
 } from '@soonaverse/interfaces';
 import chance from 'chance';
-import admin, { inc } from '../../src/admin.config';
-import { createMember as createMemberFunc } from '../../src/controls/member.control';
+import { soonDb } from '../../src/firebase/firestore/soondb';
+import { validateAddress } from '../../src/runtime/firebase/address';
+import { createMember as createMemberFunc } from '../../src/runtime/firebase/member';
 import { createSpace as createSpaceFunc } from '../../src/runtime/firebase/space/index';
 import * as config from '../../src/utils/config.utils';
-import { cOn, serverTime } from '../../src/utils/dateTime.utils';
+import { serverTime } from '../../src/utils/dateTime.utils';
 import * as ipUtils from '../../src/utils/ip.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { getWallet, MEDIA, testEnv } from '../set-up';
-import { validateAddress } from './../../src/controls/address.control';
+import { MEDIA, getWallet, testEnv } from '../set-up';
 
 export const mockWalletReturnValue = <T>(walletSpy: any, address: string, body: T) =>
   walletSpy.mockReturnValue(Promise.resolve({ address, body }));
 
-export const expectThrow = async <C, E>(call: C | Promise<C>, error: E) => {
+export const expectThrow = async <C, E>(call: C | Promise<C>, error: E, message?: string) => {
   try {
     await call;
     fail();
   } catch (e: any) {
-    expect(e.details.key).toBe(error);
+    expect(e.key).toBe(error);
+    if (message) {
+      expect(e.message).toBe(message);
+    }
   }
 };
 
@@ -39,15 +44,14 @@ export const milestoneProcessed = async (
 ) => {
   for (let attempt = 0; attempt < 400; ++attempt) {
     await new Promise((r) => setTimeout(r, 500));
-    const doc = await admin
-      .firestore()
+    const doc = await soonDb()
       .doc(
         `${COL.MILESTONE + (network ? `_${network}` : '')}/${nextMilestone}/${
           SUB_COL.TRANSACTIONS
         }/${defTranId}`,
       )
-      .get();
-    if (doc.data()?.processed) {
+      .get<Record<string, unknown>>();
+    if (doc?.processed) {
       return;
     }
   }
@@ -58,9 +62,9 @@ export const submitMilestoneFunc = async (address: string, amount: number, netwo
   submitMilestoneOutputsFunc([{ address, amount }], network);
 
 export const submitMilestoneOutputsFunc = async <T>(outputs: T[], network?: Network) => {
-  const milestoneColl = admin
-    .firestore()
-    .collection(COL.MILESTONE + (network ? `_${network}` : ''));
+  const milestoneColl = soonDb().collection(
+    (COL.MILESTONE + (network ? `_${network}` : '')) as COL,
+  );
   const nextMilestone = wallet.getRandomEthAddress();
   const defTranId = chance().string({
     pool: 'abcdefghijklmnopqrstuvwxyz',
@@ -108,8 +112,7 @@ export const createMember = async (spy: any): Promise<string> => {
   for (const network of Object.values(Network)) {
     const wallet = await getWallet(network);
     const address = await wallet.getNewIotaAddressDetails();
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.MEMBER}/${memberAddress}`)
       .update({ [`validatedAddress.${network}`]: address.bech32, name: getRandomSymbol() });
   }
@@ -119,30 +122,30 @@ export const createMember = async (spy: any): Promise<string> => {
 export const createSpace = async (spy: any, guardian: string): Promise<Space> => {
   mockWalletReturnValue(spy, guardian, { name: 'Space A', bannerUrl: MEDIA });
   const space = await testEnv.wrap(createSpaceFunc)({});
-  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`);
+  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space.uid}`);
   for (const network of Object.values(Network)) {
     const wallet = await getWallet(network);
     const address = await wallet.getNewIotaAddressDetails();
     await spaceDocRef.update({ [`validatedAddress.${network}`]: address.bech32 });
   }
-  return <Space>(await spaceDocRef.get()).data();
+  return <Space>await spaceDocRef.get();
 };
 
 export const tokenProcessed = (tokenId: string, distributionLength: number, reconciled: boolean) =>
   wait(async () => {
-    const doc = await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).get();
-    const distributionsSnap = await admin
-      .firestore()
-      .collection(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}`)
-      .get();
-    const distributionsOk = distributionsSnap.docs.reduce(
-      (acc, doc) => acc && (doc.data()?.reconciled || false) === reconciled,
-      distributionLength === distributionsSnap.docs.length,
+    const doc = await soonDb().doc(`${COL.TOKEN}/${tokenId}`).get<Token>();
+    const distributionsSnap = await soonDb()
+      .doc(`${COL.TOKEN}/${tokenId}`)
+      .collection(SUB_COL.DISTRIBUTION)
+      .get<TokenDistribution>();
+    const distributionsOk = distributionsSnap.reduce(
+      (acc, doc) => acc && (doc?.reconciled || false) === reconciled,
+      distributionLength === distributionsSnap.length,
     );
-    if (doc.data()?.status === TokenStatus.ERROR) {
+    if (doc?.status === TokenStatus.ERROR) {
       throw new Error('Token not processed: ' + tokenId);
     }
-    return distributionsOk && doc.data()?.status === TokenStatus.PRE_MINTED;
+    return distributionsOk && doc?.status === TokenStatus.PRE_MINTED;
   });
 
 export const wait = async (func: () => Promise<boolean>, maxAttempt = 1200, delay = 500) => {
@@ -183,14 +186,14 @@ export const createRoyaltySpaces = async () => {
   const guardian = await createMember(walletSpy);
 
   const spaceIdSpy = jest.spyOn(wallet, 'getRandomEthAddress');
-  const spaceOneDoc = await admin.firestore().doc(`${COL.SPACE}/${spaceOneId}`).get();
-  if (!spaceOneDoc.exists) {
+  const spaceOneDoc = await soonDb().doc(`${COL.SPACE}/${spaceOneId}`).get();
+  if (!spaceOneDoc) {
     spaceIdSpy.mockReturnValue(spaceOneId);
     await createSpace(walletSpy, guardian);
   }
 
-  const spaceTwoDoc = await admin.firestore().doc(`${COL.SPACE}/${spaceTwoId}`).get();
-  if (!spaceTwoDoc.exists) {
+  const spaceTwoDoc = await soonDb().doc(`${COL.SPACE}/${spaceTwoId}`).get();
+  if (!spaceTwoDoc) {
     spaceIdSpy.mockReturnValue(spaceTwoId);
     await createSpace(walletSpy, guardian);
   }
@@ -200,34 +203,29 @@ export const createRoyaltySpaces = async () => {
 };
 
 export const addGuardianToSpace = async (space: string, member: string) => {
-  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space}`);
+  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space}`);
   const guardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member);
   const guardian = await guardianDocRef.get();
-  if (guardian.exists) {
+  if (guardian) {
     return;
   }
-  await guardianDocRef.set(
-    cOn({
-      uid: member,
-      parentId: space,
-      parentCol: COL.SPACE,
-    }),
-  );
-  await spaceDocRef.update({ totalGuardians: inc(1), totalMembers: inc(1) });
+  await guardianDocRef.set({
+    uid: member,
+    parentId: space,
+    parentCol: COL.SPACE,
+  });
+  await spaceDocRef.update({ totalGuardians: soonDb().inc(1), totalMembers: soonDb().inc(1) });
 };
 
 export const removeGuardianFromSpace = async (space: string, member: string) => {
-  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space}`);
+  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space}`);
   const guardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member);
   await guardianDocRef.delete();
-  await spaceDocRef.update({ totalGuardians: inc(-1), totalMembers: inc(-11) });
+  await spaceDocRef.update({ totalGuardians: soonDb().inc(-1), totalMembers: soonDb().inc(-11) });
 };
 
 export const saveSoon = async () => {
   const soonTokenId = '0xa381bfccaf121e38e31362d85b5ad30cd7fc0d06';
-  await admin
-    .firestore()
-    .doc(`${COL.TOKEN}/${soonTokenId}`)
-    .set({ uid: soonTokenId, symbol: 'SOON' });
+  await soonDb().doc(`${COL.TOKEN}/${soonTokenId}`).set({ uid: soonTokenId, symbol: 'SOON' });
   return soonTokenId;
 };

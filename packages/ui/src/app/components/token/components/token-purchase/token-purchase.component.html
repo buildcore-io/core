@@ -52,7 +52,10 @@
         title: 'Token price',
         titleIcon: coinIcon,
         type: descriptionItemTypes.DEFAULT_NO_TRUNCATE,
-        value: unitsService.format((token?.pricePerToken || 0) * 1000 * 1000)
+        value:
+          (token?.pricePerToken || 0) * getDecimalsPerNetwork(token?.mintingData?.network)
+          | formatToken
+          | async
       }
     ]"
   ></wen-description>
@@ -141,7 +144,17 @@
       class="flex items-center justify-between flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14"
     >
       <div class="mt-1">
-        {{ getResultAmount() }}
+        {{
+          isAmountInput
+            ? (
+                getResultAmount()
+                | convertToken : token?.mintingData?.network
+                | async
+                | formatToken : token?.mintingData?.network : false : false
+                | async
+              )?.toString() || undefined
+            : (getResultAmount() | formatToken : token?.uid : false : false | async)
+        }}
       </div>
       <div class="mt-1">
         {{ isAmountInput ? unitsService.label() : token?.symbol }}
@@ -164,7 +177,9 @@
     class="block w-full"
     [targetAddress]="targetAddress"
     [formattedAmount]="
-      unitsService.format(amountControl.value * 1000 * 1000 * (token?.pricePerToken || 0))
+      { value: amountControl.value * (token?.pricePerToken || 0), exponents: token?.decimals }
+        | formatToken : token?.uid
+        | async
     "
   >
   </wen-send-funds>
@@ -173,7 +188,10 @@
     class="mt-6"
     [targetAddress]="targetAddress"
     [network]="token?.mintingData?.network"
-    [targetAmount]="(amountControl.value * (token?.pricePerToken || 0) || 0).toString()"
+    [targetAmount]="
+      (getTargetAmount() | convertToken : token?.mintingData?.network | async)?.toString() ||
+      undefined
+    "
   >
   </wen-wallet-deeplink>
 </ng-template>
@@ -190,7 +208,9 @@
     class="block w-full"
     [targetAddress]="targetAddress"
     [formattedAmount]="
-      unitsService.format(amountControl.value * 1000 * 1000 * (token?.pricePerToken || 0))
+      { value: amountControl.value * (token?.pricePerToken || 0), exponents: token?.decimals }
+        | formatToken : token?.uid
+        | async
     "
   >
   </wen-send-funds>
@@ -199,7 +219,10 @@
     class="mt-6"
     [targetAddress]="targetAddress"
     [network]="token?.mintingData?.network"
-    [targetAmount]="getTargetAmount()"
+    [targetAmount]="
+      (getTargetAmount() | convertToken : token?.mintingData?.network | async)?.toString() ||
+      undefined
+    "
   >
   </wen-wallet-deeplink>
 
@@ -244,7 +267,9 @@
       </div>
       <div class="mt-2 text-lg font-bold" i18n>
         {{
-          (formatTokenBest(purchasedAmount / (token?.pricePerToken || 0)) | number : '1.0-6') +
+          (purchasedAmount / (token?.pricePerToken || 0)
+            | formatToken : token?.uid : false : false
+            | async) +
             ' ' +
             token?.symbol
         }}
@@ -259,7 +284,7 @@
       >
         Price
       </div>
-      <div class="mt-2 text-lg font-bold" i18n>{{ unitsService.format(purchasedAmount) }}</div>
+      <div class="mt-2 text-lg font-bold" i18n>{{ purchasedAmount | formatToken | async }}</div>
     </div>
   </div>
 
@@ -305,10 +330,5 @@
     >
       Close checkout
     </button>
-    <!--
-        <button nz-button nzType="default" (click)="goToToken()"
-            nzSize="large" class="w-full mb-6 lg:w-auto lg:mb-0 lg:mt-1" i18n>
-            Show my Tokens
-        </button> -->
   </div>
 </ng-template>

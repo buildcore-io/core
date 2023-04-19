@@ -2,6 +2,7 @@ import {
   COL,
   Member,
   SUB_COL,
+  TRANSACTION_AUTO_EXPIRY_MS,
   TokenDistribution,
   TokenDrop,
   TokenDropStatus,
@@ -10,16 +11,15 @@ import {
   TransactionOrderType,
   TransactionType,
   TransactionValidationType,
-  TRANSACTION_AUTO_EXPIRY_MS,
   WenError,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import Joi from 'joi';
 import { isEmpty } from 'lodash';
-import admin from '../../../admin.config';
+import { soonDb } from '../../../firebase/firestore/soondb';
 import { assertMemberHasValidAddress } from '../../../utils/address.utils';
-import { dateToTimestamp } from '../../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../../utils/error.utils';
+import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
+import { invalidArgument } from '../../../utils/error.utils';
 import { assertValidationAsync } from '../../../utils/schema.utils';
 import { dropToOutput } from '../../../utils/token-minting-utils/member.utils';
 import { getTokenBySymbol, getUnclaimedDrops } from '../../../utils/token.utils';
@@ -40,8 +40,8 @@ export class TangleTokenClaimService {
     await assertValidationAsync(Joi.object({ symbol: CommonJoi.tokenSymbol() }), params);
 
     const order = await createMintedTokenAirdropCalimOrder(owner, params.symbol as string);
-    this.transactionService.updates.push({
-      ref: admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`),
+    this.transactionService.push({
+      ref: soonDb().doc(`${COL.TRANSACTION}/${order.uid}`),
       data: order,
       action: 'set',
     });
@@ -53,19 +53,19 @@ export class TangleTokenClaimService {
 export const createMintedTokenAirdropCalimOrder = async (owner: string, symbol: string) => {
   const token = await getTokenBySymbol(symbol);
   if (!token) {
-    throw throwInvalidArgument(WenError.token_does_not_exist);
+    throw invalidArgument(WenError.token_does_not_exist);
   }
 
   if (![TokenStatus.MINTED, TokenStatus.BASE].includes(token.status)) {
-    throw throwInvalidArgument(WenError.token_in_invalid_status);
+    throw invalidArgument(WenError.token_in_invalid_status);
   }
 
-  const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data();
+  const member = <Member>await soonDb().doc(`${COL.MEMBER}/${owner}`).get();
   assertMemberHasValidAddress(member, token.mintingData?.network!);
 
   const drops = await getClaimableDrops(token.uid, owner);
   if (isEmpty(drops)) {
-    throw throwInvalidArgument(WenError.no_tokens_to_claim);
+    throw invalidArgument(WenError.no_tokens_to_claim);
   }
 
   const wallet = (await WalletService.newWallet(token.mintingData?.network!)) as SmrWallet;
@@ -98,9 +98,9 @@ export const createMintedTokenAirdropCalimOrder = async (owner: string, symbol: 
 
 const getClaimableDrops = async (token: string, member: string) => {
   const airdops = await getUnclaimedDrops(token, member);
-  const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token}`);
+  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token}`);
   const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member);
-  const distribution = <TokenDistribution | undefined>(await distributionDocRef.get()).data();
+  const distribution = await distributionDocRef.get<TokenDistribution>();
   if (distribution?.mintedClaimedOn || !distribution?.tokenOwned) {
     return airdops;
   }
@@ -108,8 +108,8 @@ const getClaimableDrops = async (token: string, member: string) => {
     uid: getRandomEthAddress(),
     member,
     token,
-    createdOn: dateToTimestamp(dayjs()),
-    vestingAt: dateToTimestamp(dayjs()),
+    createdOn: serverTime(),
+    vestingAt: serverTime(),
     count: distribution?.tokenOwned,
     status: TokenDropStatus.UNCLAIMED,
   };

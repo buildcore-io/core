@@ -1,31 +1,7 @@
-import { WEN_FUNC } from '@soonaverse/interfaces';
+import { WEN_FUNC, WEN_FUNC_TRIGGER } from '@soonaverse/interfaces';
 import { algoliaTrigger } from './algolia/algolia.trigger';
-import { validateAddress } from './controls/address.control';
-import { generateCustomFirebaseToken } from './controls/auth.control';
-import { createMember, updateMember } from './controls/member.control';
-import { openBid } from './controls/order.control';
-import { rankController } from './controls/rank.control';
-import { unblockMember } from './controls/space/member.unblock.control';
-import { updateSpace } from './controls/space/space.update.control';
-import { depositStake, removeStakeReward, stakeReward } from './controls/stake.control';
-import { airdropToken, claimAirdroppedToken } from './controls/token-airdrop.control';
-import { airdropMintedToken } from './controls/token-minting/airdrop-minted-token';
-import { claimMintedTokenOrder } from './controls/token-minting/claim-minted-token.control';
-import { mintTokenOrder } from './controls/token-minting/token-mint.control';
-import { cancelTradeOrder } from './controls/token-trading/token-trade-cancel.controller';
-import { tradeToken } from './controls/token-trading/token-trade.controller';
-import {
-  cancelPublicSale,
-  createToken,
-  creditToken,
-  enableTokenTrading,
-  orderToken,
-  setTokenAvailableForSale,
-  updateToken,
-} from './controls/token.control';
-import { voteController } from './controls/vote.control';
-import { cron } from './cron';
-import { algoliaRoll } from './firebase/dbRoll/algolia.roll';
+import { validateAddress } from './runtime/firebase/address';
+import { generateCustomFirebaseToken } from './runtime/firebase/auth';
 import {
   addOwnerAward,
   approveAwardParticipant,
@@ -43,10 +19,12 @@ import {
   updateCollection,
 } from './runtime/firebase/collection';
 import { creditUnrefundable } from './runtime/firebase/credit/index';
+import { createMember, updateMember } from './runtime/firebase/member';
 import {
   createBatchNft,
   createNft,
   depositNft,
+  openBid,
   orderNft,
   setForSaleNft,
   stakeNft,
@@ -59,6 +37,7 @@ import {
   rejectProposal,
   voteOnProposal,
 } from './runtime/firebase/proposal';
+import { rankController } from './runtime/firebase/rank';
 import {
   acceptMemberSpace,
   addGuardian,
@@ -69,8 +48,29 @@ import {
   joinSpace,
   leaveSpace,
   removeGuardian,
+  unblockMember,
+  updateSpace,
 } from './runtime/firebase/space';
-import { importMintedToken } from './runtime/firebase/token';
+import { depositStake, removeStakeReward, stakeReward } from './runtime/firebase/stake';
+import {
+  airdropToken,
+  cancelPublicSale,
+  claimAirdroppedToken,
+  createToken,
+  creditToken,
+  enableTokenTrading,
+  orderToken,
+  setTokenAvailableForSale,
+  updateToken,
+} from './runtime/firebase/token/base';
+import {
+  airdropMintedToken,
+  claimMintedTokenOrder,
+  importMintedToken,
+  mintTokenOrder,
+} from './runtime/firebase/token/minting';
+import { cancelTradeOrder, tradeToken } from './runtime/firebase/token/trading';
+import { voteController } from './runtime/firebase/vote';
 import { awardUpdateTrigger } from './triggers/award.trigger';
 import { collectionStatsUpdate } from './triggers/collection.stats.trigger';
 import { collectionWrite } from './triggers/collection.trigger';
@@ -93,12 +93,12 @@ import { transactionWrite } from './triggers/transaction-trigger/transaction.tri
 import { isProdEnv } from './utils/config.utils';
 
 // Members functions.
-exports[WEN_FUNC.cMemberNotExists] = createMember;
-exports[WEN_FUNC.uMember] = updateMember;
+exports[WEN_FUNC.createMember] = createMember;
+exports[WEN_FUNC.updateMember] = updateMember;
 
 // Space functions.
-exports[WEN_FUNC.cSpace] = createSpace;
-exports[WEN_FUNC.uSpace] = updateSpace;
+exports[WEN_FUNC.createSpace] = createSpace;
+exports[WEN_FUNC.updateSpace] = updateSpace;
 exports[WEN_FUNC.joinSpace] = joinSpace;
 exports[WEN_FUNC.leaveSpace] = leaveSpace;
 exports[WEN_FUNC.addGuardianSpace] = addGuardian;
@@ -109,25 +109,25 @@ exports[WEN_FUNC.acceptMemberSpace] = acceptMemberSpace;
 exports[WEN_FUNC.declineMemberSpace] = declineMemberSpace;
 
 // Award Functions
-exports[WEN_FUNC.cAward] = createAward;
+exports[WEN_FUNC.createAward] = createAward;
 exports[WEN_FUNC.fundAward] = fundAward;
-exports[WEN_FUNC.rAward] = rejectAward;
+exports[WEN_FUNC.rejectAward] = rejectAward;
 exports[WEN_FUNC.addOwnerAward] = addOwnerAward;
 exports[WEN_FUNC.participateAward] = awardParticipate;
-exports[WEN_FUNC.aParticipantAward] = approveAwardParticipant;
-exports[WEN_FUNC.awardTrigger] = awardUpdateTrigger;
+exports[WEN_FUNC.approveParticipantAward] = approveAwardParticipant;
+exports[WEN_FUNC_TRIGGER.awardTrigger] = awardUpdateTrigger;
 exports[WEN_FUNC.cancelAward] = cancelAward;
 
 // Award Functions
-exports[WEN_FUNC.cProposal] = createProposal;
-exports[WEN_FUNC.aProposal] = approveProposal;
-exports[WEN_FUNC.rProposal] = rejectProposal;
+exports[WEN_FUNC.createProposal] = createProposal;
+exports[WEN_FUNC.approveProposal] = approveProposal;
+exports[WEN_FUNC.rejectProposal] = rejectProposal;
 exports[WEN_FUNC.voteOnProposal] = voteOnProposal;
-exports['trigger_' + WEN_FUNC.onProposalUpdated] = onProposalUpdated;
+exports['trigger_' + WEN_FUNC_TRIGGER.onProposalUpdated] = onProposalUpdated;
 
 // Collection functions
-exports[WEN_FUNC.cCollection] = createCollection;
-exports[WEN_FUNC.uCollection] = updateCollection;
+exports[WEN_FUNC.createCollection] = createCollection;
+exports[WEN_FUNC.updateCollection] = updateCollection;
 exports[WEN_FUNC.approveCollection] = approveCollection;
 exports[WEN_FUNC.rejectCollection] = rejectCollection;
 
@@ -136,16 +136,15 @@ exports[WEN_FUNC.openBid] = openBid;
 exports[WEN_FUNC.validateAddress] = validateAddress;
 
 export * from './api/index';
-// CRON Tasks
-export { cron };
+export * from './cron';
 export { milestoneTriggers as trigger };
 export { algoliaTrigger };
 
 exports[WEN_FUNC.creditUnrefundable] = creditUnrefundable;
 exports[WEN_FUNC.mintCollection] = mintCollection;
 
-exports[WEN_FUNC.cNft] = createNft;
-exports[WEN_FUNC.cBatchNft] = createBatchNft;
+exports[WEN_FUNC.createNft] = createNft;
+exports[WEN_FUNC.createBatchNft] = createBatchNft;
 exports[WEN_FUNC.updateUnsoldNft] = updateUnsoldNft;
 exports[WEN_FUNC.setForSaleNft] = setForSaleNft;
 exports[WEN_FUNC.withdrawNft] = withdrawNft;
@@ -172,8 +171,8 @@ exports['trigger_collectionStatsUpdate'] = collectionStatsUpdate;
 exports['trigger_nftWrite'] = nftWrite;
 
 // Token functions
-exports[WEN_FUNC.cToken] = createToken;
-exports[WEN_FUNC.uToken] = updateToken;
+exports[WEN_FUNC.createToken] = createToken;
+exports[WEN_FUNC.updateToken] = updateToken;
 exports[WEN_FUNC.setTokenAvailableForSale] = setTokenAvailableForSale;
 exports[WEN_FUNC.orderToken] = orderToken;
 exports[WEN_FUNC.creditToken] = creditToken;
@@ -187,7 +186,7 @@ exports[WEN_FUNC.tradeToken] = tradeToken;
 exports[WEN_FUNC.cancelPublicSale] = cancelPublicSale;
 exports[WEN_FUNC.mintTokenOrder] = mintTokenOrder;
 exports[WEN_FUNC.claimMintedTokenOrder] = claimMintedTokenOrder;
-exports['trigger_' + WEN_FUNC.mnemonicWrite] = mnemonicWrite;
+exports['trigger_' + WEN_FUNC_TRIGGER.mnemonicWrite] = mnemonicWrite;
 exports[WEN_FUNC.depositStake] = depositStake;
 exports[WEN_FUNC.airdropMintedToken] = airdropMintedToken;
 exports[WEN_FUNC.voteController] = voteController;
@@ -204,6 +203,3 @@ exports[WEN_FUNC.generateCustomFirebaseToken] = generateCustomFirebaseToken;
 exports[WEN_FUNC.claimSpace] = claimSpace;
 
 exports[WEN_FUNC.importMintedToken] = importMintedToken;
-
-// TODO remove after release
-exports['algolia_roll'] = algoliaRoll;

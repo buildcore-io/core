@@ -222,17 +222,16 @@
           >
             <td class="z-10 border-0 left">{{ item.createdOn?.toDate() | date:"short" }}</td>
             <td class="z-10 border-0 right">
-              {{ unitsService.format(item.count, undefined, false, false) }}
+              {{ item.count | formatToken: (data.token$ | async)?.uid:false:false | async }}
             </td>
             <td class="z-10 border-0 right">
-              {{ unitsService.format(item.price * item.count, (data.token$ |
-              async)?.mintingData?.networkFormat || (data.token$ | async)?.mintingData?.network,
-              false, false, 2) }}
+              {{ (item.price * item.count) | formatToken: (data.token$ | async)?.uid:false:false:2 |
+              async }}
             </td>
             <td class="z-10 border-0 right">
-              {{ unitsService.format(item.price * 1000 * 1000, (data.token$ |
-              async)?.mintingData?.networkFormat || (data.token$ | async)?.mintingData?.network,
-              false, false) }}
+              {{ { value: item.price, exponents: getDefaultNetworkDecimals()} | formatToken: (
+              (data.token$ | async)?.mintingData?.networkFormat || (data.token$ |
+              async)?.mintingData?.network) : false:false | async}}
             </td>
             <td class="z-10 border-0 right">{{ helper.getTradeOrderStatus(item) }}</td>
             <td class="z-10 border-0 right">
@@ -296,17 +295,16 @@
           >
             <td class="z-10 border-0 left">{{ item.createdOn?.toDate() | date:"short" }}</td>
             <td class="z-10 border-0 right">
-              {{ unitsService.format(item.count, undefined, false, false) }}
+              {{ item.count | formatToken: (data.token$ | async)?.uid:false:false | async }}
             </td>
             <td class="z-10 border-0 right">
-              {{ unitsService.format(item.price * item.count, (data.token$ |
-              async)?.mintingData?.networkFormat || (data.token$ | async)?.mintingData?.network,
-              false, false, 2) }}
+              {{ (item.price * item.count) | formatToken: (data.token$ | async)?.uid:false:false:2 |
+              async}}
             </td>
             <td class="z-10 border-0 right">
-              {{ unitsService.format(item.price * 1000 * 1000, (data.token$ |
-              async)?.mintingData?.networkFormat || (data.token$ | async)?.mintingData?.network,
-              false, false) }}
+              {{ { value: item.price, exponents: getDefaultNetworkDecimals()} | formatToken: (
+              (data.token$ | async)?.mintingData?.networkFormat || (data.token$ |
+              async)?.mintingData?.network) : false:false | async}}
             </td>
             <td class="z-10 border-0 right">
               <ng-container
@@ -388,16 +386,16 @@
               <ng-container *ngIf="item.type === tokenTradeOrderTypes.SELL" i18n>Sell</ng-container>
             </td>
             <td class="z-10 border-0 right">
-              {{ unitsService.format(item.count, undefined, false, false) }}
+              {{ item.count | formatToken: (data.token$ | async)?.uid:false:false | async }}
             </td>
             <td class="z-10 border-0 right">
-              {{ unitsService.format(item.price * item.count, (item.type ===
-              tokenTradeOrderTypes.SELL ? item?.targetNetwork : item?.sourceNetwork), false, true,
-              2) }}
+              {{ (item.price * item.count) | formatToken: (item.type === tokenTradeOrderTypes.SELL ?
+              item?.targetNetwork : item?.sourceNetwork):false:true: 2 | async }}
             </td>
             <td class="z-10 border-0 right">
-              {{ unitsService.format(item.price * 1000 * 1000, (item.type ===
-              tokenTradeOrderTypes.SELL ? item?.targetNetwork : item?.sourceNetwork)) }}
+              {{ {value: item.price, exponents: getDefaultNetworkDecimals() }| formatToken:
+              (item.type === tokenTradeOrderTypes.SELL ? item?.targetNetwork : item?.sourceNetwork)
+              | async }}
             </td>
             <td class="z-10 border-0 right">
               <ng-container *ngIf="item.status === bidAskStatuses.SETTLED" i18n>
@@ -544,9 +542,10 @@
           async)?.mintingData?.network) }})
         </div>
         <div class="text-lg font-bold lg:mt-2">
-          {{ ((listenAvgPrice$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice$ |
-          async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.networkFormat ||
-          (data.token$ | async)?.mintingData?.network, false, false) }}
+          {{ ((listenAvgPrice$ | async) || 0) === 0 ? '-' : ( { value: ((listenAvgPrice$ | async) ||
+          0), exponents: getDefaultNetworkDecimals() } | formatToken :( (data.token$ |
+          async)?.mintingData?.networkFormat || (data.token$ |
+          async)?.mintingData?.network):false:false | async) }}
           <span
             class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
             i18n
@@ -691,18 +690,18 @@
             <td class="z-10 flex items-center border-0 padding-left-5 trade-history-order__sell">
               <div *ngIf="item.isOwner" class="w-2 h-2 mr-2 rounded-full bg-[#28B16F]"></div>
               <div>
-                {{ unitsService.format(item.price * 1000 * 1000, (data.token$ |
-                async)?.mintingData?.networkFormat || (data.token$ | async)?.mintingData?.network,
-                false, false) }}
+                {{ {value: item.price, exponents: getDefaultNetworkDecimals()} | formatToken: (
+                (data.token$ | async)?.mintingData?.networkFormat || (data.token$ |
+                async)?.mintingData?.network):false:false | async }}
               </div>
             </td>
             <td class="z-10 border-0 right">
-              {{ unitsService.format(item.amount, undefined, false, false) }}
+              {{ item.amount | formatToken: (data.token$ | async)?.uid:false:false | async }}
             </td>
             <td class="z-10 border-0 right">
-              {{ unitsService.format(item.price * item.amount, (data.token$ |
-              async)?.mintingData?.networkFormat || (data.token$ | async)?.mintingData?.network,
-              false, false, 2) }}
+              {{ (item.price * item.amount) | formatToken: ( (data.token$ |
+              async)?.mintingData?.networkFormat || (data.token$ |
+              async)?.mintingData?.network):false:false:2 | async }}
             </td>
           </tr>
           <div
@@ -719,9 +718,10 @@
     <div
       class="flex items-center w-full py-3 pl-5 pr-4 text-sm font-bold bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark border-y border-foregrounds-separator dark:border-foregrounds-separator-dark"
     >
-      {{ ((listenAvgPrice$ | async) || 0) === 0 ? '-' : unitsService.format(((listenAvgPrice$ |
-      async) || 0) * 1000 * 1000, (data.token$ | async)?.mintingData?.networkFormat || (data.token$
-      | async)?.mintingData?.network, false, false) }}
+      {{ ((listenAvgPrice$ | async) || 0) === 0 ? '-' : { value: ((listenAvgPrice$ | async) || 0),
+      exponents: getDefaultNetworkDecimals()} | formatToken: ((data.token$ |
+      async)?.mintingData?.networkFormat || (data.token$ | async)?.mintingData?.network)
+      :false:false | async }}
       <span
         class="ml-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
         i18n
@@ -754,18 +754,18 @@
             <td class="z-10 flex items-center border-0 padding-left-5 trade-history-order__buy">
               <div *ngIf="item.isOwner" class="w-2 h-2 mr-2 rounded-full bg-[#28B16F]"></div>
               <div>
-                {{ unitsService.format(item.price * 1000 * 1000, (data.token$ |
-                async)?.mintingData?.networkFormat || (data.token$ | async)?.mintingData?.network,
-                false, false) }}
+                {{ { value: item.price, exponents: getDefaultNetworkDecimals() } | formatToken:
+                ((data.token$ | async)?.mintingData?.networkFormat || (data.token$ |
+                async)?.mintingData?.network):false:false | async }}
               </div>
             </td>
             <td class="z-10 border-0 right">
-              {{ unitsService.format(item.amount, undefined, false, false) }}
+              {{ item.amount | formatToken: (data.token$ | async)?.uid:false:false | async}}
             </td>
             <td class="z-10 border-0 right">
-              {{ unitsService.format(item.price * item.amount, (data.token$ |
-              async)?.mintingData?.networkFormat || (data.token$ | async)?.mintingData?.network,
-              false, false, 2) }}
+              {{ (item.price * item.amount) | formatToken: ( (data.token$ |
+              async)?.mintingData?.networkFormat || (data.token$ |
+              async)?.mintingData?.network):false:false:2 | async}}
             </td>
           </tr>
           <div
@@ -866,12 +866,12 @@
           'trade-history-order__sell': item.triggeredBy === tokenTradeOrderTypes.SELL
         }"
         >
-          {{ unitsService.format(item.price * 1000 * 1000, (data.token$ |
-          async)?.mintingData?.networkFormat || (data.token$ | async)?.mintingData?.network, false,
-          false) }}
+          {{ { value: item.price, exponents: getDefaultNetworkDecimals() } | formatToken:
+          ((data.token$ | async)?.mintingData?.networkFormat || (data.token$ |
+          async)?.mintingData?.network):false:false | async }}
         </td>
         <td class="z-10 border-0 right">
-          {{ unitsService.format(item.count, undefined, false, false) }}
+          {{ item.count | formatToken: (data.token$ | async)?.uid:false:false | async }}
         </td>
         <td class="z-10 flex items-center justify-end border-0 right">
           <div>{{ item.createdOn?.toDate() | date: 'mediumTime' }}</div>
@@ -976,10 +976,9 @@
         <div
           class="flex items-center text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
         >
-          <ng-container i18n>Balance</ng-container>: {{ unitsService.format(((memberDistribution$ |
-          async)?.tokenOwned || 0) - ((memberDistribution$ | async)?.lockedForSale || 0),
-          (data.token$ | async)?.mintingData?.networkFormat || (data.token$ |
-          async)?.mintingData?.network, true, false) }}
+          <ng-container i18n>Balance</ng-container>: {{ (((memberDistribution$ | async)?.tokenOwned
+          || 0) - ((memberDistribution$ | async)?.lockedForSale || 0)) | formatToken: (data.token$ |
+          async)?.uid:true:false | async }}
         </div>
         <a
           class="ml-2 text-xs font-medium text-textlink-enabled dark:text-textlink-enabled-dark"
@@ -1067,23 +1066,6 @@
         <nz-dropdown-menu #prices="nzDropdownMenu">
           <ul nz-menu>
             <li nz-menu-item (click)="setCurrentPrice()" i18n>Set Current Price</li>
-            <!-- MID same as current price -->
-            <!-- <li
-              nz-menu-item
-              (click)="setMidPrice()"
-              i18n
-              *ngIf="!((sortedBids$ | async)?.length === 0 || (sortedAsks$ | async)?.length === 0 || (priceOption$ | async) === priceOptionTypes.MARKET)"
-            >
-              Set MID
-              <wen-icon-question-circle
-                [size]="18"
-                class="ml-1"
-                nz-tooltip
-                nzTooltipPlacement="bottom"
-                i18n-nzTooltipTitle
-                nzTooltipTitle="The mid price is the average between the bid price and the ask price."
-              ></wen-icon-question-circle>
-            </li> -->
             <li
               nz-menu-item
               (click)="setBidPrice()"
@@ -1160,7 +1142,7 @@
     *ngIf="getResultAmount() < 1 && !amountControl.pristine"
     class="mt-1 text-xs font-medium text-inputs-error dark:text-inputs-error-dark"
   >
-    <ng-container i18n>Minimum total has to be at least</ng-container> {{getMinTotal()}} {{
+    <ng-container i18n>Minimum total has to be at least 1</ng-container> {{
     helper.getPairFrom(data.token$ | async) }}
   </div>
 
@@ -1169,7 +1151,8 @@
       *ngIf="currentTradeFormState$.value === tradeFormStates.SELL && (auth.member$ | async)?.tokenTradingFeePercentage !== 0"
       class="flex mt-1 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
     >
-      <ng-container i18n>Fee</ng-container> {{ exchangeFee }}% ({{ getFee() }})
+      <ng-container i18n>Fee</ng-container> {{ exchangeFee }}% ({{ getFee() | formatToken:
+      (data.token$ | async)?.uid:true | async }})
       <wen-icon-question-circle
         [size]="16"
         class="ml-1 text-icons-secondary dark:text-icons-secondary-dark"

@@ -13,7 +13,7 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { get } from 'lodash';
-import admin from '../../admin.config';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from './transaction-service';
@@ -47,8 +47,8 @@ export class StakeService {
     const expiresAt = dateToTimestamp(dayjs().add(weeks, 'week').toDate());
 
     const tokenUid = get(order, 'payload.token', '');
-    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${tokenUid}`);
-    const token = <Token>(await tokenDocRef.get()).data();
+    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${tokenUid}`);
+    const token = <Token>await tokenDocRef.get();
 
     const billPayment = <Transaction>{
       type: TransactionType.BILL_PAYMENT,
@@ -90,19 +90,17 @@ export class StakeService {
       orderId: order.uid,
       billPaymentId: billPayment.uid,
       customMetadata: get(order, 'payload.customMetadata', {}),
-      leftCheck: dayjs(expiresAt.toDate()).valueOf(),
-      rightCheck: dayjs().valueOf(),
     };
     billPayment.payload.stake = stake.uid;
 
-    this.transactionService.updates.push({
-      ref: admin.firestore().doc(`${COL.STAKE}/${stake.uid}`),
+    this.transactionService.push({
+      ref: soonDb().doc(`${COL.STAKE}/${stake.uid}`),
       data: stake,
       action: 'set',
     });
 
-    this.transactionService.updates.push({
-      ref: admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`),
+    this.transactionService.push({
+      ref: soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`),
       data: billPayment,
       action: 'set',
     });

@@ -63,15 +63,31 @@
         </nz-form-item>
         <nz-form-item
           class="floating-title"
+          [ngClass]="newService.decimalsControl.value ? 'value' : ''"
+        >
+          <nz-form-label i18n>Number of Decimals</nz-form-label>
+          <nz-form-control i18n-nzErrorTip nzErrorTip="0 - 20 decimals supported only">
+            <input
+              nz-input
+              type="number"
+              i18n-placeholder
+              placeholder="Number of Decimals"
+              nzSize="large"
+              [formControl]="newService.decimalsControl"
+            />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item
+          class="floating-title"
           [ngClass]="newService.totalSupplyControl.value ? 'value' : ''"
         >
-          <nz-form-label i18n>Total token supply (up to 6 decimals are supported)</nz-form-label>
+          <nz-form-label i18n>Total token supply</nz-form-label>
           <nz-form-control i18n-nzErrorTip nzErrorTip="Total supply is invalid.">
             <input
               nz-input
               type="number"
               i18n-placeholder
-              placeholder="Total token supply (up to 6 decimals are supported)"
+              placeholder="Total token supply"
               nzSize="large"
               [formControl]="newService.totalSupplyControl"
             />

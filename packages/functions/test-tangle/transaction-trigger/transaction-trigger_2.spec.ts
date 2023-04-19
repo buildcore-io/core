@@ -7,7 +7,7 @@ import {
   Transaction,
   TransactionType,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
@@ -52,11 +52,11 @@ describe('Transaction trigger spec', () => {
         void: false,
       },
     };
-    const docRef = admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+    const docRef = soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
     await docRef.create(billPayment);
     await wait(async () => {
-      const doc = await docRef.get();
-      return doc.data()?.payload?.walletReference?.confirmed;
+      const doc = await docRef.get<Transaction>();
+      return doc?.payload?.walletReference?.confirmed;
     });
     const outputs = await wallet.getOutputs(targetAddress.bech32, [], undefined);
     expect(Object.values(outputs).length).toBe(1);

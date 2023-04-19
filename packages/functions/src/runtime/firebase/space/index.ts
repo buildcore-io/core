@@ -1,14 +1,22 @@
-import { GITHUB_REGEXP, ProposalType, TWITTER_REGEXP, WEN_FUNC } from '@soonaverse/interfaces';
+import {
+  GITHUB_REGEXP,
+  MAX_TOTAL_TOKEN_SUPPLY,
+  ProposalType,
+  TWITTER_REGEXP,
+  WEN_FUNC,
+} from '@soonaverse/interfaces';
 import Joi from 'joi';
 import { acceptSpaceMemberControl } from '../../../controls/space/member.accept.control';
 import { blockMemberControl } from '../../../controls/space/member.block.control';
 import { declineMemberControl } from '../../../controls/space/member.decline.control';
 import { leaveSpaceControl } from '../../../controls/space/member.leave.control';
+import { unblockMemberControl } from '../../../controls/space/member.unblock.control';
 import { claimSpaceControl } from '../../../controls/space/space.claim.control';
 import { createSpaceControl } from '../../../controls/space/space.create.control';
 import { editGuardianControl } from '../../../controls/space/space.guardian.edit.control';
 import { joinSpaceControl } from '../../../controls/space/space.join.control';
-import { onCall } from '../../../firebase/functions/onCall';
+import { updateSpaceControl } from '../../../controls/space/space.update.control';
+import { onRequest } from '../../../firebase/functions/onRequest';
 import { CommonJoi } from '../../../services/joi/common';
 import { uidSchema } from '../common';
 
@@ -25,7 +33,7 @@ export const createSpaceSchema = {
   bannerUrl: CommonJoi.storageUrl(false),
 };
 
-export const createSpace = onCall(WEN_FUNC.cSpace)(
+export const createSpace = onRequest(WEN_FUNC.createSpace)(
   Joi.object(createSpaceSchema),
   createSpaceControl,
 );
@@ -35,33 +43,51 @@ export const editSpaceMemberSchema = Joi.object({
   member: CommonJoi.uid(),
 });
 
-export const addGuardian = onCall(WEN_FUNC.addGuardianSpace)(
+export const addGuardian = onRequest(WEN_FUNC.addGuardianSpace)(
   editSpaceMemberSchema,
   editGuardianControl(ProposalType.ADD_GUARDIAN),
 );
 
-export const removeGuardian = onCall(WEN_FUNC.removeGuardianSpace)(
+export const removeGuardian = onRequest(WEN_FUNC.removeGuardianSpace)(
   editSpaceMemberSchema,
   editGuardianControl(ProposalType.REMOVE_GUARDIAN),
 );
 
-export const acceptMemberSpace = onCall(WEN_FUNC.acceptMemberSpace)(
+export const acceptMemberSpace = onRequest(WEN_FUNC.acceptMemberSpace)(
   editSpaceMemberSchema,
   acceptSpaceMemberControl,
 );
 
-export const blockMember = onCall(WEN_FUNC.blockMemberSpace)(
+export const blockMember = onRequest(WEN_FUNC.blockMemberSpace)(
   editSpaceMemberSchema,
   blockMemberControl,
 );
 
-export const declineMemberSpace = onCall(WEN_FUNC.declineMemberSpace)(
+export const declineMemberSpace = onRequest(WEN_FUNC.declineMemberSpace)(
   editSpaceMemberSchema,
   declineMemberControl,
 );
 
-export const leaveSpace = onCall(WEN_FUNC.leaveSpace)(uidSchema, leaveSpaceControl);
+export const unblockMember = onRequest(WEN_FUNC.unblockMemberSpace)(
+  editSpaceMemberSchema,
+  unblockMemberControl,
+);
 
-export const joinSpace = onCall(WEN_FUNC.claimSpace)(uidSchema, joinSpaceControl);
+const updateSpaceSchema = Joi.object({
+  ...createSpaceSchema,
+  uid: CommonJoi.uid(),
+  tokenBased: Joi.boolean().allow(false, true).optional(),
+  minStakedValue: Joi.when('tokenBased', {
+    is: Joi.exist().valid(true),
+    then: Joi.number().min(1).max(MAX_TOTAL_TOKEN_SUPPLY).integer().required(),
+    otherwise: Joi.forbidden(),
+  }),
+});
 
-export const claimSpace = onCall(WEN_FUNC.claimSpace)(spaceIdSchema, claimSpaceControl);
+export const updateSpace = onRequest(WEN_FUNC.updateSpace)(updateSpaceSchema, updateSpaceControl);
+
+export const leaveSpace = onRequest(WEN_FUNC.leaveSpace)(uidSchema, leaveSpaceControl);
+
+export const joinSpace = onRequest(WEN_FUNC.claimSpace)(uidSchema, joinSpaceControl);
+
+export const claimSpace = onRequest(WEN_FUNC.claimSpace)(spaceIdSchema, claimSpaceControl);

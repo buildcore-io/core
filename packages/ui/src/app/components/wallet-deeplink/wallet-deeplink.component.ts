@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { Network, WEN_NAME } from '@soonaverse/interfaces';
+import { DEFAULT_NETWORK, NETWORK_DETAIL, Network, WEN_NAME } from '@soonaverse/interfaces';
 
 @Component({
   selector: 'wen-wallet-deeplink',
@@ -80,7 +80,7 @@ export class WalletDeeplinkComponent {
   private _tokenId?: string;
   private _tokenAmount?: number;
 
-  constructor(private sanitizer: DomSanitizer) {}
+  constructor(private sanitizer: DomSanitizer, private cd: ChangeDetectorRef) {}
 
   private setLinks(): void {
     this.fireflyDeepLink = this.getFireflyDeepLink();
@@ -104,11 +104,9 @@ export class WalletDeeplinkComponent {
             this.tokenId +
             '&disableToggleGift=true&disableChangeExpiration=true' +
             '&amount=' +
-            (Number(this.tokenAmount) * 1000 * 1000).toFixed(0) +
+            Number(this.tokenAmount).toFixed(0) +
             '&tag=soonaverse&giftStorageDeposit=true' +
-            (this.surplus
-              ? '&surplus=' + (Number(this.targetAmount) * 1000 * 1000).toFixed(0)
-              : ''),
+            (this.surplus ? '&surplus=' + Number(this.targetAmount).toFixed(0) : ''),
         );
       } else {
         return this.sanitizer.bypassSecurityTrustUrl(
@@ -117,7 +115,7 @@ export class WalletDeeplinkComponent {
             this.targetAddress +
             '&disableToggleGift=true&disableChangeExpiration=true' +
             '&amount=' +
-            (Number(this.targetAmount) * 1000 * 1000).toFixed(0) +
+            Number(this.targetAmount).toFixed(0) +
             '&tag=soonaverse&giftStorageDeposit=true',
         );
       }
@@ -126,7 +124,9 @@ export class WalletDeeplinkComponent {
         'iota://wallet/send/' +
           this.targetAddress +
           '?amount=' +
-          +Number(this.targetAmount).toFixed(6).replace(/,/g, '.') +
+          +(Number(this.targetAmount) / NETWORK_DETAIL[this.network || DEFAULT_NETWORK].divideBy)
+            .toFixed(6)
+            .replace(/,/g, '.') +
           '&unit=Mi',
       );
     }
@@ -144,7 +144,7 @@ export class WalletDeeplinkComponent {
           'tanglepay://iota_sendTransaction/' +
             this.targetAddress +
             '?value=' +
-            (Number(this.tokenAmount) * 1000 * 1000).toFixed(0) +
+            Number(this.tokenAmount).toFixed(0) +
             '&network=shimmer&assetId=' +
             this.tokenId +
             '&tag=' +
@@ -155,7 +155,9 @@ export class WalletDeeplinkComponent {
           'tanglepay://send/' +
             this.targetAddress +
             '?value=' +
-            +Number(this.targetAmount).toFixed(6).replace(/,/g, '.') +
+            +(Number(this.targetAmount) / NETWORK_DETAIL[this.network].divideBy)
+              .toFixed(6)
+              .replace(/,/g, '.') +
             '&unit=SMR' +
             '&tag=' +
             WEN_NAME.toLowerCase(),
@@ -166,7 +168,9 @@ export class WalletDeeplinkComponent {
         'tanglepay://send/' +
           this.targetAddress +
           '?value=' +
-          +Number(this.targetAmount).toFixed(6).replace(/,/g, '.') +
+          +(Number(this.targetAmount) / NETWORK_DETAIL[this.network || DEFAULT_NETWORK].divideBy)
+            .toFixed(6)
+            .replace(/,/g, '.') +
           '&unit=Mi' +
           '&tag=' +
           WEN_NAME.toLowerCase(),

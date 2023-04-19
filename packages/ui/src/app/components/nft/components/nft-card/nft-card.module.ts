@@ -3,7 +3,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AccessBadgeModule } from '@components/collection/components/collection-access-badge/collection-access-badge.module';
 import { IconModule } from '@components/icon/icon.module';
-import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
+import { FormatTokenModule } from '@core/pipes/formatToken/format-token.module';
+import { ResizeAvatarModule } from '@core/pipes/resize-avatar/resize-avatar.module';
 import { StripMarkDownModule } from '@core/pipes/strip-markdown/strip-markdown.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
@@ -17,6 +18,7 @@ import { NftCardComponent } from './nft-card.component';
   imports: [
     CommonModule,
     RouterModule,
+    FormatTokenModule,
     StripMarkDownModule,
     TruncateModule,
     IconModule,
@@ -24,7 +26,7 @@ import { NftCardComponent } from './nft-card.component';
     NzNotificationModule,
     NzAvatarModule,
     NzToolTipModule,
-    IpfsAvatarModule,
+    ResizeAvatarModule,
     AccessBadgeModule,
   ],
   exports: [NftCardComponent],

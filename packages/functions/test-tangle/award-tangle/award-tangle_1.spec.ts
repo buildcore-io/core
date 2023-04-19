@@ -11,7 +11,7 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
@@ -48,8 +48,8 @@ describe('Award tangle request', () => {
 
     token = await saveBaseToken(space.uid, guardian);
 
-    const guardianDocRef = admin.firestore().doc(`${COL.MEMBER}/${guardian}`);
-    const guardianData = <Member>(await guardianDocRef.get()).data();
+    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${guardian}`);
+    const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, network);
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
   });
@@ -71,21 +71,20 @@ describe('Award tangle request', () => {
       },
     );
 
-    const creditQuery = admin
-      .firestore()
+    const creditQuery = soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST)
       .where('member', '==', guardian);
     await wait(async () => {
       const snap = await creditQuery.get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
     const snap = await creditQuery.get();
-    const credit = snap.docs[0].data() as Transaction;
+    const credit = snap[0] as Transaction;
     expect(credit.payload.amount).toBe(5 * MIN_IOTA_AMOUNT);
 
-    const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${credit.payload.response.award}`);
-    const award = (await awardDocRef.get()).data() as Award;
+    const awardDocRef = soonDb().doc(`${COL.AWARD}/${credit.payload.response.award}`);
+    const award = (await awardDocRef.get()) as Award;
     expect(award.uid).toBe(credit.payload.response.award);
     expect(award.name).toBe(newAward.name);
     expect(award.description).toBe(newAward.description);

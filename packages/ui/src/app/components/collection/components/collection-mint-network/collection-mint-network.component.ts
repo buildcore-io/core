@@ -16,22 +16,23 @@ import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
-import { removeItem, setItem, StorageItem } from '@core/utils';
+import { StorageItem, removeItem, setItem } from '@core/utils';
 import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/collection/services/helper.service';
 import {
   Collection,
   CollectionType,
+  NETWORK_DETAIL,
   Network,
+  TRANSACTION_AUTO_EXPIRY_MS,
   Timestamp,
   Transaction,
   TransactionType,
-  TRANSACTION_AUTO_EXPIRY_MS,
   UnsoldMintingOptions,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import { BehaviorSubject, interval, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, interval } from 'rxjs';
 
 export enum StepType {
   SELECT = 'Select',
@@ -308,7 +309,7 @@ export class CollectionMintNetworkComponent implements OnInit {
     };
 
     if (this.unsoldControl.value === UnsoldMintingOptions.SET_NEW_PRICE) {
-      params.price = Number(this.newPrice.value) * 1000 * 1000;
+      params.price = Number(this.newPrice.value) * NETWORK_DETAIL[this.selectedNetwork].divideBy;
     }
 
     await this.auth.sign(params, (sc, finish) => {

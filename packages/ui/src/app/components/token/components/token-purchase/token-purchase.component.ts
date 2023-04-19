@@ -20,10 +20,19 @@ import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Space, Timestamp, Token, Transaction, TransactionType } from '@soonaverse/interfaces';
+import {
+  DEFAULT_NETWORK,
+  NETWORK_DETAIL,
+  Network,
+  Space,
+  Timestamp,
+  Token,
+  Transaction,
+  TransactionType,
+  getDefDecimalIfNotSet,
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import bigDecimal from 'js-big-decimal';
-import { BehaviorSubject, filter, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, filter } from 'rxjs';
 
 export enum StepType {
   CONFIRM = 'Confirm',
@@ -266,14 +275,6 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
     this.wenOnClose.next();
   }
 
-  public formatTokenBest(amount?: number | null): string {
-    if (!amount) {
-      return '0';
-    }
-
-    return (amount / 1000 / 1000).toFixed(6).toString();
-  }
-
   public getEndDate(): dayjs.Dayjs {
     return dayjs(this.token?.saleStartDate?.toDate()).add(this.token?.saleLength || 0, 'ms');
   }
@@ -338,28 +339,18 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
     });
   }
 
-  public getTargetAmount(): string {
-    return bigDecimal.divide(
-      bigDecimal.floor(
-        bigDecimal.multiply(
-          Number(this.amountControl.value * 1000 * 1000),
-          Number(this.token?.pricePerToken || 0),
-        ),
-      ),
-      1,
-      6,
-    );
+  public getDecimalsPerNetwork(v?: Network): number {
+    return NETWORK_DETAIL[v || DEFAULT_NETWORK].divideBy;
   }
 
-  public getResultAmount(): string {
+  public getTargetAmount(): number {
+    return this.amountControl.value * (this.token?.pricePerToken || 0);
+  }
+
+  public getResultAmount(): number {
     return this.isAmountInput
-      ? this.unitsService.format(
-          this.amountControl.value * 1000 * 1000 * (this.token?.pricePerToken || 0),
-          undefined,
-          false,
-          false,
-        )
-      : this.unitsService.format(this.amountControl.value * 1000 * 1000, undefined, false, false);
+      ? this.amountControl.value * (this.token?.pricePerToken || 0)
+      : this.amountControl.value * Math.pow(10, getDefDecimalIfNotSet(this.token?.decimals));
   }
 
   public ngOnDestroy(): void {

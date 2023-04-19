@@ -1,5 +1,5 @@
 import { COL, UnsoldMintingOptions, WenError } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { mintCollection } from '../../src/runtime/firebase/collection/index';
 import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -17,10 +17,7 @@ describe('Collection minting', () => {
   });
 
   it('Should throw, member has no valid address', async () => {
-    await admin
-      .firestore()
-      .doc(`${COL.MEMBER}/${helper.guardian}`)
-      .update({ validatedAddress: {} });
+    await soonDb().doc(`${COL.MEMBER}/${helper.guardian}`).update({ validatedAddress: {} });
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
       collection: helper.collection,
       network: helper.network,
@@ -33,10 +30,7 @@ describe('Collection minting', () => {
   });
 
   it('Should throw, space has no valid address', async () => {
-    await admin
-      .firestore()
-      .doc(`${COL.SPACE}/${helper.space!.uid}`)
-      .update({ validatedAddress: {} });
+    await soonDb().doc(`${COL.SPACE}/${helper.space!.uid}`).update({ validatedAddress: {} });
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
       collection: helper.collection,
       network: helper.network,
@@ -49,10 +43,7 @@ describe('Collection minting', () => {
   });
 
   it('Should throw, royalty space has no valid address', async () => {
-    await admin
-      .firestore()
-      .doc(`${COL.SPACE}/${helper.royaltySpace!.uid}`)
-      .update({ validatedAddress: {} });
+    await soonDb().doc(`${COL.SPACE}/${helper.royaltySpace!.uid}`).update({ validatedAddress: {} });
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
       collection: helper.collection,
       network: helper.network,

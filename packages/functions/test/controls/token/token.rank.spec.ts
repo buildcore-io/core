@@ -8,11 +8,10 @@ import {
   TokenStats,
   WenError,
 } from '@soonaverse/interfaces';
-import admin from '../../../src/admin.config';
-import { rankController } from '../../../src/controls/rank.control';
-import { createToken } from '../../../src/controls/token.control';
+import { soonDb } from '../../../src/firebase/firestore/soondb';
+import { rankController } from '../../../src/runtime/firebase/rank';
+import { createToken } from '../../../src/runtime/firebase/token/base';
 import * as config from '../../../src/utils/config.utils';
-import { cOn } from '../../../src/utils/dateTime.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../../set-up';
 import {
@@ -40,6 +39,7 @@ const dummyToken = (space: string) =>
     overviewGraphics: MEDIA,
     termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
     access: 0,
+    decimals: 6,
   } as any);
 
 describe('Token rank test', () => {
@@ -60,16 +60,13 @@ describe('Token rank test', () => {
     token = await testEnv.wrap(createToken)({});
     await saveSoon();
 
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.SPACE}/${RANKING_TEST.tokenSpace}/${SUB_COL.GUARDIANS}/${member}`)
-      .set(
-        cOn({
-          uid: member,
-          parentId: RANKING_TEST.tokenSpace,
-          parentCol: COL.SPACE,
-        }),
-      );
+      .set({
+        uid: member,
+        parentId: RANKING_TEST.tokenSpace,
+        parentCol: COL.SPACE,
+      });
   });
 
   it('Should throw, no token', async () => {
@@ -102,8 +99,7 @@ describe('Token rank test', () => {
   });
 
   it('Should throw, not space member', async () => {
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.SPACE}/${RANKING_TEST.tokenSpace}/${SUB_COL.GUARDIANS}/${member}`)
       .delete();
 
@@ -117,15 +113,15 @@ describe('Token rank test', () => {
 
   const validateStats = async (count: number, sum: number) => {
     await wait(async () => {
-      const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`);
+      const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
       const statsDocRef = tokenDocRef.collection(SUB_COL.STATS).doc(token.uid);
-      const stats = <TokenStats | undefined>(await statsDocRef.get()).data();
+      const stats = <TokenStats | undefined>await statsDocRef.get();
       const statsAreCorrect =
         stats?.ranks?.count === count &&
         stats?.ranks?.sum === sum &&
         stats?.ranks?.avg === Number((stats?.ranks?.sum! / stats?.ranks?.count!).toFixed(3));
 
-      token = <Token>(await tokenDocRef.get()).data();
+      token = <Token>await tokenDocRef.get();
       return (
         statsAreCorrect &&
         token.rankCount === count &&

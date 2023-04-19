@@ -16,23 +16,26 @@ import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
-import { getItem, setItem, StorageItem } from '@core/utils';
+import { StorageItem, getItem, setItem } from '@core/utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
+  DEFAULT_NETWORK,
+  NETWORK_DETAIL,
   Network,
   SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
   Space,
+  TRANSACTION_AUTO_EXPIRY_MS,
   Timestamp,
   Token,
   TokenTradeOrderType,
   Transaction,
   TransactionType,
-  TRANSACTION_AUTO_EXPIRY_MS,
+  getDefDecimalIfNotSet,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
-import { BehaviorSubject, interval, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, interval } from 'rxjs';
 
 export enum StepType {
   CONFIRM = 'Confirm',
@@ -259,9 +262,13 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
         this.agreeTermsConditions = true;
         this.agreeTokenTermsConditions = true;
         // Hide while we're waiting.
-        this.proceedWithOffer(() => {
-          this.isOpen = true;
-          this.cd.markForCheck();
+        this.proceedWithOffer((s: boolean) => {
+          if (s) {
+            this.isOpen = true;
+            this.cd.markForCheck();
+          } else {
+            this.close();
+          }
         }).catch(() => {
           this.close();
         });
@@ -336,20 +343,28 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
 
     const params: any = {
       symbol: this.token.symbol,
-      count: Number(this.amount * 1000 * 1000),
+      count: Number(this.amount * Math.pow(10, getDefDecimalIfNotSet(this.token?.decimals))),
       price: Number(this.price),
       type: TokenTradeOrderType.SELL,
     };
 
     const r = await this.auth.sign(params, (sc, finish) => {
       this.notification
-        .processRequest(this.tokenMarketApi.tradeToken(sc), $localize`Offer order created.`, finish)
+        .processRequest(
+          this.tokenMarketApi.tradeToken(sc),
+          $localize`Offer order created.`,
+          (success: boolean) => {
+            cb && cb(success);
+            finish();
+          },
+        )
         .subscribe((val: any) => {
           this.transSubscription?.unsubscribe();
           this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
           this.pushToHistory(val, val.uid, dayjs(), $localize`Waiting for transaction...`);
           if (cb) {
-            cb();
+            cb && cb(true);
+            finish();
           }
         });
     });
@@ -367,13 +382,16 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     return StepType;
   }
 
-  public getTargetAmount(): number {
+  public getTargetAmount(divideBy = false): number {
     return Number(
-      bigDecimal.divide(
-        bigDecimal.floor(
-          bigDecimal.multiply(Number(this.amount * 1000 * 1000), Number(this.price)),
+      bigDecimal[divideBy ? 'divide' : 'multiply'](
+        bigDecimal.floor(bigDecimal.multiply(Number(this.amount), Number(this.price))),
+        Math.pow(
+          10,
+          getDefDecimalIfNotSet(
+            NETWORK_DETAIL[this.token?.mintingData?.network || DEFAULT_NETWORK].decimals,
+          ),
         ),
-        1000 * 1000,
         6,
       ),
     );
@@ -383,12 +401,16 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
     return SERVICE_MODULE_FEE_TOKEN_EXCHANGE;
   }
 
-  public getFee(): string {
-    return this.unitsService.format(
-      Number(bigDecimal.multiply(this.getTargetAmount(), this.exchangeFee * 100 * 100)),
-      this.token?.mintingData?.network,
-      true,
-      true,
+  public getFee(): number {
+    return Number(
+      bigDecimal.multiply(
+        bigDecimal.divide(
+          this.getTargetAmount(false),
+          NETWORK_DETAIL[this.token?.mintingData?.network || DEFAULT_NETWORK].divideBy,
+          6,
+        ),
+        this.exchangeFee * 100 * 100,
+      ),
     );
   }
 

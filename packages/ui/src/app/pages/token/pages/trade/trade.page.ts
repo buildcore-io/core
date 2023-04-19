@@ -15,22 +15,23 @@ import { TokenMarketApi } from '@api/token_market.api';
 import { TokenPurchaseApi } from '@api/token_purchase.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { TRADING_VIEW_INTERVALS } from '@components/trading-view/components/trading-view/trading-view.component';
+import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
 import { SeoService } from '@core/services/seo';
-import { NETWORK_DETAIL, UnitsService } from '@core/services/units';
-import { getItem, setItem, StorageItem } from '@core/utils';
+import { UnitsService } from '@core/services/units';
+import { StorageItem, getItem, setItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
   DEFAULT_NETWORK,
+  DEFAULT_NETWORK_DECIMALS,
   FILE_SIZES,
   Member,
-  MIN_AMOUNT_TO_TRANSFER,
-  Network,
+  NETWORK_DETAIL,
   SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
   Space,
   Timestamp,
@@ -41,6 +42,7 @@ import {
   TokenTradeOrder,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
+  getDefDecimalIfNotSet,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -48,16 +50,16 @@ import updateLocale from 'dayjs/plugin/updateLocale';
 import bigDecimal from 'js-big-decimal';
 import {
   BehaviorSubject,
+  Observable,
+  Subscription,
   combineLatest,
   filter,
   first,
   interval,
   map,
   merge,
-  Observable,
   of,
   skip,
-  Subscription,
   take,
 } from 'rxjs';
 
@@ -193,6 +195,7 @@ export class TradePage implements OnInit, OnDestroy {
     public previewImageService: PreviewImageService,
     public data: DataService,
     public auth: AuthService,
+    public cache: CacheService,
     public helper: HelperService,
     public unitsService: UnitsService,
     private tokenApi: TokenApi,
@@ -363,7 +366,7 @@ export class TradePage implements OnInit, OnDestroy {
       .subscribe(() => {
         let amount =
           Number(this.amountControl.value) *
-          NETWORK_DETAIL[this.data.token$.value?.mintingData?.network || Network.IOTA].divideBy;
+          NETWORK_DETAIL[this.data.token$.value?.mintingData?.network || DEFAULT_NETWORK].divideBy;
         let result = 0;
         if (this.currentTradeFormState$.value === TradeFormState.SELL) {
           for (let i = 0; i < this.sortedBids$.value.length; i++) {
@@ -633,8 +636,10 @@ export class TradePage implements OnInit, OnDestroy {
   public openTradeModal(): void {
     if (this.currentTradeFormState$.value === TradeFormState.BUY) {
       this.isBidTokenOpen = true;
+      this.isAskTokenOpen = false;
     } else {
       this.isAskTokenOpen = true;
+      this.isBidTokenOpen = false;
     }
     this.cd.markForCheck();
   }
@@ -643,7 +648,9 @@ export class TradePage implements OnInit, OnDestroy {
     return (
       this.currentTradeFormState$.value === TradeFormState.SELL &&
       this.memberDistribution$?.value?.tokenOwned !== null &&
-      (this.memberDistribution$?.value?.tokenOwned || 0) / 1000 / 1000 < this.amountControl.value
+      (this.memberDistribution$?.value?.tokenOwned || 0) *
+        Math.pow(10, getDefDecimalIfNotSet(this.data.token$.value?.decimals)) <
+        this.amountControl.value
     );
   }
 
@@ -754,14 +761,8 @@ export class TradePage implements OnInit, OnDestroy {
     return SERVICE_MODULE_FEE_TOKEN_EXCHANGE;
   }
 
-  public getFee(): string {
-    return this.unitsService.format(
-      Number(bigDecimal.multiply(this.getResultAmount(), this.exchangeFee * 100 * 100)),
-      this.data.token$.value?.mintingData?.networkFormat ||
-        this.data.token$.value?.mintingData?.network,
-      true,
-      true,
-    );
+  public getFee(): number {
+    return Number(bigDecimal.multiply(this.getResultAmount(), this.exchangeFee * 100 * 100));
   }
 
   public orderBookRowClick(item: TransformedBidAskItem, state: TradeFormState): void {
@@ -769,9 +770,15 @@ export class TradePage implements OnInit, OnDestroy {
     this.currentTradeFormState$.next(
       state === TradeFormState.BUY ? TradeFormState.SELL : TradeFormState.BUY,
     );
-    this.amountControl.setValue(item.amount / 1000 / 1000);
+    this.amountControl.setValue(
+      item.amount / Math.pow(10, getDefDecimalIfNotSet(this.data.token$.value?.decimals)),
+    );
     this.priceOption$.next(PriceOptionType.LIMIT);
     this.priceControl.setValue(bigDecimal.round(item.price, 3));
+  }
+
+  public getDefaultNetworkDecimals(): number {
+    return DEFAULT_NETWORK_DECIMALS;
   }
 
   public tradeHistoryClick(item: TokenPurchase): void {
@@ -791,10 +798,6 @@ export class TradePage implements OnInit, OnDestroy {
           this.cd.markForCheck();
         }),
     );
-  }
-
-  public getMinTotal(): number {
-    return MIN_AMOUNT_TO_TRANSFER / 1000 / 1000;
   }
 
   public mobileBuySellClick(state: TradeFormState): void {

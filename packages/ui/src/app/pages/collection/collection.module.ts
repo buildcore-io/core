@@ -14,9 +14,10 @@ import { NftCardModule } from '@components/nft/components/nft-card/nft-card.modu
 import { RadioModule } from '@components/radio/radio.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { OnVisibleModule } from '@core/directives/on-visible/on-visible.module';
-import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
+import { FormatTokenModule } from '@core/pipes/formatToken/format-token.module';
 import { IpfsBadgeModule } from '@core/pipes/ipfs-badge/ipfs-badge.module';
 import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
+import { ResizeAvatarModule } from '@core/pipes/resize-avatar/resize-avatar.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { FilterService } from '@pages/market/services/filter.service';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
@@ -56,13 +57,14 @@ import { DataService } from './services/data.service';
     CollectionRoutingModule,
     LayoutModule,
     NzDatePickerModule,
-    IpfsAvatarModule,
+    ResizeAvatarModule,
     CollectionStatusModule,
     NzButtonModule,
     FormsModule,
     CollapseModule,
     DrawerModule,
     NzDrawerModule,
+    FormatTokenModule,
     NzInputNumberModule,
     SelectSpaceModule,
     ReactiveFormsModule,

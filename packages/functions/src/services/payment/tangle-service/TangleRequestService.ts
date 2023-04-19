@@ -7,15 +7,13 @@ import {
   TangleRequestType,
   Transaction,
   TransactionOrder,
-  URL_PATHS,
   WenError,
 } from '@soonaverse/interfaces';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { get } from 'lodash';
-import admin from '../../../admin.config';
+import { soonDb } from '../../../firebase/firestore/soondb';
 import { getOutputMetadata } from '../../../utils/basic-output.utils';
-import { cOn } from '../../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../../utils/error.utils';
+import { invalidArgument } from '../../../utils/error.utils';
 import { getRandomNonce } from '../../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 import { TangleAddressValidationService } from './address-validation.service';
@@ -36,7 +34,6 @@ import { SpaceLeaveService } from './space/SpaceLeaveService';
 import { TangleStakeService } from './stake.service';
 import { TangleTokenClaimService } from './token-claim.service';
 import { TangleTokenTradeService } from './token-trade.service';
-
 export class TangleRequestService {
   constructor(readonly transactionService: TransactionService) {}
 
@@ -180,27 +177,26 @@ export class TangleRequestService {
         return await service.handleSpaceCreateRequest(owner, request);
       }
       default:
-        throw throwInvalidArgument(WenError.invalid_tangle_request_type);
+        throw invalidArgument(WenError.invalid_tangle_request_type);
     }
   };
 
   private getOwner = async (senderAddress: string, network: Network) => {
-    const snap = await admin
-      .firestore()
+    const snap = await soonDb()
       .collection(COL.MEMBER)
       .where(`validatedAddress.${network}`, '==', senderAddress)
-      .get();
+      .get<Member>();
 
-    if (snap.size > 1) {
-      throw throwInvalidArgument(WenError.multiple_members_with_same_address);
+    if (snap.length > 1) {
+      throw invalidArgument(WenError.multiple_members_with_same_address);
     }
 
-    if (snap.size === 1) {
-      return snap.docs[0].id;
+    if (snap.length === 1) {
+      return snap[0].uid;
     }
 
-    const docRef = admin.firestore().doc(`${COL.MEMBER}/${senderAddress}`);
-    const member = <Member | undefined>(await docRef.get()).data();
+    const docRef = soonDb().doc(`${COL.MEMBER}/${senderAddress}`);
+    const member = <Member | undefined>await docRef.get();
     if (!member) {
       const memberData = {
         uid: senderAddress,
@@ -209,7 +205,7 @@ export class TangleRequestService {
           [network as string]: senderAddress,
         },
       };
-      await docRef.create(cOn(memberData, URL_PATHS.MEMBER));
+      await docRef.create(memberData);
     }
 
     return senderAddress;

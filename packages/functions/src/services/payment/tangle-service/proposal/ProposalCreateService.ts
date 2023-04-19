@@ -2,21 +2,17 @@ import {
   COL,
   Proposal,
   ProposalMember,
-  ProposalSubType,
   ProposalType,
   SpaceMember,
   SUB_COL,
   TokenStatus,
-  Transaction,
-  TransactionAwardType,
   WenError,
 } from '@soonaverse/interfaces';
 import Joi from 'joi';
-import admin from '../../../../admin.config';
-import { Database } from '../../../../database/Database';
+import { soonDb } from '../../../../firebase/firestore/soondb';
 import { createProposalSchema } from '../../../../runtime/firebase/proposal';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../../../utils/error.utils';
+import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getTokenForSpace } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
@@ -31,11 +27,11 @@ export class ProposalCreateService {
 
     const { proposal, proposalOwner } = await createProposal(owner, request);
 
-    const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
-    this.transactionService.updates.push({ ref: proposalDocRef, data: proposal, action: 'set' });
+    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+    this.transactionService.push({ ref: proposalDocRef, data: proposal, action: 'set' });
 
     const proposalOwnerDocRef = proposalDocRef.collection(SUB_COL.OWNERS).doc(proposalOwner.uid);
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: proposalOwnerDocRef,
       data: proposalOwner,
       action: 'set',
@@ -46,20 +42,17 @@ export class ProposalCreateService {
 }
 
 export const createProposal = async (owner: string, params: Record<string, unknown>) => {
-  const spaceMember = await Database.getById<SpaceMember>(
-    COL.SPACE,
-    params.space as string,
-    SUB_COL.MEMBERS,
-    owner,
-  );
+  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${params.space}`);
+  const spaceMemberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner);
+  const spaceMember = await spaceMemberDocRef.get<SpaceMember>();
   if (!spaceMember) {
-    throw throwInvalidArgument(WenError.you_are_not_part_of_space);
+    throw invalidArgument(WenError.you_are_not_part_of_space);
   }
 
   if (params.type === ProposalType.NATIVE) {
     const token = await getTokenForSpace(params.space as string);
     if (token?.status !== TokenStatus.MINTED) {
-      throw throwInvalidArgument(WenError.token_not_minted);
+      throw invalidArgument(WenError.token_not_minted);
     }
     params.token = token.uid;
   }
@@ -98,16 +91,17 @@ export const createProposal = async (owner: string, params: Record<string, unkno
 
 const createProposalMembersAndGetTotalWeight = async (proposal: Proposal) => {
   const subCol = proposal.settings.onlyGuardians ? SUB_COL.GUARDIANS : SUB_COL.MEMBERS;
-  const spaceMembers = await Database.getAll<SpaceMember>(
-    COL.SPACE,
-    proposal.space as string,
-    subCol,
-  );
+  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${proposal.space}`);
+  const spaceMembers = await spaceDocRef.collection(subCol).get<SpaceMember>();
 
   const promises = spaceMembers.map(async (spaceMember) => {
     const proposalMember = await createProposalMember(proposal, spaceMember);
     if (proposalMember.weight || proposal.type === ProposalType.NATIVE) {
-      await Database.create(COL.PROPOSAL, proposalMember, SUB_COL.MEMBERS, proposal.uid);
+      const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+      await proposalDocRef
+        .collection(SUB_COL.MEMBERS)
+        .doc(proposalMember.uid)
+        .create(proposalMember);
     }
     return proposalMember.weight || 0;
   });
@@ -117,49 +111,11 @@ const createProposalMembersAndGetTotalWeight = async (proposal: Proposal) => {
 };
 
 const createProposalMember = async (proposal: Proposal, spaceMember: SpaceMember) => {
-  const defaultWeight = proposal.settings.defaultMinWeight || 0;
-  const votingWeight = await calculateVotingWeight(proposal, spaceMember.uid);
-  const weight = Math.max(votingWeight, defaultWeight);
   return <ProposalMember>{
     uid: spaceMember.uid,
-    weight,
+    weight: proposal.type === ProposalType.NATIVE ? 0 : 1,
     voted: false,
     parentId: proposal.uid,
     parentCol: COL.PROPOSAL,
   };
-};
-
-const calculateVotingWeight = async (proposal: Proposal, member: string) => {
-  if (proposal.type === ProposalType.NATIVE) {
-    return 0;
-  }
-  if (
-    proposal.subType === ProposalSubType.REPUTATION_BASED_ON_SPACE ||
-    proposal.subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS
-  ) {
-    let weight = 0;
-    await Database.getManyPaginated<Transaction>(COL.TRANSACTION, {
-      ['payload.type']: TransactionAwardType.BADGE,
-      member,
-    })(async (badges) => {
-      for (const badge of badges) {
-        weight += getReputationFromBadge(proposal, badge);
-      }
-    });
-    return weight;
-  }
-  return 1;
-};
-
-const getReputationFromBadge = (proposal: Proposal, badge: Transaction) => {
-  if (proposal.subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
-    if (proposal.settings.awards.includes(badge.payload.award)) {
-      return badge.payload?.tokenReward || 0;
-    }
-    return 0;
-  }
-  if (badge.space === proposal.space) {
-    return Math.trunc(badge.payload?.tokenReward || 0);
-  }
-  return 0;
 };

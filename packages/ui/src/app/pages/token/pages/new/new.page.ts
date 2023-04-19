@@ -10,7 +10,7 @@ import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NewService } from '@pages/token/services/new.service';
-import { Access, TokenAllocation } from '@soonaverse/interfaces';
+import { Access, TokenAllocation, getDefDecimalIfNotSet } from '@soonaverse/interfaces';
 
 export enum StepType {
   INTRODUCTION = 'Introduction',
@@ -131,7 +131,7 @@ export class NewPage implements OnInit {
     res.space = data.space;
     res.access = Access.OPEN;
     res.pricePerToken = Number(data.price);
-    res.totalSupply = Number(data.totalSupply * 1000 * 1000);
+    res.totalSupply = Number(data.totalSupply * Math.pow(10, getDefDecimalIfNotSet(data.decimals)));
     res.allocations = data.allocations;
     res.links = data.links.map((l: { url: string }) => l.url);
     res.icon = data.icon;
@@ -139,6 +139,7 @@ export class NewPage implements OnInit {
     res.termsAndConditions = data.termsAndConditionsLink;
     res.shortDescriptionTitle = data.shortTitle;
     res.shortDescription = data.shortDescription;
+    res.decimals = data.decimals;
     return res;
   }
 

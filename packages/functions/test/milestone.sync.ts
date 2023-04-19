@@ -1,16 +1,13 @@
 import { OutputTypes, TREASURY_OUTPUT_TYPE } from '@iota/iota.js-next';
 
 import { COL, MilestoneTransaction, Network, SUB_COL } from '@soonaverse/interfaces';
-import dayjs from 'dayjs';
 
 import * as adminPackage from 'firebase-admin';
 
 import { last } from 'lodash';
-
-import admin from '../src/admin.config';
+import { soonDb } from '../src/firebase/firestore/soondb';
 
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
-import { dateToTimestamp } from '../src/utils/dateTime.utils';
 
 import { getWallet, projectId } from './set-up';
 
@@ -24,60 +21,44 @@ const app = adminPackage.initializeApp(config, 'second');
 const onlineDb = app.firestore();
 process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
 
-const syncMilestones = async (col: COL) => {
-  let lastDoc = (await onlineDb.collection(col).orderBy('createdOn', 'desc').limit(1).get())
-    .docs[0];
+const syncMilestones = async (col: COL, network: Network) => {
+  const lastDocQuery = onlineDb.collection(col).orderBy('createdOn', 'desc').limit(1);
+  let lastDoc = (await lastDocQuery.get()).docs[0];
+
+  const wallet = (await getWallet(Network.RMS)) as SmrWallet;
 
   while (1) {
     const snap = await onlineDb
       .collection(col)
       .orderBy('createdOn')
       .startAfter(lastDoc)
-      .limit(500)
+      .limit(10)
       .get();
-
-    const batch = admin.firestore().batch();
-    snap.docs.forEach((doc) => batch.create(admin.firestore().doc(doc.ref.path), doc.data()));
-    await batch.commit();
-
     lastDoc = last(snap.docs) || lastDoc;
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    const batch = soonDb().batch();
+    snap.docs.forEach((doc) => batch.create(soonDb().doc(doc.ref.path), doc.data()));
+    await batch.commit();
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const promises = snap.docs.map((doc) => syncTransactions(network, wallet, doc.ref.path));
+    await Promise.all(promises);
   }
 };
 
-const syncTransactions = async () => {
-  const wallet = (await getWallet(Network.RMS)) as SmrWallet;
-
-  onlineDb
-    .collectionGroup(SUB_COL.TRANSACTIONS)
-    .where('processed', '==', false)
-    .where('createdOn', '>=', dateToTimestamp(dayjs().toDate()))
-    .limit(1000)
-    .onSnapshot(
-      async (snap) => {
-        const promise = snap.docs.map(async (doc) => {
-          const data = doc.data();
-          const network =
-            doc.ref.parent.parent?.parent.path === COL.MILESTONE_ATOI ? Network.ATOI : Network.RMS;
-          const addresses = await getAddesses(data, network, wallet);
-          if (await addressInDb(addresses)) {
-            return doc;
-          }
-          return undefined;
-        });
-        const docs = (await Promise.all(promise)).filter((d) => d !== undefined);
-
-        const promises = docs.map(async (doc) => {
-          try {
-            await admin.firestore().doc(doc!.ref.path).create(doc!.data());
-          } catch (error) {}
-        });
-
-        await Promise.all(promises);
-      },
-      (error) => console.log(error),
-    );
+const syncTransactions = async (network: Network, wallet: SmrWallet, parentPath: string) => {
+  const snap = await onlineDb.collection(`${parentPath}/${SUB_COL.TRANSACTIONS}`).get();
+  const promises = snap.docs.map(async (doc) => {
+    const data = doc.data();
+    const addresses = await getAddesses(data, network, wallet);
+    if (await addressInDb(addresses)) {
+      await soonDb()
+        .doc(doc!.ref.path)
+        .create({ ...doc!.data(), processed: false });
+    }
+  });
+  await Promise.all(promises);
 };
 
 const getAddesses = async (doc: any, network: Network, wallet: SmrWallet) => {
@@ -92,14 +73,13 @@ const getAddesses = async (doc: any, network: Network, wallet: SmrWallet) => {
 
 const addressInDb = async (addresses: string[]) => {
   for (const address of addresses) {
-    const doc = await admin.firestore().collection(COL.MNEMONIC).doc(address).get();
-    if (doc.exists) {
+    const doc = await soonDb().collection(COL.MNEMONIC).doc(address).get();
+    if (doc) {
       return true;
     }
   }
   return false;
 };
 
-syncMilestones(COL.MILESTONE_RMS);
-syncMilestones(COL.MILESTONE_ATOI);
-syncTransactions();
+syncMilestones(COL.MILESTONE_RMS, Network.RMS);
+syncMilestones(COL.MILESTONE_ATOI, Network.ATOI);

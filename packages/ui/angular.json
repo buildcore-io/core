@@ -23,47 +23,11 @@
       "root": "",
       "sourceRoot": "src",
       "prefix": "wen",
-      "i18n": {
-        "sourceLocale": {
-          "baseHref": "",
-          "code": "en"
-        },
-        "locales": {
-          "de": {
-            "translation": "src/locale/messages.de-DE.xlf",
-            "baseHref": ""
-          },
-          "es": {
-            "translation": "src/locale/messages.es-ES.xlf",
-            "baseHref": ""
-          },
-          "fr": {
-            "translation": "src/locale/messages.fr-FR.xlf",
-            "baseHref": ""
-          },
-          "it": {
-            "translation": "src/locale/messages.it-IT.xlf",
-            "baseHref": ""
-          },
-          "ko": {
-            "translation": "src/locale/messages.ko-KR.xlf",
-            "baseHref": ""
-          },
-          "nl": {
-            "translation": "src/locale/messages.nl-NL.xlf",
-            "baseHref": ""
-          },
-          "zh-CN": {
-            "translation": "src/locale/messages.zh-CN.xlf",
-            "baseHref": ""
-          }
-        }
-      },
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/soonaverse",
+            "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -119,34 +83,6 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
-            },
-            "de": {
-              "localize": ["de"],
-              "i18nMissingTranslation": "warning"
-            },
-            "es": {
-              "localize": ["es"],
-              "i18nMissingTranslation": "warning"
-            },
-            "fr": {
-              "localize": ["fr"],
-              "i18nMissingTranslation": "warning"
-            },
-            "it": {
-              "localize": ["it"],
-              "i18nMissingTranslation": "warning"
-            },
-            "ko": {
-              "localize": ["ko"],
-              "i18nMissingTranslation": "warning"
-            },
-            "nl": {
-              "localize": ["nl"],
-              "i18nMissingTranslation": "warning"
-            },
-            "zh-CN": {
-              "localize": ["zh-CN"],
-              "i18nMissingTranslation": "warning"
             }
           },
           "defaultConfiguration": "production"
@@ -210,27 +146,6 @@
               "optimization": false,
               "sourceMap": true,
               "extractLicenses": false
-            },
-            "de": {
-              "i18nMissingTranslation": "warning"
-            },
-            "es": {
-              "i18nMissingTranslation": "warning"
-            },
-            "fr": {
-              "i18nMissingTranslation": "warning"
-            },
-            "it": {
-              "i18nMissingTranslation": "warning"
-            },
-            "ko": {
-              "i18nMissingTranslation": "warning"
-            },
-            "nl": {
-              "i18nMissingTranslation": "warning"
-            },
-            "zh-CN": {
-              "i18nMissingTranslation": "warning"
             }
           },
           "defaultConfiguration": "production"

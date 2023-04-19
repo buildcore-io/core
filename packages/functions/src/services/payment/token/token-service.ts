@@ -17,14 +17,12 @@ import {
   TransactionOrder,
   TransactionOrderType,
   TRANSACTION_MAX_EXPIRY_MS,
-  URL_PATHS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { get, head, last } from 'lodash';
-import admin, { inc } from '../../../admin.config';
-import { LastDocType } from '../../../utils/common.utils';
-import { cOn, dateToTimestamp, uOn } from '../../../utils/dateTime.utils';
+import { getSnapshot, soonDb } from '../../../firebase/firestore/soondb';
+import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { getBoughtByMemberDiff, getTotalPublicSupply } from '../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from '../transaction-service';
@@ -53,8 +51,8 @@ export class TokenService {
     match: TransactionMatch,
   ) {
     const payment = await this.transactionService.createPayment(order, match);
-    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`);
-    const token = <Token>(await tokenDocRef.get()).data();
+    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${order.payload.token}`);
+    const token = <Token>await tokenDocRef.get();
     const tokensSent = (tranOutput.nativeTokens || []).reduce(
       (acc, act) => (act.id === token.mintingData?.tokenId ? acc + Number(act.amount) : acc),
       0,
@@ -70,20 +68,20 @@ export class TokenService {
       return;
     }
 
-    let lastDoc: LastDocType | undefined = undefined;
+    let lastDocId = '';
     do {
-      let query = admin.firestore().collection(COL.AIRDROP).where('orderId', '==', order.uid);
-      if (lastDoc) {
-        query = query.startAfter(lastDoc);
-      }
-      const snap = await query.limit(250).get();
-      lastDoc = last(snap.docs);
+      const lastDoc = await getSnapshot(COL.AIRDROP, lastDocId);
+      const snap = await soonDb()
+        .collection(COL.AIRDROP)
+        .where('orderId', '==', order.uid)
+        .limit(250)
+        .startAfter(lastDoc)
+        .get<TokenDrop>();
+      lastDocId = last(snap)?.uid || '';
 
-      const batch = admin.firestore().batch();
-      snap.docs.forEach((doc) => {
-        const airdrop = doc.data() as TokenDrop;
-        const distributionDocRef = admin
-          .firestore()
+      const batch = soonDb().batch();
+      snap.forEach((airdrop) => {
+        const distributionDocRef = soonDb()
           .collection(COL.TOKEN)
           .doc(airdrop.token)
           .collection(SUB_COL.DISTRIBUTION)
@@ -91,23 +89,24 @@ export class TokenService {
 
         batch.set(
           distributionDocRef,
-          uOn({
+          {
             parentId: airdrop.token,
             parentCol: COL.TOKEN,
             uid: airdrop.member,
-            totalUnclaimedAirdrop: inc(airdrop.count),
-          }),
-          { merge: true },
+            totalUnclaimedAirdrop: soonDb().inc(airdrop.count),
+          },
+          true,
         );
-        batch.update(doc.ref, uOn({ status: TokenDropStatus.UNCLAIMED }));
+        const docRef = soonDb().doc(`${COL.AIRDROP}/${airdrop.uid}`);
+        batch.update(docRef, { status: TokenDropStatus.UNCLAIMED });
       });
       await batch.commit();
-    } while (lastDoc);
+    } while (lastDocId);
 
     this.transactionService.markAsReconciled(order, match.msgId);
 
-    this.transactionService.updates.push({
-      ref: admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`),
+    this.transactionService.push({
+      ref: soonDb().doc(`${COL.TRANSACTION}/${order.uid}`),
       data: { 'payload.amount': tranOutput.amount },
       action: 'update',
     });
@@ -136,45 +135,41 @@ export class TokenService {
     this.transactionService.markAsReconciled(order, match.msgId);
 
     await this.createDistributionDocRef(order.payload.token!, order.member!);
-    const token = <Token>(
-      (await admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`).get()).data()
-    );
+    const token = <Token>await soonDb().doc(`${COL.TOKEN}/${order.payload.token}`).get();
     const network = order.network || DEFAULT_NETWORK;
-    const data = cOn(
-      <TokenTradeOrder>{
-        uid: getRandomEthAddress(),
-        owner: order.member,
-        token: token.uid,
-        tokenStatus: token.status,
-        type:
-          order.payload.type === TransactionOrderType.SELL_TOKEN
-            ? TokenTradeOrderType.SELL
-            : TokenTradeOrderType.BUY,
-        count: nativeTokens || get(order, 'payload.count', 0),
-        price: get(order, 'payload.price', 0),
-        totalDeposit: nativeTokens || order.payload.amount,
-        balance: nativeTokens || order.payload.amount,
-        fulfilled: 0,
-        status: TokenTradeOrderStatus.ACTIVE,
-        orderTransactionId: order.uid,
-        paymentTransactionId: payment.uid,
-        expiresAt:
-          soonTransaction?.payload?.expiresOn ||
-          dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms')),
-        sourceNetwork: network,
-        targetNetwork: token.status === TokenStatus.BASE ? getNetworkPair(network) : network,
-      },
-      URL_PATHS.TOKEN_MARKET,
-    );
-    const ref = admin.firestore().doc(`${COL.TOKEN_MARKET}/${data.uid}`);
-    this.transactionService.updates.push({ ref, data, action: 'set' });
+    const data = <TokenTradeOrder>{
+      uid: getRandomEthAddress(),
+      owner: order.member,
+      token: token.uid,
+      tokenStatus: token.status,
+      type:
+        order.payload.type === TransactionOrderType.SELL_TOKEN
+          ? TokenTradeOrderType.SELL
+          : TokenTradeOrderType.BUY,
+      count: nativeTokens || get(order, 'payload.count', 0),
+      price: get(order, 'payload.price', 0),
+      totalDeposit: nativeTokens || order.payload.amount,
+      balance: nativeTokens || order.payload.amount,
+      fulfilled: 0,
+      status: TokenTradeOrderStatus.ACTIVE,
+      orderTransactionId: order.uid,
+      paymentTransactionId: payment.uid,
+      expiresAt:
+        soonTransaction?.payload?.expiresOn ||
+        dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms')),
+      sourceNetwork: network,
+      targetNetwork: token.status === TokenStatus.BASE ? getNetworkPair(network) : network,
+    };
+
+    const ref = soonDb().doc(`${COL.TOKEN_MARKET}/${data.uid}`);
+    this.transactionService.push({ ref, data, action: 'set' });
 
     if (
       order.payload.type === TransactionOrderType.SELL_TOKEN &&
       token.status === TokenStatus.MINTED
     ) {
-      const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
-      this.transactionService.updates.push({
+      const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+      this.transactionService.push({
         ref: orderDocRef,
         data: { 'payload.amount': match.to.amount },
         action: 'update',
@@ -187,12 +182,10 @@ export class TokenService {
     tran: TransactionMatch,
     payment: Transaction,
   ) {
-    const tokenRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`);
-    const distributionRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`);
+    const tokenRef = soonDb().doc(`${COL.TOKEN}/${order.payload.token}`);
+    const distributionRef = tokenRef.collection(SUB_COL.DISTRIBUTION).doc(order.member!);
 
-    const token = <Token>(await this.transactionService.transaction.get(tokenRef)).data();
+    const token = <Token>await this.transactionService.get(tokenRef);
     if (token.status !== TokenStatus.AVAILABLE) {
       await this.transactionService.createCredit(
         TransactionCreditType.DATA_NO_LONGER_VALID,
@@ -202,8 +195,8 @@ export class TokenService {
       return;
     }
 
-    const distribution = <TokenDistribution | undefined>(
-      (await this.transactionService.transaction.get(distributionRef)).data()
+    const distribution = await this.transactionService.transaction.get<TokenDistribution>(
+      distributionRef,
     );
     const currentTotalDeposit = Number(
       bigDecimal.add(distribution?.totalDeposit || 0, tran.to.amount),
@@ -215,13 +208,13 @@ export class TokenService {
     );
 
     const tokenUpdateData = {
-      totalDeposit: admin.firestore.FieldValue.increment(tran.to.amount),
-      tokensOrdered: admin.firestore.FieldValue.increment(boughtByMemberDiff),
+      totalDeposit: soonDb().inc(tran.to.amount),
+      tokensOrdered: soonDb().inc(boughtByMemberDiff),
     };
     const tokensOrdered = Number(bigDecimal.add(token.tokensOrdered, boughtByMemberDiff));
     const totalPublicSupply = getTotalPublicSupply(token);
 
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: tokenRef,
       data:
         tokensOrdered >= totalPublicSupply && token.autoProcessAt100Percent
@@ -230,11 +223,11 @@ export class TokenService {
       action: 'update',
     });
 
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: distributionRef,
       data: {
         uid: order.member,
-        totalDeposit: admin.firestore.FieldValue.increment(tran.to.amount),
+        totalDeposit: soonDb().inc(tran.to.amount),
         parentId: order.payload.token,
         parentCol: COL.TOKEN,
       },
@@ -244,17 +237,17 @@ export class TokenService {
   }
 
   private createDistributionDocRef = async (token: string, member: string) => {
-    const distributionDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token}/${SUB_COL.DISTRIBUTION}/${member}`);
+    const distributionDocRef = soonDb().doc(
+      `${COL.TOKEN}/${token}/${SUB_COL.DISTRIBUTION}/${member}`,
+    );
     const distributionDoc = await this.transactionService.transaction.get(distributionDocRef);
-    if (!distributionDoc.exists) {
+    if (!distributionDoc) {
       const data = {
         uid: member,
         parentId: token,
         parentCol: COL.TOKEN,
       };
-      this.transactionService.updates.push({
+      this.transactionService.push({
         ref: distributionDocRef,
         data,
         action: 'set',

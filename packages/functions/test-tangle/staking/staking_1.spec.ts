@@ -7,14 +7,15 @@ import {
   Space,
   StakeType,
   SUB_COL,
+  Transaction,
   TransactionType,
   WenError,
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
-import { depositStake } from '../../src/controls/stake.control';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';
+import { soonDb } from '../../src/firebase/firestore/soondb';
+import { depositStake } from '../../src/runtime/firebase/stake';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import {
@@ -82,8 +83,7 @@ describe('Staking test', () => {
   ])('Should set stake amount and remove it once expired', async ({ expiration, type }) => {
     const secondGuardian = await createMember(helper.walletSpy!);
     await addGuardianToSpace(helper.space?.uid!, secondGuardian);
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.TOKEN}/${helper.token?.uid!}/${SUB_COL.DISTRIBUTION}/${secondGuardian}`)
       .set({
         parentId: helper.token?.uid!,
@@ -106,7 +106,7 @@ describe('Staking test', () => {
     await helper.validateMemberStakeAmount(10, 10, 14, 14, type);
     await helper.assertDistributionStakeExpiry(stake1);
 
-    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${helper.space?.uid}`);
+    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${helper.space?.uid}`);
     await spaceDocRef.update({ tokenBased: true, minStakedValue: 10 });
 
     const stake2 = await helper.stakeAmount(20, 26, expiresAt, type);
@@ -125,7 +125,7 @@ describe('Staking test', () => {
     await helper.validateStatsStakeAmount(10, 30, 14, 43, type, 1);
     await helper.validateMemberStakeAmount(10, 30, 14, 43, type);
 
-    let space = <Space>(await spaceDocRef.get()).data();
+    let space = <Space>await spaceDocRef.get();
     expect(space.totalMembers).toBe(2);
     expect(space.totalGuardians).toBe(2);
 
@@ -134,7 +134,7 @@ describe('Staking test', () => {
     await helper.validateStatsStakeAmount(0, 30, 0, 43, type, 0);
     await helper.validateMemberStakeAmount(0, 30, 0, 43, type);
 
-    space = <Space>(await spaceDocRef.get()).data();
+    space = <Space>await spaceDocRef.get();
     expect(space.totalMembers).toBe(type === StakeType.DYNAMIC ? 1 : 2);
     expect(space.totalGuardians).toBe(type === StakeType.DYNAMIC ? 1 : 2);
 
@@ -189,35 +189,32 @@ describe('Staking test', () => {
     );
     await wait(
       async () => {
-        const snap = await admin
-          .firestore()
+        const snap = await soonDb()
           .collection(COL.TRANSACTION)
           .where('type', '==', TransactionType.UNLOCK)
           .where('member', '==', helper.member?.uid)
           .get();
-        if (snap.size) {
-          await admin
-            .firestore()
+        if (snap.length) {
+          await soonDb()
             .doc(`${COL.TRANSACTION}/${order.uid}`)
             .update({ 'payload.expiresOn': dateToTimestamp(dayjs().subtract(1, 'd')) });
         }
-        return snap.size > 0;
+        return snap.length > 0;
       },
       6000,
       100,
     );
 
-    const creditQuery = admin
-      .firestore()
+    const creditQuery = soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.member?.uid);
     await wait(async () => {
       const snap = await creditQuery.get();
-      return snap.size > 0;
+      return snap.length > 0;
     });
-    const credits = await creditQuery.get();
-    expect(credits.size).toBe(1);
-    expect(credits.docs[0].data()?.payload.targetAddress).toBe(helper.memberAddress?.bech32);
+    const credits = await creditQuery.get<Transaction>();
+    expect(credits.length).toBe(1);
+    expect(credits[0]?.payload.targetAddress).toBe(helper.memberAddress?.bech32);
   });
 });

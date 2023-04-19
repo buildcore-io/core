@@ -3,31 +3,34 @@ import {
   BaseProposalAnswerValue,
   COL,
   MediaStatus,
+  Member,
   Proposal,
   ProposalType,
   REMOVE_STAKE_REWARDS_THRESHOLD_PERCENTAGE,
   Space,
+  SpaceGuardian,
+  SpaceMember,
   StakeRewardStatus,
   StakeType,
   SUB_COL,
   TokenDistribution,
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
-  WEN_FUNC,
+  WEN_FUNC_TRIGGER,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
-import { set } from 'lodash';
-import admin, { inc } from '../admin.config';
+import { get, set } from 'lodash';
+import { soonDb } from '../firebase/firestore/soondb';
 import { scale } from '../scale.settings';
 import { getStakeForType } from '../services/stake.service';
 import { downloadMediaAndPackCar } from '../utils/car.utils';
-import { cOn, dateToTimestamp, uOn } from '../utils/dateTime.utils';
+import { dateToTimestamp } from '../utils/dateTime.utils';
 import { spaceToIpfsMetadata } from '../utils/space.utils';
 import { getTokenForSpace } from '../utils/token.utils';
 
 export const onProposalUpdated = functions
   .runWith({
-    minInstances: scale(WEN_FUNC.onProposalUpdated),
+    minInstances: scale(WEN_FUNC_TRIGGER.onProposalUpdated),
   })
   .firestore.document(COL.PROPOSAL + '/{proposalId}')
   .onWrite(async (change) => {
@@ -72,27 +75,24 @@ const voteThresholdReached = (prev: Proposal | undefined, curr: Proposal, thresh
 };
 
 const onAddRemoveGuardianProposalApproved = async (proposal: Proposal) => {
-  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${proposal.space}`);
+  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${proposal.space}`);
   const guardianDocRef = spaceDocRef
     .collection(SUB_COL.GUARDIANS)
     .doc(proposal.settings.addRemoveGuardian);
   const isAddGuardian = proposal.type === ProposalType.ADD_GUARDIAN;
 
-  const batch = admin.firestore().batch();
+  const batch = soonDb().batch();
   if (isAddGuardian) {
-    batch.set(
-      guardianDocRef,
-      cOn({
-        uid: proposal.settings.addRemoveGuardian,
-        parentId: proposal.space,
-        parentCol: COL.SPACE,
-      }),
-    );
+    batch.set(guardianDocRef, {
+      uid: proposal.settings.addRemoveGuardian,
+      parentId: proposal.space,
+      parentCol: COL.SPACE,
+    });
   } else {
     batch.delete(guardianDocRef);
   }
-  batch.update(spaceDocRef, uOn({ totalGuardians: inc(isAddGuardian ? 1 : -1) }));
-  const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  batch.update(spaceDocRef, { totalGuardians: soonDb().inc(isAddGuardian ? 1 : -1) });
+  const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
   batch.update(proposalDocRef, {
     'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's')),
     completed: true,
@@ -102,10 +102,10 @@ const onAddRemoveGuardianProposalApproved = async (proposal: Proposal) => {
 
 const onEditSpaceProposalApproved = async (proposal: Proposal) => {
   const spaceUpdateData: Space = proposal.settings.spaceUpdateData;
-  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${spaceUpdateData.uid}`);
+  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${spaceUpdateData.uid}`);
 
   if (spaceUpdateData.bannerUrl) {
-    const space = <Space>(await spaceDocRef.get()).data();
+    const space = (await spaceDocRef.get<Space>())!;
     const metadata = spaceToIpfsMetadata({ ...space, ...spaceUpdateData });
     const ipfs = await downloadMediaAndPackCar(space.uid, spaceUpdateData.bannerUrl, metadata);
     set(spaceUpdateData, 'ipfsMedia', ipfs.ipfsMedia);
@@ -115,8 +115,12 @@ const onEditSpaceProposalApproved = async (proposal: Proposal) => {
   }
 
   if (spaceUpdateData.open) {
-    const knockingMembersSnap = await spaceDocRef.collection(SUB_COL.KNOCKING_MEMBERS).get();
-    const deleteKnockingMemberPromise = knockingMembersSnap.docs.map((d) => d.ref.delete());
+    const knockingMembersSnap = await spaceDocRef
+      .collection(SUB_COL.KNOCKING_MEMBERS)
+      .get<SpaceMember>();
+    const deleteKnockingMemberPromise = knockingMembersSnap.map((kMember) =>
+      spaceDocRef.collection(SUB_COL.KNOCKING_MEMBERS).doc(kMember.uid).delete(),
+    );
     await Promise.all(deleteKnockingMemberPromise);
   }
 
@@ -125,15 +129,19 @@ const onEditSpaceProposalApproved = async (proposal: Proposal) => {
   const updateData = spaceUpdateData.open
     ? { ...spaceUpdateData, totalPendingMembers: 0 }
     : spaceUpdateData;
-  await spaceDocRef.update(
-    uOn({
+  const prevValidatedAddresses = get(updateData, 'prevValidatedAddresses');
+  if (prevValidatedAddresses) {
+    set(updateData, 'prevValidatedAddresses', soonDb().arrayUnion(prevValidatedAddresses));
+  }
+  await spaceDocRef.set(
+    {
       ...updateData,
-      totalMembers: inc(-removedMembers),
-      totalGuardians: inc(-removedGuardians),
-    }),
+      totalMembers: soonDb().inc(-removedMembers),
+      totalGuardians: soonDb().inc(-removedGuardians),
+    },
+    true,
   );
-  await admin
-    .firestore()
+  await soonDb()
     .doc(`${COL.PROPOSAL}/${proposal.uid}`)
     .update({
       'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's')),
@@ -145,36 +153,31 @@ const removeMembersAndGuardiansThatDontHaveEnoughStakes = async (updateData: Spa
   if (!updateData.tokenBased) {
     return { removedMembers: 0, removedGuardians: 0 };
   }
-  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${updateData.uid}`);
-  const space = <Space>(await spaceDocRef.get()).data();
+  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${updateData.uid}`);
+  const space = (await spaceDocRef.get<Space>())!;
   const token = await getTokenForSpace(space.uid);
 
   let removedMembers = 0;
   let removedGuardians = 0;
 
-  const membersSnap = await admin
-    .firestore()
-    .collection(`${COL.SPACE}/${space.uid}/${SUB_COL.MEMBERS}`)
-    .get();
+  const membersSnap = await spaceDocRef.collection(SUB_COL.MEMBERS).get<Member>();
 
-  for (const memberDoc of membersSnap.docs) {
+  for (const member of membersSnap) {
     if (space.totalMembers - removedMembers === 1) {
       break;
     }
     const hasEnoughStaked = await memberHasEnoughStakedValues(
       token?.uid!,
-      memberDoc.id,
+      member.uid,
       updateData.minStakedValue || 0,
     );
     if (!hasEnoughStaked) {
       removedMembers++;
-      await memberDoc.ref.delete();
-      const guardianDoc = await admin
-        .firestore()
-        .doc(`${COL.SPACE}/${space.uid}/${SUB_COL.GUARDIANS}/${memberDoc.id}`)
-        .get();
-      if (guardianDoc.exists) {
-        await guardianDoc.ref.delete();
+      await spaceDocRef.collection(SUB_COL.MEMBERS).doc(member.uid).delete();
+      const guardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member.uid);
+      const guardian = await guardianDocRef.get<SpaceGuardian>();
+      if (guardian) {
+        await guardianDocRef.delete();
         removedGuardians++;
       }
     }
@@ -184,31 +187,28 @@ const removeMembersAndGuardiansThatDontHaveEnoughStakes = async (updateData: Spa
 };
 
 const memberHasEnoughStakedValues = async (token: string, member: string, minStaked: number) => {
-  const distributionDocRef = admin
-    .firestore()
-    .doc(`${COL.TOKEN}/${token}/${SUB_COL.DISTRIBUTION}/${member}`);
-  const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+  const distributionDocRef = soonDb().doc(
+    `${COL.TOKEN}/${token}/${SUB_COL.DISTRIBUTION}/${member}`,
+  );
+  const distribution = await distributionDocRef.get<TokenDistribution>();
   const stakedValue = getStakeForType(distribution, StakeType.DYNAMIC);
   return stakedValue > minStaked;
 };
 
 const onRemoveStakeRewardApporved = async (proposal: Proposal) => {
-  const batch = admin.firestore().batch();
+  const batch = soonDb().batch();
 
   const stakeRewardIds = proposal.settings.stakeRewardIds as string[];
   stakeRewardIds.forEach((rewardId) => {
-    const docRef = admin.firestore().doc(`${COL.STAKE_REWARD}/${rewardId}`);
-    batch.update(docRef, uOn({ status: StakeRewardStatus.DELETED }));
+    const docRef = soonDb().doc(`${COL.STAKE_REWARD}/${rewardId}`);
+    batch.update(docRef, { status: StakeRewardStatus.DELETED });
   });
 
-  const proposalDocRef = admin.firestore().doc(`${COL.PROPOSAL}/${proposal.uid}`);
-  batch.update(
-    proposalDocRef,
-    uOn({
-      'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's')),
-      completed: true,
-    }),
-  );
+  const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  batch.update(proposalDocRef, {
+    'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's')),
+    completed: true,
+  });
 
   await batch.commit();
 };

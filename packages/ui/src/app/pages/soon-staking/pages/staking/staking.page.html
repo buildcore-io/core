@@ -152,8 +152,8 @@
   <button nz-button nzType="primary" nzSize="large" (click)="submit()" nzBlock>
     <span *ngIf="!amountControl.value">Start Staking</span>
     <span *ngIf="amountControl.value"
-      >Stake {{unitService.format(amountControl.value * 1000 * 1000, undefined, true, false, 2)}}
-      {{(token$ | async)?.symbol | uppercase}}</span
+      >Stake {{ { value: amountControl.value, exponents: 0} | formatToken: (token$ |
+      async)?.uid:true:false:2}} {{(token$ | async)?.symbol | uppercase}}</span
     >
   </button>
   <div class="mt-10 lg:mt-16" *ngIf="isSoonSpace() | async">
@@ -235,13 +235,34 @@
       </thead>
       <tbody>
         <tr *ngFor="let data of basicTable.data">
-          <td>{{data.category}}</td>
-          <td>{{data.category_extra}}</td>
-          <td>{{data.level0}}</td>
-          <td [ngClass]="(getLevelClass(1) | async)">{{data.level1}}</td>
-          <td [ngClass]="(getLevelClass(2) | async)">{{data.level2}}</td>
-          <td [ngClass]="(getLevelClass(3) | async)">{{data.level3}}</td>
-          <td [ngClass]="(getLevelClass(4) | async)">{{data.level4}}</td>
+          <ng-container *ngIf="data.key !== '1'">
+            <td>{{data.category}}</td>
+            <td>{{data.category_extra}}</td>
+            <td>{{data.level0}}</td>
+            <td [ngClass]="(getLevelClass(1) | async)">{{data.level1}}</td>
+            <td [ngClass]="(getLevelClass(2) | async)">{{data.level2}}</td>
+            <td [ngClass]="(getLevelClass(3) | async)">{{data.level3}}</td>
+            <td [ngClass]="(getLevelClass(4) | async)">{{data.level4}}</td>
+          </ng-container>
+          <ng-container *ngIf="data.key === '1'">
+            <td>{{data.category}}</td>
+            <td>{{data.category_extra}}</td>
+            <td>
+              {{(pInt(data.level0) | formatToken: (token$ | async)?.uid:false:false:0 | async)}}
+            </td>
+            <td [ngClass]="(getLevelClass(1) | async)">
+              {{(pInt(data.level1) | formatToken: (token$ | async)?.uid:false:false:0 | async)}}
+            </td>
+            <td [ngClass]="(getLevelClass(2) | async)">
+              {{(pInt(data.level2) | formatToken: (token$ | async)?.uid:false:false:0 | async)}}
+            </td>
+            <td [ngClass]="(getLevelClass(3) | async)">
+              {{(pInt(data.level3) | formatToken: (token$ | async)?.uid:false:false:0 | async)}}
+            </td>
+            <td [ngClass]="(getLevelClass(4) | async)">
+              {{(pInt(data.level4) | formatToken: (token$ | async)?.uid:false:false:0 | async)}}
+            </td>
+          </ng-container>
         </tr>
       </tbody>
     </nz-table>

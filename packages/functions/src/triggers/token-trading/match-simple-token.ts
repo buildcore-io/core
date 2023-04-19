@@ -17,9 +17,9 @@ import {
 } from '@soonaverse/interfaces';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty, tail } from 'lodash';
-import admin from '../../admin.config';
+import { ITransaction } from '../../firebase/firestore/interfaces';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { getAddress } from '../../utils/address.utils';
-import { cOn, uOn } from '../../utils/dateTime.utils';
 import { getRoyaltyFees } from '../../utils/royalty.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Match } from './match-token';
@@ -36,9 +36,9 @@ const createBuyPayments = async (
 ) => {
   let salePrice = Number(bigDecimal.floor(bigDecimal.multiply(tokensToTrade, price)));
   const fulfilled = buy.fulfilled + tokensToTrade === buy.count;
-  const buyOrder = <Transaction>(
-    (await admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get()).data()
-  );
+  const buyOrder = (await soonDb()
+    .doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`)
+    .get<Transaction>())!;
   const royaltyFees = await getRoyaltyFees(salePrice, seller.tokenTradingFeePercentage);
 
   let balanceLeft = buy.balance - salePrice;
@@ -58,7 +58,7 @@ const createBuyPayments = async (
   const royaltyPaymentPromises = Object.entries(royaltyFees)
     .filter((entry) => entry[1] > 0)
     .map(async ([space, fee]) => {
-      const spaceData = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space}`).get()).data();
+      const spaceData = await soonDb().doc(`${COL.SPACE}/${space}`).get<Space>();
       return <Transaction>{
         type: TransactionType.BILL_PAYMENT,
         uid: getRandomEthAddress(),
@@ -144,40 +144,36 @@ const createBuyPayments = async (
 };
 
 const updateSaleLock = (
-  transaction: admin.firestore.Transaction,
+  transaction: ITransaction,
   prev: TokenTradeOrder,
   sell: TokenTradeOrder,
 ) => {
   const diff = sell.fulfilled - prev.fulfilled;
-  const docRef = admin
-    .firestore()
-    .doc(`${COL.TOKEN}/${sell.token}/${SUB_COL.DISTRIBUTION}/${sell.owner}`);
+  const docRef = soonDb().doc(`${COL.TOKEN}/${sell.token}/${SUB_COL.DISTRIBUTION}/${sell.owner}`);
   const data = {
-    lockedForSale: admin.firestore.FieldValue.increment(-diff),
-    sold: admin.firestore.FieldValue.increment(diff),
-    tokenOwned: admin.firestore.FieldValue.increment(-diff),
+    lockedForSale: soonDb().inc(-diff),
+    sold: soonDb().inc(diff),
+    tokenOwned: soonDb().inc(-diff),
   };
-  transaction.set(docRef, uOn(data), { merge: true });
+  transaction.set(docRef, data, true);
 };
 
 const updateBuyerDistribution = (
-  transaction: admin.firestore.Transaction,
+  transaction: ITransaction,
   prev: TokenTradeOrder,
   buy: TokenTradeOrder,
 ) => {
   const diff = buy.fulfilled - prev.fulfilled;
-  const docRef = admin
-    .firestore()
-    .doc(`${COL.TOKEN}/${buy.token}/${SUB_COL.DISTRIBUTION}/${buy.owner}`);
+  const docRef = soonDb().doc(`${COL.TOKEN}/${buy.token}/${SUB_COL.DISTRIBUTION}/${buy.owner}`);
   const data = {
-    totalPurchased: admin.firestore.FieldValue.increment(diff),
-    tokenOwned: admin.firestore.FieldValue.increment(diff),
+    totalPurchased: soonDb().inc(diff),
+    tokenOwned: soonDb().inc(diff),
   };
-  transaction.set(docRef, uOn(data), { merge: true });
+  transaction.set(docRef, data, true);
 };
 
 export const matchSimpleToken = async (
-  transaction: admin.firestore.Transaction,
+  transaction: ITransaction,
   token: Token,
   buy: TokenTradeOrder,
   sell: TokenTradeOrder,
@@ -186,8 +182,8 @@ export const matchSimpleToken = async (
 ): Promise<Match> => {
   const tokensToTrade = Math.min(sell.count - sell.fulfilled, buy.count - buy.fulfilled);
 
-  const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data();
-  const buyer = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buy.owner}`).get()).data();
+  const seller = (await soonDb().doc(`${COL.MEMBER}/${sell.owner}`).get<Member>())!;
+  const buyer = (await soonDb().doc(`${COL.MEMBER}/${buy.owner}`).get<Member>())!;
   const buyerPayments = await createBuyPayments(
     token,
     buy,
@@ -201,9 +197,7 @@ export const matchSimpleToken = async (
   if (isEmpty(buyerPayments)) {
     return { purchase: undefined, buyerCreditId: undefined, sellerCreditId: undefined };
   }
-  buyerPayments.forEach((p) =>
-    transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${p.uid}`), cOn(p)),
-  );
+  buyerPayments.forEach((p) => transaction.create(soonDb().doc(`${COL.TRANSACTION}/${p.uid}`), p));
 
   return {
     purchase: <TokenPurchase>{
@@ -229,7 +223,7 @@ export const matchSimpleToken = async (
 };
 
 export const updateSellLockAndDistribution = (
-  transaction: admin.firestore.Transaction,
+  transaction: ITransaction,
   prevBuy: TokenTradeOrder,
   buy: TokenTradeOrder,
   prevSell: TokenTradeOrder,

@@ -1,4 +1,4 @@
-import { BaseRecord, EthAddress, FileMetedata, IotaAddress, Timestamp } from './base';
+import { BaseRecord, EthAddress, FileMetedata, IotaAddress, Restrictions, Timestamp } from './base';
 import { NativeToken } from './milestone';
 
 export const TRANSACTION_AUTO_EXPIRY_MS = 4 * 60 * 1000;
@@ -136,6 +136,37 @@ export enum Network {
   RMS = 'rms',
 }
 
+export const NETWORK_DETAIL = {
+  [Network.IOTA]: {
+    label: 'MIOTA',
+    divideBy: 1000 * 1000,
+    decimals: 6,
+  },
+  [Network.ATOI]: {
+    label: 'MATOI',
+    divideBy: 1000 * 1000,
+    decimals: 6,
+  },
+  [Network.SMR]: {
+    label: Network.SMR.toUpperCase(),
+    divideBy: 1000 * 1000,
+    decimals: 6,
+  },
+  [Network.RMS]: {
+    label: Network.RMS.toUpperCase(),
+    divideBy: 1000 * 1000,
+    decimals: 6,
+  },
+};
+
+export const DEFAULT_NETWORK_DECIMALS = 6;
+
+export const getDefDecimalIfNotSet = (v?: number | null) => {
+  return v !== undefined && v !== null && v > -1 ? v : DEFAULT_NETWORK_DECIMALS;
+};
+
+export type Units = 'Pi' | 'Ti' | 'Gi' | 'Mi' | 'Ki' | 'i';
+
 export const getNetworkPair = (network: Network) => {
   switch (network) {
     case Network.IOTA:
@@ -195,6 +226,7 @@ export interface OrderTransaction {
   collection?: EthAddress;
   token?: EthAddress;
   quantity?: number;
+  restrictions?: Restrictions;
 }
 
 export interface PaymentTransaction {
@@ -238,6 +270,7 @@ export interface BillPaymentTransaction {
   royalty: boolean;
   collection?: EthAddress;
   delay: number;
+  restrictions?: Restrictions;
 }
 
 export enum CreditPaymentReason {

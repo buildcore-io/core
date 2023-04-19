@@ -1,41 +1,36 @@
 import { COL, Stake, SUB_COL } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
-import admin, { inc } from '../admin.config';
+import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
 import { onStakeExpired } from '../services/stake.service';
-import { LastDocType } from '../utils/common.utils';
-import { dateToTimestamp, uOn } from '../utils/dateTime.utils';
+import { dateToTimestamp } from '../utils/dateTime.utils';
 
 export const removeExpiredStakesFromSpace = async () => {
-  let lastDoc: LastDocType | undefined = undefined;
+  let lastDocId = '';
   do {
-    const query = getExpiredStakeQuery(lastDoc);
-    const snap = await query.get();
+    const query = await getExpiredStakeQuery(lastDocId);
+    const snap = await query.get<Stake>();
+    lastDocId = last(snap)?.uid || '';
 
-    const promises = snap.docs.map((d) => updateTokenStakeStats(d.id));
+    const promises = snap.map((d) => updateTokenStakeStats(d.uid));
     await Promise.all(promises);
-
-    lastDoc = last(snap.docs);
-  } while (lastDoc);
+  } while (lastDocId);
 };
 
-const getExpiredStakeQuery = (lastDoc?: LastDocType) => {
-  const query = admin
-    .firestore()
+const getExpiredStakeQuery = async (lastDocId = '') => {
+  const lastDoc = await getSnapshot(COL.STAKE, lastDocId);
+  return soonDb()
     .collection(COL.STAKE)
     .where('expiresAt', '<=', dateToTimestamp(dayjs().toDate()))
     .where('expirationProcessed', '==', false)
+    .startAfter(lastDoc)
     .limit(1000);
-  if (lastDoc) {
-    return query.startAfter(lastDoc);
-  }
-  return query;
 };
 
 const updateTokenStakeStats = async (stakeId: string) =>
-  admin.firestore().runTransaction(async (transaction) => {
-    const stakeDocRef = admin.firestore().doc(`${COL.STAKE}/${stakeId}`);
-    const stake = (await transaction.get(stakeDocRef)).data() as Stake;
+  soonDb().runTransaction(async (transaction) => {
+    const stakeDocRef = soonDb().doc(`${COL.STAKE}/${stakeId}`);
+    const stake = <Stake>await transaction.get(stakeDocRef);
     if (stake.expirationProcessed) {
       return;
     }
@@ -45,25 +40,23 @@ const updateTokenStakeStats = async (stakeId: string) =>
     const updateData = {
       stakes: {
         [stake.type]: {
-          amount: inc(-stake.amount),
-          value: inc(-stake.value),
+          amount: soonDb().inc(-stake.amount),
+          value: soonDb().inc(-stake.value),
         },
       },
       stakeExpiry: {
         [stake.type]: {
-          [stake.expiresAt.toMillis()]: admin.firestore.FieldValue.delete(),
+          [stake.expiresAt.toMillis()]: soonDb().deleteField(),
         },
       },
     };
-    const spaceDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${stake.token}/${SUB_COL.STATS}/${stake.token}`);
-    transaction.set(spaceDocRef, uOn(updateData), { merge: true });
+    const spaceDocRef = soonDb().doc(`${COL.TOKEN}/${stake.token}/${SUB_COL.STATS}/${stake.token}`);
+    transaction.set(spaceDocRef, updateData, true);
 
-    const spaceMemberDocRef = admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${stake.token}/${SUB_COL.DISTRIBUTION}/${stake.member}`);
-    transaction.set(spaceMemberDocRef, uOn(updateData), { merge: true });
+    const spaceMemberDocRef = soonDb().doc(
+      `${COL.TOKEN}/${stake.token}/${SUB_COL.DISTRIBUTION}/${stake.member}`,
+    );
+    transaction.set(spaceMemberDocRef, updateData, true);
 
     transaction.update(stakeDocRef, { expirationProcessed: true });
   });

@@ -12,10 +12,10 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import admin from '../../src/admin.config';
-import { withdrawNft } from '../../src/runtime/firebase/nft/index';
-import { openBid } from '../../src/controls/order.control';
 import { finalizeAllNftAuctions } from '../../src/cron/nft.cron';
+import { soonDb } from '../../src/firebase/firestore/soondb';
+import { openBid } from '../../src/runtime/firebase/nft';
+import { withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { getAddress } from '../../src/utils/address.utils';
 import { Bech32AddressHelper } from '../../src/utils/bech32-address.helper';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -58,9 +58,7 @@ describe('Minted nft trading', () => {
       );
 
       await wait(async () => {
-        const nft = <Nft>(
-          (await admin.firestore().doc(`${COL.NFT}/${helper.nft!.uid}`).get()).data()
-        );
+        const nft = <Nft>await soonDb().doc(`${COL.NFT}/${helper.nft!.uid}`).get();
         return !isEmpty(nft.auctionHighestTransaction);
       });
 
@@ -73,50 +71,43 @@ describe('Minted nft trading', () => {
       );
 
       await wait(async () => {
-        const nft = <Nft>(
-          (await admin.firestore().doc(`${COL.NFT}/${helper.nft!.uid}`).get()).data()
-        );
+        const nft = <Nft>await soonDb().doc(`${COL.NFT}/${helper.nft!.uid}`).get();
 
         const payment = (
-          await admin
-            .firestore()
+          await soonDb()
             .collection(COL.TRANSACTION)
             .where('type', '==', TransactionType.PAYMENT)
             .where('payload.sourceTransaction', 'array-contains', bidOrder2.uid)
-            .get()
-        ).docs[0]?.data() as Transaction;
+            .get<Transaction>()
+        )[0];
         return nft.auctionHighestTransaction === payment?.uid;
       });
 
-      await admin
-        .firestore()
+      await soonDb()
         .doc(`${COL.NFT}/${helper.nft!.uid}`)
         .update({ auctionTo: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
 
       await finalizeAllNftAuctions();
 
       await wait(async () => {
-        const nft = <Nft>(
-          (await admin.firestore().doc(`${COL.NFT}/${helper.nft!.uid}`).get()).data()
-        );
+        const nft = <Nft>await soonDb().doc(`${COL.NFT}/${helper.nft!.uid}`).get();
         return nft.owner === helper.member;
       });
 
       mockWalletReturnValue(helper.walletSpy, helper.member!, { nft: helper.nft!.uid });
       await testEnv.wrap(withdrawNft)({});
 
-      const nft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${helper.nft!.uid}`).get()).data();
+      const nft = <Nft>await soonDb().doc(`${COL.NFT}/${helper.nft!.uid}`).get();
       expect(nft.status).toBe(NftStatus.WITHDRAWN);
 
       await wait(async () => {
         const transaction = (
-          await admin
-            .firestore()
+          await soonDb()
             .collection(COL.TRANSACTION)
             .where('type', '==', TransactionType.WITHDRAW_NFT)
             .where('payload.nft', '==', helper.nft!.uid)
-            .get()
-        ).docs[0]?.data() as Transaction;
+            .get<Transaction>()
+        )[0];
         return transaction?.payload?.walletReference?.confirmed;
       });
 
@@ -133,9 +124,7 @@ describe('Minted nft trading', () => {
         'rms',
         NFT_OUTPUT_TYPE,
       );
-      const member = <Member>(
-        (await admin.firestore().doc(`${COL.MEMBER}/${helper.member}`).get()).data()
-      );
+      const member = <Member>await soonDb().doc(`${COL.MEMBER}/${helper.member}`).get();
       expect(ownerAddress).toBe(getAddress(member, Network.RMS));
     },
   );

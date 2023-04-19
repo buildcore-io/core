@@ -18,8 +18,9 @@ import { RadioModule } from '@components/radio/radio.module';
 import { ShareModule } from '@components/share/share.module';
 import { TabsModule } from '@components/tabs/tabs.module';
 import { TimelineModule } from '@components/timeline/timeline.module';
-import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
+import { FormatTokenModule } from '@core/pipes/formatToken/format-token.module';
 import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
+import { ResizeAvatarModule } from '@core/pipes/resize-avatar/resize-avatar.module';
 import { StripMarkDownModule } from '@core/pipes/strip-markdown/strip-markdown.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
@@ -45,8 +46,8 @@ import { MultiplePage } from './pages/new/multiple/multiple.page';
 import { NewPage } from './pages/new/new.page';
 import { SinglePage } from './pages/new/single/single.page';
 import { NFTPage } from './pages/nft/nft.page';
-import { DataService } from './services/data.service';
 import { NotFoundPage } from './pages/not-found/not-found.page';
+import { DataService } from './services/data.service';
 
 @NgModule({
   declarations: [NFTPage, NewPage, SinglePage, MultiplePage, NotFoundPage],
@@ -67,7 +68,7 @@ import { NotFoundPage } from './pages/not-found/not-found.page';
     NftBidModule,
     NftCheckoutModule,
     StripMarkDownModule,
-    IpfsAvatarModule,
+    ResizeAvatarModule,
     NzDatePickerModule,
     RadioModule,
     NzIconModule,
@@ -84,6 +85,7 @@ import { NotFoundPage } from './pages/not-found/not-found.page';
     NftPreviewModule,
     CollapseModule,
     NzTableModule,
+    FormatTokenModule,
     TruncateModule,
     NzModalModule,
     ShareModule,

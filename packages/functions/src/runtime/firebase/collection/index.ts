@@ -18,7 +18,7 @@ import { createCollectionControl } from '../../../controls/collection/collection
 import { rejectCollectionControl } from '../../../controls/collection/collection.reject.control';
 import { updateCollectionControl } from '../../../controls/collection/collection.update.control';
 import { AVAILABLE_NETWORKS } from '../../../controls/common';
-import { onCall } from '../../../firebase/functions/onCall';
+import { onRequest } from '../../../firebase/functions/onRequest';
 import { CommonJoi } from '../../../services/joi/common';
 import { networks } from '../../../utils/config.utils';
 import { uidSchema } from '../common';
@@ -38,7 +38,7 @@ export const updateMintedCollectionSchema = {
     .custom((discounts: { tokenReward: number }[], helpers) => {
       const unique = uniq(discounts.map((d) => d.tokenReward));
       if (unique.length !== discounts.length) {
-        return helpers.error('Token reward must me unique');
+        return helpers.error('array.unique', { message: 'Token reward must me unique' });
       }
       return discounts;
     }),
@@ -96,22 +96,22 @@ const createCollectionSchema = {
   limitedEdition: Joi.boolean().optional(),
 };
 
-export const createCollection = onCall(WEN_FUNC.cCollection)(
+export const createCollection = onRequest(WEN_FUNC.createCollection)(
   Joi.object(createCollectionSchema),
   createCollectionControl,
 );
 
-export const updateCollection = onCall(WEN_FUNC.uCollection)(
+export const updateCollection = onRequest(WEN_FUNC.updateCollection)(
   uidSchema,
   updateCollectionControl,
   true,
 );
 
-export const approveCollection = onCall(WEN_FUNC.approveCollection)(
+export const approveCollection = onRequest(WEN_FUNC.approveCollection)(
   uidSchema,
   approveCollectionControl,
 );
-export const rejectCollection = onCall(WEN_FUNC.rejectCollection)(
+export const rejectCollection = onRequest(WEN_FUNC.rejectCollection)(
   uidSchema,
   rejectCollectionControl,
 );
@@ -131,7 +131,7 @@ const mintCollectionSchema = Joi.object({
   }),
 });
 
-export const mintCollection = onCall(WEN_FUNC.mintCollection, {
-  memory: '8GB',
+export const mintCollection = onRequest(WEN_FUNC.mintCollection, {
+  memory: '8GiB',
   timeoutSeconds: 540,
 })(mintCollectionSchema, mintCollectionOrderControl);

@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { DeviceService } from '@core/services/device';
-import { NETWORK_DETAIL } from '@core/services/units';
 import { environment } from '@env/environment';
 import {
   DEFAULT_NETWORK,
   Member,
+  NETWORK_DETAIL,
   Network,
   PROD_NETWORKS,
   Space,

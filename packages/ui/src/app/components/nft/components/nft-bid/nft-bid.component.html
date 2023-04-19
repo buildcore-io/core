@@ -130,11 +130,9 @@
           <div class="flex items-center mt-2 text-lg">
             <div class="mr-2 font-bold truncate">
               {{
-                unitsService.format(
-                  getRecord()?.auctionHighestBid || getRecord()?.auctionFloorPrice || 0,
-                  getRecord()?.mintingData?.network,
-                  true
-                )
+                getRecord()?.auctionHighestBid || getRecord()?.auctionFloorPrice || 0
+                  | formatToken : getRecord()?.mintingData?.network : true
+                  | async
               }}
             </div>
             <a
@@ -146,7 +144,7 @@
               class="flex items-center"
             >
               <nz-avatar
-                [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar : filesizes.small"
+                [nzSrc]="(auth.member$ | async)?.avatar | resizeAvatar : filesizes.small"
                 class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-8"
                 [nzSize]="32"
               >
@@ -260,7 +258,7 @@
       class="w-full mt-6 lg:w-auto"
       [targetAddress]="targetAddress"
       [network]="nft?.mintingData?.network"
-      [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()"
+      [targetAmount]="(targetAmount || 0).toString()"
     >
     </wen-wallet-deeplink>
   </div>
@@ -298,7 +296,7 @@
           <td class="text-sm font-medium">{{ item.createdOn?.toDate() | date : 'mediumTime' }}</td>
           <td class="text-sm font-medium">{{ item.type }}</td>
           <td class="text-sm font-medium">
-            {{ unitsService.format(item.payload.amount, item.network) }}
+            {{ item.payload.amount | formatToken : item.network | async }}
           </td>
           <td class="text-right">
             <a
@@ -326,7 +324,7 @@
       class="w-full mt-6 lg:w-auto"
       [targetAddress]="targetAddress"
       [network]="nft?.mintingData?.network"
-      [targetAmount]="((targetAmount || 0) / 1000 / 1000).toString()"
+      [targetAmount]="(targetAmount || 0).toString()"
     >
     </wen-wallet-deeplink>
   </div>

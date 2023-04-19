@@ -17,7 +17,7 @@ import {
   TransactionCreditType,
   TransactionOrder,
 } from '@soonaverse/interfaces';
-import admin, { inc } from '../../../admin.config';
+import { soonDb } from '../../../firebase/firestore/soondb';
 import { Bech32AddressHelper } from '../../../utils/bech32-address.helper';
 import { serverTime } from '../../../utils/dateTime.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';
@@ -31,14 +31,14 @@ export class SpaceService {
     const payment = await this.transactionService.createPayment(order, match);
     await this.transactionService.createCredit(TransactionCreditType.SPACE_CALIMED, payment, match);
 
-    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${order.space}`);
-    const space = <Space>(await this.transactionService.transaction.get(spaceDocRef)).data();
+    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${order.space}`);
+    const space = <Space>await this.transactionService.get(spaceDocRef);
     if (!space.collectionId || space.claimed) {
       return;
     }
 
-    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${space.collectionId}`);
-    const collection = <Collection>(await collectionDocRef.get()).data();
+    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${space.collectionId}`);
+    const collection = <Collection>await collectionDocRef.get();
 
     const senderIsIssuer = await senderIsCollectionIssuer(
       order.network!,
@@ -56,28 +56,28 @@ export class SpaceService {
       createdOn: serverTime(),
     };
     const spaceGuardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(order.member!);
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: spaceGuardianDocRef,
       data: spaceMember,
       action: 'set',
       merge: true,
     });
     const spaceMemberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(order.member!);
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: spaceMemberDocRef,
       data: spaceMember,
       action: 'set',
       merge: true,
     });
 
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: spaceDocRef,
-      data: { totalMembers: inc(1), totalGuardians: inc(1), claimed: true },
+      data: { totalMembers: soonDb().inc(1), totalGuardians: soonDb().inc(1), claimed: true },
       action: 'update',
     });
 
-    const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${order.member}`);
-    this.transactionService.updates.push({
+    const memberDocRef = soonDb().doc(`${COL.MEMBER}/${order.member}`);
+    this.transactionService.push({
       ref: memberDocRef,
       data: { spaces: { [space.uid]: { uid: space.uid, isMember: true } } },
       action: 'update',

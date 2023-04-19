@@ -1,19 +1,24 @@
 import { COL } from '@soonaverse/interfaces';
 import crypto from 'crypto';
-import { cert, initializeApp } from 'firebase-admin/app';
+import dotenv from 'dotenv';
+import admin from 'firebase-admin';
 import { getFirestore } from 'firebase-admin/firestore';
 import fs from 'fs';
 import glob from 'glob';
+import { FirebaseApp } from '../src/firebase/app/app';
 import serviceAccount from './serviceAccountKey.json';
 
-const app = initializeApp({
-  credential: cert(serviceAccount as any),
+dotenv.config({ path: '../.env' });
+
+const app = admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount as any),
 });
+process.env.FIREBASE_CONFIG = JSON.stringify({ projectId: serviceAccount.project_id });
 
 const execute = async () => {
   const db = getFirestore(app);
   const files = glob.sync(`./dbUpgrades/**/*.ts`);
-  for (const file of files) {
+  for (const file of files.sort()) {
     const content = fs.readFileSync(file);
     const hash = crypto.createHash('sha1').update(content).digest('hex');
 
@@ -26,12 +31,11 @@ const execute = async () => {
 
     console.log(`Running ${file}`);
     const func = await import(pathToImportFileName(file));
-    await func.roll(app);
+    await func.roll(new FirebaseApp(app));
     await docRef.create({});
   }
 };
 
-const pathToImportFileName = (path: string) =>
-  path.replace('packages/functions/scripts', '.').replace('.ts', '');
+const pathToImportFileName = (path: string) => './' + path.replace('.ts', '');
 
 execute();

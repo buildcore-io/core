@@ -12,9 +12,10 @@ import {
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import admin from '../../src/admin.config';
-import { tradeToken } from '../../src/controls/token-trading/token-trade.controller';
+import { soonDb } from '../../src/firebase/firestore/soondb';
+import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { getAddress } from '../../src/utils/address.utils';
+import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { getWallet, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
@@ -55,39 +56,34 @@ describe('Base token trading', () => {
       2 * MIN_IOTA_AMOUNT,
     );
 
-    const sellQuery = admin
-      .firestore()
+    const sellQuery = soonDb()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.seller!.uid);
     await wait(async () => {
       const snap = await sellQuery.get();
-      return snap.size !== 0;
+      return snap.length !== 0;
     });
 
-    const sell = <TokenTradeOrder>(await sellQuery.get()).docs[0].data();
+    const sell = <TokenTradeOrder>(await sellQuery.get())[0];
     expect(sell.tokenStatus).toBe(TokenStatus.BASE);
 
-    const buyQuery = admin
-      .firestore()
-      .collection(COL.TOKEN_MARKET)
-      .where('owner', '==', helper.buyer!.uid);
+    const buyQuery = soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer!.uid);
     await wait(async () => {
       const snap = await buyQuery.get();
-      return snap.size !== 0;
+      return snap.length !== 0;
     });
-    const buy = <TokenTradeOrder>(await buyQuery.get()).docs[0].data();
+    const buy = <TokenTradeOrder>(await buyQuery.get())[0];
     expect(buy.tokenStatus).toBe(TokenStatus.BASE);
 
-    const purchaseQuery = admin
-      .firestore()
+    const purchaseQuery = soonDb()
       .collection(COL.TOKEN_PURCHASE)
       .where('sell', '==', sell.uid)
       .where('buy', '==', buy.uid);
     await wait(async () => {
       const snap = await purchaseQuery.get();
-      return snap.size !== 0;
+      return snap.length !== 0;
     });
-    const purchase = <TokenPurchase>(await purchaseQuery.get()).docs[0].data();
+    const purchase = <TokenPurchase>(await purchaseQuery.get())[0];
 
     expect(purchase.count).toBe(MIN_IOTA_AMOUNT);
     expect(purchase.price).toBe(2);
@@ -97,13 +93,12 @@ describe('Base token trading', () => {
     expect(purchase.sellerTier).toBe(0);
     expect(purchase.sellerTokenTradingFeePercentage).toBeNull();
 
-    const sellerBillPaymentsSnap = await admin
-      .firestore()
+    const sellerBillPaymentsSnap = await soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller!.uid)
       .where('type', '==', TransactionType.BILL_PAYMENT)
       .get();
-    const sellerBillPayments = sellerBillPaymentsSnap.docs.map((d) => d.data() as Transaction);
+    const sellerBillPayments = sellerBillPaymentsSnap.map((d) => d as Transaction);
     expect(
       sellerBillPayments.find(
         (bp) =>
@@ -124,21 +119,19 @@ describe('Base token trading', () => {
       expect(sellerBillPayment.payload.tokenSymbol).toBe(helper.token!.symbol);
       expect(sellerBillPayment.payload.type).toBe(BillPaymentType.BASE_TOKEN_TRADE);
     });
-    const sellerCreditSnap = await admin
-      .firestore()
+    const sellerCreditSnap = await soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller!.uid)
       .where('type', '==', TransactionType.CREDIT)
       .get();
-    expect(sellerCreditSnap.size).toBe(0);
+    expect(sellerCreditSnap.length).toBe(0);
 
-    const buyerBillPaymentsSnap = await admin
-      .firestore()
+    const buyerBillPaymentsSnap = await soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer!.uid)
       .where('type', '==', TransactionType.BILL_PAYMENT)
       .get();
-    const buyerBillPayments = buyerBillPaymentsSnap.docs.map((d) => d.data() as Transaction);
+    const buyerBillPayments = buyerBillPaymentsSnap.map((d) => d as Transaction);
     expect(buyerBillPayments.length).toBe(3);
     expect(
       buyerBillPayments.find(
@@ -176,13 +169,12 @@ describe('Base token trading', () => {
           bp.payload.targetAddress === getAddress(helper.seller, helper.targetNetwork),
       ),
     ).toBeDefined();
-    const buyerCreditnap = await admin
-      .firestore()
+    const buyerCreditnap = await soonDb()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer!.uid)
       .where('type', '==', TransactionType.CREDIT)
       .get();
-    expect(buyerCreditnap.size).toBe(0);
+    expect(buyerCreditnap.length).toBe(0);
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
 
@@ -197,7 +189,7 @@ describe('Base token trading', () => {
 
   it('Should create buy order with expiration from expiration unlock', async () => {
     const date = dayjs().add(2, 'h').millisecond(0).toDate();
-    const expiresAt = admin.firestore.Timestamp.fromDate(date) as Timestamp;
+    const expiresAt = dateToTimestamp(date);
 
     mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
       symbol: helper.token!.symbol,
@@ -213,22 +205,19 @@ describe('Base token trading', () => {
       expiresAt,
     );
 
-    const buyQuery = admin
-      .firestore()
-      .collection(COL.TOKEN_MARKET)
-      .where('owner', '==', helper.buyer!.uid);
+    const buyQuery = soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer!.uid);
     await wait(async () => {
       const snap = await buyQuery.get();
-      return snap.size !== 0;
+      return snap.length !== 0;
     });
-    const buy = <TokenTradeOrder>(await buyQuery.get()).docs[0].data();
+    const buy = <TokenTradeOrder>(await buyQuery.get())[0];
 
     expect(dayjs(buy.expiresAt.toDate()).isSame(dayjs(expiresAt.toDate()))).toBe(true);
   });
 
   it('Should credit buy order with expiration unlock, wrong amount', async () => {
     const date = dayjs().add(2, 'h').millisecond(0).toDate();
-    const expiresAt = admin.firestore.Timestamp.fromDate(date) as Timestamp;
+    const expiresAt = dateToTimestamp(date) as Timestamp;
 
     mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
       symbol: helper.token!.symbol,
@@ -245,16 +234,15 @@ describe('Base token trading', () => {
     );
 
     await wait(async () => {
-      const snap = await admin
-        .firestore()
+      const snap = await soonDb()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
         .where('member', '==', helper.buyer?.uid)
-        .get();
+        .get<Transaction>();
       return (
-        snap.size === 1 &&
-        snap.docs[0].data()!.payload.amount === 4 * MIN_IOTA_AMOUNT &&
-        snap.docs[0].data()!.payload.targetAddress === faucetAddress.bech32
+        snap.length === 1 &&
+        snap[0]!.payload.amount === 4 * MIN_IOTA_AMOUNT &&
+        snap[0]!.payload.targetAddress === faucetAddress.bech32
       );
     });
   });

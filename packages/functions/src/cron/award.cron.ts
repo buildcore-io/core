@@ -1,15 +1,16 @@
-import { COL } from '@soonaverse/interfaces';
+import { Award, COL } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../admin.config';
-import { uOn } from '../utils/dateTime.utils';
+import { soonDb } from '../firebase/firestore/soondb';
 
 export const processExpiredAwards = async () => {
-  const snap = await admin
-    .firestore()
+  const snap = await soonDb()
     .collection(COL.AWARD)
     .where('completed', '==', false)
     .where('endDate', '<=', dayjs().toDate())
-    .get();
-  const promises = snap.docs.map((doc) => doc.ref.update(uOn({ completed: true })));
+    .get<Award>();
+  const promises = snap.map(async (award) => {
+    const docRef = soonDb().doc(`${COL.AWARD}/${award.uid}`);
+    await docRef.update({ completed: true });
+  });
   await Promise.all(promises);
 };

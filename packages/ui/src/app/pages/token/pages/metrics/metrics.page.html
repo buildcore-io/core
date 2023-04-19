@@ -19,7 +19,8 @@
         *ngIf="(data.token$ | async)?.totalSupply"
       >
         <span class="font-bold"
-          >{{ helper.formatTokenBest((data.token$ | async)?.totalSupply) | number : '1.0-2' }}</span
+          >{{ (data.token$ | async)?.totalSupply | formatToken:(data.token$ |
+          async)?.uid:false:false | async }}</span
         >
         <span>{{ ' ' + (data.token$ | async)?.symbol }}</span>
       </div>

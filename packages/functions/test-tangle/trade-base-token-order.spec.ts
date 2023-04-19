@@ -13,10 +13,9 @@ import {
   TransactionType,
   WenError,
 } from '@soonaverse/interfaces';
-import admin from '../src/admin.config';
-import { createMember } from '../src/controls/member.control';
-import { cancelTradeOrder } from '../src/controls/token-trading/token-trade-cancel.controller';
-import { tradeToken } from '../src/controls/token-trading/token-trade.controller';
+import { soonDb } from '../src/firebase/firestore/soondb';
+import { createMember } from '../src/runtime/firebase/member';
+import { cancelTradeOrder, tradeToken } from '../src/runtime/firebase/token/trading';
 import { AddressDetails } from '../src/services/wallet/wallet';
 import { getAddress } from '../src/utils/address.utils';
 import { serverTime } from '../src/utils/dateTime.utils';
@@ -50,7 +49,7 @@ describe('Trade base token controller', () => {
     await testEnv.wrap(createMember)(sellerId);
     validateAddress[Network.ATOI] = await addValidatedAddress(Network.ATOI, sellerId);
     validateAddress[Network.RMS] = await addValidatedAddress(Network.RMS, sellerId);
-    seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sellerId}`).get()).data();
+    seller = <Member>await soonDb().doc(`${COL.MEMBER}/${sellerId}`).get();
 
     const guardian = await createMemberTest(walletSpy);
     const space = await createSpace(walletSpy, guardian);
@@ -71,12 +70,12 @@ describe('Trade base token controller', () => {
     const tradeOrder = await testEnv.wrap(tradeToken)({});
     await requestFundsFromFaucet(sourceNetwork, tradeOrder.payload.targetAddress, MIN_IOTA_AMOUNT);
 
-    const query = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', seller.uid);
+    const query = soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', seller.uid);
     await wait(async () => {
       const snap = await query.get();
-      return snap.size !== 0;
+      return snap.length !== 0;
     });
-    const trade = <TokenTradeOrder>(await query.get()).docs[0].data();
+    const trade = <TokenTradeOrder>(await query.get())[0];
     expect(trade.sourceNetwork).toBe(sourceNetwork);
     expect(trade.targetNetwork).toBe(targetNetwork);
     expect(trade.count).toBe(MIN_IOTA_AMOUNT);
@@ -89,14 +88,13 @@ describe('Trade base token controller', () => {
     const cancelled = await testEnv.wrap(cancelTradeOrder)({});
     expect(cancelled.status).toBe(TokenTradeOrderStatus.CANCELLED);
 
-    const creditSnap = await admin
-      .firestore()
+    const creditSnap = await soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', seller.uid)
       .get();
-    expect(creditSnap.size).toBe(1);
-    const credit = <Transaction>creditSnap.docs[0].data();
+    expect(creditSnap.length).toBe(1);
+    const credit = <Transaction>creditSnap[0];
     expect(credit.payload.amount).toBe(MIN_IOTA_AMOUNT);
     expect(credit.payload.targetAddress).toBe(getAddress(seller, sourceNetwork));
 
@@ -106,10 +104,9 @@ describe('Trade base token controller', () => {
   it.each([Network.ATOI, Network.RMS])(
     'Should throw, source address not verified',
     async (network: Network) => {
-      await admin
-        .firestore()
+      await soonDb()
         .doc(`${COL.MEMBER}/${seller.uid}`)
-        .update({ [`validatedAddress.${network}`]: admin.firestore.FieldValue.delete() });
+        .update({ [`validatedAddress.${network}`]: soonDb().deleteField() });
       mockWalletReturnValue(walletSpy, seller.uid, {
         symbol: token.symbol,
         count: 10,
@@ -127,10 +124,9 @@ describe('Trade base token controller', () => {
     { sourceNetwork: Network.ATOI, targetNetwork: Network.RMS },
     { sourceNetwork: Network.RMS, targetNetwork: Network.ATOI },
   ])('Should throw, target address not verified', async ({ sourceNetwork, targetNetwork }) => {
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.MEMBER}/${seller.uid}`)
-      .update({ [`validatedAddress.${targetNetwork}`]: admin.firestore.FieldValue.delete() });
+      .update({ [`validatedAddress.${targetNetwork}`]: soonDb().deleteField() });
     mockWalletReturnValue(walletSpy, seller.uid, {
       symbol: token.symbol,
       count: 10,
@@ -159,6 +155,6 @@ const saveToken = async (space: string, guardian: string) => {
     icon: MEDIA,
     mintingData: { network: Network.ATOI },
   };
-  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token as Token;
 };

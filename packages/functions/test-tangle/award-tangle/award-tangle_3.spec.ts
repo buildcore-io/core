@@ -14,7 +14,7 @@ import {
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
@@ -49,8 +49,8 @@ describe('Award tangle request', () => {
 
     token = await saveToken(space.uid, guardian);
 
-    const guardianDocRef = admin.firestore().doc(`${COL.MEMBER}/${guardian}`);
-    const guardianData = <Member>(await guardianDocRef.get()).data();
+    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${guardian}`);
+    const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, network);
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
   });
@@ -68,19 +68,18 @@ describe('Award tangle request', () => {
     });
     await MnemonicService.store(guardianAddress.bech32, guardianAddress.mnemonic);
 
-    const creditQuery = admin
-      .firestore()
+    const creditQuery = soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST)
       .where('member', '==', guardian);
     await wait(async () => {
       const snap = await creditQuery.get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
     let snap = await creditQuery.get();
-    let credit = snap.docs[0].data() as Transaction;
+    let credit = snap[0] as Transaction;
     expect(credit.payload.amount).toBe(MIN_IOTA_AMOUNT);
-    const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${credit.payload.response.award}`);
+    const awardDocRef = soonDb().doc(`${COL.AWARD}/${credit.payload.response.award}`);
 
     await requestMintedTokenFromFaucet(
       walletService,
@@ -102,7 +101,7 @@ describe('Award tangle request', () => {
     );
 
     await wait(async () => {
-      const award = (await awardDocRef.get()).data() as Award;
+      const award = (await awardDocRef.get()) as Award;
       return award.funded;
     });
   });
@@ -143,7 +142,7 @@ const saveToken = async (space: string, guardian: string) => {
       tokenId: MINTED_TOKEN_ID,
     },
   };
-  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token as Token;
 };
 

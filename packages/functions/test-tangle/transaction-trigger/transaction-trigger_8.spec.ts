@@ -6,7 +6,7 @@ import {
   Transaction,
   TransactionType,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -49,23 +49,22 @@ describe('Transaction trigger spec', () => {
           void: false,
         },
       };
-      const docRef = admin.firestore().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+      const docRef = soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
       return docRef.create(billPayment);
     });
     await Promise.all(promises);
 
     await wait(async () => {
-      const snap = await admin
-        .firestore()
+      const snap = await soonDb()
         .collection(COL.TRANSACTION)
         .where('payload.sourceAddress', '==', sourceAddress.bech32)
         .where('payload.walletReference.confirmed', '==', true)
-        .get();
-      const countSum = snap.docs.reduce(
-        (acc, act) => acc + (act.data()?.payload?.walletReference?.count || 0),
+        .get<Transaction>();
+      const countSum = snap.reduce(
+        (acc, act) => acc + (act?.payload?.walletReference?.count || 0),
         0,
       );
-      return snap.size === count && countSum === count;
+      return snap.length === count && countSum === count;
     });
   });
 });

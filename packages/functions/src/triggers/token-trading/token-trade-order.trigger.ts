@@ -7,11 +7,11 @@ import {
   TokenTradeOrder,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
-  WEN_FUNC,
+  WEN_FUNC_TRIGGER,
 } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
-import admin from '../../admin.config';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { scale } from '../../scale.settings';
 import { getStakeForType, getTier } from '../../services/stake.service';
 import { cancelTradeOrderUtil } from '../../utils/token-trade.utils';
@@ -21,7 +21,7 @@ import { matchTradeOrder } from './match-token';
 const runParams = {
   timeoutSeconds: 540,
   memory: '512MB',
-  minInstances: scale(WEN_FUNC.onTokenTradeOrderWrite),
+  minInstances: scale(WEN_FUNC_TRIGGER.onTokenTradeOrderWrite),
 } as functions.RuntimeOptions;
 
 export const onTokenTradeOrderWrite = functions
@@ -38,11 +38,9 @@ export const onTokenTradeOrderWrite = functions
       return await matchTradeOrder(next);
     }
 
-    return await admin.firestore().runTransaction(async (transaction) => {
-      const tradeOrderDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${next.uid}`);
-      const tradeOrder = <TokenTradeOrder | undefined>(
-        (await transaction.get(tradeOrderDocRef)).data()
-      );
+    return await soonDb().runTransaction(async (transaction) => {
+      const tradeOrderDocRef = soonDb().doc(`${COL.TOKEN_MARKET}/${next.uid}`);
+      const tradeOrder = await transaction.get<TokenTradeOrder>(tradeOrderDocRef);
       if (tradeOrder && isActiveBuy(tradeOrder) && needsHigherBuyAmount(tradeOrder!)) {
         await cancelTradeOrderUtil(
           transaction,
@@ -66,13 +64,12 @@ const needsHigherBuyAmount = (buy: TokenTradeOrder) => {
 
 export const getMemberTier = async (member: Member) => {
   const soon = await getSoonToken();
-  const distributionDocRef = admin
-    .firestore()
+  const distributionDocRef = soonDb()
     .collection(COL.TOKEN)
     .doc(soon.uid)
     .collection(SUB_COL.DISTRIBUTION)
     .doc(member.uid);
-  const distribution = <TokenDistribution>(await distributionDocRef.get()).data();
+  const distribution = await distributionDocRef.get<TokenDistribution>();
   const stakeValue = getStakeForType(distribution, StakeType.DYNAMIC);
   return getTier(stakeValue);
 };

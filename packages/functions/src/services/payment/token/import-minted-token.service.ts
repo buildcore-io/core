@@ -22,8 +22,9 @@ import {
   WenError,
 } from '@soonaverse/interfaces';
 import Joi from 'joi';
-import { get } from 'lodash';
-import admin from '../../../admin.config';
+import { get, isEmpty } from 'lodash';
+import { soonDb } from '../../../firebase/firestore/soondb';
+import { soonStorage } from '../../../firebase/storage/soonStorage';
 import { Bech32AddressHelper } from '../../../utils/bech32-address.helper';
 import { getBucket } from '../../../utils/config.utils';
 import { migrateUriToSotrage, uriToUrl } from '../../../utils/media.utils';
@@ -38,10 +39,9 @@ export class ImportMintedTokenService {
     let error: { [key: string]: unknown } = {};
     try {
       const tokenId = order.payload.tokenId;
-      const existingTokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${tokenId}`);
-      const existingToken = <Token | undefined>(
-        (await this.transactionService.transaction.get(existingTokenDocRef)).data()
-      );
+      const existingTokenDocRef = soonDb().doc(`${COL.TOKEN}/${tokenId}`);
+      const existingToken = await this.transactionService.get<Token>(existingTokenDocRef);
+
       if (existingToken) {
         throw WenError.token_does_not_exist;
       }
@@ -50,13 +50,15 @@ export class ImportMintedTokenService {
       const { foundry, alias } = await this.getFoundryOutput(wallet, order, match);
       const metadata = this.getTokenMetadata(foundry);
 
-      const icon = await migrateUriToSotrage(
-        COL.TOKEN,
-        order.member!,
-        tokenId,
-        uriToUrl(metadata.uri),
-        admin.storage().bucket(getBucket()),
-      );
+      const icon = metadata.logoUrl
+        ? await migrateUriToSotrage(
+            COL.TOKEN,
+            order.member!,
+            tokenId,
+            uriToUrl(metadata.logoUrl),
+            soonStorage().bucket(getBucket()),
+          )
+        : '';
 
       const vaultAddress = await wallet.getNewIotaAddressDetails();
       const totalSupply = Number(foundry.tokenScheme.maximumSupply);
@@ -64,7 +66,10 @@ export class ImportMintedTokenService {
         createdBy: order.member,
         uid: tokenId,
         name: metadata.name,
+        title: metadata.name,
         description: metadata.description || '',
+        shortDescriptionTitle: metadata.name,
+        shortDescription: metadata.description || '',
         symbol: (metadata.symbol as string).toUpperCase(),
         space: order.space || '',
         totalSupply,
@@ -72,7 +77,7 @@ export class ImportMintedTokenService {
         approved: true,
         rejected: false,
         public: false,
-        links: [],
+        links: metadata.url ? [metadata.url] : [],
         icon,
         status: TokenStatus.MINTED,
         totalDeposit: 0,
@@ -90,12 +95,13 @@ export class ImportMintedTokenService {
           meltedTokens: Number(foundry.tokenScheme.meltedTokens),
           circulatingSupply: totalSupply - Number(foundry.tokenScheme.meltedTokens),
         },
-        mediaStatus: MediaStatus.PENDING_UPLOAD,
+        mediaStatus: icon ? MediaStatus.PENDING_UPLOAD : MediaStatus.UPLOADED,
         tradingDisabled: true,
         pricePerToken: 0,
+        decimals: metadata.decimals,
       };
-      const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`);
-      this.transactionService.updates.push({ ref: tokenDocRef, data: token, action: 'set' });
+      const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
+      this.transactionService.push({ ref: tokenDocRef, data: token, action: 'set' });
     } catch (err) {
       error = {
         status: 'error',
@@ -103,11 +109,7 @@ export class ImportMintedTokenService {
         message: get(err, 'key', 'none'),
       };
     } finally {
-      const payment = await this.transactionService.createPayment(
-        order,
-        match,
-        error !== undefined,
-      );
+      const payment = await this.transactionService.createPayment(order, match, !isEmpty(error));
       await this.transactionService.createCredit(
         TransactionCreditType.IMPORT_TOKEN,
         payment,
@@ -153,9 +155,9 @@ export class ImportMintedTokenService {
     );
     const decoded = Converter.hexToUtf8(metadataFeature?.data || '{}');
     const metadata = JSON.parse(decoded) || {};
-    const result = tokenIrc27Schema.validate(metadata, { allowUnknown: true });
+    const result = tokenIrc30Schema.validate(metadata, { allowUnknown: true });
     if (result.error) {
-      throw WenError.token_not_irc27_compilant;
+      throw WenError.token_not_irc30_compilant;
     }
     return metadata;
   };
@@ -179,9 +181,11 @@ const isAliasGovernor = (alias: IAliasOutput, address: string, hrp: string) => {
   return false;
 };
 
-const tokenIrc27Schema = Joi.object({
+const tokenIrc30Schema = Joi.object({
   name: Joi.string().required(),
-  description: Joi.string().optional(),
-  uri: Joi.string().required(),
+  description: Joi.string().allow('').optional(),
+  logoUrl: Joi.string().allow('').optional(),
+  url: Joi.string().allow('').optional(),
   symbol: Joi.string().required(),
+  decimals: Joi.number().integer().required(),
 });

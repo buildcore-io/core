@@ -7,6 +7,7 @@ import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module'
 import { NetworkModule } from '@components/network/network.module';
 import { TermsAndConditionsModule } from '@components/terms-and-conditions/terms-and-conditions.module';
 import { WalletDeeplinkModule } from '@components/wallet-deeplink/wallet-deeplink.module';
+import { FormatTokenModule } from '@core/pipes/formatToken/format-token.module';
 import { RelativeTimeModule } from '@core/pipes/relative-time/relative-time.module';
 import { TimeModule } from '@core/pipes/time/time.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
@@ -33,6 +34,7 @@ import { TokenPurchaseComponent } from './token-purchase.component';
     NzInputModule,
     FormsModule,
     ReactiveFormsModule,
+    FormatTokenModule,
     DescriptionModule,
     ModalDrawerModule,
     WalletDeeplinkModule,

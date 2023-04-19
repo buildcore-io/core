@@ -4,11 +4,11 @@ import {
   Space,
   TokenAllocation,
   TokenStatus,
-  WenError,
   WEN_FUNC,
+  WenError,
 } from '@soonaverse/interfaces';
-import admin from '../../../src/admin.config';
-import { createToken, updateToken } from '../../../src/controls/token.control';
+import { soonDb } from '../../../src/firebase/firestore/soondb';
+import { createToken, updateToken } from '../../../src/runtime/firebase/token/base';
 import * as wallet from '../../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../../set-up';
 import {
@@ -32,9 +32,10 @@ const dummyToken = (space: string) =>
     overviewGraphics: MEDIA,
     termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
     access: 0,
+    decimals: 6,
   } as any);
 
-describe('Token controller: ' + WEN_FUNC.uToken, () => {
+describe('Token controller: ' + WEN_FUNC.updateToken, () => {
   let memberAddress: string;
   let space: Space;
   let token: any;
@@ -94,7 +95,7 @@ describe('Token controller: ' + WEN_FUNC.uToken, () => {
     await expectThrow(testEnv.wrap(updateToken)({}), WenError.you_are_not_guardian_of_space.key);
   });
 
-  it('Should throw, invalid staus', async () => {
+  it('Should throw, not guardian', async () => {
     const updateData = {
       ...data,
       name: 'TokenName2',
@@ -110,29 +111,26 @@ describe('Token controller: ' + WEN_FUNC.uToken, () => {
     const updateData = { ...data, name: token.name, uid: token.uid, title: 'title2' };
     mockWalletReturnValue(walletSpy, memberAddress, updateData);
 
-    await admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}`)
-      .update({ status: TokenStatus.CANCEL_SALE });
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.CANCEL_SALE });
     await expectThrow(testEnv.wrap(updateToken)({}), WenError.token_in_invalid_status.key);
 
-    await admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}`)
-      .update({ status: TokenStatus.PRE_MINTED });
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.BASE });
     await expectThrow(testEnv.wrap(updateToken)({}), WenError.token_in_invalid_status.key);
 
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.MINTED });
-    await expectThrow(testEnv.wrap(updateToken)({}), WenError.token_in_invalid_status.key);
-
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.BASE });
-    await expectThrow(testEnv.wrap(updateToken)({}), WenError.token_in_invalid_status.key);
-
-    await admin
-      .firestore()
-      .doc(`${COL.TOKEN}/${token.uid}`)
-      .update({ status: TokenStatus.AVAILABLE });
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.AVAILABLE });
     const result = await testEnv.wrap(updateToken)({});
     expect(result.name).toBe(token.name);
+  });
+
+  it('Should throw, token minted', async () => {
+    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.MINTED });
+    const updateData = {
+      ...data,
+      name: 'TokenName2',
+      uid: token.uid,
+      title: 'title',
+    };
+    mockWalletReturnValue(walletSpy, memberAddress, updateData);
+    await expectThrow(testEnv.wrap(updateToken)({}), WenError.invalid_params.key);
   });
 });

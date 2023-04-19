@@ -10,7 +10,7 @@
           class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-10"
           style="max-width: 48px; min-width: 48px"
           [nzSize]="48"
-          [nzSrc]="member.currentProfileImage | ipfsAvatar : filesizes.small"
+          [nzSrc]="member.avatar | resizeAvatar : filesizes.small"
         ></nz-avatar>
         <h5
           nz-typography

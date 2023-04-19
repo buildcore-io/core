@@ -107,13 +107,9 @@
         >
           {{
             collection?.floorPrice
-              ? unitsService.format(
-                  collection?.floorPrice,
-                  collection?.mintingData?.network,
-                  false,
-                  true,
-                  2
-                )
+              ? (collection?.floorPrice
+                | formatToken : collection?.mintingData?.network : false : true : 2
+                | async)
               : '-'
           }}
         </div>

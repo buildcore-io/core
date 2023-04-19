@@ -1,5 +1,5 @@
-import { COL } from '@soonaverse/interfaces';
-import { Database } from '../../database/Database';
+import { COL, Transaction } from '@soonaverse/interfaces';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { createNftPuchaseOrder } from '../../services/payment/tangle-service/nft-purchase.service';
 
 export const orderNftControl = async (
@@ -13,6 +13,8 @@ export const orderNftControl = async (
     owner,
     (customParams?.ip || '') as string,
   );
-  await Database.create(COL.TRANSACTION, order);
-  return await Database.getById(COL.TRANSACTION, order.uid);
+  const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+  await orderDocRef.create(order);
+
+  return await orderDocRef.get<Transaction>();
 };

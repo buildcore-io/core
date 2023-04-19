@@ -1,6 +1,12 @@
-import { COL, MIN_IOTA_AMOUNT, TangleRequestType, TransactionType } from '@soonaverse/interfaces';
+import {
+  COL,
+  MIN_IOTA_AMOUNT,
+  TangleRequestType,
+  Transaction,
+  TransactionType,
+} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { approveProposal } from '../../src/runtime/firebase/proposal';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -43,18 +49,17 @@ describe('Create proposal via tangle request', () => {
     );
     await MnemonicService.store(helper.guardianAddress.bech32, helper.guardianAddress.mnemonic);
 
-    const orderQuery = admin
-      .firestore()
+    const orderQuery = soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.VOTE)
       .where('member', '==', helper.guardian);
     await wait(async () => {
       const snap = await orderQuery.get();
-      return snap.size === 1;
+      return snap.length === 1;
     });
 
-    const snap = await orderQuery.get();
-    const voteTransaction = snap.docs[0].data();
+    const snap = await orderQuery.get<Transaction>();
+    const voteTransaction = snap[0];
 
     await wait(async () => {
       const balance = await helper.walletService.getBalance(helper.guardianAddress.bech32);

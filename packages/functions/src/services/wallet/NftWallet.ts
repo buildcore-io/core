@@ -21,9 +21,9 @@ import {
 } from '@iota/iota.js-next';
 import { Award, COL, Collection, Nft, NftStatus, Space, Transaction } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { cloneDeep, get, head, isEmpty } from 'lodash';
-import admin from '../../admin.config';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { getAddress } from '../../utils/address.utils';
 import { mergeOutputs } from '../../utils/basic-output.utils';
 import { isValidBlockSize, packEssence, packPayload, submitBlock } from '../../utils/block.utils';
@@ -34,7 +34,6 @@ import {
   nftToMetadata,
   ZERO_ADDRESS,
 } from '../../utils/collection-minting-utils/nft.utils';
-import { uOn } from '../../utils/dateTime.utils';
 import { createUnlock } from '../../utils/smr.utils';
 import { getAliasBech32Address } from '../../utils/token-minting-utils/alias.utils';
 import { awardBadgeToNttMetadata, awardToCollectionMetadata } from '../payment/award/award-service';
@@ -42,7 +41,6 @@ import { MnemonicService } from './mnemonic';
 import { AliasWallet } from './smr-wallets/AliasWallet';
 import { SmrParams, SmrWallet } from './SmrWalletService';
 import { AddressDetails, setConsumedOutputIds } from './wallet';
-
 interface MintNftInputParams {
   readonly aliasOutputId: string;
   readonly aliasOutput: IAliasOutput;
@@ -76,13 +74,11 @@ export class NftWallet {
     nextAliasOutput.aliasId = TransactionHelper.resolveIdFromOutputId(aliasOutputId);
     nextAliasOutput.stateIndex++;
 
-    const collectionDocRef = admin
-      .firestore()
-      .doc(`${COL.COLLECTION}/${transaction.payload.collection}`);
-    const collection = <Collection>(await collectionDocRef.get()).data();
+    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${transaction.payload.collection}`);
+    const collection = <Collection>await collectionDocRef.get();
 
-    const royaltySpaceDocRef = admin.firestore().doc(`${COL.SPACE}/${collection.royaltiesSpace}`);
-    const royaltySpace = <Space>(await royaltySpaceDocRef.get()).data();
+    const royaltySpaceDocRef = soonDb().doc(`${COL.SPACE}/${collection.royaltiesSpace}`);
+    const royaltySpace = <Space>await royaltySpaceDocRef.get();
     const royaltySpaceAddress = getAddress(royaltySpace, transaction.network!);
 
     const issuerAddress: AddressTypes = {
@@ -139,15 +135,15 @@ export class NftWallet {
     nextAliasOutput.aliasId = TransactionHelper.resolveIdFromOutputId(aliasOutputId);
     nextAliasOutput.stateIndex++;
 
-    const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${transaction.payload.award}`);
-    const award = <Award>(await awardDocRef.get()).data();
+    const awardDocRef = soonDb().doc(`${COL.AWARD}/${transaction.payload.award}`);
+    const award = <Award>await awardDocRef.get();
 
     const issuerAddress: AddressTypes = {
       type: ALIAS_ADDRESS_TYPE,
       aliasId: TransactionHelper.resolveIdFromOutputId(aliasOutputId),
     };
-    const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${award.space}`);
-    const space = <Space>(await spaceDocRef.get()).data();
+    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${award.space}`);
+    const space = <Space>await spaceDocRef.get();
     const metadata = await awardToCollectionMetadata(award, space);
     const collectionOutput = createNftOutput(
       issuerAddress,
@@ -206,12 +202,10 @@ export class NftWallet {
         : collectionOutput.nftId;
 
     const collection = <Collection>(
-      (
-        await admin.firestore().doc(`${COL.COLLECTION}/${transaction.payload.collection}`).get()
-      ).data()
+      await soonDb().doc(`${COL.COLLECTION}/${transaction.payload.collection}`).get()
     );
     const royaltySpace = <Space>(
-      (await admin.firestore().doc(`${COL.SPACE}/${collection.royaltiesSpace}`).get()).data()
+      await soonDb().doc(`${COL.SPACE}/${collection.royaltiesSpace}`).get()
     );
     const royaltySpaceAddress = getAddress(royaltySpace, transaction.network!);
 
@@ -253,26 +247,20 @@ export class NftWallet {
     }
 
     const nftOutputsToMint = nftOutputs.slice(0, nftsToMint);
-    const batch = admin.firestore().batch();
+    const batch = soonDb().batch();
     nftOutputsToMint.forEach((output, i) => {
-      batch.update(
-        admin.firestore().doc(`${COL.NFT}/${nfts[i].uid}`),
-        uOn({
-          'mintingData.address': nftMintAddresses[i].bech32,
-          'mintingData.storageDeposit': Number(output.amount),
-        }),
-      );
+      batch.update(soonDb().doc(`${COL.NFT}/${nfts[i].uid}`), {
+        'mintingData.address': nftMintAddresses[i].bech32,
+        'mintingData.storageDeposit': Number(output.amount),
+      });
     });
     await batch.commit();
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.TRANSACTION}/${transaction.uid}`)
-      .update(
-        uOn({
-          'payload.amount': nftOutputsToMint.reduce((acc, act) => acc + Number(act.amount), 0),
-          'payload.nfts': nfts.slice(0, nftsToMint).map((nft) => nft.uid),
-        }),
-      );
+      .update({
+        'payload.amount': nftOutputsToMint.reduce((acc, act) => acc + Number(act.amount), 0),
+        'payload.nfts': nfts.slice(0, nftsToMint).map((nft) => nft.uid),
+      });
 
     await setConsumedOutputIds(
       sourceAddress.bech32,
@@ -313,8 +301,8 @@ export class NftWallet {
         ? TransactionHelper.resolveIdFromOutputId(collectionOutputId)
         : collectionOutput.nftId;
 
-    const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${transaction.payload.award}`);
-    const award = <Award>(await awardDocRef.get()).data();
+    const awardDocRef = soonDb().doc(`${COL.AWARD}/${transaction.payload.award}`);
+    const award = <Award>await awardDocRef.get();
 
     const issuerAddress: INftAddress = { type: NFT_ADDRESS_TYPE, nftId: collectionNftId };
     const ownerAddress = Bech32Helper.addressFromBech32(
@@ -549,14 +537,11 @@ const getNftMintingAddress = (nfts: Nft[], wallet: SmrWallet) => {
   return Promise.all(promises);
 };
 
-const getPreMintedNfts = async (collection: string, limit = 100) => {
-  const snap = await admin
-    .firestore()
+const getPreMintedNfts = (collection: string, limit = 100) =>
+  soonDb()
     .collection(COL.NFT)
     .where('collection', '==', collection)
     .where('status', '==', NftStatus.PRE_MINTED)
     .where('placeholderNft', '==', false)
     .limit(limit)
-    .get();
-  return snap.docs.map((d) => <Nft>d.data());
-};
+    .get<Nft>();

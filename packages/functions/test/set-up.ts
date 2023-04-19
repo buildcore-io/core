@@ -1,10 +1,15 @@
-import { AppCheck, Network } from '@soonaverse/interfaces';
+import { Network } from '@soonaverse/interfaces';
+import dotenv from 'dotenv';
+import express from 'express';
+import * as functions from 'firebase-functions';
 import test from 'firebase-functions-test';
+import { isEmpty } from 'lodash';
 import { IotaWallet } from '../src/services/wallet/IotaWalletService';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
 import { WalletService } from '../src/services/wallet/wallet';
 
-AppCheck.enabled = false;
+dotenv.config({ path: '.env.local' });
+
 export const projectId = 'soonaverse-dev';
 process.env.GCLOUD_PROJECT = projectId;
 
@@ -24,9 +29,45 @@ export const getConfig = () => {
   };
 };
 
-export const testEnv = process.env.LOCAL_TEST
-  ? test(getConfig())
-  : test(getConfig(), './test-service-account-key.json');
+export const sentOnRequest =
+  (func: (req: functions.https.Request, response: express.Response<any>) => void | Promise<void>) =>
+  async (data: any) => {
+    const req = { body: { data }, headers: { origin: true } } as any;
+    let error = false;
+    let response: any = undefined;
+    const res = {
+      status: (code: number) => {
+        if (code !== 200) {
+          error = true;
+        }
+      },
+      send: (res: any) => {
+        response = res.data;
+      },
+      setHeader: (key: any, value: any) => {},
+      getHeader: (key: any) => {},
+    } as any;
+    await func(req, res);
+
+    for (let attempt = 0; attempt < 5000; ++attempt) {
+      if (response !== undefined) {
+        break;
+      }
+      await new Promise((r) => setTimeout(r, 100));
+    }
+
+    if (error) {
+      throw response;
+    }
+    return isEmpty(response) ? undefined : response;
+  };
+
+export const testEnv = {
+  config: process.env.LOCAL_TEST
+    ? test(getConfig())
+    : test(getConfig(), './test-service-account-key.json'),
+  wrap: sentOnRequest,
+};
 
 export const MEDIA =
   'https://images-wen.soonaverse.com/0x0275dfc7c2624c0111d441a0819dccfd5e947c89%2F6stvhnutvg%2Ftoken_introductionary';

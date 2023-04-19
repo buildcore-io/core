@@ -2,7 +2,7 @@ import { TangleRequestType } from './models/tangleRequest';
 
 export const WenError = {
   unknown: { code: 1000, key: 'Unknown error' },
-  invalid_params: { code: 1001, key: 'Validation failed: ' },
+  invalid_params: { code: 1001, key: 'Invalid params' },
   address_must_be_provided: { code: 1002, key: 'Address must be provided.' },
   signature_must_be_provided: { code: 1003, key: 'Signature must be provided.' },
   invalid_signature: { code: 1003, key: 'Invalid signature.' },
@@ -238,16 +238,28 @@ export const WenError = {
     code: 2122,
     key: 'Your are not the governor of the alias.',
   },
-  token_not_irc27_compilant: {
+  token_not_irc30_compilant: {
     code: 2123,
-    key: 'Token metedata not irc27 compilant',
+    key: 'Token metedata not irc30 compilant',
   },
   token_must_be_public: {
     code: 2124,
-    key: 'Token must be public',
+    key: 'Token must be public. Complete KYC.',
   },
   url_not_img_or_video: {
     code: 2125,
     key: 'Url does not point to an image or video',
+  },
+  collection_must_be_classic: {
+    code: 2126,
+    key: 'Must be classic collection',
+  },
+  nft_set_as_avatar: {
+    code: 2127,
+    key: 'Nft is set as avatar',
+  },
+  stake_reward_started: {
+    code: 2128,
+    key: 'Stake reward already started',
   },
 };

@@ -7,7 +7,7 @@ import {
   UnsoldMintingOptions,
 } from '@soonaverse/interfaces';
 import { isEqual } from 'lodash';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { mintCollection } from '../../src/runtime/firebase/collection/index';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -68,26 +68,25 @@ describe('Collection minting', () => {
     );
     await Promise.all(promises);
 
-    const collectionDocRef = admin.firestore().doc(`${COL.COLLECTION}/${helper.collection}`);
+    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${helper.collection}`);
     await wait(async () => {
-      const data = <Collection>(await collectionDocRef.get()).data();
+      const data = <Collection>await collectionDocRef.get();
       return data.status === CollectionStatus.MINTED;
     });
 
-    const creditQuery = admin
-      .firestore()
+    const creditQuery = soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('payload.collection', '==', helper.collection);
     await wait(async () => {
-      const snap = await creditQuery.get();
-      const allConfirmed = snap.docs.reduce(
-        (acc, act) => acc && act.data().payload?.walletReference?.confirmed,
+      const snap = await creditQuery.get<Transaction>();
+      const allConfirmed = snap.reduce(
+        (acc, act) => acc && act.payload?.walletReference?.confirmed,
         true,
       );
-      return snap.size > 0 && allConfirmed;
+      return snap.length > 0 && allConfirmed;
     });
-    const credits = (await creditQuery.get()).docs.map((d) => <Transaction>d.data());
+    const credits = (await creditQuery.get()).map((d) => <Transaction>d);
     expect(credits.length).toBe(1);
 
     const hasValidTargetAddress =

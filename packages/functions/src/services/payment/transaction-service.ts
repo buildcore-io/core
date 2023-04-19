@@ -9,11 +9,12 @@ import {
 import {
   COL,
   DEFAULT_NETWORK,
+  MIN_AMOUNT_TO_TRANSFER,
   MilestoneTransaction,
   MilestoneTransactionEntry,
-  MIN_AMOUNT_TO_TRANSFER,
-  StorageReturn,
   SUB_COL,
+  StorageReturn,
+  TRANSACTION_AUTO_EXPIRY_MS,
   Timestamp,
   Token,
   Transaction,
@@ -24,17 +25,16 @@ import {
   TransactionType,
   TransactionUnlockType,
   TransactionValidationType,
-  TRANSACTION_AUTO_EXPIRY_MS,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { get, isEmpty, set } from 'lodash';
-import admin from '../../admin.config';
+import { IDocument, ITransaction } from '../../firebase/firestore/interfaces';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { SmrMilestoneTransactionAdapter } from '../../triggers/milestone-transactions-triggers/SmrMilestoneTransactionAdapter';
 import { getOutputMetadata } from '../../utils/basic-output.utils';
-import { cOn, dateToTimestamp, serverTime, uOn } from '../../utils/dateTime.utils';
+import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-
 export interface TransactionMatch {
   msgId: string;
   from: MilestoneTransactionEntry;
@@ -42,7 +42,7 @@ export interface TransactionMatch {
 }
 
 interface TransactionUpdates {
-  ref: admin.firestore.DocumentReference<admin.firestore.DocumentData>;
+  ref: IDocument;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
   action: 'update' | 'set' | 'delete';
@@ -51,18 +51,16 @@ interface TransactionUpdates {
 
 export class TransactionService {
   public readonly linkedTransactions: string[] = [];
-  public readonly updates: TransactionUpdates[] = [];
+  private readonly updates: TransactionUpdates[] = [];
 
-  constructor(public readonly transaction: FirebaseFirestore.Transaction) {}
+  constructor(public readonly transaction: ITransaction) {}
 
   public submit(): void {
     this.updates.forEach((params) => {
-      const dateFunc = params.merge || params.action === 'update' ? uOn : cOn;
-      const data = dateFunc(params.data);
       if (params.action === 'set') {
-        this.transaction.set(params.ref, data, { merge: params.merge || false });
+        this.transaction.set(params.ref, params.data, params.merge || false);
       } else if (params.action === 'update') {
-        this.transaction.update(params.ref, data);
+        this.transaction.update(params.ref, params.data);
       } else if (params.action === 'delete') {
         this.transaction.delete(params.ref);
       } else {
@@ -70,6 +68,10 @@ export class TransactionService {
       }
     });
   }
+
+  public push = (update: TransactionUpdates) => this.updates.push(update);
+
+  public get = <T>(docRef: IDocument) => this.transaction.get<T>(docRef);
 
   public async createPayment(
     order: Transaction,
@@ -105,15 +107,15 @@ export class TransactionService {
     };
 
     if (order.payload.token) {
-      const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`);
-      const token = <Token | undefined>(await tokenDocRef.get()).data();
+      const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${order.payload.token}`);
+      const token = await tokenDocRef.get<Token>();
       if (token) {
         set(data, 'payload.token', token.uid);
         set(data, 'payload.tokenSymbol', token.symbol);
       }
     }
     this.updates.push({
-      ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`),
+      ref: soonDb().doc(`${COL.TRANSACTION}/${data.uid}`),
       data,
       action: 'set',
     });
@@ -160,10 +162,11 @@ export class TransactionService {
           void: false,
           collection: order.payload.collection || null,
           quantity: order.payload.quantity || null,
+          restrictions: get(order, 'payload.restrictions', {}),
         },
       };
       this.updates.push({
-        ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`),
+        ref: soonDb().doc(`${COL.TRANSACTION}/${data.uid}`),
         data,
         action: 'set',
       });
@@ -191,10 +194,11 @@ export class TransactionService {
           nft: order.payload.nft || null,
           collection: order.payload.collection || null,
           quantity: order.payload.quantity || null,
+          restrictions: get(order, 'payload.restrictions', {}),
         },
       };
       this.updates.push({
-        ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`),
+        ref: soonDb().doc(`${COL.TRANSACTION}/${data.uid}`),
         data,
         action: 'set',
       });
@@ -250,15 +254,15 @@ export class TransactionService {
       }
 
       if (payment.payload.token) {
-        const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${payment.payload.token}`);
-        const token = <Token | undefined>(await tokenDocRef.get()).data();
+        const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${payment.payload.token}`);
+        const token = await tokenDocRef.get<Token>();
         if (token) {
           set(data, 'payload.token', token.uid);
           set(data, 'payload.tokenSymbol', token.symbol);
         }
       }
       this.updates.push({
-        ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`),
+        ref: soonDb().doc(`${COL.TRANSACTION}/${data.uid}`),
         data: data,
         action: 'set',
       });
@@ -298,7 +302,7 @@ export class TransactionService {
         linkedTransactions: [],
       };
       this.updates.push({
-        ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`),
+        ref: soonDb().doc(`${COL.TRANSACTION}/${data.uid}`),
         data: data,
         action: 'set',
       });
@@ -336,12 +340,12 @@ export class TransactionService {
         nftId: tran.to.nftOutput?.nftId,
         invalidPayment: payment.payload.invalidPayment,
         response,
-        ignoreWallet: !isEmpty(ignoreWalletReason),
-        ignoreWalletReason,
       },
+      ignoreWallet: !isEmpty(ignoreWalletReason),
+      ignoreWalletReason,
     };
     this.updates.push({
-      ref: admin.firestore().doc(`${COL.TRANSACTION}/${transaction.uid}`),
+      ref: soonDb().doc(`${COL.TRANSACTION}/${transaction.uid}`),
       data: transaction,
       action: 'set',
     });
@@ -351,7 +355,7 @@ export class TransactionService {
 
   public markAsReconciled = (transaction: Transaction, chainRef: string) =>
     this.updates.push({
-      ref: admin.firestore().doc(`${COL.TRANSACTION}/${transaction.uid}`),
+      ref: soonDb().doc(`${COL.TRANSACTION}/${transaction.uid}`),
       data: {
         'payload.reconciled': true,
         'payload.chainReference': chainRef,
@@ -365,10 +369,9 @@ export class TransactionService {
     soonTransaction?: Transaction,
   ) => {
     if (soonTransaction?.type === TransactionType.UNLOCK) {
-      const doc = await admin
-        .firestore()
+      const doc = (await soonDb()
         .doc(soonTransaction.payload.milestoneTransactionPath)
-        .get();
+        .get<Record<string, unknown>>())!;
       const adapter = new SmrMilestoneTransactionAdapter(order.network!);
       const milestoneTransaction = await adapter.toMilestoneTransaction(doc);
       return milestoneTransaction.inputs?.[0];
@@ -508,7 +511,7 @@ export class TransactionService {
       },
     };
     this.updates.push({
-      ref: admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`),
+      ref: soonDb().doc(`${COL.TRANSACTION}/${data.uid}`),
       data,
       action: 'set',
     });

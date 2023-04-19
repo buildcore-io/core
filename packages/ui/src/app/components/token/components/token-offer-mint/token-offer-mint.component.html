@@ -46,11 +46,11 @@
     <div class="text-right whitespace-nowrap">
       <div class="font-bold">
         {{
-          unitsService.format(
-            price * 1000 * 1000,
-            token?.mintingData?.networkFormat || token?.mintingData?.network,
-            true
-          )
+          price
+            | convertToken : token?.mintingData?.network
+            | async
+            | formatToken : token?.mintingData?.networkFormat || token?.mintingData?.network : true
+            | async
         }}
       </div>
       <span
@@ -76,11 +76,9 @@
     <div class="text-right">
       <div class="font-bold whitespace-nowrap">
         {{
-          unitsService.format(
-            getTargetAmount() * 1000 * 1000,
-            token?.mintingData?.networkFormat || token?.mintingData?.network,
-            true
-          )
+          getTargetAmount()
+            | formatToken : token?.mintingData?.networkFormat || token?.mintingData?.network : true
+            | async
         }}
       </div>
       <span
@@ -88,7 +86,7 @@
         i18n
         >~{{
           unitsService.getUsd(
-            getTargetAmount(),
+            amount * price,
             token?.mintingData?.networkFormat || token?.mintingData?.network
           )
             | async
@@ -100,7 +98,8 @@
         class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
         *ngIf="(auth.member$ | async)?.tokenTradingFeePercentage !== 0"
       >
-        <ng-container i18n>Fee</ng-container> {{ exchangeFee }}% ( {{ getFee() }})
+        <ng-container i18n>Fee</ng-container> {{ exchangeFee }}% (
+        {{ getFee() | formatToken : this.token?.mintingData?.network : true : true | async }})
       </div>
       <div
         class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
@@ -117,7 +116,11 @@
       Token amount to send
     </div>
     <div class="font-bold whitespace-nowrap">
-      {{ unitsService.format(amount * 1000 * 1000, undefined, true, false) }}
+      {{
+        { value: amount, exponents: token?.decimals }
+          | formatToken : token?.uid : true : false
+          | async
+      }}
       {{ (token?.symbol === 'IOTA' ? 'M' : '') + token?.symbol }}
     </div>
   </div>
@@ -214,8 +217,10 @@
     [targetAddress]="targetAddress"
     [formattedAmount]="
       helper.isBase(token || undefined)
-        ? unitsService.format(targetAmount || 0, getSymbolForNetwork())
-        : unitsService.format(amount * 1000 * 1000, undefined, true, false) +
+        ? (targetAmount || 0 | formatToken : getSymbolForNetwork() | async)
+        : ({ value: amount, exponents: token?.decimals }
+            | formatToken : token?.uid : true : false
+            | async) +
           ' ' +
           (token?.symbol === 'IOTA' ? 'M' : '') +
           token?.symbol
@@ -243,7 +248,7 @@
         : undefined
     "
     [tokenId]="token?.symbol !== 'IOTA' ? token?.mintingData?.tokenId : undefined"
-    [tokenAmount]="amount"
+    [tokenAmount]="(amount | convertToken : token?.uid | async) || undefined"
     [targetAmount]="token?.symbol !== 'IOTA' ? getTargetAmount() + '' : amount + ''"
   >
   </wen-wallet-deeplink>

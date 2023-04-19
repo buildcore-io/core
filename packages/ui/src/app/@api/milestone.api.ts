@@ -1,6 +1,6 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Firestore } from '@angular/fire/firestore';
-import { Functions } from '@angular/fire/functions';
 import { COL, Milestone } from '@soonaverse/interfaces';
 import { BaseApi } from './base.api';
 
@@ -10,7 +10,7 @@ import { BaseApi } from './base.api';
 export class MilestoneApi extends BaseApi<Milestone> {
   public collection = COL.MILESTONE;
 
-  constructor(protected firestore: Firestore, protected functions: Functions) {
-    super(firestore, functions);
+  constructor(protected firestore: Firestore, protected httpClient: HttpClient) {
+    super(firestore, httpClient);
   }
 }

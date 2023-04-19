@@ -1,13 +1,14 @@
 import { path as ffmpegPath } from '@ffmpeg-installer/ffmpeg';
-import { Bucket } from '@google-cloud/storage';
-import { IMAGE_CACHE_AGE } from '@soonaverse/interfaces';
+import { IMAGE_CACHE_AGE, WEN_FUNC_TRIGGER } from '@soonaverse/interfaces';
 import { spawn } from 'child-process-promise';
 import * as functions from 'firebase-functions';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import sharp from 'sharp';
-import admin from '../../admin.config';
+import { IBucket } from '../../firebase/storage/interfaces';
+import { soonStorage } from '../../firebase/storage/soonStorage';
+import { scale } from '../../scale.settings';
 import { getBucket } from '../../utils/config.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -21,7 +22,7 @@ export enum ImageWidth {
 }
 
 export const resizeImageTrigger = functions
-  .runWith({ memory: '4GB', minInstances: 10 })
+  .runWith({ memory: '4GB', minInstances: scale(WEN_FUNC_TRIGGER.resizeImg) })
   .storage.bucket(getBucket())
   .object()
   .onFinalize(async (object: functions.storage.ObjectMetadata) => {
@@ -48,7 +49,7 @@ export const resizeImageTrigger = functions
 
 const downloadMedia = async (workdir: string, object: functions.storage.ObjectMetadata) => {
   const destination = path.join(workdir, path.basename(object.name!));
-  await admin.storage().bucket(object.bucket).file(object.name!).download({ destination });
+  await soonStorage().bucket(object.bucket).download(object.name!, destination);
   return destination;
 };
 
@@ -59,7 +60,7 @@ const uploadeResizedImages = async (
 ) => {
   const extension = path.extname(downloadedImgPath);
   const fileName = path.basename(downloadedImgPath).replace(extension, '');
-  const bucket = admin.storage().bucket(object.bucket);
+  const bucket = soonStorage().bucket(object.bucket);
 
   const uploadPromises = Object.values(ImageWidth).map(async (size) => {
     const resizedImgName = `${fileName}_${extension.replace('.', '')}_${size}X${size}.webp`;
@@ -80,7 +81,7 @@ const uploadVideoPreview = async (
 ) => {
   const extension = path.extname(downloadedVideoPath);
   const fileName = path.basename(downloadedVideoPath).replace(extension, '');
-  const bucket = admin.storage().bucket(object.bucket);
+  const bucket = soonStorage().bucket(object.bucket);
 
   const thumbnailName = `${fileName}.png`;
   const thumbnailLocalPath = path.join(workdir, thumbnailName);
@@ -133,14 +134,11 @@ const createThumbnail = async (downloadedVideoPath: string, thumbnailLocalPath: 
 const createWebpImg = (sourcePath: string, targetPath: string, width: number) =>
   sharp(sourcePath).resize({ width }).webp({ quality: 100 }).toFile(targetPath);
 
-const uploadResizedImg = (bucket: Bucket, sourcePath: string, destination: string) =>
-  bucket.upload(sourcePath, {
-    destination: destination,
+const uploadResizedImg = (bucket: IBucket, sourcePath: string, destination: string) =>
+  bucket.upload(sourcePath, destination, {
+    contentType: 'image/webp',
+    cacheControl: `public,max-age=${IMAGE_CACHE_AGE}`,
     metadata: {
-      contentType: 'image/webp',
-      cacheControl: `public,max-age=${IMAGE_CACHE_AGE}`,
-      metadata: {
-        resized: 'true',
-      },
+      resized: 'true',
     },
   });

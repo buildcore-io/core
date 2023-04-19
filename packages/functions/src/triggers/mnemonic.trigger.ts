@@ -1,15 +1,21 @@
-import { COL, MAX_WALLET_RETRY, Mnemonic, TransactionType, WEN_FUNC } from '@soonaverse/interfaces';
+import {
+  COL,
+  MAX_WALLET_RETRY,
+  Mnemonic,
+  Transaction,
+  TransactionType,
+  WEN_FUNC_TRIGGER,
+} from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';
-import admin from '../admin.config';
+import { soonDb } from '../firebase/firestore/soondb';
 import { scale } from '../scale.settings';
-import { uOn } from '../utils/dateTime.utils';
 import { EXECUTABLE_TRANSACTIONS } from './transaction-trigger/transaction.trigger';
 
 export const mnemonicWrite = functions
   .runWith({
     timeoutSeconds: 540,
-    minInstances: scale(WEN_FUNC.mnemonicWrite),
+    minInstances: scale(WEN_FUNC_TRIGGER.mnemonicWrite),
     memory: '512MB',
   })
   .firestore.document(COL.MNEMONIC + '/{address}')
@@ -21,33 +27,33 @@ export const mnemonicWrite = functions
     }
 
     const address = context.params.address as string;
-    const sourceAddressTrans = (
-      await getUncofirmedTransactionsByFieldName('payload.sourceAddress', address)
-    ).docs;
-    const storageDepositAddressTrans = (
-      await getUncofirmedTransactionsByFieldName('payload.storageDepositSourceAddress', address)
-    ).docs;
+    const sourceAddressTrans = await getUncofirmedTransactionsByFieldName(
+      'payload.sourceAddress',
+      address,
+    );
+    const storageDepositAddressTrans = await getUncofirmedTransactionsByFieldName(
+      'payload.storageDepositSourceAddress',
+      address,
+    );
     const transactions = [...sourceAddressTrans, ...storageDepositAddressTrans];
 
     const tranId =
-      transactions.find((doc) => doc.data()?.type !== TransactionType.CREDIT)?.id ||
-      transactions.find((doc) => doc.data()?.type === TransactionType.CREDIT)?.id;
+      transactions.find((doc) => doc.type !== TransactionType.CREDIT)?.uid ||
+      transactions.find((doc) => doc.type === TransactionType.CREDIT)?.uid;
     if (!isEmpty(tranId)) {
-      await admin
-        .firestore()
+      await soonDb()
         .doc(`${COL.TRANSACTION}/${tranId}`)
-        .update(uOn({ shouldRetry: true, 'payload.walletReference.inProgress': false }));
+        .update({ shouldRetry: true, 'payload.walletReference.inProgress': false });
     }
   });
 
 const getUncofirmedTransactionsByFieldName = (fieldName: FieldNameType, address: string) =>
-  admin
-    .firestore()
+  soonDb()
     .collection(COL.TRANSACTION)
     .where(fieldName, '==', address)
     .where('type', 'in', EXECUTABLE_TRANSACTIONS)
     .where('payload.walletReference.chainReference', '==', null)
     .where('payload.walletReference.count', '<', MAX_WALLET_RETRY)
-    .get();
+    .get<Transaction>();
 
 type FieldNameType = 'payload.sourceAddress' | 'payload.storageDepositSourceAddress';

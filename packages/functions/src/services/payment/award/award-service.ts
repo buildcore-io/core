@@ -22,7 +22,7 @@ import {
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
-import admin, { inc } from '../../../admin.config';
+import { soonDb } from '../../../firebase/firestore/soondb';
 import { packBasicOutput } from '../../../utils/basic-output.utils';
 import { PLACEHOLDER_CID } from '../../../utils/car.utils';
 import { createNftOutput } from '../../../utils/collection-minting-utils/nft.utils';
@@ -38,8 +38,8 @@ export class AwardService {
   public handleAwardFundingOrder = async (order: Transaction, match: TransactionMatch) => {
     const payment = await this.transactionService.createPayment(order, match);
 
-    const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${order.payload.award}`);
-    const award = <Award>(await this.transactionService.transaction.get(awardDocRef)).data();
+    const awardDocRef = soonDb().doc(`${COL.AWARD}/${order.payload.award}`);
+    const award = <Award>await this.transactionService.get(awardDocRef);
 
     if (award.funded) {
       await this.transactionService.createCredit(
@@ -67,7 +67,7 @@ export class AwardService {
 
     this.transactionService.markAsReconciled(order, match.msgId);
 
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: awardDocRef,
       data: {
         funded: true,
@@ -92,20 +92,20 @@ export class AwardService {
         award: award.uid,
       },
     };
-    const mintAliasTranDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${mintAliasOrder.uid}`);
-    this.transactionService.updates.push({
+    const mintAliasTranDocRef = soonDb().doc(`${COL.TRANSACTION}/${mintAliasOrder.uid}`);
+    this.transactionService.push({
       ref: mintAliasTranDocRef,
       data: mintAliasOrder,
       action: 'set',
     });
 
     if (order.payload.legacyAwardFundRequestId) {
-      const legacyAwardFundRequesDocRef = admin
-        .firestore()
-        .doc(`${COL.TRANSACTION}/${order.payload.legacyAwardFundRequestId}`);
-      this.transactionService.updates.push({
+      const legacyAwardFundRequesDocRef = soonDb().doc(
+        `${COL.TRANSACTION}/${order.payload.legacyAwardFundRequestId}`,
+      );
+      this.transactionService.push({
         ref: legacyAwardFundRequesDocRef,
-        data: { 'payload.legacyAwardsBeeingFunded': inc(-1) },
+        data: { 'payload.legacyAwardsBeeingFunded': soonDb().inc(-1) },
         action: 'update',
       });
     }
@@ -188,8 +188,8 @@ export const getAwardgStorageDeposits = async (award: Award, token: Token, walle
     aliasId: aliasOutput.aliasId,
   };
 
-  const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${award.space}`);
-  const space = <Space>(await spaceDocRef.get()).data();
+  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${award.space}`);
+  const space = <Space>await spaceDocRef.get();
 
   const collectionMetadata = await awardToCollectionMetadata(award, space);
   const collectionOutput = createNftOutput(

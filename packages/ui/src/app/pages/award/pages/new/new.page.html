@@ -284,9 +284,9 @@
               Total to be funded
             </div>
             <div>
-              {{ getCurrentToken() ? (unitsService.format( getTotalTokens() * 1000 * 1000,
-              getCurrentToken()?.mintingData?.network, true, false ) + ' ' +
-              getCurrentToken()?.symbol) : ' - ' }}
+              {{ getCurrentToken() ? (( {value: getTotalTokens(), exponents:
+              getCurrentToken()?.decimals} | formatToken: getCurrentToken()?.uid: true: false |
+              async ) + ' ' + getCurrentToken()?.symbol) : ' - ' }}
             </div>
           </div>
         </nz-card>

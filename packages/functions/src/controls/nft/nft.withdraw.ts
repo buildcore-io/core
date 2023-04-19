@@ -1,29 +1,35 @@
 import { COL, Member, Nft, NftStatus, WenError } from '@soonaverse/interfaces';
-import { Database, TransactionRunner } from '../../database/Database';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { createNftWithdrawOrder } from '../../services/payment/tangle-service/nft-purchase.service';
 import { assertMemberHasValidAddress, getAddress } from '../../utils/address.utils';
-import { throwInvalidArgument } from '../../utils/error.utils';
+import { invalidArgument } from '../../utils/error.utils';
 
 export const withdrawNftControl = async (owner: string, params: Record<string, unknown>) =>
-  TransactionRunner.runTransaction(async (transaction) => {
-    const nft = await transaction.getById<Nft>(COL.NFT, params.nft as string);
+  soonDb().runTransaction(async (transaction) => {
+    const nftDocRef = soonDb().doc(`${COL.NFT}/${params.nft}`);
+    const nft = await transaction.get<Nft>(nftDocRef);
     if (!nft) {
-      throw throwInvalidArgument(WenError.nft_does_not_exists);
+      throw invalidArgument(WenError.nft_does_not_exists);
     }
 
     if (nft.owner !== owner) {
-      throw throwInvalidArgument(WenError.you_must_be_the_owner_of_nft);
+      throw invalidArgument(WenError.you_must_be_the_owner_of_nft);
     }
 
     if (nft.status !== NftStatus.MINTED) {
-      throw throwInvalidArgument(WenError.nft_not_minted);
+      throw invalidArgument(WenError.nft_not_minted);
     }
 
     if (nft.availableFrom || nft.auctionFrom) {
-      throw throwInvalidArgument(WenError.nft_on_sale);
+      throw invalidArgument(WenError.nft_on_sale);
     }
 
-    const member = await Database.getById<Member>(COL.MEMBER, owner);
+    if (nft.setAsAvatar) {
+      throw invalidArgument(WenError.nft_set_as_avatar);
+    }
+
+    const memberDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
+    const member = await memberDocRef.get<Member>();
     assertMemberHasValidAddress(member, nft.mintingData?.network!);
 
     const { order, nftUpdateData } = createNftWithdrawOrder(
@@ -31,9 +37,10 @@ export const withdrawNftControl = async (owner: string, params: Record<string, u
       member!.uid,
       getAddress(member, nft.mintingData?.network!),
     );
-    transaction.update({ col: COL.TRANSACTION, data: order, action: 'set' });
-    transaction.update({ col: COL.NFT, data: nftUpdateData, action: 'update' });
+    const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+    transaction.create(orderDocRef, order);
+    transaction.update(nftDocRef, nftUpdateData);
 
-    const collectionUpdateData = { uid: nft.collection, total: Database.inc(-1) };
-    transaction.update({ col: COL.COLLECTION, data: collectionUpdateData, action: 'update' });
+    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nft.collection}`);
+    transaction.update(collectionDocRef, { total: soonDb().inc(-1) });
   });

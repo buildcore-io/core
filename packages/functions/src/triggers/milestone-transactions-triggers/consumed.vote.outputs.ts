@@ -1,32 +1,30 @@
 import { COL, Proposal, SUB_COL, Transaction, TransactionType } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import admin, { inc } from '../../admin.config';
+import { ITransaction } from '../../firebase/firestore/interfaces';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { getTokenVoteMultiplier } from '../../services/payment/voting-service';
-import { serverTime, uOn } from '../../utils/dateTime.utils';
+import { serverTime } from '../../utils/dateTime.utils';
 
 export const processConsumedVoteOutputs = async (
-  transaction: admin.firestore.Transaction,
+  transaction: ITransaction,
   consumedOutputIds: string[],
 ) => {
   for (const consumedOutput of consumedOutputIds) {
-    const voteTransactionSnap = await admin
-      .firestore()
+    const voteTransactionSnap = await soonDb()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.VOTE)
       .where('payload.outputId', '==', consumedOutput)
       .where('payload.outputConsumed', '==', false)
       .limit(1)
-      .get();
-    if (!voteTransactionSnap.size) {
+      .get<Transaction>();
+    if (!voteTransactionSnap.length) {
       continue;
     }
 
-    const voteTransactionDocRef = voteTransactionSnap.docs[0].ref;
-    const voteTransaction = voteTransactionSnap.docs[0].data() as Transaction;
-    const proposalDocRef = admin
-      .firestore()
-      .doc(`${COL.PROPOSAL}/${voteTransaction.payload.proposalId}`);
-    const proposal = <Proposal>(await proposalDocRef.get()).data();
+    const voteTransactionDocRef = soonDb().doc(`${COL.TRANSACTION}/${voteTransactionSnap[0].uid}`);
+    const voteTransaction = voteTransactionSnap[0];
+    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${voteTransaction.payload.proposalId}`);
+    const proposal = <Proposal>await proposalDocRef.get();
     if (dayjs().isAfter(proposal.settings.endDate.toDate())) {
       transaction.update(voteTransactionDocRef, {
         'payload.outputConsumed': true,
@@ -47,12 +45,12 @@ export const processConsumedVoteOutputs = async (
     const value = voteTransaction.payload.values[0];
     const data = {
       results: {
-        total: inc(-prevWeight + currWeight),
-        voted: inc(-prevWeight + currWeight),
-        answers: { [value]: inc(-prevWeight + currWeight) },
+        total: soonDb().inc(-prevWeight + currWeight),
+        voted: soonDb().inc(-prevWeight + currWeight),
+        answers: { [value]: soonDb().inc(-prevWeight + currWeight) },
       },
     };
-    transaction.set(proposalDocRef, uOn(data), { merge: true });
+    transaction.set(proposalDocRef, data, true);
 
     transaction.update(voteTransactionDocRef, {
       'payload.weight': currWeight,
@@ -67,17 +65,17 @@ export const processConsumedVoteOutputs = async (
     transaction.set(
       proposalMemberDocRef,
       {
-        values: admin.firestore.FieldValue.arrayRemove({
+        values: soonDb().arrayRemove({
           [value]: prevWeight,
           voteTransaction: voteTransaction.uid,
         }),
-        voteTransactions: inc(-1),
-        weightPerAnswer: { [value]: inc(-prevWeight + currWeight) },
+        voteTransactions: soonDb().inc(-1),
+        weightPerAnswer: { [value]: soonDb().inc(-prevWeight + currWeight) },
       },
-      { merge: true },
+      true,
     );
     transaction.update(proposalMemberDocRef, {
-      values: admin.firestore.FieldValue.arrayUnion({
+      values: soonDb().arrayUnion({
         [value]: currWeight,
         voteTransaction: voteTransaction.uid,
       }),

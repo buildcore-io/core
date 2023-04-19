@@ -6,7 +6,7 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import { get, isEmpty } from 'lodash';
-import admin from '../../admin.config';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from './transaction-service';
 
@@ -19,10 +19,10 @@ export class CreditService {
   ) => {
     const payment = await this.transactionService.createPayment(order, match);
 
-    const transactionDocRef = admin
-      .firestore()
-      .doc(`${COL.TRANSACTION}/${get(order, 'payload.transaction', '')}`);
-    const transaction = <Transaction>(await transactionDocRef.get()).data();
+    const transactionDocRef = soonDb().doc(
+      `${COL.TRANSACTION}/${get(order, 'payload.transaction', '')}`,
+    );
+    const transaction = <Transaction>await transactionDocRef.get();
 
     if (!isEmpty(transaction.payload.unlockedBy)) {
       await this.transactionService.createCredit(
@@ -52,13 +52,13 @@ export class CreditService {
         transaction: transaction.uid,
       },
     };
-    this.transactionService.updates.push({
-      ref: admin.firestore().doc(`${COL.TRANSACTION}/${credit.uid}`),
+    this.transactionService.push({
+      ref: soonDb().doc(`${COL.TRANSACTION}/${credit.uid}`),
       data: credit,
       action: 'set',
     });
 
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: transactionDocRef,
       data: { 'payload.unlockedBy': credit.uid },
       action: 'update',

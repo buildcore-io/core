@@ -14,7 +14,7 @@ import {
   Transaction,
   TransactionType,
 } from '@soonaverse/interfaces';
-import admin from '../../src/admin.config';
+import { soonDb } from '../../src/firebase/firestore/soondb';
 import { getAddress } from '../../src/utils/address.utils';
 import { EMPTY_NFT_ID } from '../../src/utils/collection-minting-utils/nft.utils';
 import { CollectionMintHelper, getNftMetadata } from './Helper';
@@ -37,18 +37,13 @@ describe('Collection minting', () => {
       await helper.createAndOrderNft(true);
       const nft = await helper.createAndOrderNft(true, true);
       let placeholderNft = await helper.createAndOrderNft(true, false);
-      await admin
-        .firestore()
-        .doc(`${COL.NFT}/${placeholderNft.uid}`)
-        .update({ placeholderNft: true });
-      await admin
-        .firestore()
+      await soonDb().doc(`${COL.NFT}/${placeholderNft.uid}`).update({ placeholderNft: true });
+      await soonDb()
         .doc(`${COL.COLLECTION}/${helper.collection}`)
-        .update({ total: admin.firestore.FieldValue.increment(-1) });
+        .update({ total: soonDb().inc(-1) });
 
       if (limited) {
-        await admin
-          .firestore()
+        await soonDb()
           .doc(`${COL.COLLECTION}/${helper.collection}`)
           .update({ limitedEdition: limited });
       }
@@ -57,7 +52,7 @@ describe('Collection minting', () => {
         await helper.lockCollectionConfirmed();
         const indexer = new IndexerPluginClient(helper.walletService?.client!);
         const collection = <Collection>(
-          (await admin.firestore().doc(`${COL.COLLECTION}/${helper.collection}`).get()).data()
+          await soonDb().doc(`${COL.COLLECTION}/${helper.collection}`).get()
         );
         const outputId = (await indexer.nft(collection.mintingData?.nftId!)).items[0];
         const output = <INftOutput>(await helper.walletService!.client.output(outputId)).output;
@@ -65,32 +60,26 @@ describe('Collection minting', () => {
       }
 
       const bidCredit = (
-        await admin
-          .firestore()
+        await soonDb()
           .collection(COL.TRANSACTION)
           .where('payload.collection', '==', helper.collection)
           .where('type', '==', TransactionType.CREDIT)
           .get()
-      ).docs.map((d) => <Transaction>d.data());
+      ).map((d) => <Transaction>d);
       expect(bidCredit.length).toBe(1);
       expect(bidCredit[0].payload.amount).toBe(2 * MIN_IOTA_AMOUNT);
-      const bidder = <Member>(
-        (await admin.firestore().doc(`${COL.MEMBER}/${helper.member}`).get()).data()
-      );
+      const bidder = <Member>await soonDb().doc(`${COL.MEMBER}/${helper.member}`).get();
       const order = <Transaction>(
-        (
-          await admin.firestore().doc(`${COL.TRANSACTION}/${nft.auctionHighestTransaction}`).get()
-        ).data()
+        await soonDb().doc(`${COL.TRANSACTION}/${nft.auctionHighestTransaction}`).get()
       );
       expect(bidCredit[0].payload.targetAddress).toBe(getAddress(bidder, DEFAULT_NETWORK));
       expect(bidCredit[0].payload.sourceAddress).toBe(order.payload.targetAddress);
 
-      const nftsQuery = admin
-        .firestore()
+      const nftsQuery = soonDb()
         .collection(COL.NFT)
         .where('collection', '==', helper.collection)
         .where('placeholderNft', '==', false);
-      const nfts = (await nftsQuery.get()).docs.map((d) => <Nft>d.data());
+      const nfts = (await nftsQuery.get()).map((d) => <Nft>d);
       const allCancelled = nfts.reduce(
         (acc, act) =>
           acc &&
@@ -107,10 +96,10 @@ describe('Collection minting', () => {
       expect(allCancelled).toBe(true);
 
       const collection = <Collection>(
-        (await admin.firestore().doc(`${COL.COLLECTION}/${helper.collection}`).get()).data()
+        await soonDb().doc(`${COL.COLLECTION}/${helper.collection}`).get()
       );
       const royaltySpace = <Space>(
-        (await admin.firestore().doc(`${COL.SPACE}/${collection.royaltiesSpace}`).get()).data()
+        await soonDb().doc(`${COL.SPACE}/${collection.royaltiesSpace}`).get()
       );
 
       const collectionOutput = await helper.nftWallet!.getNftOutputs(
@@ -149,9 +138,7 @@ describe('Collection minting', () => {
         expect(metadata.soonaverseId).toBe(nft.uid);
       }
 
-      placeholderNft = <Nft>(
-        (await admin.firestore().doc(`${COL.NFT}/${placeholderNft.uid}`).get()).data()
-      );
+      placeholderNft = <Nft>await soonDb().doc(`${COL.NFT}/${placeholderNft.uid}`).get();
       expect(placeholderNft.status).toBe(NftStatus.PRE_MINTED);
     },
   );
@@ -160,11 +147,11 @@ describe('Collection minting', () => {
     let lockedNft = await helper.createLockedNft();
     await helper.mintCollection();
     const lockedNftOrder = <Transaction>(
-      (await admin.firestore().doc(`${COL.TRANSACTION}/${lockedNft.lockedBy}`).get()).data()
+      await soonDb().doc(`${COL.TRANSACTION}/${lockedNft.lockedBy}`).get()
     );
     expect(lockedNftOrder.payload.void).toBe(true);
 
-    lockedNft = <Nft>(await admin.firestore().doc(`${COL.NFT}/${lockedNft.uid}`).get()).data();
+    lockedNft = <Nft>await soonDb().doc(`${COL.NFT}/${lockedNft.uid}`).get();
     expect(lockedNft.locked).toBe(false);
     expect(lockedNft.lockedBy).toBe(null);
     expect(lockedNft.mintingData).toBeDefined();

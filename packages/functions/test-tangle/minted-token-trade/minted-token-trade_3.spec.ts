@@ -13,9 +13,9 @@ import {
 } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
-import admin from '../../src/admin.config';
-import { tradeToken } from '../../src/controls/token-trading/token-trade.controller';
 import { cancelExpiredSale } from '../../src/cron/token.cron';
+import { soonDb } from '../../src/firebase/firestore/soondb';
+import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -41,12 +41,8 @@ describe('Token minting', () => {
 
     await wait(async () => {
       const orders = (
-        await admin
-          .firestore()
-          .collection(COL.TOKEN_MARKET)
-          .where('owner', '==', helper.buyer)
-          .get()
-      ).docs.map((d) => <TokenTradeOrder>d.data());
+        await soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer).get()
+      ).map((d) => <TokenTradeOrder>d);
       const fulfilled = orders.filter((o) => o.count === o.fulfilled);
       return fulfilled.length === orders.length;
     });
@@ -58,7 +54,7 @@ describe('Token minting', () => {
     'Should create trade order order with expiration from expiration unlock',
     async (type: TokenTradeOrderType) => {
       const date = dayjs().add(2, 'm').millisecond(0).toDate();
-      const expiresAt = admin.firestore.Timestamp.fromDate(date) as Timestamp;
+      const expiresAt = dateToTimestamp(date);
 
       if (type === TokenTradeOrderType.SELL) {
         await helper.createSellTradeOrder(10, MIN_IOTA_AMOUNT, expiresAt);
@@ -66,42 +62,31 @@ describe('Token minting', () => {
         await helper.createBuyOrder(10, MIN_IOTA_AMOUNT, expiresAt);
       }
 
-      const member = <Member>(
-        await admin
-          .firestore()
-          .doc(
-            `${COL.MEMBER}/${type === TokenTradeOrderType.SELL ? helper.seller! : helper.buyer!}`,
-          )
-          .get()
-      ).data();
+      const member = <Member>await soonDb()
+        .doc(`${COL.MEMBER}/${type === TokenTradeOrderType.SELL ? helper.seller! : helper.buyer!}`)
+        .get();
 
-      const tradeQuery = admin
-        .firestore()
-        .collection(COL.TOKEN_MARKET)
-        .where('owner', '==', member.uid);
+      const tradeQuery = soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', member.uid);
       await wait(async () => {
         const snap = await tradeQuery.get();
-        return snap.size === 1;
+        return snap.length === 1;
       });
-      const trade = <TokenTradeOrder>(await tradeQuery.get()).docs[0].data();
+      const trade = <TokenTradeOrder>(await tradeQuery.get())[0];
       expect(dayjs(trade.expiresAt.toDate()).isSame(dayjs(expiresAt.toDate()))).toBe(true);
 
-      await admin
-        .firestore()
+      await soonDb()
         .doc(`${COL.TOKEN_MARKET}/${trade.uid}`)
         .update({ expiresAt: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
       await cancelExpiredSale();
 
       await wait(async () => {
-        const snap = await admin
-          .firestore()
+        const snap = await soonDb()
           .collection(COL.TRANSACTION)
           .where('type', '==', TransactionType.CREDIT)
           .where('member', '==', member.uid)
-          .get();
+          .get<Transaction>();
         return (
-          snap.size === 1 &&
-          snap.docs[0].data()!.payload.targetAddress === getAddress(member, helper.network)
+          snap.length === 1 && snap[0]!.payload.targetAddress === getAddress(member, helper.network)
         );
       });
     },
@@ -109,7 +94,7 @@ describe('Token minting', () => {
 
   it('Should credit buy order with expiration unlock, wrong amount', async () => {
     const date = dayjs().add(2, 'h').millisecond(0).toDate();
-    const expiresAt = admin.firestore.Timestamp.fromDate(date) as Timestamp;
+    const expiresAt = dateToTimestamp(date) as Timestamp;
 
     mockWalletReturnValue(helper.walletSpy, helper.seller!, {
       symbol: helper.token!.symbol,
@@ -118,8 +103,7 @@ describe('Token minting', () => {
       type: TokenTradeOrderType.SELL,
     });
     const sellOrder: Transaction = await testEnv.wrap(tradeToken)({});
-    await admin
-      .firestore()
+    await soonDb()
       .doc(`${COL.TRANSACTION}/${sellOrder.uid}`)
       .update({ 'payload.expiresOn': dateToTimestamp(dayjs().subtract(2, 'h').toDate()) });
 
@@ -136,16 +120,15 @@ describe('Token minting', () => {
     });
 
     await wait(async () => {
-      const snap = await admin
-        .firestore()
+      const snap = await soonDb()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
         .where('member', '==', helper.seller)
-        .get();
+        .get<Transaction>();
       return (
-        snap.size === 1 &&
-        snap.docs[0].data()!.payload.walletReference?.confirmed &&
-        snap.docs[0].data()!.payload.targetAddress === helper.sellerAddress!.bech32
+        snap.length === 1 &&
+        snap[0]!.payload.walletReference?.confirmed &&
+        snap[0]!.payload.targetAddress === helper.sellerAddress!.bech32
       );
     });
   });

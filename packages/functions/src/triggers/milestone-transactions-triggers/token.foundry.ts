@@ -4,19 +4,16 @@ import {
   IAliasAddress,
   IFoundryOutput,
   IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE,
+  ITransactionPayload,
   OutputTypes,
   TransactionHelper,
 } from '@iota/iota.js-next';
 import { COL } from '@soonaverse/interfaces';
-import admin from '../../admin.config';
-import { uOn } from '../../utils/dateTime.utils';
+import { soonDb } from '../../firebase/firestore/soondb';
 import { getTokenByMintId } from '../../utils/token.utils';
 
-export const updateTokenSupplyData = async (
-  doc: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>,
-) => {
-  const data = doc.data()!;
-  const foundryOutputs = (data.payload.essence.outputs as OutputTypes[])
+export const updateTokenSupplyData = async (data: Record<string, unknown>) => {
+  const foundryOutputs = ((data.payload as ITransactionPayload).essence.outputs as OutputTypes[])
     .filter((o) => o.type === FOUNDRY_OUTPUT_TYPE)
     .map((o) => <IFoundryOutput>o);
   for (const foundryOutput of foundryOutputs) {
@@ -31,13 +28,11 @@ export const updateTokenSupplyData = async (
     }
     const meltedTokens = Number(foundryOutput.tokenScheme.meltedTokens);
     const totalSupply = Number(foundryOutput.tokenScheme.maximumSupply);
-    const tokendDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`);
-    await tokendDocRef.update(
-      uOn({
-        'mintingData.meltedTokens': meltedTokens,
-        'mintingData.circulatingSupply': totalSupply - meltedTokens,
-      }),
-    );
+    const tokendDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
+    await tokendDocRef.update({
+      'mintingData.meltedTokens': meltedTokens,
+      'mintingData.circulatingSupply': totalSupply - meltedTokens,
+    });
   }
 };
 

@@ -8,19 +8,17 @@ import {
   TransactionAwardType,
   TransactionCreditType,
   TransactionType,
-  WEN_FUNC,
+  WEN_FUNC_TRIGGER,
 } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions';
-import admin from '../admin.config';
+import { soonDb } from '../firebase/firestore/soondb';
 import { scale } from '../scale.settings';
 import { getAddress } from '../utils/address.utils';
-import { cOn } from '../utils/dateTime.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
-
 export const awardUpdateTrigger = functions
   .runWith({
     timeoutSeconds: 540,
-    minInstances: scale(WEN_FUNC.awardTrigger),
+    minInstances: scale(WEN_FUNC_TRIGGER.awardTrigger),
   })
   .firestore.document(COL.AWARD + '/{awardId}')
   .onUpdate(async (change) => {
@@ -35,8 +33,8 @@ export const awardUpdateTrigger = functions
       curr.completed &&
       curr.badgesMinted === curr.issued
     ) {
-      const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${curr.fundedBy}`);
-      const member = <Member>(await memberDocRef.get()).data();
+      const memberDocRef = soonDb().doc(`${COL.MEMBER}/${curr.fundedBy}`);
+      const member = await memberDocRef.get<Member>();
       const targetAddress = getAddress(member, curr.network);
 
       const burnAlias = <Transaction>{
@@ -54,12 +52,12 @@ export const awardUpdateTrigger = functions
           award: curr.uid,
         },
       };
-      await admin.firestore().doc(`${COL.TRANSACTION}/${burnAlias.uid}`).create(cOn(burnAlias));
+      await soonDb().doc(`${COL.TRANSACTION}/${burnAlias.uid}`).create(burnAlias);
 
       const remainingBadges = curr.badge.total - curr.issued;
       if (curr.badge.type === AwardBadgeType.BASE && remainingBadges) {
-        const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${curr.badge.tokenUid}`);
-        const token = <Token>(await tokenDocRef.get()).data();
+        const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${curr.badge.tokenUid}`);
+        const token = (await tokenDocRef.get<Token>())!;
         const baseTokenCredit = <Transaction>{
           type: TransactionType.CREDIT,
           uid: getRandomEthAddress(),
@@ -78,10 +76,7 @@ export const awardUpdateTrigger = functions
             tokenSymbol: token.symbol,
           },
         };
-        await admin
-          .firestore()
-          .doc(`${COL.TRANSACTION}/${baseTokenCredit.uid}`)
-          .create(cOn(baseTokenCredit));
+        await soonDb().doc(`${COL.TRANSACTION}/${baseTokenCredit.uid}`).create(baseTokenCredit);
       }
     }
 
@@ -91,14 +86,14 @@ export const awardUpdateTrigger = functions
       curr.completed &&
       curr.airdropClaimed === curr.issued
     ) {
-      const memberDocRef = admin.firestore().doc(`${COL.MEMBER}/${curr.fundedBy}`);
-      const member = <Member>(await memberDocRef.get()).data();
+      const memberDocRef = soonDb().doc(`${COL.MEMBER}/${curr.fundedBy}`);
+      const member = await memberDocRef.get<Member>();
       const targetAddress = getAddress(member, curr.network);
 
       const remainingBadges = curr.badge.total - curr.issued;
 
-      const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${curr.badge.tokenUid}`);
-      const token = <Token>(await tokenDocRef.get()).data();
+      const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${curr.badge.tokenUid}`);
+      const token = (await tokenDocRef.get<Token>())!;
 
       const nativeTokensCredit = <Transaction>{
         type: TransactionType.CREDIT,
@@ -121,9 +116,6 @@ export const awardUpdateTrigger = functions
           tokenSymbol: token.symbol,
         },
       };
-      await admin
-        .firestore()
-        .doc(`${COL.TRANSACTION}/${nativeTokensCredit.uid}`)
-        .create(cOn(nativeTokensCredit));
+      await soonDb().doc(`${COL.TRANSACTION}/${nativeTokensCredit.uid}`).create(nativeTokensCredit);
     }
   });

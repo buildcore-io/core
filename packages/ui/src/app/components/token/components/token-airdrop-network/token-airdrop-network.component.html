@@ -56,7 +56,7 @@
           Tokens to airdrop
         </div>
         <div class="font-bold">
-          {{ unitsService.format(getTotalToDrop(), undefined, undefined, false) }}
+          {{ getTotalToDrop() | formatToken : token?.uid : false : false | async }}
           {{ token?.symbol }}
         </div>
       </div>
@@ -120,7 +120,7 @@
           Tokens to Airdrop
         </div>
         <div class="font-bold">
-          {{ unitsService.format(getTotalToDrop(), undefined, undefined, false) }}
+          {{ getTotalToDrop() | formatToken : token?.uid : false : false | async }}
           {{ token?.symbol }}
         </div>
       </div>
@@ -167,7 +167,9 @@
         *ngIf="!helper.isExpired(transaction$ | async)"
         [targetAddress]="targetAddress"
         [formattedAmount]="
-          unitsService.format(getTotalToDrop(), undefined, false, false) + ' ' + token?.symbol
+          (getTotalToDrop() | formatToken : token?.uid : false : false | async) +
+          ' ' +
+          token?.symbol
         "
       >
       </wen-send-funds>
@@ -178,7 +180,7 @@
         [targetAddress]="targetAddress"
         [network]="token?.mintingData?.network"
         [tokenId]="token?.mintingData?.tokenId"
-        [tokenAmount]="getTotalToDrop() / 1000 / 1000"
+        [tokenAmount]="getTotalToDrop()"
         [targetAmount]="targetAmount?.toString()"
       >
       </wen-wallet-deeplink>

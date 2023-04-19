@@ -1,6 +1,5 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -8,20 +7,23 @@ import {
   Output,
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { NftApi } from '@api/nft.api';
+import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { AuthService } from '@components/auth/services/auth.service';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
+  COL,
   DISCORD_REGEXP,
   FILE_SIZES,
   GITHUB_REGEXP,
   Member,
+  Nft,
   TWITTER_REGEXP,
 } from '@soonaverse/interfaces';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { firstValueFrom } from 'rxjs';
+import { NzSelectOptionInterface } from 'ng-zorro-antd/select';
+import { BehaviorSubject, Subscription, first, from } from 'rxjs';
 import { MemberApi } from '../../../../@api/member.api';
 import { NotificationService } from '../../../../@core/services/notification/notification.service';
-import { MintApi } from './../../../../@api/mint.api';
 
 const maxAboutCharacters = 160;
 
@@ -36,28 +38,37 @@ export class MemberEditDrawerComponent implements OnInit {
   @Input() isDesktop?: boolean;
 
   @Output() public wenOnClose = new EventEmitter<void>();
+  public filteredNfts$: BehaviorSubject<NzSelectOptionInterface[]> = new BehaviorSubject<
+    NzSelectOptionInterface[]
+  >([]);
   public nameControl: FormControl = new FormControl('');
   public aboutControl: FormControl = new FormControl('', Validators.maxLength(maxAboutCharacters));
-  public currentProfileImageControl: FormControl = new FormControl(undefined);
+  public avatarNftControl: FormControl = new FormControl(undefined);
   public discordControl: FormControl = new FormControl('', Validators.pattern(DISCORD_REGEXP));
   public twitterControl: FormControl = new FormControl('', Validators.pattern(TWITTER_REGEXP));
   public githubControl: FormControl = new FormControl('', Validators.pattern(GITHUB_REGEXP));
   public minted = false;
   public maxAboutCharacters = maxAboutCharacters;
   public memberForm: FormGroup;
+  public nftCache: {
+    [propName: string]: {
+      name: string;
+      media: string;
+    };
+  } = {};
 
+  private nftsSubscription?: Subscription;
   constructor(
     private auth: AuthService,
     private memberApi: MemberApi,
-    private mintApi: MintApi,
-    private nzNotification: NzNotificationService,
+    private nftApi: NftApi,
+    public readonly algoliaService: AlgoliaService,
     private notification: NotificationService,
-    private cd: ChangeDetectorRef,
   ) {
     this.memberForm = new FormGroup({
       name: this.nameControl,
       about: this.aboutControl,
-      currentProfileImage: this.currentProfileImageControl,
+      avatarNft: this.avatarNftControl,
       discord: this.discordControl,
       twitter: this.twitterControl,
       github: this.githubControl,
@@ -74,34 +85,14 @@ export class MemberEditDrawerComponent implements OnInit {
         this.setFormValues(obj);
       }
     });
+
+    setTimeout(() => {
+      this.subscribeNftList();
+    }, 2000);
   }
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
-  }
-
-  public async mint(): Promise<void> {
-    // Find Available image.
-    const result = await firstValueFrom(this.mintApi.getAvailable('avatar'));
-    if (!result || result?.length === 0) {
-      this.nzNotification.error('', 'No more avatars available');
-      return;
-    } else {
-      const results: boolean = await this.auth.mint();
-      if (results === false) {
-        this.nzNotification.error('', 'Unable to mint your avatar at the moment. Try again later.');
-      } else {
-        this.minted = true;
-        this.currentProfileImageControl.setValue({
-          metadata: result[0].uid,
-          fileName: result[0].fileName,
-          original: result[0].original,
-          avatar: result[0].avatar,
-        });
-      }
-
-      this.cd.markForCheck();
-    }
   }
 
   private setFormValues(obj: Member): void {
@@ -110,7 +101,57 @@ export class MemberEditDrawerComponent implements OnInit {
     this.discordControl.setValue(obj.discord);
     this.twitterControl.setValue(obj.twitter);
     this.githubControl.setValue(obj.github);
-    this.currentProfileImageControl.setValue(obj.currentProfileImage);
+    if (obj?.avatarNft) {
+      this.nftApi
+        .listen(obj.avatarNft)
+        .pipe(first())
+        .subscribe((nft) => {
+          if (nft) {
+            this.avatarNftControl.setValue(obj.avatarNft);
+            this.filteredNfts$.next([
+              {
+                label: nft.name,
+                value: nft.uid,
+              },
+            ]);
+            this.nftCache[nft.uid] = {
+              name: nft.name,
+              media: nft.media,
+            };
+          }
+        });
+    }
+  }
+
+  private subscribeNftList(search?: string): void {
+    this.nftsSubscription?.unsubscribe();
+    this.nftsSubscription = from(
+      this.algoliaService.searchClient.initIndex(COL.NFT).search(search || '', {
+        length: 10,
+        offset: 0,
+        filters: 'owner:' + this.auth.member$.value!.uid + ' AND ' + 'status:minted',
+      }),
+    ).subscribe((r) => {
+      this.filteredNfts$.next(
+        r.hits.map((r) => {
+          const nft = r as unknown as Nft;
+          this.nftCache[nft.uid] = {
+            name: nft.name,
+            media: nft.media,
+          };
+          return {
+            label: nft.name,
+            value: nft.uid,
+          };
+        }),
+      );
+    });
+  }
+
+  public searchNft(v: string): void {
+    if (v) {
+      this.subscribeNftList(v);
+    }
   }
 
   public async save(): Promise<void> {
@@ -124,21 +165,13 @@ export class MemberEditDrawerComponent implements OnInit {
       delete obj.currentProfileImage;
     }
 
-    await this.auth.sign(
-      {
-        ...this.memberForm.value,
-        ...{
-          uid: this.auth.member$.value!.uid,
-        },
-      },
-      (sc, finish) => {
-        this.notification
-          .processRequest(this.memberApi.updateMember(sc), 'Updated', finish)
-          .subscribe(() => {
-            this.close();
-          });
-      },
-    );
+    await this.auth.sign(this.memberForm.value, (sc, finish) => {
+      this.notification
+        .processRequest(this.memberApi.updateMember(sc), 'Updated', finish)
+        .subscribe(() => {
+          this.close();
+        });
+    });
   }
 
   public close(): void {

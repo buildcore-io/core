@@ -11,12 +11,13 @@ import {
 } from '@soonaverse/interfaces';
 import Joi from 'joi';
 import { isEmpty, set } from 'lodash';
-import admin from '../../../../admin.config';
+import { soonDb } from '../../../../firebase/firestore/soondb';
+import { soonStorage } from '../../../../firebase/storage/soonStorage';
 import { awardBageSchema, createAwardSchema } from '../../../../runtime/firebase/award';
 import { downloadMediaAndPackCar } from '../../../../utils/car.utils';
 import { getBucket } from '../../../../utils/config.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
-import { throwInvalidArgument } from '../../../../utils/error.utils';
+import { invalidArgument } from '../../../../utils/error.utils';
 import { migrateUriToSotrage, uriToUrl } from '../../../../utils/media.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsSpaceMember } from '../../../../utils/space.utils';
@@ -40,22 +41,22 @@ export class AwardCreateService {
 
     const { award, owner: awardOwner } = await createAward(owner, request);
 
-    const awardDocRef = admin.firestore().doc(`${COL.AWARD}/${award.uid}`);
-    this.transactionService.updates.push({
+    const awardDocRef = soonDb().doc(`${COL.AWARD}/${award.uid}`);
+    this.transactionService.push({
       ref: awardDocRef,
       data: award,
       action: 'set',
     });
 
-    this.transactionService.updates.push({
+    this.transactionService.push({
       ref: awardDocRef.collection(SUB_COL.OWNERS).doc(owner),
       data: awardOwner,
       action: 'set',
     });
 
     const order = await createAwardFundOrder(owner, award);
-    const orderDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`);
-    this.transactionService.updates.push({ ref: orderDocRef, data: order, action: 'set' });
+    const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+    this.transactionService.push({ ref: orderDocRef, data: order, action: 'set' });
 
     const response = {
       award: award.uid,
@@ -78,10 +79,10 @@ export const createAward = async (owner: string, params: Record<string, unknown>
 
   const token = await getTokenBySymbol(tokenSymbol as string);
   if (!token) {
-    throw throwInvalidArgument(WenError.token_does_not_exist);
+    throw invalidArgument(WenError.token_does_not_exist);
   }
   if (token.mintingData?.network !== params.network) {
-    throw throwInvalidArgument(WenError.invalid_network);
+    throw invalidArgument(WenError.invalid_network);
   }
   const awardUid = getRandomEthAddress();
   const badgeType = getBadgeType(token);
@@ -89,7 +90,7 @@ export const createAward = async (owner: string, params: Record<string, unknown>
   if (badge?.image) {
     let imageUrl = badge.image as string;
     if (!isStorageUrl(imageUrl)) {
-      const bucket = admin.storage().bucket(getBucket());
+      const bucket = soonStorage().bucket(getBucket());
       imageUrl = await migrateUriToSotrage(COL.AWARD, owner, awardUid, uriToUrl(imageUrl), bucket);
       set(badge, 'image', imageUrl);
     }
@@ -143,5 +144,5 @@ const getBadgeType = (token: Token) => {
   if (token.status === TokenStatus.MINTED) {
     return AwardBadgeType.NATIVE;
   }
-  throw throwInvalidArgument(WenError.token_in_invalid_status);
+  throw invalidArgument(WenError.token_in_invalid_status);
 };

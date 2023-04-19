@@ -28,7 +28,7 @@ import { NotificationService } from './../../../../@core/services/notification/n
 import { AuthService } from './../../../../components/auth/services/auth.service';
 
 import { FileApi } from '@api/file.api';
-import { Network } from '@soonaverse/interfaces';
+import { getDefDecimalIfNotSet, Network } from '@soonaverse/interfaces';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 
@@ -215,7 +215,8 @@ export class NewPage implements OnInit, OnDestroy {
     obj.badge = {
       description: obj.badgeDescription,
       name: obj.badgeName,
-      tokenReward: obj.badgeToken * 1000 * 1000,
+      tokenReward:
+        obj.badgeToken * Math.pow(10, getDefDecimalIfNotSet(this.getCurrentToken()?.decimals)),
       total: obj.badgeCount,
       image: obj.image,
       tokenSymbol: this.getCurrentToken()?.symbol,
