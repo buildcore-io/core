@@ -354,7 +354,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
           this.tokenMarketApi.tradeToken(sc),
           $localize`Offer order created.`,
           (success: boolean) => {
-            cb(success);
+            cb && cb(success);
             finish();
           },
         )
@@ -363,7 +363,7 @@ export class TokenOfferMintComponent implements OnInit, OnDestroy {
           this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
           this.pushToHistory(val, val.uid, dayjs(), $localize`Waiting for transaction...`);
           if (cb) {
-            cb(true);
+            cb && cb(true);
             finish();
           }
         });

@@ -102,7 +102,7 @@
   <ng-template #transactionTemplate>
     <div class="wen-transaction-active-container">
       <div
-        class="flex w-full p-4 mb-3 font-bold bg-tags-pending dark:bg-tags-pending-dark rounded-xl"
+        class="flex w-full p-4 mb-3 font-medium bg-tags-pending dark:bg-tags-pending-dark rounded-xl"
       >
         <wen-icon-alert-octagon
           class="text-icons-primary dark:text-icons-primary-dark"
@@ -166,7 +166,7 @@
 
   <ng-template #waitTemplate>
     <div
-      class="flex w-full p-4 mb-3 font-bold bg-tags-pending dark:bg-tags-pending-dark rounded-xl"
+      class="flex w-full p-4 mb-3 font-medium bg-tags-pending dark:bg-tags-pending-dark rounded-xl"
     >
       <wen-icon-alert-octagon
         class="text-icons-primary dark:text-icons-primary-dark"
@@ -233,8 +233,8 @@
           <div class="ml-3.5 text-lg font-medium" i18n>Transaction complete. Congratulations.</div>
         </div>
 
-        <button nz-button nzType="primary" nzSize="large" class="mt-10" (click)="close()" i18n>
-          Finish
+        <button nz-button nzType="primary" nzSize="large" class="mt-10" (click)="goToToken()" i18n>
+          See Imported Token
         </button>
       </ng-container>
     </div>

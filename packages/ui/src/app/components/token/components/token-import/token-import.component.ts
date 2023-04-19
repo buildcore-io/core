@@ -8,6 +8,7 @@ import {
   Output,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { Router } from '@angular/router';
 import { OrderApi } from '@api/order.api';
 import { TokenMintApi } from '@api/token_mint.api';
 import { AuthService } from '@components/auth/services/auth.service';
@@ -17,6 +18,7 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsService } from '@core/services/units';
 import { StorageItem, removeItem, setItem } from '@core/utils';
+import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import {
@@ -94,6 +96,7 @@ export class TokenImportComponent implements OnInit {
     public unitsService: UnitsService,
     public transactionService: TransactionService,
     public helper: HelperService,
+    private router: Router,
     private cd: ChangeDetectorRef,
     private auth: AuthService,
     private notification: NotificationService,
@@ -282,6 +285,11 @@ export class TokenImportComponent implements OnInit {
   public close(): void {
     this.reset();
     this.wenOnClose.next();
+  }
+
+  public goToToken(): void {
+    this.router.navigate(['/', ROUTER_UTILS.config.token.root, this.tokenIdControl.value]);
+    this.close();
   }
 
   public isExpired(val?: Transaction | null): boolean {

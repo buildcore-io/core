@@ -117,11 +117,11 @@ export class HelperService {
 
   public getExplorerUrl(token?: Token | null): string {
     if (token?.mintingData?.network === Network.RMS) {
-      return 'https://explorer.shimmer.network/testnet/block/' + token.mintingData.blockId;
+      return 'https://explorer.shimmer.network/testnet/foundry/' + token.mintingData.tokenId;
     } else if (token?.mintingData?.network === Network.IOTA) {
       return 'https://thetangle.org/search/' + token.mintingData.blockId;
     } else if (token?.mintingData?.network === Network.SMR) {
-      return 'https://explorer.shimmer.network/shimmer/block/' + token.mintingData.blockId;
+      return 'https://explorer.shimmer.network/shimmer/foundry/' + token.mintingData.tokenId;
     } else if (token?.mintingData?.network === Network.ATOI) {
       return 'https://explorer.iota.org/devnet/search/' + token.mintingData.blockId;
     } else {
