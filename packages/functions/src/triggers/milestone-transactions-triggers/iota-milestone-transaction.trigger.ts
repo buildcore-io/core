@@ -10,21 +10,25 @@ const handleMilestoneTransactionWrite =
     if (!change.after.data()) {
       return;
     }
-    return soonDb().runTransaction(async (transaction) => {
-      const docRef = soonDb().doc(change.after.ref.path);
-      const milestoneTransaction = await transaction.get<Record<string, unknown>>(docRef);
-      if (!milestoneTransaction || milestoneTransaction.processed) {
-        return;
-      }
-      await confirmTransaction(change.after.ref.path, milestoneTransaction, network);
+    try {
+      return soonDb().runTransaction(async (transaction) => {
+        const docRef = soonDb().doc(change.after.ref.path);
+        const milestoneTransaction = await transaction.get<Record<string, unknown>>(docRef);
+        if (!milestoneTransaction || milestoneTransaction.processed) {
+          return;
+        }
+        await confirmTransaction(change.after.ref.path, milestoneTransaction, network);
 
-      const service = new ProcessingService(transaction);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await service.processMilestoneTransactions(milestoneTransaction as any);
-      service.submit();
+        const service = new ProcessingService(transaction);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await service.processMilestoneTransactions(milestoneTransaction as any);
+        service.submit();
 
-      transaction.update(docRef, { processed: true, processedOn: dayjs().toDate() });
-    });
+        transaction.update(docRef, { processed: true, processedOn: dayjs().toDate() });
+      });
+    } catch (error) {
+      functions.logger.error(`${network} transaction error`, change.after.ref.path, error);
+    }
   };
 
 export const iotaMilestoneTransactionWrite = functions

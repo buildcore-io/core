@@ -152,8 +152,8 @@
   <button nz-button nzType="primary" nzSize="large" (click)="submit()" nzBlock>
     <span *ngIf="!amountControl.value">Start Staking</span>
     <span *ngIf="amountControl.value"
-      >Stake {{ { value: amountControl.value, exponents: 0} | formatToken: (token$ |
-      async)?.uid:true:false:2}} {{(token$ | async)?.symbol | uppercase}}</span
+      >Stake {{ { value: amountControl.value, exponents: (token$ | async)?.decimals} | formatToken:
+      (token$ | async)?.uid:true:false:2|async}} {{(token$ | async)?.symbol | uppercase}}</span
     >
   </button>
   <div class="mt-10 lg:mt-16" *ngIf="isSoonSpace() | async">

@@ -80,7 +80,7 @@ const removeExpiredNftStakes = functions.scheduler.onSchedule(
 
 const updateFloorPriceOnCollectionsCron = functions.scheduler.onSchedule(
   {
-    timeoutSeconds: 540,
+    timeoutSeconds: 1800,
     schedule: 'every 5 minutes',
   },
   updateFloorPriceOnCollections,

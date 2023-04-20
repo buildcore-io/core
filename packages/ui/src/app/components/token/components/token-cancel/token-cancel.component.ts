@@ -66,11 +66,9 @@ export class TokenCancelComponent {
 
   public getTargetAmount(): string {
     return bigDecimal.divide(
-      bigDecimal.floor(
-        bigDecimal.multiply(
-          Number((this.tradeOrder?.count || 0) - (this.tradeOrder?.fulfilled || 0)),
-          Number(this.tradeOrder?.price || 0),
-        ),
+      bigDecimal.multiply(
+        Number((this.tradeOrder?.count || 0) - (this.tradeOrder?.fulfilled || 0)),
+        Number(this.tradeOrder?.price || 0),
       ),
       NETWORK_DETAIL[this.token?.mintingData?.network || DEFAULT_NETWORK].divideBy,
       6,

@@ -249,7 +249,9 @@
     "
     [tokenId]="token?.symbol !== 'IOTA' ? token?.mintingData?.tokenId : undefined"
     [tokenAmount]="(amount | convertToken : token?.uid | async) || undefined"
-    [targetAmount]="token?.symbol !== 'IOTA' ? getTargetAmount() + '' : amount + ''"
+    [targetAmount]="
+      token?.symbol !== 'IOTA' ? getTargetAmount() + '' : (amount | convertToken | async) + ''
+    "
   >
   </wen-wallet-deeplink>
 
