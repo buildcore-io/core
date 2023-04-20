@@ -337,7 +337,7 @@ export class TransactionService {
         sourceTransaction: [payment.uid],
         reconciled: true,
         void: false,
-        nftId: tran.to.nftOutput?.nftId,
+        nftId: tran.to.nftOutput?.nftId || '',
         invalidPayment: payment.payload.invalidPayment,
         response,
       },
