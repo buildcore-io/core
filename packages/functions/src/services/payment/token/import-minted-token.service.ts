@@ -28,7 +28,6 @@ import { soonStorage } from '../../../firebase/storage/soonStorage';
 import { Bech32AddressHelper } from '../../../utils/bech32-address.helper';
 import { getBucket } from '../../../utils/config.utils';
 import { migrateUriToSotrage, uriToUrl } from '../../../utils/media.utils';
-import { CommonJoi } from '../../joi/common';
 import { SmrWallet } from '../../wallet/SmrWalletService';
 import { WalletService } from '../../wallet/wallet';
 import { TransactionMatch, TransactionService } from '../transaction-service';
@@ -187,6 +186,6 @@ const tokenIrc30Schema = Joi.object({
   description: Joi.string().allow('').optional(),
   logoUrl: Joi.string().allow('').optional(),
   url: Joi.string().allow('').optional(),
-  symbol: CommonJoi.tokenSymbol(),
+  symbol: Joi.string().required(),
   decimals: Joi.number().integer().required(),
 });
