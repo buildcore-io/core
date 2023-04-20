@@ -67,6 +67,14 @@ describe('Token controller: ' + WEN_FUNC.createToken, () => {
     expect(result.decimals).toBe(5);
   });
 
+  it('Should create token with $ prefix', async () => {
+    mockWalletReturnValue(walletSpy, memberAddress, { ...token, symbol: '$' + token.symbol });
+    const result = await testEnv.wrap(createToken)({});
+    expect(result?.uid).toBeDefined();
+    expect(result.tradingDisabled).toBe(true);
+    expect(result.decimals).toBe(5);
+  });
+
   it('Should throw, invalid icon url', async () => {
     mockWalletReturnValue(walletSpy, memberAddress, { ...token, icon: 'asd' });
     await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key);
