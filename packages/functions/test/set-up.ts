@@ -32,7 +32,7 @@ export const getConfig = () => {
 export const sentOnRequest =
   (func: (req: functions.https.Request, response: express.Response<any>) => void | Promise<void>) =>
   async (data: any) => {
-    const req = { body: { data }, headers: { origin: true } } as any;
+    const req = { ip: '127.0.0.1', body: { data }, headers: { origin: true } } as any;
     let error = false;
     let response: any = undefined;
     const res = {
