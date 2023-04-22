@@ -56,7 +56,6 @@ export class TangleNftPurchaseService {
       request.collection as string,
       request.nft as string,
       owner,
-      '',
     );
     set(order, 'payload.tanglePuchase', true);
 

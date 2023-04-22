@@ -34,6 +34,9 @@ export const assertIpNotBlocked = async (
   ipInfoToken = getIpInfoToken(),
   blockedCountries = getBlockedCountries(),
 ) => {
+  if (!ipAddress) {
+    return;
+  }
   const ipInfo = await getIpInfo(ipInfoToken, ipAddress);
   const blockedCountryCodes = getBlockedCountriesForEntity(blockedCountries, entityId, entityType);
   if (blockedCountryCodes.includes(ipInfo.countryCode)) {
