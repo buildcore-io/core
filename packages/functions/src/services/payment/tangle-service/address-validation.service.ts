@@ -87,6 +87,8 @@ export const createAddressValidationOrder = async (
     if (await hasActiveEditProposal(space.uid)) {
       throw invalidArgument(WenError.ongoing_proposal);
     }
+  } else if (owner.startsWith(network)) {
+    throw invalidArgument(WenError.can_not_change_validated_addess);
   }
 
   const wallet = await WalletService.newWallet(network);

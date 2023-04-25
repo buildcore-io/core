@@ -262,4 +262,8 @@ export const WenError = {
     code: 2128,
     key: 'Stake reward already started',
   },
+  can_not_change_validated_addess: {
+    code: 2129,
+    key: 'Can not change validated address',
+  },
 };

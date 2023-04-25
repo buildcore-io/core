@@ -174,14 +174,14 @@ describe('Address validation', () => {
       const wallet = await WalletService.newWallet(Network.RMS);
       const tmp = await wallet.getNewIotaAddressDetails();
 
+      await soonDb()
+        .doc(`${COL.MEMBER}/${member}`)
+        .set({ validatedAddress: { [Network.RMS]: tmp.bech32 } }, true);
+
       if (validateSpace) {
         space = (await createSpace(walletSpy, member)).uid;
         await soonDb().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} });
-        await soonDb()
-          .doc(`${COL.MEMBER}/${member}`)
-          .set({ validatedAddress: { [Network.RMS]: tmp.bech32 } }, true);
       }
-      const memberId = validateSpace ? member : tmp.bech32;
       await requestFundsFromFaucet(Network.RMS, tmp.bech32, 5 * MIN_IOTA_AMOUNT);
 
       const request = {
@@ -195,7 +195,7 @@ describe('Address validation', () => {
       const query = soonDb()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
-        .where('member', '==', memberId);
+        .where('member', '==', member);
 
       await wait(async () => {
         const snap = await query.get<Transaction>();
@@ -206,14 +206,14 @@ describe('Address validation', () => {
         const spaceData = <Space>await soonDb().doc(`${COL.SPACE}/${space}`).get();
         expect(spaceData.validatedAddress![Network.RMS]).toBe(tmp.bech32);
       } else {
-        const member = <Member>await soonDb().doc(`${COL.MEMBER}/${memberId}`).get();
-        expect(member.validatedAddress![Network.RMS]).toBe(tmp.bech32);
-        expect(member.prevValidatedAddresses).toEqual([tmp.bech32]);
+        const memberData = <Member>await soonDb().doc(`${COL.MEMBER}/${member}`).get();
+        expect(memberData.validatedAddress![Network.RMS]).toBe(tmp.bech32);
+        expect(memberData.prevValidatedAddresses).toEqual([tmp.bech32]);
       }
 
       const snap = await soonDb()
         .collection(COL.TRANSACTION)
-        .where('member', '==', memberId)
+        .where('member', '==', member)
         .where('payload.type', '==', TransactionUnlockType.TANGLE_TRANSFER)
         .get();
       expect(snap.length).toBe(1);
