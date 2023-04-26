@@ -23,7 +23,6 @@ import { last } from 'lodash';
 import { getSnapshot, soonDb } from '../../firebase/firestore/soondb';
 import { getAddress } from '../../utils/address.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
-import { hasActiveEditProposal } from '../../utils/space.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from './transaction-service';
 
@@ -68,10 +67,6 @@ export class AddressService {
 
     const spaceDocRef = soonDb().doc(`${COL.SPACE}/${order.space}`);
     const space = await this.transactionService.get<Space>(spaceDocRef);
-
-    if (await hasActiveEditProposal(space!.uid)) {
-      return;
-    }
 
     const ownerDocRef = soonDb().doc(`${COL.MEMBER}/${order.member}`);
     const owner = <Member>await ownerDocRef.get();
