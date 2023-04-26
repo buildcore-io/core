@@ -39,7 +39,11 @@ const getManySchema = Joi.object({
     .conditional('fieldName', {
       is: fieldNameSchema,
       then: fieldValueSchema,
-      otherwise: Joi.array().min(1).max(MAX_WHERE_STATEMENTS).items(fieldValueSchema),
+      otherwise: Joi.array()
+        .min(1)
+        .max(MAX_WHERE_STATEMENTS)
+        .length(Joi.ref('fieldName.length'))
+        .items(fieldValueSchema),
     })
     .optional(),
   startAfter: CommonJoi.uid(false),
@@ -63,9 +67,14 @@ export const getMany = async (req: functions.https.Request, res: express.Respons
   if (body.fieldName && body.fieldValue != null) {
     const fieldNames = Array.isArray(body.fieldName) ? body.fieldName : [body.fieldName];
     const fieldValue = Array.isArray(body.fieldValue) ? body.fieldValue : [body.fieldValue];
-    for (let i = 0; i < fieldNames.length; ++i) {
-      query = query.where(fieldNames[i], '==', fieldValue[i]);
-    }
+    const filters = fieldNames.reduce(
+      (acc, act, index) => ({ ...acc, [act]: (acc[act] || []).concat(fieldValue[index]) }),
+      {} as Record<string, unknown[]>,
+    );
+    Object.entries(filters).forEach(([key, value]) => {
+      const hasMany = value.length > 1;
+      query = query.where(key, hasMany ? 'in' : '==', hasMany ? value : value[0]);
+    });
   }
 
   if (body.collection === PublicCollections.NFT) {

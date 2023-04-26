@@ -347,3 +347,37 @@ describe('Get subs by field name', () => {
     await getMany(req, res);
   });
 });
+
+describe('Get all with IN', () => {
+  let space = '';
+
+  beforeEach(() => {
+    space = getRandomEthAddress();
+  });
+
+  it('Should get all with in filter', async () => {
+    const count = 3;
+    const members = Array.from(Array(count)).map(() => ({
+      uid: getRandomEthAddress(),
+      space,
+    }));
+    for (const member of members) {
+      const docRef = soonDb().doc(`${PublicCollections.MEMBER}/${member.uid}`);
+      await docRef.create(member);
+    }
+
+    const req = {
+      query: {
+        collection: PublicCollections.MEMBER,
+        fieldName: ['uid', 'space', 'uid'],
+        fieldValue: [members[0].uid, space, members[1].uid],
+      },
+    } as any;
+    const res = {
+      send: (body: any) => {
+        expect(body.length).toBe(2);
+      },
+    } as any;
+    await getMany(req, res);
+  });
+});

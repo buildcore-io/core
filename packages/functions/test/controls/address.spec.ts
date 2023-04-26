@@ -76,7 +76,9 @@ describe('Address validation test', () => {
     expect(proposal.questions[0].additionalInfo).toBe(
       `IOTA: ${milestone.fromAdd} (previously: None)\n`,
     );
-    expect(proposal.settings.spaceUpdateData.validatedAddress[Network.IOTA]).toBe(milestone.fromAdd);
+    expect(proposal.settings.spaceUpdateData.validatedAddress[Network.IOTA]).toBe(
+      milestone.fromAdd,
+    );
     expect(proposal.settings.spaceUpdateData.uid).toBe(space);
 
     await waitForAddressValidation(space, COL.SPACE);
