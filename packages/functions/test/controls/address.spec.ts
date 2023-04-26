@@ -2,6 +2,7 @@ import { COL, Member, Network, Space, WenError } from '@soonaverse/interfaces';
 import { isEmpty } from 'lodash';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { validateAddress } from '../../src/runtime/firebase/address';
+import { WalletService } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
@@ -43,6 +44,20 @@ describe('Address validation test', () => {
     await milestoneProcessed(milestone.milestone, milestone.tranId);
     await waitForAddressValidation(member, COL.MEMBER);
   });
+
+  it.each([Network.RMS, Network.SMR])(
+    'Should throw, member id is address',
+    async (network: Network) => {
+      const wallet = await WalletService.newWallet(network);
+      const address = await wallet.getNewIotaAddressDetails();
+      const memberDocRef = soonDb().doc(`${COL.MEMBER}/${address.bech32}`);
+      await memberDocRef.create({ uid: address.bech32 });
+      await expectThrow(
+        validateMemberAddressFunc(walletSpy, address.bech32, network),
+        WenError.can_not_change_validated_addess.key,
+      );
+    },
+  );
 
   it('Should validate space address', async () => {
     let order = await validateSpaceAddressFunc(walletSpy, member, space);
