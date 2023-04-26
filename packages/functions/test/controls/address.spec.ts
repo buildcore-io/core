@@ -1,4 +1,4 @@
-import { COL, Member, Network, Space, WenError } from '@soonaverse/interfaces';
+import { COL, Member, Network, Proposal, Space, WenError } from '@soonaverse/interfaces';
 import { isEmpty } from 'lodash';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { validateAddress } from '../../src/runtime/firebase/address';
@@ -69,6 +69,15 @@ describe('Address validation test', () => {
       const snap = await proposalQuery.get();
       return snap.length > 0;
     });
+
+    const snap = await proposalQuery.get<Proposal>();
+    const proposal = snap[0]!;
+    expect(proposal.questions[0].text).toBe("Do you want to update the space's validate address?");
+    expect(proposal.questions[0].additionalInfo).toBe(
+      `IOTA: ${milestone.fromAdd} (previously: None)\n`,
+    );
+    expect(proposal.settings.spaceUpdateData.validatedAddress[Network.IOTA]).toBe(milestone.fromAdd);
+    expect(proposal.settings.spaceUpdateData.uid).toBe(space);
 
     await waitForAddressValidation(space, COL.SPACE);
 

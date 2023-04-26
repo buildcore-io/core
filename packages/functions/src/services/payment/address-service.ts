@@ -217,9 +217,9 @@ const createUpdateSpaceValidatedAddressProposal = (
     questions: [
       {
         text: "Do you want to update the space's validate address?",
-        additionalInfo: `${order.network!.toUpperCase()}: ${
-          order.payload.targetAddress
-        } (previously: ${getAddress(space, order.network!) || 'None'})\n`,
+        additionalInfo: `${order.network!.toUpperCase()}: ${validatedAddress} (previously: ${
+          getAddress(space, order.network!) || 'None'
+        })\n`,
         answers: [
           {
             text: 'No',
