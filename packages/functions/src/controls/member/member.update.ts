@@ -56,7 +56,7 @@ const getNft = async (owner: string, nftId: string) => {
   if (nft.status !== NftStatus.MINTED) {
     throw invalidArgument(WenError.nft_not_minted);
   }
-  if (nft.available !== NftAvailable.UNAVAILABLE) {
+  if (nft.available !== undefined && nft.available !== NftAvailable.UNAVAILABLE) {
     throw invalidArgument(WenError.nft_on_sale);
   }
   return nft;

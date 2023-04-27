@@ -158,13 +158,13 @@ export const WenError = {
   no_tokens_to_claim: { code: 2087, key: 'No tokens to claim.' },
   token_not_minted: { code: 2088, key: 'Token is not minted.' },
   invalid_collection_status: { code: 2089, key: 'Invalid collection status.' },
-  nft_not_minted: { code: 2090, key: 'Nft not minted.' },
+  nft_not_minted: { code: 2090, key: 'NFT not minted.' },
   invalid_nft_status: { code: 2091, key: 'Invalid nft status.' },
-  nft_on_sale: { code: 2092, key: 'Nft is on sale.' },
+  nft_on_sale: { code: 2092, key: 'NFT is on sale.' },
   no_nfts_to_mint: { code: 2093, key: 'No nfts to mint in the collection.' },
-  no_ipfs_media: { code: 2094, key: 'Nft does not have ipfs media' },
-  hidden_nft: { code: 2095, key: 'Nft can not be hidden' },
-  nft_already_sold: { code: 2096, key: 'Nft already sold' },
+  no_ipfs_media: { code: 2094, key: 'NFT does not have ipfs media' },
+  hidden_nft: { code: 2095, key: 'NFT can not be hidden' },
+  nft_already_sold: { code: 2096, key: 'NFT already sold' },
   member_already_knocking: { code: 2097, key: 'Member already asking to join space' },
   can_not_credit_transaction: { code: 2098, key: 'Can not credit this transaction' },
   transaction_already_confirmed: { code: 2099, key: 'Transaction already confirmed' },
@@ -208,7 +208,7 @@ export const WenError = {
   },
   nft_not_irc27_compilant: {
     code: 2114,
-    key: 'Nft metadata not irc27 compilant',
+    key: 'NFT metadata not irc27 compilant',
   },
   collection_not_irc27_compilant: {
     code: 2115,
@@ -256,7 +256,7 @@ export const WenError = {
   },
   nft_set_as_avatar: {
     code: 2127,
-    key: 'Nft is set as avatar',
+    key: 'NFT is set as avatar',
   },
   stake_reward_started: {
     code: 2128,
@@ -266,4 +266,12 @@ export const WenError = {
     code: 2129,
     key: 'Can not change validated address',
   },
+  max_8_unique_field_names: {
+    code: 2130,
+    key: 'Maximum 8 unique field names are allowed',
+  },
+  max_10_fields: {
+    code: 2131,
+    key: 'A field name can appear maximum 10 times'
+  }
 };
