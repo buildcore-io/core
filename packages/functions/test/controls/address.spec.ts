@@ -1,7 +1,8 @@
-import { COL, Member, Network, Space, WenError } from '@soonaverse/interfaces';
+import { COL, Member, Network, Proposal, Space, WenError } from '@soonaverse/interfaces';
 import { isEmpty } from 'lodash';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { validateAddress } from '../../src/runtime/firebase/address';
+import { WalletService } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
@@ -44,6 +45,20 @@ describe('Address validation test', () => {
     await waitForAddressValidation(member, COL.MEMBER);
   });
 
+  it.each([Network.RMS, Network.SMR])(
+    'Should throw, member id is address',
+    async (network: Network) => {
+      const wallet = await WalletService.newWallet(network);
+      const address = await wallet.getNewIotaAddressDetails();
+      const memberDocRef = soonDb().doc(`${COL.MEMBER}/${address.bech32}`);
+      await memberDocRef.create({ uid: address.bech32 });
+      await expectThrow(
+        validateMemberAddressFunc(walletSpy, address.bech32, network),
+        WenError.can_not_change_validated_addess.key,
+      );
+    },
+  );
+
   it('Should validate space address', async () => {
     let order = await validateSpaceAddressFunc(walletSpy, member, space);
     const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
@@ -54,6 +69,17 @@ describe('Address validation test', () => {
       const snap = await proposalQuery.get();
       return snap.length > 0;
     });
+
+    const snap = await proposalQuery.get<Proposal>();
+    const proposal = snap[0]!;
+    expect(proposal.questions[0].text).toBe("Do you want to update the space's validate address?");
+    expect(proposal.questions[0].additionalInfo).toBe(
+      `IOTA: ${milestone.fromAdd} (previously: None)\n`,
+    );
+    expect(proposal.settings.spaceUpdateData.validatedAddress[Network.IOTA]).toBe(
+      milestone.fromAdd,
+    );
+    expect(proposal.settings.spaceUpdateData.uid).toBe(space);
 
     await waitForAddressValidation(space, COL.SPACE);
 

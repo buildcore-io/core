@@ -21,7 +21,6 @@ import { generateRandomAmount } from '../../../utils/common.utils';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../utils/error.utils';
 import { assertValidationAsync } from '../../../utils/schema.utils';
-import { hasActiveEditProposal } from '../../../utils/space.utils';
 import { assertIsGuardian } from '../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { WalletService } from '../../wallet/wallet';
@@ -84,9 +83,8 @@ export const createAddressValidationOrder = async (
 
   if (space) {
     await assertIsGuardian(space.uid, owner);
-    if (await hasActiveEditProposal(space.uid)) {
-      throw invalidArgument(WenError.ongoing_proposal);
-    }
+  } else if (owner.startsWith(network)) {
+    throw invalidArgument(WenError.can_not_change_validated_addess);
   }
 
   const wallet = await WalletService.newWallet(network);

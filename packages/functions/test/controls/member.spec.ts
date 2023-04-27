@@ -98,6 +98,22 @@ describe('MemberController: ' + WEN_FUNC.updateMember, () => {
     expect(nftData?.setAsAvatar).toBe(false);
   });
 
+  it('Should set nft as avatar, when available field is missing', async () => {
+    const nft = {
+      uid: wallet.getRandomEthAddress(),
+      media: MEDIA,
+      owner: dummyAddress,
+      status: NftStatus.MINTED,
+    };
+    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+    await nftDocRef.create(nft);
+    const updateParams = { avatarNft: nft.uid };
+    mockWalletReturnValue(walletSpy, dummyAddress, updateParams);
+    let uMember = await testEnv.wrap(updateMember)({});
+    expect(uMember.avatarNft).toBe(nft.uid);
+    expect(uMember.avatar).toBe(MEDIA);
+  });
+
   it('Should throw, invalid nft not nft owner', async () => {
     mockWalletReturnValue(walletSpy, dummyAddress, { avatarNft: wallet.getRandomEthAddress() });
     await expectThrow(testEnv.wrap(updateMember)({}), WenError.nft_does_not_exists.key);

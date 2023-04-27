@@ -1,4 +1,9 @@
-import { PublicCollections, PublicSubCollections, QUERY_MAX_LENGTH } from '@soonaverse/interfaces';
+import {
+  PublicCollections,
+  PublicSubCollections,
+  QUERY_MAX_LENGTH,
+  WenError,
+} from '@soonaverse/interfaces';
 import { isEmpty, last } from 'lodash';
 import { getMany } from '../../src/api/getMany';
 import { soonDb } from '../../src/firebase/firestore/soondb';
@@ -342,6 +347,106 @@ describe('Get subs by field name', () => {
     res = {
       send: (body: any[]) => {
         expect(body.length).toBe(1);
+      },
+    } as any;
+    await getMany(req, res);
+  });
+});
+
+describe('Get all with IN', () => {
+  let space = '';
+
+  beforeEach(() => {
+    space = getRandomEthAddress();
+  });
+
+  it('Should get all with in filter', async () => {
+    const count = 3;
+    const members = Array.from(Array(count)).map(() => ({
+      uid: getRandomEthAddress(),
+      space,
+    }));
+    for (const member of members) {
+      const docRef = soonDb().doc(`${PublicCollections.MEMBER}/${member.uid}`);
+      await docRef.create(member);
+    }
+
+    const req = {
+      query: {
+        collection: PublicCollections.MEMBER,
+        fieldName: ['uid', 'space', 'uid'],
+        fieldValue: [members[0].uid, space, members[1].uid],
+      },
+    } as any;
+    const res = {
+      send: (body: any) => {
+        expect(body.length).toBe(2);
+      },
+    } as any;
+    await getMany(req, res);
+  });
+
+  it('Should throw, max 10 IN allowed', async () => {
+    let req = {
+      query: {
+        collection: PublicCollections.MEMBER,
+        fieldName: Array.from(Array(10)).map(() => 'uid'),
+        fieldValue: Array.from(Array(10)).map(() => 'uid'),
+      },
+    } as any;
+    let res = {
+      send: (body: any) => {
+        expect(body.length).toBe(0);
+      },
+    } as any;
+    await getMany(req, res);
+
+    req = {
+      query: {
+        collection: PublicCollections.MEMBER,
+        fieldName: Array.from(Array(11)).map(() => 'uid'),
+        fieldValue: Array.from(Array(11)).map(() => 'uid'),
+      },
+    } as any;
+    res = {
+      status: (status: number) => {
+        expect(status).toBe(400);
+      },
+      send: (body: any) => {
+        expect(body).toBe(WenError.max_10_fields.key);
+      },
+    } as any;
+    await getMany(req, res);
+  });
+
+  it('Should throw, max 8 field allowed', async () => {
+    let req = {
+      query: {
+        collection: PublicCollections.MEMBER,
+        fieldName: Array.from(Array(8)).map((_, index) => index.toString()),
+        fieldValue: Array.from(Array(8)).map(() => 'uid'),
+      },
+    } as any;
+    let res = {
+      send: (body: any) => {
+        expect(body.length).toBe(0);
+      },
+    } as any;
+    await getMany(req, res);
+
+    req = {
+      query: {
+        collection: PublicCollections.MEMBER,
+        fieldName: Array.from(Array(9)).map((_, index) => index.toString()),
+        fieldValue: Array.from(Array(9)).map(() => 'uid'),
+      },
+    } as any;
+    res = {
+      status: (status: number) => {
+        expect(status).toBe(400);
+      },
+      send: (body: any) => {
+        expect(body).toBe(WenError.max_8_unique_field_names.key);
       },
     } as any;
     await getMany(req, res);
