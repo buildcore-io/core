@@ -266,4 +266,12 @@ export const WenError = {
     code: 2129,
     key: 'Can not change validated address',
   },
+  max_8_unique_field_names: {
+    code: 2130,
+    key: 'Maximum 8 unique field names are allowed',
+  },
+  max_10_fields: {
+    code: 2131,
+    key: 'A field name can appear maximum 10 times'
+  }
 };
