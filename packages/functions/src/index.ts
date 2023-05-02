@@ -1,6 +1,5 @@
 import { WEN_FUNC, WEN_FUNC_TRIGGER } from '@soonaverse/interfaces';
 import { algoliaTrigger } from './algolia/algolia.trigger';
-import { collectionRoll } from './dbRoll/0.19/col.minting.roll';
 import { validateAddress } from './runtime/firebase/address';
 import { generateCustomFirebaseToken } from './runtime/firebase/auth';
 import {
@@ -204,6 +203,3 @@ exports[WEN_FUNC.generateCustomFirebaseToken] = generateCustomFirebaseToken;
 exports[WEN_FUNC.claimSpace] = claimSpace;
 
 exports[WEN_FUNC.importMintedToken] = importMintedToken;
-
-// TODO remove after calling it
-exports['collectionroll'] = collectionRoll;
