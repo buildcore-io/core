@@ -51,7 +51,7 @@ export const collectionWrite = functions
       }
       if (
         curr.status === CollectionStatus.MINTING &&
-        prev.mintingData?.nftMediaToPrepare &&
+        (prev.mintingData?.nftMediaToPrepare || 0) > 0 &&
         curr.mintingData?.nftMediaToPrepare === 0
       ) {
         return await onNftMediaPrepared(curr);
@@ -141,19 +141,14 @@ const onCollectionMinting = async (collection: Collection) => {
 
   const metadata = collectionToIpfsMetadata(collection);
   const ipfs = await downloadMediaAndPackCar(collection.uid, collection.bannerUrl, metadata);
-  const nftsToMint = await updateNftsForMinting(collection);
+  await updateNftsForMinting(collection);
 
-  await soonDb()
-    .doc(`${COL.COLLECTION}/${collection.uid}`)
-    .update({
-      'mintingData.nftsToMint': soonDb().inc(nftsToMint),
-      mediaStatus: MediaStatus.PENDING_UPLOAD,
-      'mintingData.nftMediaToUpload': soonDb().inc(nftsToMint),
-      'mintingData.nftMediaToPrepare': soonDb().inc(nftsToMint),
-      ipfsMedia: ipfs.ipfsMedia,
-      ipfsMetadata: ipfs.ipfsMetadata,
-      ipfsRoot: ipfs.ipfsRoot,
-    });
+  await soonDb().doc(`${COL.COLLECTION}/${collection.uid}`).update({
+    mediaStatus: MediaStatus.PENDING_UPLOAD,
+    ipfsMedia: ipfs.ipfsMedia,
+    ipfsMetadata: ipfs.ipfsMetadata,
+    ipfsRoot: ipfs.ipfsRoot,
+  });
 };
 
 const onNftMediaPrepared = async (collection: Collection) => {
@@ -178,7 +173,6 @@ const BATCH_SIZE = 1000;
 const updateNftsForMinting = async (collection: Collection) => {
   const unsoldMintingOptions = collection.mintingData?.unsoldMintingOptions;
   let lastDocId = '';
-  let nftsToMintCount = 0;
   let unsoldCount = 0;
   do {
     const lastDoc = await getSnapshot(COL.NFT, lastDocId);
@@ -203,10 +197,18 @@ const updateNftsForMinting = async (collection: Collection) => {
       unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD
         ? allNfts.filter((nft) => nft.sold)
         : allNfts;
+
+    await soonDb()
+      .doc(`${COL.COLLECTION}/${collection.uid}`)
+      .update({
+        'mintingData.nftsToMint': soonDb().inc(nftsToMint.length),
+        'mintingData.nftMediaToUpload': soonDb().inc(nftsToMint.length),
+        'mintingData.nftMediaToPrepare': soonDb().inc(nftsToMint.length),
+      });
+
     const promises = nftsToMint.map((nft) => setNftForMinting(nft.uid, collection));
     await Promise.all(promises);
 
-    nftsToMintCount += nftsToMint.length;
     unsoldCount += unsold.length;
   } while (lastDocId);
 
@@ -247,8 +249,6 @@ const updateNftsForMinting = async (collection: Collection) => {
         price: collection.mintingData?.newPrice || collection.price,
       });
   }
-
-  return nftsToMintCount;
 };
 
 const setNftForMinting = (nftId: string, collection: Collection) =>
