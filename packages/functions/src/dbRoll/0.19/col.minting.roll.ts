@@ -6,13 +6,13 @@ import {
 } from '@iota/iota.js-next';
 import { COL, Collection, CollectionStatus, Network, Transaction } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions/v2';
-import { SmrWallet } from '../../../src/services/wallet/SmrWalletService';
-import { WalletService } from '../../../src/services/wallet/wallet';
-import { packBasicOutput } from '../../../src/utils/basic-output.utils';
-import { packEssence, packPayload, submitBlock } from '../../../src/utils/block.utils';
-import { isProdEnv } from '../../../src/utils/config.utils';
-import { createUnlock } from '../../../src/utils/smr.utils';
 import { soonDb } from '../../firebase/firestore/soondb';
+import { SmrWallet } from '../../services/wallet/SmrWalletService';
+import { WalletService } from '../../services/wallet/wallet';
+import { packBasicOutput } from '../../utils/basic-output.utils';
+import { packEssence, packPayload, submitBlock } from '../../utils/block.utils';
+import { isProdEnv } from '../../utils/config.utils';
+import { createUnlock } from '../../utils/smr.utils';
 
 export const collectionRoll = functions.https.onRequest(async (_, res) => {
   if (isProdEnv()) {
