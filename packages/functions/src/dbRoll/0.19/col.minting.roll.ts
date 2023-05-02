@@ -4,29 +4,34 @@ import {
   REFERENCE_UNLOCK_TYPE,
   TransactionHelper,
 } from '@iota/iota.js-next';
-import { COL, Collection, Network, Transaction } from '@soonaverse/interfaces';
-import { FirebaseApp } from '../../../src/firebase/app/app';
-import { Firestore } from '../../../src/firebase/firestore/firestore';
+import { COL, Collection, CollectionStatus, Network, Transaction } from '@soonaverse/interfaces';
+import * as functions from 'firebase-functions/v2';
 import { SmrWallet } from '../../../src/services/wallet/SmrWalletService';
 import { WalletService } from '../../../src/services/wallet/wallet';
 import { packBasicOutput } from '../../../src/utils/basic-output.utils';
 import { packEssence, packPayload, submitBlock } from '../../../src/utils/block.utils';
 import { isProdEnv } from '../../../src/utils/config.utils';
 import { createUnlock } from '../../../src/utils/smr.utils';
+import { soonDb } from '../../firebase/firestore/soondb';
 
-export const rollMintingCollection = async (app: FirebaseApp) => {
-  if (!isProdEnv()) {
+export const collectionRoll = functions.https.onRequest(async (_, res) => {
+  if (isProdEnv()) {
+    await rollMintingCollection();
+  }
+  res.send('ok');
+});
+
+const rollMintingCollection = async () => {
+  const collectionId = '0xe58a0148d8ca16269e27c8d31adb8aeec812770b';
+  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${collectionId}`);
+  const collection = <Collection>await collectionDocRef.get();
+
+  if (collection.status !== CollectionStatus.MINTING) {
     return;
   }
 
-  const db = new Firestore(app);
-
-  const collectionId = '0xe58a0148d8ca16269e27c8d31adb8aeec812770b';
-  const collectionDocRef = db.doc(`${COL.COLLECTION}/${collectionId}`);
-  const collection = <Collection>await collectionDocRef.get();
-
   const orderId = collection.mintingData?.mintingOrderId;
-  const orderDocRef = db.doc(`${COL.TRANSACTION}/${orderId}`);
+  const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${orderId}`);
   const order = <Transaction>await orderDocRef.get();
 
   const wallet = (await WalletService.newWallet(Network.SMR)) as SmrWallet;
@@ -35,14 +40,14 @@ export const rollMintingCollection = async (app: FirebaseApp) => {
   try {
     const balance = await wallet.getBalance(sourceAddress);
     await orderDocRef.delete();
-    console.log('deleting order', order);
+    functions.logger.info('deleting order', order);
 
     const aliasIdsToBurn = [
       '0x0618fc96d28b9a4401aac829eb80922d1f2eb779602f20d481b944190e1d6811',
       '0x42134dbe69fdb67fcc921e44ab5d109c5177b9a8e20434725757e9acfe241cd8',
     ];
     const blockId = await burnAliases(wallet, aliasIdsToBurn, sourceAddress);
-    console.log('Burn aliases block id', blockId);
+    functions.logger.info('Burn aliases block id', blockId);
 
     for (let attempt = 0; attempt < 300; ++attempt) {
       const actBalance = await wallet.getBalance(sourceAddress);
@@ -66,12 +71,12 @@ export const rollMintingCollection = async (app: FirebaseApp) => {
       '0x7f927795d32ef53306df0551f59e036ee0464b15',
     ];
     for (const tranId of transactionsToDelete) {
-      const docRef = db.doc(`${COL.TRANSACTION}/${tranId}`);
+      const docRef = soonDb().doc(`${COL.TRANSACTION}/${tranId}`);
       await docRef.delete();
     }
 
     const nftMintTrans = '0x5ca63f05f31aa657e5e35d710075aa483149747a';
-    const nftMintTranDocRef = db.doc(`${COL.TRANSACTION}/${nftMintTrans}`);
+    const nftMintTranDocRef = soonDb().doc(`${COL.TRANSACTION}/${nftMintTrans}`);
     await nftMintTranDocRef.update({ 'payload.walletReference.count': 0, shouldRetry: true });
   } finally {
     await orderDocRef.create(order);
@@ -111,5 +116,3 @@ const getAliasOutputs = async (aliasIds: string[], wallet: SmrWallet) => {
   }
   return result;
 };
-
-export const roll = rollMintingCollection;

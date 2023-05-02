@@ -272,6 +272,6 @@ export const WenError = {
   },
   max_10_fields: {
     code: 2131,
-    key: 'A field name can appear maximum 10 times'
-  }
+    key: 'A field name can appear maximum 10 times',
+  },
 };
