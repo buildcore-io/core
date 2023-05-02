@@ -51,7 +51,7 @@ export const collectionWrite = functions
       }
       if (
         curr.status === CollectionStatus.MINTING &&
-        (prev.mintingData?.nftMediaToPrepare || 0) > 0 &&
+        prev.mintingData?.nftMediaToPrepare &&
         curr.mintingData?.nftMediaToPrepare === 0
       ) {
         return await onNftMediaPrepared(curr);
@@ -175,6 +175,10 @@ const updateNftsForMinting = async (collection: Collection) => {
   const unsoldMintingOptions = collection.mintingData?.unsoldMintingOptions;
   let lastDocId = '';
   let unsoldCount = 0;
+  let nftsToMintCount = 0;
+  let nftMediaToUploadCount = 0;
+  let nftMediaToPrepareCount = 0;
+
   do {
     const lastDoc = await getSnapshot(COL.NFT, lastDocId);
     const allNfts = await soonDb()
@@ -199,29 +203,30 @@ const updateNftsForMinting = async (collection: Collection) => {
         ? allNfts.filter((nft) => nft.sold)
         : allNfts;
 
-    await collectionDocRef.update({
-      'mintingData.nftsToMint': soonDb().inc(nftsToMint.length),
-      'mintingData.nftMediaToUpload': soonDb().inc(nftsToMint.length),
-      'mintingData.nftMediaToPrepare': soonDb().inc(nftsToMint.length),
-    });
+    nftsToMintCount += nftsToMint.length;
+    nftMediaToUploadCount += nftsToMint.length;
+    nftMediaToPrepareCount += nftsToMint.length;
 
     const promises = nftsToMint.map((nft) => setNftForMinting(nft.uid, collection));
     const nftMediaStatuses = await Promise.all(promises);
-    const nftMediaAlreadyUpdated = nftMediaStatuses.filter(
+    const nftMediaAlreadyUploaded = nftMediaStatuses.filter(
       (s) => s === MediaStatus.UPLOADED,
     ).length;
-    const nftMediaPrepared = nftMediaStatuses.filter((s) =>
+    const nftMediaAlreadyPrepared = nftMediaStatuses.filter((s) =>
       [MediaStatus.UPLOADED, MediaStatus.PENDING_UPLOAD].includes(s),
     ).length;
-    if (nftMediaAlreadyUpdated || nftMediaPrepared) {
-      await collectionDocRef.update({
-        'mintingData.nftMediaToUpload': soonDb().inc(-nftMediaAlreadyUpdated),
-        'mintingData.nftMediaToPrepare': soonDb().inc(-nftMediaPrepared),
-      });
-    }
+
+    nftMediaToUploadCount -= nftMediaAlreadyUploaded;
+    nftMediaToPrepareCount -= nftMediaAlreadyPrepared;
 
     unsoldCount += unsold.length;
   } while (lastDocId);
+
+  await collectionDocRef.update({
+    'mintingData.nftsToMint': soonDb().inc(nftsToMintCount),
+    'mintingData.nftMediaToUpload': soonDb().inc(nftMediaToUploadCount),
+    'mintingData.nftMediaToPrepare': soonDb().inc(nftMediaToPrepareCount),
+  });
 
   if (
     !unsoldCount ||
@@ -242,9 +247,7 @@ const updateNftsForMinting = async (collection: Collection) => {
     await Promise.all(promises);
   }
   if (unsoldCount && unsoldMintingOptions === UnsoldMintingOptions.TAKE_OWNERSHIP) {
-    await soonDb()
-      .doc(`${COL.COLLECTION}/${collection.uid}`)
-      .update({ sold: soonDb().inc(unsoldCount) });
+    await collectionDocRef.update({ sold: soonDb().inc(unsoldCount) });
   }
 
   // Update placeholder
