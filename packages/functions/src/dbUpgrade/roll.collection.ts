@@ -34,7 +34,7 @@ const availabledProdCollections = [
 ];
 
 export const rollbackCollectionMint = functions.https.onRequest(
-  { maxInstances: 1 },
+  { maxInstances: 1, timeoutSeconds: 3600 },
   async (req, res) => {
     const collectionId = req.body.collectionId;
     if (isProdEnv()) {
@@ -102,35 +102,50 @@ const burnNft = async (nft: Nft, wallet: SmrWallet, targetAddress: string) => {
   if (nft.status !== NftStatus.MINTED) {
     return;
   }
-  const indexer = new IndexerPluginClient(wallet.client);
-  const sourceAddress = await wallet.getAddressDetails(nft.mintingData?.address!);
+  try {
+    const indexer = new IndexerPluginClient(wallet.client);
+    const sourceAddress = await wallet.getAddressDetails(nft.mintingData?.address!);
 
-  const nftOutputId = (await indexer.nft(nft.mintingData?.nftId!)).items[0];
-  const nftOutput = (await wallet.client.output(nftOutputId)).output;
+    const nftOutputId = (await indexer.nft(nft.mintingData?.nftId!)).items[0];
+    const nftOutput = (await wallet.client.output(nftOutputId)).output;
 
-  const remainder = packBasicOutput(targetAddress, Number(nftOutput.amount), [], wallet.info);
+    const remainder = packBasicOutput(targetAddress, Number(nftOutput.amount), [], wallet.info);
 
-  const inputs = [nftOutputId].map(TransactionHelper.inputFromOutputId);
-  const inputsCommitment = TransactionHelper.getInputsCommitment([nftOutput]);
-  const essence = packEssence(inputs, inputsCommitment, [remainder], wallet, {});
+    const inputs = [nftOutputId].map(TransactionHelper.inputFromOutputId);
+    const inputsCommitment = TransactionHelper.getInputsCommitment([nftOutput]);
+    const essence = packEssence(inputs, inputsCommitment, [remainder], wallet, {});
 
-  const blockId = await submitBlock(
-    wallet,
-    packPayload(essence, [createUnlock(essence, sourceAddress.keyPair)]),
-  );
-  console.log('burning nft', nft.uid, blockId);
-  await awaitLedgerInclusionState(blockId, nft.mintingData?.network!);
-
-  const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
-  await nftDocRef.update({
-    'mintingData.address': soonDb().deleteField(),
-    'mintingData.mintedOn': soonDb().deleteField(),
-    'mintingData.mintedBy': soonDb().deleteField(),
-    'mintingData.blockId': soonDb().deleteField(),
-    'mintingData.nftId': soonDb().deleteField(),
-    'mintingData.mintingOrderId': soonDb().deleteField(),
-    status: NftStatus.PRE_MINTED,
-  });
+    const blockId = await submitBlock(
+      wallet,
+      packPayload(essence, [createUnlock(essence, sourceAddress.keyPair)]),
+    );
+    console.log('burning nft', nft.uid, blockId);
+    await awaitLedgerInclusionState(blockId, nft.mintingData?.network!);
+  } catch {
+    try {
+      const nftAddress = await wallet.getAddressDetails(nft.mintingData?.address!);
+      const balance = await wallet.getBalance(nftAddress.bech32);
+      const blockId = await wallet.send(nftAddress, targetAddress, balance, {});
+      console.log('burning nft, sending balance', nft.uid, blockId);
+      await awaitLedgerInclusionState(blockId, nft.mintingData?.network!);
+      await MnemonicService.store(
+        nftAddress.bech32,
+        nftAddress.mnemonic,
+        nft.mintingData?.network!,
+      );
+    } catch {}
+  } finally {
+    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+    await nftDocRef.update({
+      'mintingData.address': soonDb().deleteField(),
+      'mintingData.mintedOn': soonDb().deleteField(),
+      'mintingData.mintedBy': soonDb().deleteField(),
+      'mintingData.blockId': soonDb().deleteField(),
+      'mintingData.nftId': soonDb().deleteField(),
+      'mintingData.mintingOrderId': soonDb().deleteField(),
+      status: NftStatus.PRE_MINTED,
+    });
+  }
 };
 
 export const awaitLedgerInclusionState = async (blockId: string, network: Network) => {
