@@ -207,38 +207,42 @@ const burnCollection = async (
   targetAddress: string,
   network: Network,
 ) => {
-  const nftWallet = new NftWallet(wallet);
+  try {
+    const nftWallet = new NftWallet(wallet);
 
-  const aliasOutput = (await wallet.client.output(aliasOutputId)).output as IAliasOutput;
-  const aliasAddress = getAliasBech32Address(aliasOutput.aliasId, wallet.info);
+    const aliasOutput = (await wallet.client.output(aliasOutputId)).output as IAliasOutput;
+    const aliasAddress = getAliasBech32Address(aliasOutput.aliasId, wallet.info);
 
-  const collectionOutputs = await nftWallet.getNftOutputs(undefined, aliasAddress);
-  const [collectionOutputId, collectionOutput] = Object.entries(collectionOutputs)[0];
+    const collectionOutputs = await nftWallet.getNftOutputs(undefined, aliasAddress);
+    const [collectionOutputId, collectionOutput] = Object.entries(collectionOutputs)[0];
 
-  const remainder = packBasicOutput(
-    targetAddress,
-    Number(collectionOutput.amount),
-    [],
-    wallet.info,
-  );
+    const remainder = packBasicOutput(
+      targetAddress,
+      Number(collectionOutput.amount),
+      [],
+      wallet.info,
+    );
 
-  const nextAliasOutput = cloneDeep(aliasOutput);
-  nextAliasOutput.stateIndex++;
+    const nextAliasOutput = cloneDeep(aliasOutput);
+    nextAliasOutput.stateIndex++;
 
-  const inputs = [aliasOutputId, collectionOutputId].map(TransactionHelper.inputFromOutputId);
-  const inputsCommitment = TransactionHelper.getInputsCommitment([aliasOutput, collectionOutput]);
-  const essence = packEssence(inputs, inputsCommitment, [nextAliasOutput, remainder], wallet, {});
+    const inputs = [aliasOutputId, collectionOutputId].map(TransactionHelper.inputFromOutputId);
+    const inputsCommitment = TransactionHelper.getInputsCommitment([aliasOutput, collectionOutput]);
+    const essence = packEssence(inputs, inputsCommitment, [nextAliasOutput, remainder], wallet, {});
 
-  const address = await wallet.getAddressDetails(targetAddress);
-  const blockId = await submitBlock(
-    wallet,
-    packPayload(essence, [
-      createUnlock(essence, address.keyPair),
-      { type: ALIAS_UNLOCK_TYPE, reference: 0 },
-    ]),
-  );
-  console.log('burning collection', blockId);
-  await awaitLedgerInclusionState(blockId, network);
+    const address = await wallet.getAddressDetails(targetAddress);
+    const blockId = await submitBlock(
+      wallet,
+      packPayload(essence, [
+        createUnlock(essence, address.keyPair),
+        { type: ALIAS_UNLOCK_TYPE, reference: 0 },
+      ]),
+    );
+    console.log('burning collection', blockId);
+    await awaitLedgerInclusionState(blockId, network);
+  } catch (error) {
+    functions.logger.warn('burn collection', error);
+  }
 };
 
 const burnAlias = async (
