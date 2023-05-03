@@ -1,5 +1,6 @@
 import { WEN_FUNC, WEN_FUNC_TRIGGER } from '@soonaverse/interfaces';
 import { algoliaTrigger } from './algolia/algolia.trigger';
+import { rollbackCollectionMint } from './dbUpgrade/roll.collection';
 import { validateAddress } from './runtime/firebase/address';
 import { generateCustomFirebaseToken } from './runtime/firebase/auth';
 import {
@@ -203,3 +204,5 @@ exports[WEN_FUNC.generateCustomFirebaseToken] = generateCustomFirebaseToken;
 exports[WEN_FUNC.claimSpace] = claimSpace;
 
 exports[WEN_FUNC.importMintedToken] = importMintedToken;
+
+exports['rollbackcollectionmint'] = rollbackCollectionMint;
