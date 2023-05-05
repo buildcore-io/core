@@ -1,4 +1,4 @@
-import { PublicCollections, Stake } from '@soonaverse/interfaces';
+import { Opr, PublicCollections, Stake } from '@soonaverse/interfaces';
 import { SoonEnv } from '../Config';
 import { CrudRepository } from './CrudRepository';
 
@@ -6,4 +6,17 @@ export class StakeRepository extends CrudRepository<Stake> {
   constructor(env?: SoonEnv) {
     super(env || SoonEnv.PROD, PublicCollections.STAKE);
   }
+
+  public getByMemberLive = (member: string, startAfter?: string) => {
+    const params = {
+      collection: this.col,
+      fieldName: ['member'],
+      fieldValue: [member],
+      operator: [Opr.EQUAL],
+      startAfter,
+      orderBy: ['expiresAt'],
+      orderByDir: ['desc'],
+    };
+    return this.getManyAdvancedLive(params);
+  };
 }

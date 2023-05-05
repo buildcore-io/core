@@ -49,3 +49,31 @@ export interface GetAddressesRequest {
 export interface KeepAliveRequest {
   readonly instanceId: string;
 }
+
+export enum Opr {
+  EQUAL = '==',
+  NOT_EQUAL = '!=',
+  LESS = '<',
+  LESS_OR_EQUAL = '<=',
+  GREATER = '>',
+  GREATER_OR_EQUAL = '>=',
+  IN = 'in',
+}
+
+export interface GetManyAdvancedRequest {
+  readonly collection: PublicCollections;
+
+  readonly uid?: string;
+  readonly subCollection?: PublicSubCollections;
+
+  readonly fieldName: string[];
+  readonly fieldValue: (string | number | boolean)[];
+  readonly operator: Opr[];
+
+  readonly orderBy?: string[];
+  readonly orderByDir?: string[];
+
+  readonly startAfter?: string;
+
+  readonly live?: boolean;
+}

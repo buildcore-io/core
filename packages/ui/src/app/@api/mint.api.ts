@@ -19,6 +19,7 @@ export class MintApi {
     // none.
   }
 
+  // TODO - seems unused
   public getAvailable(type: 'badge' | 'avatar'): Observable<any[]> {
     return collectionData(
       query(

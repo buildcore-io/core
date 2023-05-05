@@ -69,10 +69,13 @@ export class MemberApi extends BaseApi<Member> {
     super(firestore, httpClient);
   }
 
+  // MemberRepository.getByIdLive
   public listen(id: EthAddress): Observable<Member | undefined> {
     return super.listen(id);
   }
 
+  // TokenDistributionRepository.getById
+  // AirdropRepository.getByField
   public soonDistributionStats(
     id: EthAddress,
   ): Observable<TokenDistributionWithAirdrops | undefined> {
@@ -113,6 +116,7 @@ export class MemberApi extends BaseApi<Member> {
     ) as Observable<TokenDistributionWithAirdrops | undefined>;
   }
 
+  // MemberRepository.getByFieldLive, order by createdOn can be done locally
   public listenMultiple(ids: EthAddress[]): Observable<Member[]> {
     const streams: Observable<Member[]>[] = [];
     for (let i = 0, j = ids.length; i < j; i += WHERE_IN_BATCH) {
@@ -133,6 +137,7 @@ export class MemberApi extends BaseApi<Member> {
     );
   }
 
+  // StakeRepository.getByMemberLive
   public topStakes(
     memberId: EthAddress,
     _orderBy: string | string[] = 'createdOn',
@@ -174,6 +179,8 @@ export class MemberApi extends BaseApi<Member> {
     );
   }
 
+  // TokenDistributionRepository.getTopBySubColIdLive
+  // AirdropRepository.getByField
   public topTokens(
     memberId: EthAddress,
     _orderBy: string | string[] = 'createdOn',
@@ -219,6 +226,7 @@ export class MemberApi extends BaseApi<Member> {
     );
   }
 
+  // SpaceMemberRepository.getTopBySubColIdLive
   public topSpaces(
     memberId: EthAddress,
     orderBy: string | string[] = 'createdOn',
@@ -235,6 +243,7 @@ export class MemberApi extends BaseApi<Member> {
     });
   }
 
+  // SpaceKnockingMemberRepository.getTopBySubColIdLive
   public pendingSpaces(
     memberId: EthAddress,
     orderBy: string | string[] = 'createdOn',
@@ -251,6 +260,7 @@ export class MemberApi extends BaseApi<Member> {
     });
   }
 
+  // AwardParticipantRepository.getTopByMemberLive
   // TODO We need to tweak this to make sure don't filter locally.
   public topAwardsPending(
     memberId: EthAddress,
@@ -270,6 +280,7 @@ export class MemberApi extends BaseApi<Member> {
   }
 
   // TODO We need to tweak this to make sure don't filter locally.
+  // AwardParticipantRepository.getTopByMemberLive
   public topAwardsCompleted(
     memberId: EthAddress,
     orderBy: string | string[] = 'createdOn',
@@ -287,6 +298,7 @@ export class MemberApi extends BaseApi<Member> {
     });
   }
 
+  // ProposalMemberRepository.getTopBySubColIdLive
   // TODO We need to tweak this to make sure don't filter locally.
   public topProposals(
     memberId: EthAddress,
@@ -310,6 +322,7 @@ export class MemberApi extends BaseApi<Member> {
     });
   }
 
+  // TransactionRepository.getBadgesForMemberLive
   public topBadges(
     memberId: string,
     orderBy: string | string[] = 'createdOn',
@@ -335,6 +348,7 @@ export class MemberApi extends BaseApi<Member> {
     ) as Observable<Transaction[]>;
   }
 
+  // TransactionRepository.getTopLive
   public topTransactions(
     memberId: string,
     orderBy: string | string[] = 'createdOn',
@@ -399,6 +413,7 @@ export class MemberApi extends BaseApi<Member> {
     ) as Observable<Transaction[]>;
   }
 
+  // SpaceMemberRepository.getTopBySubColIdLive
   public allSpacesAsMember(memberId: EthAddress): Observable<Space[]> {
     return collectionData(
       query(

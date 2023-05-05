@@ -72,6 +72,7 @@ export class NftApi extends BaseApi<Nft> {
     return this.request(WEN_FUNC.stakeNft, req);
   }
 
+  // TransactionRepository.getByField
   public successfullOrders(
     nftId: string,
     network?: Network,
@@ -141,6 +142,7 @@ export class NftApi extends BaseApi<Nft> {
     );
   }
 
+  // TransactionRepository.getNftOffers
   public getOffers(nft: Nft): Observable<OffersHistory[]> {
     return collectionData(
       query(
@@ -175,6 +177,7 @@ export class NftApi extends BaseApi<Nft> {
     );
   }
 
+  // TransactionRepository.getMembersBidsLive
   public getMembersBids(
     member: Member,
     nft: Nft,
@@ -229,6 +232,7 @@ export class NftApi extends BaseApi<Nft> {
     );
   }
 
+  // NftRepository.getLatestByCollectionLive
   public lastCollection(
     collection: string,
     lastValue?: number,
@@ -244,6 +248,7 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
+  // NftRepository.getLatestByCollectionLive
   public positionInCollection(
     collection: string,
     lastValue?: number,
@@ -259,6 +264,7 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
+  // NftRepository.getByOwnerLive
   public topMember(member: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query({
       collection: this.collection,

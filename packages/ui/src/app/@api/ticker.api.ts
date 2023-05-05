@@ -15,6 +15,7 @@ export class TickerApi extends BaseApi<Ticker> {
     super(firestore, httpClient);
   }
 
+  // TickerRepository.getByIdLive
   public listen(id: string): Observable<Ticker | undefined> {
     return docData(doc(this.firestore, this.collection, id)) as Observable<Ticker | undefined>;
   }

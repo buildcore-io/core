@@ -351,6 +351,7 @@ jobs:
           firebase emulators:exec "
                 npm run test-online:ci -- --findRelatedTests test/api/getUpdatedAfter.spec.ts &&
                 npm run test-online:ci -- --findRelatedTests test/api/getTokenPrice.spec.ts &&
+                npm run test-online:ci -- --findRelatedTests test/api/getManyAdvanced.spec.ts &&
                 npm run test-online:ci -- --findRelatedTests test/api/getMany.spec.ts &&
                 npm run test-online:ci -- --findRelatedTests test/api/getById.spec.ts &&
                 npm run test-online:ci -- --findRelatedTests test/api/getAddresses.spec.ts &&

@@ -51,6 +51,7 @@ export class AwardApi extends BaseApi<Award> {
   }
 
   // TODO implement pagination
+  // AwardRepository.getBySpaceAndFilterLive
   public listenSpace(space: string, filter: AwardFilter = AwardFilter.ALL): Observable<Award[]> {
     const constraints = [];
     constraints.push(where('space', '==', space));
@@ -74,6 +75,7 @@ export class AwardApi extends BaseApi<Award> {
     ) as Observable<Award[]>;
   }
 
+  // AwardRepository.getByFieldLive
   public listenOwners(award: string, lastValue?: number): Observable<Member[]> {
     return this.subCollectionMembers({
       docId: award,
@@ -82,6 +84,7 @@ export class AwardApi extends BaseApi<Award> {
     });
   }
 
+  // AwardRepository.getLastActiveLive
   public lastActive(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
     return this._query({
       collection: this.collection,
@@ -98,6 +101,7 @@ export class AwardApi extends BaseApi<Award> {
   }
 
   // TODO: Fix typings.
+  // AwardParticipantRepository.getParticipantsLive
   public listenPendingParticipants<AwardParticipantWithMember>(
     award: string,
     lastValue?: number,
@@ -122,6 +126,7 @@ export class AwardApi extends BaseApi<Award> {
   }
 
   // TODO: Fix typings.
+  // AwardParticipantRepository.getParticipantsLive
   public listenIssuedParticipants<AwardParticipantWithMember>(
     award: string,
     lastValue?: number,
@@ -145,6 +150,7 @@ export class AwardApi extends BaseApi<Award> {
     });
   }
 
+  // AwardParticipantRepository.getByIdLive
   public isMemberParticipant(awardId: string, memberId: string): Observable<boolean> {
     if (!awardId || !memberId) {
       return of(false);

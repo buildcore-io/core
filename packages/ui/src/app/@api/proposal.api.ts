@@ -58,10 +58,12 @@ export class ProposalApi extends BaseApi<Proposal> {
     super(firestore, httpClient);
   }
 
+  // ProposalRepository.getByIdLive
   public listen(id: EthAddress): Observable<Proposal | undefined> {
     return super.listen(id);
   }
 
+  // ProposalRepository.getActiveLive
   public lastActive(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
     return this._query({
       collection: this.collection,
@@ -74,6 +76,7 @@ export class ProposalApi extends BaseApi<Proposal> {
   }
 
   // TODO implement pagination
+  // ProposalRepository.getBySpaceAndFilterLive
   public listenSpace(
     space: string,
     filter: ProposalFilter = ProposalFilter.ALL,
@@ -97,6 +100,7 @@ export class ProposalApi extends BaseApi<Proposal> {
     ) as Observable<Proposal[]>;
   }
 
+  // ProposalRepository.getLatestVotesForProposalLive
   public lastVotes(proposalId: string): Observable<TransactionWithFullMember[]> {
     return collectionData(
       query(
@@ -134,6 +138,7 @@ export class ProposalApi extends BaseApi<Proposal> {
     );
   }
 
+  // ProposalRepository.getLatestVotesForProposalLive
   public getMembersVotes(proposalId: string, memberId: string): Observable<Transaction[]> {
     return collectionData(
       query(
@@ -147,6 +152,7 @@ export class ProposalApi extends BaseApi<Proposal> {
     ) as Observable<Transaction[]>;
   }
 
+  // ProposalMemberRepository.getById
   public canMemberVote(proposalId: string, memberId: string): Observable<boolean> {
     if (!proposalId || !memberId) {
       return of(false);
@@ -167,6 +173,7 @@ export class ProposalApi extends BaseApi<Proposal> {
     );
   }
 
+  // ProposalMemberRepository.getVotingMembersLive
   public listenPendingMembers(
     proposalId: string,
     lastValue?: number,
@@ -193,6 +200,7 @@ export class ProposalApi extends BaseApi<Proposal> {
     });
   }
 
+  // ProposalMemberRepository.getVotingMembersLive
   public listenVotedMembers(
     proposalId: string,
     lastValue?: number,

@@ -38,6 +38,7 @@ export class OrderApi extends BaseApi<Transaction> {
     return this.request(WEN_FUNC.openBid, req);
   }
 
+  // TransactionRepository.getManyByIdLive - order by can be done locally
   public listenMultiple(ids: EthAddress[]): Observable<Transaction[]> {
     const streams: Observable<Transaction[]>[] = [];
     for (let i = 0, j = ids.length; i < j; i += WHERE_IN_BATCH) {

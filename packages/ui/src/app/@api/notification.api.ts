@@ -15,6 +15,7 @@ export class NotificationApi extends BaseApi<Notification> {
     super(firestore, httpClient);
   }
 
+  // NotificationRepository.getByMemberLive
   public topMember(
     memberUid: string,
     lastValue?: number,

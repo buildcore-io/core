@@ -43,6 +43,7 @@ export const QUERY_MAX_LENGTH = 100;
 export enum ApiRoutes {
   GET_BY_ID = '/getById',
   GET_MANY = '/getMany',
+  GET_MANY_ADVANCED = '/getManyAdvanced',
   GET_UPDATED_AFTER = '/getUpdatedAfter',
   GET_TOKEN_PRICE = '/getTokenPrice',
   GET_ADDRESSES = '/addresses',

@@ -89,6 +89,7 @@ export class TokenApi extends BaseApi<Token> {
     return this.request(WEN_FUNC.enableTokenTrading, req);
   }
 
+  // TokenDistributionRepository.getByIdLive
   public getMembersDistribution(
     tokenId: string,
     memberId: string,
@@ -108,6 +109,7 @@ export class TokenApi extends BaseApi<Token> {
     ) as Observable<TokenDistribution | undefined>;
   }
 
+  // TokenDistributionRepository.getAllLive
   public getDistributions(tokenId?: string): Observable<TokenDistribution[] | undefined> {
     if (!tokenId) {
       return of(undefined);
@@ -120,6 +122,7 @@ export class TokenApi extends BaseApi<Token> {
     ) as Observable<TokenDistribution[]>;
   }
 
+  // TokenStatsRepository.getByIdLive
   public stats(tokenId: string): Observable<TokenStats | undefined> {
     if (!tokenId) {
       return of(undefined);
@@ -136,6 +139,7 @@ export class TokenApi extends BaseApi<Token> {
     ) as Observable<TokenStats | undefined>;
   }
 
+  // TokenRepository.getByStatusLive (first arg [])
   public topPublic(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,
@@ -147,6 +151,7 @@ export class TokenApi extends BaseApi<Token> {
     });
   }
 
+  // TokenRepository.getLatestLive
   public top(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,
@@ -157,6 +162,7 @@ export class TokenApi extends BaseApi<Token> {
     });
   }
 
+  // TokenRepository.getBySpaceLive
   public space(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,
@@ -168,6 +174,7 @@ export class TokenApi extends BaseApi<Token> {
     });
   }
 
+  // TokenRepository.getByStatusLive
   public tradingPairs(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,
@@ -182,6 +189,7 @@ export class TokenApi extends BaseApi<Token> {
     });
   }
 
+  // TokenRepository.getByStatusLive
   public launchpad(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,

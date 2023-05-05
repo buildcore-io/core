@@ -6,6 +6,7 @@ import { onRequestConfig } from '../firebase/functions/onRequest';
 import { getAddresses } from './getAddresses';
 import { getById } from './getById';
 import { getMany } from './getMany';
+import { getManyAdvanced } from './getManyAdvanced';
 import { getTokenPrice } from './getTokenPrice';
 import { getUpdatedAfter } from './getUpdatedAfter';
 import { keepAlive } from './keepAlive';
@@ -25,6 +26,8 @@ const getHandler = (url: string) => {
       return getById;
     case ApiRoutes.GET_MANY:
       return getMany;
+    case ApiRoutes.GET_MANY_ADVANCED:
+      return getManyAdvanced;
     case ApiRoutes.GET_UPDATED_AFTER:
       return getUpdatedAfter;
     case ApiRoutes.GET_TOKEN_PRICE:

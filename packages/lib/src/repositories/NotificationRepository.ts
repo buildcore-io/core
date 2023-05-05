@@ -1,4 +1,4 @@
-import { Notification, PublicCollections } from '@soonaverse/interfaces';
+import { Notification, Opr, PublicCollections } from '@soonaverse/interfaces';
 import { SoonEnv } from '../Config';
 import { CrudRepository } from './CrudRepository';
 
@@ -6,4 +6,17 @@ export class NotificationRepository extends CrudRepository<Notification> {
   constructor(env?: SoonEnv) {
     super(env || SoonEnv.PROD, PublicCollections.NOTIFICATION);
   }
+
+  public getByMemberLive = (member: string, startAfter?: string) => {
+    const params = {
+      collection: this.col,
+      fieldName: ['member'],
+      fieldValue: [member],
+      operator: [Opr.EQUAL],
+      startAfter,
+      orderBy: ['createdOn'],
+      orderByDir: ['desc'],
+    };
+    return this.getManyAdvancedLive(params);
+  };
 }

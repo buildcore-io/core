@@ -20,6 +20,7 @@ export const keepAlive = async (req: functions.https.Request, res: express.Respo
   }
   const docRef = soonDb().doc(`${COL.KEEP_ALIVE}/${body.instanceId}`);
   await docRef.update({});
+  res.status(200).send({ update: true });
 };
 
 export const PING_INTERVAL = 30000;
@@ -44,18 +45,16 @@ export const sendLiveUpdates = async (
       await closeConnection();
       return;
     }
-    res.write(`event: ping\n`);
-    res.write(`data: ${instanceId}\n\n`);
+    res.write(`event: ping\ndata: ${instanceId}\n\n`);
   };
 
   await ping();
   const pingInterval = setInterval(async () => {
     await ping();
-  }, PING_INTERVAL);
+  }, PING_INTERVAL * 0.8);
 
   const unsubscribe = func((data) => {
-    res.write(`event: update\n`);
-    res.write(`data: ${JSON.stringify(filter ? filter(data) : data)}\n\n`);
+    res.write(`event: update\ndata: ${JSON.stringify(filter ? filter(data) : data)}\n\n`);
   });
 
   res.on('close', async () => {

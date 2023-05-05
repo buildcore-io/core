@@ -75,6 +75,7 @@ export class BaseApi<T> {
 
   constructor(protected firestore: Firestore, protected httpClient: HttpClient) {}
 
+  // CrudRepository.getByIdLive
   public listen(id: string): Observable<T | undefined> {
     return docData(doc(this.firestore, this.collection, id.toLowerCase())) as Observable<
       T | undefined

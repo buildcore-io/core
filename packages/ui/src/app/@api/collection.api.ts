@@ -42,6 +42,7 @@ export class CollectionApi extends BaseApi<Collection> {
     return this.request(WEN_FUNC.rankController, req);
   }
 
+  // CollectionStatsRepository.getByIdLive
   public stats(collectionId: string): Observable<CollectionStats | undefined> {
     if (!collectionId) {
       return of(undefined);
@@ -58,6 +59,7 @@ export class CollectionApi extends BaseApi<Collection> {
     ) as Observable<CollectionStats | undefined>;
   }
 
+  // CollectionRepository.getAllPendingLive
   public allPendingSpace(
     space: string,
     lastValue?: number,
@@ -77,6 +79,7 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
+  // CollectionRepository.getAllAvailableLive
   public allAvailableSpace(
     space: string,
     lastValue?: number,
@@ -92,6 +95,7 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
+  // CollectionRepository.getAllRejectedLive
   public allRejectedSpace(
     space: string,
     lastValue?: number,

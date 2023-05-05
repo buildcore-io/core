@@ -15,6 +15,7 @@ export class TransactionApi extends BaseApi<Transaction> {
     super(firestore, httpClient);
   }
 
+  // TransactionRepository.getByIdLive
   public listen(id: EthAddress): Observable<Transaction | undefined> {
     return super.listen(id);
   }

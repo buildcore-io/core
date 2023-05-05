@@ -9,7 +9,7 @@ export const wrappedFetch = <T>(url: string, params: Record<string, unknown>) =>
       });
   });
 
-const toQueryParams = (params: Record<string, unknown>) => {
+export const toQueryParams = (params: Record<string, unknown>) => {
   let query = '';
   for (const entry of Object.entries(params)) {
     if (entry[1] === undefined) {

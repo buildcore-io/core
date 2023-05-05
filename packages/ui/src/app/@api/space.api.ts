@@ -15,6 +15,7 @@ export class SpaceApi extends BaseApi<Space> {
     super(firestore, httpClient);
   }
 
+  // SpaceMemberRepository.getByIdLive
   public isMemberWithinSpace(spaceId: string, memberId: string): Observable<boolean> {
     if (!spaceId || !memberId) {
       return of(false);
@@ -35,6 +36,7 @@ export class SpaceApi extends BaseApi<Space> {
     );
   }
 
+  // SpaceGuardianRepository.getByIdLive
   public isGuardianWithinSpace(spaceId: string, memberId: string): Observable<boolean> {
     if (!spaceId || !memberId) {
       return of(false);
@@ -55,6 +57,7 @@ export class SpaceApi extends BaseApi<Space> {
     );
   }
 
+  // SpaceKnockingMemberRepository.getByIdLive
   public isPendingMemberWithinSpace(spaceId: string, memberId: string): Observable<boolean> {
     if (!spaceId || !memberId) {
       return of(false);
@@ -75,6 +78,7 @@ export class SpaceApi extends BaseApi<Space> {
     );
   }
 
+  // SpaceGuardianRepository.getAllLive
   public listenGuardians(
     spaceId: string,
     lastValue?: number,
@@ -88,6 +92,7 @@ export class SpaceApi extends BaseApi<Space> {
     });
   }
 
+  // SpaceMemberRepository.getAllLive
   public listenMembersWithoutData(
     spaceId: string,
     lastValue?: number,
@@ -103,6 +108,7 @@ export class SpaceApi extends BaseApi<Space> {
     });
   }
 
+  // SpaceMemberRepository.getAllLive
   public listenMembers(
     spaceId: string,
     lastValue?: number,
@@ -118,6 +124,7 @@ export class SpaceApi extends BaseApi<Space> {
     });
   }
 
+  // SpaceBlockedMemberRepository.getAllLive
   public listenBlockedMembers(
     spaceId: string,
     lastValue?: number,
@@ -131,6 +138,7 @@ export class SpaceApi extends BaseApi<Space> {
     });
   }
 
+  // SpaceKnockingMemberRepository.getAllLive
   public listenPendingMembers(
     spaceId: string,
     lastValue?: number,
