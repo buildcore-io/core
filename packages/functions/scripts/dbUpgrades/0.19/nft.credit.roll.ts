@@ -17,14 +17,14 @@ export const nftCreditRoll = async (app: FirebaseApp) => {
   for (const trans of transactions) {
     const address = trans.payload.sourceAddress as string;
     if (!address.startsWith('smr')) {
-      return;
+      continue;
     }
 
     const client = new SingleNodeClient('https://smr1.svrs.io/');
     const indexer = new IndexerPluginClient(client);
     const nfts = (await indexer.nfts({ addressBech32: address })).items;
     if (nfts.length !== 1) {
-      return;
+      continue;
     }
 
     const outputResponse = await client.output(nfts[0]);
