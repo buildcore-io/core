@@ -4,6 +4,7 @@ import {
   Bech32Helper,
   EXPIRATION_UNLOCK_CONDITION_TYPE,
   REFERENCE_UNLOCK_TYPE,
+  STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
   TAG_FEATURE_TYPE,
   TransactionHelper,
   UnlockTypes,
@@ -11,13 +12,13 @@ import {
 import { Converter } from '@iota/util.js-next';
 import {
   Access,
-  Categories,
   COL,
+  Categories,
   Collection,
   CollectionStatus,
   CollectionType,
-  Member,
   MIN_IOTA_AMOUNT,
+  Member,
   Network,
   Nft,
   NftAccess,
@@ -42,9 +43,9 @@ import {
   setForSaleNft,
   withdrawNft,
 } from '../../src/runtime/firebase/nft/index';
-import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
+import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
 import { mergeOutputs, packBasicOutput } from '../../src/utils/basic-output.utils';
@@ -61,7 +62,7 @@ import {
   submitMilestoneFunc,
   wait,
 } from '../../test/controls/common';
-import { getWallet, MEDIA, testEnv } from '../../test/set-up';
+import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 
 export class Helper {
@@ -177,6 +178,7 @@ export class Helper {
     nftId?: string,
     extraAmount = 0,
     tag = '',
+    storageDeposit = false,
   ) => {
     await requestFundsFromFaucet(
       this.network,
@@ -210,6 +212,16 @@ export class Helper {
           this.walletService!.info.protocol.bech32Hrp,
         ),
         unixTime: dayjs(expiresOn.toDate()).unix(),
+      });
+    }
+    if (storageDeposit) {
+      nftOutput.unlockConditions.push({
+        type: STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
+        returnAddress: Bech32Helper.addressFromBech32(
+          sourceAddress.bech32,
+          this.walletService!.info.protocol.bech32Hrp,
+        ),
+        amount: nftOutput.amount,
       });
     }
     const consumedExtraAmount = extraAmount || expiresOn ? extraAmount || MIN_IOTA_AMOUNT : 0;

@@ -444,7 +444,7 @@ export class TransactionService {
       };
       const payment = await this.createPayment(order, match, true);
       const ignoreWalletReason = this.getIngnoreWalletReason(tranOutput.unlockConditions || []);
-      if (order.payload.type === TransactionOrderType.DEPOSIT_NFT) {
+      if (match.to.nftOutput?.nftId) {
         this.createNftCredit(payment, match, undefined, undefined, ignoreWalletReason);
         return;
       }
