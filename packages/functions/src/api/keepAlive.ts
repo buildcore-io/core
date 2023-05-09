@@ -29,6 +29,15 @@ export const sendLiveUpdates = async (
   func: (callback: (data: any) => void) => () => void,
   filter?: (data: any) => any,
 ) => {
+  const instanceId = getRandomEthAddress();
+
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+
+  const keepAliveDocRef = soonDb().doc(`${COL.KEEP_ALIVE}/${instanceId}`);
+  await keepAliveDocRef.create({});
+
   const ping = async () => {
     const instance = await keepAliveDocRef.get<BaseRecord>();
     if (!instance || dayjs().diff(dayjs(instance.updatedOn?.toDate())) > PING_INTERVAL) {
@@ -38,15 +47,6 @@ export const sendLiveUpdates = async (
     res.write(`event: ping\n`);
     res.write(`data: ${instanceId}\n\n`);
   };
-
-  const instanceId = getRandomEthAddress();
-
-  const keepAliveDocRef = soonDb().doc(`${COL.KEEP_ALIVE}/${instanceId}`);
-  await keepAliveDocRef.create({});
-
-  res.setHeader('Content-Type', 'text/event-stream');
-  res.setHeader('Cache-Control', 'no-cache');
-  res.setHeader('Connection', 'keep-alive');
 
   await ping();
   const pingInterval = setInterval(async () => {
