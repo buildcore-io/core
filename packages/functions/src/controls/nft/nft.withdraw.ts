@@ -1,4 +1,12 @@
-import { COL, Member, Nft, NftStatus, WenError } from '@soonaverse/interfaces';
+import {
+  COL,
+  Collection,
+  CollectionStatus,
+  Member,
+  Nft,
+  NftStatus,
+  WenError,
+} from '@soonaverse/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { createNftWithdrawOrder } from '../../services/payment/tangle-service/nft-purchase.service';
 import { assertMemberHasValidAddress, getAddress } from '../../utils/address.utils';
@@ -28,6 +36,12 @@ export const withdrawNftControl = async (owner: string, params: Record<string, u
       throw invalidArgument(WenError.nft_set_as_avatar);
     }
 
+    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nft.collection}`);
+    const collection = await collectionDocRef.get<Collection>();
+    if (collection?.status !== CollectionStatus.MINTED) {
+      throw invalidArgument(WenError.nft_not_minted);
+    }
+
     const memberDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
     const member = await memberDocRef.get<Member>();
     assertMemberHasValidAddress(member, nft.mintingData?.network!);
@@ -41,6 +55,5 @@ export const withdrawNftControl = async (owner: string, params: Record<string, u
     transaction.create(orderDocRef, order);
     transaction.update(nftDocRef, nftUpdateData);
 
-    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nft.collection}`);
     transaction.update(collectionDocRef, { total: soonDb().inc(-1) });
   });
