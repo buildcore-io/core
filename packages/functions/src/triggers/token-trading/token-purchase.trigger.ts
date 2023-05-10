@@ -1,13 +1,16 @@
 import { COL, SUB_COL, TokenPurchase, WEN_FUNC_TRIGGER } from '@soonaverse/interfaces';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { scale } from '../../scale.settings';
 
-export const onTokenPurchaseCreated = functions
-  .runWith({ minInstances: scale(WEN_FUNC_TRIGGER.onTokenPurchaseCreated) })
-  .firestore.document(COL.TOKEN_PURCHASE + '/{docId}')
-  .onCreate(async (snap) => {
-    const data = <TokenPurchase>snap.data();
+export const onTokenPurchaseCreated = functions.firestore.onDocumentCreated(
+  {
+    document: COL.TOKEN_PURCHASE + '/{docId}',
+    minInstances: scale(WEN_FUNC_TRIGGER.onTokenPurchaseCreated),
+    concurrency: 1000,
+  },
+  async (event) => {
+    const data = <TokenPurchase>event.data!.data();
     if (!data.token) {
       return;
     }
@@ -21,4 +24,5 @@ export const onTokenPurchaseCreated = functions
         },
         true,
       );
-  });
+  },
+);

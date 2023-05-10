@@ -19,7 +19,7 @@ import {
   TransactionType,
   WEN_FUNC_TRIGGER,
 } from '@soonaverse/interfaces';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
 import { IBatch } from '../firebase/firestore/interfaces';
@@ -40,16 +40,16 @@ import {
 } from '../utils/token.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 
-export const onTokenStatusUpdate = functions
-  .runWith({
+export const onTokenStatusUpdate = functions.firestore.onDocumentUpdated(
+  {
     timeoutSeconds: 540,
-    memory: '4GB',
+    memory: '4GiB',
     minInstances: scale(WEN_FUNC_TRIGGER.onTokenStatusUpdate),
-  })
-  .firestore.document(COL.TOKEN + '/{tokenId}')
-  .onUpdate(async (change) => {
-    const prev = <Token | undefined>change.before.data();
-    const curr = <Token | undefined>change.after.data();
+    document: COL.TOKEN + '/{tokenId}',
+  },
+  async (event) => {
+    const prev = <Token | undefined>event.data?.before?.data();
+    const curr = <Token | undefined>event.data?.after?.data();
 
     if (prev?.status === TokenStatus.AVAILABLE && curr?.status === TokenStatus.PROCESSING) {
       return await processTokenDistribution(curr!);
@@ -66,7 +66,8 @@ export const onTokenStatusUpdate = functions
     if (prev?.mintingData?.tokensInVault && curr?.mintingData?.tokensInVault === 0) {
       await onTokenVaultEmptied(curr);
     }
-  });
+  },
+);
 
 const getTokenCount = (token: Token, amount: number) => Math.floor(amount / token.pricePerToken);
 

@@ -8,22 +8,17 @@ import {
   TransactionAwardType,
   TransactionCreditType,
   TransactionType,
-  WEN_FUNC_TRIGGER,
 } from '@soonaverse/interfaces';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { soonDb } from '../firebase/firestore/soondb';
-import { scale } from '../scale.settings';
 import { getAddress } from '../utils/address.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
-export const awardUpdateTrigger = functions
-  .runWith({
-    timeoutSeconds: 540,
-    minInstances: scale(WEN_FUNC_TRIGGER.awardTrigger),
-  })
-  .firestore.document(COL.AWARD + '/{awardId}')
-  .onUpdate(async (change) => {
-    const prev = <Award>change.before.data();
-    const curr = <Award | undefined>change.after.data();
+
+export const awardUpdateTrigger = functions.firestore.onDocumentUpdated(
+  { document: COL.AWARD + '/{awardId}', concurrency: 1000 },
+  async (event) => {
+    const prev = <Award>event.data?.before?.data();
+    const curr = <Award | undefined>event.data?.after?.data();
     if (!curr || !curr.funded) {
       return;
     }
@@ -118,4 +113,5 @@ export const awardUpdateTrigger = functions
       };
       await soonDb().doc(`${COL.TRANSACTION}/${nativeTokensCredit.uid}`).create(nativeTokensCredit);
     }
-  });
+  },
+);

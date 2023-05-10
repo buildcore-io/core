@@ -15,27 +15,22 @@ import {
   SUB_COL,
   TokenDistribution,
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
-  WEN_FUNC_TRIGGER,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { get, set } from 'lodash';
 import { soonDb } from '../firebase/firestore/soondb';
-import { scale } from '../scale.settings';
 import { getStakeForType } from '../services/stake.service';
 import { downloadMediaAndPackCar } from '../utils/car.utils';
 import { dateToTimestamp } from '../utils/dateTime.utils';
 import { spaceToIpfsMetadata } from '../utils/space.utils';
 import { getTokenForSpace } from '../utils/token.utils';
 
-export const onProposalUpdated = functions
-  .runWith({
-    minInstances: scale(WEN_FUNC_TRIGGER.onProposalUpdated),
-  })
-  .firestore.document(COL.PROPOSAL + '/{proposalId}')
-  .onWrite(async (change) => {
-    const prev = <Proposal | undefined>change.before.data();
-    const curr = <Proposal | undefined>change.after.data();
+export const onProposalUpdated = functions.firestore.onDocumentWritten(
+  { document: COL.PROPOSAL + '/{proposalId}' },
+  async (event) => {
+    const prev = <Proposal | undefined>event.data?.before?.data();
+    const curr = <Proposal | undefined>event.data?.after?.data();
     if (!curr) {
       return;
     }
@@ -60,7 +55,8 @@ export const onProposalUpdated = functions
     ) {
       return await onRemoveStakeRewardApporved(curr);
     }
-  });
+  },
+);
 
 const isAddRemoveGuardianVote = (curr: Proposal) =>
   [ProposalType.ADD_GUARDIAN, ProposalType.REMOVE_GUARDIAN].includes(curr.type);

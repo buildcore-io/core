@@ -12,7 +12,7 @@ import {
   UnsoldMintingOptions,
   WEN_FUNC_TRIGGER,
 } from '@soonaverse/interfaces';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { last } from 'lodash';
 import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
 import { scale } from '../scale.settings';
@@ -20,16 +20,16 @@ import { getAddress } from '../utils/address.utils';
 import { collectionToIpfsMetadata, downloadMediaAndPackCar } from '../utils/car.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 
-export const collectionWrite = functions
-  .runWith({
+export const collectionWrite = functions.firestore.onDocumentUpdated(
+  {
+    document: COL.COLLECTION + '/{collectionId}',
     timeoutSeconds: 540,
     minInstances: scale(WEN_FUNC_TRIGGER.collectionWrite),
-    memory: '1GB',
-  })
-  .firestore.document(COL.COLLECTION + '/{collectionId}')
-  .onUpdate(async (change) => {
-    const prev = <Collection>change.before.data();
-    const curr = <Collection>change.after.data();
+    memory: '1GiB',
+  },
+  async (event) => {
+    const prev = <Collection>event.data?.before?.data();
+    const curr = <Collection>event.data?.after?.data();
     if (!curr) {
       return;
     }
@@ -59,7 +59,8 @@ export const collectionWrite = functions
     } catch (error) {
       functions.logger.error(curr.uid, error);
     }
-  });
+  },
+);
 
 const updateNftApprovalState = async (collectionId: string) => {
   let lastDocId = '';

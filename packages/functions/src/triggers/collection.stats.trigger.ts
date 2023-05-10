@@ -1,25 +1,22 @@
-import { COL, CollectionStats, SUB_COL, WEN_FUNC_TRIGGER } from '@soonaverse/interfaces';
-import * as functions from 'firebase-functions';
+import { COL, CollectionStats, SUB_COL } from '@soonaverse/interfaces';
+import * as functions from 'firebase-functions/v2';
 import { soonDb } from '../firebase/firestore/soondb';
-import { scale } from '../scale.settings';
 import { getRankingThreshold } from '../utils/config.utils';
 
-export const collectionStatsUpdate = functions
-  .runWith({
-    minInstances: scale(WEN_FUNC_TRIGGER.collectionStatsUpdate),
-  })
-  .firestore.document(`${COL.COLLECTION}/{collectionId}/${SUB_COL.STATS}/{subDocId}`)
-  .onWrite(async (change, context) => {
-    const prev = <CollectionStats | undefined>change.before.data();
-    const curr = <CollectionStats | undefined>change.after.data();
+export const collectionStatsUpdate = functions.firestore.onDocumentWritten(
+  { document: `${COL.COLLECTION}/{collectionId}/${SUB_COL.STATS}/{subDocId}`, concurrency: 1000 },
+  async (event) => {
+    const prev = <CollectionStats | undefined>event.data?.before?.data();
+    const curr = <CollectionStats | undefined>event.data?.after?.data();
     if (!curr) {
       return;
     }
 
     if (rankingThresholdReached(prev, curr)) {
-      await onRankingThresholdReached(context.params.collectionId);
+      await onRankingThresholdReached(event.params.collectionId);
     }
-  });
+  },
+);
 
 const rankingThresholdReached = (
   prev: CollectionStats | undefined,
