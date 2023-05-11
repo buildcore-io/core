@@ -18,7 +18,7 @@ import {
   WalletResult,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { isEmpty } from 'lodash';
 import { ITransaction } from '../../firebase/firestore/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
@@ -54,16 +54,16 @@ export const EXECUTABLE_TRANSACTIONS = [
   TransactionType.AWARD,
 ];
 
-export const transactionWrite = functions
-  .runWith({
+export const transactionWrite = functions.firestore.onDocumentWritten(
+  {
+    document: COL.TRANSACTION + '/{tranId}',
     timeoutSeconds: 540,
     minInstances: scale(WEN_FUNC_TRIGGER.transactionWrite),
-    memory: '4GB',
-  })
-  .firestore.document(COL.TRANSACTION + '/{tranId}')
-  .onWrite(async (change) => {
-    const prev = <Transaction | undefined>change.before.data();
-    const curr = <Transaction | undefined>change.after.data();
+    memory: '4GiB',
+  },
+  async (event) => {
+    const prev = <Transaction | undefined>event.data?.before?.data();
+    const curr = <Transaction | undefined>event.data?.after?.data();
 
     if (!curr) {
       return;
@@ -172,7 +172,8 @@ export const transactionWrite = functions
       const awardDocRef = soonDb().doc(`${COL.AWARD}/${curr.payload.award}`);
       await awardDocRef.update({ airdropClaimed: soonDb().inc(1) });
     }
-  });
+  },
+);
 
 const executeTransaction = async (transactionId: string) => {
   const shouldProcess = await prepareTransaction(transactionId);

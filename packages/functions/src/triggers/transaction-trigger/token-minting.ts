@@ -17,7 +17,7 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { getAddress } from '../../utils/address.utils';
 import { indexToString } from '../../utils/block.utils';

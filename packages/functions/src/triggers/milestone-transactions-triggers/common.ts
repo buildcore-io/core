@@ -4,6 +4,7 @@ import { Converter } from '@iota/util.js';
 import { Converter as ConverterNext } from '@iota/util.js-next';
 import { COL, Network, Transaction, WEN_FUNC_TRIGGER } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
+import { DocumentOptions } from 'firebase-functions/v2/firestore';
 import { isEmpty } from 'lodash';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { scale } from '../../scale.settings';
@@ -13,7 +14,7 @@ import { WalletService } from '../../services/wallet/wallet';
 export const milestoneTriggerConfig = {
   timeoutSeconds: 300,
   minInstances: scale(WEN_FUNC_TRIGGER.milestoneTransactionWrite),
-};
+} as DocumentOptions<string>;
 
 export const confirmTransaction = async (
   milestoneTransactionPath: string,

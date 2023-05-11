@@ -6,7 +6,7 @@ import {
   NftAvailable,
   WEN_FUNC_TRIGGER,
 } from '@soonaverse/interfaces';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { soonDb } from '../firebase/firestore/soondb';
 import { scale } from '../scale.settings';
 import { downloadMediaAndPackCar, nftToIpfsMetadata } from '../utils/car.utils';
@@ -27,16 +27,16 @@ const getNftAvailability = (nft: Nft | undefined) => {
   return NftAvailable.UNAVAILABLE;
 };
 
-export const nftWrite = functions
-  .runWith({
+export const nftWrite = functions.firestore.onDocumentWritten(
+  {
     minInstances: scale(WEN_FUNC_TRIGGER.nftWrite),
     timeoutSeconds: 540,
-    memory: '512MB',
-  })
-  .firestore.document(COL.NFT + '/{nftId}')
-  .onWrite(async (change) => {
-    const prev = <Nft | undefined>change.before.data();
-    const curr = <Nft | undefined>change.after.data();
+    memory: '512MiB',
+    document: COL.NFT + '/{nftId}',
+  },
+  async (event) => {
+    const prev = <Nft | undefined>event.data?.before?.data();
+    const curr = <Nft | undefined>event.data?.after?.data();
     if (!curr) {
       return;
     }
@@ -58,13 +58,14 @@ export const nftWrite = functions
         availableNfts: soonDb().inc(availableNfts),
       });
 
-      await change.after.ref.update({ available: currAvailability });
+      await event.data!.after.ref.update({ available: currAvailability });
     }
 
     if (prev?.mediaStatus !== curr.mediaStatus && curr.mediaStatus === MediaStatus.PREPARE_IPFS) {
       await prepareNftMedia(curr);
     }
-  });
+  },
+);
 
 const prepareNftMedia = async (nft: Nft) => {
   const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nft.collection}`);
