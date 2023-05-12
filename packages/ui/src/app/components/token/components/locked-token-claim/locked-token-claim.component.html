@@ -24,18 +24,30 @@
 </ng-template>
 
 <ng-template #confirmTemplate>
-  <div class="relative flex flex-col mt-6 space-y-4 font-medium lg:mt-6">
+  <div
+    class="relative flex flex-col mt-6 space-y-4 font-medium lg:mt-6"
+    *ngIf="this.transaction?.payload.nativeTokens?.[0]?.amount || this.transaction?.payload.nativeTokens?.nft"
+  >
     <div class="info-item">
-      <div i18n>Total available tokens to refund</div>
+      <div i18n>Total available assets to refund</div>
       <div class="mt-1">
-        {{
-          (
-            this.transaction?.payload.nativeTokens?.[0].amount| formatToken:
-            this.transaction?.payload.token:
-            false:
-            false | async
-          )
-        }}
+        <ng-container *ngIf="this.transaction?.payload.nativeTokens?.[0]?.amount">
+          {{
+              (
+                this.transaction?.payload.nativeTokens?.[0].amount| formatToken:
+                this.transaction?.payload.token:
+                false:
+                false | async
+              )
+          }}
+          tokens
+        </ng-container>
+        <ng-container *ngIf="this.transaction?.payload.nft">
+          <ng-container *ngIf="this.transaction?.payload.nativeTokens?.[0]?.amount">
+            &nbsp;+&nbsp;
+          </ng-container>
+          1 NFT
+        </ng-container>
       </div>
     </div>
   </div>
@@ -57,20 +69,30 @@
 <ng-template #transactionTemplate>
   <div class="relative flex flex-col mt-6 font-medium lg:mt-6">
     <div
+      *ngIf="this.transaction?.payload.nativeTokens?.[0]?.amount || this.transaction?.payload.nativeTokens?.nft"
       class="flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14"
     >
       <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-        Total available tokens to refund
+        Total available assets to refund
       </div>
       <div class="mt-1 text-lg font-bold">
-        {{
-          (
-            this.transaction?.payload.nativeTokens?.[0].amount | formatToken:
-            this.transaction?.payload.token:
-            false:
-            false | async
-          )
-        }}
+        <ng-container *ngIf="this.transaction?.payload.nativeTokens?.[0]?.amount">
+          {{
+            (
+              this.transaction?.payload.nativeTokens?.[0].amount| formatToken:
+              this.transaction?.payload.token:
+              false:
+              false | async
+            )
+          }}
+          tokens
+        </ng-container>
+        <ng-container *ngIf="this.transaction?.payload.nft">
+          <ng-container *ngIf="this.transaction?.payload.nativeTokens?.[0]?.amount">
+            &nbsp;+&nbsp;
+          </ng-container>
+          1 NFT
+        </ng-container>
       </div>
     </div>
   </div>
