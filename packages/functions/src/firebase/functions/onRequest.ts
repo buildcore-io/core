@@ -1,6 +1,7 @@
 import { WEN_FUNC } from '@soonaverse/interfaces';
 import cors from 'cors';
 import * as functions from 'firebase-functions/v2';
+import { HttpsOptions } from 'firebase-functions/v2/https';
 import Joi from 'joi';
 import { get } from 'lodash';
 import { scale } from '../../scale.settings';
@@ -19,7 +20,7 @@ export const onRequest =
     func: (owner: string, params: P, customParams?: Record<string, unknown>) => Promise<R>,
     validateOnlyUid = false,
   ) =>
-    functions.https.onRequest(getConfig(funcName, runtimeOptions), (req, res) =>
+    functions.https.onRequest(onRequestConfig(funcName, runtimeOptions), (req, res) =>
       cors({ origin: true })(req, res, async () => {
         try {
           const params = await decodeAuth(req.body.data, funcName);
@@ -44,10 +45,19 @@ export const onRequest =
       }),
     );
 
-export const getConfig = (funcName: WEN_FUNC, runtimeOptions?: functions.https.CallableOptions) => {
-  const config: functions.https.CallableOptions = { minInstances: scale(funcName) };
+export const onRequestConfig = (
+  funcName: WEN_FUNC,
+  runtimeOptions?: functions.https.CallableOptions,
+) => {
+  const config: HttpsOptions = {
+    ingressSettings: 'ALLOW_INTERNAL_AND_GCLB',
+    minInstances: scale(funcName),
+  };
   if (!isEmulatorEnv) {
     config.cors = true;
   }
-  return { ...config, ...runtimeOptions };
+  return {
+    ...config,
+    ...runtimeOptions,
+  } as HttpsOptions;
 };

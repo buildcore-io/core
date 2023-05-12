@@ -2,7 +2,7 @@ import { ApiRoutes, WEN_FUNC } from '@soonaverse/interfaces';
 import cors from 'cors';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
-import { getConfig } from '../firebase/functions/onRequest';
+import { onRequestConfig } from '../firebase/functions/onRequest';
 import { getAddresses } from './getAddresses';
 import { getById } from './getById';
 import { getMany } from './getMany';
@@ -11,7 +11,7 @@ import { getUpdatedAfter } from './getUpdatedAfter';
 import { keepAlive } from './keepAlive';
 
 export const api = functions.https.onRequest(
-  getConfig(WEN_FUNC.api, { timeoutSeconds: 60 }),
+  onRequestConfig(WEN_FUNC.api, { timeoutSeconds: 1800 }),
   (req, res) =>
     cors({ origin: true })(req, res, async () => {
       getHandler(req.url)(req, res);

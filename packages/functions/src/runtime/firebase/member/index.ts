@@ -10,7 +10,7 @@ import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
 import { createMemberControl } from '../../../controls/member/member.create';
 import { updateMemberControl } from '../../../controls/member/member.update';
-import { getConfig, onRequest } from '../../../firebase/functions/onRequest';
+import { onRequest, onRequestConfig } from '../../../firebase/functions/onRequest';
 import { CommonJoi } from '../../../services/joi/common';
 import { assertValidationAsync } from '../../../utils/schema.utils';
 export const updateMemberSchema = Joi.object({
@@ -23,7 +23,7 @@ export const updateMemberSchema = Joi.object({
 });
 
 export const createMember = functions.https.onRequest(
-  getConfig(WEN_FUNC.createMember),
+  onRequestConfig(WEN_FUNC.createMember),
   (req, res) =>
     cors({ origin: true })(req, res, async () => {
       try {
