@@ -1,14 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {
-  collection,
-  collectionData,
-  doc,
-  docData,
-  Firestore,
-  query,
-  where,
-} from '@angular/fire/firestore';
+import { doc, docData, Firestore, where } from '@angular/fire/firestore';
 import {
   Award,
   COL,
@@ -19,6 +11,9 @@ import {
   WEN_FUNC,
   WenRequest,
 } from '@soonaverse/interfaces';
+import { AwardRepository, SoonEnv } from '@soonaverse/lib';
+
+import { environment } from '@env/environment';
 import { map, Observable, of } from 'rxjs';
 import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 
@@ -41,6 +36,9 @@ export enum AwardFilter {
 })
 export class AwardApi extends BaseApi<Award> {
   public collection = COL.AWARD;
+  protected awardRepo: AwardRepository = new AwardRepository(
+    environment.production ? SoonEnv.PROD : SoonEnv.TEST,
+  );
 
   constructor(protected firestore: Firestore, protected httpClient: HttpClient) {
     super(firestore, httpClient);
@@ -53,26 +51,7 @@ export class AwardApi extends BaseApi<Award> {
   // TODO implement pagination
   // AwardRepository.getBySpaceAndFilterLive
   public listenSpace(space: string, filter: AwardFilter = AwardFilter.ALL): Observable<Award[]> {
-    const constraints = [];
-    constraints.push(where('space', '==', space));
-    if (filter === AwardFilter.ACTIVE) {
-      constraints.push(where('endDate', '>=', new Date()));
-      constraints.push(where('completed', '==', false));
-      constraints.push(where('approved', '==', true));
-    } else if (filter === AwardFilter.COMPLETED) {
-      constraints.push(where('completed', '==', true));
-      constraints.push(where('approved', '==', true));
-    } else if (filter === AwardFilter.DRAFT) {
-      constraints.push(where('endDate', '>=', new Date()));
-      constraints.push(where('rejected', '==', false));
-      constraints.push(where('approved', '==', false));
-    } else if (filter === AwardFilter.REJECTED) {
-      constraints.push(where('rejected', '==', true));
-    }
-
-    return collectionData(
-      query(collection(this.firestore, this.collection), ...constraints),
-    ) as Observable<Award[]>;
+    return this.awardRepo.getBySpaceAndFilterLive(space, filter);
   }
 
   // AwardRepository.getByFieldLive
