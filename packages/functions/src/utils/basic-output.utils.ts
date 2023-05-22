@@ -4,6 +4,7 @@ import {
   Bech32Helper,
   EXPIRATION_UNLOCK_CONDITION_TYPE,
   IBasicOutput,
+  ICommonOutput,
   IMetadataFeature,
   INativeToken,
   INodeInfo,
@@ -169,7 +170,7 @@ export const subtractNativeTokens = (
   return result;
 };
 
-export const getOutputMetadata = (output: IBasicOutput | undefined) => {
+export const getOutputMetadata = (output: ICommonOutput | undefined) => {
   try {
     const metadataFeature = <IMetadataFeature | undefined>(
       output?.features?.find((f) => f.type === METADATA_FEATURE_TYPE)

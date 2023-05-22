@@ -1,6 +1,6 @@
 import {
-  AddressTypes,
   ADDRESS_UNLOCK_CONDITION_TYPE,
+  AddressTypes,
   ED25519_ADDRESS_TYPE,
   INftOutput,
   INodeInfo,
@@ -32,17 +32,26 @@ export const createNftOutput = (
   metadata: string,
   info: INodeInfo,
   vestingAt?: dayjs.Dayjs,
+  mutableMetadata?: string,
 ): INftOutput => {
   const output: INftOutput = {
     type: NFT_OUTPUT_TYPE,
     amount: '0',
     nftId: EMPTY_NFT_ID,
-    immutableFeatures: [
-      { type: ISSUER_FEATURE_TYPE, address: issuerAddress },
-      { type: METADATA_FEATURE_TYPE, data: Converter.utf8ToHex(metadata, true) },
-    ],
+    immutableFeatures: [{ type: ISSUER_FEATURE_TYPE, address: issuerAddress }],
     unlockConditions: [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: ownerAddress }],
   };
+  if (metadata) {
+    output.immutableFeatures?.push({
+      type: METADATA_FEATURE_TYPE,
+      data: Converter.utf8ToHex(metadata, true),
+    });
+  }
+  if (mutableMetadata) {
+    output.features = [
+      { type: METADATA_FEATURE_TYPE, data: Converter.utf8ToHex(mutableMetadata, true) },
+    ];
+  }
   if (vestingAt && vestingAt.isAfter(dayjs())) {
     output.unlockConditions.push({
       type: TIMELOCK_UNLOCK_CONDITION_TYPE,

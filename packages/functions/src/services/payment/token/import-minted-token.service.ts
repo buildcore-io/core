@@ -1,6 +1,4 @@
 import {
-  ALIAS_OUTPUT_TYPE,
-  GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE,
   IAliasAddress,
   IAliasOutput,
   IFoundryOutput,
@@ -25,9 +23,9 @@ import Joi from 'joi';
 import { get, isEmpty } from 'lodash';
 import { soonDb } from '../../../firebase/firestore/soondb';
 import { soonStorage } from '../../../firebase/storage/soonStorage';
-import { Bech32AddressHelper } from '../../../utils/bech32-address.helper';
 import { getBucket } from '../../../utils/config.utils';
 import { migrateUriToSotrage, uriToUrl } from '../../../utils/media.utils';
+import { isAliasGovernor } from '../../../utils/token-minting-utils/alias.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';
 import { WalletService } from '../../wallet/wallet';
 import { TransactionMatch, TransactionService } from '../transaction-service';
@@ -162,24 +160,6 @@ export class ImportMintedTokenService {
     return metadata;
   };
 }
-
-const isAliasGovernor = (alias: IAliasOutput, address: string, hrp: string) => {
-  const governors =
-    alias.unlockConditions?.filter((uc) => uc.type === GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE) ||
-    [];
-
-  for (const governor of governors) {
-    const governorBech32 = Bech32AddressHelper.addressFromAddressUnlockCondition(
-      [governor],
-      hrp,
-      ALIAS_OUTPUT_TYPE,
-    );
-    if (governorBech32 === address) {
-      return true;
-    }
-  }
-  return false;
-};
 
 const tokenIrc30Schema = Joi.object({
   name: Joi.string().required(),

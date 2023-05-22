@@ -499,15 +499,18 @@ export class TransactionService {
           amount: Number(nt.amount),
         })),
         sourceAddress: tranOutput.address,
-        targetAddress:
-          type === TransactionUnlockType.TANGLE_TRANSFER
-            ? order.payload.targetAddress
-            : tranOutput.address,
+        targetAddress: [
+          TransactionUnlockType.TANGLE_TRANSFER,
+          TransactionUnlockType.UNLOCK_NFT,
+        ].includes(type)
+          ? order.payload.targetAddress
+          : tranOutput.address,
         sourceTransaction: [order.uid],
         expiresOn: expiresOn || dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
         milestoneTransactionPath: `${COL.MILESTONE}_${network}/${tran.milestone}/${SUB_COL.TRANSACTIONS}/${tran.uid}`,
         outputToConsume,
         customMetadata: getOutputMetadata(tranOutput.output),
+        nftId: tranOutput.nftOutput?.nftId || '',
       },
     };
     this.updates.push({

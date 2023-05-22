@@ -1,4 +1,5 @@
 import { COL, Space, SUB_COL, WenError } from '@soonaverse/interfaces';
+import { head } from 'lodash';
 import { soonDb } from '../firebase/firestore/soondb';
 import { serverTime } from './dateTime.utils';
 import { invalidArgument } from './error.utils';
@@ -40,4 +41,13 @@ export const hasActiveEditProposal = async (space: string) => {
     .where('settings.endDate', '>=', serverTime())
     .get();
   return ongoingProposalSnap.length > 0;
+};
+
+export const getSpaceByAliasId = async (aliasId: string) => {
+  const spaces = await soonDb()
+    .collection(COL.SPACE)
+    .where('alias.aliasId', '==', aliasId)
+    .limit(1)
+    .get<Space>();
+  return head(spaces);
 };

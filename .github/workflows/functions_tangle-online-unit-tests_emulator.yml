@@ -1921,7 +1921,7 @@ jobs:
           firebase emulators:exec "
                 npm run test-tangle-online:ci -- --findRelatedTests test-tangle/minted-nft-trading/minted-nft-trading_2.spec.ts &&
                 npm run test-tangle-online:ci -- --findRelatedTests test-tangle/minted-nft-trading/minted-nft-trading_1.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_9.spec.ts 
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/metadata-nft/mint-metadata-nft_5.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -1972,9 +1972,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_8.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_7.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_6.spec.ts 
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/metadata-nft/mint-metadata-nft_4.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/metadata-nft/mint-metadata-nft_3.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/metadata-nft/mint-metadata-nft_2.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2025,9 +2025,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_5.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_4.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_3.spec.ts 
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/metadata-nft/mint-metadata-nft_1.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_9.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_8.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2078,9 +2078,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_2.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_12.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_11.spec.ts 
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_7.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_6.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_5.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2131,9 +2131,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_10.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_1.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_7.spec.ts 
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_4.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_3.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_2.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2184,9 +2184,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_6.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_5.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_4.spec.ts 
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_12.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_11.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_10.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2237,9 +2237,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_3.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_2.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_12.spec.ts 
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_1.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_7.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_6.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2290,9 +2290,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_10.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_1.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award-tangle/award-tangle_6.spec.ts 
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_5.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_4.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_3.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2343,9 +2343,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award-tangle/award-tangle_5.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award-tangle/award-tangle_4.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award-tangle/award-tangle_3.spec.ts 
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_2.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_12.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_10.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2396,9 +2396,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award-tangle/award-tangle_2.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award-tangle/award-tangle_1.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award/award_9.spec.ts 
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_1.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award-tangle/award-tangle_6.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award-tangle/award-tangle_5.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2449,9 +2449,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award/award_8.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award/award_7.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award/award_6.spec.ts 
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award-tangle/award-tangle_4.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award-tangle/award-tangle_3.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award-tangle/award-tangle_2.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2502,9 +2502,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award/award_5.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award/award_4.spec.ts &&
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award/award_3.spec.ts 
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award-tangle/award-tangle_1.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award/award_9.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award/award_8.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2555,7 +2555,112 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
-                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award/award_2.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award/award_7.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award/award_6.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award/award_5.spec.ts 
+             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
+      - name: Archive firestore data
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+           name: firestore-data-test-tangle-online-chunk_47
+           path: ./packages/functions/firestore-data/
+           retention-days: 1
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/test
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
+
+  chunk_48:
+    needs: npm-install
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+      - uses: actions/cache@v3
+        with:
+          path: |
+           node_modules
+           packages/functions/node_modules
+           packages/interfaces/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
+      - name: Init
+        run: |
+          npm run build:functions
+          npm install -g firebase-tools
+      - name: Test
+        working-directory: packages/functions
+        run: |
+          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
+          npm run milestone-sync &
+          firebase emulators:exec "
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award/award_4.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award/award_3.spec.ts &&
+                npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award/award_2.spec.ts 
+             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
+      - name: Archive firestore data
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+           name: firestore-data-test-tangle-online-chunk_48
+           path: ./packages/functions/firestore-data/
+           retention-days: 1
+      - name: Analyze Test and Coverage Results
+        uses: runforesight/foresight-test-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+          test_format: JUNIT
+          test_framework: JEST
+          test_path: packages/functions/reports/test
+          coverage_format: COBERTURA/XML
+          coverage_path: packages/functions/reports/coverage
+
+  chunk_49:
+    needs: npm-install
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+      - uses: actions/cache@v3
+        with:
+          path: |
+           node_modules
+           packages/functions/node_modules
+           packages/interfaces/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
+      - name: Init
+        run: |
+          npm run build:functions
+          npm install -g firebase-tools
+      - name: Test
+        working-directory: packages/functions
+        run: |
+          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
+          npm run milestone-sync &
+          firebase emulators:exec "
                 npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award/award_10.spec.ts &&
                 npm run test-tangle-online:ci -- --findRelatedTests test-tangle/award/award_1.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
@@ -2563,7 +2668,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-online-chunk_47
+           name: firestore-data-test-tangle-online-chunk_49
            path: ./packages/functions/firestore-data/
            retention-days: 1
       - name: Analyze Test and Coverage Results

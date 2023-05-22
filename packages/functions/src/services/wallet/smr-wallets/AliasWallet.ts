@@ -12,8 +12,8 @@ import { mergeOutputs, packBasicOutput } from '../../../utils/basic-output.utils
 import { packEssence, packPayload, submitBlock } from '../../../utils/block.utils';
 import { createUnlock } from '../../../utils/smr.utils';
 import { createAliasOutput } from '../../../utils/token-minting-utils/alias.utils';
-import { MnemonicService } from '../mnemonic';
 import { SmrParams, SmrWallet } from '../SmrWalletService';
+import { MnemonicService } from '../mnemonic';
 import { setConsumedOutputIds } from '../wallet';
 
 export class AliasWallet {

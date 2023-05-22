@@ -14,6 +14,7 @@ export enum CollectionType {
   CLASSIC = 0,
   GENERATED = 1,
   SFT = 2,
+  METADATA = 3,
 }
 
 export interface DiscountLine {
@@ -52,7 +53,6 @@ export interface CollectionBase extends BaseRecord {
   royaltiesSpace: EthAddress;
   discounts: DiscountLine[];
   total: number;
-  // TODO Boldizsar needs to calculate
   totalTrades: number;
   lastTradedOn: Timestamp | null;
   sold: number;

@@ -23,6 +23,8 @@ export enum TransactionType {
   AWARD = 'AWARD',
 
   UNLOCK = 'UNLOCK',
+
+  METADATA_NFT = 'METADATA_NFT',
 }
 
 export enum TransactionOrderType {
@@ -48,6 +50,7 @@ export enum TransactionOrderType {
   STAKE_NFT = 'STAKE_NFT',
   FUND_AWARD = 'FUND_AWARD',
   IMPORT_TOKEN = 'IMPORT_TOKEN',
+  MINT_METADATA_NFT = 'MINT_METADATA_NFT',
 }
 
 export enum TransactionMintCollectionType {
@@ -80,6 +83,7 @@ export enum TransactionCreditType {
   SPACE_CALIMED = 'SPACE_CALIMED',
   PRE_MINTED_CLAIM = 'PRE_MINTED_CLAIM',
   IMPORT_TOKEN = 'IMPORT_TOKEN',
+  MINT_METADATA_NFT = 'MINT_METADATA_NFT',
 }
 
 export enum TransactionUnlockType {
@@ -93,6 +97,13 @@ export enum TransactionAwardType {
   MINT_COLLECTION = 'MINT_COLLECTION',
   BADGE = 'BADGE',
   BURN_ALIAS = 'BURN_ALIAS',
+}
+
+export enum TransactionMetadataNftType {
+  MINT_ALIAS = 'MINT_ALIAS',
+  MINT_COLLECTION = 'MINT_COLLECTION',
+  MINT_NFT = 'MINT_NFT',
+  UPDATE_MINTED_NFT = 'UPDATE_MINTED_NFT',
 }
 
 export enum TransactionValidationType {
@@ -256,6 +267,7 @@ export interface BillPaymentTransaction {
   vestingAt?: Timestamp;
   sourceAddress: IotaAddress;
   storageDepositSourceAddress?: string;
+  aliasGovAddress?: string;
   targetAddress: IotaAddress;
   reconciled: boolean;
   void: boolean;
