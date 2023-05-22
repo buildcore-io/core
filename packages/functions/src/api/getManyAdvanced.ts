@@ -59,13 +59,13 @@ export const getManyAdvanced = async (req: functions.https.Request, res: express
   if (body.fieldName?.length) {
     try {
       const { filters, operators } = getFilters(body.fieldName, body.fieldValue!, body.operator!);
-      for (const [[key, values]] of Object.entries(filters)) {
+      for (const [key, values] of Object.entries(filters)) {
         if (operators[key][0] === Opr.IN) {
           query = query.where(key, operators[key][0], values);
           continue;
         }
         for (let i = 0; i < values.length; ++i) {
-          query = query.where(key, operators[key][i], values);
+          query = query.where(key, operators[key][i], values[i]);
         }
       }
     } catch (error) {
