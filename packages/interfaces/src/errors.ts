@@ -274,4 +274,12 @@ export const WenError = {
     code: 2131,
     key: 'A field name can appear maximum 10 times',
   },
+  alias_not_deposited: {
+    code: 2132,
+    key: 'Alias must be sent to soonaverse',
+  },
+  nft_not_deposited: {
+    code: 2133,
+    key: 'NFT must be sent to soonaverse',
+  },
 };

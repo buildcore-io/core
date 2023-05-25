@@ -20,7 +20,9 @@ import { TangleAddressValidationService } from './address-validation.service';
 import { AwardApproveParticipantService } from './award/award.approve.participant.service';
 import { AwardCreateService } from './award/award.create.service';
 import { AwardFundService } from './award/award.fund.service';
+import { MintMetadataNftService } from './metadataNft/mint-metadata-nft.service';
 import { TangleNftPurchaseService } from './nft-purchase.service';
+import { NftDepositService } from './nft/nft-deposit.service';
 import { ProposalApprovalService } from './proposal/ProposalApporvalService';
 import { ProposalCreateService } from './proposal/ProposalCreateService';
 import { ProposalVoteService } from './proposal/voting/ProposalVoteService';
@@ -92,6 +94,10 @@ export class TangleRequestService {
     request: Record<string, unknown>,
     soonTransaction?: Transaction,
   ) => {
+    if (tranEntry.nftOutput) {
+      const service = new NftDepositService(this.transactionService);
+      return await service.handleNftDeposit(order.network!, owner, tran, tranEntry);
+    }
     switch (request.requestType) {
       case TangleRequestType.ADDRESS_VALIDATION: {
         const service = new TangleAddressValidationService(this.transactionService);
@@ -176,6 +182,18 @@ export class TangleRequestService {
         const service = new SpaceCreateService(this.transactionService);
         return await service.handleSpaceCreateRequest(owner, request);
       }
+      case TangleRequestType.MINT_METADATA_NFT: {
+        const service = new MintMetadataNftService(this.transactionService);
+        return await service.handleMetadataNftMintRequest(
+          order.network!,
+          owner,
+          request,
+          match.to.amount,
+          tran,
+          tranEntry,
+        );
+      }
+
       default:
         throw invalidArgument(WenError.invalid_tangle_request_type);
     }

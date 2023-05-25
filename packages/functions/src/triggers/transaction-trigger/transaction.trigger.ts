@@ -9,6 +9,7 @@ import {
   Network,
   Transaction,
   TransactionAwardType,
+  TransactionMetadataNftType,
   TransactionMintCollectionType,
   TransactionMintTokenType,
   TransactionOrderType,
@@ -36,6 +37,7 @@ import { unclockMnemonic } from '../milestone-transactions-triggers/common';
 import { onAirdropClaim } from './airdrop.claim';
 import { onAwardUpdate } from './award.transaction.update';
 import { onCollectionMintingUpdate } from './collection-minting';
+import { onMetadataNftMintUpdate } from './matadatNft-minting';
 import { onNftStaked } from './nft-staked';
 import { onProposalVoteCreditConfirmed } from './proposal.vote';
 import { onStakingConfirmed } from './staking';
@@ -52,6 +54,7 @@ export const EXECUTABLE_TRANSACTIONS = [
   TransactionType.UNLOCK,
   TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED,
   TransactionType.AWARD,
+  TransactionType.METADATA_NFT,
 ];
 
 export const transactionWrite = functions.firestore.onDocumentWritten(
@@ -164,6 +167,11 @@ export const transactionWrite = functions.firestore.onDocumentWritten(
       return;
     }
 
+    if (isConfirmed(prev, curr) && curr.type === TransactionType.METADATA_NFT) {
+      await onMetadataNftMintUpdate(curr);
+      return;
+    }
+
     if (
       isConfirmed(prev, curr) &&
       curr.payload.award &&
@@ -213,6 +221,9 @@ const executeTransaction = async (transactionId: string) => {
 
         case TransactionType.AWARD:
           return submitCreateAwardTransaction(transaction, walletService as SmrWallet, params);
+
+        case TransactionType.METADATA_NFT:
+          return submitMintMetadataTransaction(transaction, walletService as SmrWallet, params);
 
         case TransactionType.CREDIT_NFT:
         case TransactionType.WITHDRAW_NFT: {
@@ -338,6 +349,38 @@ const submitCreateAwardTransaction = (
   }
 };
 
+const submitMintMetadataTransaction = async (
+  transaction: Transaction,
+  wallet: SmrWallet,
+  params: SmrParams,
+) => {
+  switch (transaction.payload.type) {
+    case TransactionMetadataNftType.MINT_ALIAS: {
+      const aliasWallet = new AliasWallet(wallet);
+      return aliasWallet.mintAlias(transaction, params);
+    }
+    case TransactionMetadataNftType.MINT_COLLECTION: {
+      const nftWallet = new NftWallet(wallet);
+      return nftWallet.mintCollection(transaction, params);
+    }
+    case TransactionMetadataNftType.MINT_NFT: {
+      const nftWallet = new NftWallet(wallet);
+      return nftWallet.mintMetadataNft(transaction, params);
+    }
+    case TransactionMetadataNftType.UPDATE_MINTED_NFT: {
+      const nftWallet = new NftWallet(wallet);
+      return nftWallet.updateMetadataNft(transaction, params);
+    }
+    default: {
+      functions.logger.error(
+        'Unsupported executable transaction type in submitCreateAwardTransaction',
+        transaction,
+      );
+      throw Error('Unsupported executable transaction type ' + transaction.payload.type);
+    }
+  }
+};
+
 const submitUnlockTransaction = async (
   transaction: Transaction,
   wallet: SmrWallet,
@@ -410,6 +453,7 @@ const prepareTransaction = (transactionId: string) =>
     if (!tranData.payload.outputToConsume) {
       lockMnemonic(transaction, transactionId, tranData.payload.sourceAddress);
       lockMnemonic(transaction, transactionId, tranData.payload.storageDepositSourceAddress);
+      lockMnemonic(transaction, transactionId, tranData.payload.aliasGovAddress);
     }
 
     return true;
@@ -450,9 +494,11 @@ const mnemonicsAreLocked = async (transaction: ITransaction, tran: Transaction) 
     transaction,
     tran.payload.storageDepositSourceAddress,
   );
+  const aliasGovAddress = await getMnemonic(transaction, tran.payload.aliasGovAddress);
   return (
     (sourceAddressMnemonic.lockedBy || tran.uid) !== tran.uid ||
-    (storageDepositSourceAddress.lockedBy || tran.uid) !== tran.uid
+    (storageDepositSourceAddress.lockedBy || tran.uid) !== tran.uid ||
+    (aliasGovAddress.lockedBy || tran.uid) !== tran.uid
   );
 };
 

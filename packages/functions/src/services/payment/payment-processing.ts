@@ -19,6 +19,7 @@ import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { AddressService } from './address-service';
 import { AwardService } from './award/award-service';
 import { CreditService } from './credit-service';
+import { MetadataNftService } from './metadataNft-service';
 import { CollectionMintingService } from './nft/collection-minting-service';
 import { NftDepositService } from './nft/nft-deposit-service';
 import { NftService } from './nft/nft-service';
@@ -222,6 +223,11 @@ export class ProcessingService {
         case TransactionOrderType.IMPORT_TOKEN: {
           const service = new ImportMintedTokenService(this.transactionService);
           await service.handleMintedTokenImport(order, match);
+          break;
+        }
+        case TransactionOrderType.MINT_METADATA_NFT: {
+          const service = new MetadataNftService(this.transactionService);
+          await service.handleMintMetadataNftRequest(order, match);
           break;
         }
       }

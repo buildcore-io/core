@@ -40,7 +40,7 @@ describe('Stake nft', () => {
       type: StakeType.DYNAMIC,
     });
     const stakeNftOrder = await testEnv.wrap(stakeNft)({});
-    const blockId = await helper.sendNftToAddress(
+    await helper.sendNftToAddress(
       helper.guardianAddress!,
       stakeNftOrder.payload.targetAddress,
       undefined,
@@ -49,7 +49,6 @@ describe('Stake nft', () => {
       undefined,
       true,
     );
-    console.log(blockId);
 
     const creditQuery = soonDb()
       .collection(COL.TRANSACTION)

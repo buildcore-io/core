@@ -40,6 +40,7 @@ export const confirmTransaction = async (
 
   await unclockMnemonic(transaction.payload.sourceAddress);
   await unclockMnemonic(transaction.payload.storageDepositSourceAddress);
+  await unclockMnemonic(transaction.payload.aliasGovAddress);
 };
 
 export const unclockMnemonic = async (address: string) => {

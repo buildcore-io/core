@@ -7,7 +7,7 @@ import {
   WEN_FUNC_TRIGGER,
 } from '@soonaverse/interfaces';
 import * as functions from 'firebase-functions/v2';
-import { isEmpty } from 'lodash';
+import { chunk, isEmpty } from 'lodash';
 import { soonDb } from '../firebase/firestore/soondb';
 import { scale } from '../scale.settings';
 import { EXECUTABLE_TRANSACTIONS } from './transaction-trigger/transaction.trigger';
@@ -26,15 +26,10 @@ export const mnemonicWrite = functions.firestore.onDocumentUpdated(
     }
 
     const address = event.params.address as string;
-    const sourceAddressTrans = await getUncofirmedTransactionsByFieldName(
-      'payload.sourceAddress',
-      address,
+    const promises = Object.values(FieldNameType).map((value) =>
+      getUncofirmedTransactionsByFieldName(value, address),
     );
-    const storageDepositAddressTrans = await getUncofirmedTransactionsByFieldName(
-      'payload.storageDepositSourceAddress',
-      address,
-    );
-    const transactions = [...sourceAddressTrans, ...storageDepositAddressTrans];
+    const transactions = (await Promise.all(promises)).reduce((acc, act) => [...acc, ...act], []);
 
     const tranId =
       transactions.find((doc) => doc.type !== TransactionType.CREDIT)?.uid ||
@@ -47,13 +42,21 @@ export const mnemonicWrite = functions.firestore.onDocumentUpdated(
   },
 );
 
-const getUncofirmedTransactionsByFieldName = (fieldName: FieldNameType, address: string) =>
-  soonDb()
-    .collection(COL.TRANSACTION)
-    .where(fieldName, '==', address)
-    .where('type', 'in', EXECUTABLE_TRANSACTIONS)
-    .where('payload.walletReference.chainReference', '==', null)
-    .where('payload.walletReference.count', '<', MAX_WALLET_RETRY)
-    .get<Transaction>();
+const getUncofirmedTransactionsByFieldName = async (fieldName: FieldNameType, address: string) => {
+  const promises = chunk(EXECUTABLE_TRANSACTIONS, 10).map((chunk) =>
+    soonDb()
+      .collection(COL.TRANSACTION)
+      .where(fieldName, '==', address)
+      .where('type', 'in', chunk)
+      .where('payload.walletReference.chainReference', '==', null)
+      .where('payload.walletReference.count', '<', MAX_WALLET_RETRY)
+      .get<Transaction>(),
+  );
+  return (await Promise.all(promises)).reduce((acc, act) => [...acc, ...act], []);
+};
 
-type FieldNameType = 'payload.sourceAddress' | 'payload.storageDepositSourceAddress';
+enum FieldNameType {
+  SOURCE_ADDRESS = 'payload.sourceAddress',
+  STORAGE_DEP_ADDRESS = 'payload.storageDepositSourceAddress',
+  ALIAS_GOV_ADDRESS = 'payload.aliasGovAddress',
+}
