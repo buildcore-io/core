@@ -137,12 +137,6 @@ export class TradePage implements OnInit, OnDestroy {
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(
     undefined,
   );
-  public listenAvgSell$: BehaviorSubject<number | undefined> = new BehaviorSubject<
-    number | undefined
-  >(undefined);
-  public listenAvgBuy$: BehaviorSubject<number | undefined> = new BehaviorSubject<
-    number | undefined
-  >(undefined);
   public listenAvgPrice$: BehaviorSubject<number | undefined> = new BehaviorSubject<
     number | undefined
   >(undefined);
@@ -475,18 +469,6 @@ export class TradePage implements OnInit, OnDestroy {
         .listenAvgPrice(tokenId)
         .pipe(untilDestroyed(this))
         .subscribe(this.listenAvgPrice$),
-    );
-    this.subscriptions$.push(
-      this.tokenMarketApi
-        .listenToAvgBuy(tokenId)
-        .pipe(untilDestroyed(this))
-        .subscribe(this.listenAvgBuy$),
-    );
-    this.subscriptions$.push(
-      this.tokenMarketApi
-        .listenToAvgSell(tokenId)
-        .pipe(untilDestroyed(this))
-        .subscribe(this.listenAvgSell$),
     );
   }
 

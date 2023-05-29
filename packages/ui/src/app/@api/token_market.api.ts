@@ -152,16 +152,4 @@ export class TokenMarketApi extends BaseApi<TokenTradeOrder> {
   public cancel(req: WenRequest): Observable<TokenTradeOrder | undefined> {
     return this.request(WEN_FUNC.cancelTradeOrder, req);
   }
-
-  public listenToAvgBuy = (tokenId: string): Observable<number | undefined> =>
-    this._query({
-      collection: this.collection,
-      constraints: this.getBuyOrders(tokenId),
-    }).pipe(map(this.calcVWAP));
-
-  public listenToAvgSell = (tokenId: string): Observable<number | undefined> =>
-    this._query({
-      collection: this.collection,
-      constraints: this.getSellOrders(tokenId),
-    }).pipe(map(this.calcVWAP));
 }
