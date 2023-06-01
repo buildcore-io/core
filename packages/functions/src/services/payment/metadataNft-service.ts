@@ -3,7 +3,6 @@ import {
   COL,
   CollectionStatus,
   CollectionType,
-  Member,
   Network,
   Nft,
   NftAccess,
@@ -17,8 +16,10 @@ import {
 } from '@soonaverse/interfaces';
 import { get } from 'lodash';
 import { soonDb } from '../../firebase/firestore/soondb';
-import { getAddress } from '../../utils/address.utils';
-import { getNftByMintingId } from '../../utils/collection-minting-utils/nft.utils';
+import {
+  getCollectionByMintingId,
+  getNftByMintingId,
+} from '../../utils/collection-minting-utils/nft.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from './transaction-service';
 
@@ -29,9 +30,9 @@ export class MetadataNftService {
     const payment = await this.transactionService.createPayment(order, match);
     this.transactionService.markAsReconciled(order, match.msgId);
 
-    const aliasId = get(order, 'payload.aliasId', '');
-    const collectionId = get(order, 'payload.collectionId', '');
-    const nftId = get(order, 'payload.nftId', '');
+    const aliasId = get(order, 'payload.aliasId');
+    const collectionId = get(order, 'payload.collectionId');
+    const nftId = get(order, 'payload.nftId');
 
     if (!aliasId) {
       const mintAlias = <Transaction>{
@@ -78,21 +79,19 @@ export class MetadataNftService {
       return;
     }
 
+    const collection = await getCollectionByMintingId(collectionId);
     const nft = nftId
       ? (await getNftByMintingId(nftId))!
       : createMetadataNft(
           get(order, 'member', ''),
           get(order, 'space', ''),
-          collectionId,
+          collection!.uid,
           get(order, 'payload.metadata', {}),
         );
     if (!nftId) {
       const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
       this.transactionService.push({ ref: nftDocRef, data: nft, action: 'set' });
     }
-
-    const member = await soonDb().doc(`${COL.MEMBER}/${order.member}`).get<Member>();
-    const memberAddress = getAddress(member, order.network!);
 
     const space = await soonDb().doc(`${COL.SPACE}/${order.space}`).get<Space>();
 
@@ -101,7 +100,7 @@ export class MetadataNftService {
       order.network!,
       order.payload.targetAddress,
       space?.alias?.address!,
-      memberAddress,
+      order.payload.targetAddress,
       get(order, 'payload.aliasId', ''),
       get(order, 'payload.collectionId', ''),
       order.uid,
@@ -121,7 +120,7 @@ export const createMetadataNft = (
   ({
     uid: getRandomEthAddress(),
     name: 'Metadata NFT',
-    collection: collection,
+    collection,
     owner: member,
     isOwned: true,
     saleAccess: NftAccess.MEMBERS,

@@ -1,8 +1,10 @@
 import { ITransactionPayload, TransactionHelper } from '@iota/iota.js-next';
 import {
   COL,
+  Collection,
   DEFAULT_NETWORK,
   Member,
+  Nft,
   NftStatus,
   Space,
   Transaction,
@@ -111,9 +113,6 @@ const onCollectionMinted = async (transaction: Transaction) => {
     },
   });
 
-  const member = await soonDb().doc(`${COL.MEMBER}/${transaction.member}`).get<Member>();
-  const memberAddress = getAddress(member, transaction.network!);
-
   const order = await soonDb()
     .doc(`${COL.TRANSACTION}/${transaction.payload.orderId}`)
     .get<Transaction>();
@@ -134,7 +133,7 @@ const onCollectionMinted = async (transaction: Transaction) => {
     transaction.network!,
     transaction.payload.targetAddress,
     space?.alias?.address!,
-    memberAddress,
+    transaction.payload.targetAddress,
     get(transaction, 'payload.aliasId', ''),
     collectionId,
     get(transaction, 'payload.orderId', ''),
@@ -156,9 +155,11 @@ const onNftMinted = async (transaction: Transaction) => {
   const batch = soonDb().batch();
 
   const nftDocRef = soonDb().doc(`${COL.NFT}/${transaction.payload.nft}`);
+  const nft = await nftDocRef.get<Nft>();
   batch.update(nftDocRef, {
-    status: NftStatus.WITHDRAWN,
+    status: NftStatus.MINTED,
     mintingData: {
+      address: transaction.payload.targetAddress,
       network: transaction.network,
       mintedOn: dateToTimestamp(dayjs()),
       mintedBy: transaction.member,
@@ -176,25 +177,31 @@ const onNftMinted = async (transaction: Transaction) => {
     get(order, 'payload.nftOutputAmount', 0);
 
   const member = await soonDb().doc(`${COL.MEMBER}/${transaction.member}`).get<Member>();
-  if (storageDepositTotal < order.payload.amount) {
-    const creditTransaction = <Transaction>{
-      type: TransactionType.CREDIT,
-      uid: getRandomEthAddress(),
-      space: transaction.space,
-      member: transaction.member,
-      network: order.network,
-      payload: {
-        type: TransactionCreditType.MINT_METADATA_NFT,
-        amount: order.payload.amount - storageDepositTotal,
-        sourceAddress: order.payload.targetAddress,
-        targetAddress: getAddress(member, order.network || DEFAULT_NETWORK),
-        reconciled: true,
-        void: false,
+  const collection = await soonDb().doc(`${COL.COLLECTION}/${nft?.collection}`).get<Collection>();
+  const space = await soonDb().doc(`${COL.SPACE}/${collection?.space}`).get<Space>();
+
+  const creditTransaction = <Transaction>{
+    type: TransactionType.CREDIT,
+    uid: getRandomEthAddress(),
+    space: transaction.space,
+    member: transaction.member,
+    network: order.network,
+    payload: {
+      type: TransactionCreditType.MINT_METADATA_NFT,
+      amount: order.payload.amount - storageDepositTotal,
+      sourceAddress: order.payload.targetAddress,
+      targetAddress: getAddress(member, order.network || DEFAULT_NETWORK),
+      reconciled: true,
+      void: false,
+      customMetadata: {
+        nftId,
+        collectionId: collection?.mintingData?.nftId || '',
+        aliasId: space?.alias?.aliasId || '',
       },
-    };
-    const creditDocRef = soonDb().doc(`${COL.TRANSACTION}/${creditTransaction.uid}`);
-    batch.create(creditDocRef, creditTransaction);
-  }
+    },
+  };
+  const creditDocRef = soonDb().doc(`${COL.TRANSACTION}/${creditTransaction.uid}`);
+  batch.create(creditDocRef, creditTransaction);
 
   await batch.commit();
 };

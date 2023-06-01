@@ -117,5 +117,13 @@ export const getNftByMintingId = async (nftId: string) => {
     .collection(COL.NFT)
     .where('mintingData.nftId', '==', nftId)
     .get<Nft>();
-  return <Nft | undefined>head(snap);
+  return head(snap);
+};
+
+export const getCollectionByMintingId = async (collectionId: string) => {
+  const snap = await soonDb()
+    .collection(COL.COLLECTION)
+    .where('mintingData.nftId', '==', collectionId)
+    .get<Collection>();
+  return head(snap);
 };

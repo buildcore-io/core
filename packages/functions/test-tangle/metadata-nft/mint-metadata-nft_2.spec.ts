@@ -1,4 +1,4 @@
-import { IndexerPluginClient } from '@iota/iota.js-next';
+import { IBasicOutput, ITransactionPayload } from '@iota/iota.js-next';
 import {
   COL,
   Collection,
@@ -9,7 +9,9 @@ import {
   TransactionType,
 } from '@soonaverse/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
+import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
+import { getOutputMetadata } from '../../src/utils/basic-output.utils';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
 import { Helper } from './Helper';
@@ -27,7 +29,7 @@ describe('Metadata nft', () => {
     await helper.beforeEach();
   });
 
-  it('Should mint metada nft, mint new one for same collection&alias', async () => {
+  it('Should mint metada nft, mint new one for same collection', async () => {
     const metadata = { mytest: 'mytest', asd: 'asdasdasd' };
     await helper.walletService.send(
       helper.memberAddress,
@@ -68,9 +70,8 @@ describe('Metadata nft', () => {
     const credit = (await creditQuery.get<Transaction>())[0];
 
     const space = <Space>await soonDb().doc(`${COL.SPACE}/${credit.space}`).get();
-    const collection = (
-      await soonDb().collection(COL.COLLECTION).where('space', '==', space.uid).get<Collection>()
-    )[0];
+    const collectionQuery = soonDb().collection(COL.COLLECTION).where('space', '==', space.uid);
+    const collection = (await collectionQuery.get<Collection>())[0];
 
     await helper.walletService.send(
       helper.memberAddress,
@@ -81,7 +82,6 @@ describe('Metadata nft', () => {
           request: {
             requestType: TangleRequestType.MINT_METADATA_NFT,
             metadata,
-            aliasId: space.alias?.aliasId,
             collectionId: collection.mintingData?.nftId,
           },
         },
@@ -95,11 +95,29 @@ describe('Metadata nft', () => {
 
     await wait(async () => {
       const snap = await creditQuery.get<Transaction>();
-      return snap.length === 2 && snap[0]?.payload?.walletReference?.confirmed;
+      return (
+        snap.length === 2 &&
+        snap.reduce((acc, act) => acc && act.payload?.walletReference?.confirmed, true)
+      );
     });
-
-    const indexer = new IndexerPluginClient(helper.walletService.client);
-    const nftResult = await indexer.nfts({ addressBech32: helper.memberAddress.bech32 });
-    expect(nftResult.items.length).toBe(2);
+    const credits = await creditQuery.get<Transaction>();
+    const credit1Meta = await getMetadata(
+      helper.walletService,
+      credits[0].payload.walletReference.chainReference!,
+    );
+    const credit2Meta = await getMetadata(
+      helper.walletService,
+      credits[1].payload.walletReference.chainReference!,
+    );
+    expect(credit1Meta.aliasId).toBe(credit2Meta.aliasId);
+    expect(credit1Meta.collectionId).toBe(credit2Meta.collectionId);
+    expect(credit1Meta.nftId).not.toBe(credit2Meta.nftId);
   });
 });
+
+const getMetadata = async (wallet: SmrWallet, blockId: string) => {
+  const block = await wallet.client.block(blockId);
+  const payload = block.payload! as ITransactionPayload;
+  const output = payload.essence.outputs[0] as IBasicOutput;
+  return getOutputMetadata(output);
+};

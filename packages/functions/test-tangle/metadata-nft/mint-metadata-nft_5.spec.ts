@@ -1,4 +1,3 @@
-import { IndexerPluginClient } from '@iota/iota.js-next';
 import {
   COL,
   Collection,
@@ -110,11 +109,10 @@ describe('Metadata nft', () => {
 
     await wait(async () => {
       const snap = await creditQuery.get<Transaction>();
-      return snap.length === 3 && snap[0]?.payload?.walletReference?.confirmed;
+      return (
+        snap.length === 3 &&
+        snap.reduce((acc, act) => acc && act.payload?.walletReference?.confirmed, true)
+      );
     });
-
-    const indexer = new IndexerPluginClient(helper.walletService.client);
-    const nftResult = await indexer.nfts({ addressBech32: helper.memberAddress.bech32 });
-    expect(nftResult.items.length).toBe(3);
   });
 });

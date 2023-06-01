@@ -349,6 +349,28 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
+          "fieldPath": "payload.aliasGovAddress",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "payload.walletReference.chainReference",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "payload.walletReference.count",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "transaction",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
           "fieldPath": "space",
           "order": "ASCENDING"
         },

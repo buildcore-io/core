@@ -1,8 +1,8 @@
-import { IndexerPluginClient } from '@iota/iota.js-next';
 import {
   COL,
   Collection,
   MIN_IOTA_AMOUNT,
+  Nft,
   Space,
   TangleRequestType,
   Transaction,
@@ -27,7 +27,7 @@ describe('Metadata nft', () => {
     await helper.beforeEach();
   });
 
-  it('Should mint metada nft, mint new one for same alias but new', async () => {
+  it('Should mint metada nft, mint new one for same alias but new collection', async () => {
     const metadata = { mytest: 'mytest', asd: 'asdasdasd' };
     await helper.walletService.send(
       helper.memberAddress,
@@ -91,12 +91,15 @@ describe('Metadata nft', () => {
 
     await wait(async () => {
       const snap = await creditQuery.get<Transaction>();
-      return snap.length === 2 && snap[0]?.payload?.walletReference?.confirmed;
+      return (
+        snap.length === 2 &&
+        snap.reduce((acc, act) => acc && act.payload?.walletReference?.confirmed, true)
+      );
     });
 
-    const indexer = new IndexerPluginClient(helper.walletService.client);
-    const nftResult = await indexer.nfts({ addressBech32: helper.memberAddress.bech32 });
-    expect(nftResult.items.length).toBe(2);
+    const nfts = await soonDb().collection(COL.NFT).where('owner', '==', helper.member).get<Nft>();
+    expect(nfts[0].collection).not.toBe(nfts[1].collection);
+    expect(nfts[0].space).toBe(nfts[1].space);
 
     const collections = await soonDb()
       .collection(COL.COLLECTION)
