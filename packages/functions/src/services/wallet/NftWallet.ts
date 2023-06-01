@@ -524,8 +524,9 @@ export class NftWallet {
       .output as INftOutput;
 
     const nft = <Nft>await soonDb().doc(`${COL.NFT}/${transaction.payload.nft}`).get();
-    const nftOwnerAddress = await this.wallet.getAddressDetails(nft.depositData?.address!);
-    const nftResult = await indexer.nft(nft.depositData?.nftId!);
+    const nftOwnerAddressBech = nft.mintingData?.address || nft.depositData?.address!;
+    const nftOwnerAddress = await this.wallet.getAddressDetails(nftOwnerAddressBech);
+    const nftResult = await indexer.nft(nft.mintingData?.nftId!);
     const nftOutputId = nftResult.items[0];
     const nftOutput = (await this.wallet.client.output(nftOutputId)).output as INftOutput;
 
@@ -550,6 +551,9 @@ export class NftWallet {
       .get<Transaction>();
     const mutableMetadata = JSON.stringify(get(order, 'payload.metadata', {}));
     const nextNftOutput = cloneDeep(nftOutput);
+    if (nextNftOutput.nftId === EMPTY_NFT_ID) {
+      nextNftOutput.nftId = TransactionHelper.resolveIdFromOutputId(nftOutputId);
+    }
     nextNftOutput.features = [
       { type: METADATA_FEATURE_TYPE, data: Converter.utf8ToHex(mutableMetadata, true) },
     ];
@@ -574,7 +578,9 @@ export class NftWallet {
     const unlocks: UnlockTypes[] = [
       createUnlock(essence, aliasGovAddress.keyPair),
       { type: ALIAS_UNLOCK_TYPE, reference: 0 },
-      createUnlock(essence, nftOwnerAddress.keyPair),
+      aliasGovAddress.bech32 === nftOwnerAddressBech
+        ? { type: REFERENCE_UNLOCK_TYPE, reference: 0 }
+        : createUnlock(essence, nftOwnerAddress.keyPair),
       sourceIsGov
         ? { type: REFERENCE_UNLOCK_TYPE, reference: 0 }
         : createUnlock(essence, sourceAddress.keyPair),

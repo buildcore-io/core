@@ -1,7 +1,10 @@
-import { INftOutput, IndexerPluginClient } from '@iota/iota.js-next';
+import { IBasicOutput, ITransactionPayload } from '@iota/iota.js-next';
 import {
   COL,
+  Collection,
   MIN_IOTA_AMOUNT,
+  Nft,
+  Space,
   TangleRequestType,
   Transaction,
   TransactionType,
@@ -64,12 +67,22 @@ describe('Metadata nft', () => {
       const snap = await creditQuery.get<Transaction>();
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
+    const credit = (await creditQuery.get<Transaction>())[0];
+    const block = await helper.walletService.client.block(
+      credit.payload.walletReference.chainReference,
+    );
+    const payload = block.payload! as ITransactionPayload;
+    const output = payload.essence.outputs[0] as IBasicOutput;
+    const outputMetadata = getOutputMetadata(output);
 
-    const indexer = new IndexerPluginClient(helper.walletService.client);
-    let nftResult = await indexer.nfts({ addressBech32: helper.memberAddress.bech32 });
-    const nftOutput = (await helper.walletService.client.output(nftResult.items[0]))
-      .output as INftOutput;
-    const nftMetadata = getOutputMetadata(nftOutput);
-    expect(nftMetadata).toEqual(metadata);
+    const nftQuery = soonDb().collection(COL.NFT).where('owner', '==', helper.member);
+    const nft = (await nftQuery.get<Nft>())[0];
+    const collection = await soonDb().doc(`${COL.COLLECTION}/${nft.collection}`).get<Collection>();
+    const space = await soonDb().doc(`${COL.SPACE}/${nft.space}`).get<Space>();
+    expect(outputMetadata).toEqual({
+      nftId: nft!.mintingData!.nftId,
+      collectionId: collection!.mintingData!.nftId,
+      aliasId: space!.alias!.aliasId,
+    });
   });
 });
