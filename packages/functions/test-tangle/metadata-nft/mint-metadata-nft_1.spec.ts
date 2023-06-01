@@ -1,4 +1,4 @@
-import { IBasicOutput, ITransactionPayload } from '@iota/iota.js-next';
+import { IBasicOutput, ITransactionPayload, IndexerPluginClient } from '@iota/iota.js-next';
 import {
   COL,
   Collection,
@@ -31,7 +31,7 @@ describe('Metadata nft', () => {
 
   it('Should mint metada nft', async () => {
     const metadata = { mytest: 'mytest', asd: 'asdasdasd' };
-    await helper.walletService.send(
+    const blockId = await helper.walletService.send(
       helper.memberAddress,
       tangleOrder.payload.targetAddress,
       MIN_IOTA_AMOUNT,
@@ -84,5 +84,9 @@ describe('Metadata nft', () => {
       collectionId: collection!.mintingData!.nftId,
       aliasId: space!.alias!.aliasId,
     });
+
+    const indexer = new IndexerPluginClient(helper.walletService.client);
+    const items = (await indexer.basicOutputs({ tagHex: blockId })).items;
+    expect(items.length).toBe(1);
   });
 });

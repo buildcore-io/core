@@ -188,7 +188,7 @@ export class TangleRequestService {
           order.network!,
           owner,
           request,
-          match.to.amount,
+          match,
           tran,
           tranEntry,
         );

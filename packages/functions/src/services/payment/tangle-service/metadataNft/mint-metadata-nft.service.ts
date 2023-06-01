@@ -46,7 +46,7 @@ import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { CommonJoi } from '../../../joi/common';
 import { SmrWallet } from '../../../wallet/SmrWalletService';
 import { WalletService } from '../../../wallet/wallet';
-import { TransactionService } from '../../transaction-service';
+import { TransactionMatch, TransactionService } from '../../transaction-service';
 
 const schema = Joi.object({
   nftId: CommonJoi.uid(false),
@@ -62,7 +62,7 @@ export class MintMetadataNftService {
     network: Network,
     owner: string,
     request: Record<string, unknown>,
-    amountReceived: number,
+    match: TransactionMatch,
     tran: MilestoneTransaction,
     tranEntry: MilestoneTransactionEntry,
   ) => {
@@ -86,7 +86,7 @@ export class MintMetadataNftService {
 
     const amount = aliasOutputAmount + collectionOutputAmount + nftOutputAmount;
 
-    const remainingAmount = amountReceived - amount;
+    const remainingAmount = match.to.amount - amount;
     const remainderOutput = packBasicOutput(
       targetAddress.bech32,
       remainingAmount,
@@ -96,6 +96,7 @@ export class MintMetadataNftService {
       undefined,
       undefined,
       { nftId, collectionId, aliasId },
+      match.msgId,
     );
 
     if (remainingAmount !== Number(remainderOutput.amount)) {
@@ -127,7 +128,7 @@ export class MintMetadataNftService {
       network,
       payload: {
         type: TransactionOrderType.MINT_METADATA_NFT,
-        amount: amountReceived,
+        amount: match.to.amount,
         targetAddress: targetAddress.bech32,
         validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
         expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
@@ -140,6 +141,7 @@ export class MintMetadataNftService {
         nftId: nftId === EMPTY_NFT_ID ? '' : nftId,
         nftOutputAmount,
         metadata: request.metadata,
+        tag: match.msgId,
       },
     };
     const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
