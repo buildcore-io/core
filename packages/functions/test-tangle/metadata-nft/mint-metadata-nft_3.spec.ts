@@ -99,9 +99,42 @@ describe('Metadata nft', () => {
 
     const indexer = new IndexerPluginClient(helper.walletService.client);
 
-    const nftOutputId = (await indexer.nft(nft.mintingData?.nftId!)).items[0];
-    const nftOutput = (await helper.walletService.client.output(nftOutputId)).output as INftOutput;
-    const meta = getOutputMetadata(nftOutput);
+    let nftOutputId = (await indexer.nft(nft.mintingData?.nftId!)).items[0];
+    let nftOutput = (await helper.walletService.client.output(nftOutputId)).output as INftOutput;
+    let meta = getOutputMetadata(nftOutput);
     expect(meta).toEqual({ asd: 'hello' });
+
+    await helper.walletService.send(
+      helper.memberAddress,
+      tangleOrder.payload.targetAddress,
+      MIN_IOTA_AMOUNT,
+      {
+        customMetadata: {
+          request: {
+            requestType: TangleRequestType.MINT_METADATA_NFT,
+            metadata: { asd: 'helloasdasd2' },
+            nftId: nft.mintingData?.nftId,
+          },
+        },
+      },
+    );
+    await MnemonicService.store(
+      helper.memberAddress.bech32,
+      helper.memberAddress.mnemonic,
+      helper.network,
+    );
+
+    await wait(async () => {
+      const snap = await creditQuery.get<Transaction>();
+      return (
+        snap.length === 3 &&
+        snap.reduce((acc, act) => acc && act.payload?.walletReference?.confirmed, true)
+      );
+    });
+
+    nftOutputId = (await indexer.nft(nft.mintingData?.nftId!)).items[0];
+    nftOutput = (await helper.walletService.client.output(nftOutputId)).output as INftOutput;
+    meta = getOutputMetadata(nftOutput);
+    expect(meta).toEqual({ asd: 'helloasdasd2' });
   });
 });

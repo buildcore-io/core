@@ -198,6 +198,7 @@ const onNftMinted = async (transaction: Transaction) => {
         collectionId: collection?.mintingData?.nftId || '',
         aliasId: space?.alias?.aliasId || '',
       },
+      tag: order.payload.tag || '',
     },
   };
   const creditDocRef = soonDb().doc(`${COL.TRANSACTION}/${creditTransaction.uid}`);
@@ -213,8 +214,8 @@ const onNftUpdated = async (transaction: Transaction) => {
   const order = <Transaction>await orderDocRef.get();
 
   const nftDocRef = soonDb().doc(`${COL.NFT}/${transaction.payload.nft}`);
+  const nft = await nftDocRef.get<Nft>();
   batch.update(nftDocRef, {
-    status: NftStatus.WITHDRAWN,
     properties: order.payload.metadata,
   });
 
@@ -222,6 +223,8 @@ const onNftUpdated = async (transaction: Transaction) => {
   const balance = await wallet.getBalance(order.payload.targetAddress);
 
   const member = await soonDb().doc(`${COL.MEMBER}/${transaction.member}`).get<Member>();
+  const collection = await soonDb().doc(`${COL.COLLECTION}/${nft?.collection}`).get<Collection>();
+  const space = await soonDb().doc(`${COL.SPACE}/${collection?.space}`).get<Space>();
 
   const creditTransaction = <Transaction>{
     type: TransactionType.CREDIT,
@@ -236,6 +239,12 @@ const onNftUpdated = async (transaction: Transaction) => {
       targetAddress: getAddress(member, order.network || DEFAULT_NETWORK),
       reconciled: true,
       void: false,
+      customMetadata: {
+        nftId: nft?.mintingData?.nftId || '',
+        collectionId: collection?.mintingData?.nftId || '',
+        aliasId: space?.alias?.aliasId || '',
+      },
+      tag: order.payload.tag || '',
     },
   };
   const creditDocRef = soonDb().doc(`${COL.TRANSACTION}/${creditTransaction.uid}`);

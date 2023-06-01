@@ -32,6 +32,7 @@ const getShimmerParams = async (transaction: Transaction) => ({
   vestingAt: transaction.payload.vestingAt,
   storageDepositReturnAddress: transaction.payload.storageReturn?.address,
   customMetadata: transaction.payload.customMetadata,
+  tag: transaction.payload.tag,
 });
 
 const getParams = async (transaction: Transaction) => {

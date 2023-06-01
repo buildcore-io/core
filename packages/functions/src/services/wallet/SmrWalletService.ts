@@ -53,6 +53,7 @@ export interface SmrParams extends WalletParams {
   readonly vestingAt?: Timestamp;
   readonly expiration?: Expiration;
   readonly customMetadata?: Record<string, unknown>;
+  readonly tag?: string;
 }
 
 export const getShimmerClient = async (network: Network) => {
@@ -175,6 +176,7 @@ export class SmrWallet implements Wallet<SmrParams> {
       params.vestingAt,
       params.expiration,
       params.customMetadata,
+      params.tag,
     );
 
     const remainders: IBasicOutput[] = [];
