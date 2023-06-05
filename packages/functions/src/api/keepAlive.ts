@@ -9,6 +9,8 @@ import { CommonJoi } from '../services/joi/common';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 import { getQueryParams } from './common';
 
+import { Observable } from 'rxjs';
+
 const keepAliveSchema = Joi.object({
   instanceId: CommonJoi.uid(),
 });
@@ -19,17 +21,13 @@ export const keepAlive = async (req: functions.https.Request, res: express.Respo
     return;
   }
   const docRef = soonDb().doc(`${COL.KEEP_ALIVE}/${body.instanceId}`);
-  await docRef.update({});
+  await docRef.set({}, true);
   res.status(200).send({ update: true });
 };
 
 export const PING_INTERVAL = 30000;
 
-export const sendLiveUpdates = async (
-  res: express.Response,
-  func: (callback: (data: any) => void) => () => void,
-  filter?: (data: any) => any,
-) => {
+export const sendLiveUpdates = async <T>(res: express.Response, observable: Observable<T>) => {
   const instanceId = getRandomEthAddress();
 
   res.setHeader('Content-Type', 'text/event-stream');
@@ -48,13 +46,12 @@ export const sendLiveUpdates = async (
     res.write(`event: ping\ndata: ${instanceId}\n\n`);
   };
 
-  await ping();
   const pingInterval = setInterval(async () => {
     await ping();
   }, PING_INTERVAL * 0.8);
 
-  const unsubscribe = func((data) => {
-    res.write(`event: update\ndata: ${JSON.stringify(filter ? filter(data) : data)}\n\n`);
+  const subscription = observable.subscribe((data) => {
+    res.write(`event: update\ndata: ${JSON.stringify(data)}\n\n`);
   });
 
   res.on('close', async () => {
@@ -64,7 +61,7 @@ export const sendLiveUpdates = async (
   const closeConnection = async () => {
     await keepAliveDocRef.delete();
     clearInterval(pingInterval);
-    unsubscribe();
+    subscription.unsubscribe();
     res.end();
   };
 };

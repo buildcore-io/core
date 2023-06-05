@@ -14,7 +14,6 @@ import { TokenPurchase, TokenStatus } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import {
   CandlestickData,
-  createChart,
   CrosshairMode,
   GridOptions,
   HistogramData,
@@ -26,6 +25,7 @@ import {
   TimeScaleOptions,
   UTCTimestamp,
   VisiblePriceScaleOptions,
+  createChart,
 } from 'lightweight-charts';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
@@ -198,7 +198,7 @@ export class TradingViewComponent implements OnInit, AfterViewInit {
     if (!this._tokenId || !this.status) return;
     this.purchasesSubs$?.unsubscribe();
     this.purchasesSubs$ = this.tokenPurchaseApi
-      .listenToPurchases(this._tokenId, [this.status])
+      .listenToPurchases(this._tokenId)
       .pipe(untilDestroyed(this))
       .subscribe(this.listenToPurchases$);
   }

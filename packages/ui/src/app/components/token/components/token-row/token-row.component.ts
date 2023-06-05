@@ -62,11 +62,11 @@ export class TokenRowComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     if (this.token?.uid) {
-      this.listenToStats(this.token.uid, [this.token.status || TokenStatus.PRE_MINTED]);
+      this.listenToStats(this.token.uid);
     }
   }
 
-  private listenToStats(tokenId: string, status: TokenStatus[]): void {
+  private listenToStats(tokenId: string): void {
     // TODO Add pagging.
     this.subscriptions$.push(
       this.tokenMarketApi
@@ -76,25 +76,25 @@ export class TokenRowComponent implements OnInit, OnDestroy {
     );
     this.subscriptions$.push(
       this.tokenPurchaseApi
-        .listenAvgPrice7d(tokenId, status)
+        .listenAvgPrice7d(tokenId)
         .pipe(untilDestroyed(this))
         .subscribe(this.listenAvgPrice7d$),
     );
     this.subscriptions$.push(
       this.tokenPurchaseApi
-        .listenVolume24h(tokenId, status)
+        .listenVolume24h(tokenId)
         .pipe(untilDestroyed(this))
         .subscribe(this.listenVolume24h$),
     );
     this.subscriptions$.push(
       this.tokenPurchaseApi
-        .listenVolume7d(tokenId, status)
+        .listenVolume7d(tokenId)
         .pipe(untilDestroyed(this))
         .subscribe(this.listenVolume7d$),
     );
     this.subscriptions$.push(
       this.tokenPurchaseApi
-        .listenChangePrice24h(tokenId, status)
+        .listenChangePrice24h(tokenId)
         .pipe(untilDestroyed(this))
         .subscribe(this.listenChangePrice24h$),
     );

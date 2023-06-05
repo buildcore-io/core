@@ -9,12 +9,16 @@ export enum SoonEnv {
 
 export const getByIdUrl = (baseUrl: SoonEnv) => baseUrl + ApiRoutes.GET_BY_ID;
 
-export const getByManyUrl = (baseUrl: SoonEnv) => baseUrl + ApiRoutes.GET_MANY;
+export const getManyUrl = (baseUrl: SoonEnv) => baseUrl + ApiRoutes.GET_MANY;
 
 export const getManyAdvancedUrl = (baseUrl: SoonEnv) => baseUrl + ApiRoutes.GET_MANY_ADVANCED;
 
 export const getUpdatedAfterUrl = (baseUrl: SoonEnv) => baseUrl + ApiRoutes.GET_UPDATED_AFTER;
 
 export const getTokenPriceUrl = (baseUrl: SoonEnv) => baseUrl + ApiRoutes.GET_TOKEN_PRICE;
+
+export const getAvgPriceUrl = (baseUrl: SoonEnv) => baseUrl + ApiRoutes.GET_AVG_PRICE;
+
+export const getPriceChangeUrl = (baseUrl: SoonEnv) => baseUrl + ApiRoutes.GET_PRICE_CHANGE;
 
 export const getKeepAliveUrl = (baseUrl: SoonEnv) => baseUrl + ApiRoutes.KEEP_ALIVE;

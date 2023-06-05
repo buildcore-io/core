@@ -1,203 +1,102 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
-  collection,
-  collectionData,
-  doc,
-  docData,
-  Firestore,
-  query,
-  where,
-} from '@angular/fire/firestore';
-import {
-  COL,
-  SUB_COL,
+  PublicCollections,
   Token,
   TokenDistribution,
-  TokenStats,
-  TokenStatus,
   Transaction,
   WEN_FUNC,
   WenRequest,
 } from '@soonaverse/interfaces';
+import {
+  TokenDistributionRepository,
+  TokenRepository,
+  TokenStatsRepository,
+} from '@soonaverse/lib';
 import { Observable, of } from 'rxjs';
-import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
+import { BaseApi, SOON_ENV } from './base.api';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TokenApi extends BaseApi<Token> {
-  public collection = COL.TOKEN;
+  private tokenRepo = new TokenRepository(SOON_ENV);
+  private tokenStatsRepo = new TokenStatsRepository(SOON_ENV);
+  private tokenDistributionRepo = new TokenDistributionRepository(SOON_ENV);
 
-  constructor(protected firestore: Firestore, protected httpClient: HttpClient) {
-    super(firestore, httpClient);
+  constructor(protected httpClient: HttpClient) {
+    super(PublicCollections.TOKEN, httpClient);
   }
 
-  public create(req: WenRequest): Observable<Token | undefined> {
-    return this.request(WEN_FUNC.createToken, req);
-  }
+  public create = (req: WenRequest): Observable<Token | undefined> =>
+    this.request(WEN_FUNC.createToken, req);
 
-  public update(req: WenRequest): Observable<Token | undefined> {
-    return this.request(WEN_FUNC.updateToken, req);
-  }
+  public update = (req: WenRequest): Observable<Token | undefined> =>
+    this.request(WEN_FUNC.updateToken, req);
 
-  public setTokenAvailableForSale(req: WenRequest): Observable<Token | undefined> {
-    return this.request(WEN_FUNC.setTokenAvailableForSale, req);
-  }
+  public setTokenAvailableForSale = (req: WenRequest): Observable<Token | undefined> =>
+    this.request(WEN_FUNC.setTokenAvailableForSale, req);
 
-  public vote(req: WenRequest): Observable<Transaction | undefined> {
-    return this.request(WEN_FUNC.voteController, req);
-  }
+  public vote = (req: WenRequest): Observable<Transaction | undefined> =>
+    this.request(WEN_FUNC.voteController, req);
 
-  public rank(req: WenRequest): Observable<Transaction | undefined> {
-    return this.request(WEN_FUNC.rankController, req);
-  }
+  public rank = (req: WenRequest): Observable<Transaction | undefined> =>
+    this.request(WEN_FUNC.rankController, req);
 
-  public cancelPublicSale(req: WenRequest): Observable<Token | undefined> {
-    return this.request(WEN_FUNC.cancelPublicSale, req);
-  }
+  public cancelPublicSale = (req: WenRequest): Observable<Token | undefined> =>
+    this.request(WEN_FUNC.cancelPublicSale, req);
 
-  public airdropToken(req: WenRequest): Observable<TokenDistribution[] | undefined> {
-    return this.request(WEN_FUNC.airdropToken, req);
-  }
+  public airdropToken = (req: WenRequest): Observable<TokenDistribution[] | undefined> =>
+    this.request(WEN_FUNC.airdropToken, req);
 
-  public airdropMintedToken(req: WenRequest): Observable<Transaction | undefined> {
-    return this.request(WEN_FUNC.airdropMintedToken, req);
-  }
+  public airdropMintedToken = (req: WenRequest): Observable<Transaction | undefined> =>
+    this.request(WEN_FUNC.airdropMintedToken, req);
 
-  public creditToken(req: WenRequest): Observable<Transaction[] | undefined> {
-    return this.request(WEN_FUNC.creditToken, req);
-  }
+  public creditToken = (req: WenRequest): Observable<Transaction[] | undefined> =>
+    this.request(WEN_FUNC.creditToken, req);
 
-  public claimAirdroppedToken(req: WenRequest): Observable<Transaction | undefined> {
-    return this.request(WEN_FUNC.claimAirdroppedToken, req);
-  }
+  public claimAirdroppedToken = (req: WenRequest): Observable<Transaction | undefined> =>
+    this.request(WEN_FUNC.claimAirdroppedToken, req);
 
-  public claimMintedToken(req: WenRequest): Observable<Transaction | undefined> {
-    return this.request(WEN_FUNC.claimMintedTokenOrder, req);
-  }
+  public claimMintedToken = (req: WenRequest): Observable<Transaction | undefined> =>
+    this.request(WEN_FUNC.claimMintedTokenOrder, req);
 
-  public depositStake(req: WenRequest): Observable<Transaction | undefined> {
-    return this.request(WEN_FUNC.depositStake, req);
-  }
+  public depositStake = (req: WenRequest): Observable<Transaction | undefined> =>
+    this.request(WEN_FUNC.depositStake, req);
 
-  public voteOnProposal(req: WenRequest): Observable<Transaction | undefined> {
-    return this.request(WEN_FUNC.voteOnProposal, req);
-  }
+  public voteOnProposal = (req: WenRequest): Observable<Transaction | undefined> =>
+    this.request(WEN_FUNC.voteOnProposal, req);
 
-  public enableTrading(req: WenRequest): Observable<Token | undefined> {
-    return this.request(WEN_FUNC.enableTokenTrading, req);
-  }
+  public enableTrading = (req: WenRequest): Observable<Token | undefined> =>
+    this.request(WEN_FUNC.enableTokenTrading, req);
 
-  // TokenDistributionRepository.getByIdLive
-  public getMembersDistribution(
-    tokenId: string,
-    memberId: string,
-  ): Observable<TokenDistribution | undefined> {
+  public getMembersDistribution(tokenId: string, memberId: string) {
     if (!tokenId || !memberId) {
       return of(undefined);
     }
-
-    return docData(
-      doc(
-        this.firestore,
-        this.collection,
-        tokenId.toLowerCase(),
-        SUB_COL.DISTRIBUTION,
-        memberId.toLowerCase(),
-      ),
-    ) as Observable<TokenDistribution | undefined>;
+    return this.tokenDistributionRepo.getByIdLive(tokenId.toLowerCase(), memberId.toLowerCase());
   }
 
-  // TokenDistributionRepository.getAllLive
   public getDistributions(tokenId?: string): Observable<TokenDistribution[] | undefined> {
     if (!tokenId) {
       return of(undefined);
     }
-
-    return collectionData(
-      query(
-        collection(this.firestore, this.collection, tokenId.toLowerCase(), SUB_COL.DISTRIBUTION),
-      ),
-    ) as Observable<TokenDistribution[]>;
+    return this.tokenDistributionRepo.getAllLive(tokenId.toLowerCase());
   }
 
-  // TokenStatsRepository.getByIdLive
-  public stats(tokenId: string): Observable<TokenStats | undefined> {
+  public stats(tokenId: string) {
     if (!tokenId) {
       return of(undefined);
     }
-
-    return docData(
-      doc(
-        this.firestore,
-        this.collection,
-        tokenId.toLowerCase(),
-        SUB_COL.STATS,
-        tokenId.toLowerCase(),
-      ),
-    ) as Observable<TokenStats | undefined>;
+    return this.tokenStatsRepo.getByIdLive(tokenId.toLowerCase(), tokenId.toLowerCase());
   }
 
-  // TokenRepository.getByStatusLive (first arg [])
-  public topPublic(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [where('public', '==', true)],
-    });
-  }
+  public topPublic = (lastValue?: string, limit?: number) =>
+    this.tokenRepo.getByStatusLive([], lastValue, limit);
 
-  // TokenRepository.getLatestLive
-  public top(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-    });
-  }
+  public top = (lastValue?: string, limit?: number): Observable<Token[]> =>
+    this.tokenRepo.getTopLive(lastValue, limit);
 
-  // TokenRepository.getBySpaceLive
-  public space(space: string, lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [where('space', '==', space)],
-    });
-  }
-
-  // TokenRepository.getByStatusLive
-  public tradingPairs(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('public', '==', true),
-        where('status', 'in', [TokenStatus.BASE, TokenStatus.PRE_MINTED, TokenStatus.MINTED]),
-      ],
-    });
-  }
-
-  // TokenRepository.getByStatusLive
-  public launchpad(lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [where('public', '==', true), where('status', 'in', [TokenStatus.AVAILABLE])],
-    });
-  }
+  public space = (space: string, lastValue?: string) =>
+    this.tokenRepo.getBySpaceLive(space, lastValue);
 }

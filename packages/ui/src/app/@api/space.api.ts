@@ -1,202 +1,114 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { doc, docData, Firestore } from '@angular/fire/firestore';
-import { COL, Member, Space, SUB_COL, WEN_FUNC, WenRequest } from '@soonaverse/interfaces';
-import { map, Observable, of } from 'rxjs';
-import { BaseApi } from './base.api';
+import {
+  PublicCollections,
+  Space,
+  SpaceMember,
+  WEN_FUNC,
+  WenRequest,
+} from '@soonaverse/interfaces';
+import {
+  MemberRepository,
+  SpaceBlockedMemberRepository,
+  SpaceGuardianRepository,
+  SpaceKnockingMemberRepository,
+  SpaceMemberRepository,
+} from '@soonaverse/lib';
+import { Observable, map, of, switchMap } from 'rxjs';
+import { BaseApi, SOON_ENV } from './base.api';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SpaceApi extends BaseApi<Space> {
-  public collection = COL.SPACE;
+  private memberRepo = new MemberRepository(SOON_ENV);
+  private spaceMemberRepo = new SpaceMemberRepository(SOON_ENV);
+  private spaceGuardianRepo = new SpaceGuardianRepository(SOON_ENV);
+  private spaceBlockedRepo = new SpaceBlockedMemberRepository(SOON_ENV);
+  private spaceKnockingRepo = new SpaceKnockingMemberRepository(SOON_ENV);
 
-  constructor(protected firestore: Firestore, protected httpClient: HttpClient) {
-    super(firestore, httpClient);
+  constructor(protected httpClient: HttpClient) {
+    super(PublicCollections.SPACE, httpClient);
   }
 
-  // SpaceMemberRepository.getByIdLive
   public isMemberWithinSpace(spaceId: string, memberId: string): Observable<boolean> {
     if (!spaceId || !memberId) {
       return of(false);
     }
-
-    return docData(
-      doc(
-        this.firestore,
-        this.collection,
-        spaceId.toLowerCase(),
-        SUB_COL.MEMBERS,
-        memberId.toLowerCase(),
-      ),
-    ).pipe(
-      map((o) => {
-        return !!o;
-      }),
-    );
+    return this.spaceMemberRepo.getByIdLive(spaceId, memberId).pipe(map((member) => !!member));
   }
 
-  // SpaceGuardianRepository.getByIdLive
   public isGuardianWithinSpace(spaceId: string, memberId: string): Observable<boolean> {
     if (!spaceId || !memberId) {
       return of(false);
     }
-
-    return docData(
-      doc(
-        this.firestore,
-        this.collection,
-        spaceId.toLowerCase(),
-        SUB_COL.GUARDIANS,
-        memberId.toLowerCase(),
-      ),
-    ).pipe(
-      map((o) => {
-        return !!o;
-      }),
-    );
+    return this.spaceGuardianRepo.getByIdLive(spaceId, memberId).pipe(map((member) => !!member));
   }
 
-  // SpaceKnockingMemberRepository.getByIdLive
   public isPendingMemberWithinSpace(spaceId: string, memberId: string): Observable<boolean> {
     if (!spaceId || !memberId) {
       return of(false);
     }
+    return this.spaceKnockingRepo.getByIdLive(spaceId, memberId).pipe(map((member) => !!member));
+  }
 
-    return docData(
-      doc(
-        this.firestore,
-        this.collection,
-        spaceId.toLowerCase(),
-        SUB_COL.KNOCKING_MEMBERS,
-        memberId.toLowerCase(),
-      ),
-    ).pipe(
-      map((o) => {
-        return !!o;
-      }),
+  public listenGuardians = (spaceId: string, lastValue?: string) =>
+    this.spaceGuardianRepo.getAllLive(spaceId, lastValue).pipe(switchMap(this.getMembers));
+
+  public listenMembersWithoutData = (spaceId: string, lastValue?: string) =>
+    this.spaceMemberRepo
+      .getAllLive(spaceId, lastValue)
+      .pipe(map((members) => members.map((m) => ({ uid: m.uid }))));
+
+  public listenMembers = (spaceId: string, lastValue?: string) =>
+    this.spaceMemberRepo.getAllLive(spaceId, lastValue).pipe(switchMap(this.getMembers));
+
+  public listenBlockedMembers = (spaceId: string, lastValue?: string) =>
+    this.spaceBlockedRepo.getAllLive(spaceId, lastValue).pipe(switchMap(this.getMembers));
+
+  public listenPendingMembers = (spaceId: string, lastValue?: string) =>
+    this.spaceKnockingRepo.getAllLive(spaceId, lastValue).pipe(switchMap(this.getMembers));
+
+  private getMembers = async (spaceMembers: SpaceMember[]) => {
+    const promises = spaceMembers.map(
+      async (spaceMember) => (await this.memberRepo.getById(spaceMember.uid))!,
     );
-  }
+    return await Promise.all(promises);
+  };
 
-  // SpaceGuardianRepository.getAllLive
-  public listenGuardians(
-    spaceId: string,
-    lastValue?: number,
-    searchIds?: string[],
-  ): Observable<Member[]> {
-    return this.subCollectionMembers({
-      docId: spaceId,
-      subCol: SUB_COL.GUARDIANS,
-      lastValue: lastValue,
-      searchIds: searchIds,
-    });
-  }
+  public create = (req: WenRequest): Observable<Space | undefined> =>
+    this.request(WEN_FUNC.createSpace, req);
 
-  // SpaceMemberRepository.getAllLive
-  public listenMembersWithoutData(
-    spaceId: string,
-    lastValue?: number,
-    searchIds?: string[],
-    def?: number,
-  ): Observable<Array<{ uid: string }>> {
-    return this.subCollectionMembersWithoutData({
-      docId: spaceId,
-      subCol: SUB_COL.MEMBERS,
-      lastValue: lastValue,
-      searchIds: searchIds,
-      def: def,
-    });
-  }
+  public save = (req: WenRequest): Observable<Space | undefined> =>
+    this.request(WEN_FUNC.updateSpace, req);
 
-  // SpaceMemberRepository.getAllLive
-  public listenMembers(
-    spaceId: string,
-    lastValue?: number,
-    searchIds?: string[],
-    def?: number,
-  ): Observable<Member[]> {
-    return this.subCollectionMembers({
-      docId: spaceId,
-      subCol: SUB_COL.MEMBERS,
-      lastValue: lastValue,
-      searchIds: searchIds,
-      def: def,
-    });
-  }
+  public join = (req: WenRequest): Observable<Space | undefined> =>
+    this.request(WEN_FUNC.joinSpace, req);
 
-  // SpaceBlockedMemberRepository.getAllLive
-  public listenBlockedMembers(
-    spaceId: string,
-    lastValue?: number,
-    searchIds?: string[],
-  ): Observable<Member[]> {
-    return this.subCollectionMembers({
-      docId: spaceId,
-      subCol: SUB_COL.BLOCKED_MEMBERS,
-      lastValue: lastValue,
-      searchIds: searchIds,
-    });
-  }
+  public leave = (req: WenRequest): Observable<Space | undefined> =>
+    this.request(WEN_FUNC.leaveSpace, req);
 
-  // SpaceKnockingMemberRepository.getAllLive
-  public listenPendingMembers(
-    spaceId: string,
-    lastValue?: number,
-    searchIds?: string[],
-  ): Observable<Member[]> {
-    return this.subCollectionMembers({
-      docId: spaceId,
-      subCol: SUB_COL.KNOCKING_MEMBERS,
-      lastValue: lastValue,
-      searchIds: searchIds,
-    });
-  }
+  public setGuardian = (req: WenRequest): Observable<Space | undefined> =>
+    this.request(WEN_FUNC.addGuardianSpace, req);
 
-  public create(req: WenRequest): Observable<Space | undefined> {
-    return this.request(WEN_FUNC.createSpace, req);
-  }
+  public claimSpace = (req: WenRequest): Observable<Space | undefined> =>
+    this.request(WEN_FUNC.claimSpace, req);
 
-  public save(req: WenRequest): Observable<Space | undefined> {
-    return this.request(WEN_FUNC.updateSpace, req);
-  }
+  public removeGuardian = (req: WenRequest): Observable<Space | undefined> =>
+    this.request(WEN_FUNC.removeGuardianSpace, req);
 
-  public join(req: WenRequest): Observable<Space | undefined> {
-    return this.request(WEN_FUNC.joinSpace, req);
-  }
+  public blockMember = (req: WenRequest): Observable<Space | undefined> =>
+    this.request(WEN_FUNC.blockMemberSpace, req);
 
-  public leave(req: WenRequest): Observable<Space | undefined> {
-    return this.request(WEN_FUNC.leaveSpace, req);
-  }
+  public unblockMember = (req: WenRequest): Observable<Space | undefined> =>
+    this.request(WEN_FUNC.unblockMemberSpace, req);
 
-  public setGuardian(req: WenRequest): Observable<Space | undefined> {
-    return this.request(WEN_FUNC.addGuardianSpace, req);
-  }
+  public acceptMember = (req: WenRequest): Observable<Space | undefined> =>
+    this.request(WEN_FUNC.acceptMemberSpace, req);
 
-  public claimSpace(req: WenRequest): Observable<Space | undefined> {
-    return this.request(WEN_FUNC.claimSpace, req);
-  }
+  public rejectMember = (req: WenRequest): Observable<Space | undefined> =>
+    this.request(WEN_FUNC.declineMemberSpace, req);
 
-  public removeGuardian(req: WenRequest): Observable<Space | undefined> {
-    return this.request(WEN_FUNC.removeGuardianSpace, req);
-  }
-
-  public blockMember(req: WenRequest): Observable<Space | undefined> {
-    return this.request(WEN_FUNC.blockMemberSpace, req);
-  }
-
-  public unblockMember(req: WenRequest): Observable<Space | undefined> {
-    return this.request(WEN_FUNC.unblockMemberSpace, req);
-  }
-
-  public acceptMember(req: WenRequest): Observable<Space | undefined> {
-    return this.request(WEN_FUNC.acceptMemberSpace, req);
-  }
-
-  public rejectMember(req: WenRequest): Observable<Space | undefined> {
-    return this.request(WEN_FUNC.declineMemberSpace, req);
-  }
-
-  public update(req: WenRequest): Observable<Space | undefined> {
-    return this.request(WEN_FUNC.updateSpace, req);
-  }
+  public update = (req: WenRequest): Observable<Space | undefined> =>
+    this.request(WEN_FUNC.updateSpace, req);
 }

@@ -2,6 +2,8 @@ export * from './BadgesRepository';
 export * from './MemberRepository';
 export * from './NftRepository';
 export * from './NotificationRepository';
+export * from './StakeRepository';
+export * from './StakeRewardRepository';
 export * from './TickerRepository';
 export * from './TransactionRepository';
 export * from './award/index';

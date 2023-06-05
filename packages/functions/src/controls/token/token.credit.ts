@@ -25,7 +25,7 @@ import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const creditTokenControl = async (owner: string, params: Record<string, unknown>) => {
   const tranId = getRandomEthAddress();
-  const creditTranDoc = soonDb().collection(COL.TRANSACTION).doc(tranId);
+  const creditTranDoc = soonDb().doc(`${COL.TRANSACTION}/${tranId}`);
 
   await soonDb().runTransaction(async (transaction) => {
     const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${params.token}`);

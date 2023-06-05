@@ -7,13 +7,14 @@ export class NotificationRepository extends CrudRepository<Notification> {
     super(env || SoonEnv.PROD, PublicCollections.NOTIFICATION);
   }
 
-  public getByMemberLive = (member: string, startAfter?: string) => {
+  public getByMemberLive = (member: string, startAfter?: string, limit?: number) => {
     const params = {
       collection: this.col,
       fieldName: ['member'],
       fieldValue: [member],
       operator: [Opr.EQUAL],
       startAfter,
+      limit,
       orderBy: ['createdOn'],
       orderByDir: ['desc'],
     };

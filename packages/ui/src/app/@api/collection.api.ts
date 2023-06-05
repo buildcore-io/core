@@ -1,17 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { doc, docData, Firestore, where } from '@angular/fire/firestore';
 import {
-  COL,
   Collection,
-  CollectionStats,
-  SUB_COL,
+  PublicCollections,
   Transaction,
   WEN_FUNC,
   WenRequest,
 } from '@soonaverse/interfaces';
+import { CollectionRepository, CollectionStatsRepository } from '@soonaverse/lib';
 import { Observable, of } from 'rxjs';
-import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
+import { BaseApi, SOON_ENV } from './base.api';
 
 export enum CollectionFilter {
   ALL = 'all',
@@ -24,106 +22,43 @@ export enum CollectionFilter {
   providedIn: 'root',
 })
 export class CollectionApi extends BaseApi<Collection> {
-  public collection = COL.COLLECTION;
+  protected colRepo = new CollectionRepository(SOON_ENV);
+  protected colStatRepo = new CollectionStatsRepository(SOON_ENV);
 
-  constructor(protected firestore: Firestore, protected httpClient: HttpClient) {
-    super(firestore, httpClient);
+  constructor(protected httpClient: HttpClient) {
+    super(PublicCollections.COLLECTION, httpClient);
   }
 
-  public mintCollection(req: WenRequest): Observable<Transaction | undefined> {
-    return this.request(WEN_FUNC.mintCollection, req);
-  }
+  public mintCollection = (req: WenRequest): Observable<Transaction | undefined> =>
+    this.request(WEN_FUNC.mintCollection, req);
 
-  public vote(req: WenRequest): Observable<Transaction | undefined> {
-    return this.request(WEN_FUNC.voteController, req);
-  }
+  public vote = (req: WenRequest): Observable<Transaction | undefined> =>
+    this.request(WEN_FUNC.voteController, req);
 
-  public rank(req: WenRequest): Observable<Transaction | undefined> {
-    return this.request(WEN_FUNC.rankController, req);
-  }
+  public rank = (req: WenRequest): Observable<Transaction | undefined> =>
+    this.request(WEN_FUNC.rankController, req);
 
-  // CollectionStatsRepository.getByIdLive
-  public stats(collectionId: string): Observable<CollectionStats | undefined> {
-    if (!collectionId) {
-      return of(undefined);
-    }
+  public stats = (collectionId: string) =>
+    collectionId ? this.colStatRepo.getByIdLive(collectionId, collectionId) : of(undefined);
 
-    return docData(
-      doc(
-        this.firestore,
-        this.collection,
-        collectionId.toLowerCase(),
-        SUB_COL.STATS,
-        collectionId.toLowerCase(),
-      ),
-    ) as Observable<CollectionStats | undefined>;
-  }
+  public allPendingSpace = (space: string, lastValue?: string) =>
+    this.colRepo.getAllPendingLive(space, lastValue);
 
-  // CollectionRepository.getAllPendingLive
-  public allPendingSpace(
-    space: string,
-    lastValue?: number,
-    def = DEFAULT_LIST_SIZE,
-  ): Observable<Collection[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [
-        where('space', '==', space),
-        where('approved', '==', false),
-        where('rejected', '==', false),
-      ],
-    });
-  }
+  public allAvailableSpace = (space: string, lastValue?: string) =>
+    this.colRepo.getAllAvailableLive(space, lastValue);
 
-  // CollectionRepository.getAllAvailableLive
-  public allAvailableSpace(
-    space: string,
-    lastValue?: number,
-    def = DEFAULT_LIST_SIZE,
-  ): Observable<Collection[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [where('space', '==', space), where('approved', '==', true)],
-    });
-  }
+  public allRejectedSpace = (space: string, lastValue?: string) =>
+    this.colRepo.getAllRejectedLive(space, lastValue);
 
-  // CollectionRepository.getAllRejectedLive
-  public allRejectedSpace(
-    space: string,
-    lastValue?: number,
-    def = DEFAULT_LIST_SIZE,
-  ): Observable<Collection[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [where('space', '==', space), where('rejected', '==', true)],
-    });
-  }
+  public create = (req: WenRequest): Observable<Collection | undefined> =>
+    this.request(WEN_FUNC.createCollection, req);
 
-  public create(req: WenRequest): Observable<Collection | undefined> {
-    return this.request(WEN_FUNC.createCollection, req);
-  }
+  public update = (req: WenRequest): Observable<Collection | undefined> =>
+    this.request(WEN_FUNC.updateCollection, req);
 
-  public update(req: WenRequest): Observable<Collection | undefined> {
-    return this.request(WEN_FUNC.updateCollection, req);
-  }
+  public approve = (req: WenRequest): Observable<Collection | undefined> =>
+    this.request(WEN_FUNC.approveCollection, req);
 
-  public approve(req: WenRequest): Observable<Collection | undefined> {
-    return this.request(WEN_FUNC.approveCollection, req);
-  }
-
-  public reject(req: WenRequest): Observable<Collection | undefined> {
-    return this.request(WEN_FUNC.rejectCollection, req);
-  }
+  public reject = (req: WenRequest): Observable<Collection | undefined> =>
+    this.request(WEN_FUNC.rejectCollection, req);
 }

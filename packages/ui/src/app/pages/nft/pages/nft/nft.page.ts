@@ -205,7 +205,7 @@ export class NFTPage implements OnInit, OnDestroy {
         );
         this.nftSubscriptions$.push(
           this.nftApi
-            .positionInCollection(p.collection, undefined, 5)
+            .positionInCollection(p.collection, undefined)
             .pipe(untilDestroyed(this))
             .subscribe(this.data.topNftWithinCollection$),
         );
@@ -226,7 +226,7 @@ export class NFTPage implements OnInit, OnDestroy {
         }
         this.nftSubscriptions$.push(
           this.nftApi
-            .lastCollection(p.collection, undefined, 1)
+            .lastCollection(p.collection, undefined)
             ?.pipe(
               untilDestroyed(this),
               map((obj: Nft[]) => {

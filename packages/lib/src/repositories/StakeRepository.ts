@@ -7,13 +7,14 @@ export class StakeRepository extends CrudRepository<Stake> {
     super(env || SoonEnv.PROD, PublicCollections.STAKE);
   }
 
-  public getByMemberLive = (member: string, startAfter?: string) => {
+  public getByMemberLive = (member: string, startAfter?: string, limit?: number) => {
     const params = {
       collection: this.col,
       fieldName: ['member'],
       fieldValue: [member],
       operator: [Opr.EQUAL],
       startAfter,
+      limit,
       orderBy: ['expiresAt'],
       orderByDir: ['desc'],
     };

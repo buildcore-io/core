@@ -53,7 +53,7 @@ export const onRequestConfig = (
     ingressSettings: 'ALLOW_INTERNAL_AND_GCLB',
     minInstances: scale(funcName),
   };
-  if (!isEmulatorEnv) {
+  if (!isEmulatorEnv()) {
     config.cors = true;
   }
   return {

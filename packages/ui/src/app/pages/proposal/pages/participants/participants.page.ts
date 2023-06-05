@@ -14,7 +14,7 @@ import { DeviceService } from '@core/services/device';
 import { SeoService } from '@core/services/seo';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { COL, GLOBAL_DEBOUNCE_TIME, Member } from '@soonaverse/interfaces';
-import { BehaviorSubject, debounceTime, first, from, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, debounceTime, first, from, skip } from 'rxjs';
 import { DataService } from '../../services/data.service';
 import { DEFAULT_LIST_SIZE } from './../../../../@api/base.api';
 import { ProposalApi, ProposalParticipantWithMember } from './../../../../@api/proposal.api';
@@ -118,7 +118,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
 
             // Top 10 records only supported
             this.overTenRecords = ids.length > 10;
-            this.onScroll(ids.slice(0, 10));
+            this.onScroll();
           });
       } else {
         // Show normal list again.
@@ -163,12 +163,12 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     return this.selectedListControl.value === this.filterOptions.PENDING;
   }
 
-  public onScroll(searchIds?: string[]): void {
+  public onScroll(): void {
     if (!this.proposalId) {
       return;
     }
 
-    this.onParticipantScroll(this.proposalId, this.selectedListControl.value, searchIds);
+    this.onParticipantScroll(this.proposalId, this.selectedListControl.value);
   }
 
   protected store(
@@ -187,11 +187,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     stream$.next(Array.prototype.concat.apply([], store));
   }
 
-  public onParticipantScroll(
-    proposalId: string,
-    list: ParticipantFilterOptions,
-    searchIds?: string[],
-  ): void {
+  public onParticipantScroll(proposalId: string, list: ParticipantFilterOptions): void {
     let store;
     let handler;
     let stream;
@@ -216,13 +212,13 @@ export class ParticipantsPage implements OnInit, OnDestroy {
 
     // For initial load stream will not be defiend.
     const lastValue = stream ? stream[stream.length - 1]._issuedOn : undefined;
-    handler.call(this, proposalId, lastValue, searchIds);
+    handler.call(this, proposalId, lastValue);
   }
 
-  public listenVotedMembers(proposalId: string, lastValue?: any, searchIds?: string[]): void {
+  public listenVotedMembers(proposalId: string, lastValue?: any): void {
     this.subscriptions$.push(
       this.proposalApi
-        .listenVotedMembers(proposalId, lastValue, searchIds)
+        .listenVotedMembers(proposalId, lastValue)
         .subscribe(
           this.store.bind(
             this,
@@ -234,10 +230,10 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     );
   }
 
-  public listenPendingMembers(proposalId: string, lastValue?: number, searchIds?: string[]): void {
+  public listenPendingMembers(proposalId: string, lastValue?: string): void {
     this.subscriptions$.push(
       this.proposalApi
-        .listenPendingMembers(proposalId, lastValue, searchIds)
+        .listenPendingMembers(proposalId, lastValue)
         .subscribe(
           this.store.bind(
             this,

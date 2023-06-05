@@ -12,13 +12,14 @@ import {
   TokenDistribution,
   TokenStats,
 } from '@soonaverse/interfaces';
+import { AwardFilter } from '@soonaverse/lib';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import {
   AuditOneQueryService,
   AuditOneResponseMember,
 } from 'src/app/service-modules/audit-one/services/query.service';
-import { AwardApi, AwardFilter } from './../../../@api/award.api';
+import { AwardApi } from './../../../@api/award.api';
 import { DEFAULT_LIST_SIZE } from './../../../@api/base.api';
 import { ProposalApi, ProposalFilter } from './../../../@api/proposal.api';
 import { SpaceApi } from './../../../@api/space.api';
@@ -324,20 +325,20 @@ export class DataService implements OnDestroy {
     return Array.isArray(arr) && arr.length === 0;
   }
 
-  public listenMembers(spaceId: string, lastValue?: number, searchIds?: string[]): void {
+  public listenMembers(spaceId: string, lastValue?: string): void {
     this.subscriptions$.push(
       this.spaceApi
-        .listenMembers(spaceId, lastValue, searchIds)
+        .listenMembers(spaceId, lastValue)
         .subscribe(
           this.store.bind(this, this.members$, this.dataStoreMembers, this.dataStoreMembers.length),
         ),
     );
   }
 
-  public listenBlockedMembers(spaceId: string, lastValue?: number, searchIds?: string[]): void {
+  public listenBlockedMembers(spaceId: string, lastValue?: string): void {
     this.subscriptions$.push(
       this.spaceApi
-        .listenBlockedMembers(spaceId, lastValue, searchIds)
+        .listenBlockedMembers(spaceId, lastValue)
         .subscribe(
           this.store.bind(
             this,
@@ -349,10 +350,10 @@ export class DataService implements OnDestroy {
     );
   }
 
-  public listenPendingMembers(spaceId: string, lastValue?: any, searchIds?: string[]): void {
+  public listenPendingMembers(spaceId: string, lastValue?: any): void {
     this.subscriptions$.push(
       this.spaceApi
-        .listenPendingMembers(spaceId, lastValue, searchIds)
+        .listenPendingMembers(spaceId, lastValue)
         .subscribe(
           this.store.bind(
             this,
@@ -409,7 +410,7 @@ export class DataService implements OnDestroy {
 
     // For initial load stream will not be defiend.
     const lastValue = stream ? stream[stream.length - 1].createdOn : undefined;
-    handler.call(this, spaceId, lastValue, searchIds);
+    handler.call(this, spaceId, lastValue);
   }
 
   public getPendingMembersCount(members?: Member[] | null): number {

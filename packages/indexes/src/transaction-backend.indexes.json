@@ -1,0 +1,44 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "transaction",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "payload.void",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "payload.reconciled",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "payload.expiresOn",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "transaction",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "payload.invalidPayment",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "payload.sourceTransaction",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "payload.amount",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ]
+}

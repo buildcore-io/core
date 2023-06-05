@@ -46,6 +46,8 @@ export enum ApiRoutes {
   GET_MANY_ADVANCED = '/getManyAdvanced',
   GET_UPDATED_AFTER = '/getUpdatedAfter',
   GET_TOKEN_PRICE = '/getTokenPrice',
+  GET_AVG_PRICE = '/getAvgPrice',
+  GET_PRICE_CHANGE = '/getPriceChange',
   GET_ADDRESSES = '/addresses',
   KEEP_ALIVE = '/keepAlive',
 }

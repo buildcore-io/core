@@ -32,7 +32,11 @@ export class TransactionRepository extends CrudRepository<Transaction> {
     return this.getManyAdvancedLive(params);
   };
 
-  public getTopLive = (orderBy: string[] = ['createdOn'], startAfter?: string) => {
+  public getTopTransactionsLive = (
+    orderBy: string[] = ['createdOn'],
+    startAfter?: string,
+    member?: string,
+  ) => {
     const includedTypes = [
       TransactionType.PAYMENT,
       TransactionType.BILL_PAYMENT,
@@ -45,11 +49,19 @@ export class TransactionRepository extends CrudRepository<Transaction> {
       TransactionType.CREDIT_TANGLE_REQUEST,
       TransactionType.VOTE,
     ];
+    const fieldName = includedTypes.map(() => 'type');
+    const fieldValue: string[] = includedTypes;
+    const operator = includedTypes.map(() => Opr.IN);
+    if (member) {
+      fieldName.push('member');
+      fieldValue.push(member);
+      operator.push(Opr.EQUAL);
+    }
     const params = {
       collection: this.col,
-      fieldName: includedTypes.map(() => 'type'),
-      fieldValue: includedTypes,
-      operator: includedTypes.map(() => Opr.IN),
+      fieldName,
+      fieldValue,
+      operator,
       startAfter,
       orderBy,
       orderByDir: orderBy.map(() => 'desc'),

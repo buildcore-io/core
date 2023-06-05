@@ -42,14 +42,16 @@ export const mnemonicWrite = functions.firestore.onDocumentUpdated(
   },
 );
 
+const COUNT_IN = Array.from(Array(MAX_WALLET_RETRY)).map((_, i) => i);
+
 const getUncofirmedTransactionsByFieldName = async (fieldName: FieldNameType, address: string) => {
-  const promises = chunk(EXECUTABLE_TRANSACTIONS, 10).map((chunk) =>
+  const promises = chunk(EXECUTABLE_TRANSACTIONS, 5).map((chunk) =>
     soonDb()
       .collection(COL.TRANSACTION)
       .where(fieldName, '==', address)
       .where('type', 'in', chunk)
       .where('payload.walletReference.chainReference', '==', null)
-      .where('payload.walletReference.count', '<', MAX_WALLET_RETRY)
+      .where('payload.walletReference.count', 'in', COUNT_IN)
       .get<Transaction>(),
   );
   return (await Promise.all(promises)).reduce((acc, act) => [...acc, ...act], []);

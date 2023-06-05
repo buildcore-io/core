@@ -1,11 +1,14 @@
 import { Award, Opr, PublicCollections } from '@soonaverse/interfaces';
+import { switchMap } from 'rxjs';
 import { SoonEnv } from '../../Config';
 import { CrudRepository } from '../CrudRepository';
-import { AwardFilter } from './index';
+import { AwardFilter, AwardParticipantRepository } from './index';
 
 export class AwardRepository extends CrudRepository<Award> {
+  private participantRepo: AwardParticipantRepository;
   constructor(env?: SoonEnv) {
     super(env || SoonEnv.PROD, PublicCollections.AWARD);
+    this.participantRepo = new AwardParticipantRepository(env);
   }
 
   public getBySpaceAndFilterLive = (space: string, filter: AwardFilter = AwardFilter.ALL) => {
@@ -51,5 +54,15 @@ export class AwardRepository extends CrudRepository<Award> {
     const orderBy = ['endDate'];
     const params = { collection: this.col, fieldName, fieldValue, operator, startAfter, orderBy };
     return this.getManyAdvancedLive(params);
+  };
+
+  public getTopByMemberLive = (member: string, completed?: boolean, startAfter?: string) => {
+    const members = this.participantRepo.getTopByMemberLive(member, completed, startAfter);
+    return members.pipe(
+      switchMap(async (members) => {
+        const promises = members.map((member) => this.getById(member.parentId));
+        return (await Promise.all(promises)).map((s) => s!);
+      }),
+    );
   };
 }

@@ -18,7 +18,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import { Token, TokenStatus } from '@soonaverse/interfaces';
-import { BehaviorSubject, first, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, first } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -85,13 +85,13 @@ export class TokenTradingPairRowComponent implements OnInit, OnDestroy {
     );
     this.subscriptions$.push(
       this.tokenPurchaseApi
-        .listenVolume24h(tokenId, status)
+        .listenVolume24h(tokenId)
         .pipe(untilDestroyed(this))
         .subscribe(this.listenVolume24h$),
     );
     this.subscriptions$.push(
       this.tokenPurchaseApi
-        .listenChangePrice24h(tokenId, status)
+        .listenChangePrice24h(tokenId)
         .pipe(untilDestroyed(this))
         .subscribe(this.listenChangePrice24h$),
     );

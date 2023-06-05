@@ -172,7 +172,8 @@ const createBillAndRoyaltyPayment = async (
         tokenSymbol: token.symbol,
       },
     };
-    batch.create(soonDb().collection(COL.TRANSACTION).doc(royaltyPayment.uid), royaltyPayment);
+    const royaltyPaymentDocRef = soonDb().doc(`${COL.TRANSACTION}/${royaltyPayment.uid}`);
+    batch.create(royaltyPaymentDocRef, royaltyPayment);
     balance -= fee;
   }
   const network = order.network || DEFAULT_NETWORK;
@@ -200,7 +201,8 @@ const createBillAndRoyaltyPayment = async (
       tokenSymbol: token.symbol,
     },
   };
-  batch.create(soonDb().collection(COL.TRANSACTION).doc(billPayment.uid), billPayment);
+  const billPaymentDocRef = soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+  batch.create(billPaymentDocRef, billPayment);
   return { billPaymentId: billPayment.uid, royaltyBillPaymentId: royaltyPayment?.uid || '' };
 };
 
@@ -216,7 +218,7 @@ const createCredit = async (
   }
   const member = <Member>await memberDocRef(distribution.uid!).get();
   const tranId = getRandomEthAddress();
-  const docRef = soonDb().collection(COL.TRANSACTION).doc(tranId);
+  const docRef = soonDb().doc(`${COL.TRANSACTION}/${tranId}`);
   const network = order.network || DEFAULT_NETWORK;
   const data = <Transaction>{
     type: TransactionType.CREDIT,
@@ -438,8 +440,8 @@ const onTokenVaultEmptied = async (token: Token) => {
   const minter = await soonDb().doc(`${COL.MEMBER}/${token.mintingData?.mintedBy}`).get<Member>();
   const paymentsSnap = await soonDb()
     .collection(COL.TRANSACTION)
-    .where('payload.sourceTransaction', 'array-contains', token.mintingData?.vaultAddress!)
     .where('type', '==', TransactionType.PAYMENT)
+    .where('payload.sourceTransaction', 'array-contains', token.mintingData?.vaultAddress!)
     .get<Transaction>();
   const credit = <Transaction>{
     type: TransactionType.CREDIT,

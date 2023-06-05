@@ -29,22 +29,28 @@ export class ProposalRepository extends CrudRepository<Proposal> {
     const fieldName = ['space'];
     const fieldValue: (string | boolean)[] = [space];
     const operator = [Opr.EQUAL];
+    const orderBy: string[] = [];
+    const orderByDir: string[] = [];
 
     switch (filter) {
       case ProposalFilter.ACTIVE: {
-        fieldName.push('settings.endDate', 'approve');
+        fieldName.push('settings.endDate', 'approved');
         fieldValue.push(new Date().toISOString(), true);
         operator.push(Opr.GREATER_OR_EQUAL, Opr.EQUAL);
+        orderBy.push('settings.endDate');
+        orderByDir.push('asc');
         break;
       }
       case ProposalFilter.COMPLETED: {
-        fieldName.push('settings.endDate', 'approve');
+        fieldName.push('settings.endDate', 'approved');
         fieldValue.push(new Date().toISOString(), true);
         operator.push(Opr.LESS_OR_EQUAL, Opr.EQUAL);
+        orderBy.push('settings.endDate');
+        orderByDir.push('asc');
         break;
       }
       case ProposalFilter.DRAFT: {
-        fieldName.push('rejected', 'approve');
+        fieldName.push('rejected', 'approved');
         fieldValue.push(false, false);
         operator.push(Opr.EQUAL, Opr.EQUAL);
         break;
@@ -63,8 +69,8 @@ export class ProposalRepository extends CrudRepository<Proposal> {
       fieldValue,
       operator,
       startAfter,
-      orderBy: ['settings.endDate'],
-      orderByDir: ['asc'],
+      orderBy,
+      orderByDir,
     };
     return this.getManyAdvancedLive(params);
   };

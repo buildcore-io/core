@@ -101,7 +101,7 @@ const onMintedAirdropClaim = async (order: Transaction, token: Token) => {
   const paymentsSnap = await soonDb()
     .collection(COL.TRANSACTION)
     .where('type', '==', TransactionType.PAYMENT)
-    .where('sourceTransaction', 'array-contains', order.uid)
+    .where('payload.sourceTransaction', 'array-contains', order.uid)
     .get<Transaction>();
   const paymentsId = paymentsSnap.map((d) => d.uid);
 

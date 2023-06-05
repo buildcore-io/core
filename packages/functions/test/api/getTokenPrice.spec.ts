@@ -5,6 +5,7 @@ import {
   TokenTradeOrderStatus,
   TokenTradeOrderType,
 } from '@soonaverse/interfaces';
+import { getById } from '../../src/api/getById';
 import { getTokenPrice } from '../../src/api/getTokenPrice';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -12,7 +13,9 @@ import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 describe('Token price', () => {
   it('Should get token price', async () => {
     const token = getRandomEthAddress();
-    await soonDb().doc(`${COL.TICKER}/${TICKERS.SMRUSD}`).set({ price: 0.5 });
+    const tickerDocRef = soonDb().doc(`${COL.TICKER}/${TICKERS.SMRUSD}`);
+    await tickerDocRef.delete();
+    await tickerDocRef.set({ price: 0.5 });
     await soonDb().doc(`${COL.TOKEN_MARKET}/${getRandomEthAddress()}`).create({
       token,
       status: TokenTradeOrderStatus.ACTIVE,
@@ -38,5 +41,16 @@ describe('Token price', () => {
       },
     } as any;
     await getTokenPrice(req, res);
+  });
+
+  it('Should get ticker', async () => {
+    await soonDb().doc(`${COL.TICKER}/${TICKERS.SMRUSD}`).set({ price: 0.5 });
+    const req = { query: { collection: COL.TICKER, uid: TICKERS.SMRUSD } } as any;
+    const res = {
+      send: (body: any) => {
+        expect(body.price).toBe(0.5);
+      },
+    } as any;
+    await getById(req, res);
   });
 });

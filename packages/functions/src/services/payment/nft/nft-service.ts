@@ -103,7 +103,7 @@ export class NftService {
       const orderId = Array.isArray(highestPay.payload.sourceTransaction)
         ? last(highestPay.payload.sourceTransaction)!
         : highestPay.payload.sourceTransaction!;
-      const orderDocRef = soonDb().collection(COL.TRANSACTION).doc(orderId);
+      const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${orderId}`);
       const order = <Transaction | undefined>await orderDocRef.get();
       if (!order) {
         throw new Error('Unable to find ORDER linked to PAYMENT');
@@ -150,7 +150,7 @@ export class NftService {
   }
 
   public async markAsVoid(transaction: TransactionOrder): Promise<void> {
-    const refSource = soonDb().collection(COL.TRANSACTION).doc(transaction.uid);
+    const refSource = soonDb().doc(`${COL.TRANSACTION}/${transaction.uid}`);
     const data = (await this.transactionService.get<Transaction>(refSource))!;
     if (transaction.payload.nft) {
       if (transaction.payload.type === TransactionOrderType.NFT_PURCHASE) {
@@ -188,15 +188,15 @@ export class NftService {
 
   private async addNewBid(transaction: Transaction, payment: Transaction): Promise<void> {
     const nftDocRef = soonDb().collection(COL.NFT).doc(transaction.payload.nft);
-    const paymentDocRef = soonDb().collection(COL.TRANSACTION).doc(payment.uid);
+    const paymentDocRef = soonDb().doc(`${COL.TRANSACTION}/${payment.uid}`);
     const nft = await this.transactionService.get<Nft>(nftDocRef);
     let newValidPayment = false;
     let previousHighestPay: TransactionPayment | undefined;
     const paymentPayload = <PaymentTransaction>payment.payload;
     if (nft?.auctionHighestTransaction) {
-      const previousHighestPayRef = soonDb()
-        .collection(COL.TRANSACTION)
-        .doc(nft?.auctionHighestTransaction);
+      const previousHighestPayRef = soonDb().doc(
+        `${COL.TRANSACTION}/${nft?.auctionHighestTransaction}`,
+      );
       previousHighestPay = (await this.transactionService.get<Transaction>(previousHighestPayRef))!;
 
       if (
@@ -213,7 +213,7 @@ export class NftService {
 
     // We need to credit the old payment.
     if (newValidPayment && previousHighestPay) {
-      const refPrevPayment = soonDb().collection(COL.TRANSACTION).doc(previousHighestPay.uid);
+      const refPrevPayment = soonDb().doc(`${COL.TRANSACTION}/${previousHighestPay.uid}`);
       previousHighestPay.payload.invalidPayment = true;
       this.transactionService.push({
         ref: refPrevPayment,
@@ -246,7 +246,7 @@ export class NftService {
         const sourcTran: string = Array.isArray(previousHighestPay.payload.sourceTransaction)
           ? last(previousHighestPay.payload.sourceTransaction)!
           : previousHighestPay.payload.sourceTransaction!;
-        const refHighTranOrderDocRef = soonDb().collection(COL.TRANSACTION).doc(sourcTran);
+        const refHighTranOrderDocRef = soonDb().doc(`${COL.TRANSACTION}/${sourcTran}`);
         const refHighTranOrder = await this.transactionService.get<Transaction>(
           refHighTranOrderDocRef,
         );
@@ -384,7 +384,7 @@ export class NftService {
         const orderId = Array.isArray(highestPay.payload.sourceTransaction)
           ? last(highestPay.payload.sourceTransaction)!
           : highestPay.payload.sourceTransaction!;
-        const orderDocRef = soonDb().collection(COL.TRANSACTION).doc(orderId);
+        const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${orderId}`);
         this.transactionService.push({
           ref: orderDocRef,
           data: { linkedTransactions: soonDb().arrayUnion(credit?.uid) },

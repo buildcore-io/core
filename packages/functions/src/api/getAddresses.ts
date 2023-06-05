@@ -10,8 +10,9 @@ import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
 import { get } from 'lodash';
+import { map } from 'rxjs';
 import { soonDb } from '../firebase/firestore/soondb';
-import { getQueryParams } from './common';
+import { getQueryParams, queryToObservable } from './common';
 import { sendLiveUpdates } from './keepAlive';
 
 const getAddressesSchema = Joi.object({
@@ -36,7 +37,10 @@ export const getAddresses = async (req: functions.https.Request, res: express.Re
     .limit(1000);
 
   if (body.live) {
-    await sendLiveUpdates(res, query.onSnapshot, (snap: Mnemonic[]) => snap.map(sanitizeMnemonic));
+    const observable = queryToObservable<Mnemonic>(query).pipe(
+      map((mnemonics) => mnemonics.map(sanitizeMnemonic)),
+    );
+    await sendLiveUpdates(res, observable);
     return;
   }
 

@@ -59,6 +59,128 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "token_purchase",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "age.in24h",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "token_purchase",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "age.in48h",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "token_purchase",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "age.in7d",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "token_purchase",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "age.in24h",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "token",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "price",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "token_purchase",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "age.in24h",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "token",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "price",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "token_purchase",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "age.in24h",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "age.in48h",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "token",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "price",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "token_purchase",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "age.in24h",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "age.in48h",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "token",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "price",
+          "order": "DESCENDING"
+        }
+      ]
     }
   ]
 }

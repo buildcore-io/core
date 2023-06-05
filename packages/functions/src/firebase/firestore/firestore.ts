@@ -188,9 +188,9 @@ export class FirestoreDocument implements IDocument {
     await this.document.delete();
   };
 
-  public onSnapshot = <T>(callback: (data: T) => void) =>
+  public onSnapshot = <T>(callback: (data: T | undefined) => void) =>
     this.document.onSnapshot((snap) => {
-      callback({ ...snap.data(), uid: snap.id } as T);
+      callback(snap.exists ? ({ ...snap.data(), uid: snap.id } as T) : undefined);
     });
 
   public collection = (subCol: SUB_COL | PublicSubCollections): ICollection =>

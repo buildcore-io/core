@@ -10,9 +10,10 @@ import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
 import { isEmpty } from 'lodash';
+import { map } from 'rxjs';
 import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
 import { CommonJoi } from '../services/joi/common';
-import { getQueryLimit, getQueryParams } from './common';
+import { getQueryLimit, getQueryParams, queryToObservable } from './common';
 import { sendLiveUpdates } from './keepAlive';
 
 const getUpdatedAfterSchema = Joi.object({
@@ -63,9 +64,10 @@ export const getUpdatedAfter = async (req: functions.https.Request, res: express
   }
 
   if (body.live) {
-    await sendLiveUpdates(res, query.onSnapshot, (snap: Record<string, unknown>[]) =>
-      snap.filter((d) => !isEmpty(d)).map((d) => ({ id: d.uid, ...d })),
+    const observable = queryToObservable<Record<string, unknown>>(query).pipe(
+      map((snap) => snap.filter((d) => !isEmpty(d)).map((d) => ({ id: d.uid, ...d }))),
     );
+    await sendLiveUpdates(res, observable);
     return;
   }
 

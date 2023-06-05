@@ -32,7 +32,7 @@ export interface IDocument {
   set: (data: any, merge?: boolean) => Promise<void>;
   delete: () => Promise<void>;
 
-  onSnapshot: <T>(callback: (data: T) => void) => () => void;
+  onSnapshot: <T>(callback: (data: T | undefined) => void) => () => void;
 
   collection: (subCol: SUB_COL | PublicSubCollections) => ICollection;
   get: <D>() => Promise<D | undefined>;

@@ -6,16 +6,18 @@ import {
   Opr,
   PublicCollections,
   PublicSubCollections,
+  TransactionType,
   WenError,
 } from '@soonaverse/interfaces';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
-import { get, isEmpty } from 'lodash';
+import { get, isEmpty, isEqual } from 'lodash';
+import { map } from 'rxjs';
 import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
 import { CommonJoi } from '../services/joi/common';
 import { invalidArgument } from '../utils/error.utils';
-import { getQueryLimit, getQueryParams } from './common';
+import { getQueryLimit, getQueryParams, queryToObservable } from './common';
 import { sendLiveUpdates } from './keepAlive';
 
 const fieldNameSchema = Joi.string().max(MAX_FIELD_NAME_LENGTH);
@@ -43,6 +45,8 @@ const getManyAdvancedSchema = Joi.object({
   orderBy: Joi.array().min(1).items(fieldNameSchema).optional(),
   orderByDir: Joi.array().min(1).items(Joi.string().valid('asc', 'desc')).optional(),
 
+  limit: Joi.number().min(1).max(100).optional(),
+
   startAfter: CommonJoi.uid(false),
   live: Joi.boolean().optional(),
 });
@@ -56,41 +60,47 @@ export const getManyAdvanced = async (req: functions.https.Request, res: express
   const { collection, subCollection, uid } = body;
   let query = getBaseQuery(collection, uid, subCollection).limit(getQueryLimit(body.collection));
 
-  if (body.fieldName?.length) {
-    try {
-      const { filters, operators } = getFilters(body.fieldName, body.fieldValue!, body.operator!);
-      for (const [key, values] of Object.entries(filters)) {
-        if (operators[key][0] === Opr.IN) {
-          query = query.where(key, operators[key][0], values);
-          continue;
-        }
-        for (let i = 0; i < values.length; ++i) {
-          query = query.where(key, operators[key][i], values[i]);
-        }
+  const { filters, operators } = getFilters(body.fieldName, body.fieldValue, body.operator);
+  try {
+    for (const [key, values] of Object.entries(filters)) {
+      if (operators[key][0] === Opr.IN) {
+        query = query.where(key, operators[key][0], values);
+        continue;
       }
-    } catch (error) {
-      res.status(400);
-      res.send(get(error, 'details.key', 'unknown'));
-      return;
+      for (let i = 0; i < values.length; ++i) {
+        query = query.where(key, operators[key][i], values[i]);
+      }
     }
+  } catch (error) {
+    res.status(400);
+    res.send(get(error, 'details.key', 'unknown'));
+    return;
   }
 
-  if (body.collection === PublicCollections.NFT) {
+  if (body.collection === PublicCollections.NFT && !isEqual(filters['hidden'], [false])) {
     query = query.where('hidden', '==', false);
   }
 
-  if (body.collection === PublicCollections.TRANSACTION) {
+  const typeFilters = filters['type'];
+  if (
+    body.collection === PublicCollections.TRANSACTION &&
+    (!typeFilters || typeFilters.includes(TransactionType.ORDER))
+  ) {
     query = query.where('isOrderType', '==', false);
   }
 
   if (body.startAfter) {
-    const startAfter = getSnapshot(
+    const startAfter = await getSnapshot(
       body.collection,
       body.uid || body.startAfter,
       body.subCollection,
       body.startAfter,
     );
-    query = query.startAfter(await startAfter);
+    query = query.startAfter(startAfter);
+  }
+
+  if (body.limit) {
+    query = query.limit(body.limit);
   }
 
   const orderByDir = (body.orderByDir || []) as ('asc' | 'desc')[];
@@ -99,9 +109,10 @@ export const getManyAdvanced = async (req: functions.https.Request, res: express
   }
 
   if (body.live) {
-    await sendLiveUpdates(res, query.onSnapshot, (snap: Record<string, unknown>[]) =>
-      snap.filter((d) => !isEmpty(d)).map((d) => ({ id: d.uid, ...d })),
+    const observable = queryToObservable<Record<string, unknown>>(query).pipe(
+      map((snap) => snap.filter((d) => !isEmpty(d)).map((d) => ({ id: d.uid, ...d }))),
     );
+    await sendLiveUpdates(res, observable);
     return;
   }
 
@@ -110,7 +121,10 @@ export const getManyAdvanced = async (req: functions.https.Request, res: express
   res.send(result);
 };
 
-const getFilters = (fieldNames: string[], fieldValues: unknown[], fieldOperators: Opr[]) => {
+const getFilters = (fieldNames?: string[], fieldValues?: unknown[], fieldOperators?: Opr[]) => {
+  if (!fieldNames || !fieldValues || !fieldOperators) {
+    return { filters: {}, operators: {} };
+  }
   const nameAndValues = fieldNames.reduce(
     (acc, act, index) => ({ ...acc, [act]: [...get(acc, act, []), fieldValues[index]] }),
     {} as Record<string, unknown[]>,

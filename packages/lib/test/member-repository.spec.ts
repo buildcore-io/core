@@ -6,7 +6,7 @@ describe('MemberRepository test', () => {
     const uid = '0x003ede16bb59f07b0656280d84b976a4633ad59c';
     const repo = new MemberRepository(SoonEnv.TEST);
     const member = await repo.getById(uid);
-    expect(member.uid).toBe('0x003ede16bb59f07b0656280d84b976a4633ad59c');
+    expect(member?.uid).toBe('0x003ede16bb59f07b0656280d84b976a4633ad59c');
   });
 
   it('Should get member by number field', async () => {

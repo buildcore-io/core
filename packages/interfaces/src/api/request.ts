@@ -1,4 +1,4 @@
-import { Network } from '../models';
+import { Network, TokenTradeOrderType } from '../models';
 import { PublicCollections, PublicSubCollections } from './base';
 
 export interface GetByIdRequest {
@@ -38,6 +38,7 @@ export interface GetUpdatedAfterRequest {
 
 export interface GetTokenPrice {
   readonly token: string;
+  readonly live?: boolean;
 }
 
 export interface GetAddressesRequest {
@@ -66,14 +67,39 @@ export interface GetManyAdvancedRequest {
   readonly uid?: string;
   readonly subCollection?: PublicSubCollections;
 
-  readonly fieldName: string[];
-  readonly fieldValue: (string | number | boolean)[];
-  readonly operator: Opr[];
+  readonly fieldName?: string[];
+  readonly fieldValue?: (string | number | boolean)[];
+  readonly operator?: Opr[];
 
   readonly orderBy?: string[];
   readonly orderByDir?: string[];
 
   readonly startAfter?: string;
 
+  readonly limit?: number;
+
   readonly live?: boolean;
+}
+
+export interface GetAvgTradeRequest {
+  readonly token: string;
+  readonly type: TokenTradeOrderType;
+}
+
+export interface GetAvgPriceRequest {
+  readonly token: string;
+}
+
+export interface GetAvgPriceResponse {
+  readonly token: string;
+  readonly avg: number;
+}
+
+export interface GetPriceChangeRequest {
+  readonly token: string;
+}
+
+export interface GetPriceChangeResponse {
+  readonly token: string;
+  readonly change: number;
 }

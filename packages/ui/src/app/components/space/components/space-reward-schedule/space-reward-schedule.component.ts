@@ -7,7 +7,6 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { FULL_TODO_CHANGE_TO_PAGING } from '@api/base.api';
 import { StakeRewardApi } from '@api/stake_reward';
 import { AuthService } from '@components/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification';
@@ -72,7 +71,7 @@ export class SpaceRewardScheduleComponent implements OnInit {
   public ngOnInit(): void {
     // Load schedule.
     this.stakeRewardApi
-      .token(this.token!.uid, undefined, FULL_TODO_CHANGE_TO_PAGING)
+      .token(this.token!.uid, undefined)
       .pipe(
         untilDestroyed(this),
         map((o) => {

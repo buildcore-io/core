@@ -109,10 +109,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
       if (obj?.uid) {
         this.cancelAccessSubscriptions();
         this.accessSubscriptions$.push(
-          this.memberApi.topSpaces(obj.uid, 'createdOn', undefined, 1).subscribe((space) => {
-            this.enableCreateAwardProposal = space.length > 0;
-            this.cd.markForCheck();
-          }),
+          this.memberApi
+            .topSpaces(obj.uid, undefined, undefined, undefined, 1)
+            .subscribe((space) => {
+              this.enableCreateAwardProposal = space.length > 0;
+              this.cd.markForCheck();
+            }),
         );
       } else {
         this.enableCreateAwardProposal = false;

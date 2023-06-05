@@ -13,12 +13,12 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsService } from '@core/services/units';
-import { getItem, setItem, StorageItem } from '@core/utils';
+import { StorageItem, getItem, setItem } from '@core/utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/member/services/data.service';
 import { HelperService } from '@pages/member/services/helper.service';
-import { calcStakedMultiplier, Member, Stake, Token, TokenDrop } from '@soonaverse/interfaces';
-import { BehaviorSubject, combineLatest, map, Observable, of, Subscription } from 'rxjs';
+import { Member, Stake, Token, TokenDrop, calcStakedMultiplier } from '@soonaverse/interfaces';
+import { BehaviorSubject, Observable, Subscription, combineLatest, map, of } from 'rxjs';
 
 export enum TokenItemType {
   CLAIM = 'Claim',
@@ -185,7 +185,7 @@ export class TokensPage implements OnInit, OnDestroy {
 
   public getHandlerTokens(last?: any): Observable<Token[]> {
     if (this.data.member$.value?.uid) {
-      return this.memberApi.topTokens(this.data.member$.value.uid, undefined, last);
+      return this.memberApi.topTokens(this.data.member$.value.uid);
     } else {
       return of([]);
     }
@@ -193,7 +193,7 @@ export class TokensPage implements OnInit, OnDestroy {
 
   public getHandlerStaked(last?: any): Observable<StakeWithTokenRec[]> {
     if (this.data.member$.value?.uid) {
-      return this.memberApi.topStakes(this.data.member$.value.uid, undefined, last);
+      return this.memberApi.topStakes(this.data.member$.value.uid, last);
     } else {
       return of([]);
     }

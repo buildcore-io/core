@@ -1,22 +1,18 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { doc, docData, Firestore } from '@angular/fire/firestore';
-import { COL, Ticker } from '@soonaverse/interfaces';
-import { Observable } from 'rxjs';
-import { BaseApi } from './base.api';
+import { PublicCollections, Ticker } from '@soonaverse/interfaces';
+import { TickerRepository } from '@soonaverse/lib';
+import { BaseApi, SOON_ENV } from './base.api';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TickerApi extends BaseApi<Ticker> {
-  public collection = COL.TICKER;
+  private tickerRepo = new TickerRepository(SOON_ENV);
 
-  constructor(protected firestore: Firestore, protected httpClient: HttpClient) {
-    super(firestore, httpClient);
+  constructor(protected httpClient: HttpClient) {
+    super(PublicCollections.TICKER, httpClient);
   }
 
-  // TickerRepository.getByIdLive
-  public listen(id: string): Observable<Ticker | undefined> {
-    return docData(doc(this.firestore, this.collection, id)) as Observable<Ticker | undefined>;
-  }
+  public listen = (id: string) => this.tickerRepo.getByIdLive(id);
 }

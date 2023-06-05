@@ -1,6 +1,7 @@
 import { Observable, Subscriber } from 'rxjs';
 import { SoonEnv, getKeepAliveUrl } from './Config';
 import { wrappedFetch } from './fetch.utils';
+import { processObject, processObjectArray } from './utils';
 
 const HEADERS = {
   Accept: 'text/event-stream',
@@ -63,12 +64,14 @@ export class SoonObservable<T> extends Observable<T> {
     }
 
     if (type === 'update') {
-      this.observer!.next(JSON.parse(data) as T);
+      const parsed = JSON.parse(data);
+      const processed = Array.isArray(parsed) ? processObjectArray(parsed) : processObject(parsed);
+      this.observer!.next(processed as T);
       return;
     }
   };
 
   private getEventType = (event: string) => event.split('\n')[0].split(': ')[1];
 
-  private getData = (event: string) => event.split('\n')[1].split(': ')[1];
+  private getData = (event: string) => event.split('data: ')[1];
 }
