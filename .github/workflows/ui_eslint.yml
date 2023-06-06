@@ -19,7 +19,7 @@ jobs:
         with:
           node-version: 18
       - name: Install Dependencies
-        run: npx lerna bootstrap --scope=@soonaverse/ui
+        run: npm run build:ui
       - name: Lint
         working-directory: packages/ui
         run: npm run lint

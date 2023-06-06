@@ -31,7 +31,7 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: npx lerna bootstrap --scope=@soonaverse/functions
+        run: npm run build:functions
 
   chunk_0:
     needs: npm-install

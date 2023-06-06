@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install Dependencies
-        run: npx lerna bootstrap --scope=@soonaverse/ui
+        run: cd ../../ && npm run build:ui
       - name: Build
         run: npm run build:prod
       - uses: FirebaseExtended/action-hosting-deploy@v0
@@ -88,8 +88,8 @@ jobs:
           node-version: 18
       - name: Install dependencies
         run: |
-          npx lerna bootstrap --scope=@soonaverse/functions
           npm i -g ts-node
+          cd ../../ && npm run build:functions
       - name: Set env vars
         run: echo "$FUNCTIONS_ENV_VARS" >> .env
         env:

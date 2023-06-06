@@ -16,7 +16,6 @@
   },
   "scripts": {
     "lint": "eslint --ext .js,.ts src",
-    "prepare": "tsc",
     "build": "tsc",
     "build:lerna": "npx lerna bootstrap --scope=@soonaverse/functions",
     "emulators": "tsc --watch & firebase -c ../../firebase.json emulators:start --only functions,firestore,storage,ui,auth",
@@ -107,6 +106,6 @@
     "node-ipinfo": "3.4.0",
     "sharp": "0.32.0",
     "web3.storage": "4.5.4",
-    "rxjs": "^7.8.1"
+    "rxjs": "7.8.1"
   }
 }

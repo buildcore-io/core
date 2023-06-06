@@ -5,16 +5,17 @@
     "packages/*"
   ],
   "scripts": {
-    "build:ui": "npx lerna bootstrap --scope=@soonaverse/ui",
-    "build:functions": "npx lerna bootstrap --scope=@soonaverse/functions",
-    "build:interfaces": "npx lerna bootstrap --scope=@soonaverse/interfaces",
-    "build:lib": "npx lerna bootstrap --scope=@soonaverse/lib",
+    "build:ui": "npx lerna bootstrap --scope=@soonaverse/ui && lerna run build --scope=@soonaverse/ui --include-dependencies",
+    "build:functions": "npx lerna bootstrap --scope=@soonaverse/functions && lerna run build --scope=@soonaverse/functions --include-dependencies",
+    "build:interfaces": "npx lerna bootstrap --scope=@soonaverse/interfaces && lerna run build --scope=@soonaverse/interfaces --include-dependencies",
+    "build:lib": "npx lerna bootstrap --scope=@soonaverse/lib && lerna run build --scope=@soonaverse/lib --include-dependencies",
     "build": "npx lerna bootstrap",
     "clean:functions": "rm -rf packages/functions/interfaces; rm -rf packages/functions/lib",
     "clean:interfaces": "rm -rf packages/interfaces/lib",
     "clean:lib": "rm -rf packages/lib/lib",
+    "clean:ui": "rm -rf packages/ui/dist",
     "clean:node_modules": "npx lerna clean --yes; rm -rf node_modules",
-    "clean": "npm run clean:node_modules; npm run clean:functions; npm run clean:interfaces; npm run clean:lib",
+    "clean": "npm run clean:node_modules; npm run clean:functions; npm run clean:interfaces; npm run clean:lib; npm run clean:ui",
     "prettier:ui": "npx prettier --write ./packages/ui",
     "prettier:functions": "npx prettier --write ./packages/functions",
     "prettier:interfaces": "npx prettier --write ./packages/interfaces",
@@ -23,6 +24,6 @@
     "prettier": "npm run prettier:functions; npm run prettier:interfaces; npm run prettier:indexes; npm run prettier:lib; npm run prettier:ui"
   },
   "devDependencies": {
-    "lerna": "^6.0.1"
+    "lerna": "^6.6.2"
   }
 }
