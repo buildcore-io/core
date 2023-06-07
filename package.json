@@ -5,10 +5,10 @@
     "packages/*"
   ],
   "scripts": {
-    "build:ui": "npx lerna bootstrap --scope=@soonaverse/ui && lerna run build --scope=@soonaverse/ui --include-dependencies",
-    "build:functions": "npx lerna bootstrap --scope=@soonaverse/functions && lerna run build --scope=@soonaverse/functions --include-dependencies",
-    "build:interfaces": "npx lerna bootstrap --scope=@soonaverse/interfaces && lerna run build --scope=@soonaverse/interfaces --include-dependencies",
-    "build:lib": "npx lerna bootstrap --scope=@soonaverse/lib && lerna run build --scope=@soonaverse/lib --include-dependencies",
+    "build:ui": "npx lerna bootstrap --scope=@soonaverse/ui && npx lerna run build --scope=@soonaverse/ui --include-dependencies",
+    "build:functions": "npx lerna bootstrap --scope=@soonaverse/functions && npx lerna run build --scope=@soonaverse/functions --include-dependencies",
+    "build:interfaces": "npx lerna bootstrap --scope=@soonaverse/interfaces && npx lerna run build --scope=@soonaverse/interfaces --include-dependencies",
+    "build:lib": "npx lerna bootstrap --scope=@soonaverse/lib && npx lerna run build --scope=@soonaverse/lib --include-dependencies",
     "build": "npx lerna bootstrap",
     "clean:functions": "rm -rf packages/functions/interfaces; rm -rf packages/functions/lib",
     "clean:interfaces": "rm -rf packages/interfaces/lib",

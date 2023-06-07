@@ -9,7 +9,7 @@ import {
 } from '@soonaverse/interfaces';
 import { map } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
-import { SoonEnv, getAvgPriceUrl, getPriceChangeUrl } from '../../Config';
+import { SESSION_ID, SoonEnv, getAvgPriceUrl, getPriceChangeUrl } from '../../Config';
 import { toQueryParams } from '../../fetch.utils';
 import { SoonObservable } from '../../soon_observable';
 import { CrudRepository } from '../CrudRepository';
@@ -33,13 +33,13 @@ export class TokenPurchaseRepository extends CrudRepository<TokenPurchase> {
   };
 
   public getAvgPriceLive = (token: string): Observable<number> => {
-    const params = { token } as GetAvgPriceRequest;
+    const params = { token, sessionId: SESSION_ID } as GetAvgPriceRequest;
     const url = getAvgPriceUrl(this.env) + toQueryParams({ ...params });
     return new SoonObservable<GetAvgPriceResponse>(this.env, url).pipe(map((result) => result.avg));
   };
 
   public getPriceChangeLive = (token: string): Observable<number> => {
-    const params = { token } as GetPriceChangeRequest;
+    const params = { token, sessionId: SESSION_ID } as GetPriceChangeRequest;
     const url = getPriceChangeUrl(this.env) + toQueryParams({ ...params });
     return new SoonObservable<GetPriceChangeResponse>(this.env, url).pipe(
       map((result) => result.change),
