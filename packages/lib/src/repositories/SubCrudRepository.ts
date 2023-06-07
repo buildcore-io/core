@@ -5,7 +5,14 @@ import {
   PublicSubCollections,
 } from '@soonaverse/interfaces';
 import { Observable, map } from 'rxjs';
-import { SoonEnv, getByIdUrl, getManyAdvancedUrl, getManyUrl, getUpdatedAfterUrl } from '../Config';
+import {
+  SESSION_ID,
+  SoonEnv,
+  getByIdUrl,
+  getManyAdvancedUrl,
+  getManyUrl,
+  getUpdatedAfterUrl,
+} from '../Config';
 import { toQueryParams, wrappedFetch } from '../fetch.utils';
 import { SoonObservable } from '../soon_observable';
 import { processObject, processObjectArray } from '../utils';
@@ -42,7 +49,7 @@ export abstract class SubCrudRepository<T> {
       parentUid: parent,
       subCollection: this.subCol,
       uid,
-      live: true,
+      sessionId: SESSION_ID,
     };
     const url = getByIdUrl(this.env) + toQueryParams(params);
     const observable = new SoonObservable<T>(this.env, url);
@@ -138,7 +145,7 @@ export abstract class SubCrudRepository<T> {
   };
 
   protected getManyAdvancedLive = (params: GetManyAdvancedRequest): Observable<T[]> => {
-    const url = getManyAdvancedUrl(this.env) + toQueryParams({ ...params, live: true });
+    const url = getManyAdvancedUrl(this.env) + toQueryParams({ ...params, sessionId: SESSION_ID });
     return new SoonObservable<T[]>(this.env, url);
   };
 }

@@ -1,6 +1,5 @@
 import { Observable, Subscriber } from 'rxjs';
-import { SoonEnv, getKeepAliveUrl } from './Config';
-import { wrappedFetch } from './fetch.utils';
+import { SoonEnv } from './Config';
 import { processObject, processObjectArray } from './utils';
 
 const HEADERS = {
@@ -56,12 +55,6 @@ export class SoonObservable<T> extends Observable<T> {
   private onEvent = async (event: string) => {
     const type = this.getEventType(event);
     const data = this.getData(event);
-
-    if (type === 'ping') {
-      const url = getKeepAliveUrl(this.env);
-      await wrappedFetch(url, { instanceId: data });
-      return;
-    }
 
     if (type === 'update') {
       const parsed = JSON.parse(data);

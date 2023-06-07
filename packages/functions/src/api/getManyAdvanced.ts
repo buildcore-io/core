@@ -48,7 +48,7 @@ const getManyAdvancedSchema = Joi.object({
   limit: Joi.number().min(1).max(100).optional(),
 
   startAfter: CommonJoi.uid(false),
-  live: Joi.boolean().optional(),
+  sessionId: CommonJoi.sessionId(),
 });
 
 export const getManyAdvanced = async (req: functions.https.Request, res: express.Response) => {
@@ -108,11 +108,11 @@ export const getManyAdvanced = async (req: functions.https.Request, res: express
     query = query.orderBy(body.orderBy![i], orderByDir[i]);
   }
 
-  if (body.live) {
+  if (body.sessionId) {
     const observable = queryToObservable<Record<string, unknown>>(query).pipe(
       map((snap) => snap.filter((d) => !isEmpty(d)).map((d) => ({ id: d.uid, ...d }))),
     );
-    await sendLiveUpdates(res, observable);
+    await sendLiveUpdates(body.sessionId, res, observable);
     return;
   }
 

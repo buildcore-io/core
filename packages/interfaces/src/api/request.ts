@@ -1,15 +1,18 @@
 import { Network, TokenTradeOrderType } from '../models';
 import { PublicCollections, PublicSubCollections } from './base';
 
-export interface GetByIdRequest {
+export interface BaseRequest {
+  readonly sessionId?: string;
+}
+
+export interface GetByIdRequest extends BaseRequest {
   readonly collection: PublicCollections;
   readonly uid: string;
   readonly parentUid?: string;
   readonly subCollection?: PublicSubCollections;
-  readonly live?: boolean;
 }
 
-export interface GetManyRequest {
+export interface GetManyRequest extends BaseRequest {
   readonly collection: PublicCollections;
 
   readonly uid?: string;
@@ -19,11 +22,9 @@ export interface GetManyRequest {
   readonly fieldValue?: string | number | boolean | (string | number | boolean)[];
 
   readonly startAfter?: string;
-
-  readonly live?: boolean;
 }
 
-export interface GetUpdatedAfterRequest {
+export interface GetUpdatedAfterRequest extends BaseRequest {
   readonly collection: PublicCollections;
 
   readonly uid?: string;
@@ -33,22 +34,19 @@ export interface GetUpdatedAfterRequest {
   readonly updatedAfter?: number;
 
   readonly startAfter?: string;
-  readonly live?: boolean;
 }
 
-export interface GetTokenPrice {
+export interface GetTokenPrice extends BaseRequest {
   readonly token: string;
-  readonly live?: boolean;
 }
 
-export interface GetAddressesRequest {
+export interface GetAddressesRequest extends BaseRequest {
   readonly network: Network;
   readonly createdAfter?: number;
-  readonly live?: boolean;
 }
 
 export interface KeepAliveRequest {
-  readonly instanceId: string;
+  readonly sessionId: string;
 }
 
 export enum Opr {
@@ -61,7 +59,7 @@ export enum Opr {
   IN = 'in',
 }
 
-export interface GetManyAdvancedRequest {
+export interface GetManyAdvancedRequest extends BaseRequest {
   readonly collection: PublicCollections;
 
   readonly uid?: string;
@@ -77,16 +75,14 @@ export interface GetManyAdvancedRequest {
   readonly startAfter?: string;
 
   readonly limit?: number;
-
-  readonly live?: boolean;
 }
 
-export interface GetAvgTradeRequest {
+export interface GetAvgTradeRequest extends BaseRequest {
   readonly token: string;
   readonly type: TokenTradeOrderType;
 }
 
-export interface GetAvgPriceRequest {
+export interface GetAvgPriceRequest extends BaseRequest {
   readonly token: string;
 }
 
@@ -95,7 +91,7 @@ export interface GetAvgPriceResponse {
   readonly avg: number;
 }
 
-export interface GetPriceChangeRequest {
+export interface GetPriceChangeRequest extends BaseRequest {
   readonly token: string;
 }
 

@@ -7,7 +7,7 @@ import {
   SOON_TEST_ADDRESS_API,
   WEN_FUNC,
 } from '@soonaverse/interfaces';
-import { SoonEnv } from '@soonaverse/lib';
+import { SoonEnv, initSoonEnv } from '@soonaverse/lib';
 import { CrudRepository } from '@soonaverse/lib/lib/repositories/CrudRepository';
 import { Observable, map } from 'rxjs';
 
@@ -19,6 +19,8 @@ export const FULL_TODO_CHANGE_TO_PAGING = FULL_LIST;
 export const FULL_TODO_MOVE_TO_PROTOCOL = FULL_LIST;
 
 export const SOON_ENV = environment.production ? SoonEnv.PROD : SoonEnv.TEST;
+
+initSoonEnv(SOON_ENV);
 
 export class BaseApi<T> {
   protected repo: CrudRepository<T>;

@@ -12,6 +12,7 @@ import Joi from 'joi';
 import { get } from 'lodash';
 import { map } from 'rxjs';
 import { soonDb } from '../firebase/firestore/soondb';
+import { CommonJoi } from '../services/joi/common';
 import { getQueryParams, queryToObservable } from './common';
 import { sendLiveUpdates } from './keepAlive';
 
@@ -20,7 +21,7 @@ const getAddressesSchema = Joi.object({
     .equal(...Object.values(Network))
     .required(),
   createdAfter: Joi.number().min(0).max(MAX_MILLISECONDS).integer().required(),
-  live: Joi.boolean().optional(),
+  sessionId: CommonJoi.sessionId(),
 });
 
 export const getAddresses = async (req: functions.https.Request, res: express.Response) => {
@@ -36,11 +37,11 @@ export const getAddresses = async (req: functions.https.Request, res: express.Re
     .startAfter(dayjs(body.createdAfter).toDate())
     .limit(1000);
 
-  if (body.live) {
+  if (body.sessionId) {
     const observable = queryToObservable<Mnemonic>(query).pipe(
       map((mnemonics) => mnemonics.map(sanitizeMnemonic)),
     );
-    await sendLiveUpdates(res, observable);
+    await sendLiveUpdates(body.sessionId, res, observable);
     return;
   }
 

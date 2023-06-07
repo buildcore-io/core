@@ -10,7 +10,10 @@ import { CommonJoi } from '../services/joi/common';
 import { getHeadCountObs, getQueryParams } from './common';
 import { sendLiveUpdates } from './keepAlive';
 
-const getAvgPriceSchema = Joi.object({ token: CommonJoi.uid() });
+const getAvgPriceSchema = Joi.object({
+  token: CommonJoi.uid(),
+  sessionId: CommonJoi.sessionId(true),
+});
 
 export const getPriceChange = async (req: functions.https.Request, res: express.Response) => {
   const body = getQueryParams<GetPriceChangeRequest>(req, res, getAvgPriceSchema);
@@ -18,7 +21,7 @@ export const getPriceChange = async (req: functions.https.Request, res: express.
     return;
   }
   const result = getPriceChangeLive(body.token).pipe(map((change) => ({ id: body.token, change })));
-  await sendLiveUpdates(res, result);
+  await sendLiveUpdates(body.sessionId!, res, result);
   return;
 };
 

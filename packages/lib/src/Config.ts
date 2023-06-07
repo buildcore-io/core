@@ -1,4 +1,6 @@
-import { ApiRoutes } from '@soonaverse/interfaces';
+import { ApiRoutes, PING_INTERVAL } from '@soonaverse/interfaces';
+import { wrappedFetch } from './fetch.utils';
+import { randomString } from './utils';
 
 export enum SoonEnv {
   PROD = 'https://api.soonaverse.com/api',
@@ -22,3 +24,12 @@ export const getAvgPriceUrl = (baseUrl: SoonEnv) => baseUrl + ApiRoutes.GET_AVG_
 export const getPriceChangeUrl = (baseUrl: SoonEnv) => baseUrl + ApiRoutes.GET_PRICE_CHANGE;
 
 export const getKeepAliveUrl = (baseUrl: SoonEnv) => baseUrl + ApiRoutes.KEEP_ALIVE;
+
+export const SESSION_ID = randomString();
+
+export const initSoonEnv = (env: SoonEnv) => {
+  setInterval(async () => {
+    const url = getKeepAliveUrl(env);
+    await wrappedFetch(url, { sessionId: SESSION_ID });
+  }, PING_INTERVAL * 0.8);
+};

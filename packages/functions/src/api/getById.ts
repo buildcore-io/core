@@ -18,7 +18,7 @@ const getByIdSchema = Joi.object({
     .equal(...Object.values(PublicSubCollections))
     .optional(),
   uid: Joi.string().alphanum().min(5).max(maxAddressLength).required(),
-  live: Joi.boolean().optional(),
+  sessionId: CommonJoi.sessionId(),
 });
 
 export const getById = async (req: functions.https.Request, res: express.Response) => {
@@ -33,7 +33,7 @@ export const getById = async (req: functions.https.Request, res: express.Respons
       : `${body.collection}/${body.uid}`;
   const docRef = soonDb().doc(docPath);
 
-  if (body.live) {
+  if (body.sessionId) {
     const observable = documentToObservable<Record<string, unknown>>(docRef).pipe(
       map((data) => {
         if (!data || isHiddenNft(body.collection, data)) {
@@ -42,7 +42,7 @@ export const getById = async (req: functions.https.Request, res: express.Respons
         return data;
       }),
     );
-    await sendLiveUpdates(res, observable);
+    await sendLiveUpdates(body.sessionId, res, observable);
     return;
   }
 

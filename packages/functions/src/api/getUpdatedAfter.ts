@@ -28,7 +28,7 @@ const getUpdatedAfterSchema = Joi.object({
   updatedAfter: Joi.number().min(0).max(MAX_MILLISECONDS).integer().optional(),
 
   startAfter: CommonJoi.uid(false),
-  live: Joi.boolean().optional(),
+  sessionId: CommonJoi.sessionId(),
 });
 
 export const getUpdatedAfter = async (req: functions.https.Request, res: express.Response) => {
@@ -63,11 +63,11 @@ export const getUpdatedAfter = async (req: functions.https.Request, res: express
     query = query.startAfter(startAfter);
   }
 
-  if (body.live) {
+  if (body.sessionId) {
     const observable = queryToObservable<Record<string, unknown>>(query).pipe(
       map((snap) => snap.filter((d) => !isEmpty(d)).map((d) => ({ id: d.uid, ...d }))),
     );
-    await sendLiveUpdates(res, observable);
+    await sendLiveUpdates(body.sessionId, res, observable);
     return;
   }
 

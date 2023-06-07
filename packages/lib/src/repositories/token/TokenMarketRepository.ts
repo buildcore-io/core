@@ -6,7 +6,7 @@ import {
   TokenTradeOrderType,
 } from '@soonaverse/interfaces';
 import { Observable } from 'rxjs';
-import { SoonEnv, getTokenPriceUrl } from '../../Config';
+import { SESSION_ID, SoonEnv, getTokenPriceUrl } from '../../Config';
 import { toQueryParams, wrappedFetch } from '../../fetch.utils';
 import { SoonObservable } from '../../soon_observable';
 import { CrudRepository } from '../CrudRepository';
@@ -33,7 +33,7 @@ export class TokenMarketRepository extends CrudRepository<TokenTradeOrder> {
   };
 
   public getTokenPriceLive = (token: string): Observable<TokenPriceResponse> => {
-    const params = { token, live: true };
+    const params = { token, sessionId: SESSION_ID };
     const url = getTokenPriceUrl(this.env) + toQueryParams(params);
     return new SoonObservable<TokenPriceResponse>(this.env, url);
   };

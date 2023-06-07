@@ -51,3 +51,5 @@ export enum ApiRoutes {
   GET_ADDRESSES = '/addresses',
   KEEP_ALIVE = '/keepAlive',
 }
+
+export const PING_INTERVAL = 30000;

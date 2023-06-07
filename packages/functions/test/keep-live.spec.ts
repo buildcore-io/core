@@ -10,7 +10,8 @@ describe('Keep alive test', () => {
   it('Should send back data', async () => {
     const col = COL.MEMBER;
     const uid = getRandomEthAddress();
-    const eventSourceUrl = `${baseUrl}/getById?collection=${col}&uid=${uid}&live=true`;
+    const sessionId = getRandomEthAddress();
+    const eventSourceUrl = `${baseUrl}/getById?collection=${col}&uid=${uid}&sessionId=${sessionId}`;
 
     const source = new EventSource(eventSourceUrl);
 
@@ -38,29 +39,13 @@ describe('Keep alive test', () => {
     source.close();
   });
 
-  it('Should receive ping request', async () => {
-    const col = COL.MEMBER;
-    const eventSourceUrl = `${baseUrl}/getMany?collection=${col}&live=true`;
-    const source = new EventSource(eventSourceUrl);
-    let instanceId = '';
-
-    source.addEventListener('ping', async (event) => {
-      instanceId = event.data;
-    });
-
-    await wait(async () => {
-      return instanceId !== '';
-    });
-
-    source.close();
-  });
-
   it('Should get many live', async () => {
+    const sessionId = getRandomEthAddress();
     const col = COL.NFT;
     const uids = [getRandomEthAddress(), getRandomEthAddress()];
     const field = getRandomEthAddress();
 
-    const eventSourceUrl = `${baseUrl}/getMany?collection=${col}&live=true&fieldName=field&fieldValue=${field}`;
+    const eventSourceUrl = `${baseUrl}/getMany?collection=${col}&sessionId=${sessionId}&fieldName=field&fieldValue=${field}`;
     const source = new EventSource(eventSourceUrl);
 
     let data: any[] = [];

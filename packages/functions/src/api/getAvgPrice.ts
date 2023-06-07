@@ -8,7 +8,10 @@ import { CommonJoi } from '../services/joi/common';
 import { getHeadCountObs, getQueryParams } from './common';
 import { sendLiveUpdates } from './keepAlive';
 
-const getAvgPriceSchema = Joi.object({ token: CommonJoi.uid() });
+const getAvgPriceSchema = Joi.object({
+  token: CommonJoi.uid(),
+  sessionId: CommonJoi.sessionId(true),
+});
 
 export const getAvgPrice = async (req: functions.https.Request, res: express.Response) => {
   const body = getQueryParams<GetAvgPriceRequest>(req, res, getAvgPriceSchema);
@@ -16,7 +19,7 @@ export const getAvgPrice = async (req: functions.https.Request, res: express.Res
     return;
   }
   const result = getAvgLive(body.token).pipe(map((avg) => ({ id: body.token, avg })));
-  await sendLiveUpdates(res, result);
+  await sendLiveUpdates(body.sessionId!, res, result);
 };
 
 const getAvgLive = (token: string) => {

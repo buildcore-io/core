@@ -1,18 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BaseRecord, COL, KeepAliveRequest } from '@soonaverse/interfaces';
+import { BaseRecord, COL, KeepAliveRequest, PING_INTERVAL } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
 import { soonDb } from '../firebase/firestore/soondb';
 import { CommonJoi } from '../services/joi/common';
-import { getRandomEthAddress } from '../utils/wallet.utils';
 import { getQueryParams } from './common';
 
 import { Observable } from 'rxjs';
 
 const keepAliveSchema = Joi.object({
-  instanceId: CommonJoi.uid(),
+  sessionId: CommonJoi.sessionId(),
 });
 
 export const keepAlive = async (req: functions.https.Request, res: express.Response) => {
@@ -20,35 +19,34 @@ export const keepAlive = async (req: functions.https.Request, res: express.Respo
   if (!body) {
     return;
   }
-  const docRef = soonDb().doc(`${COL.KEEP_ALIVE}/${body.instanceId}`);
+  const docRef = soonDb().doc(`${COL.KEEP_ALIVE}/${body.sessionId}`);
   await docRef.set({}, true);
   res.status(200).send({ update: true });
 };
 
-export const PING_INTERVAL = 30000;
-
-export const sendLiveUpdates = async <T>(res: express.Response, observable: Observable<T>) => {
-  const instanceId = getRandomEthAddress();
-
+export const sendLiveUpdates = async <T>(
+  sessionId: string,
+  res: express.Response,
+  observable: Observable<T>,
+) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
 
-  const keepAliveDocRef = soonDb().doc(`${COL.KEEP_ALIVE}/${instanceId}`);
-  await keepAliveDocRef.create({});
+  const keepAliveDocRef = soonDb().doc(`${COL.KEEP_ALIVE}/${sessionId}`);
+  await keepAliveDocRef.set({}, true);
 
   const ping = async () => {
     const instance = await keepAliveDocRef.get<BaseRecord>();
-    if (!instance || dayjs().diff(dayjs(instance.updatedOn?.toDate())) > PING_INTERVAL) {
+    const diff = dayjs().diff(dayjs(instance?.updatedOn?.toDate()));
+    if (!instance || diff > PING_INTERVAL) {
       await closeConnection();
-      return;
     }
-    res.write(`event: ping\ndata: ${instanceId}\n\n`);
   };
 
   const pingInterval = setInterval(async () => {
     await ping();
-  }, PING_INTERVAL * 0.8);
+  }, PING_INTERVAL);
 
   const subscription = observable.subscribe((data) => {
     res.write(`event: update\ndata: ${JSON.stringify(data)}\n\n`);
@@ -59,9 +57,9 @@ export const sendLiveUpdates = async <T>(res: express.Response, observable: Obse
   });
 
   const closeConnection = async () => {
-    await keepAliveDocRef.delete();
-    clearInterval(pingInterval);
     subscription.unsubscribe();
+    clearInterval(pingInterval);
+    await keepAliveDocRef.delete();
     res.end();
   };
 };

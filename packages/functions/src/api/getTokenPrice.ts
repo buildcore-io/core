@@ -21,7 +21,7 @@ import { sendLiveUpdates } from './keepAlive';
 
 const getTokenPriceSchema = Joi.object({
   token: CommonJoi.uid(),
-  live: Joi.boolean().optional(),
+  sessionId: CommonJoi.sessionId(),
 });
 
 const tickerDocRef = soonDb().doc(`${COL.TICKER}/${TICKERS.SMRUSD}`);
@@ -48,7 +48,7 @@ export const getTokenPrice = async (req: functions.https.Request, res: express.R
     .orderBy('price', 'desc')
     .limit(1);
 
-  if (body.live) {
+  if (body.sessionId) {
     const lowestSell = queryToObservable<TokenTradeOrder>(lowestSellQuery);
     const highestBuy = queryToObservable<TokenTradeOrder>(highestBuyQuery);
     const ticker = documentToObservable<Ticker>(tickerDocRef);
@@ -58,7 +58,7 @@ export const getTokenPrice = async (req: functions.https.Request, res: express.R
         return { id: body.token, price, usdPrice: toUsdPrice(price, ticker) };
       }),
     );
-    await sendLiveUpdates(res, combined);
+    await sendLiveUpdates(body.sessionId, res, combined);
     return;
   }
 

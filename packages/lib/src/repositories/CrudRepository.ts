@@ -1,6 +1,13 @@
 import { GetManyAdvancedRequest, Opr, PublicCollections } from '@soonaverse/interfaces';
 import { Observable, combineLatest, map } from 'rxjs';
-import { SoonEnv, getByIdUrl, getManyAdvancedUrl, getManyUrl, getUpdatedAfterUrl } from '../Config';
+import {
+  SESSION_ID,
+  SoonEnv,
+  getByIdUrl,
+  getManyAdvancedUrl,
+  getManyUrl,
+  getUpdatedAfterUrl,
+} from '../Config';
 import { toQueryParams, wrappedFetch } from '../fetch.utils';
 import { SoonObservable } from '../soon_observable';
 import { processObject, processObjectArray } from '../utils';
@@ -26,7 +33,7 @@ export class CrudRepository<T> {
    * @returns Observable with the entity
    */
   public getByIdLive = (uid: string): Observable<T | undefined> => {
-    const params = { collection: this.col, uid, live: true };
+    const params = { collection: this.col, uid, sessionId: SESSION_ID };
     const url = getByIdUrl(this.env) + toQueryParams(params);
     const observable = new SoonObservable<T>(this.env, url);
     return observable.pipe(
@@ -151,7 +158,7 @@ export class CrudRepository<T> {
   };
 
   protected getManyAdvancedLive = (params: GetManyAdvancedRequest): Observable<T[]> => {
-    const url = getManyAdvancedUrl(this.env) + toQueryParams({ ...params, live: true });
+    const url = getManyAdvancedUrl(this.env) + toQueryParams({ ...params, sessionId: SESSION_ID });
     return new SoonObservable<T[]>(this.env, url);
   };
 }

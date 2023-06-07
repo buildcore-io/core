@@ -18,6 +18,10 @@ export class CommonJoi {
     });
     return required ? base.required() : base.allow(null, '').optional();
   }
+  public static sessionId = (required = false) => {
+    const base = Joi.string().alphanum().min(1).max(100);
+    return required ? base.required() : base.optional();
+  };
   public static tokenSymbol(): AnySchema {
     return Joi.string().min(2).max(5).regex(RegExp('^\\$?[A-Z]+$')).required();
   }
