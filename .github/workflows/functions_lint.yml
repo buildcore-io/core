@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 18
       - name: Install Dependencies
-        run: npx lerna bootstrap --scope=@soonaverse/functions
+        run: cd ../../ && npm run build:functions
       - name: Lint
         run: npm run lint
       - name: Prettier

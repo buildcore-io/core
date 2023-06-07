@@ -7,12 +7,12 @@ import {
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AwardFilter } from '@api/award.api';
 import { DeviceService } from '@core/services/device';
 import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Award } from '@soonaverse/interfaces';
+import { AwardFilter } from '@soonaverse/lib';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { DataService } from './../../services/data.service';
 

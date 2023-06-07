@@ -94,7 +94,7 @@ export class ProcessingService {
     orderId: string,
     soonTransaction: Transaction | undefined,
   ): Promise<void> {
-    const orderRef = soonDb().collection(COL.TRANSACTION).doc(orderId);
+    const orderRef = soonDb().doc(`${COL.TRANSACTION}/${orderId}`);
     const order = await this.transactionService.get<TransactionOrder>(orderRef);
 
     if (!order) {

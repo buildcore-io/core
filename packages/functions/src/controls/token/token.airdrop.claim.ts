@@ -38,7 +38,7 @@ export const claimAirdroppedTokenControl = async (
   const space = await spaceDocRef.get<Space>();
 
   const tranId = getRandomEthAddress();
-  const orderDocRef = soonDb().collection(COL.TRANSACTION).doc(tranId);
+  const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${tranId}`);
 
   const wallet = await WalletService.newWallet();
   const targetAddress = await wallet.getNewIotaAddressDetails();

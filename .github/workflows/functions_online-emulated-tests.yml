@@ -31,7 +31,7 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: npx lerna bootstrap --scope=@soonaverse/functions
+        run: npm run build:functions
 
   chunk_0:
     needs: npm-install
@@ -351,6 +351,7 @@ jobs:
           firebase emulators:exec "
                 npm run test-online:ci -- --findRelatedTests test/api/getUpdatedAfter.spec.ts &&
                 npm run test-online:ci -- --findRelatedTests test/api/getTokenPrice.spec.ts &&
+                npm run test-online:ci -- --findRelatedTests test/api/getManyAdvanced.spec.ts &&
                 npm run test-online:ci -- --findRelatedTests test/api/getMany.spec.ts &&
                 npm run test-online:ci -- --findRelatedTests test/api/getById.spec.ts &&
                 npm run test-online:ci -- --findRelatedTests test/api/getAddresses.spec.ts &&

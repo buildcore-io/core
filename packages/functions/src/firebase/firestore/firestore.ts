@@ -7,6 +7,7 @@ import { cOn, uOn } from './common';
 import {
   IBatch,
   ICollection,
+  ICollectionGroup,
   IDatabase,
   IDocument,
   IDocumentSnapshot,
@@ -23,6 +24,9 @@ export class Firestore implements IDatabase {
 
   public collection = (col: COL | PublicCollections) =>
     new FirestoreCollection(this.db, this.db.collection(col));
+
+  public collectionGroup = (col: SUB_COL | PublicSubCollections) =>
+    new FirestoreCollectionGroup(this.db.collectionGroup(col));
 
   public doc = (documentPath: string) => new FirestoreDocument(this.db, this.db.doc(documentPath));
 
@@ -122,19 +126,17 @@ export class FirestoreTransaction implements ITransaction {
   };
 }
 
-export class FirestoreCollection implements ICollection {
+class FirestoreCollectionGroup implements ICollectionGroup {
   constructor(
-    private readonly db: admin.firestore.Firestore,
-    private readonly collection: admin.firestore.CollectionReference,
+    protected readonly collection:
+      | admin.firestore.CollectionGroup
+      | admin.firestore.CollectionReference,
   ) {}
 
   public get = async <T>() => {
     const snap = await this.collection.get();
     return snap.docs.map((d) => d.data() as T);
   };
-
-  public doc = (documentPath: string) =>
-    new FirestoreDocument(this.db, this.collection.doc(documentPath));
 
   public where = (fieldPath: string, operator: admin.firestore.WhereFilterOp, value: any) =>
     new FirestoreQuery(this.collection.where(fieldPath, operator, value));
@@ -147,6 +149,21 @@ export class FirestoreCollection implements ICollection {
     }
     return new FirestoreQuery(this.collection.startAfter(value));
   };
+}
+
+export class FirestoreCollection extends FirestoreCollectionGroup implements ICollection {
+  constructor(
+    private readonly db: admin.firestore.Firestore,
+    collection: admin.firestore.CollectionReference,
+  ) {
+    super(collection);
+  }
+
+  public doc = (documentPath: string) =>
+    new FirestoreDocument(
+      this.db,
+      (this.collection as admin.firestore.CollectionReference).doc(documentPath),
+    );
 }
 
 export class FirestoreDocument implements IDocument {
@@ -171,9 +188,9 @@ export class FirestoreDocument implements IDocument {
     await this.document.delete();
   };
 
-  public onSnapshot = <T>(callback: (data: T) => void) =>
+  public onSnapshot = <T>(callback: (data: T | undefined) => void) =>
     this.document.onSnapshot((snap) => {
-      callback({ ...snap.data(), uid: snap.id } as T);
+      callback(snap.exists ? ({ ...snap.data(), uid: snap.id } as T) : undefined);
     });
 
   public collection = (subCol: SUB_COL | PublicSubCollections): ICollection =>

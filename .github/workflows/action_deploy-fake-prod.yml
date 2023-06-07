@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install Dependencies
-        run: npx lerna bootstrap --scope=@soonaverse/ui
+        run: npm run build:ui
       - name: Build
         run: npm run build
       # enable maintenance mode.

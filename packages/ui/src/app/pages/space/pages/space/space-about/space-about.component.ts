@@ -134,12 +134,7 @@ export class SpaceAboutComponent implements OnInit, OnDestroy {
     if (!space?.uid) return;
 
     this.spaceApi
-      .listenMembersWithoutData(
-        space?.uid,
-        undefined,
-        undefined,
-        this.data.space$.value?.totalMembers,
-      )
+      .listenMembersWithoutData(space?.uid, undefined)
       .pipe(skip(1), first())
       .subscribe((members) => {
         this.exportingMembers = false;

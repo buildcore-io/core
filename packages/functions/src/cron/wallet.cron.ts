@@ -63,10 +63,12 @@ const rerunTransaction = async (transaction: ITransaction, data: Transaction) =>
   return data.uid;
 };
 
+const COUNT_IN = Array.from(Array(MAX_WALLET_RETRY + 1)).map((_, i) => i);
+
 const getFailedTransactionsSnap = () =>
   soonDb()
     .collection(COL.TRANSACTION)
     .where('payload.walletReference.confirmed', '==', false)
     .where('payload.walletReference.inProgress', '==', true)
-    .where('payload.walletReference.count', '<=', MAX_WALLET_RETRY)
+    .where('payload.walletReference.count', 'in', COUNT_IN)
     .get<Transaction>();

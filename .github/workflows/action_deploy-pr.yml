@@ -17,10 +17,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Install Dependencies
-        run: npx lerna bootstrap --scope=@soonaverse/ui
-      - name: Build
-        run: npm run build
+      - name: Install Dependencies & build
+        run: cd ../../ && npm run build:ui
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'

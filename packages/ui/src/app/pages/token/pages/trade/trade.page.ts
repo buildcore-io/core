@@ -7,7 +7,6 @@ import {
 } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { FULL_TODO_MOVE_TO_PROTOCOL } from '@api/base.api';
 import { FileApi } from '@api/file.api';
 import { SpaceApi } from '@api/space.api';
 import { TokenApi } from '@api/token.api';
@@ -137,12 +136,6 @@ export class TradePage implements OnInit, OnDestroy {
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(
     undefined,
   );
-  public listenAvgSell$: BehaviorSubject<number | undefined> = new BehaviorSubject<
-    number | undefined
-  >(undefined);
-  public listenAvgBuy$: BehaviorSubject<number | undefined> = new BehaviorSubject<
-    number | undefined
-  >(undefined);
   public listenAvgPrice$: BehaviorSubject<number | undefined> = new BehaviorSubject<
     number | undefined
   >(undefined);
@@ -402,23 +395,13 @@ export class TradePage implements OnInit, OnDestroy {
       // TODO paging?
       this.subscriptionsMembersBids$.push(
         this.tokenMarketApi
-          .membersAsks(
-            member.uid,
-            this.data.token$.value?.uid,
-            undefined,
-            FULL_TODO_MOVE_TO_PROTOCOL,
-          )
+          .membersAsks(member.uid, this.data.token$.value?.uid, undefined)
           .pipe(untilDestroyed(this))
           .subscribe(this.myAsks$),
       );
       this.subscriptionsMembersBids$.push(
         this.tokenMarketApi
-          .membersBids(
-            member.uid,
-            this.data.token$.value?.uid,
-            undefined,
-            FULL_TODO_MOVE_TO_PROTOCOL,
-          )
+          .membersBids(member.uid, this.data.token$.value?.uid, undefined)
           .pipe(untilDestroyed(this))
           .subscribe(this.myBids$),
       );
@@ -457,13 +440,13 @@ export class TradePage implements OnInit, OnDestroy {
     // TODO Add pagging.
     this.subscriptions$.push(
       this.tokenMarketApi
-        .asksActive(tokenId, undefined, FULL_TODO_MOVE_TO_PROTOCOL)
+        .asksActive(tokenId, undefined)
         .pipe(untilDestroyed(this))
         .subscribe(this.asks$),
     );
     this.subscriptions$.push(
       this.tokenMarketApi
-        .bidsActive(tokenId, undefined, FULL_TODO_MOVE_TO_PROTOCOL)
+        .bidsActive(tokenId, undefined)
         .pipe(untilDestroyed(this))
         .subscribe(this.bids$),
     );
@@ -476,37 +459,25 @@ export class TradePage implements OnInit, OnDestroy {
         .pipe(untilDestroyed(this))
         .subscribe(this.listenAvgPrice$),
     );
-    this.subscriptions$.push(
-      this.tokenMarketApi
-        .listenToAvgBuy(tokenId)
-        .pipe(untilDestroyed(this))
-        .subscribe(this.listenAvgBuy$),
-    );
-    this.subscriptions$.push(
-      this.tokenMarketApi
-        .listenToAvgSell(tokenId)
-        .pipe(untilDestroyed(this))
-        .subscribe(this.listenAvgSell$),
-    );
   }
 
   private listenToPurchaseStats(tokenId: string, status: TokenStatus[]): void {
     // TODO Add pagging.
     this.subscriptions$.push(
       this.tokenPurchaseApi
-        .listenAvgPrice7d(tokenId, status)
+        .listenAvgPrice7d(tokenId)
         .pipe(untilDestroyed(this))
         .subscribe(this.listenAvgPrice7d$),
     );
     this.subscriptions$.push(
       this.tokenPurchaseApi
-        .tokenTopHistory(tokenId, status)
+        .listenToPurchases(tokenId)
         .pipe(untilDestroyed(this))
         .subscribe(this.tradeHistory$),
     );
     this.subscriptions$.push(
       this.tokenPurchaseApi
-        .listenChangePrice24h(tokenId, status)
+        .listenChangePrice24h(tokenId)
         .pipe(untilDestroyed(this))
         .subscribe(this.listenChangePrice24h$),
     );
@@ -790,7 +761,7 @@ export class TradePage implements OnInit, OnDestroy {
   public orderClick(item: TokenTradeOrder): void {
     this.subscriptions$.push(
       this.tokenPurchaseApi
-        .tradeDetails(item.uid, item.type)
+        .getPurchasesForTrade(item)
         .pipe(first(), untilDestroyed(this))
         .subscribe((r) => {
           this.tradeDetailOrder = item;

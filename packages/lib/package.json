@@ -15,12 +15,13 @@
   },
   "scripts": {
     "lint": "eslint --ext .js,.ts src",
-    "prepare": "tsc",
     "build": "tsc",
     "test": "jest"
   },
   "dependencies": {
-    "@soonaverse/interfaces": "*"
+    "@soonaverse/interfaces": "*",
+    "dayjs": "1.11.7",
+    "rxjs": "7.8.1"
   },
   "devDependencies": {
     "@babel/preset-typescript": "7.18.6",
@@ -35,6 +36,6 @@
     "lodash": "4.17.21",
     "prettier": "2.8.3",
     "ts-jest": "29.0.3",
-    "typescript": "4.8.4"
+    "typescript": "4.9.5"
   }
 }

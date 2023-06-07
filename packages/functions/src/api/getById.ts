@@ -2,9 +2,11 @@ import { GetByIdRequest, PublicCollections, PublicSubCollections } from '@soonav
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
+import { map } from 'rxjs';
 import { soonDb } from '../firebase/firestore/soondb';
 import { CommonJoi } from '../services/joi/common';
-import { getQueryParams, isHiddenNft } from './common';
+import { maxAddressLength } from '../utils/wallet.utils';
+import { documentToObservable, getQueryParams, isHiddenNft } from './common';
 import { sendLiveUpdates } from './keepAlive';
 
 const getByIdSchema = Joi.object({
@@ -15,8 +17,8 @@ const getByIdSchema = Joi.object({
   subCollection: Joi.string()
     .equal(...Object.values(PublicSubCollections))
     .optional(),
-  uid: CommonJoi.uid(),
-  live: Joi.boolean().optional(),
+  uid: Joi.string().alphanum().min(5).max(maxAddressLength).required(),
+  sessionId: CommonJoi.sessionId(),
 });
 
 export const getById = async (req: functions.https.Request, res: express.Response) => {
@@ -31,13 +33,16 @@ export const getById = async (req: functions.https.Request, res: express.Respons
       : `${body.collection}/${body.uid}`;
   const docRef = soonDb().doc(docPath);
 
-  if (body.live) {
-    await sendLiveUpdates(res, docRef.onSnapshot, (data) => {
-      if (!data || isHiddenNft(body.collection, data)) {
-        return {};
-      }
-      return data;
-    });
+  if (body.sessionId) {
+    const observable = documentToObservable<Record<string, unknown>>(docRef).pipe(
+      map((data) => {
+        if (!data || isHiddenNft(body.collection, data)) {
+          return {};
+        }
+        return data;
+      }),
+    );
+    await sendLiveUpdates(body.sessionId, res, observable);
     return;
   }
 

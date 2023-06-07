@@ -4,8 +4,11 @@ import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
 import { onRequestConfig } from '../firebase/functions/onRequest';
 import { getAddresses } from './getAddresses';
+import { getAvgPrice } from './getAvgPrice';
 import { getById } from './getById';
 import { getMany } from './getMany';
+import { getManyAdvanced } from './getManyAdvanced';
+import { getPriceChange } from './getPriceChange';
 import { getTokenPrice } from './getTokenPrice';
 import { getUpdatedAfter } from './getUpdatedAfter';
 import { keepAlive } from './keepAlive';
@@ -25,10 +28,16 @@ const getHandler = (url: string) => {
       return getById;
     case ApiRoutes.GET_MANY:
       return getMany;
+    case ApiRoutes.GET_MANY_ADVANCED:
+      return getManyAdvanced;
     case ApiRoutes.GET_UPDATED_AFTER:
       return getUpdatedAfter;
     case ApiRoutes.GET_TOKEN_PRICE:
       return getTokenPrice;
+    case ApiRoutes.GET_AVG_PRICE:
+      return getAvgPrice;
+    case ApiRoutes.GET_PRICE_CHANGE:
+      return getPriceChange;
     case ApiRoutes.GET_ADDRESSES:
       return getAddresses;
     case ApiRoutes.KEEP_ALIVE:

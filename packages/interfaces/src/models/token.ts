@@ -170,6 +170,12 @@ export interface TokenDistribution extends BaseSubCollection {
   readonly stakeVoteTransactionId?: string;
 }
 
+export enum TokenPurchaseAge {
+  IN_24_H = 'in24h',
+  IN_48_H = 'in48h',
+  IN_7_D = 'in7d',
+}
+
 export interface TokenPurchase extends BaseRecord {
   readonly token: string;
   readonly tokenStatus?: TokenStatus;
@@ -187,6 +193,8 @@ export interface TokenPurchase extends BaseRecord {
 
   readonly sellerTokenTradingFeePercentage?: number;
   readonly sellerTier?: number;
+
+  readonly age: { [key: string]: boolean };
 }
 
 export enum TokenTradeOrderType {
@@ -227,6 +235,7 @@ export interface TokenTradeOrder extends BaseRecord {
 
 export interface TokenStats extends BaseSubCollection {
   readonly volumeTotal: number;
+  readonly volume: { [key: string]: number };
   readonly stakes?: { [key: string]: StakeStat };
   readonly votes?: VoteStats;
   readonly ranks?: RankStats;

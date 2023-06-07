@@ -14,7 +14,7 @@ export const voidExpiredOrdersCron = async () => {
 
   for (const tran of snap) {
     await soonDb().runTransaction(async (transaction) => {
-      const tranDocRef = soonDb().collection(COL.TRANSACTION).doc(tran.uid);
+      const tranDocRef = soonDb().doc(`${COL.TRANSACTION}/${tran.uid}`);
       const tranData = (await transaction.get<Transaction>(tranDocRef))!;
       const service: ProcessingService = new ProcessingService(transaction);
       await service.markAsVoid(tranData);

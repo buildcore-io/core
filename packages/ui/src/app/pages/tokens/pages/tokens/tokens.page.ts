@@ -4,7 +4,7 @@ import { TokenApi } from '@api/token.api';
 import { FavouritesIconComponent } from '@components/icon/favourites/favourites.component';
 import { TabSection } from '@components/tabs/tabs.component';
 import { DeviceService } from '@core/services/device';
-import { getItem, setItem, StorageItem } from '@core/utils';
+import { StorageItem, getItem, setItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from '@env/environment';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';

@@ -6,7 +6,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { DEFAULT_LIST_SIZE, FULL_TODO_CHANGE_TO_PAGING } from '@api/base.api';
+import { DEFAULT_LIST_SIZE } from '@api/base.api';
 import { MemberApi } from '@api/member.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
@@ -18,7 +18,7 @@ import { DataService } from '@pages/member/services/data.service';
 import { HelperService } from '@pages/member/services/helper.service';
 import { Member, Transaction, TransactionType } from '@soonaverse/interfaces';
 import Papa from 'papaparse';
-import { BehaviorSubject, first, map, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription, first, map, of } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -101,12 +101,7 @@ export class TransactionsPage implements OnInit, OnDestroy {
 
   public getHandler(last?: any): Observable<Transaction[]> {
     if (this.data.member$.value) {
-      return this.memberApi.topTransactions(
-        this.data.member$.value.uid,
-        undefined,
-        last,
-        FULL_TODO_CHANGE_TO_PAGING,
-      );
+      return this.memberApi.topTransactions(this.data.member$.value.uid, undefined, last);
     } else {
       return of([]);
     }
@@ -163,12 +158,7 @@ export class TransactionsPage implements OnInit, OnDestroy {
     if (!this.data.member$.value?.uid) return;
     this.exportingTransactions = true;
     this.memberApi
-      .topTransactions(
-        this.data.member$.value?.uid,
-        undefined,
-        undefined,
-        FULL_TODO_CHANGE_TO_PAGING,
-      )
+      .topTransactions(this.data.member$.value?.uid, undefined, undefined)
       .pipe(first(), untilDestroyed(this))
       .subscribe((transactions: Transaction[]) => {
         this.exportingTransactions = false;

@@ -16,9 +16,8 @@
   },
   "scripts": {
     "lint": "eslint --ext .js,.ts src",
-    "prepare": "tsc",
     "build": "tsc",
-    "build:lerna": "npx lerna bootstrap --scope=@soonaverse/functions",
+    "build:lerna": "npx lerna bootstrap --scope=@soonaverse/functions && lerna run build --scope=@soonaverse/functions --include-dependencies",
     "emulators": "tsc --watch & firebase -c ../../firebase.json emulators:start --only functions,firestore,storage,ui,auth",
     "milestone-sync": "npx ts-node ./test/milestone.sync.ts",
     "serve": "run-p \"milestone-sync\" \"emulators\" ",
@@ -106,6 +105,7 @@
     "mime-types": "2.1.35",
     "node-ipinfo": "3.4.0",
     "sharp": "0.32.0",
-    "web3.storage": "4.5.4"
+    "web3.storage": "4.5.4",
+    "rxjs": "7.8.1"
   }
 }

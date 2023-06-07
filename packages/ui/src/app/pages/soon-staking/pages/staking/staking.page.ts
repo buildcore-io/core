@@ -6,7 +6,6 @@ import {
   OnInit,
 } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { FULL_TODO_CHANGE_TO_PAGING } from '@api/base.api';
 import { SpaceApi } from '@api/space.api';
 import { StakeRewardApi } from '@api/stake_reward';
 import { TokenApi } from '@api/token.api';
@@ -176,9 +175,7 @@ export class StakingPage implements OnInit, OnDestroy {
 
   public listenToTokenRewards(token: string): void {
     this.subscriptions$.push(
-      this.stakeRewardsApi
-        .token(token, undefined, FULL_TODO_CHANGE_TO_PAGING)
-        .subscribe(this.stakeRewards$),
+      this.stakeRewardsApi.token(token, undefined).subscribe(this.stakeRewards$),
     );
   }
 

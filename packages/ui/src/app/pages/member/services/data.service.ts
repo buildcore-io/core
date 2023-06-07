@@ -7,7 +7,6 @@ import {
   AuditOneQueryService,
   AuditOneResponseMember,
 } from 'src/app/service-modules/audit-one/services/query.service';
-import { FULL_TODO_CHANGE_TO_PAGING } from './../../../@api/base.api';
 import { TransactionApi } from './../../../@api/transaction.api';
 
 export enum MemberAction {
@@ -73,7 +72,7 @@ export class DataService {
       this.lastLoadedMemberId = this.member$.value.uid;
       this.subscriptions$.push(
         this.memberApi
-          .topBadges(this.member$.value.uid, 'createdOn', undefined, FULL_TODO_CHANGE_TO_PAGING)
+          .topBadges(this.member$.value.uid, 'createdOn', undefined)
           .pipe(untilDestroyed(this))
           .subscribe(this.badges$),
       );

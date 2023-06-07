@@ -16,8 +16,7 @@ import { SeoService } from '@core/services/seo';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FILE_SIZES, Member } from '@soonaverse/interfaces';
-import { BehaviorSubject, skip, Subscription } from 'rxjs';
-import { FULL_TODO_CHANGE_TO_PAGING } from './../../../../@api/base.api';
+import { BehaviorSubject, Subscription, skip } from 'rxjs';
 import { MemberApi } from './../../../../@api/member.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { DataService } from './../../services/data.service';
@@ -119,10 +118,7 @@ export class MemberPage implements OnInit, OnDestroy {
     );
     // TODO Implement search. This is parked since we will be implementing new search here.
     this.subscriptions$.push(
-      this.memberApi
-        .topSpaces(memberId, undefined, undefined, FULL_TODO_CHANGE_TO_PAGING)
-        .pipe(untilDestroyed(this))
-        .subscribe(this.data.space$),
+      this.memberApi.topSpaces(memberId).pipe(untilDestroyed(this)).subscribe(this.data.space$),
     );
     this.subscriptions$.push(
       this.memberApi.listen(memberId).pipe(untilDestroyed(this)).subscribe(this.data.member$),

@@ -1,9 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Firestore } from '@angular/fire/firestore';
 import {
-  COL,
   MIN_AMOUNT_TO_TRANSFER,
+  PublicCollections,
   StakeReward,
   StakeRewardStatus,
   StakeType,
@@ -11,19 +10,19 @@ import {
   WEN_FUNC,
   WenRequest,
 } from '@soonaverse/interfaces';
+import { StakeRewardRepository } from '@soonaverse/lib';
 import dayjs from 'dayjs';
-import { where } from 'firebase/firestore';
 import { Observable } from 'rxjs';
-import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
+import { BaseApi, SOON_ENV } from './base.api';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StakeRewardApi extends BaseApi<StakeReward> {
-  public collection = COL.STAKE_REWARD;
+  private stakeRewardRepo = new StakeRewardRepository(SOON_ENV);
 
-  constructor(protected firestore: Firestore, protected httpClient: HttpClient) {
-    super(firestore, httpClient);
+  constructor(protected httpClient: HttpClient) {
+    super(PublicCollections.STAKE_REWARD, httpClient);
   }
 
   /**
@@ -61,26 +60,12 @@ export class StakeRewardApi extends BaseApi<StakeReward> {
     return potentialEarnedTokens / memberStakeAmount;
   }
 
-  public token(
-    token: string,
-    lastValue?: number,
-    def = DEFAULT_LIST_SIZE,
-  ): Observable<StakeReward[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'endDate',
-      direction: 'asc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [where('token', '==', token)],
-    });
-  }
+  public token = (token: string, lastValue?: string) =>
+    this.stakeRewardRepo.getByTokenLive(token, lastValue);
 
-  public submit(req: WenRequest): Observable<StakeReward[] | undefined> {
-    return this.request(WEN_FUNC.stakeReward, req);
-  }
+  public submit = (req: WenRequest): Observable<StakeReward[] | undefined> =>
+    this.request(WEN_FUNC.stakeReward, req);
 
-  public remove(req: WenRequest): Observable<StakeReward[] | undefined> {
-    return this.request(WEN_FUNC.removeStakeReward, req);
-  }
+  public remove = (req: WenRequest): Observable<StakeReward[] | undefined> =>
+    this.request(WEN_FUNC.removeStakeReward, req);
 }

@@ -1,47 +1,40 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {
-  collection,
-  collectionData,
-  collectionGroup,
-  doc,
-  docData,
-  DocumentData,
-  Firestore,
-  getDocs,
-  limit,
-  orderBy as ordBy,
-  query,
-  QueryConstraint,
-  startAfter,
-  where,
-} from '@angular/fire/firestore';
 import { environment } from '@env/environment';
 import {
-  Award,
-  COL,
   EthAddress,
   Member,
   Proposal,
+  PublicCollections,
   SOON_TOKEN,
   SOON_TOKEN_TEST,
-  Space,
-  SpaceMember,
   Stake,
-  SUB_COL,
   Token,
   TokenDistribution,
   TokenDrop,
   TokenDropStatus,
   Transaction,
-  TransactionAwardType,
-  TransactionType,
   WEN_FUNC,
   WenRequest,
 } from '@soonaverse/interfaces';
+import {
+  AirdropRepository,
+  AwardParticipantRepository,
+  AwardRepository,
+  MemberRepository,
+  ProposalMemberRepository,
+  ProposalRepository,
+  SpaceKnockingMemberRepository,
+  SpaceMemberRepository,
+  SpaceRepository,
+  StakeRepository,
+  TokenDistributionRepository,
+  TokenRepository,
+  TransactionRepository,
+} from '@soonaverse/lib';
 import dayjs from 'dayjs';
-import { combineLatest, filter, map, Observable, switchMap } from 'rxjs';
-import { BaseApi, DEFAULT_LIST_SIZE, FULL_TODO_CHANGE_TO_PAGING, WHERE_IN_BATCH } from './base.api';
+import { Observable, combineLatest, map, switchMap } from 'rxjs';
+import { BaseApi, SOON_ENV } from './base.api';
 
 export interface TokenDistributionWithAirdrops extends TokenDistribution {
   tokenDrops: TokenDrop[];
@@ -63,384 +56,175 @@ export interface StakeWithTokenRec extends Stake {
   providedIn: 'root',
 })
 export class MemberApi extends BaseApi<Member> {
-  public collection = 'member';
+  protected memberRepo = new MemberRepository(SOON_ENV);
+  protected tokenDistRepo = new TokenDistributionRepository(SOON_ENV);
+  protected airdropRepo = new AirdropRepository(SOON_ENV);
+  protected stakeRepo = new StakeRepository(SOON_ENV);
+  protected tokenRepo = new TokenRepository(SOON_ENV);
+  protected spaceRepo = new SpaceRepository(SOON_ENV);
+  protected spaceMemberRepo = new SpaceMemberRepository(SOON_ENV);
+  protected spaceKnockingRepo = new SpaceKnockingMemberRepository(SOON_ENV);
+  protected awardRepo = new AwardRepository(SOON_ENV);
+  protected awardParticipantRepo = new AwardParticipantRepository(SOON_ENV);
+  protected proposalRepo = new ProposalRepository(SOON_ENV);
+  protected proposalMemberRepo = new ProposalMemberRepository(SOON_ENV);
+  protected transactionRepo = new TransactionRepository(SOON_ENV);
 
-  constructor(protected firestore: Firestore, protected httpClient: HttpClient) {
-    super(firestore, httpClient);
+  constructor(protected httpClient: HttpClient) {
+    super(PublicCollections.MEMBER, httpClient);
   }
 
-  public listen(id: EthAddress): Observable<Member | undefined> {
-    return super.listen(id);
-  }
-
-  public soonDistributionStats(
-    id: EthAddress,
-  ): Observable<TokenDistributionWithAirdrops | undefined> {
-    return docData(
-      doc(
-        this.firestore,
-        COL.TOKEN,
-        environment.production ? SOON_TOKEN : SOON_TOKEN_TEST,
-        SUB_COL.DISTRIBUTION,
-        id.toLowerCase(),
-      ),
-    ).pipe(
-      switchMap(async (v) => {
-        if (!v) {
-          return v;
+  public soonDistributionStats = (id: EthAddress) => {
+    const tokenId = environment.production ? SOON_TOKEN : SOON_TOKEN_TEST;
+    return this.tokenDistRepo.getByIdLive(tokenId, id.toLowerCase()).pipe(
+      switchMap(async (distribution) => {
+        if (!distribution) {
+          return;
         }
-
-        // We have to load the airdrops.
-        const qr: any = await getDocs(
-          query(
-            collection(this.firestore, COL.AIRDROP),
-            where('member', '==', id.toLowerCase()),
-            where('token', '==', environment.production ? SOON_TOKEN : SOON_TOKEN_TEST),
-          ),
+        const tokenDrops = await this.airdropRepo.getByField(
+          ['member', 'token', 'status'],
+          [id.toLowerCase(), tokenId, TokenDropStatus.UNCLAIMED],
         );
-
-        v.tokenDrops = qr.docs
-          ? qr.docs
-              .filter((doc: DocumentData) => {
-                return (<TokenDrop>doc.data()).status === TokenDropStatus.UNCLAIMED;
-              })
-              .map((doc: any) => {
-                return <TokenDrop>doc.data();
-              })
-          : [];
-        return v;
+        return { ...distribution, tokenDrops };
       }),
     ) as Observable<TokenDistributionWithAirdrops | undefined>;
-  }
+  };
 
-  public listenMultiple(ids: EthAddress[]): Observable<Member[]> {
-    const streams: Observable<Member[]>[] = [];
-    for (let i = 0, j = ids.length; i < j; i += WHERE_IN_BATCH) {
-      const batchToGet: string[] = ids.slice(i, i + WHERE_IN_BATCH);
-      streams.push(
-        this._query({
-          collection: this.collection,
-          orderBy: 'createdOn',
-          direction: 'asc',
-          constraints: [where('uid', 'in', batchToGet)],
+  public listenMultiple = (ids: EthAddress[]) =>
+    this.memberRepo
+      .getByFieldLive(
+        ids.map(() => 'uid'),
+        ids,
+      )
+      .pipe(
+        map((members) => {
+          members.sort((a, b) => (a.createdOn?.seconds || 0) - (b.createdOn?.seconds || 0));
+          return members;
         }),
       );
-    }
-    return combineLatest(streams).pipe(
-      map((o) => {
-        return o.flat(1);
+
+  public topStakes = (memberId: EthAddress, lastValue?: string): Observable<StakeWithTokenRec[]> =>
+    this.stakeRepo.getByMemberLive(memberId, lastValue).pipe(
+      switchMap(async (stakes: Stake[]) => {
+        const tokenIds = Array.from(new Set(stakes.map((s) => s.token)));
+        const tokenPromises = tokenIds.map((id) => this.tokenRepo.getById(id));
+        const tokens = await Promise.all(tokenPromises);
+
+        return stakes.map((stake) => ({
+          ...stake,
+          tokenRec: tokens.find((t) => t?.uid === stake.token)!,
+        }));
       }),
     );
-  }
 
-  public topStakes(
-    memberId: EthAddress,
-    _orderBy: string | string[] = 'createdOn',
-    lastValue?: number,
-    def = DEFAULT_LIST_SIZE,
-  ): Observable<StakeWithTokenRec[]> {
-    return this._query({
-      collection: COL.STAKE,
-      orderBy: 'expiresAt',
-      direction: 'desc',
-      lastValue: lastValue,
-      def: def,
-      constraints: [...[where('member', '==', memberId)]],
-    }).pipe(
-      switchMap(async (obj: any[]) => {
-        const out: StakeWithTokenRec[] = [];
-        const subRecords: Token[] = await this.getSubRecordsInBatches(
-          COL.TOKEN,
-          obj.map((o) => {
-            return o.token;
-          }),
-        );
-
-        for (const o of obj) {
-          const finObj: any = subRecords.find((subO: any) => {
-            return subO.uid === o.token;
-          });
-
-          out.push({
-            ...o,
-            ...{
-              tokenRec: finObj,
-            },
-          });
-        }
-
-        return out;
-      }),
-    );
-  }
-
-  public topTokens(
-    memberId: EthAddress,
-    _orderBy: string | string[] = 'createdOn',
-    lastValue?: number,
-    def = DEFAULT_LIST_SIZE,
-  ): Observable<TokenWithMemberDistribution[]> {
-    return this.topParent({
-      col: COL.TOKEN,
-      subCol: SUB_COL.DISTRIBUTION,
-      memberId: memberId,
-      orderBy: [],
-      lastValue: lastValue,
-      def: def,
-      frRef: (obj: any, subCollection: any) => {
-        obj.distribution = subCollection;
-        return obj;
-      },
-    }).pipe(
-      switchMap(async (v: TokenWithMemberDistribution[]) => {
-        for (const t of v) {
-          // We have to load the airdrops.
-          const qr: any = await getDocs(
-            query(
-              collection(this.firestore, COL.AIRDROP),
-              where('member', '==', memberId),
-              where('token', '==', t.uid),
-            ),
+  public topTokens = (memberId: EthAddress): Observable<TokenWithMemberDistribution[]> =>
+    this.tokenDistRepo.getTopBySubColIdLive(memberId, [], []).pipe(
+      switchMap(async (distributions) => {
+        const promises = distributions.map(async (distribution) => {
+          const token = await this.tokenRepo.getById(distribution.parentId);
+          const tokenDrops = await this.airdropRepo.getByField(
+            ['member', 'token', 'status'],
+            [memberId, distribution.parentId, TokenDropStatus.UNCLAIMED],
           );
-
-          t.distribution.tokenDrops = qr.docs
-            ? qr.docs
-                .filter((doc: DocumentData) => {
-                  return (<TokenDrop>doc.data()).status === TokenDropStatus.UNCLAIMED;
-                })
-                .map((doc: DocumentData) => {
-                  return <TokenDrop>doc.data();
-                })
-            : [];
-        }
-
-        return v;
+          return {
+            ...token,
+            distribution: { ...distribution, tokenDrops },
+          } as TokenWithMemberDistribution;
+        });
+        return await Promise.all(promises);
       }),
     );
-  }
 
-  public topSpaces(
+  public topSpaces = (
     memberId: EthAddress,
-    orderBy: string | string[] = 'createdOn',
-    lastValue?: number,
-    def = DEFAULT_LIST_SIZE,
-  ): Observable<Space[]> {
-    return this.topParent({
-      col: COL.SPACE,
-      subCol: SUB_COL.MEMBERS,
-      memberId: memberId,
-      orderBy: orderBy,
-      lastValue: lastValue,
-      def: def,
-    });
-  }
+    orderBy = ['createdOn'],
+    orderByDir = ['desc'],
+    lastValue?: string,
+    limit?: number,
+  ) => this.spaceRepo.getTopByMember(memberId, orderBy, orderByDir, lastValue, limit);
 
-  public pendingSpaces(
+  public pendingSpaces = (
     memberId: EthAddress,
-    orderBy: string | string[] = 'createdOn',
-    lastValue?: number,
-    def = DEFAULT_LIST_SIZE,
-  ): Observable<Space[]> {
-    return this.topParent({
-      col: COL.SPACE,
-      subCol: SUB_COL.KNOCKING_MEMBERS,
-      memberId: memberId,
-      orderBy: orderBy,
-      lastValue: lastValue,
-      def: def,
-    });
-  }
+    orderBy = ['createdOn'],
+    orderByDir = ['desc'],
+    lastValue?: string,
+  ) => this.spaceRepo.getPendingSpacesByMemberLive(memberId, orderBy, orderByDir, lastValue);
 
-  // TODO We need to tweak this to make sure don't filter locally.
-  public topAwardsPending(
-    memberId: EthAddress,
-    orderBy: string | string[] = 'createdOn',
-    lastValue?: number,
-    def = FULL_TODO_CHANGE_TO_PAGING,
-  ): Observable<Award[]> {
-    return this.topParent({
-      col: COL.AWARD,
-      subCol: SUB_COL.PARTICIPANTS,
-      memberId: memberId,
-      orderBy: orderBy,
-      lastValue: lastValue,
-      def: def,
-      constraints: [where('completed', '==', false)],
-    });
-  }
+  public topAwardsPending = (memberId: EthAddress, lastValue?: string) =>
+    this.awardRepo.getTopByMemberLive(memberId, false, lastValue);
 
-  // TODO We need to tweak this to make sure don't filter locally.
-  public topAwardsCompleted(
-    memberId: EthAddress,
-    orderBy: string | string[] = 'createdOn',
-    lastValue?: number,
-    def = FULL_TODO_CHANGE_TO_PAGING,
-  ): Observable<Award[]> {
-    return this.topParent({
-      col: COL.AWARD,
-      subCol: SUB_COL.PARTICIPANTS,
-      memberId: memberId,
-      orderBy: orderBy,
-      lastValue: lastValue,
-      def: def,
-      constraints: [where('completed', '==', true)],
-    });
-  }
+  public topAwardsCompleted = (memberId: EthAddress, lastValue?: string) =>
+    this.awardRepo.getTopByMemberLive(memberId, true, lastValue);
 
-  // TODO We need to tweak this to make sure don't filter locally.
-  public topProposals(
+  public topProposals = (
     memberId: EthAddress,
-    orderBy: string | string[] = 'createdOn',
-    lastValue?: number,
-    def = FULL_TODO_CHANGE_TO_PAGING,
-  ): Observable<Proposal[]> {
-    return this.topParent({
-      col: COL.PROPOSAL,
-      subCol: SUB_COL.MEMBERS,
-      memberId: memberId,
-      orderBy: orderBy,
-      lastValue: lastValue,
-      def: def,
-      frRef: (obj: any) => {
-        return (
-          obj.settings.endDate?.toDate() &&
-          dayjs(obj.settings.endDate.toDate()).isAfter(dayjs(new Date()))
-        );
-      },
-    });
-  }
+    orderBy = ['createdOn'],
+    orderByDir = ['desc'],
+    lastValue?: string,
+  ) =>
+    this.proposalMemberRepo.getTopBySubColIdLive(memberId, orderBy, orderByDir, lastValue).pipe(
+      switchMap(async (members) => {
+        const result: Proposal[] = [];
+        for (const member of members) {
+          const proposal = (await this.proposalRepo.getById(member.parentId))!;
+          const endDate = proposal.settings.endDate?.toDate();
+          if (endDate && dayjs(endDate).isAfter(dayjs(new Date()))) {
+            result.push(proposal);
+          }
+        }
+        return result;
+      }),
+    );
 
   public topBadges(
     memberId: string,
     orderBy: string | string[] = 'createdOn',
-    lastValue?: number,
-    def = DEFAULT_LIST_SIZE,
+    lastValue?: string,
   ): Observable<Transaction[]> {
-    const constraints: QueryConstraint[] = [];
-    const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
-    constraints.push(where('type', 'in', [TransactionType.AWARD]));
-    constraints.push(where('member', '==', memberId));
-    constraints.push(where('payload.type', '==', TransactionAwardType.BADGE));
-    order.forEach((o) => {
-      constraints.push(ordBy(o, 'desc'));
-    });
-
-    if (lastValue) {
-      constraints.push(startAfter(lastValue));
-    }
-    constraints.push(limit(def));
-
-    return collectionData(
-      query(collection(this.firestore, COL.TRANSACTION), ...constraints),
-    ) as Observable<Transaction[]>;
+    const orderBys = Array.isArray(orderBy) ? orderBy : [orderBy];
+    return this.transactionRepo.getBadgesForMemberLive(memberId, orderBys, lastValue);
   }
 
   public topTransactions(
     memberId: string,
     orderBy: string | string[] = 'createdOn',
-    lastValue?: number,
-    def = DEFAULT_LIST_SIZE,
+    lastValue?: string,
   ): Observable<Transaction[]> {
-    const includedTypes = [
-      TransactionType.PAYMENT,
-      TransactionType.BILL_PAYMENT,
-      TransactionType.CREDIT,
-      TransactionType.CREDIT_NFT,
-      TransactionType.MINT_COLLECTION,
-      TransactionType.WITHDRAW_NFT,
-      TransactionType.MINT_TOKEN,
-      TransactionType.UNLOCK,
-      TransactionType.CREDIT_TANGLE_REQUEST,
-      TransactionType.VOTE,
-    ];
-    const constraints: QueryConstraint[] = [];
-    const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
-    constraints.push(where('type', 'in', includedTypes));
-    order.forEach((o) => {
-      constraints.push(ordBy(o, 'desc'));
-    });
+    const orderBys = Array.isArray(orderBy) ? orderBy : [orderBy];
 
-    if (lastValue) {
-      constraints.push(startAfter(lastValue));
-    }
+    const all = this.transactionRepo
+      .getTopTransactionsLive(orderBys, lastValue)
+      .pipe(map((result) => result.filter((t) => t.member !== memberId)));
 
-    constraints.push(limit(def));
+    const members = this.transactionRepo.getTopTransactionsLive(orderBys, lastValue, memberId);
 
-    return combineLatest([
-      collectionData(
-        query(
-          collection(this.firestore, COL.TRANSACTION),
-          where('payload.previousOwner', '==', memberId),
-          ...constraints,
-        ),
-      ).pipe(
-        map((a: any) => {
-          // It gets picked by the other search.
-          return a.filter((t: any) => {
-            return t.member !== memberId;
-          });
+    return combineLatest([all, members]).pipe(
+      map(([notForMember, forMember]) =>
+        [...notForMember, ...forMember].sort((a, b) => {
+          const aTime = a.createdOn?.toDate().getTime() || 0;
+          const bTime = b.createdOn?.toDate().getTime() || 0;
+          return -aTime + bTime;
         }),
       ),
-      collectionData(
-        query(
-          collection(this.firestore, COL.TRANSACTION),
-          where('member', '==', memberId),
-          ...constraints,
-        ),
-      ),
-    ]).pipe(
-      filter(([previous, current]) => !!previous && !!current),
-      map(([previous, current]) =>
-        [...previous, ...current].sort(
-          (a, b) =>
-            -(a.createdOn?.toDate().getTime() || 0) + (b.createdOn?.toDate().getTime() || 0),
-        ),
-      ),
-    ) as Observable<Transaction[]>;
+    );
   }
 
-  public allSpacesAsMember(memberId: EthAddress): Observable<Space[]> {
-    return collectionData(
-      query(
-        collectionGroup(this.firestore, SUB_COL.MEMBERS),
-        where('uid', '==', memberId),
-        where('parentCol', '==', COL.SPACE),
-      ),
-    ).pipe(
-      switchMap(async (obj: DocumentData[]) => {
-        const res = obj as SpaceMember[];
-        const out: Space[] = [];
-        const subRecords: Space[] = await this.getSubRecordsInBatches(
-          COL.SPACE,
-          res.map((o) => {
-            return o.parentId;
-          }),
+  public allSpacesAsMember = (memberId: EthAddress, lastValue?: string) =>
+    this.spaceMemberRepo.getTopBySubColIdLive(memberId, [], [], lastValue).pipe(
+      switchMap(async (spaceMembers) => {
+        const spacePromises = spaceMembers.map(
+          async (member) => (await this.spaceRepo.getById(member.parentId))!,
         );
-        for (const o of res) {
-          const finObj: any = subRecords.find((subO: any) => {
-            return subO.uid === o.parentId;
-          });
-          if (!finObj) {
-            console.warn('Missing record in database');
-          } else {
-            out.push(finObj);
-          }
-        }
-
-        return out;
+        return await Promise.all(spacePromises);
       }),
-    ) as Observable<Space[]>;
-  }
+    );
 
-  public createIfNotExists(address: string): Observable<Member | undefined> {
-    return this.request(WEN_FUNC.createMember, address);
-  }
+  public createIfNotExists = (address: string): Observable<Member | undefined> =>
+    this.request(WEN_FUNC.createMember, address);
 
-  public updateMember(req: WenRequest): Observable<Member | undefined> {
-    return this.request(WEN_FUNC.updateMember, req);
-  }
+  public updateMember = (req: WenRequest): Observable<Member | undefined> =>
+    this.request(WEN_FUNC.updateMember, req);
 
-  public generateAuthToken(req: WenRequest): Observable<string | undefined> {
-    return this.request(WEN_FUNC.generateCustomFirebaseToken, req);
-  }
+  public generateAuthToken = (req: WenRequest): Observable<string | undefined> =>
+    this.request(WEN_FUNC.generateCustomFirebaseToken, req);
 }

@@ -45,7 +45,7 @@ export const orderTokenControl = async (
   }
 
   const tranId = tokenOrderTransactionDocId(owner, token);
-  const orderDoc = soonDb().collection(COL.TRANSACTION).doc(tranId);
+  const orderDoc = soonDb().doc(`${COL.TRANSACTION}/${tranId}`);
   const space = await soonDb().doc(`${COL.SPACE}/${token.space}`).get<Space>();
 
   await assertHasAccess(

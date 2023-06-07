@@ -61,10 +61,7 @@ function init(outputFile) {
   );
   fs.appendFileSync(outputFile, '      - name: Install Dependencies\n');
   fs.appendFileSync(outputFile, "        if: steps.cache.outputs.cache-hit != 'true'\n");
-  fs.appendFileSync(
-    outputFile,
-    '        run: npx lerna bootstrap --scope=@soonaverse/functions\n\n',
-  );
+  fs.appendFileSync(outputFile, '        run: npm run build:functions\n\n');
 }
 
 function job(outputFile, chunk, files, commandName) {

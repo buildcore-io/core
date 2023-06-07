@@ -3,6 +3,7 @@ import { COL, PublicCollections, PublicSubCollections, SUB_COL } from '@soonaver
 
 export interface IDatabase {
   collection: (col: COL | PublicCollections) => ICollection;
+  collectionGroup: (col: SUB_COL | PublicSubCollections) => ICollectionGroup;
   doc: (documentPath: string) => IDocument;
 
   batch: () => IBatch;
@@ -14,12 +15,15 @@ export interface IDatabase {
   deleteField: () => any;
 }
 
-export interface ICollection {
-  doc: (documentPath: string) => IDocument;
+export interface ICollectionGroup {
   get: <T>() => Promise<T[]>;
   where: (fieldPath: string, operator: WhereFilterOp, value: any) => IQuery;
   limit: (value: number) => IQuery;
   startAfter: (value?: IDocumentSnapshot | string | number | Date) => IQuery;
+}
+
+export interface ICollection extends ICollectionGroup {
+  doc: (documentPath: string) => IDocument;
 }
 
 export interface IDocument {
@@ -28,7 +32,7 @@ export interface IDocument {
   set: (data: any, merge?: boolean) => Promise<void>;
   delete: () => Promise<void>;
 
-  onSnapshot: <T>(callback: (data: T) => void) => () => void;
+  onSnapshot: <T>(callback: (data: T | undefined) => void) => () => void;
 
   collection: (subCol: SUB_COL | PublicSubCollections) => ICollection;
   get: <D>() => Promise<D | undefined>;

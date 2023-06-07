@@ -189,7 +189,7 @@ const executeTransaction = async (transactionId: string) => {
     return;
   }
 
-  const docRef = soonDb().collection(COL.TRANSACTION).doc(transactionId);
+  const docRef = soonDb().doc(`${COL.TRANSACTION}/${transactionId}`);
   const transaction = <Transaction>await docRef.get();
   const payload = transaction.payload;
 
@@ -411,7 +411,7 @@ const submitUnlockTransaction = async (
 
 const prepareTransaction = (transactionId: string) =>
   soonDb().runTransaction(async (transaction) => {
-    const docRef = soonDb().collection(COL.TRANSACTION).doc(transactionId);
+    const docRef = soonDb().doc(`${COL.TRANSACTION}/${transactionId}`);
     const tranData = await transaction.get<Transaction>(docRef);
     if (
       isEmulatorEnv() &&
