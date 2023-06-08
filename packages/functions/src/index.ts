@@ -52,6 +52,7 @@ import {
   updateSpace,
 } from './runtime/firebase/space';
 import { depositStake, removeStakeReward, stakeReward } from './runtime/firebase/stake';
+import { uploadFile } from './runtime/firebase/storage/file.upload';
 import {
   airdropToken,
   cancelPublicSale,
@@ -203,3 +204,5 @@ exports[WEN_FUNC.generateCustomFirebaseToken] = generateCustomFirebaseToken;
 exports[WEN_FUNC.claimSpace] = claimSpace;
 
 exports[WEN_FUNC.importMintedToken] = importMintedToken;
+
+exports[WEN_FUNC.uploadFile] = uploadFile;

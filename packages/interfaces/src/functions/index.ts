@@ -99,6 +99,8 @@ export enum WEN_FUNC {
   generateCustomFirebaseToken = 'generatecustomfirebasetoken',
 
   api = 'api',
+
+  uploadFile = 'uploadfile',
 }
 
 export interface cMemberNotExists {
