@@ -81,6 +81,7 @@ export const uploadFileControl = (req: functions.https.Request, res: express.Res
     const dowloadUrl = await bucket.upload(params.filePath as string, destination, {});
 
     fs.rmSync(workdir, { recursive: true, force: true });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (params.file as any).resume();
 
     const idDevBucket = bucketName === Bucket.DEV;
