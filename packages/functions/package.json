@@ -17,7 +17,7 @@
   "scripts": {
     "lint": "eslint --ext .js,.ts src",
     "build": "tsc",
-    "build:lerna": "npx lerna bootstrap --scope=@soonaverse/functions && lerna run build --scope=@soonaverse/functions --include-dependencies",
+    "build:lerna": "npx lerna@6.6.2 bootstrap --scope=@soonaverse/functions && lerna run build --scope=@soonaverse/functions --include-dependencies",
     "emulators": "tsc --watch & firebase -c ../../firebase.json emulators:start --only functions,firestore,storage,ui,auth",
     "milestone-sync": "npx ts-node ./test/milestone.sync.ts",
     "serve": "run-p \"milestone-sync\" \"emulators\" ",

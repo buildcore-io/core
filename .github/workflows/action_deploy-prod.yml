@@ -66,10 +66,10 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - name: Init
         run: |
-          npx lerna version ${{ github.event.release.tag_name }} --no-private --no-git-tag-version --y
+          npx lerna@6.6.2 version ${{ github.event.release.tag_name }} --no-private --no-git-tag-version --y
           npm run build:lib
       - name: Deploy to npm
-        run: npx lerna publish ${{ github.event.release.tag_name }} --no-private --no-git-tag-version --y
+        run: npx lerna@6.6.2 publish ${{ github.event.release.tag_name }} --no-private --no-git-tag-version --y
 
   roll-firestore:
     runs-on: ubuntu-latest
