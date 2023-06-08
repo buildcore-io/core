@@ -83,7 +83,13 @@ export class CrudRepository<T> {
     fieldValue: string | number | boolean | (string | number | boolean)[],
     startAfter?: string,
   ): Observable<T[]> => {
-    const params = { collection: this.col, fieldName, fieldValue, startAfter };
+    const params = {
+      collection: this.col,
+      fieldName,
+      fieldValue,
+      startAfter,
+      sessionId: SESSION_ID,
+    };
     const url = getManyUrl(this.env) + toQueryParams(params);
     return new SoonObservable<T[]>(this.env, url);
   };
@@ -137,7 +143,7 @@ export class CrudRepository<T> {
    * @returns
    */
   public getAllUpdatedAfterLive = (updatedAfter: number, startAfter?: string): Observable<T[]> => {
-    const params = { collection: this.col, updatedAfter, startAfter };
+    const params = { collection: this.col, updatedAfter, startAfter, sessionId: SESSION_ID };
     const url = getUpdatedAfterUrl(this.env) + toQueryParams(params);
     return new SoonObservable<T[]>(this.env, url);
   };
@@ -153,8 +159,7 @@ export class CrudRepository<T> {
       orderBy: ['createdOn'],
       orderByDir: ['desc'],
     } as GetManyAdvancedRequest;
-    const url = getManyAdvancedUrl(this.env) + toQueryParams({ ...params });
-    return new SoonObservable<T[]>(this.env, url);
+    return this.getManyAdvancedLive(params);
   };
 
   protected getManyAdvancedLive = (params: GetManyAdvancedRequest): Observable<T[]> => {
