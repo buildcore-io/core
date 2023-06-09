@@ -5,7 +5,7 @@ import { COL, Member, Network, WEN_FUNC, WenError } from '@soonaverse/interfaces
 import jwt from 'jsonwebtoken';
 import { get } from 'lodash';
 import { soonDb } from '../src/firebase/firestore/soondb';
-import { generateCustomFirebaseToken } from '../src/runtime/firebase/auth';
+import { generateCustomToken } from '../src/runtime/firebase/auth';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
 import { WalletService } from '../src/services/wallet/wallet';
 import * as config from '../src/utils/config.utils';
@@ -29,10 +29,10 @@ describe('Auth control test', () => {
 
   it('Should create and reuse custom token', async () => {
     mockWalletReturnValue(walletSpy, member, {});
-    const token = await testEnv.wrap(generateCustomFirebaseToken)({});
+    const token = await testEnv.wrap(generateCustomToken)({});
     walletSpy.mockRestore();
 
-    const tokenGeneratedWithToken = await testEnv.wrap(generateCustomFirebaseToken)({
+    const tokenGeneratedWithToken = await testEnv.wrap(generateCustomToken)({
       address: member,
       customToken: token,
       body: {},
@@ -46,7 +46,7 @@ describe('Auth control test', () => {
 
   it('Should throw, custom token for func expired', async () => {
     mockWalletReturnValue(walletSpy, member, {});
-    const token = await testEnv.wrap(generateCustomFirebaseToken)({});
+    const token = await testEnv.wrap(generateCustomToken)({});
     walletSpy.mockRestore();
 
     configSpy = jest.spyOn(config, 'getCustomTokenLifetime');
@@ -54,7 +54,7 @@ describe('Auth control test', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 2000));
     await expectThrow(
-      testEnv.wrap(generateCustomFirebaseToken)({
+      testEnv.wrap(generateCustomToken)({
         address: member,
         customToken: token,
         body: {},

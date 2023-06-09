@@ -96,7 +96,7 @@ export enum WEN_FUNC {
   stakeReward = 'stakereward',
   removeStakeReward = 'removestakereward',
 
-  generateCustomFirebaseToken = 'generatecustomfirebasetoken',
+  generateCustomToken = 'generatecustomtoken',
 
   api = 'api',
 

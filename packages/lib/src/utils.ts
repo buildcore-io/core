@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import dayjs from 'dayjs';
+import { Timestamp } from '@soonaverse/interfaces';
 import { isEqual } from 'lodash';
 
 export const processObjectArray = <T>(array: any[]) =>
@@ -18,7 +18,7 @@ const processValue = (value: any): any => {
   if (value instanceof Object) {
     const keys = Object.keys(value);
     if (isEqual(keys, ['_seconds', '_nanoseconds'])) {
-      return dayjs(value._nanoseconds);
+      return new Timestamp(value._seconds, value._nanoseconds);
     }
     return processObject(value);
   }

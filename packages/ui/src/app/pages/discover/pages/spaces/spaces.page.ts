@@ -7,7 +7,7 @@ import { FilterStorageService } from '@core/services/filter-storage';
 import { SeoService } from '@core/services/seo';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { discoverSections } from '@pages/discover/pages/discover/discover.page';
-import { COL } from '@soonaverse/interfaces';
+import { COL, Timestamp } from '@soonaverse/interfaces';
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
 import { Subject } from 'rxjs';
 import { FilterService } from './../../services/filter.service';
