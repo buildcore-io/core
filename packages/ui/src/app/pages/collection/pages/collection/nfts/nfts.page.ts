@@ -6,7 +6,6 @@ import {
   OnChanges,
   OnInit,
 } from '@angular/core';
-import { Timestamp } from '@angular/fire/firestore';
 import { NftApi } from '@api/nft.api';
 import { AlgoliaCheckboxFilterType } from '@components/algolia/algolia-checkbox/algolia-checkbox.component';
 import { defaultPaginationItems } from '@components/algolia/algolia.options';

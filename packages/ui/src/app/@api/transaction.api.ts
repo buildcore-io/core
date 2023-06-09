@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Firestore } from '@angular/fire/firestore';
 import { PublicCollections, Transaction, WEN_FUNC, WenRequest } from '@soonaverse/interfaces';
 import { Observable } from 'rxjs';
 import { BaseApi } from './base.api';
@@ -9,7 +8,7 @@ import { BaseApi } from './base.api';
   providedIn: 'root',
 })
 export class TransactionApi extends BaseApi<Transaction> {
-  constructor(protected firestore: Firestore, protected httpClient: HttpClient) {
+  constructor(protected httpClient: HttpClient) {
     super(PublicCollections.TRANSACTION, httpClient);
   }
 

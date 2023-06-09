@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { Timestamp } from '@angular/fire/firestore';
 import { AlgoliaCheckboxFilterType } from '@components/algolia/algolia-checkbox/algolia-checkbox.component';
 import { defaultPaginationItems } from '@components/algolia/algolia.options';
 import { AlgoliaService } from '@components/algolia/services/algolia.service';

@@ -18,12 +18,9 @@ const EXTENSION_PAT = /\.[^/.]+$/;
 export class FileApi {
   constructor(protected httpClient: HttpClient) {}
 
-  public static isMigrated = (url: string) =>
-    !url.startsWith('https://firebasestorage.googleapis.com/v0/b/');
-
   public static getUrl(org: string, size?: FILE_SIZES): string {
     const ext = org.match(EXTENSION_PAT)?.[0]?.replace('.', '_');
-    if (!this.isMigrated(org) || !size || !ext) {
+    if (!size || !ext) {
       return org;
     }
     return org.replace(EXTENSION_PAT, ext + '_' + size + '.webp');
@@ -32,7 +29,7 @@ export class FileApi {
   public static getVideoPreview(org: string): string | undefined {
     const extensionPat = EXTENSION_PAT;
     const ext = org.match(extensionPat)?.[0]?.replace('.', '_');
-    if (!this.isMigrated(org) || !ext) {
+    if (!ext) {
       return undefined;
     }
     return org.replace(EXTENSION_PAT, ext + '_preview.webp');

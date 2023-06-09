@@ -2,11 +2,10 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
-import { getItem, setItem, StorageItem } from '@core/utils';
+import { StorageItem, getItem, setItem } from '@core/utils';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { COL } from '@soonaverse/interfaces';
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
-import { Timestamp } from 'firebase/firestore';
 
 @UntilDestroy()
 // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection

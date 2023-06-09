@@ -1,5 +1,5 @@
 export enum CookieItem {
-  firebaseLanguageOverride = 'firebase-language-override',
+  languageOverride = 'language-override',
 }
 
 export function getCookie(name: string): string | null {

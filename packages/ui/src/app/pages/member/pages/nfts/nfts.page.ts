@@ -11,7 +11,6 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/member/services/data.service';
 import { COL, Member } from '@soonaverse/interfaces';
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
-import { Timestamp } from 'firebase/firestore';
 import { BehaviorSubject } from 'rxjs';
 
 @UntilDestroy()
