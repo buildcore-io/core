@@ -1,7 +1,7 @@
 import { WEN_FUNC, WEN_FUNC_TRIGGER } from '@soonaverse/interfaces';
 import { algoliaTrigger } from './algolia/algolia.trigger';
 import { validateAddress } from './runtime/firebase/address';
-import { generateCustomFirebaseToken } from './runtime/firebase/auth';
+import { generateCustomToken } from './runtime/firebase/auth';
 import {
   addOwnerAward,
   approveAwardParticipant,
@@ -52,6 +52,7 @@ import {
   updateSpace,
 } from './runtime/firebase/space';
 import { depositStake, removeStakeReward, stakeReward } from './runtime/firebase/stake';
+import { uploadFile } from './runtime/firebase/storage/file.upload';
 import {
   airdropToken,
   cancelPublicSale,
@@ -198,8 +199,10 @@ exports['storage_trigger_resizeImage'] = resizeImageTrigger;
 exports[WEN_FUNC.stakeReward] = stakeReward;
 exports[WEN_FUNC.removeStakeReward] = removeStakeReward;
 
-exports[WEN_FUNC.generateCustomFirebaseToken] = generateCustomFirebaseToken;
+exports[WEN_FUNC.generateCustomToken] = generateCustomToken;
 
 exports[WEN_FUNC.claimSpace] = claimSpace;
 
 exports[WEN_FUNC.importMintedToken] = importMintedToken;
+
+exports[WEN_FUNC.uploadFile] = uploadFile;

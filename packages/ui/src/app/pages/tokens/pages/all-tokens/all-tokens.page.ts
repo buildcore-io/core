@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { Timestamp } from '@angular/fire/firestore';
 import { AlgoliaService } from '@components/algolia/services/algolia.service';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
 import { SeoService } from '@core/services/seo';
 import { UntilDestroy } from '@ngneat/until-destroy';
-import { COL } from '@soonaverse/interfaces';
+import { COL, Timestamp } from '@soonaverse/interfaces';
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
 import { tokensSections } from '../tokens/tokens.page';
 

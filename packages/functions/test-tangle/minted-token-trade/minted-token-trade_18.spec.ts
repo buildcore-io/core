@@ -107,7 +107,7 @@ describe('Minted toke trading tangle request', () => {
       expect(sellOrder.type).toBe(TokenTradeOrderType.SELL);
 
       if (expiresAt) {
-        expect(sellOrder.expiresAt.isEqual(expiresAt)).toBe(true);
+        expect(sellOrder.expiresAt.seconds).toBe(expiresAt.seconds);
       } else {
         expect(sellOrder.expiresAt.toDate().getTime()).toBeGreaterThan(
           dayjs().add(30, 'd').toDate().getTime(),

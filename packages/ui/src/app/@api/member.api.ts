@@ -226,5 +226,5 @@ export class MemberApi extends BaseApi<Member> {
     this.request(WEN_FUNC.updateMember, req);
 
   public generateAuthToken = (req: WenRequest): Observable<string | undefined> =>
-    this.request(WEN_FUNC.generateCustomFirebaseToken, req);
+    this.request(WEN_FUNC.generateCustomToken, req);
 }

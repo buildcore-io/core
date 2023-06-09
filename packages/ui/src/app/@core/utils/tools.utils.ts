@@ -17,7 +17,7 @@ export function download(data: string, name: string): void {
   link.click();
 }
 
-export const flattenFirebaseObject = (obj: any, prefix = '') => {
+export const flattenObject = (obj: any, prefix = '') => {
   const flattened: any = {};
   Object.keys(obj).forEach((key) => {
     const value = obj[key];
@@ -26,7 +26,7 @@ export const flattenFirebaseObject = (obj: any, prefix = '') => {
     if (value?.nanoseconds > 0 && value?.seconds > 0) {
       flattened[prefix + key] = new Date(value.seconds * 1000);
     } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-      Object.assign(flattened, flattenFirebaseObject(value, prefix + key + '.'));
+      Object.assign(flattened, flattenObject(value, prefix + key + '.'));
     } else if (Array.isArray(value)) {
       flattened[prefix + key] = value.join(',');
     } else {

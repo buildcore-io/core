@@ -47,7 +47,7 @@ describe('Minted nft trading', () => {
       nft: helper.nft!.uid,
     });
     const order = await testEnv.wrap(orderNft)({});
-    requestFundsFromFaucet(
+    await requestFundsFromFaucet(
       Network.RMS,
       order.payload.targetAddress,
       order.payload.amount,

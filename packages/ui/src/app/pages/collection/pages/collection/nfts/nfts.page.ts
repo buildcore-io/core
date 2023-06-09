@@ -6,7 +6,6 @@ import {
   OnChanges,
   OnInit,
 } from '@angular/core';
-import { Timestamp } from '@angular/fire/firestore';
 import { NftApi } from '@api/nft.api';
 import { AlgoliaCheckboxFilterType } from '@components/algolia/algolia-checkbox/algolia-checkbox.component';
 import { defaultPaginationItems } from '@components/algolia/algolia.options';
@@ -18,7 +17,7 @@ import { FilterStorageService } from '@core/services/filter-storage';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { marketSections } from '@pages/market/pages/market/market.page';
 import { FilterService } from '@pages/market/services/filter.service';
-import { COL } from '@soonaverse/interfaces';
+import { COL, Timestamp } from '@soonaverse/interfaces';
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
 import { Subject } from 'rxjs';
 

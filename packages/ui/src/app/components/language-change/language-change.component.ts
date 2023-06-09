@@ -19,23 +19,21 @@ export class LanguageChangeComponent implements OnInit {
   constructor(private deviceService: DeviceService) {
     if (this.deviceService.isBrowser) {
       this.languageControl.setValue(
-        getCookie(CookieItem.firebaseLanguageOverride) || this.languages[0].firebase,
+        getCookie(CookieItem.languageOverride) || this.languages[0].remoteHosting,
       );
     }
   }
 
   ngOnInit(): void {
     let prevLang = this.languageControl.value;
-    this.languageControl.valueChanges
-      .pipe(untilDestroyed(this))
-      .subscribe((firebaseLang: string) => {
-        if (prevLang !== firebaseLang) {
-          setCookie(CookieItem.firebaseLanguageOverride, firebaseLang);
-          setTimeout(() => {
-            window?.location.reload();
-          }, 750);
-          prevLang = firebaseLang;
-        }
-      });
+    this.languageControl.valueChanges.pipe(untilDestroyed(this)).subscribe((lang: string) => {
+      if (prevLang !== lang) {
+        setCookie(CookieItem.languageOverride, lang);
+        setTimeout(() => {
+          window?.location.reload();
+        }, 750);
+        prevLang = lang;
+      }
+    });
   }
 }

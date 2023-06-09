@@ -13,7 +13,7 @@ export interface LanguagesType {
   [key: string]: {
     ngZorro: any;
     title: string;
-    firebase: string;
+    remoteHosting: string;
   };
 }
 
@@ -21,41 +21,41 @@ export const Languages: LanguagesType = {
   en: {
     ngZorro: en_GB,
     title: 'EN',
-    firebase: 'en',
+    remoteHosting: 'en',
   },
   // de: {
   //   ngZorro: de_DE,
   //   title: 'DE',
-  //   firebase: 'de',
+  //   remoteHosting: 'de',
   // },
   // es: {
   //   ngZorro: es_ES,
   //   title: 'ES',
-  //   firebase: 'es',
+  //   remoteHosting: 'es',
   // },
   // fr: {
   //   ngZorro: fr_FR,
   //   title: 'FR',
-  //   firebase: 'fr',
+  //   remoteHosting: 'fr',
   // },
   // it: {
   //   ngZorro: it_IT,
   //   title: 'IT',
-  //   firebase: 'it',
+  //   remoteHosting: 'it',
   // },
   // ko: {
   //   ngZorro: ko_KR,
   //   title: 'KO',
-  //   firebase: 'ko',
+  //   remoteHosting: 'ko',
   // },
   // nl: {
   //   ngZorro: nl_NL,
   //   title: 'NL',
-  //   firebase: 'nl',
+  //   remoteHosting: 'nl',
   // },
   // zh_cn: {
   //   ngZorro: zh_CN,
   //   title: '简中',
-  //   firebase: 'cn',
+  //   remoteHosting: 'cn',
   // }
 };
