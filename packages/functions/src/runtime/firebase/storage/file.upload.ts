@@ -1,4 +1,4 @@
-import { Bucket, WEN_FUNC, WenError, generateRandomFileName } from '@build5/interfaces';
+import { Bucket, WEN_FUNC, WenError, generateRandomFileName } from '@build-5/interfaces';
 import busboy from 'busboy';
 import cors from 'cors';
 import express from 'express';

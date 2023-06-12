@@ -10,7 +10,7 @@ import {
   TOKEN_SALE_TEST,
   WEN_FUNC,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { get, isEmpty } from 'lodash';
 import { invalidArgument } from './error.utils';
 

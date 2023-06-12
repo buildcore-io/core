@@ -10,7 +10,7 @@ import {
   TransactionAwardType,
   TransactionCreditType,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import {
   ALIAS_ADDRESS_TYPE,
   AddressTypes,

@@ -1,4 +1,4 @@
-import { COL, Member, Token, Transaction } from '@build5/interfaces';
+import { COL, Member, Token, Transaction } from '@build-5/interfaces';
 import {
   IAliasOutput,
   OutputTypes,

@@ -1,4 +1,4 @@
-import { COL, CollectionStats, SUB_COL } from '@build5/interfaces';
+import { COL, CollectionStats, SUB_COL } from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
 import { soonDb } from '../firebase/firestore/soondb';
 import { getRankingThreshold } from '../utils/config.utils';

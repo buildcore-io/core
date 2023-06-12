@@ -1,4 +1,4 @@
-import { COL, Proposal, SUB_COL } from '@build5/interfaces';
+import { COL, Proposal, SUB_COL } from '@build-5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { createProposal } from '../../services/payment/tangle-service/proposal/ProposalCreateService';
 

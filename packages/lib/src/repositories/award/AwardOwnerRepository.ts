@@ -1,4 +1,4 @@
-import { AwardOwner, PublicCollections, PublicSubCollections } from '@build5/interfaces';
+import { AwardOwner, PublicCollections, PublicSubCollections } from '@build-5/interfaces';
 import { SoonEnv } from '../../Config';
 import { SubCrudRepository } from '../SubCrudRepository';
 

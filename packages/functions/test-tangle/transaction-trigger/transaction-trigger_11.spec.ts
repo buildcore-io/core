@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build5/interfaces';
+import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build-5/interfaces';
 import { isEmpty, isEqual } from 'lodash';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { IotaWallet } from '../../src/services/wallet/IotaWalletService';

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, MIN_IOTA_AMOUNT, Network } from '@build5/interfaces';
+import { COL, MIN_IOTA_AMOUNT, Network } from '@build-5/interfaces';
 import {
   AddressTypes,
   ED25519_ADDRESS_TYPE,

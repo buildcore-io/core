@@ -1,4 +1,4 @@
-import { COL, Space, SUB_COL, WenError } from '@build5/interfaces';
+import { COL, Space, SUB_COL, WenError } from '@build-5/interfaces';
 import { soonDb } from '../../../../firebase/firestore/soondb';
 import { editSpaceMemberSchema } from '../../../../runtime/firebase/space';
 import { invalidArgument } from '../../../../utils/error.utils';

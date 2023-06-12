@@ -1,4 +1,4 @@
-import { PublicCollections, QUERY_MAX_LENGTH } from '@build5/interfaces';
+import { PublicCollections, QUERY_MAX_LENGTH } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty, last } from 'lodash';
 import { getUpdatedAfter } from '../../src/api/getUpdatedAfter';

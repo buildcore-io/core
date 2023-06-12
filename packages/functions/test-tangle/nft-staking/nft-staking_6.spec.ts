@@ -1,4 +1,4 @@
-import { COL, KEY_NAME_TANGLE, Network, Nft, StakeType } from '@build5/interfaces';
+import { COL, KEY_NAME_TANGLE, Network, Nft, StakeType } from '@build-5/interfaces';
 import {
   INftOutput,
   IndexerPluginClient,

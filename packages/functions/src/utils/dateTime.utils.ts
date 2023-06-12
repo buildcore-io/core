@@ -1,4 +1,4 @@
-import { Timestamp as ITimestamp } from '@build5/interfaces';
+import { Timestamp as ITimestamp } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { Timestamp } from 'firebase-admin/firestore';
 

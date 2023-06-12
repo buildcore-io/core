@@ -21,7 +21,7 @@ import {
   TransactionUnlockType,
   TransactionValidationType,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
 import { AVAILABLE_NETWORKS } from '../../../controls/common';

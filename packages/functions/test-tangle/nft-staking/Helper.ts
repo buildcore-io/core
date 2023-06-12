@@ -17,7 +17,7 @@ import {
   TransactionMintCollectionType,
   TransactionType,
   UnsoldMintingOptions,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import {
   ADDRESS_UNLOCK_CONDITION_TYPE,
   Bech32Helper,

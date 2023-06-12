@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, Member, Network, Token, TokenStatus } from '@build5/interfaces';
+import { COL, Member, Network, Token, TokenStatus } from '@build-5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { createMember } from '../../src/runtime/firebase/member';
 import { IotaWallet } from '../../src/services/wallet/IotaWalletService';

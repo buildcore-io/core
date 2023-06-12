@@ -10,7 +10,7 @@ import {
   Transaction,
   TransactionType,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { getAddress } from '../../src/utils/address.utils';

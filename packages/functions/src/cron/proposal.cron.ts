@@ -1,4 +1,4 @@
-import { COL, Proposal } from '@build5/interfaces';
+import { COL, Proposal } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../firebase/firestore/soondb';
 

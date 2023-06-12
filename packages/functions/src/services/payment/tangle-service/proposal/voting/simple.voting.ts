@@ -1,4 +1,4 @@
-import { Proposal, ProposalMember } from '@build5/interfaces';
+import { Proposal, ProposalMember } from '@build-5/interfaces';
 import { head } from 'lodash';
 import { soonDb } from '../../../../../firebase/firestore/soondb';
 import { createVoteTransaction } from './ProposalVoteService';

@@ -1,4 +1,4 @@
-import { COL, Stake, SUB_COL } from '@build5/interfaces';
+import { COL, Stake, SUB_COL } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
 import { getSnapshot, soonDb } from '../firebase/firestore/soondb';

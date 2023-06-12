@@ -4,7 +4,7 @@ import {
   TICKERS,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { getById } from '../../src/api/getById';
 import { getTokenPrice } from '../../src/api/getTokenPrice';
 import { soonDb } from '../../src/firebase/firestore/soondb';

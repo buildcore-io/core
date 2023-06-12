@@ -7,7 +7,7 @@ import {
   TangleRequestType,
   Transaction,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { IBasicOutput, ITransactionPayload, IndexerPluginClient } from '@iota/iota.js-next';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';

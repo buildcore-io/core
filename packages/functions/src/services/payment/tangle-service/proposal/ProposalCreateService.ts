@@ -7,7 +7,7 @@ import {
   SUB_COL,
   TokenStatus,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import Joi from 'joi';
 import { soonDb } from '../../../../firebase/firestore/soondb';
 import { createProposalSchema } from '../../../../runtime/firebase/proposal';

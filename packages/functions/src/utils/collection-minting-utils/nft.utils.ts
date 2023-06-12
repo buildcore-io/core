@@ -1,4 +1,4 @@
-import { COL, Collection, KEY_NAME_TANGLE, Nft } from '@build5/interfaces';
+import { COL, Collection, KEY_NAME_TANGLE, Nft } from '@build-5/interfaces';
 import {
   ADDRESS_UNLOCK_CONDITION_TYPE,
   AddressTypes,

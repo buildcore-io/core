@@ -1,4 +1,4 @@
-import { COL, Collection, WenError } from '@build5/interfaces';
+import { COL, Collection, WenError } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { invalidArgument } from '../../utils/error.utils';

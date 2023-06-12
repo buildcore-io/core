@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { COL, MIN_IOTA_AMOUNT, TokenTradeOrderType, WenError } from '@build5/interfaces';
+import { COL, MIN_IOTA_AMOUNT, TokenTradeOrderType, WenError } from '@build-5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';

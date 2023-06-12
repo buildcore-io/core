@@ -1,4 +1,4 @@
-import { WenError } from '@build5/interfaces';
+import { WenError } from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
 import Joi, { AnySchema, ValidationResult } from 'joi';
 import { head } from 'lodash';

@@ -1,4 +1,4 @@
-import { COL, Collection, Rank, SUB_COL, Token, WenError } from '@build5/interfaces';
+import { COL, Collection, Rank, SUB_COL, Token, WenError } from '@build-5/interfaces';
 import { set } from 'lodash';
 import { soonDb } from '../firebase/firestore/soondb';
 import { hasStakedSoonTokens } from '../services/stake.service';

@@ -1,4 +1,4 @@
-import { COL, Proposal, SUB_COL, Transaction, TransactionType } from '@build5/interfaces';
+import { COL, Proposal, SUB_COL, Transaction, TransactionType } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { ITransaction } from '../../firebase/firestore/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';

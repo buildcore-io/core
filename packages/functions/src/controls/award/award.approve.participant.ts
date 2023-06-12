@@ -1,4 +1,4 @@
-import { Transaction } from '@build5/interfaces';
+import { Transaction } from '@build-5/interfaces';
 import { get } from 'lodash';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { approveAwardParticipant } from '../../services/payment/tangle-service/award/award.approve.participant.service';

@@ -16,7 +16,7 @@ import {
   TransactionMintCollectionType,
   TransactionType,
   UnsoldMintingOptions,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { IMetadataFeature, INftOutput, METADATA_FEATURE_TYPE } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js-next';
 import dayjs from 'dayjs';

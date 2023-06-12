@@ -1,4 +1,4 @@
-import { COL } from '@build5/interfaces';
+import { COL } from '@build-5/interfaces';
 import {
   FOUNDRY_OUTPUT_TYPE,
   IAddressUnlockCondition,

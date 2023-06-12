@@ -8,7 +8,7 @@ import {
   Transaction,
   TransactionOrder,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
 import { get } from 'lodash';
 import { soonDb } from '../../../firebase/firestore/soondb';

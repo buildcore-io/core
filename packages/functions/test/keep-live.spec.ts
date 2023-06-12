@@ -1,4 +1,4 @@
-import { COL } from '@build5/interfaces';
+import { COL } from '@build-5/interfaces';
 import EventSource from 'eventsource';
 import { isEmpty } from 'lodash';
 import { soonDb } from '../src/firebase/firestore/soondb';

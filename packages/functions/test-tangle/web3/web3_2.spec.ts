@@ -1,4 +1,4 @@
-import { COL, Collection, MediaStatus, Space } from '@build5/interfaces';
+import { COL, Collection, MediaStatus, Space } from '@build-5/interfaces';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { collectionToIpfsMetadata, nftToIpfsMetadata } from '../../src/utils/car.utils';

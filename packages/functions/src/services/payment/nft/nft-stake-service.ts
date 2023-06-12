@@ -10,7 +10,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import {
   INftOutput,
   TAG_FEATURE_TYPE,

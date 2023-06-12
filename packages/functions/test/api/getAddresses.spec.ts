@@ -1,4 +1,4 @@
-import { COL, Network } from '@build5/interfaces';
+import { COL, Network } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
 import { getAddresses } from '../../src/api/getAddresses';

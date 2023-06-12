@@ -1,4 +1,4 @@
-import { COL, SUB_COL } from '@build5/interfaces';
+import { COL, SUB_COL } from '@build-5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { getLeaveSpaceData } from '../../services/payment/tangle-service/space/SpaceLeaveService';
 

@@ -1,4 +1,4 @@
-import { COL } from '@build5/interfaces';
+import { COL } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { markExpiredProposalCompleted } from '../../src/cron/proposal.cron';
 import { soonDb } from '../../src/firebase/firestore/soondb';

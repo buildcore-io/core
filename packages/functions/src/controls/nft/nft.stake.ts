@@ -1,4 +1,4 @@
-import { COL, Network, StakeType } from '@build5/interfaces';
+import { COL, Network, StakeType } from '@build-5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { createNftStakeOrder } from '../../services/payment/nft/nft-stake-service';
 

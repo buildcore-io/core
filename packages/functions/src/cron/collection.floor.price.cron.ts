@@ -1,4 +1,4 @@
-import { COL, Collection, Nft, NftAccess, NftAvailable } from '@build5/interfaces';
+import { COL, Collection, Nft, NftAccess, NftAvailable } from '@build-5/interfaces';
 import { head, last } from 'lodash';
 import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
 

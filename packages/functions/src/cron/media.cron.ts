@@ -7,7 +7,7 @@ import {
   Nft,
   Space,
   Token,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
 import { soonDb } from '../firebase/firestore/soondb';
 import { awardToIpfsMetadata } from '../services/payment/award/award-service';

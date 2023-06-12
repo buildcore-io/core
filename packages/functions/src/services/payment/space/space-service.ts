@@ -7,7 +7,7 @@ import {
   SUB_COL,
   TransactionCreditType,
   TransactionOrder,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import {
   GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE,
   IAliasOutput,

@@ -1,12 +1,12 @@
-import { GetManyAdvancedRequest, Opr, PublicCollections } from '@build5/interfaces';
+import { GetManyAdvancedRequest, Opr, PublicCollections } from '@build-5/interfaces';
 import { Observable, combineLatest, map } from 'rxjs';
 import {
-  SESSION_ID,
-  SoonEnv,
-  getByIdUrl,
-  getManyAdvancedUrl,
-  getManyUrl,
-  getUpdatedAfterUrl,
+    SESSION_ID,
+    SoonEnv,
+    getByIdUrl,
+    getManyAdvancedUrl,
+    getManyUrl,
+    getUpdatedAfterUrl,
 } from '../Config';
 import { toQueryParams, wrappedFetch } from '../fetch.utils';
 import { SoonObservable } from '../soon_observable';

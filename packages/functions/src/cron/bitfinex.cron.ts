@@ -1,4 +1,4 @@
-import { COL, TICKERS } from '@build5/interfaces';
+import { COL, TICKERS } from '@build-5/interfaces';
 import axios from 'axios';
 import { soonDb } from '../firebase/firestore/soondb';
 

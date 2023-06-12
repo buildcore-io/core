@@ -1,4 +1,4 @@
-import { Access, COL, Nft, SUB_COL, TransactionAwardType, WenError } from '@build5/interfaces';
+import { Access, COL, Nft, SUB_COL, TransactionAwardType, WenError } from '@build-5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { invalidArgument } from '../../utils/error.utils';
 

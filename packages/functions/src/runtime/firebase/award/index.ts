@@ -1,4 +1,4 @@
-import { MAX_IOTA_AMOUNT, WEN_FUNC } from '@build5/interfaces';
+import { MAX_IOTA_AMOUNT, WEN_FUNC } from '@build-5/interfaces';
 import Joi from 'joi';
 import { approveAwardParticipantControl } from '../../../controls/award/award.approve.participant';
 import { cancelAwardControl } from '../../../controls/award/award.cancel';

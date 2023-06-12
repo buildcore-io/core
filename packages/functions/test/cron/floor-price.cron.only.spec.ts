@@ -1,4 +1,4 @@
-import { COL, Collection, MIN_IOTA_AMOUNT, NftAccess, NftAvailable } from '@build5/interfaces';
+import { COL, Collection, MIN_IOTA_AMOUNT, NftAccess, NftAvailable } from '@build-5/interfaces';
 import { updateFloorPriceOnCollections } from '../../src/cron/collection.floor.price.cron';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';

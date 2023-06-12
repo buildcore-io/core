@@ -1,4 +1,4 @@
-import { ApiRoutes, WEN_FUNC } from '@build5/interfaces';
+import { ApiRoutes, WEN_FUNC } from '@build-5/interfaces';
 import cors from 'cors';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';

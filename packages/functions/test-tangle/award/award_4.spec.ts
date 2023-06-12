@@ -10,7 +10,7 @@ import {
   TransactionAwardType,
   TransactionCreditType,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { processExpiredAwards } from '../../src/cron/award.cron';
 import { soonDb } from '../../src/firebase/firestore/soondb';

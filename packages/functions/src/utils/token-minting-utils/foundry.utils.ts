@@ -1,4 +1,4 @@
-import { KEY_NAME_TANGLE, Token } from '@build5/interfaces';
+import { KEY_NAME_TANGLE, Token } from '@build-5/interfaces';
 import * as lib from '@iota/iota.js-next';
 import { IFoundryOutput, INodeInfo, TransactionHelper } from '@iota/iota.js-next';
 import { Converter, HexHelper } from '@iota/util.js-next';

@@ -1,4 +1,4 @@
-import { Bucket } from '@build5/interfaces';
+import { Bucket } from '@build-5/interfaces';
 import { soonStorage } from '../../src/firebase/storage/soonStorage';
 import { ImageWidth } from '../../src/triggers/storage/resize.img.trigger';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';

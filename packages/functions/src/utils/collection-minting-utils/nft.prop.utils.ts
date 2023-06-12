@@ -1,4 +1,4 @@
-import { PropStats } from '@build5/interfaces';
+import { PropStats } from '@build-5/interfaces';
 
 export const propsToAttributes = (props: PropStats | undefined) =>
   Object.entries(props || {}).map(([key, value]) => ({

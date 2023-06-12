@@ -6,7 +6,7 @@ import {
   NftStake,
   StakeType,
   Transaction,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { TIMELOCK_UNLOCK_CONDITION_TYPE } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { soonDb } from '../../src/firebase/firestore/soondb';
@@ -28,7 +28,7 @@ describe('Stake nft', () => {
     await helper.beforeEach();
   });
 
-  it('Should stake nft minted outside build5', async () => {
+  it('Should stake nft minted outside build-5', async () => {
     let nft = await helper.createAndOrderNft();
     let nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
     await helper.mintCollection();

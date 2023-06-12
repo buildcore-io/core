@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BaseRecord, COL, KeepAliveRequest, PING_INTERVAL } from '@build5/interfaces';
+import { BaseRecord, COL, KeepAliveRequest, PING_INTERVAL } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';

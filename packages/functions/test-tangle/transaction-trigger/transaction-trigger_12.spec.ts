@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build5/interfaces';
+import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build-5/interfaces';
 import { ITransactionPayload, TRANSACTION_ID_LENGTH } from '@iota/iota.js';
 import {
   ITransactionPayload as NextITransactionPayload,

@@ -1,4 +1,4 @@
-import { COL, Network, Transaction, WEN_FUNC_TRIGGER } from '@build5/interfaces';
+import { COL, Network, Transaction, WEN_FUNC_TRIGGER } from '@build-5/interfaces';
 import { ITransactionPayload } from '@iota/iota.js';
 import { ITransactionPayload as ITransactionPayloadNext } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js';

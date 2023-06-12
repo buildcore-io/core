@@ -5,7 +5,7 @@ import {
   MIN_WEEKS_TO_STAKE,
   StakeType,
   WEN_FUNC,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import Joi from 'joi';
 import { depositStakeControl } from '../../../controls/stake/stake.deposit';
 import { stakeRewardControl } from '../../../controls/stake/stake.reward';

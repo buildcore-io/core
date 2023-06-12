@@ -1,4 +1,4 @@
-import { COL, SUB_COL, TokenPurchaseAge, TokenStats } from '@build5/interfaces';
+import { COL, SUB_COL, TokenPurchaseAge, TokenStats } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { tokenPurchaseRoll } from '../../scripts/dbUpgrades/0.20/tokenPurchaseRoll';
 import { removePurchasesFromVolumeStats } from '../../src/cron/token.purchase.cron';

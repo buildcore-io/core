@@ -1,4 +1,4 @@
-import { COL, MediaStatus, Space } from '@build5/interfaces';
+import { COL, MediaStatus, Space } from '@build-5/interfaces';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { updateSpace } from '../../src/runtime/firebase/space';

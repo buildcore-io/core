@@ -7,7 +7,7 @@ import {
   Transaction,
   TransactionCreditType,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import {
   IAliasAddress,
   IAliasOutput,

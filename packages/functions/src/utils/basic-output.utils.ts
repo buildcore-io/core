@@ -1,4 +1,4 @@
-import { Timestamp } from '@build5/interfaces';
+import { Timestamp } from '@build-5/interfaces';
 import {
   ADDRESS_UNLOCK_CONDITION_TYPE,
   BASIC_OUTPUT_TYPE,

@@ -5,7 +5,7 @@ import {
   Space,
   TangleRequestType,
   Transaction,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';

@@ -1,4 +1,4 @@
-import { COL, SUB_COL } from '@build5/interfaces';
+import { COL, SUB_COL } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { approveProposal, createProposal } from '../../src/runtime/firebase/proposal';

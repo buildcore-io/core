@@ -7,7 +7,7 @@ import {
   TokenDrop,
   TokenDropStatus,
   TokenStatus,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';

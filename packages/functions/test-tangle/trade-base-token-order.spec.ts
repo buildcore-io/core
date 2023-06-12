@@ -12,7 +12,7 @@ import {
   Transaction,
   TransactionType,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { soonDb } from '../src/firebase/firestore/soondb';
 import { createMember } from '../src/runtime/firebase/member';
 import { cancelTradeOrder, tradeToken } from '../src/runtime/firebase/token/trading';

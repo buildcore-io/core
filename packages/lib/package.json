@@ -1,5 +1,5 @@
 {
-  "name": "@build5/lib",
+  "name": "@build-5/lib",
   "version": "0.0.0",
   "description": "",
   "license": "Apache-2.0",
@@ -19,7 +19,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@build5/interfaces": "*",
+    "@build-5/interfaces": "*",
     "rxjs": "7.8.1"
   },
   "devDependencies": {

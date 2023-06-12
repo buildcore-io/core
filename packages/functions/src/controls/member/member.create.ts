@@ -1,4 +1,4 @@
-import { COL, Member } from '@build5/interfaces';
+import { COL, Member } from '@build-5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { getRandomNonce } from '../../utils/wallet.utils';
 

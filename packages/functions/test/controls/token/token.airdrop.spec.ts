@@ -6,7 +6,7 @@ import {
   TokenDrop,
   TokenDropStatus,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../../../src/firebase/firestore/soondb';
 import { airdropToken, createToken } from '../../../src/runtime/firebase/token/base';

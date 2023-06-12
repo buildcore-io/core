@@ -1,4 +1,4 @@
-import { ALGOLIA_COLLECTIONS, COL } from '@build5/interfaces';
+import { ALGOLIA_COLLECTIONS, COL } from '@build-5/interfaces';
 import algoliasearch from 'algoliasearch';
 import * as functions from 'firebase-functions/v2';
 import { scaleAlgolia } from '../scale.settings';

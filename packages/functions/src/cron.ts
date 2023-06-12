@@ -1,7 +1,7 @@
 import {
   STAKE_REWARD_CRON_INTERVAL_CONFIG,
   STAKE_REWARD_TEST_CRON_INTERVAL_CONFIG,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
 import { processExpiredAwards } from './cron/award.cron';
 import { getLatestBitfinexPricesCron } from './cron/bitfinex.cron';

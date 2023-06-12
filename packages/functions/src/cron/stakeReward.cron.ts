@@ -14,7 +14,7 @@ import {
   Transaction,
   TransactionIgnoreWalletReason,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions/v2';
 import { isEmpty, last } from 'lodash';

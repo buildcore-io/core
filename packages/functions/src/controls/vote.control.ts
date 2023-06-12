@@ -1,4 +1,4 @@
-import { COL, Collection, SUB_COL, Token, Vote, WenError } from '@build5/interfaces';
+import { COL, Collection, SUB_COL, Token, Vote, WenError } from '@build-5/interfaces';
 import { soonDb } from '../firebase/firestore/soondb';
 import { hasStakedSoonTokens } from '../services/stake.service';
 import { invalidArgument } from '../utils/error.utils';

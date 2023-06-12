@@ -5,7 +5,7 @@ import {
   MediaStatus,
   Nft,
   UnsoldMintingOptions,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { mintCollection } from '../../src/runtime/firebase/collection';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';

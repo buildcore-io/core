@@ -6,7 +6,7 @@ import {
   Transaction,
   TransactionType,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import {
   AddressTypes,
   ED25519_ADDRESS_TYPE,

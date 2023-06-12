@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Bucket, COL, Collection, Nft, Transaction, TransactionType } from '@build5/interfaces';
+import { Bucket, COL, Collection, Nft, Transaction, TransactionType } from '@build-5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { soonStorage } from '../../src/firebase/storage/soonStorage';
 import { depositNft, withdrawNft } from '../../src/runtime/firebase/nft/index';

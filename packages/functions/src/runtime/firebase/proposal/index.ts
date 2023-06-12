@@ -1,4 +1,4 @@
-import { ProposalStartDateMin, ProposalType, WEN_FUNC } from '@build5/interfaces';
+import { ProposalStartDateMin, ProposalType, WEN_FUNC } from '@build-5/interfaces';
 import Joi from 'joi';
 import { proposalApprovalControl } from '../../../controls/proposal/approve.reject.proposal';
 import { createProposalControl } from '../../../controls/proposal/create.proposal';

@@ -5,7 +5,7 @@ import {
   TransactionCreditType,
   TransactionOrder,
   UnsoldMintingOptions,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { get } from 'lodash';
 import { soonDb } from '../../../firebase/firestore/soondb';
 import { TransactionMatch, TransactionService } from '../transaction-service';

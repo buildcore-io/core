@@ -1,4 +1,4 @@
-import { COL, WEN_FUNC } from '@build5/interfaces';
+import { COL, WEN_FUNC } from '@build-5/interfaces';
 import Joi from 'joi';
 import { voteControl } from '../../../controls/vote.control';
 import { onRequest } from '../../../firebase/functions/onRequest';

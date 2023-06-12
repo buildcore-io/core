@@ -1,4 +1,4 @@
-import { COL, DEFAULT_NETWORK, Mnemonic } from '@build5/interfaces';
+import { COL, DEFAULT_NETWORK, Mnemonic } from '@build-5/interfaces';
 import { AES, enc } from 'crypto-js';
 import { soonDb } from '../../firebase/firestore/soondb';
 export class MnemonicService {

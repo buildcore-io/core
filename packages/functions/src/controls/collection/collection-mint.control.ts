@@ -14,7 +14,7 @@ import {
   TransactionValidationType,
   UnsoldMintingOptions,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { AddressTypes, ED25519_ADDRESS_TYPE, INodeInfo } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { last } from 'lodash';

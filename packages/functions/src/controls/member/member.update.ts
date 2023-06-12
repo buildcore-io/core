@@ -1,4 +1,4 @@
-import { COL, Member, Nft, NftAvailable, NftStatus, WenError } from '@build5/interfaces';
+import { COL, Member, Nft, NftAvailable, NftStatus, WenError } from '@build-5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { invalidArgument } from '../../utils/error.utils';
 import { cleanupParams } from '../../utils/schema.utils';

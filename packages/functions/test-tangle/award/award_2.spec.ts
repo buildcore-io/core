@@ -13,7 +13,7 @@ import {
   Transaction,
   TransactionAwardType,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import {
   IndexerPluginClient,
   INftOutput,

@@ -1,4 +1,4 @@
-import { COL, Nft, Transaction } from '@build5/interfaces';
+import { COL, Nft, Transaction } from '@build-5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 

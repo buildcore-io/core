@@ -1,4 +1,4 @@
-import { COL, SpaceMember, SUB_COL } from '@build5/interfaces';
+import { COL, SpaceMember, SUB_COL } from '@build-5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { acceptSpaceMember } from '../../services/payment/tangle-service/space/SpaceAcceptMemberService';
 

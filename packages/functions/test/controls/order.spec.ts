@@ -13,7 +13,7 @@ import {
   TransactionOrder,
   TransactionType,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import {
   createNft,

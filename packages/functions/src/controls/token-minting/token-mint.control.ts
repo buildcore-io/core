@@ -10,7 +10,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { TransactionHelper } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { soonDb } from '../../firebase/firestore/soondb';

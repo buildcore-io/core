@@ -10,7 +10,7 @@ import {
   TokenDropStatus,
   Transaction,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { IndexerPluginClient } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { soonDb } from '../../src/firebase/firestore/soondb';

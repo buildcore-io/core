@@ -1,6 +1,6 @@
 import { OutputTypes, TREASURY_OUTPUT_TYPE } from '@iota/iota.js-next';
 
-import { COL, MilestoneTransaction, Network, SUB_COL } from '@build5/interfaces';
+import { COL, MilestoneTransaction, Network, SUB_COL } from '@build-5/interfaces';
 
 import * as adminPackage from 'firebase-admin';
 

@@ -1,11 +1,11 @@
 import {
-  Nft,
-  Opr,
-  PublicCollections,
-  Transaction,
-  TransactionAwardType,
-  TransactionType,
-} from '@build5/interfaces';
+    Nft,
+    Opr,
+    PublicCollections,
+    Transaction,
+    TransactionAwardType,
+    TransactionType,
+} from '@build-5/interfaces';
 import { SoonEnv } from '../Config';
 import { CrudRepository } from './CrudRepository';
 

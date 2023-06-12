@@ -1,4 +1,4 @@
-import { COL, Network, SUB_COL } from '@build5/interfaces';
+import { COL, Network, SUB_COL } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { DocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions/v2';

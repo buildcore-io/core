@@ -7,7 +7,7 @@ import {
   Transaction,
   TransactionMintCollectionType,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { ITransactionPayload, TransactionHelper } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions/v2';

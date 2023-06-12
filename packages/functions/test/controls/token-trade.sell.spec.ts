@@ -10,7 +10,7 @@ import {
   TokenTradeOrderStatus,
   TokenTradeOrderType,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { enableTokenTrading } from '../../src/runtime/firebase/token/base';

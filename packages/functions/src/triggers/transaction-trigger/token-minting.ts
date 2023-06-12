@@ -6,7 +6,7 @@ import {
   Transaction,
   TransactionMintTokenType,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import {
   ALIAS_OUTPUT_TYPE,
   FOUNDRY_OUTPUT_TYPE,

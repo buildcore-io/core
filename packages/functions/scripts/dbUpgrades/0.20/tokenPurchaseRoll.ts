@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { COL, SUB_COL, TokenPurchase, TokenPurchaseAge } from '@build5/interfaces';
+import { COL, SUB_COL, TokenPurchase, TokenPurchaseAge } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty, last } from 'lodash';
 import { FirebaseApp } from '../../../src/firebase/app/app';

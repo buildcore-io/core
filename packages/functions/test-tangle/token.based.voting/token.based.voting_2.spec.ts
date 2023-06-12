@@ -1,4 +1,4 @@
-import { MIN_IOTA_AMOUNT } from '@build5/interfaces';
+import { MIN_IOTA_AMOUNT } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { wait } from '../../test/controls/common';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';

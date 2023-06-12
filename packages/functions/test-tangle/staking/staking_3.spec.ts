@@ -1,4 +1,4 @@
-import { COL, Member, MIN_IOTA_AMOUNT, Stake, StakeType } from '@build5/interfaces';
+import { COL, Member, MIN_IOTA_AMOUNT, Stake, StakeType } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';
 import { soonDb } from '../../src/firebase/firestore/soondb';

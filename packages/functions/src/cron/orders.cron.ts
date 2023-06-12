@@ -1,4 +1,4 @@
-import { COL, Transaction, TransactionType } from '@build5/interfaces';
+import { COL, Transaction, TransactionType } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../firebase/firestore/soondb';
 import { ProcessingService } from '../services/payment/payment-processing';

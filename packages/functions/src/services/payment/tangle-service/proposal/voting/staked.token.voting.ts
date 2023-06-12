@@ -6,7 +6,7 @@ import {
   TokenDistribution,
   Transaction,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { ITransaction } from '../../../../../firebase/firestore/interfaces';
 import { soonDb } from '../../../../../firebase/firestore/soondb';

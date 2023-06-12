@@ -1,10 +1,10 @@
 import {
-  Opr,
-  PublicCollections,
-  TokenTradeOrder,
-  TokenTradeOrderStatus,
-  TokenTradeOrderType,
-} from '@build5/interfaces';
+    Opr,
+    PublicCollections,
+    TokenTradeOrder,
+    TokenTradeOrderStatus,
+    TokenTradeOrderType,
+} from '@build-5/interfaces';
 import { Observable } from 'rxjs';
 import { SESSION_ID, SoonEnv, getTokenPriceUrl } from '../../Config';
 import { toQueryParams, wrappedFetch } from '../../fetch.utils';

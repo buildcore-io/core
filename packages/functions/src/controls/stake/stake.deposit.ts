@@ -1,4 +1,4 @@
-import { COL, StakeType } from '@build5/interfaces';
+import { COL, StakeType } from '@build-5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { createStakeOrder } from '../../services/payment/tangle-service/stake.service';
 

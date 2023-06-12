@@ -1,4 +1,4 @@
-import { COL, UnsoldMintingOptions, WenError } from '@build5/interfaces';
+import { COL, UnsoldMintingOptions, WenError } from '@build-5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { mintCollection } from '../../src/runtime/firebase/collection/index';
 import * as config from '../../src/utils/config.utils';

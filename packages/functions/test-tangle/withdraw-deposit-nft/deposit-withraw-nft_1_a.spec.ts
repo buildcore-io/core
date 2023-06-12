@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, Member, Nft, NftStatus, Transaction, TransactionType } from '@build5/interfaces';
+import { COL, Member, Nft, NftStatus, Transaction, TransactionType } from '@build-5/interfaces';
 import { isEqual } from 'lodash';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { depositNft, withdrawNft } from '../../src/runtime/firebase/nft/index';

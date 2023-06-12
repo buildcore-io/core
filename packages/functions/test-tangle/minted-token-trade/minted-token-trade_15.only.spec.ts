@@ -9,7 +9,7 @@ import {
   TokenPurchase,
   Transaction,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { head } from 'lodash';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { wait } from '../../test/controls/common';

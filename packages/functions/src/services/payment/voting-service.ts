@@ -7,7 +7,7 @@ import {
   TransactionOrder,
   TransactionType,
   VoteTransaction,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get, head } from 'lodash';
 import { soonDb } from '../../firebase/firestore/soondb';

@@ -15,7 +15,7 @@ import {
   TransactionUnlockType,
   VoteTransaction,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../../../../../firebase/firestore/soondb';
 import { voteOnProposalSchema } from '../../../../../runtime/firebase/proposal';

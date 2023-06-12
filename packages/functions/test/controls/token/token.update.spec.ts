@@ -6,7 +6,7 @@ import {
   TokenStatus,
   WEN_FUNC,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { soonDb } from '../../../src/firebase/firestore/soondb';
 import { createToken, updateToken } from '../../../src/runtime/firebase/token/base';
 import * as wallet from '../../../src/utils/wallet.utils';

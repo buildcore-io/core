@@ -1,4 +1,4 @@
-import { COL, Space, SUB_COL, TokenAllocation, TokenStats, WenError } from '@build5/interfaces';
+import { COL, Space, SUB_COL, TokenAllocation, TokenStats, WenError } from '@build-5/interfaces';
 import { soonDb } from '../../../src/firebase/firestore/soondb';
 import { createToken } from '../../../src/runtime/firebase/token/base';
 import { voteController } from '../../../src/runtime/firebase/vote';

@@ -1,4 +1,4 @@
-import { Member, PublicCollections } from '@build5/interfaces';
+import { Member, PublicCollections } from '@build-5/interfaces';
 import { SoonEnv } from '../Config';
 import { CrudRepository } from './CrudRepository';
 

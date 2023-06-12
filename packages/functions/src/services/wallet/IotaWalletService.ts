@@ -1,4 +1,4 @@
-import { KEY_NAME_TANGLE, Network } from '@build5/interfaces';
+import { KEY_NAME_TANGLE, Network } from '@build-5/interfaces';
 import { Bip32Path } from '@iota/crypto.js';
 import {
   Bech32Helper,

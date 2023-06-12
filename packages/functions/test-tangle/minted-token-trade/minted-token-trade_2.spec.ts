@@ -8,7 +8,7 @@ import {
   Transaction,
   TransactionCreditType,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { wait } from '../../test/controls/common';
 import { awaitTransactionConfirmationsForToken } from '../common';

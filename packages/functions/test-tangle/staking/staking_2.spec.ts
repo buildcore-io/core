@@ -1,4 +1,4 @@
-import { COL, Space, StakeType } from '@build5/interfaces';
+import { COL, Space, StakeType } from '@build-5/interfaces';
 import {
   IMetadataFeature,
   METADATA_FEATURE_TYPE,

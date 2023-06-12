@@ -1,4 +1,4 @@
-import { COL, DEFAULT_NETWORK, Network } from '@build5/interfaces';
+import { COL, DEFAULT_NETWORK, Network } from '@build-5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { IotaWallet, getIotaClient } from './IotaWalletService';
 import { SmrWallet, getShimmerClient } from './SmrWalletService';

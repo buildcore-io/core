@@ -4,7 +4,7 @@ import {
   CollectionStatus,
   UnsoldMintingOptions,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { mintCollection } from '../../src/runtime/firebase/collection/index';
 import { expectThrow, mockWalletReturnValue, wait } from '../../test/controls/common';

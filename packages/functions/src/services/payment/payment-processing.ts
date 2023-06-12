@@ -10,7 +10,7 @@ import {
   TransactionOrderType,
   TransactionType,
   TransactionUnlockType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { ITransaction } from '../../firebase/firestore/interfaces';

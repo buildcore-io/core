@@ -1,4 +1,4 @@
-import { Collection, KEY_NAME_TANGLE, Nft, Token } from '@build5/interfaces';
+import { Collection, KEY_NAME_TANGLE, Nft, Token } from '@build-5/interfaces';
 import { CarReader } from '@ipld/car';
 import * as dagPb from '@ipld/dag-pb';
 import { randomUUID } from 'crypto';

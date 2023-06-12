@@ -1,4 +1,4 @@
-import { WEN_FUNC } from '@build5/interfaces';
+import { WEN_FUNC } from '@build-5/interfaces';
 import Joi from 'joi';
 import { creditUnrefundableControl } from '../../../controls/credit/credit.controller';
 import { onRequest } from '../../../firebase/functions/onRequest';

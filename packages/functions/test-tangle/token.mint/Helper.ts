@@ -1,4 +1,4 @@
-import { COL, Member, Network, SUB_COL, Space, Token, TokenStatus } from '@build5/interfaces';
+import { COL, Member, Network, SUB_COL, Space, Token, TokenStatus } from '@build-5/interfaces';
 import {
   ALIAS_UNLOCK_TYPE,
   Bech32Helper,

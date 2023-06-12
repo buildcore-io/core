@@ -1,4 +1,4 @@
-import { MilestoneTransaction, MilestoneTransactionEntry, Network } from '@build5/interfaces';
+import { MilestoneTransaction, MilestoneTransactionEntry, Network } from '@build-5/interfaces';
 import {
   BASIC_OUTPUT_TYPE,
   Bech32Helper,

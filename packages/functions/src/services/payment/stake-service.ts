@@ -10,7 +10,7 @@ import {
   TransactionCreditType,
   TransactionOrder,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get } from 'lodash';
 import { soonDb } from '../../firebase/firestore/soondb';

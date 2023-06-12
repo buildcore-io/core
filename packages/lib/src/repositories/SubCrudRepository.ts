@@ -1,17 +1,17 @@
 import {
-  GetManyAdvancedRequest,
-  Opr,
-  PublicCollections,
-  PublicSubCollections,
-} from '@build5/interfaces';
+    GetManyAdvancedRequest,
+    Opr,
+    PublicCollections,
+    PublicSubCollections,
+} from '@build-5/interfaces';
 import { Observable, map } from 'rxjs';
 import {
-  SESSION_ID,
-  SoonEnv,
-  getByIdUrl,
-  getManyAdvancedUrl,
-  getManyUrl,
-  getUpdatedAfterUrl,
+    SESSION_ID,
+    SoonEnv,
+    getByIdUrl,
+    getManyAdvancedUrl,
+    getManyUrl,
+    getUpdatedAfterUrl,
 } from '../Config';
 import { toQueryParams, wrappedFetch } from '../fetch.utils';
 import { SoonObservable } from '../soon_observable';

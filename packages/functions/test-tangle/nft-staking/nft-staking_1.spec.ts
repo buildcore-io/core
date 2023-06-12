@@ -6,7 +6,7 @@ import {
   NftStake,
   StakeType,
   Transaction,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { stakeNft } from '../../src/runtime/firebase/nft';

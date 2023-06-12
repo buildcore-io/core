@@ -12,7 +12,7 @@ import {
   Space,
   Transaction,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { IndexerPluginClient, INftOutput } from '@iota/iota.js-next';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { getAddress } from '../../src/utils/address.utils';

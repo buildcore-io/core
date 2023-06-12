@@ -5,7 +5,7 @@ import {
   Transaction,
   TransactionType,
   UnsoldMintingOptions,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { isEqual } from 'lodash';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { mintCollection } from '../../src/runtime/firebase/collection/index';

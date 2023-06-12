@@ -1,4 +1,4 @@
-import { COL, Opr, PublicCollections, TransactionType } from '@build5/interfaces';
+import { COL, Opr, PublicCollections, TransactionType } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { getManyAdvanced } from '../../src/api/getManyAdvanced';
 import { soonDb } from '../../src/firebase/firestore/soondb';

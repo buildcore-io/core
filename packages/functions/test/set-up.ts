@@ -1,4 +1,4 @@
-import { Network } from '@build5/interfaces';
+import { Network } from '@build-5/interfaces';
 import dotenv from 'dotenv';
 import express from 'express';
 import test from 'firebase-functions-test';

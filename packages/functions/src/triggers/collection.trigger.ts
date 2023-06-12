@@ -11,7 +11,7 @@ import {
   TransactionType,
   UnsoldMintingOptions,
   WEN_FUNC_TRIGGER,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
 import { last } from 'lodash';
 import { getSnapshot, soonDb } from '../firebase/firestore/soondb';

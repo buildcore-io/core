@@ -1,4 +1,4 @@
-import { COL, Member, WenError } from '@build5/interfaces';
+import { COL, Member, WenError } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { voteOnProposal } from '../../src/runtime/firebase/proposal';

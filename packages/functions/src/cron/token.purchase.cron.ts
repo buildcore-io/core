@@ -1,4 +1,4 @@
-import { COL, SUB_COL, TokenPurchase, TokenPurchaseAge } from '@build5/interfaces';
+import { COL, SUB_COL, TokenPurchase, TokenPurchaseAge } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
 import { soonDb } from '../firebase/firestore/soondb';

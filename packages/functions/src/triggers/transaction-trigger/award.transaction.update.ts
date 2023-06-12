@@ -1,4 +1,4 @@
-import { COL, Transaction, TransactionAwardType, TransactionType } from '@build5/interfaces';
+import { COL, Transaction, TransactionAwardType, TransactionType } from '@build-5/interfaces';
 import { ITransactionPayload, TransactionHelper } from '@iota/iota.js-next';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { indexToString } from '../../utils/block.utils';

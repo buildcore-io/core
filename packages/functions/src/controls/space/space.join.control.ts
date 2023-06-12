@@ -1,4 +1,4 @@
-import { COL, Space, SUB_COL, WenError } from '@build5/interfaces';
+import { COL, Space, SUB_COL, WenError } from '@build-5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { getJoinSpaceData } from '../../services/payment/tangle-service/space/SpaceJoinService';
 import { invalidArgument } from '../../utils/error.utils';

@@ -10,7 +10,7 @@ import {
   TransactionOrder,
   TransactionOrderType,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import chance from 'chance';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { validateAddress } from '../../src/runtime/firebase/address';

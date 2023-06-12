@@ -1,4 +1,4 @@
-import { KEY_NAME_TANGLE } from '@build5/interfaces';
+import { KEY_NAME_TANGLE } from '@build-5/interfaces';
 import {
   DEFAULT_PROTOCOL_VERSION,
   IBlock,

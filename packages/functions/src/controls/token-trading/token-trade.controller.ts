@@ -1,4 +1,4 @@
-import { COL, SUB_COL, Token, TokenTradeOrderType, WenError } from '@build5/interfaces';
+import { COL, SUB_COL, Token, TokenTradeOrderType, WenError } from '@build-5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { createTokenTradeOrder } from '../../services/payment/tangle-service/token-trade.service';
 import { invalidArgument } from '../../utils/error.utils';

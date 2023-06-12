@@ -1,4 +1,4 @@
-import { WEN_FUNC, WEN_FUNC_TRIGGER } from '@build5/interfaces';
+import { WEN_FUNC, WEN_FUNC_TRIGGER } from '@build-5/interfaces';
 import { algoliaTrigger } from './algolia/algolia.trigger';
 import { validateAddress } from './runtime/firebase/address';
 import { generateCustomToken } from './runtime/firebase/auth';

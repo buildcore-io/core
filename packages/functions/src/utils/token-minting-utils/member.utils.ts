@@ -1,4 +1,4 @@
-import { COL, SUB_COL, Token, TokenDistribution, TokenDrop } from '@build5/interfaces';
+import { COL, SUB_COL, Token, TokenDistribution, TokenDrop } from '@build-5/interfaces';
 import { INodeInfo } from '@iota/iota.js-next';
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';

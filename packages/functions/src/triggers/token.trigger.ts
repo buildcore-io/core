@@ -18,7 +18,7 @@ import {
   TransactionMintTokenType,
   TransactionType,
   WEN_FUNC_TRIGGER,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';

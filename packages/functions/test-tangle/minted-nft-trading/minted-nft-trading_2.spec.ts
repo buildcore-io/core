@@ -7,7 +7,7 @@ import {
   Transaction,
   TransactionType,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { INftOutput, IndexerPluginClient, NFT_OUTPUT_TYPE } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { soonDb } from '../../src/firebase/firestore/soondb';

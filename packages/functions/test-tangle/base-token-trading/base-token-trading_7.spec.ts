@@ -7,7 +7,7 @@ import {
   TokenTradeOrderStatus,
   TokenTradeOrderType,
   Transaction,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { cancelExpiredSale } from '../../src/cron/token.cron';
 import { soonDb } from '../../src/firebase/firestore/soondb';

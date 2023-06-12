@@ -6,7 +6,7 @@ import {
   WEN_FUNC,
   WenError,
   WenRequest,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { Ed25519 } from '@iota/crypto.js';
 import { Ed25519 as Ed25519Next } from '@iota/crypto.js-next';
 import { Bech32Helper, Ed25519Address } from '@iota/iota.js';

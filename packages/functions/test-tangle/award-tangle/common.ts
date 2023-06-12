@@ -5,7 +5,7 @@ import {
   TokenStatus,
   TransactionAwardType,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { IQuery } from '../../src/firebase/firestore/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { serverTime } from '../../src/utils/dateTime.utils';

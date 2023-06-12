@@ -1,4 +1,4 @@
-import { COL, GetAddressesRequest, MAX_MILLISECONDS, Mnemonic, Network } from '@build5/interfaces';
+import { COL, GetAddressesRequest, MAX_MILLISECONDS, Mnemonic, Network } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';

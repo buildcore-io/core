@@ -6,7 +6,7 @@ import {
   Nft,
   NftStatus,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { createNftWithdrawOrder } from '../../services/payment/tangle-service/nft-purchase.service';
 import { assertMemberHasValidAddress, getAddress } from '../../utils/address.utils';

@@ -1,4 +1,4 @@
-import { COL, MediaStatus, Network, SUB_COL } from '@build5/interfaces';
+import { COL, MediaStatus, Network, SUB_COL } from '@build-5/interfaces';
 import Joi from 'joi';
 import { get, set } from 'lodash';
 import { soonDb } from '../../../../firebase/firestore/soondb';

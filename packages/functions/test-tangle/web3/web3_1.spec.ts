@@ -8,7 +8,7 @@ import {
   SUB_COL,
   Token,
   TokenStatus,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { Web3Storage } from 'web3.storage';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
 import { soonDb } from '../../src/firebase/firestore/soondb';

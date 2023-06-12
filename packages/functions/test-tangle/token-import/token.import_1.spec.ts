@@ -8,7 +8,7 @@ import {
   Transaction,
   TransactionCreditType,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { importMintedToken } from '../../src/runtime/firebase/token/minting';
 import { getAddress } from '../../src/utils/address.utils';

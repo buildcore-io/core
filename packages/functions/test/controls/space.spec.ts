@@ -14,7 +14,7 @@ import {
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
   WEN_FUNC,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { tail } from 'lodash';
 import { soonDb } from '../../src/firebase/firestore/soondb';

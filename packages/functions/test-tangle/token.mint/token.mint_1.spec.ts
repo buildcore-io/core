@@ -9,7 +9,7 @@ import {
   Transaction,
   TransactionMintTokenType,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { IFoundryOutput, IndexerPluginClient, addressBalance } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { isEqual } from 'lodash';

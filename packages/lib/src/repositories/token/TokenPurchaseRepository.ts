@@ -1,12 +1,12 @@
 import {
-  GetAvgPriceRequest,
-  GetAvgPriceResponse,
-  GetPriceChangeRequest,
-  GetPriceChangeResponse,
-  Opr,
-  PublicCollections,
-  TokenPurchase,
-} from '@build5/interfaces';
+    GetAvgPriceRequest,
+    GetAvgPriceResponse,
+    GetPriceChangeRequest,
+    GetPriceChangeResponse,
+    Opr,
+    PublicCollections,
+    TokenPurchase,
+} from '@build-5/interfaces';
 import { map } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
 import { SESSION_ID, SoonEnv, getAvgPriceUrl, getPriceChangeUrl } from '../../Config';

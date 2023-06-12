@@ -1,4 +1,4 @@
-import { PublicCollections, Space } from '@build5/interfaces';
+import { PublicCollections, Space } from '@build-5/interfaces';
 import { switchMap } from 'rxjs';
 import { SoonEnv } from '../../Config';
 import { CrudRepository } from '../CrudRepository';

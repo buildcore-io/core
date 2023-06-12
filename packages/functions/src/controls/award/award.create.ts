@@ -1,4 +1,4 @@
-import { Award, COL, SUB_COL } from '@build5/interfaces';
+import { Award, COL, SUB_COL } from '@build-5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { createAward } from '../../services/payment/tangle-service/award/award.create.service';
 
