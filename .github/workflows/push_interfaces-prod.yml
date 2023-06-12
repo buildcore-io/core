@@ -1,0 +1,52 @@
+name: Push interfaces to the public repo, master
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  push_interfaces:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Git
+      run: |
+        git config --global user.name "${{ github.actor }}"
+        git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
+    - name: Push to public repo
+      run: |
+        cd ../
+        git clone -b master https://username:$GITHUB_TOKEN@github.com/build-5/interfaces.git
+        cp -r core/packages/interfaces/* interfaces/
+        cd interfaces
+        git add --all
+        git commit -a --allow-empty-message -m ''
+        git push origin master
+
+  push_lib:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Git
+      run: |
+        git config --global user.name "${{ github.actor }}"
+        git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
+    - name: Push to public repo
+      run: |
+        cd ../
+        git clone -b master https://username:$GITHUB_TOKEN@github.com/build-5/lib.git
+        cp -r core/packages/lib/* lib/
+        cd lib
+        git add --all
+        git commit -a --allow-empty-message -m ''
+        git push origin master
+  
