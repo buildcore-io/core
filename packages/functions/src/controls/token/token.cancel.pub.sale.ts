@@ -1,4 +1,4 @@
-import { COL, Token, TokenStatus, WenError } from '@soonaverse/interfaces';
+import { COL, Token, TokenStatus, WenError } from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { invalidArgument } from '../../utils/error.utils';

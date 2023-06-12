@@ -7,7 +7,7 @@ import {
   Transaction,
   TransactionIgnoreWalletReason,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { creditUnrefundable } from '../../src/runtime/firebase/credit';
 import { stakeNft } from '../../src/runtime/firebase/nft';

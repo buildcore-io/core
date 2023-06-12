@@ -1,4 +1,4 @@
-import { DiscountLine, WenError } from '@soonaverse/interfaces';
+import { DiscountLine, WenError } from '@build5/interfaces';
 import { uniq } from 'lodash';
 import { invalidArgument } from '../../utils/error.utils';
 import { getTokenBySymbol } from '../../utils/token.utils';

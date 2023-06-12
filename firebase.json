@@ -1,6 +1,6 @@
 {
   "firestore": {
-    "predeploy": ["cd packages/indexes && npm run build:lerna"],
+    "predeploy": ["npm run build:indexes"],
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
@@ -13,7 +13,6 @@
     ],
     "postdeploy": [
       "sed -i.bu 's/\"file:.\\/interfaces\"/\"*\"/g' packages/functions/package.json",
-      "sed -i.bu 's/prepared/prepare/g' packages/functions/package.json",
       "rm packages/functions/package.json.bu"
     ],
     "source": "packages/functions"

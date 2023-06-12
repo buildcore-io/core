@@ -1,5 +1,3 @@
-import { IndexerPluginClient } from '@iota/iota.js-next';
-import { HexHelper } from '@iota/util.js-next';
 import {
   Award,
   COL,
@@ -14,7 +12,9 @@ import {
   TransactionAwardType,
   TransactionCreditType,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import { IndexerPluginClient } from '@iota/iota.js-next';
+import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { processExpiredAwards } from '../../src/cron/award.cron';
@@ -28,8 +28,8 @@ import {
 } from '../../src/runtime/firebase/award';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
-import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
+import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
 import { mergeOutputs } from '../../src/utils/basic-output.utils';

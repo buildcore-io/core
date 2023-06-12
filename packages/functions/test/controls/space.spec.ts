@@ -5,16 +5,16 @@ import {
   Proposal,
   ProposalMember,
   ProposalType,
+  SUB_COL,
   Space,
   StakeType,
-  SUB_COL,
   TokenStatus,
   Transaction,
   TransactionType,
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
-  WenError,
   WEN_FUNC,
-} from '@soonaverse/interfaces';
+  WenError,
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { tail } from 'lodash';
 import { soonDb } from '../../src/firebase/firestore/soondb';

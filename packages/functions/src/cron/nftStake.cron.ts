@@ -1,4 +1,4 @@
-import { COL, NftStake } from '@soonaverse/interfaces';
+import { COL, NftStake } from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
 import { getSnapshot, soonDb } from '../firebase/firestore/soondb';

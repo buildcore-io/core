@@ -6,7 +6,7 @@ import {
   PublicCollections,
   PublicSubCollections,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';

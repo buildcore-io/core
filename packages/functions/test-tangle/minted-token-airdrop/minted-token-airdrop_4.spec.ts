@@ -12,7 +12,7 @@ import {
   TokenDropStatus,
   Transaction,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { airdropMintedToken } from '../../src/runtime/firebase/token/minting';

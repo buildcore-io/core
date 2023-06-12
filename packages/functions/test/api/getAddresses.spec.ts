@@ -1,4 +1,4 @@
-import { COL, Network } from '@soonaverse/interfaces';
+import { COL, Network } from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
 import { getAddresses } from '../../src/api/getAddresses';

@@ -1,3 +1,4 @@
+import { COL } from '@build5/interfaces';
 import {
   FOUNDRY_OUTPUT_TYPE,
   IAddressUnlockCondition,
@@ -8,7 +9,6 @@ import {
   OutputTypes,
   TransactionHelper,
 } from '@iota/iota.js-next';
-import { COL } from '@soonaverse/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { getTokenByMintId } from '../../utils/token.utils';
 

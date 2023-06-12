@@ -4,7 +4,7 @@ import {
   TWITTER_REGEXP,
   WEN_FUNC,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import cors from 'cors';
 import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';

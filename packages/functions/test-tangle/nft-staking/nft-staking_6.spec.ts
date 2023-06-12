@@ -1,11 +1,11 @@
+import { COL, KEY_NAME_TANGLE, Network, Nft, StakeType } from '@build5/interfaces';
 import {
-  IndexerPluginClient,
   INftOutput,
+  IndexerPluginClient,
   TAG_FEATURE_TYPE,
   TransactionHelper,
 } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js-next';
-import { COL, KEY_NAME_TANGLE, Network, Nft, StakeType } from '@soonaverse/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { stakeNft } from '../../src/runtime/firebase/nft';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';

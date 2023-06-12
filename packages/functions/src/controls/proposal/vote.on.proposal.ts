@@ -7,7 +7,7 @@ import {
   TokenStatus,
   Transaction,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import {
   getProposal,

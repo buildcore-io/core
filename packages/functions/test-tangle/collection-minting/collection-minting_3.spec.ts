@@ -5,7 +5,7 @@ import {
   Transaction,
   TransactionMintCollectionType,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import { isEmpty } from 'lodash';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { CollectionMintHelper } from './Helper';

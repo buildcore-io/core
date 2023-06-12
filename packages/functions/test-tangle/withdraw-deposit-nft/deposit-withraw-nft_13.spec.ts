@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { COL, MIN_IOTA_AMOUNT, Network, Nft } from '@build5/interfaces';
 import {
   AddressTypes,
   ED25519_ADDRESS_TYPE,
@@ -8,7 +9,6 @@ import {
   TransactionHelper,
   UnlockTypes,
 } from '@iota/iota.js-next';
-import { COL, MIN_IOTA_AMOUNT, Network, Nft } from '@soonaverse/interfaces';
 import { cloneDeep } from 'lodash';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { depositNft } from '../../src/runtime/firebase/nft';
@@ -17,7 +17,7 @@ import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
 import { packBasicOutput } from '../../src/utils/basic-output.utils';
 import { indexToString, packEssence, packPayload, submitBlock } from '../../src/utils/block.utils';
-import { createNftOutput, EMPTY_NFT_ID } from '../../src/utils/collection-minting-utils/nft.utils';
+import { EMPTY_NFT_ID, createNftOutput } from '../../src/utils/collection-minting-utils/nft.utils';
 import { createUnlock, getTransactionPayloadHex } from '../../src/utils/smr.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';

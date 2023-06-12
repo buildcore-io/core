@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, Transaction, TransactionType } from '@soonaverse/interfaces';
+import { COL, Transaction, TransactionType } from '@build5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { depositNft } from '../../src/runtime/firebase/nft/index';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';

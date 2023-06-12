@@ -1,4 +1,3 @@
-import { IndexerPluginClient, INftOutput } from '@iota/iota.js-next';
 import {
   Award,
   COL,
@@ -9,12 +8,13 @@ import {
   TokenStatus,
   Transaction,
   TransactionAwardType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import { INftOutput, IndexerPluginClient } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
-import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
+import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';

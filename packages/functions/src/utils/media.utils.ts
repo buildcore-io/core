@@ -5,7 +5,7 @@ import {
   IMAGE_CACHE_AGE,
   IPFS_GATEWAY,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import axios from 'axios';
 import { randomUUID } from 'crypto';
 import * as functions from 'firebase-functions/v2';

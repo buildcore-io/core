@@ -4,7 +4,7 @@ import {
   TransactionCreditType,
   TransactionOrder,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import { get, isEmpty } from 'lodash';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { getRandomEthAddress } from '../../utils/wallet.utils';

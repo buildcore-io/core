@@ -1,4 +1,4 @@
-import { COL, Member, Network, Proposal, Space, WenError } from '@soonaverse/interfaces';
+import { COL, Member, Network, Proposal, Space, WenError } from '@build5/interfaces';
 import { isEmpty } from 'lodash';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { validateAddress } from '../../src/runtime/firebase/address';

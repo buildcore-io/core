@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, PublicCollections, PublicSubCollections, SUB_COL } from '@soonaverse/interfaces';
+import { COL, PublicCollections, PublicSubCollections, SUB_COL } from '@build5/interfaces';
 
 export interface IDatabase {
   collection: (col: COL | PublicCollections) => ICollection;

@@ -1,4 +1,4 @@
-import { COL, Collection, NftStake, StakeType } from '@soonaverse/interfaces';
+import { COL, Collection, NftStake, StakeType } from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { processExpiredNftStakes } from '../../src/cron/nftStake.cron';
 import { soonDb } from '../../src/firebase/firestore/soondb';

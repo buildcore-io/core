@@ -1,4 +1,4 @@
-import { COL, PublicCollections, PublicSubCollections, SUB_COL } from '@soonaverse/interfaces';
+import { COL, PublicCollections, PublicSubCollections, SUB_COL } from '@build5/interfaces';
 import { soonApp } from '../app/soonApp';
 import { Firestore } from './firestore';
 import { IDatabase } from './interfaces';

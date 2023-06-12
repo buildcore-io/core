@@ -15,7 +15,7 @@ import {
   SUB_COL,
   TokenDistribution,
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions/v2';
 import { get, set } from 'lodash';

@@ -1,4 +1,4 @@
-import { COL, Collection, Nft, UnsoldMintingOptions } from '@soonaverse/interfaces';
+import { COL, Collection, Nft, UnsoldMintingOptions } from '@build5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { CollectionMintHelper } from './Helper';
 

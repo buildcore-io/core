@@ -1,4 +1,4 @@
-import { WEN_FUNC } from '@soonaverse/interfaces';
+import { WEN_FUNC } from '@build5/interfaces';
 import cors from 'cors';
 import * as functions from 'firebase-functions/v2';
 import { HttpsOptions } from 'firebase-functions/v2/https';

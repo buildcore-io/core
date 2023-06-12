@@ -1,9 +1,9 @@
 import {
   COL,
   DEFAULT_NETWORK,
-  getNetworkPair,
   MilestoneTransactionEntry,
   SUB_COL,
+  TRANSACTION_MAX_EXPIRY_MS,
   Token,
   TokenDistribution,
   TokenDrop,
@@ -16,8 +16,8 @@ import {
   TransactionCreditType,
   TransactionOrder,
   TransactionOrderType,
-  TRANSACTION_MAX_EXPIRY_MS,
-} from '@soonaverse/interfaces';
+  getNetworkPair,
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { get, head, last } from 'lodash';

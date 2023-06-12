@@ -15,7 +15,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { finalizeAllNftAuctions } from '../../src/cron/nft.cron';
 import { soonDb } from '../../src/firebase/firestore/soondb';

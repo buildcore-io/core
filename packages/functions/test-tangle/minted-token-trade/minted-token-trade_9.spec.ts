@@ -1,20 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { HexHelper } from '@iota/util.js-next';
 import {
   COL,
   MIN_IOTA_AMOUNT,
   TokenTradeOrderType,
   Transaction,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
-import { dummyTokenId, Helper, MINTED_TOKEN_ID, saveToken } from './Helper';
+import { Helper, MINTED_TOKEN_ID, dummyTokenId, saveToken } from './Helper';
 
 describe('Token minting', () => {
   const helper = new Helper();

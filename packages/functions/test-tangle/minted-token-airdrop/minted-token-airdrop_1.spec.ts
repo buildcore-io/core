@@ -15,7 +15,7 @@ import {
   Transaction,
   TransactionType,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { head } from 'lodash';
 import { soonDb } from '../../src/firebase/firestore/soondb';

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { HexHelper } from '@iota/util.js-next';
 import {
   BillPaymentType,
   calcStakedMultiplier,
@@ -17,7 +16,8 @@ import {
   TokenStats,
   TokenStatus,
   Transaction,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';

@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IMetadataFeature, INftOutput, METADATA_FEATURE_TYPE } from '@iota/iota.js-next';
-import { Converter } from '@iota/util.js-next';
 import {
   Access,
-  Categories,
   COL,
+  Categories,
   Collection,
   CollectionStatus,
   CollectionType,
@@ -18,7 +16,9 @@ import {
   TransactionMintCollectionType,
   TransactionType,
   UnsoldMintingOptions,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import { IMetadataFeature, INftOutput, METADATA_FEATURE_TYPE } from '@iota/iota.js-next';
+import { Converter } from '@iota/util.js-next';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
 import { soonDb } from '../../src/firebase/firestore/soondb';
@@ -41,7 +41,7 @@ import {
   submitMilestoneFunc,
   wait,
 } from '../../test/controls/common';
-import { getWallet, MEDIA, testEnv } from '../../test/set-up';
+import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 
 export class CollectionMintHelper {

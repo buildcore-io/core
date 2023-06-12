@@ -17,7 +17,7 @@ import {
   TransactionOrder,
   TransactionOrderType,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { head } from 'lodash';
 import { ITransaction } from '../../firebase/firestore/interfaces';

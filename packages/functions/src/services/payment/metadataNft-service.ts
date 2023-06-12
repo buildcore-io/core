@@ -13,7 +13,7 @@ import {
   TransactionMetadataNftType,
   TransactionOrder,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import { get } from 'lodash';
 import { soonDb } from '../../firebase/firestore/soondb';
 import {

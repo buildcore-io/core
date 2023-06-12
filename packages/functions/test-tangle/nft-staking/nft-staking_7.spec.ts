@@ -1,4 +1,4 @@
-import { COL, Network, Nft, StakeType, Transaction, TransactionType } from '@soonaverse/interfaces';
+import { COL, Network, Nft, StakeType, Transaction, TransactionType } from '@build5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { stakeNft } from '../../src/runtime/firebase/nft';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';

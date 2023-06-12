@@ -5,7 +5,7 @@ import {
   Space,
   TangleRequestType,
   Transaction,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { wait } from '../../test/controls/common';
 import { requestFundsFromFaucet } from '../faucet';

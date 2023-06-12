@@ -1,5 +1,3 @@
-import { TIMELOCK_UNLOCK_CONDITION_TYPE } from '@iota/iota.js-next';
-import { HexHelper } from '@iota/util.js-next';
 import {
   calcStakedMultiplier,
   COL,
@@ -10,7 +8,9 @@ import {
   Transaction,
   TransactionType,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import { TIMELOCK_UNLOCK_CONDITION_TYPE } from '@iota/iota.js-next';
+import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';

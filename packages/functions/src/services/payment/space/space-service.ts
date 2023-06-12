@@ -1,13 +1,4 @@
 import {
-  GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE,
-  IAliasOutput,
-  IGovernorAddressUnlockCondition,
-  IIssuerFeature,
-  IndexerPluginClient,
-  INftOutput,
-  ISSUER_FEATURE_TYPE,
-} from '@iota/iota.js-next';
-import {
   COL,
   Collection,
   Network,
@@ -16,7 +7,16 @@ import {
   SUB_COL,
   TransactionCreditType,
   TransactionOrder,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import {
+  GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE,
+  IAliasOutput,
+  IGovernorAddressUnlockCondition,
+  IIssuerFeature,
+  IndexerPluginClient,
+  INftOutput,
+  ISSUER_FEATURE_TYPE,
+} from '@iota/iota.js-next';
 import { soonDb } from '../../../firebase/firestore/soondb';
 import { Bech32AddressHelper } from '../../../utils/bech32-address.helper';
 import { serverTime } from '../../../utils/dateTime.utils';

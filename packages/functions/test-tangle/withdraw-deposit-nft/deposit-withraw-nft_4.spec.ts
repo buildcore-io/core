@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, WenError } from '@soonaverse/interfaces';
+import { COL, WenError } from '@build5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';

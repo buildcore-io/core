@@ -1,4 +1,4 @@
-import { COL, Stake, SUB_COL, Transaction } from '@soonaverse/interfaces';
+import { COL, Stake, SUB_COL, Transaction } from '@build5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { onStakeCreated } from '../../services/stake.service';
 

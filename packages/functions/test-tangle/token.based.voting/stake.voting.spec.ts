@@ -1,10 +1,10 @@
-import { COL, SUB_COL } from '@soonaverse/interfaces';
+import { COL, SUB_COL } from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { approveProposal, createProposal } from '../../src/runtime/firebase/proposal';
 import { mockWalletReturnValue } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
-import { dummyProposal, Helper } from './Helper';
+import { Helper, dummyProposal } from './Helper';
 
 describe('Staked oken based voting', () => {
   const helper = new Helper();

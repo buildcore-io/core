@@ -1,4 +1,4 @@
-import { COL, TokenStatus } from '@soonaverse/interfaces';
+import { COL, TokenStatus } from '@build5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { Helper } from './Helper';

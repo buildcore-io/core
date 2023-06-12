@@ -1,4 +1,4 @@
-import { WEN_FUNC, WEN_FUNC_TRIGGER } from '@soonaverse/interfaces';
+import { WEN_FUNC, WEN_FUNC_TRIGGER } from '@build5/interfaces';
 import { algoliaTrigger } from './algolia/algolia.trigger';
 import { validateAddress } from './runtime/firebase/address';
 import { generateCustomToken } from './runtime/firebase/auth';
@@ -138,8 +138,7 @@ exports[WEN_FUNC.validateAddress] = validateAddress;
 
 export * from './api/index';
 export * from './cron';
-export { milestoneTriggers as trigger };
-export { algoliaTrigger };
+export { algoliaTrigger, milestoneTriggers as trigger };
 
 exports[WEN_FUNC.creditUnrefundable] = creditUnrefundable;
 exports[WEN_FUNC.mintCollection] = mintCollection;

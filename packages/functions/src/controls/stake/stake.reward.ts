@@ -1,4 +1,4 @@
-import { COL, StakeReward, StakeRewardStatus, Token, WenError } from '@soonaverse/interfaces';
+import { COL, StakeReward, StakeRewardStatus, Token, WenError } from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { dateToTimestamp } from '../../utils/dateTime.utils';

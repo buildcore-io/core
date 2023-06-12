@@ -13,7 +13,7 @@ import {
   TransactionOrder,
   TransactionType,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import {
   createNft,

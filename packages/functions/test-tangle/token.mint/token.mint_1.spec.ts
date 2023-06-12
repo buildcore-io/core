@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { addressBalance, IFoundryOutput, IndexerPluginClient } from '@iota/iota.js-next';
 import {
   COL,
   KEY_NAME_TANGLE,
@@ -10,7 +9,8 @@ import {
   Transaction,
   TransactionMintTokenType,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import { IFoundryOutput, IndexerPluginClient, addressBalance } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { isEqual } from 'lodash';
 import { soonDb } from '../../src/firebase/firestore/soondb';
@@ -20,7 +20,7 @@ import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
-import { getAliasOutput, getFoundryMetadata, getStateAndGovernorAddress, Helper } from './Helper';
+import { Helper, getAliasOutput, getFoundryMetadata, getStateAndGovernorAddress } from './Helper';
 
 describe('Token minting', () => {
   const helper = new Helper();

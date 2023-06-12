@@ -1,3 +1,4 @@
+import { COL, Member, Token, Transaction } from '@build5/interfaces';
 import {
   IAliasOutput,
   OutputTypes,
@@ -5,7 +6,6 @@ import {
   TransactionHelper,
   UnlockTypes,
 } from '@iota/iota.js-next';
-import { COL, Member, Token, Transaction } from '@soonaverse/interfaces';
 import { cloneDeep } from 'lodash';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { getAddress } from '../../utils/address.utils';
@@ -19,9 +19,9 @@ import {
 } from '../../utils/token-minting-utils/foundry.utils';
 import { getOwnedTokenTotal } from '../../utils/token-minting-utils/member.utils';
 import { getUnclaimedAirdropTotalValue } from '../../utils/token.utils';
+import { SmrParams, SmrWallet } from './SmrWalletService';
 import { MnemonicService } from './mnemonic';
 import { AliasWallet } from './smr-wallets/AliasWallet';
-import { SmrParams, SmrWallet } from './SmrWalletService';
 import { setConsumedOutputIds } from './wallet';
 
 export class NativeTokenWallet {

@@ -1,4 +1,4 @@
-import { COL, Nft, NftAvailable, NftStatus, WEN_FUNC, WenError } from '@soonaverse/interfaces';
+import { COL, Nft, NftAvailable, NftStatus, WEN_FUNC, WenError } from '@build5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { createMember, updateMember } from '../../src/runtime/firebase/member';
 import * as wallet from '../../src/utils/wallet.utils';

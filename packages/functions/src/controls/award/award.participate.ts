@@ -1,4 +1,4 @@
-import { Award, COL, SUB_COL, WenError } from '@soonaverse/interfaces';
+import { Award, COL, SUB_COL, WenError } from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { invalidArgument } from '../../utils/error.utils';

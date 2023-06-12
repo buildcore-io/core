@@ -1,4 +1,4 @@
-import { COL, Proposal } from '@soonaverse/interfaces';
+import { COL, Proposal } from '@build5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { getProposalApprovalData } from '../../services/payment/tangle-service/proposal/ProposalApporvalService';
 

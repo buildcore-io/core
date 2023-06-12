@@ -1,3 +1,4 @@
+import { COL, Member, Network, SUB_COL, Space, Token, TokenStatus } from '@build5/interfaces';
 import {
   ALIAS_UNLOCK_TYPE,
   Bech32Helper,
@@ -14,7 +15,6 @@ import {
   UnlockTypes,
 } from '@iota/iota.js-next';
 import { Converter, HexHelper } from '@iota/util.js-next';
-import { COL, Member, Network, Space, SUB_COL, Token, TokenStatus } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import { cloneDeep } from 'lodash';
 import { soonDb } from '../../src/firebase/firestore/soondb';
@@ -28,7 +28,7 @@ import { createUnlock } from '../../src/utils/smr.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { createMember, createSpace, getRandomSymbol } from '../../test/controls/common';
-import { getWallet, MEDIA } from '../../test/set-up';
+import { MEDIA, getWallet } from '../../test/set-up';
 
 export class Helper {
   public guardian: Member = {} as any;

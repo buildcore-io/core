@@ -1,7 +1,7 @@
+import { COL, Member, Network, WEN_FUNC, WenError } from '@build5/interfaces';
 import { Ed25519, Ed25519 as Ed25519Next } from '@iota/crypto.js-next';
 import { Converter, Converter as ConverterNext } from '@iota/util.js-next';
 import { recoverPersonalSignature } from '@metamask/eth-sig-util';
-import { COL, Member, Network, WEN_FUNC, WenError } from '@soonaverse/interfaces';
 import jwt from 'jsonwebtoken';
 import { get } from 'lodash';
 import { soonDb } from '../src/firebase/firestore/soondb';

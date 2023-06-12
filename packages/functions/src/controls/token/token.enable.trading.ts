@@ -1,4 +1,4 @@
-import { COL, Token, WenError } from '@soonaverse/interfaces';
+import { COL, Token, WenError } from '@build5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';

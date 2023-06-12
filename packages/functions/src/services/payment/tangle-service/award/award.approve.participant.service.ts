@@ -13,7 +13,7 @@ import {
   TransactionIgnoreWalletReason,
   TransactionType,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { get, head, isEmpty } from 'lodash';
 import { ITransaction } from '../../../../firebase/firestore/interfaces';

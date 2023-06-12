@@ -1,5 +1,3 @@
-import { ITransactionPayload } from '@iota/iota.js-next';
-import { Converter } from '@iota/util.js-next';
 import {
   COL,
   MAX_WALLET_RETRY,
@@ -8,7 +6,9 @@ import {
   TransactionOrderType,
   TransactionType,
   TransactionValidationType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import { ITransactionPayload } from '@iota/iota.js-next';
+import { Converter } from '@iota/util.js-next';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { soonDb } from '../src/firebase/firestore/soondb';

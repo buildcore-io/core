@@ -8,7 +8,7 @@ import {
   OrderTransaction,
   PaymentTransaction,
   Restrictions,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 
 export type OrderPayBillCreditTransaction =
   | OrderTransaction

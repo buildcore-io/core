@@ -1,4 +1,4 @@
-import { COL, Token, TokenStatus, WenError } from '@soonaverse/interfaces';
+import { COL, Token, TokenStatus, WenError } from '@build5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';

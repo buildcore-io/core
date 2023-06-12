@@ -1,4 +1,3 @@
-import { TIMELOCK_UNLOCK_CONDITION_TYPE } from '@iota/iota.js-next';
 import {
   COL,
   Collection,
@@ -7,7 +6,8 @@ import {
   NftStake,
   StakeType,
   Transaction,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import { TIMELOCK_UNLOCK_CONDITION_TYPE } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { stakeNft } from '../../src/runtime/firebase/nft';
@@ -28,7 +28,7 @@ describe('Stake nft', () => {
     await helper.beforeEach();
   });
 
-  it('Should stake nft minted outside soonaverse', async () => {
+  it('Should stake nft minted outside build5', async () => {
     let nft = await helper.createAndOrderNft();
     let nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
     await helper.mintCollection();

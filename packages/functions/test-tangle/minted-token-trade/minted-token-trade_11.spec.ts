@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { COL, MIN_IOTA_AMOUNT, TokenPurchase } from '@soonaverse/interfaces';
+import { COL, MIN_IOTA_AMOUNT, TokenPurchase } from '@build5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { wait } from '../../test/controls/common';
 import { awaitTransactionConfirmationsForToken } from '../common';

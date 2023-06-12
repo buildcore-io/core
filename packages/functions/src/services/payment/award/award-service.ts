@@ -1,12 +1,4 @@
 import {
-  AddressTypes,
-  ALIAS_ADDRESS_TYPE,
-  ED25519_ADDRESS_TYPE,
-  INftAddress,
-  NFT_ADDRESS_TYPE,
-} from '@iota/iota.js-next';
-import { HexHelper } from '@iota/util.js-next';
-import {
   Award,
   AwardBadgeType,
   COL,
@@ -18,7 +10,15 @@ import {
   TransactionAwardType,
   TransactionCreditType,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import {
+  ALIAS_ADDRESS_TYPE,
+  AddressTypes,
+  ED25519_ADDRESS_TYPE,
+  INftAddress,
+  NFT_ADDRESS_TYPE,
+} from '@iota/iota.js-next';
+import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { set } from 'lodash';

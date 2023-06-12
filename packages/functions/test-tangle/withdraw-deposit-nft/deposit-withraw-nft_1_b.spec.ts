@@ -7,7 +7,7 @@ import {
   NftStatus,
   Transaction,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { isEqual } from 'lodash';
 import { soonDb } from '../../src/firebase/firestore/soondb';

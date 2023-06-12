@@ -1,5 +1,5 @@
+import { IMAGE_CACHE_AGE, WEN_FUNC_TRIGGER } from '@build5/interfaces';
 import { path as ffmpegPath } from '@ffmpeg-installer/ffmpeg';
-import { IMAGE_CACHE_AGE, WEN_FUNC_TRIGGER } from '@soonaverse/interfaces';
 import { spawn } from 'child-process-promise';
 import * as functions from 'firebase-functions/v2';
 import fs from 'fs';

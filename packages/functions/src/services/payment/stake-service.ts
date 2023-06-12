@@ -10,7 +10,7 @@ import {
   TransactionCreditType,
   TransactionOrder,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { get } from 'lodash';
 import { soonDb } from '../../firebase/firestore/soondb';

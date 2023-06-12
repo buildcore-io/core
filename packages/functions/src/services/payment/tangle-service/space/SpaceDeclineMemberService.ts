@@ -1,4 +1,4 @@
-import { COL, SUB_COL } from '@soonaverse/interfaces';
+import { COL, SUB_COL } from '@build5/interfaces';
 import { soonDb } from '../../../../firebase/firestore/soondb';
 import { editSpaceMemberSchema } from '../../../../runtime/firebase/space';
 import { assertValidationAsync } from '../../../../utils/schema.utils';

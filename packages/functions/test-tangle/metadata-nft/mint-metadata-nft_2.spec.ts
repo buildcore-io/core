@@ -1,4 +1,3 @@
-import { IBasicOutput, ITransactionPayload } from '@iota/iota.js-next';
 import {
   COL,
   Collection,
@@ -7,7 +6,8 @@ import {
   TangleRequestType,
   Transaction,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import { IBasicOutput, ITransactionPayload } from '@iota/iota.js-next';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';

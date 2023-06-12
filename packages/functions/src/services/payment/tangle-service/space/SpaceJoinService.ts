@@ -6,7 +6,7 @@ import {
   SUB_COL,
   TokenDistribution,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import { soonDb } from '../../../../firebase/firestore/soondb';
 import { uidSchema } from '../../../../runtime/firebase/common';
 import { serverTime } from '../../../../utils/dateTime.utils';

@@ -6,7 +6,7 @@ import {
   Network,
   Space,
   Token,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
 import { soonDb } from '../../src/firebase/firestore/soondb';

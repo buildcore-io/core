@@ -6,7 +6,7 @@ import {
   ProposalType,
   TangleRequestType,
   Transaction,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { addGuardianToSpace, mockWalletReturnValue, wait } from '../../test/controls/common';

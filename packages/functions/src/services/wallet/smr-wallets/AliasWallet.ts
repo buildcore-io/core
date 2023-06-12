@@ -1,3 +1,4 @@
+import { Transaction } from '@build5/interfaces';
 import {
   Bech32Helper,
   GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE,
@@ -6,7 +7,6 @@ import {
   STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE,
   TransactionHelper,
 } from '@iota/iota.js-next';
-import { Transaction } from '@soonaverse/interfaces';
 import { cloneDeep, isEmpty } from 'lodash';
 import { mergeOutputs, packBasicOutput } from '../../../utils/basic-output.utils';
 import { packEssence, packPayload, submitBlock } from '../../../utils/block.utils';

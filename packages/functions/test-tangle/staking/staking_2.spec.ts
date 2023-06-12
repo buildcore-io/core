@@ -1,10 +1,10 @@
+import { COL, Space, StakeType } from '@build5/interfaces';
 import {
   IMetadataFeature,
   METADATA_FEATURE_TYPE,
   TIMELOCK_UNLOCK_CONDITION_TYPE,
 } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js-next';
-import { COL, Space, StakeType } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';
 import { soonDb } from '../../src/firebase/firestore/soondb';

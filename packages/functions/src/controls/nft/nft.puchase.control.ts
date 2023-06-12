@@ -1,4 +1,4 @@
-import { COL, Transaction } from '@soonaverse/interfaces';
+import { COL, Transaction } from '@build5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { createNftPuchaseOrder } from '../../services/payment/tangle-service/nft-purchase.service';
 
