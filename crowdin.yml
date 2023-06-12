@@ -1,3 +1,0 @@
-files:
-  - source: packages/ui/src/locale/messages.xlf
-    translation: /packages/ui/src/locale/messages.%locale%.xlf

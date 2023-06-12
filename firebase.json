@@ -18,20 +18,6 @@
     ],
     "source": "packages/functions"
   },
-  "hosting": [
-    {
-      "target": "5d1024cf-d55e-4b10-9d27-eccc37e80161",
-      "public": "packages/ui/dist",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-      "rewrites": [{ "source": "**", "destination": "/index.html" }]
-    },
-    {
-      "target": "def-host",
-      "public": "packages/ui/dist",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-      "rewrites": [{ "source": "**", "destination": "/index.html" }]
-    }
-  ],
   "emulators": {
     "auth": { "port": 9099 },
     "functions": { "port": 5001 },
