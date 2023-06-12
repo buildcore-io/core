@@ -25,6 +25,27 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
+  deploy_to_npm:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          registry-url: https://registry.npmjs.org/
+      - name: Init
+        run: |
+          npm version ${{ github.event.release.tag_name }} --workspace packages/interfaces
+          npm version ${{ github.event.release.tag_name }} --workspace packages/lib
+          npm run build:lib
+      - name: Deploy to npm
+        run: |
+          npm publish --workspace packages/interfaces
+          npm publish --workspace packages/lib
+
   roll-firestore:
     runs-on: ubuntu-latest
     environment: production
