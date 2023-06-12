@@ -1,0 +1,32 @@
+name: Lib | lint & test
+
+on:
+  pull_request:
+    paths:
+      - packages/lib/**
+
+jobs:
+  soon_lib:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: packages/lib
+    steps:
+      - name: Collect Workflow Telemetry
+        uses: runforesight/foresight-workflow-kit-action@v1
+        if: ${{ always() }}
+        with:
+          api_key: ${{ secrets.FORESIGHT_KEY }}
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install Dependencies
+        run: npm run build:lib
+      - name: Prettier
+        run: npx prettier --check .
+      - name: Lint
+        run: npm run lint
+      - name: Test
+        run: npm run test
