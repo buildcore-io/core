@@ -10,7 +10,7 @@ import {
   TransactionCreditType,
   TransactionType,
   WEN_FUNC,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../../../src/firebase/firestore/soondb';
 import {

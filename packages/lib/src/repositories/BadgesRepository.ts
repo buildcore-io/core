@@ -1,4 +1,4 @@
-import { Badge, PublicCollections } from '@soonaverse/interfaces';
+import { Badge, PublicCollections } from '@build5/interfaces';
 import { SoonEnv } from '../Config';
 import { CrudRepository } from './CrudRepository';
 

@@ -1,4 +1,4 @@
-import { COL, Space, SUB_COL, WenError } from '@soonaverse/interfaces';
+import { COL, Space, SUB_COL, WenError } from '@build5/interfaces';
 import { head } from 'lodash';
 import { soonDb } from '../firebase/firestore/soondb';
 import { serverTime } from './dateTime.utils';

@@ -1,4 +1,3 @@
-import { IBasicOutput, ITransactionPayload, IndexerPluginClient } from '@iota/iota.js-next';
 import {
   COL,
   Collection,
@@ -8,7 +7,8 @@ import {
   TangleRequestType,
   Transaction,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import { IBasicOutput, ITransactionPayload, IndexerPluginClient } from '@iota/iota.js-next';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { getOutputMetadata } from '../../src/utils/basic-output.utils';

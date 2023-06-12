@@ -1,4 +1,4 @@
-import { PublicCollections, PublicSubCollections } from '@soonaverse/interfaces';
+import { PublicCollections, PublicSubCollections } from '@build5/interfaces';
 import { getById } from '../../src/api/getById';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';

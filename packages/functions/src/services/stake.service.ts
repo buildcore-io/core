@@ -7,7 +7,7 @@ import {
   tiers,
   TokenDistribution,
   tokenTradingFeeDicountPercentage,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import { ITransaction } from '../firebase/firestore/interfaces';
 import { soonDb } from '../firebase/firestore/soondb';
 import { getTokenSaleConfig, isProdEnv } from '../utils/config.utils';

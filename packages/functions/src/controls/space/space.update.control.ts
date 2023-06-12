@@ -14,7 +14,7 @@ import {
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
   VoteTransaction,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { get, startCase } from 'lodash';
 import { soonDb } from '../../firebase/firestore/soondb';

@@ -2,14 +2,14 @@ import {
   Access,
   COL,
   MIN_IOTA_AMOUNT,
-  Space,
   SUB_COL,
+  Space,
   Token,
   TokenDistribution,
   TokenStatus,
-  WenError,
   WEN_FUNC,
-} from '@soonaverse/interfaces';
+  WenError,
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { joinSpace } from '../../src/runtime/firebase/space';

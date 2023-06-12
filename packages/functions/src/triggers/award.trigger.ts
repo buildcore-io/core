@@ -8,7 +8,7 @@ import {
   TransactionAwardType,
   TransactionCreditType,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import * as functions from 'firebase-functions/v2';
 import { soonDb } from '../firebase/firestore/soondb';
 import { getAddress } from '../utils/address.utils';

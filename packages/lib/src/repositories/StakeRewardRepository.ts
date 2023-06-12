@@ -1,4 +1,4 @@
-import { Opr, PublicCollections, StakeReward } from '@soonaverse/interfaces';
+import { Opr, PublicCollections, StakeReward } from '@build5/interfaces';
 import { SoonEnv } from '../Config';
 import { CrudRepository } from './CrudRepository';
 

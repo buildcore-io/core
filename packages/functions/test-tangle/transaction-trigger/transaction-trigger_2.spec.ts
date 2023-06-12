@@ -1,12 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build5/interfaces';
 import { STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE } from '@iota/iota.js-next';
-import {
-  COL,
-  MIN_IOTA_AMOUNT,
-  Network,
-  Transaction,
-  TransactionType,
-} from '@soonaverse/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails } from '../../src/services/wallet/wallet';

@@ -1,7 +1,7 @@
+import { KEY_NAME_TANGLE, Token } from '@build5/interfaces';
 import * as lib from '@iota/iota.js-next';
 import { IFoundryOutput, INodeInfo, TransactionHelper } from '@iota/iota.js-next';
 import { Converter, HexHelper } from '@iota/util.js-next';
-import { KEY_NAME_TANGLE, Token } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import { head } from 'lodash';
 import { packBasicOutput } from '../basic-output.utils';

@@ -1,5 +1,3 @@
-import { INodeInfo } from '@iota/iota.js-next';
-import { HexHelper } from '@iota/util.js-next';
 import {
   BillPaymentType,
   COL,
@@ -13,7 +11,9 @@ import {
   Transaction,
   TransactionCreditType,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import { INodeInfo } from '@iota/iota.js-next';
+import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import bigDecimal from 'js-big-decimal';
 import { ITransaction } from '../../firebase/firestore/interfaces';

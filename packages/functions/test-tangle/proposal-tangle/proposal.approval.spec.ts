@@ -1,4 +1,4 @@
-import { COL, MIN_IOTA_AMOUNT, Proposal, TangleRequestType } from '@soonaverse/interfaces';
+import { COL, MIN_IOTA_AMOUNT, Proposal, TangleRequestType } from '@build5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { wait } from '../../test/controls/common';
 import { Helper } from './Helper';

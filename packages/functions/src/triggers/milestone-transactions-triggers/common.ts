@@ -1,8 +1,8 @@
+import { COL, Network, Transaction, WEN_FUNC_TRIGGER } from '@build5/interfaces';
 import { ITransactionPayload } from '@iota/iota.js';
 import { ITransactionPayload as ITransactionPayloadNext } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js';
 import { Converter as ConverterNext } from '@iota/util.js-next';
-import { COL, Network, Transaction, WEN_FUNC_TRIGGER } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { DocumentOptions } from 'firebase-functions/v2/firestore';
 import { isEmpty } from 'lodash';

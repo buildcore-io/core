@@ -1,4 +1,3 @@
-import { HexHelper } from '@iota/util.js-next';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -22,7 +21,8 @@ import {
   TransactionValidationType,
   WenError,
   getNetworkPair,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import Joi from 'joi';

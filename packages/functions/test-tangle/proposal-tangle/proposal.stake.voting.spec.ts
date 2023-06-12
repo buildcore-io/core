@@ -1,4 +1,4 @@
-import { COL, MIN_IOTA_AMOUNT, TangleRequestType, Transaction } from '@soonaverse/interfaces';
+import { COL, MIN_IOTA_AMOUNT, TangleRequestType, Transaction } from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { soonDb } from '../../src/firebase/firestore/soondb';

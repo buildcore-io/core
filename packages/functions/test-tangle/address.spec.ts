@@ -11,7 +11,7 @@ import {
   Transaction,
   TransactionType,
   TransactionUnlockType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
 import { soonDb } from '../src/firebase/firestore/soondb';

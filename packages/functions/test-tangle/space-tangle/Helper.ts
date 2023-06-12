@@ -1,4 +1,4 @@
-import { COL, Member, Network, Space, Transaction, TransactionType } from '@soonaverse/interfaces';
+import { COL, Member, Network, Space, Transaction, TransactionType } from '@build5/interfaces';
 import { IQuery } from '../../src/firebase/firestore/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';

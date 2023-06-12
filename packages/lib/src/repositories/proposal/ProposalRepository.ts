@@ -1,4 +1,4 @@
-import { Opr, Proposal, PublicCollections } from '@soonaverse/interfaces';
+import { Opr, Proposal, PublicCollections } from '@build5/interfaces';
 import { SoonEnv } from '../../Config';
 import { CrudRepository } from '../CrudRepository';
 import { ProposalFilter } from './intex';

@@ -1,4 +1,4 @@
-import { COL, Member, Network, Space, SUB_COL, Token, TokenStatus } from '@soonaverse/interfaces';
+import { COL, Member, Network, Space, SUB_COL, Token, TokenStatus } from '@build5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';

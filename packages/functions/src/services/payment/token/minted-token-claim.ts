@@ -1,4 +1,4 @@
-import { TransactionCreditType, TransactionOrder } from '@soonaverse/interfaces';
+import { TransactionCreditType, TransactionOrder } from '@build5/interfaces';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 
 export class MintedTokenClaimService {

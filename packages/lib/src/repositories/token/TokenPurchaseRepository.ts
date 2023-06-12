@@ -6,7 +6,7 @@ import {
   Opr,
   PublicCollections,
   TokenPurchase,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import { map } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
 import { SESSION_ID, SoonEnv, getAvgPriceUrl, getPriceChangeUrl } from '../../Config';

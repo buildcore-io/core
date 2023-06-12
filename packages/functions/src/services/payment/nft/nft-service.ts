@@ -13,7 +13,7 @@ import {
   TransactionOrder,
   TransactionOrderType,
   TransactionPayment,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { get, last } from 'lodash';
 import { AVAILABLE_NETWORKS } from '../../../controls/common';

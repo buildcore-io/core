@@ -9,7 +9,7 @@ import {
   TransactionType,
   TransactionUnlockType,
   TransactionValidationType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../../../../firebase/firestore/soondb';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';

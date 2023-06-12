@@ -12,7 +12,7 @@ import {
   TokenStatus,
   Transaction,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { IQuery } from '../../src/firebase/firestore/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';

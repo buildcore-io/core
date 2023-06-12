@@ -1,4 +1,4 @@
-import { COL, Transaction, TransactionType } from '@soonaverse/interfaces';
+import { COL, Transaction, TransactionType } from '@build5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { SmrMilestoneTransactionAdapter } from '../milestone-transactions-triggers/SmrMilestoneTransactionAdapter';
 

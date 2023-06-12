@@ -1,10 +1,4 @@
 import {
-  IndexerPluginClient,
-  INftOutput,
-  ITimelockUnlockCondition,
-  TIMELOCK_UNLOCK_CONDITION_TYPE,
-} from '@iota/iota.js-next';
-import {
   Award,
   COL,
   Member,
@@ -17,7 +11,13 @@ import {
   Transaction,
   TransactionAwardType,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import {
+  IndexerPluginClient,
+  INftOutput,
+  ITimelockUnlockCondition,
+  TIMELOCK_UNLOCK_CONDITION_TYPE,
+} from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import {

@@ -25,23 +25,7 @@ jobs:
           args: deploy --only functions,firestore:indexes -P soonaverse-test -f
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-  deploy_hosting:
-    runs-on: ubuntu-latest
-    environment: staging
-    defaults:
-      run:
-        working-directory: packages/ui
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install Dependencies & build
-        run: cd ../../ && npm run build:ui
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE_TEST }}'
-          projectId: 'soonaverse-test'
-          channelId: live
-          target: def-host
+
   roll-firestore:
     runs-on: ubuntu-latest
     environment: staging

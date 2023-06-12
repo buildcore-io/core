@@ -3,7 +3,7 @@ import {
   PublicSubCollections,
   QUERY_MAX_LENGTH,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import { isEmpty, last } from 'lodash';
 import { getMany } from '../../src/api/getMany';
 import { soonDb } from '../../src/firebase/firestore/soondb';

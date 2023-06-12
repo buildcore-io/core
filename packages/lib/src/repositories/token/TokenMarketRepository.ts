@@ -4,7 +4,7 @@ import {
   TokenTradeOrder,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import { Observable } from 'rxjs';
 import { SESSION_ID, SoonEnv, getTokenPriceUrl } from '../../Config';
 import { toQueryParams, wrappedFetch } from '../../fetch.utils';

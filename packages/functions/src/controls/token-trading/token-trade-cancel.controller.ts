@@ -1,4 +1,4 @@
-import { COL, TokenTradeOrder, TokenTradeOrderStatus, WenError } from '@soonaverse/interfaces';
+import { COL, TokenTradeOrder, TokenTradeOrderStatus, WenError } from '@build5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { invalidArgument } from '../../utils/error.utils';
 import { cancelTradeOrderUtil } from '../../utils/token-trade.utils';

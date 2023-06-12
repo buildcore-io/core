@@ -7,7 +7,7 @@ import {
   TokenAllocation,
   TokenStats,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import { soonDb } from '../../../src/firebase/firestore/soondb';
 import { rankController } from '../../../src/runtime/firebase/rank';
 import { createToken } from '../../../src/runtime/firebase/token/base';

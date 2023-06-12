@@ -1,4 +1,4 @@
-import { SOON_PROD_ADDRESS, SOON_TEST_ADDRESS } from '@soonaverse/interfaces';
+import { SOON_PROD_ADDRESS, SOON_TEST_ADDRESS } from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { get } from 'lodash';
 import { isProdEnv } from '../../utils/config.utils';

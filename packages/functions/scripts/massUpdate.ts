@@ -1,4 +1,4 @@
-import { COL } from '@soonaverse/interfaces';
+import { COL } from '@build5/interfaces';
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import serviceAccount from './serviceAccountKeyTest.json';

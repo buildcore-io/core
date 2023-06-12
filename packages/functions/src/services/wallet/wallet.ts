@@ -1,7 +1,7 @@
-import { COL, DEFAULT_NETWORK, Network } from '@soonaverse/interfaces';
+import { COL, DEFAULT_NETWORK, Network } from '@build5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
-import { getIotaClient, IotaWallet } from './IotaWalletService';
-import { getShimmerClient, SmrWallet } from './SmrWalletService';
+import { IotaWallet, getIotaClient } from './IotaWalletService';
+import { SmrWallet, getShimmerClient } from './SmrWalletService';
 
 export interface IKeyPair {
   publicKey: Uint8Array;

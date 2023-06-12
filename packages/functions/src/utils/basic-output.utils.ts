@@ -1,3 +1,4 @@
+import { Timestamp } from '@build5/interfaces';
 import {
   ADDRESS_UNLOCK_CONDITION_TYPE,
   BASIC_OUTPUT_TYPE,
@@ -19,7 +20,6 @@ import {
   UnlockConditionTypes,
 } from '@iota/iota.js-next';
 import { Converter, HexHelper } from '@iota/util.js-next';
-import { Timestamp } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { cloneDeep, isEmpty } from 'lodash';

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, Collection, Nft, Space, Transaction, TransactionType } from '@soonaverse/interfaces';
+import { COL, Collection, Nft, Space, Transaction, TransactionType } from '@build5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { depositNft, withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { claimSpace } from '../../src/runtime/firebase/space';
@@ -46,7 +46,7 @@ describe('Nft depositing', () => {
     collection = <Collection>await collectionDocRef.get();
   });
 
-  it('Should deposit 2 nfts minted outside soonaverse', async () => {
+  it('Should deposit 2 nfts minted outside build5', async () => {
     await soonDb().doc(`${COL.NFT}/${nft1.uid}`).delete();
     await soonDb().doc(`${COL.NFT}/${nft2.uid}`).delete();
     await soonDb().doc(`${COL.COLLECTION}/${collection.uid}`).delete();

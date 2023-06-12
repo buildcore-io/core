@@ -1,4 +1,4 @@
-import { COL, Proposal, ProposalType, SUB_COL } from '@soonaverse/interfaces';
+import { COL, Proposal, ProposalType, SUB_COL } from '@build5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { addRemoveGuardian } from '../../services/payment/tangle-service/space/SpaceGuardianService';
 

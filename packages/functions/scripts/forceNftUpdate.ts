@@ -1,4 +1,4 @@
-import { NftAvailable } from '@soonaverse/interfaces';
+import { NftAvailable } from '@build5/interfaces';
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import serviceAccount from './serviceAccountKeyProd.json';

@@ -3,7 +3,7 @@ import {
   Opr,
   PublicCollections,
   PublicSubCollections,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import { Observable, map } from 'rxjs';
 import {
   SESSION_ID,

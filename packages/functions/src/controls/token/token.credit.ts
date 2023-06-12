@@ -11,7 +11,7 @@ import {
   TransactionCreditType,
   TransactionType,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { getAddress } from '../../utils/address.utils';
 import { invalidArgument } from '../../utils/error.utils';

@@ -1,4 +1,4 @@
-import { Award, Opr, PublicCollections } from '@soonaverse/interfaces';
+import { Award, Opr, PublicCollections } from '@build5/interfaces';
 import { switchMap } from 'rxjs';
 import { SoonEnv } from '../../Config';
 import { CrudRepository } from '../CrudRepository';

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IndexerPluginClient, INftOutput } from '@iota/iota.js-next';
 import {
   COL,
   Collection,
@@ -13,7 +12,8 @@ import {
   Space,
   Transaction,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import { IndexerPluginClient, INftOutput } from '@iota/iota.js-next';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { getAddress } from '../../src/utils/address.utils';
 import { EMPTY_NFT_ID } from '../../src/utils/collection-minting-utils/nft.utils';

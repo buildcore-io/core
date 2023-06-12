@@ -1,4 +1,4 @@
-import { COL, Space, StakeReward, WenError } from '@soonaverse/interfaces';
+import { COL, Space, StakeReward, WenError } from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { stakeReward } from '../../src/runtime/firebase/stake';

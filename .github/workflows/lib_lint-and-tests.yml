@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 18
       - name: Install Dependencies
-        run: cd ../../ && npm run build:lib
+        run: npm run build:lib
       - name: Prettier
         run: npx prettier --check .
       - name: Lint

@@ -1,4 +1,4 @@
-import { COL, MIN_IOTA_AMOUNT, Transaction } from '@soonaverse/interfaces';
+import { COL, MIN_IOTA_AMOUNT, Transaction } from '@build5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { importMintedToken } from '../../src/runtime/firebase/token/minting';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';

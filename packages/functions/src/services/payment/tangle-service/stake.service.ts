@@ -1,4 +1,3 @@
-import { HexHelper } from '@iota/util.js-next';
 import {
   COL,
   MilestoneTransaction,
@@ -11,7 +10,8 @@ import {
   TransactionUnlockType,
   TransactionValidationType,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { set } from 'lodash';

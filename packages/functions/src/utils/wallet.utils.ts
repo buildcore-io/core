@@ -1,3 +1,12 @@
+import {
+  COL,
+  DecodedToken,
+  Member,
+  Network,
+  WEN_FUNC,
+  WenError,
+  WenRequest,
+} from '@build5/interfaces';
 import { Ed25519 } from '@iota/crypto.js';
 import { Ed25519 as Ed25519Next } from '@iota/crypto.js-next';
 import { Bech32Helper, Ed25519Address } from '@iota/iota.js';
@@ -9,15 +18,6 @@ import {
 import { Converter } from '@iota/util.js';
 import { Converter as ConverterNext, HexHelper } from '@iota/util.js-next';
 import { recoverPersonalSignature } from '@metamask/eth-sig-util';
-import {
-  COL,
-  DecodedToken,
-  Member,
-  Network,
-  WEN_FUNC,
-  WenError,
-  WenRequest,
-} from '@soonaverse/interfaces';
 import { randomBytes } from 'crypto';
 import dayjs from 'dayjs';
 import { Wallet } from 'ethers';

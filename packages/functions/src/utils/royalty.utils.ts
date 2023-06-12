@@ -1,4 +1,4 @@
-import { COL, SystemConfig, SYSTEM_CONFIG_DOC_ID } from '@soonaverse/interfaces';
+import { COL, SYSTEM_CONFIG_DOC_ID, SystemConfig } from '@build5/interfaces';
 import bigDecimal from 'js-big-decimal';
 import { soonDb } from '../firebase/firestore/soondb';
 import {

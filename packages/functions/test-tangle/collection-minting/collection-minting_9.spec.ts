@@ -1,4 +1,4 @@
-import { COL, UnsoldMintingOptions, WenError } from '@soonaverse/interfaces';
+import { COL, UnsoldMintingOptions, WenError } from '@build5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { mintCollection } from '../../src/runtime/firebase/collection/index';
 import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';

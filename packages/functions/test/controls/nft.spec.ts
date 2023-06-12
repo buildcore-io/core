@@ -12,7 +12,7 @@ import {
   Space,
   WEN_FUNC,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { createCollection } from '../../src/runtime/firebase/collection/index';

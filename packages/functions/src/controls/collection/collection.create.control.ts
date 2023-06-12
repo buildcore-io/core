@@ -10,7 +10,7 @@ import {
   Space,
   SUB_COL,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { hasStakedSoonTokens } from '../../services/stake.service';
 import { assertSpaceHasValidAddress } from '../../utils/address.utils';

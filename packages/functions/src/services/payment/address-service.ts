@@ -17,7 +17,7 @@ import {
   TransactionType,
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
   VoteTransaction,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
 import { getSnapshot, soonDb } from '../../firebase/firestore/soondb';

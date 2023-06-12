@@ -1,4 +1,4 @@
-import { COL, Nft } from '@soonaverse/interfaces';
+import { COL, Nft } from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../firebase/firestore/soondb';
 import { ProcessingService } from '../services/payment/payment-processing';

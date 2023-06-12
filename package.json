@@ -2,28 +2,26 @@
   "name": "root",
   "private": true,
   "workspaces": [
-    "packages/*"
+    "packages/indexes",
+    "packages/interfaces",
+    "packages/lib",
+    "packages/functions"
   ],
   "scripts": {
-    "build:ui": "npx lerna@6.6.2 bootstrap --scope=@soonaverse/ui && npx lerna@6.6.2 run build --scope=@soonaverse/ui --include-dependencies",
-    "build:functions": "npx lerna@6.6.2 bootstrap --scope=@soonaverse/functions && npx lerna@6.6.2 run build --scope=@soonaverse/functions --include-dependencies",
-    "build:interfaces": "npx lerna@6.6.2 bootstrap --scope=@soonaverse/interfaces && npx lerna@6.6.2 run build --scope=@soonaverse/interfaces --include-dependencies",
-    "build:lib": "npx lerna@6.6.2 bootstrap --scope=@soonaverse/lib && npx lerna@6.6.2 run build --scope=@soonaverse/lib --include-dependencies",
-    "build": "npx lerna@6.6.2 bootstrap",
-    "clean:functions": "rm -rf packages/functions/interfaces; rm -rf packages/functions/lib",
-    "clean:interfaces": "rm -rf packages/interfaces/lib",
-    "clean:lib": "rm -rf packages/lib/lib",
-    "clean:ui": "rm -rf packages/ui/dist",
-    "clean:node_modules": "npx lerna@6.6.2 clean --yes; rm -rf node_modules",
-    "clean": "npm run clean:node_modules; npm run clean:functions; npm run clean:interfaces; npm run clean:lib; npm run clean:ui",
-    "prettier:ui": "npx prettier --write ./packages/ui",
+    "build:functions": "npm run build:interfaces && npm i --workspace=packages/functions && npm run build --workspace=packages/functions",
+    "build:interfaces": "npm i --workspace=packages/interfaces && npm run build --workspace=packages/interfaces",
+    "build:lib": "npm run build:interfaces && npm i --workspace=packages/lib && npm run build --workspace=packages/lib",
+    "build:indexes": "npm i --workspace=packages/indexes && npm run build --workspace=packages/indexes",
+    "build": "npm i --workspaces && npm run build --workspaces",
+    "clean:functions": "rm -rf packages/functions/interfaces; rm -rf packages/functions/lib; rm -rf packages/functions/node_modules",
+    "clean:interfaces": "rm -rf packages/interfaces/interfaces; rm -rf packages/interfaces/lib; rm -rf packages/interfaces/node_modules",
+    "clean:lib": "rm -rf packages/lib/interfaces; rm -rf packages/lib/lib; rm -rf packages/lib/node_modules",
+    "clean:indexes": "rm -rf packages/indexes/interfaces; rm -rf packages/indexes/lib; rm -rf packages/indexes/node_modules",
+    "clean": "npm run clean:functions; npm run clean:interfaces; npm run clean:indexes; npm run clean:lib",
     "prettier:functions": "npx prettier --write ./packages/functions",
     "prettier:interfaces": "npx prettier --write ./packages/interfaces",
     "prettier:lib": "npx prettier --write ./packages/lib",
     "prettier:indexes": "npx prettier --write ./packages/indexes",
-    "prettier": "npm run prettier:functions; npm run prettier:interfaces; npm run prettier:indexes; npm run prettier:lib; npm run prettier:ui"
-  },
-  "devDependencies": {
-    "lerna": "6.6.2"
+    "prettier": "npm run prettier:functions; npm run prettier:interfaces; npm run prettier:indexes;"
   }
 }

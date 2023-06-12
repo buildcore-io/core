@@ -8,7 +8,7 @@ import {
   TRANSACTION_AUTO_EXPIRY_MS,
   TRANSACTION_MAX_EXPIRY_MS,
   WEN_FUNC,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import Joi from 'joi';
 import { AVAILABLE_NETWORKS } from '../../../controls/common';

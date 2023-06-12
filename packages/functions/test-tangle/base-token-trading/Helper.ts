@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, Member, Network, Token, TokenStatus } from '@soonaverse/interfaces';
+import { COL, Member, Network, Token, TokenStatus } from '@build5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { createMember } from '../../src/runtime/firebase/member';
 import { IotaWallet } from '../../src/services/wallet/IotaWalletService';
@@ -15,7 +15,7 @@ import {
   mockWalletReturnValue,
   saveSoon,
 } from '../../test/controls/common';
-import { getWallet, MEDIA, testEnv } from '../../test/set-up';
+import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 import { addValidatedAddress } from '../common';
 
 export class Helper {

@@ -1,4 +1,4 @@
-import { COL, Space, SUB_COL, WenError } from '@soonaverse/interfaces';
+import { COL, Space, SUB_COL, WenError } from '@build5/interfaces';
 import { soonDb } from '../../../../firebase/firestore/soondb';
 import { uidSchema } from '../../../../runtime/firebase/common';
 import { invalidArgument } from '../../../../utils/error.utils';

@@ -9,7 +9,7 @@ import {
   TokenDistribution,
   TokenStatus,
   TransactionAwardType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';

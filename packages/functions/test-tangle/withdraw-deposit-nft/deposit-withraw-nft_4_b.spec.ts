@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, Nft, NftStatus, WenError } from '@soonaverse/interfaces';
+import { COL, Nft, NftStatus, WenError } from '@build5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { updateMember } from '../../src/runtime/firebase/member';
 import { withdrawNft } from '../../src/runtime/firebase/nft/index';

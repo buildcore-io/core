@@ -18,7 +18,7 @@ import {
   Token,
   WEN_FUNC,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
 import { soonDb } from '../../src/firebase/firestore/soondb';

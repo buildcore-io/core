@@ -1,10 +1,10 @@
+import { Network, Timestamp } from '@build5/interfaces';
 import { SingleNodeClient } from '@iota/iota.js';
 import { SingleNodeClient as SingleNodeClientNext } from '@iota/iota.js-next';
 import { HexHelper } from '@iota/util.js-next';
-import { Network, Timestamp } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
-import { MnemonicService } from '../src/services/wallet/mnemonic';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
+import { MnemonicService } from '../src/services/wallet/mnemonic';
 import { AddressDetails } from '../src/services/wallet/wallet';
 import { getRandomElement } from '../src/utils/common.utils';
 import { wait } from '../test/controls/common';

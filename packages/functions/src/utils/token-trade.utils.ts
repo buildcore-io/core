@@ -12,7 +12,7 @@ import {
   Transaction,
   TransactionCreditType,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import bigDecimal from 'js-big-decimal';
 import { ITransaction } from '../firebase/firestore/interfaces';
 import { soonDb } from '../firebase/firestore/soondb';

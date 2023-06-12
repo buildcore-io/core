@@ -5,7 +5,7 @@ import {
   Transaction,
   TransactionAwardType,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import { SoonEnv } from '../Config';
 import { CrudRepository } from './CrudRepository';
 

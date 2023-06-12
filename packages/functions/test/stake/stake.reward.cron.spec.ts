@@ -1,4 +1,4 @@
-import { COL, Stake, StakeReward, StakeRewardStatus, StakeType } from '@soonaverse/interfaces';
+import { COL, Stake, StakeReward, StakeRewardStatus, StakeType } from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { getStakedPerMember } from '../../src/cron/stakeReward.cron';
 import { soonDb } from '../../src/firebase/firestore/soondb';

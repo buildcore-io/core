@@ -1,4 +1,15 @@
 import {
+  Award,
+  COL,
+  Collection,
+  CollectionType,
+  Network,
+  Nft,
+  NftStatus,
+  Space,
+  Transaction,
+} from '@build5/interfaces';
+import {
   ADDRESS_UNLOCK_CONDITION_TYPE,
   ALIAS_ADDRESS_TYPE,
   ALIAS_UNLOCK_TYPE,
@@ -22,17 +33,6 @@ import {
   UnlockTypes,
 } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js-next';
-import {
-  Award,
-  COL,
-  Collection,
-  CollectionType,
-  Network,
-  Nft,
-  NftStatus,
-  Space,
-  Transaction,
-} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions/v2';
 import { cloneDeep, get, head, isEmpty } from 'lodash';

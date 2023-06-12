@@ -1,5 +1,5 @@
 {
-  "name": "@soonaverse/interfaces",
+  "name": "@build5/interfaces",
   "version": "0.0.0",
   "description": "",
   "license": "Apache-2.0",
@@ -18,5 +18,8 @@
   },
   "devDependencies": {
     "typescript": "4.9.5"
+  },
+  "dependencies": {
+    "interfaces": "^0.0.3"
   }
 }

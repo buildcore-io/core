@@ -8,7 +8,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
 import { soonDb } from '../../../../firebase/firestore/soondb';

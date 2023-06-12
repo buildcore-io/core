@@ -1,5 +1,5 @@
+import { Bucket } from '@build5/interfaces';
 import { Bucket as FBucket } from '@google-cloud/storage';
-import { Bucket } from '@soonaverse/interfaces';
 import { Storage } from 'firebase-admin/storage';
 import { FirebaseApp } from '../app/app';
 import { IBucket, IStorage } from './interfaces';

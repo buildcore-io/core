@@ -1,12 +1,4 @@
 import {
-  ALIAS_ADDRESS_TYPE,
-  AddressTypes,
-  ED25519_ADDRESS_TYPE,
-  INftOutput,
-  IndexerPluginClient,
-  NFT_ADDRESS_TYPE,
-} from '@iota/iota.js-next';
-import {
   COL,
   MilestoneTransaction,
   MilestoneTransactionEntry,
@@ -22,7 +14,15 @@ import {
   TransactionUnlockType,
   TransactionValidationType,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import {
+  ALIAS_ADDRESS_TYPE,
+  AddressTypes,
+  ED25519_ADDRESS_TYPE,
+  INftOutput,
+  IndexerPluginClient,
+  NFT_ADDRESS_TYPE,
+} from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import Joi from 'joi';
 import { isEmpty } from 'lodash';

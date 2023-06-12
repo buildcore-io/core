@@ -1,4 +1,3 @@
-import { ITransactionPayload, TransactionHelper } from '@iota/iota.js-next';
 import {
   COL,
   Collection,
@@ -11,7 +10,8 @@ import {
   TransactionCreditType,
   TransactionMetadataNftType,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import { ITransactionPayload, TransactionHelper } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { get } from 'lodash';
 import { soonDb } from '../../firebase/firestore/soondb';

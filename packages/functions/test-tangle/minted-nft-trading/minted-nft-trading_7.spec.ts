@@ -1,4 +1,3 @@
-import { IndexerPluginClient } from '@iota/iota.js-next';
 import {
   COL,
   Collection,
@@ -10,7 +9,8 @@ import {
   Transaction,
   TransactionOrderType,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import { IndexerPluginClient } from '@iota/iota.js-next';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';

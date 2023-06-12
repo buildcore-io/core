@@ -1,4 +1,4 @@
-import { Bucket } from '@soonaverse/interfaces';
+import { Bucket } from '@build5/interfaces';
 import Joi, { AnySchema } from 'joi';
 import { isEmpty } from 'lodash';
 import { isEmulatorEnv, isProdEnv } from '../../utils/config.utils';

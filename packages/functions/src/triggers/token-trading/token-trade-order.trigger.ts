@@ -8,7 +8,7 @@ import {
   TokenTradeOrderStatus,
   TokenTradeOrderType,
   WEN_FUNC_TRIGGER,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import * as functions from 'firebase-functions/v2';
 import { DocumentOptions } from 'firebase-functions/v2/firestore';
 import bigDecimal from 'js-big-decimal';

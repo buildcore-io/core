@@ -1,4 +1,4 @@
-import { COL, Token, TokenStatus, WenError } from '@soonaverse/interfaces';
+import { COL, Token, TokenStatus, WenError } from '@build5/interfaces';
 import Joi from 'joi';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { updateTokenSchema, uptdateMintedTokenSchema } from '../../runtime/firebase/token/base';

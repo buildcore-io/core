@@ -1,4 +1,3 @@
-import { IndexerPluginClient } from '@iota/iota.js-next';
 import {
   Award,
   BillPaymentType,
@@ -11,7 +10,8 @@ import {
   TokenDropStatus,
   Transaction,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import { IndexerPluginClient } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { validateAddress } from '../../src/runtime/firebase/address';

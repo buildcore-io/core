@@ -1,4 +1,4 @@
-import { ApiRoutes, PING_INTERVAL } from '@soonaverse/interfaces';
+import { ApiRoutes, PING_INTERVAL } from '@build5/interfaces';
 import { wrappedFetch } from './fetch.utils';
 import { randomString } from './utils';
 

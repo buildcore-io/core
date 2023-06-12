@@ -1,4 +1,4 @@
-import { Award, COL } from '@soonaverse/interfaces';
+import { Award, COL } from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { soonDb } from '../firebase/firestore/soondb';
 

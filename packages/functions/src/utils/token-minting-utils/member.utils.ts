@@ -1,6 +1,6 @@
+import { COL, SUB_COL, Token, TokenDistribution, TokenDrop } from '@build5/interfaces';
 import { INodeInfo } from '@iota/iota.js-next';
 import { HexHelper } from '@iota/util.js-next';
-import { COL, SUB_COL, Token, TokenDistribution, TokenDrop } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { last } from 'lodash';

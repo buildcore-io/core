@@ -5,7 +5,7 @@ import {
   Nft,
   NftAvailable,
   WEN_FUNC_TRIGGER,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import * as functions from 'firebase-functions/v2';
 import { soonDb } from '../firebase/firestore/soondb';
 import { scale } from '../scale.settings';

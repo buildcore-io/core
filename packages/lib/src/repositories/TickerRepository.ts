@@ -1,4 +1,4 @@
-import { PublicCollections, Ticker } from '@soonaverse/interfaces';
+import { PublicCollections, Ticker } from '@build5/interfaces';
 import { SoonEnv } from '../Config';
 import { CrudRepository } from './CrudRepository';
 

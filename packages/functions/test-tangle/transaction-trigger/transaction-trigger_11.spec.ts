@@ -1,16 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  COL,
-  MIN_IOTA_AMOUNT,
-  Network,
-  Transaction,
-  TransactionType,
-} from '@soonaverse/interfaces';
+import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build5/interfaces';
 import { isEmpty, isEqual } from 'lodash';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { IotaWallet } from '../../src/services/wallet/IotaWalletService';
-import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
+import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';

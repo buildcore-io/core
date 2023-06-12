@@ -17,7 +17,7 @@ import {
   TransactionUnlockType,
   WEN_FUNC_TRIGGER,
   WalletResult,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions/v2';
 import { isEmpty } from 'lodash';

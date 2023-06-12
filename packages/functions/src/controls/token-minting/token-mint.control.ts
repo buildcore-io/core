@@ -1,4 +1,3 @@
-import { TransactionHelper } from '@iota/iota.js-next';
 import {
   COL,
   Member,
@@ -11,7 +10,8 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import { TransactionHelper } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';

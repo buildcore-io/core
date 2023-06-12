@@ -1,4 +1,3 @@
-import { INftOutput } from '@iota/iota.js-next';
 import {
   Access,
   Award,
@@ -19,7 +18,8 @@ import {
   Transaction,
   TransactionOrder,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import { INftOutput } from '@iota/iota.js-next';
 import * as functions from 'firebase-functions/v2';
 import { head, isEmpty, set } from 'lodash';
 import { ITransaction } from '../../../firebase/firestore/interfaces';

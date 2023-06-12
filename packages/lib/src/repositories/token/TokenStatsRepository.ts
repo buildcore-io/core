@@ -1,4 +1,4 @@
-import { PublicCollections, PublicSubCollections, TokenStats } from '@soonaverse/interfaces';
+import { PublicCollections, PublicSubCollections, TokenStats } from '@build5/interfaces';
 import { SoonEnv } from '../../Config';
 import { SubCrudRepository } from '../SubCrudRepository';
 

@@ -1,4 +1,4 @@
-import { COL, PublicCollections, TransactionType } from '@soonaverse/interfaces';
+import { COL, PublicCollections, TransactionType } from '@build5/interfaces';
 import { getById } from '../../src/api/getById';
 import { getMany } from '../../src/api/getMany';
 import { soonDb } from '../../src/firebase/firestore/soondb';

@@ -1,3 +1,4 @@
+import { KEY_NAME_TANGLE } from '@build5/interfaces';
 import {
   DEFAULT_PROTOCOL_VERSION,
   IBlock,
@@ -6,15 +7,14 @@ import {
   IUTXOInput,
   MAX_BLOCK_LENGTH,
   OutputTypes,
-  serializeBlock,
   TAGGED_DATA_PAYLOAD_TYPE,
-  TransactionHelper,
   TRANSACTION_ESSENCE_TYPE,
   TRANSACTION_PAYLOAD_TYPE,
+  TransactionHelper,
   UnlockTypes,
+  serializeBlock,
 } from '@iota/iota.js-next';
 import { Converter, WriteStream } from '@iota/util.js-next';
-import { KEY_NAME_TANGLE } from '@soonaverse/interfaces';
 import { SmrParams, SmrWallet } from '../services/wallet/SmrWalletService';
 
 export const submitBlock = async (

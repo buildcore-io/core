@@ -8,7 +8,7 @@ import {
   Token,
   TokenStatus,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import Joi from 'joi';
 import { isEmpty, set } from 'lodash';
 import { soonDb } from '../../../../firebase/firestore/soondb';

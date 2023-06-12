@@ -1,4 +1,3 @@
-import { IndexerPluginClient } from '@iota/iota.js-next';
 import {
   COL,
   Network,
@@ -8,7 +7,8 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import { IndexerPluginClient } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { soonDb } from '../../firebase/firestore/soondb';

@@ -5,34 +5,6 @@ on:
     types: [published]
 
 jobs:
-  deploy_hosting:
-    runs-on: ubuntu-latest
-    environment: production
-    defaults:
-      run:
-        working-directory: packages/ui
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install Dependencies
-        run: cd ../../ && npm run build:ui
-      - name: Build
-        run: npm run build:prod
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE }}'
-          projectId: 'soonaverse'
-          channelId: live
-          target: 5d1024cf-d55e-4b10-9d27-eccc37e80161
-      - name: Purge cache
-        env:
-          CLOUDFLARE_API: ${{ secrets.CLOUDFLARE_API_PURGE }}
-        run: |
-          curl -X POST "https://api.cloudflare.com/client/v4/zones/52428a0399af40665f0e8c6875520990/purge_cache" \
-              -H "Authorization: Bearer $CLOUDFLARE_API" \
-              -H "Content-Type: application/json" \
-              --data '{"purge_everything":true}'
-
   deploy_functions:
     runs-on: ubuntu-latest
     environment: production
@@ -66,10 +38,13 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - name: Init
         run: |
-          npx lerna@6.6.2 version ${{ github.event.release.tag_name }} --no-private --no-git-tag-version --y
+          npm version ${{ github.event.release.tag_name }} --workspace packages/interfaces
+          npm version ${{ github.event.release.tag_name }} --workspace packages/lib
           npm run build:lib
       - name: Deploy to npm
-        run: npx lerna@6.6.2 publish ${{ github.event.release.tag_name }} --no-private --no-git-tag-version --y
+        run: |
+          npm publish --workspace packages/interfaces
+          npm publish --workspace packages/lib
 
   roll-firestore:
     runs-on: ubuntu-latest

@@ -1,4 +1,4 @@
-import { PublicCollections, QUERY_MAX_LENGTH, TokenPurchase } from '@soonaverse/interfaces';
+import { PublicCollections, QUERY_MAX_LENGTH, TokenPurchase } from '@build5/interfaces';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';

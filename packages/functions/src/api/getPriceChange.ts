@@ -1,4 +1,4 @@
-import { GetPriceChangeRequest, PublicCollections, TokenPurchaseAge } from '@soonaverse/interfaces';
+import { GetPriceChangeRequest, PublicCollections, TokenPurchaseAge } from '@build5/interfaces';
 import dayjs from 'dayjs';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';

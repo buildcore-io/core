@@ -3,7 +3,7 @@ import {
   MAX_WALLET_RETRY,
   RETRY_UNCOFIRMED_PAYMENT_DELAY,
   Transaction,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { ITransaction } from '../firebase/firestore/interfaces';
 import { soonDb } from '../firebase/firestore/soondb';

@@ -8,7 +8,7 @@ import {
   TWITTER_REGEXP,
   UnsoldMintingOptions,
   WEN_FUNC,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import Joi from 'joi';
 import { uniq } from 'lodash';

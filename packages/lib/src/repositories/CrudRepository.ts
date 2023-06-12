@@ -1,4 +1,4 @@
-import { GetManyAdvancedRequest, Opr, PublicCollections } from '@soonaverse/interfaces';
+import { GetManyAdvancedRequest, Opr, PublicCollections } from '@build5/interfaces';
 import { Observable, combineLatest, map } from 'rxjs';
 import {
   SESSION_ID,

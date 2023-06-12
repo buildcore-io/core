@@ -15,7 +15,7 @@ import {
   TransactionType,
   VoteTransaction,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import { uniq } from 'lodash';
 import { soonDb } from '../../firebase/firestore/soondb';

@@ -1,4 +1,3 @@
-import { IndexerPluginClient, INftOutput, NFT_OUTPUT_TYPE } from '@iota/iota.js-next';
 import {
   COL,
   Member,
@@ -9,7 +8,8 @@ import {
   Transaction,
   TransactionType,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import { IndexerPluginClient, INftOutput, NFT_OUTPUT_TYPE } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { finalizeAllNftAuctions } from '../../src/cron/nft.cron';

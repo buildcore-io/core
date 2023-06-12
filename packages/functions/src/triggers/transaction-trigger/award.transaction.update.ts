@@ -1,5 +1,5 @@
+import { COL, Transaction, TransactionAwardType, TransactionType } from '@build5/interfaces';
 import { ITransactionPayload, TransactionHelper } from '@iota/iota.js-next';
-import { COL, Transaction, TransactionAwardType, TransactionType } from '@soonaverse/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { indexToString } from '../../utils/block.utils';
 import { getTransactionPayloadHex } from '../../utils/smr.utils';

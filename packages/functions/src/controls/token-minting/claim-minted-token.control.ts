@@ -1,4 +1,4 @@
-import { COL } from '@soonaverse/interfaces';
+import { COL } from '@build5/interfaces';
 import { soonDb } from '../../firebase/firestore/soondb';
 import { createMintedTokenAirdropCalimOrder } from '../../services/payment/tangle-service/token-claim.service';
 

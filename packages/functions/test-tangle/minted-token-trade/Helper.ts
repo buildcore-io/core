@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { HexHelper } from '@iota/util.js-next';
 import {
   COL,
   Member,
@@ -11,7 +10,8 @@ import {
   TokenStatus,
   TokenTradeOrderType,
   Transaction,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
+import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';

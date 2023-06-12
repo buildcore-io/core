@@ -7,14 +7,14 @@ import {
   TokenDrop,
   TokenDropStatus,
   TokenStatus,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
-import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
+import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, getRandomSymbol } from '../../test/controls/common';
-import { getWallet, MEDIA } from '../../test/set-up';
+import { MEDIA, getWallet } from '../../test/set-up';
 
 export class Helper {
   public network = Network.RMS;

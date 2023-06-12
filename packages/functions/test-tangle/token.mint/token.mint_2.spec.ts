@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { COL, Member, Token, TokenStatus, TransactionType, WenError } from '@build5/interfaces';
 import { addressBalance } from '@iota/iota.js-next';
-import { COL, Member, Token, TokenStatus, TransactionType, WenError } from '@soonaverse/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { getAddress } from '../../src/utils/address.utils';

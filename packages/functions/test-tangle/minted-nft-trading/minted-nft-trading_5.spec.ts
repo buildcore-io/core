@@ -7,7 +7,7 @@ import {
   TangleRequestType,
   Transaction,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import { soonDb } from '../../src/firebase/firestore/soondb';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { WalletService } from '../../src/services/wallet/wallet';

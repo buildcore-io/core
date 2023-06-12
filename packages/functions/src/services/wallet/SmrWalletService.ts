@@ -1,3 +1,4 @@
+import { NativeToken, Network, Timestamp, Transaction } from '@build5/interfaces';
 import { Bip32Path } from '@iota/crypto.js-next';
 import {
   ADDRESS_UNLOCK_CONDITION_TYPE,
@@ -19,7 +20,6 @@ import {
   addressBalance,
 } from '@iota/iota.js-next';
 import { Converter, HexHelper } from '@iota/util.js-next';
-import { NativeToken, Network, Timestamp, Transaction } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import { generateMnemonic } from 'bip39';
 import * as functions from 'firebase-functions/v2';

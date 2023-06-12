@@ -4,7 +4,7 @@ import {
   MAX_MILLISECONDS,
   PublicCollections,
   PublicSubCollections,
-} from '@soonaverse/interfaces';
+} from '@build5/interfaces';
 import dayjs from 'dayjs';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
