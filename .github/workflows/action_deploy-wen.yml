@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: staging
     timeout-minutes: 360
-    needs: [deploy_functions, deploy_hosting]
+    needs: [deploy_functions]
     defaults:
       run:
         working-directory: packages/functions
