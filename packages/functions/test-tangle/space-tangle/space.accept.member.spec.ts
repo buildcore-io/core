@@ -6,7 +6,7 @@ import {
   TangleRequestType,
   Transaction,
 } from '@build-5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { wait } from '../../test/controls/common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
@@ -23,7 +23,7 @@ describe('Join space', () => {
   });
 
   it('Should join space via tangle request', async () => {
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${helper.space.uid}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${helper.space.uid}`);
     await spaceDocRef.update({ open: false });
 
     await requestFundsFromFaucet(Network.RMS, helper.memberAddress.bech32, MIN_IOTA_AMOUNT);

@@ -1,6 +1,6 @@
 import { PublicCollections, Space } from '@build-5/interfaces';
 import { switchMap } from 'rxjs';
-import { SoonEnv } from '../../Config';
+import { Build5Env } from '../../Config';
 import { CrudRepository } from '../CrudRepository';
 import { SpaceKnockingMemberRepository } from './SpaceKnockingMemberRepository';
 import { SpaceMemberRepository } from './SpaceMemberRepository';
@@ -8,8 +8,8 @@ import { SpaceMemberRepository } from './SpaceMemberRepository';
 export class SpaceRepository extends CrudRepository<Space> {
   private memberRepo: SpaceMemberRepository;
   private knockingMemberRepo: SpaceKnockingMemberRepository;
-  constructor(env?: SoonEnv) {
-    super(env || SoonEnv.PROD, PublicCollections.SPACE);
+  constructor(env?: Build5Env) {
+    super(env || Build5Env.PROD, PublicCollections.SPACE);
     this.memberRepo = new SpaceMemberRepository(env);
     this.knockingMemberRepo = new SpaceKnockingMemberRepository(env);
   }

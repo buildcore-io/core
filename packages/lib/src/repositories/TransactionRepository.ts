@@ -1,17 +1,17 @@
 import {
-    Nft,
-    Opr,
-    PublicCollections,
-    Transaction,
-    TransactionAwardType,
-    TransactionType,
+  Nft,
+  Opr,
+  PublicCollections,
+  Transaction,
+  TransactionAwardType,
+  TransactionType,
 } from '@build-5/interfaces';
-import { SoonEnv } from '../Config';
+import { Build5Env } from '../Config';
 import { CrudRepository } from './CrudRepository';
 
 export class TransactionRepository extends CrudRepository<Transaction> {
-  constructor(env?: SoonEnv) {
-    super(env || SoonEnv.PROD, PublicCollections.TRANSACTION);
+  constructor(env?: Build5Env) {
+    super(env || Build5Env.PROD, PublicCollections.TRANSACTION);
   }
 
   public getBadgesForMemberLive = (

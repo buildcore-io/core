@@ -29,8 +29,8 @@ import {
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions/v2';
 import { get, isEmpty, set } from 'lodash';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { IDocument, ITransaction } from '../../firebase/firestore/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
 import { SmrMilestoneTransactionAdapter } from '../../triggers/milestone-transactions-triggers/SmrMilestoneTransactionAdapter';
 import { getOutputMetadata } from '../../utils/basic-output.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
@@ -107,7 +107,7 @@ export class TransactionService {
     };
 
     if (order.payload.token) {
-      const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${order.payload.token}`);
+      const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${order.payload.token}`);
       const token = await tokenDocRef.get<Token>();
       if (token) {
         set(data, 'payload.token', token.uid);
@@ -115,7 +115,7 @@ export class TransactionService {
       }
     }
     this.updates.push({
-      ref: soonDb().doc(`${COL.TRANSACTION}/${data.uid}`),
+      ref: build5Db().doc(`${COL.TRANSACTION}/${data.uid}`),
       data,
       action: 'set',
     });
@@ -166,7 +166,7 @@ export class TransactionService {
         },
       };
       this.updates.push({
-        ref: soonDb().doc(`${COL.TRANSACTION}/${data.uid}`),
+        ref: build5Db().doc(`${COL.TRANSACTION}/${data.uid}`),
         data,
         action: 'set',
       });
@@ -198,7 +198,7 @@ export class TransactionService {
         },
       };
       this.updates.push({
-        ref: soonDb().doc(`${COL.TRANSACTION}/${data.uid}`),
+        ref: build5Db().doc(`${COL.TRANSACTION}/${data.uid}`),
         data,
         action: 'set',
       });
@@ -254,7 +254,7 @@ export class TransactionService {
       }
 
       if (payment.payload.token) {
-        const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${payment.payload.token}`);
+        const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${payment.payload.token}`);
         const token = await tokenDocRef.get<Token>();
         if (token) {
           set(data, 'payload.token', token.uid);
@@ -262,7 +262,7 @@ export class TransactionService {
         }
       }
       this.updates.push({
-        ref: soonDb().doc(`${COL.TRANSACTION}/${data.uid}`),
+        ref: build5Db().doc(`${COL.TRANSACTION}/${data.uid}`),
         data: data,
         action: 'set',
       });
@@ -302,7 +302,7 @@ export class TransactionService {
         linkedTransactions: [],
       };
       this.updates.push({
-        ref: soonDb().doc(`${COL.TRANSACTION}/${data.uid}`),
+        ref: build5Db().doc(`${COL.TRANSACTION}/${data.uid}`),
         data: data,
         action: 'set',
       });
@@ -345,7 +345,7 @@ export class TransactionService {
       ignoreWalletReason,
     };
     this.updates.push({
-      ref: soonDb().doc(`${COL.TRANSACTION}/${transaction.uid}`),
+      ref: build5Db().doc(`${COL.TRANSACTION}/${transaction.uid}`),
       data: transaction,
       action: 'set',
     });
@@ -355,7 +355,7 @@ export class TransactionService {
 
   public markAsReconciled = (transaction: Transaction, chainRef: string) =>
     this.updates.push({
-      ref: soonDb().doc(`${COL.TRANSACTION}/${transaction.uid}`),
+      ref: build5Db().doc(`${COL.TRANSACTION}/${transaction.uid}`),
       data: {
         'payload.reconciled': true,
         'payload.chainReference': chainRef,
@@ -366,11 +366,11 @@ export class TransactionService {
   private getFromAddress = async (
     tran: MilestoneTransaction,
     order: TransactionOrder,
-    soonTransaction?: Transaction,
+    build5Transaction?: Transaction,
   ) => {
-    if (soonTransaction?.type === TransactionType.UNLOCK) {
-      const doc = (await soonDb()
-        .doc(soonTransaction.payload.milestoneTransactionPath)
+    if (build5Transaction?.type === TransactionType.UNLOCK) {
+      const doc = (await build5Db()
+        .doc(build5Transaction.payload.milestoneTransactionPath)
         .get<Record<string, unknown>>())!;
       const adapter = new SmrMilestoneTransactionAdapter(order.network!);
       const milestoneTransaction = await adapter.toMilestoneTransaction(doc);
@@ -383,7 +383,7 @@ export class TransactionService {
     tran: MilestoneTransaction,
     tranOutput: MilestoneTransactionEntry,
     order: TransactionOrder,
-    soonTransaction?: Transaction,
+    build5Transaction?: Transaction,
   ): Promise<TransactionMatch | undefined> {
     const unsupportedUnlockCondition = this.getUnsupportedUnlockCondition(
       tranOutput.unlockConditions,
@@ -395,13 +395,13 @@ export class TransactionService {
     const fromAddress: MilestoneTransactionEntry = await this.getFromAddress(
       tran,
       order,
-      soonTransaction,
+      build5Transaction,
     );
     if (fromAddress && tran.outputs) {
       for (const o of tran.outputs) {
         // Ignore output that contains input address. Remaining balance.
         if (
-          soonTransaction?.type !== TransactionType.UNLOCK &&
+          build5Transaction?.type !== TransactionType.UNLOCK &&
           tran.inputs.find((i) => {
             return o.address === i.address;
           })
@@ -429,12 +429,12 @@ export class TransactionService {
     tran: MilestoneTransaction,
     order: TransactionOrder,
     tranOutput: MilestoneTransactionEntry,
-    soonTransaction?: Transaction,
+    build5Transaction?: Transaction,
   ): Promise<void> {
     const fromAddress: MilestoneTransactionEntry = await this.getFromAddress(
       tran,
       order,
-      soonTransaction,
+      build5Transaction,
     );
     if (fromAddress) {
       const match: TransactionMatch = {
@@ -514,7 +514,7 @@ export class TransactionService {
       },
     };
     this.updates.push({
-      ref: soonDb().doc(`${COL.TRANSACTION}/${data.uid}`),
+      ref: build5Db().doc(`${COL.TRANSACTION}/${data.uid}`),
       data,
       action: 'set',
     });

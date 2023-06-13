@@ -1,5 +1,5 @@
 import { COL, SUB_COL, Token, TokenTradeOrderType, WenError } from '@build-5/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { createTokenTradeOrder } from '../../services/payment/tangle-service/token-trade.service';
 import { invalidArgument } from '../../utils/error.utils';
 import { getTokenBySymbol } from '../../utils/token.utils';
@@ -11,8 +11,8 @@ export const tradeTokenControl = async (
 ) => {
   let token = await getTokenBySymbol(params.symbol as string);
 
-  return await soonDb().runTransaction(async (transaction) => {
-    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token?.uid}`);
+  return await build5Db().runTransaction(async (transaction) => {
+    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token?.uid}`);
     token = await transaction.get<Token>(tokenDocRef);
     if (!token) {
       throw invalidArgument(WenError.token_does_not_exist);
@@ -31,14 +31,14 @@ export const tradeTokenControl = async (
       customParams?.ip as string | undefined,
     );
     if (tradeOrder) {
-      const orderDocRef = soonDb().doc(`${COL.TOKEN_MARKET}/${tradeOrder.uid}`);
+      const orderDocRef = build5Db().doc(`${COL.TOKEN_MARKET}/${tradeOrder.uid}`);
       transaction.create(orderDocRef, tradeOrder);
-      const distributionDocRef = soonDb().doc(
+      const distributionDocRef = build5Db().doc(
         `${COL.TOKEN}/${token?.uid}/${SUB_COL.DISTRIBUTION}/${owner}`,
       );
       transaction.update(distributionDocRef, distribution);
     } else {
-      const tranDocRef = soonDb().doc(`${COL.TRANSACTION}/${tradeOrderTransaction.uid}`);
+      const tranDocRef = build5Db().doc(`${COL.TRANSACTION}/${tradeOrderTransaction.uid}`);
       transaction.create(tranDocRef, tradeOrderTransaction);
     }
     return tradeOrder || tradeOrderTransaction;

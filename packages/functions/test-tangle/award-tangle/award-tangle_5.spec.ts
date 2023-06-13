@@ -12,7 +12,7 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
@@ -47,7 +47,7 @@ describe('Award tangle request', () => {
 
     token = await saveBaseToken(space.uid, guardian);
 
-    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${guardian}`);
+    const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${guardian}`);
     const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, network);
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
@@ -61,7 +61,7 @@ describe('Award tangle request', () => {
     });
     await MnemonicService.store(guardianAddress.bech32, guardianAddress.mnemonic);
 
-    const creditQuery = soonDb()
+    const creditQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST)
       .where('member', '==', guardian);
@@ -77,7 +77,7 @@ describe('Award tangle request', () => {
       credit.payload.response.amount,
     );
 
-    const awardDocRef = soonDb().doc(`${COL.AWARD}/${credit.payload.response.award}`);
+    const awardDocRef = build5Db().doc(`${COL.AWARD}/${credit.payload.response.award}`);
     await wait(async () => {
       const award = (await awardDocRef.get()) as Award;
       return award.approved;
@@ -110,7 +110,7 @@ describe('Award tangle request', () => {
 });
 
 const badgeQuery = (targetAddress: string) =>
-  soonDb()
+  build5Db()
     .collection(COL.TRANSACTION)
     .where('payload.type', '==', TransactionAwardType.BADGE)
     .where('member', '==', targetAddress);

@@ -1,11 +1,11 @@
 import { COL, Nft } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../firebase/firestore/soondb';
+import { build5Db } from '../firebase/firestore/build5Db';
 import { ProcessingService } from '../services/payment/payment-processing';
 
 const finalizeNftAuction = (nftId: string) =>
-  soonDb().runTransaction(async (transaction) => {
-    const nftDocRef = soonDb().collection(COL.NFT).doc(nftId);
+  build5Db().runTransaction(async (transaction) => {
+    const nftDocRef = build5Db().collection(COL.NFT).doc(nftId);
     const nft = (await transaction.get<Nft>(nftDocRef))!;
     const service = new ProcessingService(transaction);
     await service.markNftAsFinalized(nft);
@@ -13,7 +13,7 @@ const finalizeNftAuction = (nftId: string) =>
   });
 
 export const finalizeAllNftAuctions = async () => {
-  const snap = await soonDb()
+  const snap = await build5Db()
     .collection(COL.NFT)
     .where('auctionTo', '<=', dayjs().toDate())
     .get<Nft>();
@@ -22,7 +22,7 @@ export const finalizeAllNftAuctions = async () => {
 };
 
 export const hidePlaceholderAfterSoldOutCron = async () => {
-  const snap = await soonDb()
+  const snap = await build5Db()
     .collection(COL.NFT)
     .where('sold', '==', true)
     .where('placeholderNft', '==', true)
@@ -36,7 +36,7 @@ export const hidePlaceholderAfterSoldOutCron = async () => {
       nft.soldOn.toDate() &&
       dayjs(nft.soldOn.toDate()).isBefore(dayjs().add(24, 'hours'))
     ) {
-      await soonDb().collection(COL.NFT).doc(nft.uid).update({
+      await build5Db().collection(COL.NFT).doc(nft.uid).update({
         hidden: true,
       });
     }

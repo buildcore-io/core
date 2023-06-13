@@ -7,7 +7,7 @@ import {
   TransactionType,
   WenError,
 } from '@build-5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { stakeNft } from '../../src/runtime/firebase/nft';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -26,14 +26,14 @@ describe('Stake nft', () => {
 
   it.each([true, false])('Should credit first then stake', async (migration: boolean) => {
     let nft = await helper.createAndOrderNft();
-    let nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+    let nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
     await helper.mintCollection();
     nft = <Nft>await nftDocRef.get();
     await helper.withdrawNftAndAwait(nft.uid);
 
     if (migration) {
       await nftDocRef.delete();
-      await soonDb().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
+      await build5Db().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
     }
 
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
@@ -49,7 +49,7 @@ describe('Stake nft', () => {
       nft.mintingData?.nftId,
     );
 
-    const creditQuery = soonDb()
+    const creditQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_NFT)
       .where('member', '==', helper.guardian);
@@ -72,7 +72,7 @@ describe('Stake nft', () => {
       extraRequired,
     );
 
-    const stakeQuery = soonDb()
+    const stakeQuery = build5Db()
       .collection(COL.NFT_STAKE)
       .where('nft', '==', migration ? nft.mintingData?.nftId : nft.uid);
     await wait(async () => {

@@ -1,11 +1,11 @@
 import { COL, Space, SUB_COL, WenError } from '@build-5/interfaces';
 import { head } from 'lodash';
-import { soonDb } from '../firebase/firestore/soondb';
+import { build5Db } from '../firebase/firestore/build5Db';
 import { serverTime } from './dateTime.utils';
 import { invalidArgument } from './error.utils';
 
 export const assertSpaceExists = async (spaceId: string) => {
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${spaceId}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${spaceId}`);
   const space = await spaceDocRef.get<Space>();
   if (!space) {
     throw invalidArgument(WenError.space_does_not_exists);
@@ -13,7 +13,7 @@ export const assertSpaceExists = async (spaceId: string) => {
 };
 
 export const assertIsSpaceMember = async (space: string, member: string) => {
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space}`);
   const spaceMemberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(member);
   const spaceMember = await spaceMemberDocRef.get();
   if (!spaceMember) {
@@ -23,19 +23,19 @@ export const assertIsSpaceMember = async (space: string, member: string) => {
 
 export const spaceToIpfsMetadata = (space: Space) => ({
   name: space.name,
-  soonaverseId: space.uid,
+  build5Id: space.uid,
 });
 
 export const getSpace = async (space: string | undefined) => {
   if (!space) {
     return undefined;
   }
-  const docRef = soonDb().collection(COL.SPACE).doc(space);
+  const docRef = build5Db().collection(COL.SPACE).doc(space);
   return await docRef.get<Space>();
 };
 
 export const hasActiveEditProposal = async (space: string) => {
-  const ongoingProposalSnap = await soonDb()
+  const ongoingProposalSnap = await build5Db()
     .collection(COL.PROPOSAL)
     .where('settings.spaceUpdateData.uid', '==', space)
     .where('settings.endDate', '>=', serverTime())
@@ -44,7 +44,7 @@ export const hasActiveEditProposal = async (space: string) => {
 };
 
 export const getSpaceByAliasId = async (aliasId: string) => {
-  const spaces = await soonDb()
+  const spaces = await build5Db()
     .collection(COL.SPACE)
     .where('alias.aliasId', '==', aliasId)
     .limit(1)

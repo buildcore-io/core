@@ -1,13 +1,13 @@
 import { COL, SUB_COL } from '@build-5/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { getCreateSpaceData } from '../../services/payment/tangle-service/space/SpaceCreateService';
 
 export const createSpaceControl = async (owner: string, params: Record<string, unknown>) => {
   const { space, guardian, member } = await getCreateSpaceData(owner, params);
 
-  const batch = soonDb().batch();
+  const batch = build5Db().batch();
 
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space.uid}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
   batch.create(spaceDocRef, space);
 
   const spaceGuardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(owner);
@@ -15,10 +15,10 @@ export const createSpaceControl = async (owner: string, params: Record<string, u
   const spaceMemberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner);
   batch.create(spaceMemberDocRef, guardian);
 
-  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
+  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
   batch.set(memberDocRef, member, true);
 
   await batch.commit();
 
-  return soonDb().doc(`${COL.SPACE}/${space.uid}`).get();
+  return build5Db().doc(`${COL.SPACE}/${space.uid}`).get();
 };

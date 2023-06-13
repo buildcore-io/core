@@ -13,7 +13,7 @@ import {
   TransactionType,
   WenError,
 } from '@build-5/interfaces';
-import { soonDb } from '../src/firebase/firestore/soondb';
+import { build5Db } from '../src/firebase/firestore/build5Db';
 import { createMember } from '../src/runtime/firebase/member';
 import { cancelTradeOrder, tradeToken } from '../src/runtime/firebase/token/trading';
 import { AddressDetails } from '../src/services/wallet/wallet';
@@ -49,7 +49,7 @@ describe('Trade base token controller', () => {
     await testEnv.wrap(createMember)(sellerId);
     validateAddress[Network.ATOI] = await addValidatedAddress(Network.ATOI, sellerId);
     validateAddress[Network.RMS] = await addValidatedAddress(Network.RMS, sellerId);
-    seller = <Member>await soonDb().doc(`${COL.MEMBER}/${sellerId}`).get();
+    seller = <Member>await build5Db().doc(`${COL.MEMBER}/${sellerId}`).get();
 
     const guardian = await createMemberTest(walletSpy);
     const space = await createSpace(walletSpy, guardian);
@@ -70,7 +70,7 @@ describe('Trade base token controller', () => {
     const tradeOrder = await testEnv.wrap(tradeToken)({});
     await requestFundsFromFaucet(sourceNetwork, tradeOrder.payload.targetAddress, MIN_IOTA_AMOUNT);
 
-    const query = soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', seller.uid);
+    const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', seller.uid);
     await wait(async () => {
       const snap = await query.get();
       return snap.length !== 0;
@@ -88,7 +88,7 @@ describe('Trade base token controller', () => {
     const cancelled = await testEnv.wrap(cancelTradeOrder)({});
     expect(cancelled.status).toBe(TokenTradeOrderStatus.CANCELLED);
 
-    const creditSnap = await soonDb()
+    const creditSnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', seller.uid)
@@ -104,9 +104,9 @@ describe('Trade base token controller', () => {
   it.each([Network.ATOI, Network.RMS])(
     'Should throw, source address not verified',
     async (network: Network) => {
-      await soonDb()
+      await build5Db()
         .doc(`${COL.MEMBER}/${seller.uid}`)
-        .update({ [`validatedAddress.${network}`]: soonDb().deleteField() });
+        .update({ [`validatedAddress.${network}`]: build5Db().deleteField() });
       mockWalletReturnValue(walletSpy, seller.uid, {
         symbol: token.symbol,
         count: 10,
@@ -124,9 +124,9 @@ describe('Trade base token controller', () => {
     { sourceNetwork: Network.ATOI, targetNetwork: Network.RMS },
     { sourceNetwork: Network.RMS, targetNetwork: Network.ATOI },
   ])('Should throw, target address not verified', async ({ sourceNetwork, targetNetwork }) => {
-    await soonDb()
+    await build5Db()
       .doc(`${COL.MEMBER}/${seller.uid}`)
-      .update({ [`validatedAddress.${targetNetwork}`]: soonDb().deleteField() });
+      .update({ [`validatedAddress.${targetNetwork}`]: build5Db().deleteField() });
     mockWalletReturnValue(walletSpy, seller.uid, {
       symbol: token.symbol,
       count: 10,
@@ -155,6 +155,6 @@ const saveToken = async (space: string, guardian: string) => {
     icon: MEDIA,
     mintingData: { network: Network.ATOI },
   };
-  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token as Token;
 };

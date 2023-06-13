@@ -1,7 +1,7 @@
 import { COL, Opr, PublicCollections, TransactionType } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { getManyAdvanced } from '../../src/api/getManyAdvanced';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 
 describe('Get many advanced', () => {
@@ -14,7 +14,7 @@ describe('Get many advanced', () => {
       date: dayjs().add(i, 'd').toDate(),
     }));
     for (const member of members) {
-      await soonDb().doc(`${COL.MEMBER}/${member.uid}`).create(member);
+      await build5Db().doc(`${COL.MEMBER}/${member.uid}`).create(member);
     }
 
     let req = {
@@ -82,7 +82,7 @@ describe('Get many advanced', () => {
       { uid: getRandomEthAddress(), type: TransactionType.AWARD, space, isOrderType: false },
     ];
     for (const transaction of transactions) {
-      await soonDb().doc(`${COL.TRANSACTION}/${transaction.uid}`).create(transaction);
+      await build5Db().doc(`${COL.TRANSACTION}/${transaction.uid}`).create(transaction);
     }
     const req = {
       query: {
@@ -108,7 +108,7 @@ describe('Get many advanced', () => {
       { uid: getRandomEthAddress(), hidden: false, space },
     ];
     for (const nft of nfts) {
-      await soonDb().doc(`${COL.NFT}/${nft.uid}`).create(nft);
+      await build5Db().doc(`${COL.NFT}/${nft.uid}`).create(nft);
     }
     let req = {
       query: {

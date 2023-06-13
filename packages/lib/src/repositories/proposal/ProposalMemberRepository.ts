@@ -1,10 +1,10 @@
 import { Opr, ProposalMember, PublicCollections, PublicSubCollections } from '@build-5/interfaces';
-import { SoonEnv } from '../../Config';
+import { Build5Env } from '../../Config';
 import { SubCrudRepository } from '../SubCrudRepository';
 
 export class ProposalMemberRepository extends SubCrudRepository<ProposalMember> {
-  constructor(env?: SoonEnv) {
-    super(env || SoonEnv.PROD, PublicCollections.PROPOSAL, PublicSubCollections.MEMBERS);
+  constructor(env?: Build5Env) {
+    super(env || Build5Env.PROD, PublicCollections.PROPOSAL, PublicSubCollections.MEMBERS);
   }
 
   public getVotingMembersLive = (proposal: string, voted: boolean, startAfter?: string) => {

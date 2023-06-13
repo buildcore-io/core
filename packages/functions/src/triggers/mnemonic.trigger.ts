@@ -8,7 +8,7 @@ import {
 } from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
 import { chunk, isEmpty } from 'lodash';
-import { soonDb } from '../firebase/firestore/soondb';
+import { build5Db } from '../firebase/firestore/build5Db';
 import { scale } from '../scale.settings';
 import { EXECUTABLE_TRANSACTIONS } from './transaction-trigger/transaction.trigger';
 
@@ -35,7 +35,7 @@ export const mnemonicWrite = functions.firestore.onDocumentUpdated(
       transactions.find((doc) => doc.type !== TransactionType.CREDIT)?.uid ||
       transactions.find((doc) => doc.type === TransactionType.CREDIT)?.uid;
     if (!isEmpty(tranId)) {
-      await soonDb()
+      await build5Db()
         .doc(`${COL.TRANSACTION}/${tranId}`)
         .update({ shouldRetry: true, 'payload.walletReference.inProgress': false });
     }
@@ -46,7 +46,7 @@ const COUNT_IN = Array.from(Array(MAX_WALLET_RETRY)).map((_, i) => i);
 
 const getUncofirmedTransactionsByFieldName = async (fieldName: FieldNameType, address: string) => {
   const promises = chunk(EXECUTABLE_TRANSACTIONS, 5).map((chunk) =>
-    soonDb()
+    build5Db()
       .collection(COL.TRANSACTION)
       .where(fieldName, '==', address)
       .where('type', 'in', chunk)

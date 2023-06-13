@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
-import { soonDb } from '../firebase/firestore/soondb';
+import { build5Db } from '../firebase/firestore/build5Db';
 import { CommonJoi } from '../services/joi/common';
 import { getQueryParams } from './common';
 
@@ -19,7 +19,7 @@ export const keepAlive = async (req: functions.https.Request, res: express.Respo
   if (!body) {
     return;
   }
-  const docRef = soonDb().doc(`${COL.KEEP_ALIVE}/${body.sessionId}`);
+  const docRef = build5Db().doc(`${COL.KEEP_ALIVE}/${body.sessionId}`);
   await docRef.set({}, true);
   res.status(200).send({ update: true });
 };
@@ -33,7 +33,7 @@ export const sendLiveUpdates = async <T>(
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
 
-  const keepAliveDocRef = soonDb().doc(`${COL.KEEP_ALIVE}/${sessionId}`);
+  const keepAliveDocRef = build5Db().doc(`${COL.KEEP_ALIVE}/${sessionId}`);
   await keepAliveDocRef.set({}, true);
 
   const ping = async () => {

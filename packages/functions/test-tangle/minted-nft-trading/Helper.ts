@@ -16,7 +16,7 @@ import {
   UnsoldMintingOptions,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import {
   approveCollection,
   createCollection,
@@ -85,13 +85,13 @@ export class Helper {
       collectionMintOrder.payload.amount,
       expiresAt,
     );
-    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${this.collection}`);
+    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${this.collection}`);
     await wait(async () => {
       const data = <Collection>await collectionDocRef.get();
       return data.status === CollectionStatus.MINTED;
     });
 
-    const nftDocRef = soonDb().doc(`${COL.NFT}/${this.nft?.uid}`);
+    const nftDocRef = build5Db().doc(`${COL.NFT}/${this.nft?.uid}`);
     this.nft = <Nft>await nftDocRef.get();
   };
 
@@ -103,7 +103,7 @@ export class Helper {
     mockWalletReturnValue(this.walletSpy, this.guardian!, nft);
     nft = await testEnv.wrap(createNft)({});
 
-    await soonDb()
+    await build5Db()
       .doc(`${COL.NFT}/${nft.uid}`)
       .update({ availableFrom: dayjs().subtract(1, 'h').toDate() });
     if (shouldOrder) {
@@ -119,7 +119,7 @@ export class Helper {
       await milestoneProcessed(milestone.milestone, milestone.tranId);
     }
 
-    this.nft = <Nft>await soonDb().doc(`${COL.NFT}/${nft.uid}`).get();
+    this.nft = <Nft>await build5Db().doc(`${COL.NFT}/${nft.uid}`).get();
     return this.nft;
   };
 
@@ -127,7 +127,7 @@ export class Helper {
     mockWalletReturnValue(this.walletSpy, this.guardian!, this.dummyAuctionData(this.nft!.uid));
     await testEnv.wrap(setForSaleNft)({});
     await wait(
-      async () => (await soonDb().doc(`${COL.NFT}/${this.nft!.uid}`).get<Nft>())?.available === 3,
+      async () => (await build5Db().doc(`${COL.NFT}/${this.nft!.uid}`).get<Nft>())?.available === 3,
     );
   };
 
@@ -135,7 +135,7 @@ export class Helper {
     mockWalletReturnValue(this.walletSpy, this.guardian!, this.dummySaleData(this.nft!.uid));
     await testEnv.wrap(setForSaleNft)({});
     await wait(
-      async () => (await soonDb().doc(`${COL.NFT}/${this.nft!.uid}`).get<Nft>())?.available === 1,
+      async () => (await build5Db().doc(`${COL.NFT}/${this.nft!.uid}`).get<Nft>())?.available === 1,
     );
   };
 

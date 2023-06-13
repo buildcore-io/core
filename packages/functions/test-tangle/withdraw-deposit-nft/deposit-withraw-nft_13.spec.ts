@@ -10,7 +10,7 @@ import {
   UnlockTypes,
 } from '@iota/iota.js-next';
 import { cloneDeep } from 'lodash';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { depositNft } from '../../src/runtime/firebase/nft';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
@@ -49,7 +49,7 @@ describe('Collection minting', () => {
         description: 'test',
       },
     );
-    const query = soonDb().collection(COL.NFT).where('owner', '==', helper.guardian);
+    const query = build5Db().collection(COL.NFT).where('owner', '==', helper.guardian);
     await wait(async () => {
       const snap = await query.get();
       return snap.length === 1;
@@ -70,7 +70,7 @@ describe('Collection minting', () => {
         description: 'test',
       },
     );
-    const query = soonDb().collection(COL.NFT).where('owner', '==', helper.guardian);
+    const query = build5Db().collection(COL.NFT).where('owner', '==', helper.guardian);
     await wait(async () => {
       const snap = await query.get();
       return snap.length === 1;

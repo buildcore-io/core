@@ -1,6 +1,6 @@
 import { COL, CollectionStats, SUB_COL } from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
-import { soonDb } from '../firebase/firestore/soondb';
+import { build5Db } from '../firebase/firestore/build5Db';
 import { getRankingThreshold } from '../utils/config.utils';
 
 export const collectionStatsUpdate = functions.firestore.onDocumentWritten(
@@ -32,7 +32,7 @@ const rankingThresholdReached = (
 };
 
 const onRankingThresholdReached = async (collectionId: string) => {
-  await soonDb().doc(`${COL.COLLECTION}/${collectionId}`).update({
+  await build5Db().doc(`${COL.COLLECTION}/${collectionId}`).update({
     approved: false,
     rejected: true,
   });

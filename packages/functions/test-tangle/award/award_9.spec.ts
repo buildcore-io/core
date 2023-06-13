@@ -11,7 +11,7 @@ import {
   TransactionAwardType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
@@ -60,7 +60,7 @@ describe('Create award, native', () => {
     mockWalletReturnValue(walletSpy, member, awardRequest(space.uid, token.symbol));
     award = await testEnv.wrap(createAward)({});
 
-    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${guardian}`);
+    const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${guardian}`);
     const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, network);
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
@@ -79,7 +79,7 @@ describe('Create award, native', () => {
     );
     await MnemonicService.store(guardianAddress.bech32, guardianAddress.mnemonic);
 
-    const awardDocRef = soonDb().doc(`${COL.AWARD}/${award.uid}`);
+    const awardDocRef = build5Db().doc(`${COL.AWARD}/${award.uid}`);
     await wait(async () => {
       const award = <Award>await awardDocRef.get();
       return award.approved && award.funded;
@@ -94,12 +94,12 @@ describe('Create award, native', () => {
     mockWalletReturnValue(walletSpy, guardian, { award: award.uid, members: [member, member] });
     await testEnv.wrap(approveAwardParticipant)({});
 
-    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
+    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
     const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member);
     let distribution = <TokenDistribution | undefined>await distributionDocRef.get();
     expect(distribution?.totalUnclaimedAirdrop || 0).toBe(0);
 
-    const nttQuery = soonDb()
+    const nttQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
       .where('payload.type', '==', TransactionAwardType.BADGE);
@@ -145,7 +145,7 @@ const saveToken = async (space: string, guardian: string) => {
       tokenId: MINTED_TOKEN_ID,
     },
   };
-  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token as Token;
 };
 

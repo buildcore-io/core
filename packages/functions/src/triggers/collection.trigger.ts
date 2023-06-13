@@ -14,7 +14,7 @@ import {
 } from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
 import { last } from 'lodash';
-import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
+import { build5Db, getSnapshot } from '../firebase/firestore/build5Db';
 import { scale } from '../scale.settings';
 import { getAddress } from '../utils/address.utils';
 import { collectionToIpfsMetadata, downloadMediaAndPackCar } from '../utils/car.utils';
@@ -66,7 +66,7 @@ const updateNftApprovalState = async (collectionId: string) => {
   let lastDocId = '';
   do {
     const lastDoc = await getSnapshot(COL.NFT, lastDocId);
-    const snap = await soonDb()
+    const snap = await build5Db()
       .collection(COL.NFT)
       .where('collection', '==', collectionId)
       .startAfter(lastDoc)
@@ -74,12 +74,12 @@ const updateNftApprovalState = async (collectionId: string) => {
       .get<Nft>();
     lastDocId = last(snap)?.uid || '';
 
-    await soonDb().runTransaction(async (transaction) => {
-      const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${collectionId}`);
+    await build5Db().runTransaction(async (transaction) => {
+      const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${collectionId}`);
       const collection = await transaction.get<Collection>(collectionDocRef);
 
       snap.forEach((nft) => {
-        const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+        const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
         transaction.update(nftDocRef, {
           approved: collection?.approved || false,
           rejected: collection?.rejected || false,
@@ -90,7 +90,7 @@ const updateNftApprovalState = async (collectionId: string) => {
 };
 
 const hidePlaceholderNft = async (collection: Collection) => {
-  const nftDocRef = soonDb().doc(`${COL.NFT}/${collection.placeholderNft}`);
+  const nftDocRef = build5Db().doc(`${COL.NFT}/${collection.placeholderNft}`);
   await nftDocRef.update({ hidden: collection.availableNfts === 0 });
 };
 
@@ -110,10 +110,10 @@ const onCollectionMinted = async (collection: Collection) => {
         aliasStorageDeposit: collection.mintingData?.aliasStorageDeposit || 0,
       },
     };
-    await soonDb().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+    await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
     return;
   }
-  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${collection.mintingData?.mintedBy}`);
+  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${collection.mintingData?.mintedBy}`);
   const member = (await memberDocRef.get<Member>())!;
   const order = <Transaction>{
     type: TransactionType.MINT_COLLECTION,
@@ -130,21 +130,21 @@ const onCollectionMinted = async (collection: Collection) => {
       lockCollectionNft: collection.limitedEdition || false,
     },
   };
-  await soonDb().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+  await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
 };
 
 const onCollectionMinting = async (collection: Collection) => {
-  await soonDb().doc(`${COL.COLLECTION}/${collection.uid}`).update({
-    'mintingData.nftsToMint': soonDb().deleteField(),
-    'mintingData.nftMediaToUpload': soonDb().deleteField(),
-    'mintingData.nftMediaToPrepare': soonDb().deleteField(),
+  await build5Db().doc(`${COL.COLLECTION}/${collection.uid}`).update({
+    'mintingData.nftsToMint': build5Db().deleteField(),
+    'mintingData.nftMediaToUpload': build5Db().deleteField(),
+    'mintingData.nftMediaToPrepare': build5Db().deleteField(),
   });
 
   const metadata = collectionToIpfsMetadata(collection);
   const ipfs = await downloadMediaAndPackCar(collection.uid, collection.bannerUrl, metadata);
   await updateNftsForMinting(collection);
 
-  await soonDb().doc(`${COL.COLLECTION}/${collection.uid}`).update({
+  await build5Db().doc(`${COL.COLLECTION}/${collection.uid}`).update({
     mediaStatus: MediaStatus.PENDING_UPLOAD,
     ipfsMedia: ipfs.ipfsMedia,
     ipfsMetadata: ipfs.ipfsMetadata,
@@ -167,12 +167,12 @@ const onNftMediaPrepared = async (collection: Collection) => {
       collectionStorageDeposit: collection.mintingData?.storageDeposit,
     },
   };
-  await soonDb().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+  await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
 };
 
 const BATCH_SIZE = 1000;
 const updateNftsForMinting = async (collection: Collection) => {
-  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${collection.uid}`);
+  const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${collection.uid}`);
   const unsoldMintingOptions = collection.mintingData?.unsoldMintingOptions;
   let lastDocId = '';
   let unsoldCount = 0;
@@ -182,7 +182,7 @@ const updateNftsForMinting = async (collection: Collection) => {
 
   do {
     const lastDoc = await getSnapshot(COL.NFT, lastDocId);
-    const allNfts = await soonDb()
+    const allNfts = await build5Db()
       .collection(COL.NFT)
       .where('collection', '==', collection.uid)
       .where('placeholderNft', '==', false)
@@ -193,11 +193,11 @@ const updateNftsForMinting = async (collection: Collection) => {
 
     const unsold = allNfts.filter((nft) => !nft.sold);
     if (unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD) {
-      const promises = unsold.map((nft) => soonDb().doc(`${COL.NFT}/${nft.uid}`).delete());
+      const promises = unsold.map((nft) => build5Db().doc(`${COL.NFT}/${nft.uid}`).delete());
       await Promise.all(promises);
-      await soonDb()
+      await build5Db()
         .doc(`${COL.COLLECTION}/${collection.uid}`)
-        .update({ total: soonDb().inc(-unsold.length) });
+        .update({ total: build5Db().inc(-unsold.length) });
     }
     const nftsToMint =
       unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD
@@ -224,9 +224,9 @@ const updateNftsForMinting = async (collection: Collection) => {
   } while (lastDocId);
 
   await collectionDocRef.update({
-    'mintingData.nftsToMint': soonDb().inc(nftsToMintCount),
-    'mintingData.nftMediaToUpload': soonDb().inc(nftMediaToUploadCount),
-    'mintingData.nftMediaToPrepare': soonDb().inc(nftMediaToPrepareCount),
+    'mintingData.nftsToMint': build5Db().inc(nftsToMintCount),
+    'mintingData.nftMediaToUpload': build5Db().inc(nftMediaToUploadCount),
+    'mintingData.nftMediaToPrepare': build5Db().inc(nftMediaToPrepareCount),
   });
 
   if (
@@ -236,19 +236,19 @@ const updateNftsForMinting = async (collection: Collection) => {
     )
   ) {
     const promises = (
-      await soonDb()
+      await build5Db()
         .collection(COL.NFT)
         .where('collection', '==', collection.uid)
         .where('placeholderNft', '==', true)
         .get<Nft>()
     ).map((nft) => {
-      const docRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+      const docRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
       docRef.update({ hidden: true });
     });
     await Promise.all(promises);
   }
   if (unsoldCount && unsoldMintingOptions === UnsoldMintingOptions.TAKE_OWNERSHIP) {
-    await collectionDocRef.update({ sold: soonDb().inc(unsoldCount) });
+    await collectionDocRef.update({ sold: build5Db().inc(unsoldCount) });
   }
 
   // Update placeholder
@@ -257,7 +257,7 @@ const updateNftsForMinting = async (collection: Collection) => {
     collection.placeholderNft &&
     collection.mintingData?.unsoldMintingOptions === UnsoldMintingOptions.SET_NEW_PRICE
   ) {
-    await soonDb()
+    await build5Db()
       .doc(`${COL.NFT}/${collection.placeholderNft}`)
       .update({
         availablePrice: collection.mintingData?.newPrice || collection.price,
@@ -267,9 +267,9 @@ const updateNftsForMinting = async (collection: Collection) => {
 };
 
 const setNftForMinting = async (nftId: string, collection: Collection): Promise<MediaStatus> => {
-  const nftDocRef = soonDb().doc(`${COL.NFT}/${nftId}`);
+  const nftDocRef = build5Db().doc(`${COL.NFT}/${nftId}`);
 
-  const nft = await soonDb().runTransaction(async (transaction) => {
+  const nft = await build5Db().runTransaction(async (transaction) => {
     const nft = (await transaction.get<Nft>(nftDocRef))!;
 
     if (nft.mediaStatus === MediaStatus.PREPARE_IPFS) {
@@ -292,9 +292,11 @@ const setNftForMinting = async (nftId: string, collection: Collection): Promise<
 
     if (nft.auctionHighestTransaction) {
       const highestTransaction = <Transaction>(
-        await soonDb().doc(`${COL.TRANSACTION}/${nft.auctionHighestTransaction}`).get()
+        await build5Db().doc(`${COL.TRANSACTION}/${nft.auctionHighestTransaction}`).get()
       );
-      const member = <Member>await soonDb().doc(`${COL.MEMBER}/${nft.auctionHighestBidder}`).get();
+      const member = <Member>(
+        await build5Db().doc(`${COL.MEMBER}/${nft.auctionHighestBidder}`).get()
+      );
       const credit = <Transaction>{
         type: TransactionType.CREDIT,
         uid: getRandomEthAddress(),
@@ -310,11 +312,11 @@ const setNftForMinting = async (nftId: string, collection: Collection): Promise<
           collection: nft.collection,
         },
       };
-      transaction.create(soonDb().doc(`${COL.TRANSACTION}/${credit.uid}`), credit);
+      transaction.create(build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`), credit);
     }
 
     if (nft.locked) {
-      transaction.update(soonDb().doc(`${COL.TRANSACTION}/${nft.lockedBy}`), {
+      transaction.update(build5Db().doc(`${COL.TRANSACTION}/${nft.lockedBy}`), {
         'payload.void': true,
       });
       nftUpdateData.locked = false;

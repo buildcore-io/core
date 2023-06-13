@@ -11,7 +11,7 @@ import {
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
@@ -45,9 +45,9 @@ describe('Minted toke trading tangle request', () => {
         },
       },
     });
-    await soonDb().doc(`${COL.MNEMONIC}/${tmp.bech32}`).update({ consumedOutputIds: [] });
+    await build5Db().doc(`${COL.MNEMONIC}/${tmp.bech32}`).update({ consumedOutputIds: [] });
 
-    const query = soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', tmp.bech32);
+    const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', tmp.bech32);
     await wait(async () => {
       const snap = await query.get();
       return snap.length > 0;
@@ -94,7 +94,7 @@ describe('Minted toke trading tangle request', () => {
             : undefined,
         },
       );
-      const query = soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', helper.seller);
+      const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', helper.seller);
       await wait(async () => {
         const snap = await query.get();
         return snap.length > 0;
@@ -117,7 +117,7 @@ describe('Minted toke trading tangle request', () => {
   );
 
   it('Should throw, trading disabled', async () => {
-    await soonDb().doc(`${COL.TOKEN}/${helper.token!.uid}`).update({ tradingDisabled: true });
+    await build5Db().doc(`${COL.TOKEN}/${helper.token!.uid}`).update({ tradingDisabled: true });
     const tmp = await helper.walletService!.getNewIotaAddressDetails();
     await requestFundsFromFaucet(Network.RMS, tmp.bech32, 10 * MIN_IOTA_AMOUNT);
 
@@ -131,9 +131,9 @@ describe('Minted toke trading tangle request', () => {
         },
       },
     });
-    await soonDb().doc(`${COL.MNEMONIC}/${tmp.bech32}`).update({ consumedOutputIds: [] });
+    await build5Db().doc(`${COL.MNEMONIC}/${tmp.bech32}`).update({ consumedOutputIds: [] });
 
-    const creditQuery = soonDb()
+    const creditQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST)
       .where('member', '==', tmp.bech32);

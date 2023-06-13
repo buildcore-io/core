@@ -16,7 +16,7 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../../../firebase/firestore/soondb';
+import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { editSpaceMemberSchema } from '../../../../runtime/firebase/space';
 import { dateToTimestamp, serverTime } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
@@ -37,13 +37,13 @@ export class SpaceGuardianService {
         : ProposalType.REMOVE_GUARDIAN;
     const { proposal, voteTransaction, members } = await addRemoveGuardian(owner, request, type);
 
-    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+    const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
     const memberPromisses = members.map((member) => {
       proposalDocRef.collection(SUB_COL.MEMBERS).doc(member.uid).set(member);
     });
     await Promise.all(memberPromisses);
 
-    const transactionDocRef = soonDb().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`);
+    const transactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`);
     this.transactionService.push({
       ref: transactionDocRef,
       data: voteTransaction,
@@ -67,7 +67,7 @@ export const addRemoveGuardian = async (
   const isAddGuardian = type === ProposalType.ADD_GUARDIAN;
   await assertIsGuardian(params.uid as string, owner);
 
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${params.uid}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
   const spaceMemberDoc = await spaceDocRef
     .collection(SUB_COL.MEMBERS)
     .doc(params.member as string)
@@ -86,7 +86,7 @@ export const addRemoveGuardian = async (
     throw invalidArgument(WenError.member_is_not_guardian_of_space);
   }
 
-  const ongoingProposalSnap = await soonDb()
+  const ongoingProposalSnap = await build5Db()
     .collection(COL.PROPOSAL)
     .where('settings.addRemoveGuardian', '==', params.member)
     .where('settings.endDate', '>=', serverTime())
@@ -97,7 +97,7 @@ export const addRemoveGuardian = async (
   }
 
   if (!isAddGuardian) {
-    await soonDb().runTransaction(async (transaction) => {
+    await build5Db().runTransaction(async (transaction) => {
       const space = <Space>await transaction.get(spaceDocRef);
       if (space.totalGuardians < 2) {
         throw invalidArgument(WenError.at_least_one_guardian_must_be_in_the_space);
@@ -105,9 +105,9 @@ export const addRemoveGuardian = async (
     });
   }
 
-  const guardian = <Member>await soonDb().doc(`${COL.MEMBER}/${owner}`).get();
-  const member = <Member>await soonDb().doc(`${COL.MEMBER}/${params.member}`).get();
-  const guardians = await soonDb()
+  const guardian = <Member>await build5Db().doc(`${COL.MEMBER}/${owner}`).get();
+  const member = <Member>await build5Db().doc(`${COL.MEMBER}/${params.member}`).get();
+  const guardians = await build5Db()
     .doc(`${COL.SPACE}/${params.uid}`)
     .collection(SUB_COL.GUARDIANS)
     .get<SpaceMember>();

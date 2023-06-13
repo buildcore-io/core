@@ -1,7 +1,7 @@
 import { COL, SUB_COL, TokenPurchase, TokenPurchaseAge } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
-import { soonDb } from '../firebase/firestore/soondb';
+import { build5Db } from '../firebase/firestore/build5Db';
 
 export const removePurchasesFromVolumeStats = async () => {
   for (const age of Object.values(TokenPurchaseAge)) {
@@ -13,14 +13,14 @@ const removeExiredPurchaseFromStats = async (age: TokenPurchaseAge) => {
   const allPurchases = await getExpiredPurchases(age);
   const chunks = chunk(allPurchases, 250);
   for (const purchases of chunks) {
-    const batch = soonDb().batch();
+    const batch = build5Db().batch();
     for (const purchase of purchases) {
-      const docRef = soonDb().doc(`${COL.TOKEN_PURCHASE}/${purchase.uid}`);
+      const docRef = build5Db().doc(`${COL.TOKEN_PURCHASE}/${purchase.uid}`);
       batch.set(docRef, { age: { [age]: false } }, true);
 
       const token = purchase.token;
-      const statsDocRef = soonDb().doc(`${COL.TOKEN}/${token}/${SUB_COL.STATS}/${token}`);
-      batch.set(statsDocRef, { volume: { [age]: soonDb().inc(-purchase.count) } }, true);
+      const statsDocRef = build5Db().doc(`${COL.TOKEN}/${token}/${SUB_COL.STATS}/${token}`);
+      batch.set(statsDocRef, { volume: { [age]: build5Db().inc(-purchase.count) } }, true);
     }
     await batch.commit();
   }
@@ -29,7 +29,7 @@ const removeExiredPurchaseFromStats = async (age: TokenPurchaseAge) => {
 const getExpiredPurchases = (age: TokenPurchaseAge) => {
   const days = toknePurchaseAgeToDayCount(age);
   const createdBefore = dayjs().subtract(days, 'd').toDate();
-  return soonDb()
+  return build5Db()
     .collection(COL.TOKEN_PURCHASE)
     .where(`age.${age}`, '==', true)
     .where('createdOn', '<=', createdBefore)

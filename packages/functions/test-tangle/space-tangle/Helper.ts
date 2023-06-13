@@ -1,6 +1,6 @@
 import { COL, Member, Network, Space, Transaction, TransactionType } from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { IQuery } from '../../src/firebase/firestore/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
@@ -32,22 +32,22 @@ export class Helper {
     this.member = await createMember(this.walletSpy);
     this.space = await createSpace(this.walletSpy, this.guardian);
 
-    const memberDocRef = soonDb().doc(`${COL.MEMBER}/${this.member}`);
+    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${this.member}`);
     const memberData = <Member>await memberDocRef.get();
     const memberBech32 = getAddress(memberData, this.network);
     this.memberAddress = await this.walletService.getAddressDetails(memberBech32);
 
-    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${this.guardian}`);
+    const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${this.guardian}`);
     const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, this.network);
     this.guardianAddress = await this.walletService.getAddressDetails(guardianBech32);
 
-    this.memberCreditQuery = soonDb()
+    this.memberCreditQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST)
       .where('member', '==', this.member);
 
-    this.guardianCreditQuery = soonDb()
+    this.guardianCreditQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST)
       .where('member', '==', this.guardian);

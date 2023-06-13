@@ -1,10 +1,10 @@
 import { Nft, Opr, PublicCollections } from '@build-5/interfaces';
-import { SoonEnv } from '../Config';
+import { Build5Env } from '../Config';
 import { CrudRepository } from './CrudRepository';
 
 export class NftRepository extends CrudRepository<Nft> {
-  constructor(env?: SoonEnv) {
-    super(env || SoonEnv.PROD, PublicCollections.NFT);
+  constructor(env?: Build5Env) {
+    super(env || Build5Env.PROD, PublicCollections.NFT);
   }
 
   public getByCollectionLive = (

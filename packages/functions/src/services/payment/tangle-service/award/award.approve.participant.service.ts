@@ -16,8 +16,8 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get, head, isEmpty } from 'lodash';
+import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { ITransaction } from '../../../../firebase/firestore/interfaces';
-import { soonDb } from '../../../../firebase/firestore/soondb';
 import { approveAwardParticipantSchema } from '../../../../runtime/firebase/award';
 import { getAddress } from '../../../../utils/address.utils';
 import { serverTime } from '../../../../utils/dateTime.utils';
@@ -45,7 +45,7 @@ export class AwardApproveParticipantService {
 
     for (const member of params.members.map((m) => m.toLowerCase())) {
       try {
-        const badge = await soonDb().runTransaction(
+        const badge = await build5Db().runTransaction(
           approveAwardParticipant(owner, params.award, member),
         );
         badges[badge.uid] = member;
@@ -63,7 +63,7 @@ export class AwardApproveParticipantService {
 
 export const approveAwardParticipant =
   (owner: string, awardId: string, uidOrAddress: string) => async (transaction: ITransaction) => {
-    const awardDocRef = soonDb().doc(`${COL.AWARD}/${awardId}`);
+    const awardDocRef = build5Db().doc(`${COL.AWARD}/${awardId}`);
     const award = await transaction.get<Award>(awardDocRef);
     if (!award) {
       throw invalidArgument(WenError.award_does_not_exists);
@@ -99,9 +99,9 @@ export const approveAwardParticipant =
       parentId: award.uid,
       parentCol: COL.AWARD,
       completed: true,
-      count: soonDb().inc(1),
+      count: build5Db().inc(1),
       createdOn: participant?.createdOn || serverTime(),
-      tokenReward: soonDb().inc(award.badge.tokenReward),
+      tokenReward: build5Db().inc(award.badge.tokenReward),
     };
     transaction.set(participantDocRef, participantUpdateData, true);
 
@@ -125,14 +125,14 @@ export const approveAwardParticipant =
         participatedOn: participant?.createdOn || serverTime(),
       },
     };
-    const badgeTransactionDocRef = soonDb().doc(`${COL.TRANSACTION}/${badgeTransaction.uid}`);
+    const badgeTransactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${badgeTransaction.uid}`);
     transaction.create(badgeTransactionDocRef, badgeTransaction);
 
     const memberUpdateData = {
       uid: memberId,
 
-      awardsCompleted: soonDb().inc(1),
-      totalReward: soonDb().inc(award.badge.tokenReward),
+      awardsCompleted: build5Db().inc(1),
+      totalReward: build5Db().inc(award.badge.tokenReward),
 
       spaces: {
         [award.space]: {
@@ -143,18 +143,18 @@ export const approveAwardParticipant =
           awardStat: {
             [award.badge.tokenUid]: {
               tokenSymbol: award.badge.tokenSymbol,
-              badges: soonDb().arrayUnion(badgeTransaction.uid),
-              completed: soonDb().inc(1),
-              totalReward: soonDb().inc(award.badge.tokenReward),
+              badges: build5Db().arrayUnion(badgeTransaction.uid),
+              completed: build5Db().inc(1),
+              totalReward: build5Db().inc(award.badge.tokenReward),
             },
           },
 
-          awardsCompleted: soonDb().inc(1),
-          totalReward: soonDb().inc(award.badge.tokenReward),
+          awardsCompleted: build5Db().inc(1),
+          totalReward: build5Db().inc(award.badge.tokenReward),
         },
       },
     };
-    const memberDocRef = soonDb().doc(`${COL.MEMBER}/${memberId}`);
+    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${memberId}`);
     transaction.set(memberDocRef, memberUpdateData, true);
 
     if (award.badge.tokenReward) {
@@ -170,16 +170,16 @@ export const approveAwardParticipant =
         sourceAddress: award.address,
         isBaseToken: award.badge.type === AwardBadgeType.BASE,
       };
-      const airdropDocRef = soonDb().doc(`${COL.AIRDROP}/${airdrop.uid}`);
+      const airdropDocRef = build5Db().doc(`${COL.AIRDROP}/${airdrop.uid}`);
       transaction.create(airdropDocRef, airdrop);
 
       const distribution = {
         parentId: airdrop.token,
         parentCol: COL.TOKEN,
         uid: memberId,
-        totalUnclaimedAirdrop: soonDb().inc(airdrop.count),
+        totalUnclaimedAirdrop: build5Db().inc(airdrop.count),
       };
-      const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${airdrop.token}`);
+      const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${airdrop.token}`);
       const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(memberId);
       transaction.set(distributionDocRef, distribution, true);
     }
@@ -188,12 +188,12 @@ export const approveAwardParticipant =
   };
 
 const getMember = async (network: Network, uidOrAddress: string) => {
-  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${uidOrAddress}`);
+  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${uidOrAddress}`);
   const member = await memberDocRef.get<Member>();
   if (member) {
     return member;
   }
-  const members = await soonDb()
+  const members = await build5Db()
     .collection(COL.MEMBER)
     .where(`validatedAddress.${network}`, '==', uidOrAddress)
     .get<Member>();

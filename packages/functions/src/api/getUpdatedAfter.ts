@@ -11,7 +11,7 @@ import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
 import { isEmpty } from 'lodash';
 import { map } from 'rxjs';
-import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
+import { build5Db, getSnapshot } from '../firebase/firestore/build5Db';
 import { CommonJoi } from '../services/joi/common';
 import { getQueryLimit, getQueryParams, queryToObservable } from './common';
 import { sendLiveUpdates } from './keepAlive';
@@ -44,7 +44,7 @@ export const getUpdatedAfter = async (req: functions.https.Request, res: express
 
   const updatedAfter = body.updatedAfter ? dayjs(body.updatedAfter) : dayjs().subtract(1, 'h');
 
-  let query = soonDb()
+  let query = build5Db()
     .collection(baseCollectionPath as COL)
     .where('updatedOn', '>=', updatedAfter.toDate())
     .orderBy('updatedOn')

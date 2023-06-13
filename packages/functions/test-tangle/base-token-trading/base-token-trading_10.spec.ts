@@ -6,7 +6,7 @@ import {
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -48,7 +48,7 @@ describe('Base token trading', () => {
       2 * (MIN_IOTA_AMOUNT + 1),
     );
 
-    const tradesQuery = soonDb()
+    const tradesQuery = build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {
@@ -58,7 +58,7 @@ describe('Base token trading', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    const purchase = await soonDb()
+    const purchase = await build5Db()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', helper.token!.uid)
       .get();
@@ -68,7 +68,7 @@ describe('Base token trading', () => {
   });
 
   it('Should send dust to space', async () => {
-    const tradesQuery = soonDb()
+    const tradesQuery = build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('token', '==', helper.token!.uid);
     mockWalletReturnValue(helper.walletSpy, helper.seller!.uid, {
@@ -102,7 +102,7 @@ describe('Base token trading', () => {
       2.001 * MIN_IOTA_AMOUNT,
     );
 
-    const purchaseQuery = soonDb()
+    const purchaseQuery = build5Db()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {
@@ -114,7 +114,7 @@ describe('Base token trading', () => {
     expect(purchase.price).toBe(2);
 
     const billPayments = (
-      await soonDb()
+      await build5Db()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
         .where('payload.token', '==', helper.token!.uid)

@@ -6,7 +6,7 @@ import {
   TangleRequestType,
   Transaction,
 } from '@build-5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { wait } from '../../test/controls/common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
@@ -46,7 +46,7 @@ describe('Create space', () => {
     });
     const snap = await helper.memberCreditQuery.get();
     const credit = snap[0] as Transaction;
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${credit.payload.response.space}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${credit.payload.response.space}`);
     const space = <Space>await spaceDocRef.get();
     expect(space.name).toBe('Space A');
   });

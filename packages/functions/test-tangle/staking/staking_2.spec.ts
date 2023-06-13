@@ -7,7 +7,7 @@ import {
 import { Converter } from '@iota/util.js-next';
 import dayjs from 'dayjs';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { Helper } from './Helper';
 
@@ -51,7 +51,7 @@ describe('Staking test', () => {
   it.each([StakeType.DYNAMIC, StakeType.STATIC])(
     'Should set stake amount and remove it once expired, 52 weeks',
     async (type: StakeType) => {
-      const spaceDocRef = soonDb().doc(`${COL.SPACE}/${helper.space?.uid}`);
+      const spaceDocRef = build5Db().doc(`${COL.SPACE}/${helper.space?.uid}`);
       await spaceDocRef.update({ tokenBased: true, minStakedValue: 10 });
       let space = <Space>await spaceDocRef.get();
       expect(space.totalMembers).toBe(1);
@@ -69,14 +69,14 @@ describe('Staking test', () => {
       await helper.validateStatsStakeAmount(30, 30, 60, 60, type, 1);
       await helper.validateMemberStakeAmount(30, 30, 60, 60, type);
 
-      await soonDb()
+      await build5Db()
         .doc(`${COL.STAKE}/${stake2.uid}`)
         .update({ expiresAt: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
       await removeExpiredStakesFromSpace();
       await helper.validateStatsStakeAmount(10, 30, 20, 60, type, 1);
       await helper.validateMemberStakeAmount(10, 30, 20, 60, type);
 
-      await soonDb()
+      await build5Db()
         .doc(`${COL.STAKE}/${stake1.uid}`)
         .update({ expiresAt: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
       await removeExpiredStakesFromSpace();

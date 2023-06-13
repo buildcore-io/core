@@ -5,4 +5,4 @@ admin.initializeApp();
 
 export default admin;
 
-export const soonApp = () => new FirebaseApp(admin.app());
+export const build5App = () => new FirebaseApp(admin.app());

@@ -6,7 +6,7 @@ import { Converter as ConverterNext } from '@iota/util.js-next';
 import dayjs from 'dayjs';
 import { DocumentOptions } from 'firebase-functions/v2/firestore';
 import { isEmpty } from 'lodash';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { scale } from '../../scale.settings';
 import { IotaWallet } from '../../services/wallet/IotaWalletService';
 import { WalletService } from '../../services/wallet/wallet';
@@ -25,7 +25,7 @@ export const confirmTransaction = async (
   if (isEmpty(transactionId)) {
     return;
   }
-  const docRef = soonDb().doc(`${COL.TRANSACTION}/${transactionId}`);
+  const docRef = build5Db().doc(`${COL.TRANSACTION}/${transactionId}`);
   const transaction = await docRef.get<Transaction>();
   if (!transaction) {
     return;
@@ -47,7 +47,7 @@ export const unclockMnemonic = async (address: string) => {
   if (isEmpty(address)) {
     return;
   }
-  await soonDb().doc(`${COL.MNEMONIC}/${address}`).update({
+  await build5Db().doc(`${COL.MNEMONIC}/${address}`).update({
     lockedBy: '',
     consumedOutputIds: [],
     consumedNftOutputIds: [],

@@ -1,5 +1,5 @@
 import { COL, Nft, NftAvailable, NftStatus, WEN_FUNC, WenError } from '@build-5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { createMember, updateMember } from '../../src/runtime/firebase/member';
 import * as wallet from '../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../../test/set-up';
@@ -78,7 +78,7 @@ describe('MemberController: ' + WEN_FUNC.updateMember, () => {
       status: NftStatus.MINTED,
       available: NftAvailable.UNAVAILABLE,
     };
-    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+    const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
     await nftDocRef.create(nft);
     const updateParams = { avatarNft: nft.uid };
     mockWalletReturnValue(walletSpy, dummyAddress, updateParams);
@@ -105,7 +105,7 @@ describe('MemberController: ' + WEN_FUNC.updateMember, () => {
       owner: dummyAddress,
       status: NftStatus.MINTED,
     };
-    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+    const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
     await nftDocRef.create(nft);
     const updateParams = { avatarNft: nft.uid };
     mockWalletReturnValue(walletSpy, dummyAddress, updateParams);
@@ -119,7 +119,7 @@ describe('MemberController: ' + WEN_FUNC.updateMember, () => {
     await expectThrow(testEnv.wrap(updateMember)({}), WenError.nft_does_not_exists.key);
 
     const nft = { uid: wallet.getRandomEthAddress(), media: MEDIA };
-    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+    const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
 
     await nftDocRef.create(nft);
     mockWalletReturnValue(walletSpy, dummyAddress, { avatarNft: nft.uid });

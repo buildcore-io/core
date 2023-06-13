@@ -1,11 +1,11 @@
 import { COL, Nft, WenError } from '@build-5/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 
 export const updateUnsoldNftControl = async (owner: string, params: Record<string, unknown>) =>
-  soonDb().runTransaction(async (transaction) => {
-    const nftDocRef = soonDb().doc(`${COL.NFT}/${params.uid}`);
+  build5Db().runTransaction(async (transaction) => {
+    const nftDocRef = build5Db().doc(`${COL.NFT}/${params.uid}`);
     const nft = await transaction.get<Nft>(nftDocRef);
     if (!nft) {
       throw invalidArgument(WenError.nft_does_not_exists);

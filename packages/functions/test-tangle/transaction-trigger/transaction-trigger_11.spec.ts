@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build-5/interfaces';
 import { isEmpty, isEqual } from 'lodash';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { IotaWallet } from '../../src/services/wallet/IotaWalletService';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
@@ -39,7 +39,7 @@ describe('Transaction trigger spec', () => {
         sourceAddress.bech32,
         targetAddress.bech32,
       );
-      await soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
+      await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
 
       await wait(async () => {
         const mnemonic = await MnemonicService.getData(sourceAddress.bech32);
@@ -49,7 +49,7 @@ describe('Transaction trigger spec', () => {
       await wait(async () => {
         const mnemonic = await MnemonicService.getData(sourceAddress.bech32);
         const payment = <Transaction>(
-          await soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()
+          await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()
         );
         return (
           isEmpty(mnemonic.consumedOutputIds) &&

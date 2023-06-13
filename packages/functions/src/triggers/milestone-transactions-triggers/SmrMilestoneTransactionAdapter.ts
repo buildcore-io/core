@@ -93,7 +93,7 @@ export class SmrMilestoneTransactionAdapter {
       });
     }
 
-    const soonaverseTransactionId = await getMilestoneTransactionIdForSmr(data);
+    const build5TransactionId = await getMilestoneTransactionIdForSmr(data);
 
     return {
       uid: data.uid,
@@ -103,7 +103,7 @@ export class SmrMilestoneTransactionAdapter {
       inputs,
       outputs,
       processed: data.processed,
-      soonaverseTransactionId: soonaverseTransactionId || undefined,
+      build5TransactionId: build5TransactionId || undefined,
     };
   };
 }

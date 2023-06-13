@@ -6,8 +6,8 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import sharp from 'sharp';
+import { build5Storage } from '../../firebase/storage/build5Storage';
 import { IBucket } from '../../firebase/storage/interfaces';
-import { soonStorage } from '../../firebase/storage/soonStorage';
 import { scale } from '../../scale.settings';
 import { getBucket } from '../../utils/config.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -52,7 +52,7 @@ export const resizeImageTrigger = functions.storage.onObjectFinalized(
 
 const downloadMedia = async (workdir: string, object: functions.storage.StorageObjectData) => {
   const destination = path.join(workdir, path.basename(object.name!));
-  await soonStorage().bucket(object.bucket).download(object.name!, destination);
+  await build5Storage().bucket(object.bucket).download(object.name!, destination);
   return destination;
 };
 
@@ -63,7 +63,7 @@ const uploadeResizedImages = async (
 ) => {
   const extension = path.extname(downloadedImgPath);
   const fileName = path.basename(downloadedImgPath).replace(extension, '');
-  const bucket = soonStorage().bucket(object.bucket);
+  const bucket = build5Storage().bucket(object.bucket);
 
   const uploadPromises = Object.values(ImageWidth).map(async (size) => {
     const resizedImgName = `${fileName}_${extension.replace('.', '')}_${size}X${size}.webp`;
@@ -84,7 +84,7 @@ const uploadVideoPreview = async (
 ) => {
   const extension = path.extname(downloadedVideoPath);
   const fileName = path.basename(downloadedVideoPath).replace(extension, '');
-  const bucket = soonStorage().bucket(object.bucket);
+  const bucket = build5Storage().bucket(object.bucket);
 
   const thumbnailName = `${fileName}.png`;
   const thumbnailLocalPath = path.join(workdir, thumbnailName);

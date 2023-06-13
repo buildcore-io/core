@@ -5,7 +5,7 @@ import {
   ProposalType,
   TangleRequestType,
 } from '@build-5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { approveProposal } from '../../src/runtime/firebase/proposal';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -49,7 +49,7 @@ describe('Create proposal via tangle request', () => {
       return snap.length === 2;
     });
 
-    let proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposalUid}`);
+    let proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposalUid}`);
     let proposal = <Proposal>await proposalDocRef.get();
     expect(proposal.results.answers[1]).toBe(1);
 
@@ -73,7 +73,7 @@ describe('Create proposal via tangle request', () => {
       return snap.length === 3;
     });
 
-    proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposalUid}`);
+    proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposalUid}`);
     proposal = <Proposal>await proposalDocRef.get();
     expect(proposal.results.answers[2]).toBe(1);
     expect(proposal.results.answers[1]).toBe(0);

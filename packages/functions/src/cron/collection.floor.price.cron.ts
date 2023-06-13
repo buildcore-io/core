@@ -1,20 +1,20 @@
 import { COL, Collection, Nft, NftAccess, NftAvailable } from '@build-5/interfaces';
 import { head, last } from 'lodash';
-import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
+import { build5Db, getSnapshot } from '../firebase/firestore/build5Db';
 
 export const updateFloorPriceOnCollections = async () => {
   let lastUid = '';
   do {
     const lastDoc = await getSnapshot(COL.COLLECTION, lastUid);
-    const query = soonDb().collection(COL.COLLECTION).limit(400).startAfter(lastDoc);
+    const query = build5Db().collection(COL.COLLECTION).limit(400).startAfter(lastDoc);
     const snap = await query.get<Collection>();
     lastUid = last(snap)?.uid || '';
 
-    const batch = soonDb().batch();
+    const batch = build5Db().batch();
     for (const collection of snap) {
       const floorPrice = await updateCollectionFloorPrice(collection);
       if (floorPrice !== undefined) {
-        const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${collection.uid}`);
+        const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${collection.uid}`);
         batch.update(collectionDocRef, { floorPrice });
       }
     }
@@ -25,7 +25,7 @@ export const updateFloorPriceOnCollections = async () => {
 };
 
 const updateCollectionFloorPrice = async (collection: Collection) => {
-  const snap = await soonDb()
+  const snap = await build5Db()
     .collection(COL.NFT)
     .where('collection', '==', collection.uid)
     .where('saleAccess', '==', NftAccess.OPEN)

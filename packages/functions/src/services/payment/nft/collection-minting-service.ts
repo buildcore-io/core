@@ -7,7 +7,7 @@ import {
   UnsoldMintingOptions,
 } from '@build-5/interfaces';
 import { get } from 'lodash';
-import { soonDb } from '../../../firebase/firestore/soondb';
+import { build5Db } from '../../../firebase/firestore/build5Db';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 
 export class CollectionMintingService {
@@ -17,7 +17,7 @@ export class CollectionMintingService {
     order: TransactionOrder,
     match: TransactionMatch,
   ) => {
-    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${order.payload.collection}`);
+    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${order.payload.collection}`);
     const collection = <Collection>await this.transactionService.get(collectionDocRef);
 
     const payment = await this.transactionService.createPayment(order, match);

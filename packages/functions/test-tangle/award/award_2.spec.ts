@@ -21,7 +21,7 @@ import {
   TIMELOCK_UNLOCK_CONDITION_TYPE,
 } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import {
   approveAwardParticipant,
   awardParticipate,
@@ -81,7 +81,7 @@ describe('Create award, native', () => {
     mockWalletReturnValue(walletSpy, member, awardRequest(space.uid, token.symbol));
     award = await testEnv.wrap(createAward)({});
 
-    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${guardian}`);
+    const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${guardian}`);
     const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, network);
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
@@ -104,7 +104,7 @@ describe('Create award, native', () => {
     });
     await MnemonicService.store(guardianAddress.bech32, guardianAddress.mnemonic);
 
-    const awardDocRef = soonDb().doc(`${COL.AWARD}/${award.uid}`);
+    const awardDocRef = build5Db().doc(`${COL.AWARD}/${award.uid}`);
     await wait(async () => {
       const award = <Award>await awardDocRef.get();
       return award.approved && award.funded;
@@ -121,12 +121,12 @@ describe('Create award, native', () => {
     mockWalletReturnValue(walletSpy, guardian, { award: award.uid, members: [member, member] });
     await testEnv.wrap(approveAwardParticipant)({});
 
-    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
+    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
     const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member);
     let distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.totalUnclaimedAirdrop).toBe(10);
 
-    const nttQuery = soonDb()
+    const nttQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
       .where('payload.type', '==', TransactionAwardType.BADGE);
@@ -137,7 +137,7 @@ describe('Create award, native', () => {
 
     await awaitAllTransactionsForAward(award.uid);
 
-    const memberDocRef = soonDb().doc(`${COL.MEMBER}/${member}`);
+    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${member}`);
     const memberData = <Member>await memberDocRef.get();
     const memberBech32 = getAddress(memberData, network);
     const indexer = new IndexerPluginClient(walletService.client);
@@ -158,7 +158,7 @@ describe('Create award, native', () => {
       expect(dayjs.unix(timelock.unixTime).isAfter(now.add(31557600000))).toBe(true);
     }
 
-    const airdropQuery = soonDb().collection(COL.AIRDROP).where('member', '==', member);
+    const airdropQuery = build5Db().collection(COL.AIRDROP).where('member', '==', member);
     let airdropSnap = await airdropQuery.get<TokenDrop>();
     expect(airdropSnap.length).toBe(2);
 
@@ -189,7 +189,7 @@ describe('Create award, native', () => {
     const nativeToken = output.nativeTokens?.find((nt) => nt.id === MINTED_TOKEN_ID);
     expect(Number(nativeToken?.amount)).toBe(10);
 
-    const creditQuery = soonDb()
+    const creditQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', guardian);
@@ -198,7 +198,7 @@ describe('Create award, native', () => {
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
 
-    const burnAliasQuery = soonDb()
+    const burnAliasQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('payload.type', '==', TransactionAwardType.BURN_ALIAS)
       .where('member', '==', guardian);
@@ -246,7 +246,7 @@ const saveToken = async (space: string, guardian: string) => {
       tokenId: MINTED_TOKEN_ID,
     },
   };
-  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token as Token;
 };
 

@@ -1,5 +1,5 @@
 import { COL, Space, SUB_COL, WenError } from '@build-5/interfaces';
-import { soonDb } from '../../../../firebase/firestore/soondb';
+import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { uidSchema } from '../../../../runtime/firebase/common';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
@@ -13,7 +13,7 @@ export class SpaceLeaveService {
 
     const { space, member } = await getLeaveSpaceData(owner, request.uid as string);
 
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${request.uid}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${request.uid}`);
 
     this.transactionService.push({
       ref: spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner),
@@ -33,7 +33,7 @@ export class SpaceLeaveService {
       action: 'update',
     });
 
-    const memberDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
+    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
 
     this.transactionService.push({
       ref: memberDocRef,
@@ -47,7 +47,7 @@ export class SpaceLeaveService {
 }
 
 export const getLeaveSpaceData = async (owner: string, spaceId: string) => {
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${spaceId}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${spaceId}`);
 
   const spaceMember = await spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner).get();
   if (!spaceMember) {
@@ -66,8 +66,8 @@ export const getLeaveSpaceData = async (owner: string, spaceId: string) => {
   }
 
   const spaceUpdateData = {
-    totalMembers: soonDb().inc(-1),
-    totalGuardians: soonDb().inc(isGuardian ? -1 : 0),
+    totalMembers: build5Db().inc(-1),
+    totalGuardians: build5Db().inc(isGuardian ? -1 : 0),
   };
   const member = { spaces: { [space.uid]: { uid: space.uid, isMember: false } } };
   return { space: spaceUpdateData, member };

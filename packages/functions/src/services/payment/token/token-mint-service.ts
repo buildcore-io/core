@@ -7,14 +7,14 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get } from 'lodash';
-import { soonDb } from '../../../firebase/firestore/soondb';
+import { build5Db } from '../../../firebase/firestore/build5Db';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 
 export class TokenMintService {
   constructor(readonly transactionService: TransactionService) {}
 
   public handleMintingRequest = async (order: TransactionOrder, match: TransactionMatch) => {
-    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${order.payload.token}`);
+    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${order.payload.token}`);
     const token = <Token>await this.transactionService.get(tokenDocRef);
 
     const payment = await this.transactionService.createPayment(order, match);

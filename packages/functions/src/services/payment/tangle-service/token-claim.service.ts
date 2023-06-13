@@ -16,7 +16,7 @@ import {
 import dayjs from 'dayjs';
 import Joi from 'joi';
 import { isEmpty } from 'lodash';
-import { soonDb } from '../../../firebase/firestore/soondb';
+import { build5Db } from '../../../firebase/firestore/build5Db';
 import { assertMemberHasValidAddress } from '../../../utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../utils/error.utils';
@@ -41,7 +41,7 @@ export class TangleTokenClaimService {
 
     const order = await createMintedTokenAirdropCalimOrder(owner, params.symbol as string);
     this.transactionService.push({
-      ref: soonDb().doc(`${COL.TRANSACTION}/${order.uid}`),
+      ref: build5Db().doc(`${COL.TRANSACTION}/${order.uid}`),
       data: order,
       action: 'set',
     });
@@ -60,7 +60,7 @@ export const createMintedTokenAirdropCalimOrder = async (owner: string, symbol: 
     throw invalidArgument(WenError.token_in_invalid_status);
   }
 
-  const member = <Member>await soonDb().doc(`${COL.MEMBER}/${owner}`).get();
+  const member = <Member>await build5Db().doc(`${COL.MEMBER}/${owner}`).get();
   assertMemberHasValidAddress(member, token.mintingData?.network!);
 
   const drops = await getClaimableDrops(token.uid, owner);
@@ -98,7 +98,7 @@ export const createMintedTokenAirdropCalimOrder = async (owner: string, symbol: 
 
 const getClaimableDrops = async (token: string, member: string) => {
   const airdops = await getUnclaimedDrops(token, member);
-  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token}`);
+  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token}`);
   const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member);
   const distribution = await distributionDocRef.get<TokenDistribution>();
   if (distribution?.mintedClaimedOn || !distribution?.tokenOwned) {

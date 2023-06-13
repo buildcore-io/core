@@ -15,7 +15,7 @@ import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
-import { soonDb } from '../../../firebase/firestore/soondb';
+import { build5Db } from '../../../firebase/firestore/build5Db';
 import { depositStakeSchema } from '../../../runtime/firebase/stake';
 import { packBasicOutput } from '../../../utils/basic-output.utils';
 import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
@@ -54,7 +54,7 @@ export class TangleStakeService {
     set(order, 'payload.amount', tranEntry.amount);
 
     this.transactionService.push({
-      ref: soonDb().doc(`${COL.TRANSACTION}/${order.uid}`),
+      ref: build5Db().doc(`${COL.TRANSACTION}/${order.uid}`),
       data: order,
       action: 'set',
     });

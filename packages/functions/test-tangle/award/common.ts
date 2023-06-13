@@ -6,21 +6,21 @@ import {
   TransactionAwardType,
   TransactionType,
 } from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { IQuery } from '../../src/firebase/firestore/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { getRandomSymbol, wait } from '../../test/controls/common';
 import { MEDIA } from '../../test/set-up';
 
 export const awaitAllTransactionsForAward = async (awardId: string) => {
-  const baseTransQuery = soonDb()
+  const baseTransQuery = build5Db()
     .collection(COL.TRANSACTION)
     .where('payload.award', '==', awardId)
     .where('type', 'in', [TransactionType.BILL_PAYMENT, TransactionType.CREDIT]);
   await allConfirmed(baseTransQuery);
 
-  const nttQuery = soonDb()
+  const nttQuery = build5Db()
     .collection(COL.TRANSACTION)
     .where('payload.award', '==', awardId)
     .where('payload.type', '==', TransactionAwardType.BADGE);
@@ -54,6 +54,6 @@ export const saveBaseToken = async (space: string, guardian: string) => {
       network: Network.RMS,
     },
   };
-  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token as Token;
 };

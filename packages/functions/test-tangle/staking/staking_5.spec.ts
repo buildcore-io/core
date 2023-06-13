@@ -10,7 +10,7 @@ import {
 } from '@build-5/interfaces';
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
@@ -58,10 +58,10 @@ describe('Stake reward test test', () => {
           },
         },
       });
-      await soonDb().doc(`${COL.MNEMONIC}/${tmp.bech32}`).update({ consumedOutputIds: [] });
+      await build5Db().doc(`${COL.MNEMONIC}/${tmp.bech32}`).update({ consumedOutputIds: [] });
 
       await wait(async () => {
-        const distributionDocRef = soonDb().doc(
+        const distributionDocRef = build5Db().doc(
           `${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${tmp.bech32}`,
         );
         const distribution = <TokenDistribution>await distributionDocRef.get();

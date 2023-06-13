@@ -14,7 +14,7 @@ import {
   TransactionValidationType,
   WenError,
 } from '@build-5/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress, getAddress } from '../../utils/address.utils';
 import { getRestrictions } from '../../utils/common.utils';
@@ -29,13 +29,13 @@ export const nftBidControl = async (
   params: Record<string, unknown>,
   customParams?: Record<string, unknown>,
 ) => {
-  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
+  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
   const member = await memberDocRef.get();
   if (!member) {
     throw invalidArgument(WenError.member_does_not_exists);
   }
 
-  const nftDocRef = soonDb().doc(`${COL.NFT}/${params.nft}`);
+  const nftDocRef = build5Db().doc(`${COL.NFT}/${params.nft}`);
   const nft = await nftDocRef.get<Nft>();
   if (!nft) {
     throw invalidArgument(WenError.nft_does_not_exists);
@@ -45,10 +45,10 @@ export const nftBidControl = async (
     await assertIpNotBlocked((customParams?.ip as string) || '', nft.uid, 'nft');
   }
 
-  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nft.collection}`);
+  const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nft.collection}`);
   const collection = (await collectionDocRef.get<Collection>())!;
 
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${collection.space}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${collection.space}`);
   const space = await spaceDocRef.get<Space>();
 
   if (!collection.approved) {
@@ -76,7 +76,7 @@ export const nftBidControl = async (
   }
   const network = nft.mintingData?.network || DEFAULT_NETWORK;
 
-  const prevOwnerDocRef = soonDb().doc(`${COL.MEMBER}/${nft.owner}`);
+  const prevOwnerDocRef = build5Db().doc(`${COL.MEMBER}/${nft.owner}`);
   const prevOwner = await prevOwnerDocRef.get<Member | undefined>();
   assertMemberHasValidAddress(prevOwner, network);
 
@@ -114,7 +114,7 @@ export const nftBidControl = async (
     },
     linkedTransactions: [],
   };
-  const transactionDocRef = soonDb().doc(`${COL.TRANSACTION}/${bidTransaction.uid}`);
+  const transactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${bidTransaction.uid}`);
   await transactionDocRef.create(bidTransaction);
 
   return await transactionDocRef.get<Transaction>();

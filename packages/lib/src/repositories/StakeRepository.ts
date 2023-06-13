@@ -1,10 +1,10 @@
 import { Opr, PublicCollections, Stake } from '@build-5/interfaces';
-import { SoonEnv } from '../Config';
+import { Build5Env } from '../Config';
 import { CrudRepository } from './CrudRepository';
 
 export class StakeRepository extends CrudRepository<Stake> {
-  constructor(env?: SoonEnv) {
-    super(env || SoonEnv.PROD, PublicCollections.STAKE);
+  constructor(env?: Build5Env) {
+    super(env || Build5Env.PROD, PublicCollections.STAKE);
   }
 
   public getByMemberLive = (member: string, startAfter?: string, limit?: number) => {

@@ -1,5 +1,5 @@
 import { COL, DEFAULT_NETWORK, Network } from '@build-5/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { IotaWallet, getIotaClient } from './IotaWalletService';
 import { SmrWallet, getShimmerClient } from './SmrWalletService';
 
@@ -62,6 +62,6 @@ export const setConsumedOutputIds = (
   consumedNftOutputIds: string[] = [],
   consumedAliasOutputIds: string[] = [],
 ) =>
-  soonDb()
+  build5Db()
     .doc(`${COL.MNEMONIC}/${address}`)
     .update({ consumedOutputIds, consumedNftOutputIds, consumedAliasOutputIds });

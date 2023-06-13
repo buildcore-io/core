@@ -14,7 +14,7 @@ import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { depositStake } from '../../src/runtime/firebase/stake';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -83,7 +83,7 @@ describe('Staking test', () => {
   ])('Should set stake amount and remove it once expired', async ({ expiration, type }) => {
     const secondGuardian = await createMember(helper.walletSpy!);
     await addGuardianToSpace(helper.space?.uid!, secondGuardian);
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TOKEN}/${helper.token?.uid!}/${SUB_COL.DISTRIBUTION}/${secondGuardian}`)
       .set({
         parentId: helper.token?.uid!,
@@ -106,7 +106,7 @@ describe('Staking test', () => {
     await helper.validateMemberStakeAmount(10, 10, 14, 14, type);
     await helper.assertDistributionStakeExpiry(stake1);
 
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${helper.space?.uid}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${helper.space?.uid}`);
     await spaceDocRef.update({ tokenBased: true, minStakedValue: 10 });
 
     const stake2 = await helper.stakeAmount(20, 26, expiresAt, type);
@@ -189,13 +189,13 @@ describe('Staking test', () => {
     );
     await wait(
       async () => {
-        const snap = await soonDb()
+        const snap = await build5Db()
           .collection(COL.TRANSACTION)
           .where('type', '==', TransactionType.UNLOCK)
           .where('member', '==', helper.member?.uid)
           .get();
         if (snap.length) {
-          await soonDb()
+          await build5Db()
             .doc(`${COL.TRANSACTION}/${order.uid}`)
             .update({ 'payload.expiresOn': dateToTimestamp(dayjs().subtract(1, 'd')) });
         }
@@ -205,7 +205,7 @@ describe('Staking test', () => {
       100,
     );
 
-    const creditQuery = soonDb()
+    const creditQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.member?.uid);

@@ -8,8 +8,8 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
+import { build5Db } from '../../../../../firebase/firestore/build5Db';
 import { ITransaction } from '../../../../../firebase/firestore/interfaces';
-import { soonDb } from '../../../../../firebase/firestore/soondb';
 import { invalidArgument } from '../../../../../utils/error.utils';
 import { getTokenVoteMultiplier } from '../../../voting-service';
 import { createVoteTransaction } from './ProposalVoteService';
@@ -20,7 +20,7 @@ export const voteWithStakedTokens = async (
   proposal: Proposal,
   values: number[],
 ) => {
-  const distributionDocRef = soonDb()
+  const distributionDocRef = build5Db()
     .collection(COL.TOKEN)
     .doc(proposal.token!)
     .collection(SUB_COL.DISTRIBUTION)
@@ -49,19 +49,19 @@ export const voteWithStakedTokens = async (
     values,
     stakes.map((s) => s.uid),
   );
-  const voteTransactionDocRef = soonDb().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`);
+  const voteTransactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`);
   transaction.create(voteTransactionDocRef, voteTransaction);
 
-  const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
   const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(member);
   transaction.set(
     proposalMemberDocRef,
     {
       voted: true,
-      voteTransactions: soonDb().inc(1),
+      voteTransactions: build5Db().inc(1),
       tranId: voteTransaction.uid,
-      weightPerAnswer: { [values[0]]: soonDb().inc(weight) },
-      values: soonDb().arrayUnion({
+      weightPerAnswer: { [values[0]]: build5Db().inc(weight) },
+      values: build5Db().arrayUnion({
         [values[0]]: weight,
         voteTransaction: voteTransaction.uid,
       }),
@@ -71,9 +71,9 @@ export const voteWithStakedTokens = async (
 
   const proposalData = {
     results: {
-      total: soonDb().inc(weight),
-      voted: soonDb().inc(weight),
-      answers: { [`${values[0]}`]: soonDb().inc(weight) },
+      total: build5Db().inc(weight),
+      voted: build5Db().inc(weight),
+      answers: { [`${values[0]}`]: build5Db().inc(weight) },
     },
   };
   transaction.set(proposalDocRef, proposalData, true);
@@ -88,12 +88,12 @@ const expireStakeVoteTransaction = async (
   currentProposal: Proposal,
   voteTransactionId: string,
 ) => {
-  const voteTransactionDocRef = soonDb().doc(`${COL.TRANSACTION}/${voteTransactionId}`);
+  const voteTransactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${voteTransactionId}`);
   const voteTransaction = (await transaction.get<Transaction>(voteTransactionDocRef))!;
   let proposal = currentProposal;
-  let proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${currentProposal.uid}`);
+  let proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${currentProposal.uid}`);
   if (voteTransaction.payload.proposalId !== currentProposal.uid) {
-    proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${voteTransaction.payload.proposalId}`);
+    proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${voteTransaction.payload.proposalId}`);
     proposal = (await proposalDocRef.get<Proposal>())!;
   }
 
@@ -124,17 +124,17 @@ const expireStakeVoteTransaction = async (
   transaction.set(
     proposalMemberDocRef,
     {
-      values: soonDb().arrayRemove({
+      values: build5Db().arrayRemove({
         [prevValue]: prevWeight,
         voteTransaction: voteTransaction.uid,
       }),
-      voteTransactions: soonDb().inc(-1),
-      weightPerAnswer: { [prevValue]: soonDb().inc(-prevWeight + weight) },
+      voteTransactions: build5Db().inc(-1),
+      weightPerAnswer: { [prevValue]: build5Db().inc(-prevWeight + weight) },
     },
     true,
   );
   transaction.update(proposalMemberDocRef, {
-    values: soonDb().arrayUnion({
+    values: build5Db().arrayUnion({
       [prevValue]: weight,
       voteTransaction: voteTransaction.uid,
     }),
@@ -142,9 +142,9 @@ const expireStakeVoteTransaction = async (
 
   const data = {
     results: {
-      total: soonDb().inc(-prevWeight + weight),
-      voted: soonDb().inc(-prevWeight + weight),
-      answers: { [prevValue]: soonDb().inc(-prevWeight + weight) },
+      total: build5Db().inc(-prevWeight + weight),
+      voted: build5Db().inc(-prevWeight + weight),
+      answers: { [prevValue]: build5Db().inc(-prevWeight + weight) },
     },
   };
   transaction.set(proposalDocRef, data, true);
@@ -152,7 +152,7 @@ const expireStakeVoteTransaction = async (
 
 const getStakesById = (stakeIds: string[]) => {
   const promises = stakeIds.map(async (uid) => {
-    const docRef = soonDb().doc(`${COL.STAKE}/${uid}`);
+    const docRef = build5Db().doc(`${COL.STAKE}/${uid}`);
     return (await docRef.get<Stake>())!;
   });
   return Promise.all(promises);
@@ -175,7 +175,7 @@ const getWeightForStakes = (
   }, 0);
 
 const getActiveStakes = (member: string, token: string) =>
-  soonDb()
+  build5Db()
     .collection(COL.STAKE)
     .where('member', '==', member)
     .where('token', '==', token)

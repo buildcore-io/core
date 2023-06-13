@@ -1,7 +1,7 @@
 import { COL, Member, MIN_IOTA_AMOUNT, Stake, StakeType } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { wait } from '../../test/controls/common';
 import { requestMintedTokenFromFaucet } from '../faucet';
@@ -20,13 +20,13 @@ describe('Staking test', () => {
 
   const validateMemberTradingFee = async (expected: number) => {
     await wait(async () => {
-      helper.member = <Member>await soonDb().doc(`${COL.MEMBER}/${helper.member?.uid}`).get();
+      helper.member = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.member?.uid}`).get();
       return helper.member.tokenTradingFeePercentage === expected;
     });
   };
 
   const expireStakeAndValidateFee = async (stake: Stake, expectedFee: number) => {
-    await soonDb()
+    await build5Db()
       .doc(`${COL.STAKE}/${stake.uid}`)
       .update({ expiresAt: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
     await removeExpiredStakesFromSpace();

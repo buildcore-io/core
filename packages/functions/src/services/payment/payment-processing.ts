@@ -13,8 +13,8 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { ITransaction } from '../../firebase/firestore/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { AddressService } from './address-service';
 import { AwardService } from './award/award-service';
@@ -71,19 +71,19 @@ export class ProcessingService {
     if (!tran.outputs?.length) {
       return;
     }
-    const soonTransaction = isEmpty(tran.soonaverseTransactionId)
+    const build5Transaction = isEmpty(tran.build5TransactionId)
       ? undefined
-      : await soonDb().doc(`${COL.TRANSACTION}/${tran.soonaverseTransactionId}`).get<Transaction>();
+      : await build5Db().doc(`${COL.TRANSACTION}/${tran.build5TransactionId}`).get<Transaction>();
     for (const tranOutput of tran.outputs) {
       if (
-        soonTransaction?.type !== TransactionType.UNLOCK &&
+        build5Transaction?.type !== TransactionType.UNLOCK &&
         tran.inputs.find((i) => tranOutput.address === i.address)
       ) {
         continue;
       }
       const orders = await this.findAllOrdersWithAddress(tranOutput.address);
       for (const order of orders) {
-        await this.processOrderTransaction(tran, tranOutput, order.uid, soonTransaction);
+        await this.processOrderTransaction(tran, tranOutput, order.uid, build5Transaction);
       }
     }
   }
@@ -92,9 +92,9 @@ export class ProcessingService {
     tran: MilestoneTransaction,
     tranOutput: MilestoneTransactionEntry,
     orderId: string,
-    soonTransaction: Transaction | undefined,
+    build5Transaction: Transaction | undefined,
   ): Promise<void> {
-    const orderRef = soonDb().doc(`${COL.TRANSACTION}/${orderId}`);
+    const orderRef = build5Db().doc(`${COL.TRANSACTION}/${orderId}`);
     const order = await this.transactionService.get<TransactionOrder>(orderRef);
 
     if (!order) {
@@ -110,7 +110,7 @@ export class ProcessingService {
     }
 
     // Let's process this.'
-    const match = await this.transactionService.isMatch(tran, tranOutput, order, soonTransaction);
+    const match = await this.transactionService.isMatch(tran, tranOutput, order, build5Transaction);
     if (!expired && order.payload.reconciled === false && order.payload.void === false && match) {
       const expirationUnlock = this.transactionService.getExpirationUnlock(
         tranOutput.unlockConditions,
@@ -137,7 +137,7 @@ export class ProcessingService {
             tranOutput,
             order,
             match,
-            soonTransaction,
+            build5Transaction,
           );
           break;
         case TransactionOrderType.NFT_BID:
@@ -146,7 +146,7 @@ export class ProcessingService {
             tranOutput,
             order,
             match,
-            soonTransaction,
+            build5Transaction,
           );
           break;
         case TransactionOrderType.SPACE_ADDRESS_VALIDATION:
@@ -176,7 +176,7 @@ export class ProcessingService {
             order,
             tranOutput,
             match,
-            soonTransaction,
+            build5Transaction,
           );
           break;
         case TransactionOrderType.MINT_COLLECTION:
@@ -199,7 +199,7 @@ export class ProcessingService {
             tran,
             tranOutput,
             match,
-            soonTransaction,
+            build5Transaction,
           );
           break;
         case TransactionOrderType.PROPOSAL_VOTE:
@@ -232,7 +232,7 @@ export class ProcessingService {
         }
       }
     } else {
-      await this.transactionService.processAsInvalid(tran, order, tranOutput, soonTransaction);
+      await this.transactionService.processAsInvalid(tran, order, tranOutput, build5Transaction);
     }
 
     // Add linked transaction.
@@ -249,7 +249,7 @@ export class ProcessingService {
   }
 
   private findAllOrdersWithAddress = (address: IotaAddress) =>
-    soonDb()
+    build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.ORDER)
       .where('payload.targetAddress', '==', address)

@@ -24,7 +24,7 @@ import {
 } from '@build-5/interfaces';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { cancelTradeOrder, tradeToken } from '../../src/runtime/firebase/token/trading';
 import { TOKEN_TRADE_ORDER_FETCH_LIMIT } from '../../src/triggers/token-trading/match-token';
 import { getAddress } from '../../src/utils/address.utils';
@@ -56,12 +56,12 @@ const buyTokenFunc = async (memberAddress: string, request: any) => {
 };
 
 const assertVolumeTotal = async (tokenId: string, volumeTotal: number) => {
-  const statDoc = soonDb().doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.STATS}/${tokenId}`);
+  const statDoc = build5Db().doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.STATS}/${tokenId}`);
   await wait(async () => (await statDoc.get<TokenStats>())?.volumeTotal === volumeTotal);
 };
 
 const getBillPayments = (member: string) =>
-  soonDb()
+  build5Db()
     .collection(COL.TRANSACTION)
     .where('type', '==', TransactionType.BILL_PAYMENT)
     .where('member', '==', member)
@@ -104,7 +104,7 @@ describe('Trade trigger', () => {
       fulfilled: 0,
       status: TokenTradeOrderStatus.ACTIVE,
     };
-    await soonDb().doc(`${COL.TOKEN_MARKET}/${data.uid}`).create(data);
+    await build5Db().doc(`${COL.TOKEN_MARKET}/${data.uid}`).create(data);
   };
 
   beforeAll(async () => {
@@ -126,15 +126,15 @@ describe('Trade trigger', () => {
       status: TokenStatus.PRE_MINTED,
       approved: true,
     };
-    await soonDb().doc(`${COL.TOKEN}/${tokenId}`).set(token);
+    await build5Db().doc(`${COL.TOKEN}/${tokenId}`).set(token);
     const distribution = <TokenDistribution>{ tokenOwned: tokenCount * 3 };
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}/${seller}`)
       .set(distribution);
 
-    await soonDb()
+    await build5Db()
       .doc(`${COL.SYSTEM}/${SYSTEM_CONFIG_DOC_ID}`)
-      .set({ tokenTradingFeePercentage: soonDb().deleteField() }, true);
+      .set({ tokenTradingFeePercentage: build5Db().deleteField() }, true);
   });
 
   it('Should fulfill buy with one sell', async () => {
@@ -150,7 +150,7 @@ describe('Trade trigger', () => {
     const order = await buyTokenFunc(buyer, request);
 
     await wait(async () => {
-      const buySnap = await soonDb()
+      const buySnap = await build5Db()
         .collection(COL.TOKEN_MARKET)
         .where('type', '==', TokenTradeOrderType.BUY)
         .where('owner', '==', buyer)
@@ -158,7 +158,7 @@ describe('Trade trigger', () => {
       return buySnap[0].fulfilled === tokenCount;
     });
 
-    const buySnap = await soonDb()
+    const buySnap = await build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('type', '==', TokenTradeOrderType.BUY)
       .where('owner', '==', buyer)
@@ -168,7 +168,7 @@ describe('Trade trigger', () => {
     expect(buy.status).toBe(TokenTradeOrderStatus.SETTLED);
     expect(buy.tokenStatus).toBe(TokenStatus.PRE_MINTED);
 
-    const sellSnap = await soonDb()
+    const sellSnap = await build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('type', '==', TokenTradeOrderType.SELL)
       .where('owner', '==', seller)
@@ -179,18 +179,18 @@ describe('Trade trigger', () => {
     expect(sell.tokenStatus).toBe(TokenStatus.PRE_MINTED);
 
     const sellDistribution = <TokenDistribution>(
-      await soonDb().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`).get()
+      await build5Db().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`).get()
     );
     expect(sellDistribution.lockedForSale).toBe(0);
     expect(sellDistribution.sold).toBe(tokenCount);
     expect(sellDistribution.tokenOwned).toBe(2 * tokenCount);
     const buyDistribution = <TokenDistribution>(
-      await soonDb().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${buyer}`).get()
+      await build5Db().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${buyer}`).get()
     );
     expect(buyDistribution.totalPurchased).toBe(tokenCount);
     expect(buyDistribution.tokenOwned).toBe(tokenCount);
 
-    const purchases = await soonDb()
+    const purchases = await build5Db()
       .collection(COL.TOKEN_PURCHASE)
       .where('buy', '==', buy.uid)
       .get();
@@ -204,8 +204,8 @@ describe('Trade trigger', () => {
     expect(purchase.sellerTier).toBe(0);
     expect(purchase.sellerTokenTradingFeePercentage).toBeNull();
 
-    const sellerData = <Member>await soonDb().doc(`${COL.MEMBER}/${seller}`).get();
-    const billPaymentDocRef = soonDb().doc(`${COL.TRANSACTION}/${purchase.billPaymentId}`);
+    const sellerData = <Member>await build5Db().doc(`${COL.MEMBER}/${seller}`).get();
+    const billPaymentDocRef = build5Db().doc(`${COL.TRANSACTION}/${purchase.billPaymentId}`);
     const billPayment = <Transaction>await billPaymentDocRef.get();
     expect(billPayment.payload.sourceAddress).toBe(order.payload.targetAddress);
     expect(billPayment.payload.targetAddress).toBe(getAddress(sellerData, Network.IOTA));
@@ -244,7 +244,7 @@ describe('Trade trigger', () => {
     const order = await buyTokenFunc(buyer, request);
 
     await wait(async () => {
-      const buySnap = await soonDb()
+      const buySnap = await build5Db()
         .collection(COL.TOKEN_MARKET)
         .where('type', '==', TokenTradeOrderType.BUY)
         .where('owner', '==', buyer)
@@ -252,7 +252,7 @@ describe('Trade trigger', () => {
       return buySnap[0].fulfilled === tokenCount;
     });
 
-    const buySnap = await soonDb()
+    const buySnap = await build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('type', '==', TokenTradeOrderType.BUY)
       .where('owner', '==', buyer)
@@ -261,12 +261,12 @@ describe('Trade trigger', () => {
     const buy = <TokenTradeOrder>buySnap[0];
     expect(buy.status).toBe(TokenTradeOrderStatus.SETTLED);
     const buyDistribution = <TokenDistribution>(
-      await soonDb().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${buyer}`).get()
+      await build5Db().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${buyer}`).get()
     );
     expect(buyDistribution.totalPurchased).toBe(tokenCount);
     expect(buyDistribution.tokenOwned).toBe(3 * tokenCount);
 
-    const purchase = await soonDb()
+    const purchase = await build5Db()
       .collection(COL.TOKEN_PURCHASE)
       .where('buy', '==', buy.uid)
       .get<TokenPurchase>();
@@ -276,8 +276,8 @@ describe('Trade trigger', () => {
     expect(purchase[0].price).toBe(MIN_IOTA_AMOUNT);
     expect(purchase[0].count).toBe(tokenCount);
 
-    const sellerData = <Member>await soonDb().doc(`${COL.MEMBER}/${seller}`).get();
-    const billPaymentDocRef = soonDb().doc(`${COL.TRANSACTION}/${purchase[0].billPaymentId}`);
+    const sellerData = <Member>await build5Db().doc(`${COL.MEMBER}/${seller}`).get();
+    const billPaymentDocRef = build5Db().doc(`${COL.TRANSACTION}/${purchase[0].billPaymentId}`);
     const billPayment = <Transaction>await billPaymentDocRef.get();
     expect(billPayment.payload.sourceAddress).toBe(order.payload.targetAddress);
     expect(billPayment.payload.targetAddress).toBe(getAddress(sellerData, Network.IOTA));
@@ -321,7 +321,7 @@ describe('Trade trigger', () => {
     const order = await buyTokenFunc(buyer, request);
 
     await wait(async () => {
-      const buySnap = await soonDb()
+      const buySnap = await build5Db()
         .collection(COL.TOKEN_MARKET)
         .where('type', '==', TokenTradeOrderType.BUY)
         .where('owner', '==', buyer)
@@ -329,7 +329,7 @@ describe('Trade trigger', () => {
       return buySnap[0].fulfilled === 2 * tokenCount;
     });
 
-    const buySnap = await soonDb()
+    const buySnap = await build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('type', '==', TokenTradeOrderType.BUY)
       .where('owner', '==', buyer)
@@ -339,12 +339,12 @@ describe('Trade trigger', () => {
     expect(buy.status).toBe(TokenTradeOrderStatus.SETTLED);
 
     const credit = <Transaction>(
-      await soonDb().doc(`${COL.TRANSACTION}/${buy.creditTransactionId}`).get()
+      await build5Db().doc(`${COL.TRANSACTION}/${buy.creditTransactionId}`).get()
     );
     expect(credit.payload.amount).toBe(MIN_IOTA_AMOUNT * 2 * tokenCount);
     expect(credit.payload.sourceTransaction).toContain(buySnap[0].paymentTransactionId);
     expect(credit?.payload?.sourceAddress).toBe(order.payload.targetAddress);
-    const buyerData = <Member>await soonDb().doc(`${COL.MEMBER}/${buyer}`).get();
+    const buyerData = <Member>await build5Db().doc(`${COL.MEMBER}/${buyer}`).get();
     expect(credit?.payload?.targetAddress).toBe(getAddress(buyerData, Network.IOTA));
     expect(credit.network).toBe(DEFAULT_NETWORK);
 
@@ -376,7 +376,7 @@ describe('Trade trigger', () => {
     await testEnv.wrap(tradeToken)({});
 
     await wait(async () => {
-      const sellSnap = await soonDb()
+      const sellSnap = await build5Db()
         .collection(COL.TOKEN_MARKET)
         .where('type', '==', TokenTradeOrderType.SELL)
         .where('owner', '==', seller)
@@ -384,7 +384,7 @@ describe('Trade trigger', () => {
       return sellSnap[0].fulfilled === 2 * tokenCount;
     });
 
-    const sellSnap = await soonDb()
+    const sellSnap = await build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('type', '==', TokenTradeOrderType.SELL)
       .where('owner', '==', seller)
@@ -422,7 +422,7 @@ describe('Trade trigger', () => {
 
     await wait(async () => {
       const distribution = <TokenDistribution>(
-        await soonDb().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`).get()
+        await build5Db().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`).get()
       );
       return distribution.tokenOwned === 0 && distribution.sold === 3 * tokenCount;
     });
@@ -442,7 +442,7 @@ describe('Trade trigger', () => {
 
     await wait(async () => {
       const allSettled = (
-        await soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', buyer).get()
+        await build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', buyer).get()
       )
         .map((d) => <TokenTradeOrder>d)
         .reduce((sum, act) => sum && act.status === TokenTradeOrderStatus.SETTLED, true);
@@ -450,7 +450,7 @@ describe('Trade trigger', () => {
     });
 
     const sales = (
-      await soonDb().collection(COL.TOKEN_MARKET).where('owner', 'in', [seller, buyer]).get()
+      await build5Db().collection(COL.TOKEN_MARKET).where('owner', 'in', [seller, buyer]).get()
     ).map((d) => <TokenTradeOrder>d);
     expect(sales.length).toBe(3);
     const buyFulfillmentCount = sales.reduce(
@@ -468,7 +468,7 @@ describe('Trade trigger', () => {
   });
 
   it('Should buy and sell in parallel', async () => {
-    const distributionDocRef = soonDb().doc(
+    const distributionDocRef = build5Db().doc(
       `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`,
     );
     const distribution = <TokenDistribution>{ tokenOwned: 3 * tokenCount };
@@ -489,9 +489,9 @@ describe('Trade trigger', () => {
         status: TokenTradeOrderStatus.ACTIVE,
         createdOn: serverTime(),
       };
-      await soonDb().doc(`${COL.TOKEN_MARKET}/${sellDocId}`).create(data);
+      await build5Db().doc(`${COL.TOKEN_MARKET}/${sellDocId}`).create(data);
       await distributionDocRef.update({
-        lockedForSale: soonDb().inc(count),
+        lockedForSale: build5Db().inc(count),
       });
     };
 
@@ -507,7 +507,7 @@ describe('Trade trigger', () => {
 
     await wait(async () => {
       const allSettled = (
-        await soonDb().collection(COL.TOKEN_MARKET).where('owner', 'in', [seller, buyer]).get()
+        await build5Db().collection(COL.TOKEN_MARKET).where('owner', 'in', [seller, buyer]).get()
       )
         .map((d) => <TokenTradeOrder>d)
         .reduce((sum, act) => sum && act.status === TokenTradeOrderStatus.SETTLED, true);
@@ -515,7 +515,7 @@ describe('Trade trigger', () => {
     });
 
     const sales = (
-      await soonDb().collection(COL.TOKEN_MARKET).where('owner', 'in', [seller, buyer]).get()
+      await build5Db().collection(COL.TOKEN_MARKET).where('owner', 'in', [seller, buyer]).get()
     ).map((d) => <TokenTradeOrder>d);
 
     const allSettled = sales.reduce(
@@ -529,7 +529,7 @@ describe('Trade trigger', () => {
     expect(sellDistribution.lockedForSale).toBe(0);
     expect(sellDistribution.tokenOwned).toBe(0);
     const buyDistribution = <TokenDistribution>(
-      await soonDb().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${buyer}`).get()
+      await build5Db().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${buyer}`).get()
     );
     expect(buyDistribution.totalPurchased).toBe(3 * tokenCount);
     expect(buyDistribution.tokenOwned).toBe(3 * tokenCount);
@@ -560,7 +560,7 @@ describe('Trade trigger', () => {
     });
 
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.TOKEN_MARKET)
         .where('owner', '==', buyer)
         .where('type', '==', TokenTradeOrderType.BUY)
@@ -568,7 +568,7 @@ describe('Trade trigger', () => {
       return snap[0].fulfilled === tokenCount;
     });
 
-    const snap = await soonDb()
+    const snap = await build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', buyer)
       .where('type', '==', TokenTradeOrderType.BUY)
@@ -577,7 +577,7 @@ describe('Trade trigger', () => {
     const cancelled = await testEnv.wrap(cancelTradeOrder)({});
     expect(cancelled.status).toBe(TokenTradeOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED);
 
-    const creditSnap = await soonDb()
+    const creditSnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', buyer)
@@ -608,7 +608,7 @@ describe('Trade trigger', () => {
     await wait(async () => {
       return (
         (
-          await soonDb()
+          await build5Db()
             .collection(COL.TOKEN_MARKET)
             .where('owner', '==', buyer)
             .get<TokenTradeOrder>()
@@ -616,7 +616,7 @@ describe('Trade trigger', () => {
       );
     });
 
-    const buyQuery = soonDb()
+    const buyQuery = build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('type', '==', TokenTradeOrderType.BUY)
       .where('owner', '==', buyer);
@@ -628,7 +628,7 @@ describe('Trade trigger', () => {
     const cancelled = await testEnv.wrap(cancelTradeOrder)({});
     expect(cancelled.status).toBe(TokenTradeOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED);
 
-    const creditSnap = await soonDb()
+    const creditSnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', buyer)
@@ -641,7 +641,7 @@ describe('Trade trigger', () => {
 
   it('Should settle after second run on more than batch limit', async () => {
     const distribution = <TokenDistribution>{ tokenOwned: 70 * tokenCount };
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`)
       .set(distribution);
 
@@ -658,7 +658,7 @@ describe('Trade trigger', () => {
     await wait(async () => {
       return (
         (
-          await soonDb()
+          await build5Db()
             .collection(COL.TOKEN_MARKET)
             .where('type', '==', TokenTradeOrderType.BUY)
             .where('owner', '==', buyer)
@@ -666,7 +666,7 @@ describe('Trade trigger', () => {
         )[0].status === TokenTradeOrderStatus.SETTLED
       );
     });
-    const bu = await soonDb()
+    const bu = await build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('type', '==', TokenTradeOrderType.BUY)
       .where('owner', '==', buyer)
@@ -675,7 +675,7 @@ describe('Trade trigger', () => {
     expect(bu[0]?.fulfilled).toBe(count);
     expect(bu[0]?.status).toBe(TokenTradeOrderStatus.SETTLED);
 
-    const purchases = await soonDb()
+    const purchases = await build5Db()
       .collection(COL.TOKEN_PURCHASE)
       .where('buy', '==', bu[0]?.uid)
       .get();
@@ -693,7 +693,7 @@ describe('Trade trigger', () => {
     await wait(async () => {
       return (
         (
-          await soonDb()
+          await build5Db()
             .collection(COL.TOKEN_MARKET)
             .where('type', '==', TokenTradeOrderType.BUY)
             .where('owner', '==', buyer)
@@ -701,7 +701,7 @@ describe('Trade trigger', () => {
         )[0].status === TokenTradeOrderStatus.SETTLED
       );
     });
-    const bu = await soonDb()
+    const bu = await build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('type', '==', TokenTradeOrderType.BUY)
       .where('owner', '==', buyer)
@@ -710,7 +710,7 @@ describe('Trade trigger', () => {
     expect(bu[0]?.fulfilled).toBe(1);
     expect(bu[0]?.status).toBe(TokenTradeOrderStatus.SETTLED);
 
-    const purchases = await soonDb()
+    const purchases = await build5Db()
       .collection(COL.TOKEN_PURCHASE)
       .where('buy', '==', bu[0]?.uid)
       .get();
@@ -732,7 +732,7 @@ describe('Trade trigger', () => {
       count: 2 * tokenCount,
     });
 
-    const orderQuery = soonDb().collection(COL.TOKEN_MARKET).where('token', '==', token.uid);
+    const orderQuery = build5Db().collection(COL.TOKEN_MARKET).where('token', '==', token.uid);
     await wait(async () => {
       const snap = await orderQuery.get();
       return snap.length === 2;
@@ -740,7 +740,7 @@ describe('Trade trigger', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    const purchase = await soonDb()
+    const purchase = await build5Db()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', token.uid)
       .get();
@@ -762,7 +762,7 @@ describe('Trade trigger', () => {
       count: 2 * tokenCount,
     });
 
-    const purchaseQuery = soonDb().collection(COL.TOKEN_PURCHASE).where('token', '==', token.uid);
+    const purchaseQuery = build5Db().collection(COL.TOKEN_PURCHASE).where('token', '==', token.uid);
     await wait(async () => {
       const snap = await purchaseQuery.get();
       return snap.length === 1;
@@ -773,7 +773,7 @@ describe('Trade trigger', () => {
     expect(purchase.price).toBe(MIN_IOTA_AMOUNT / 2);
 
     const billPayments = (
-      await soonDb()
+      await build5Db()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
         .where('payload.token', '==', token.uid)
@@ -800,8 +800,8 @@ describe('Trade trigger', () => {
     'Should not create royalty payments as percentage is zero',
     async (isMember: boolean) => {
       if (isMember) {
-        await soonDb().doc(`${COL.MEMBER}/${seller}`).update({ tokenTradingFeePercentage: 0 });
-        await soonDb()
+        await build5Db().doc(`${COL.MEMBER}/${seller}`).update({ tokenTradingFeePercentage: 0 });
+        await build5Db()
           .collection(COL.TOKEN)
           .doc(soonTokenId)
           .collection(SUB_COL.DISTRIBUTION)
@@ -817,7 +817,7 @@ describe('Trade trigger', () => {
             true,
           );
       } else {
-        await soonDb()
+        await build5Db()
           .doc(`${COL.SYSTEM}/${SYSTEM_CONFIG_DOC_ID}`)
           .set({ tokenTradingFeePercentage: 0 });
       }
@@ -835,7 +835,9 @@ describe('Trade trigger', () => {
         count: 2 * tokenCount,
       });
 
-      const purchaseQuery = soonDb().collection(COL.TOKEN_PURCHASE).where('token', '==', token.uid);
+      const purchaseQuery = build5Db()
+        .collection(COL.TOKEN_PURCHASE)
+        .where('token', '==', token.uid);
       await wait(async () => {
         const snap = await purchaseQuery.get();
         return snap.length === 1;
@@ -850,7 +852,7 @@ describe('Trade trigger', () => {
       }
 
       const billPayments = (
-        await soonDb()
+        await build5Db()
           .collection(COL.TRANSACTION)
           .where('type', '==', TransactionType.BILL_PAYMENT)
           .where('payload.token', '==', token.uid)
@@ -866,7 +868,7 @@ describe('Trade trigger', () => {
   );
 
   it('Should create royalty payments only with dust', async () => {
-    await soonDb().doc(`${COL.MEMBER}/${seller}`).update({ tokenTradingFeePercentage: 0 });
+    await build5Db().doc(`${COL.MEMBER}/${seller}`).update({ tokenTradingFeePercentage: 0 });
     mockWalletReturnValue(walletSpy, seller, {
       symbol: token.symbol,
       price: MIN_IOTA_AMOUNT / 2,
@@ -881,7 +883,7 @@ describe('Trade trigger', () => {
       count: 2 * tokenCount,
     });
 
-    const purchaseQuery = soonDb().collection(COL.TOKEN_PURCHASE).where('token', '==', token.uid);
+    const purchaseQuery = build5Db().collection(COL.TOKEN_PURCHASE).where('token', '==', token.uid);
     await wait(async () => {
       const snap = await purchaseQuery.get();
       return snap.length === 1;
@@ -892,7 +894,7 @@ describe('Trade trigger', () => {
     expect(purchase.price).toBe(MIN_IOTA_AMOUNT / 2);
 
     const billPayments = (
-      await soonDb()
+      await build5Db()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
         .where('payload.token', '==', token.uid)
@@ -910,7 +912,7 @@ describe('Trade trigger', () => {
   });
 
   it('Should fill buy and send dust to space one', async () => {
-    await soonDb().doc(`${COL.MEMBER}/${seller}`).update({ tokenTradingFeePercentage: 1 });
+    await build5Db().doc(`${COL.MEMBER}/${seller}`).update({ tokenTradingFeePercentage: 1 });
     mockWalletReturnValue(walletSpy, seller, {
       symbol: token.symbol,
       price: MIN_IOTA_AMOUNT / 2,
@@ -925,7 +927,7 @@ describe('Trade trigger', () => {
       count: 2 * tokenCount,
     });
 
-    const purchaseQuery = soonDb().collection(COL.TOKEN_PURCHASE).where('token', '==', token.uid);
+    const purchaseQuery = build5Db().collection(COL.TOKEN_PURCHASE).where('token', '==', token.uid);
     await wait(async () => {
       const snap = await purchaseQuery.get();
       return snap.length === 1;
@@ -936,7 +938,7 @@ describe('Trade trigger', () => {
     expect(purchase.price).toBe(MIN_IOTA_AMOUNT / 2);
 
     const billPayments = (
-      await soonDb()
+      await build5Db()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
         .where('payload.token', '==', token.uid)
@@ -982,7 +984,7 @@ describe('Trade trigger', () => {
     await wait(async () => {
       return (
         (
-          await soonDb()
+          await build5Db()
             .collection(COL.TOKEN_MARKET)
             .where('type', '==', TokenTradeOrderType.BUY)
             .where('owner', '==', buyer)
@@ -1012,7 +1014,7 @@ describe('Trade trigger', () => {
     await wait(async () => {
       return (
         (
-          await soonDb()
+          await build5Db()
             .collection(COL.TOKEN_MARKET)
             .where('owner', '==', buyer)
             .get<TokenTradeOrder>()
@@ -1024,7 +1026,7 @@ describe('Trade trigger', () => {
     expect(cancelled.status).toBe(TokenTradeOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED);
 
     const sellDistribution = <TokenDistribution>(
-      await soonDb().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`).get()
+      await build5Db().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`).get()
     );
     expect(sellDistribution.lockedForSale).toBe(0);
     expect(sellDistribution.sold).toBe(5);
@@ -1051,7 +1053,7 @@ describe('Trade trigger', () => {
     await wait(async () => {
       return (
         (
-          await soonDb()
+          await build5Db()
             .collection(COL.TOKEN_MARKET)
             .where('owner', '==', buyer)
             .get<TokenTradeOrder>()
@@ -1059,12 +1061,12 @@ describe('Trade trigger', () => {
       );
     });
 
-    const buys = await soonDb()
+    const buys = await build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', buyer)
       .get<TokenTradeOrder>();
     const purchase = <TokenPurchase>(
-      (await soonDb().collection(COL.TOKEN_PURCHASE).where('buy', '==', buys[0].uid).get())[0]
+      (await build5Db().collection(COL.TOKEN_PURCHASE).where('buy', '==', buys[0].uid).get())[0]
     );
     expect(purchase.price).toBe(MIN_IOTA_AMOUNT);
   });
@@ -1073,7 +1075,7 @@ describe('Trade trigger', () => {
     await buyTokenFunc(buyer, { symbol: token.symbol, price: 2 * MIN_IOTA_AMOUNT, count: 10 });
     await buyTokenFunc(buyer, { symbol: token.symbol, price: MIN_IOTA_AMOUNT, count: 10 });
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.TOKEN_MARKET)
         .where('owner', '==', buyer)
         .get<TokenTradeOrder>();
@@ -1092,7 +1094,7 @@ describe('Trade trigger', () => {
     await wait(async () => {
       return (
         (
-          await soonDb()
+          await build5Db()
             .collection(COL.TOKEN_MARKET)
             .where('owner', '==', seller)
             .get<TokenTradeOrder>()
@@ -1101,7 +1103,7 @@ describe('Trade trigger', () => {
     });
 
     const purchase = <TokenPurchase>(
-      (await soonDb().collection(COL.TOKEN_PURCHASE).where('sell', '==', sell.uid).get())[0]
+      (await build5Db().collection(COL.TOKEN_PURCHASE).where('sell', '==', sell.uid).get())[0]
     );
     expect(purchase.price).toBe(2 * MIN_IOTA_AMOUNT);
   });
@@ -1123,7 +1125,7 @@ describe('Trade trigger', () => {
     };
     await buyTokenFunc(buyer, request);
 
-    const buyQuery = soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', buyer);
+    const buyQuery = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', buyer);
 
     await wait(async () => {
       return (
@@ -1152,7 +1154,7 @@ describe('Trade trigger', () => {
       count: 99,
     });
 
-    const buyQuery = soonDb()
+    const buyQuery = build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('orderTransactionId', '==', order.uid);
     await wait(async () => {
@@ -1165,7 +1167,7 @@ describe('Trade trigger', () => {
       price: 2 * MIN_IOTA_AMOUNT,
       count: 1,
     });
-    const buyQuery2 = soonDb()
+    const buyQuery2 = build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('orderTransactionId', '==', order2.uid);
     await wait(async () => {
@@ -1175,7 +1177,7 @@ describe('Trade trigger', () => {
 
     const buy = (await buyQuery2.get())[0] as TokenTradeOrder;
     const purchase = (
-      await soonDb().collection(COL.TOKEN_PURCHASE).where('buy', '==', buy.uid).get()
+      await build5Db().collection(COL.TOKEN_PURCHASE).where('buy', '==', buy.uid).get()
     )[0] as TokenPurchase;
     expect(purchase.price).toBe(2 * MIN_IOTA_AMOUNT);
   });

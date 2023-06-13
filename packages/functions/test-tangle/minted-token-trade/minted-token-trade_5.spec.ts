@@ -8,7 +8,7 @@ import {
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { cancelTradeOrder } from '../../src/runtime/firebase/token/trading';
 import { mockWalletReturnValue } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -29,12 +29,12 @@ describe('Token minting', () => {
   it('Create and cancel buy', async () => {
     await helper.createBuyOrder();
 
-    const query = soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer);
+    const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer);
     const buy = <TokenTradeOrder>(await query.get())[0];
     mockWalletReturnValue(helper.walletSpy, helper.buyer!, { uid: buy.uid });
     await testEnv.wrap(cancelTradeOrder)({});
 
-    const buyerCreditnap = await soonDb()
+    const buyerCreditnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer)
       .where('type', '==', TransactionType.CREDIT)

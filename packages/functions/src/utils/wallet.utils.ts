@@ -23,7 +23,7 @@ import dayjs from 'dayjs';
 import { Wallet } from 'ethers';
 import jwt from 'jsonwebtoken';
 import { get } from 'lodash';
-import { soonDb } from '../firebase/firestore/soondb';
+import { build5Db } from '../firebase/firestore/build5Db';
 import { getCustomTokenLifetime, getJwtSecretKey } from './config.utils';
 import { unAuthenticated } from './error.utils';
 
@@ -71,7 +71,7 @@ const validateWithSignature = async (req: WenRequest) => {
     throw unAuthenticated(WenError.invalid_signature);
   }
 
-  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${req.address}`);
+  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${req.address}`);
   await memberDocRef.update({ nonce: getRandomNonce() });
 };
 
@@ -89,7 +89,7 @@ const validateWithPublicKey = async (req: WenRequest) => {
     nonce: getRandomNonce(),
     validatedAddress: { [network]: validatedAddress },
   };
-  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${address}`);
+  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${address}`);
   await memberDocRef.set(updateData, true);
 
   return address;
@@ -150,7 +150,7 @@ const validateIotaPubKey = async (req: WenRequest) => {
 };
 
 const getMember = async (address: string) => {
-  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${address}`);
+  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${address}`);
   const member = await memberDocRef.get<Member>();
   if (!member) {
     throw unAuthenticated(WenError.failed_to_decode_token);

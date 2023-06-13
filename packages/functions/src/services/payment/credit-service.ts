@@ -6,7 +6,7 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 import { get, isEmpty } from 'lodash';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from './transaction-service';
 
@@ -19,7 +19,7 @@ export class CreditService {
   ) => {
     const payment = await this.transactionService.createPayment(order, match);
 
-    const transactionDocRef = soonDb().doc(
+    const transactionDocRef = build5Db().doc(
       `${COL.TRANSACTION}/${get(order, 'payload.transaction', '')}`,
     );
     const transaction = <Transaction>await transactionDocRef.get();
@@ -53,7 +53,7 @@ export class CreditService {
       },
     };
     this.transactionService.push({
-      ref: soonDb().doc(`${COL.TRANSACTION}/${credit.uid}`),
+      ref: build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`),
       data: credit,
       action: 'set',
     });

@@ -10,7 +10,7 @@ import {
   TransactionType,
   WenError,
 } from '@build-5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
@@ -41,14 +41,14 @@ describe('Tangle request spec', () => {
     const space = await createSpace(walletSpy, member);
     token = await saveToken(space.uid, member);
 
-    const memberData = <Member>await soonDb().doc(`${COL.MEMBER}/${member}`).get();
+    const memberData = <Member>await build5Db().doc(`${COL.MEMBER}/${member}`).get();
     rmsAddress = await rmsWallet.getAddressDetails(getAddress(memberData, Network.RMS)!);
     await requestFundsFromFaucet(Network.RMS, rmsAddress.bech32, 10 * MIN_IOTA_AMOUNT);
   });
 
   it('Should return amount, multiple users with same address', async () => {
     const member2 = await createMember(walletSpy);
-    await soonDb()
+    await build5Db()
       .doc(`${COL.MEMBER}/${member2}`)
       .set({ validatedAddress: { [Network.RMS]: rmsAddress.bech32 } }, true);
 
@@ -63,7 +63,7 @@ describe('Tangle request spec', () => {
       },
     });
 
-    const query = soonDb()
+    const query = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', rmsAddress.bech32)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
@@ -94,7 +94,7 @@ describe('Tangle request spec', () => {
       },
     }));
     await rmsWallet.sendToMany(rmsAddress, requests, {});
-    const query = soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', member);
+    const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', member);
     await wait(async () => {
       const snap = await query.get();
       return snap.length === 10;
@@ -106,7 +106,7 @@ describe('Tangle request spec', () => {
       customMetadata: { request: { requestType: 'wrong_request' } },
     });
 
-    const query = soonDb()
+    const query = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
@@ -141,6 +141,6 @@ const saveToken = async (space: string, guardian: string) => {
       network: Network.ATOI,
     },
   };
-  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token as Token;
 };

@@ -4,7 +4,7 @@ import { Converter, Converter as ConverterNext } from '@iota/util.js-next';
 import { recoverPersonalSignature } from '@metamask/eth-sig-util';
 import jwt from 'jsonwebtoken';
 import { get } from 'lodash';
-import { soonDb } from '../src/firebase/firestore/soondb';
+import { build5Db } from '../src/firebase/firestore/build5Db';
 import { generateCustomToken } from '../src/runtime/firebase/auth';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
 import { WalletService } from '../src/services/wallet/wallet';
@@ -72,7 +72,7 @@ describe('Pub key test', () => {
     const address = await wallet.getNewIotaAddressDetails();
 
     const nonce = getRandomNonce();
-    const userDocRef = soonDb().doc(`${COL.MEMBER}/${address.bech32}`);
+    const userDocRef = build5Db().doc(`${COL.MEMBER}/${address.bech32}`);
     await userDocRef.create({ uid: address.bech32, nonce });
 
     const signature = Ed25519Next.sign(
@@ -104,7 +104,7 @@ describe('Pub key test', () => {
       const address = await wallet.getNewIotaAddressDetails();
 
       const nonce = getRandomNonce();
-      const userDocRef = soonDb().doc(`${COL.MEMBER}/${address.bech32}`);
+      const userDocRef = build5Db().doc(`${COL.MEMBER}/${address.bech32}`);
       await userDocRef.create({ uid: address.bech32, nonce });
 
       const signature = Ed25519.sign(
@@ -136,7 +136,7 @@ describe('Pub key test', () => {
     const address = await wallet.getNewIotaAddressDetails();
 
     const nonce = getRandomNonce();
-    const userDocRef = soonDb().doc(`${COL.MEMBER}/${address.bech32}`);
+    const userDocRef = build5Db().doc(`${COL.MEMBER}/${address.bech32}`);
     await userDocRef.create({ uid: address.bech32, nonce });
 
     const signature = Ed25519Next.sign(
@@ -170,7 +170,7 @@ describe('Pub key test', () => {
     const address = await wallet.getNewIotaAddressDetails();
 
     const nonce = getRandomNonce();
-    const userDocRef = soonDb().doc(`${COL.MEMBER}/${address.bech32}`);
+    const userDocRef = build5Db().doc(`${COL.MEMBER}/${address.bech32}`);
     await userDocRef.create({ uid: address.bech32, nonce });
 
     const signature = Ed25519Next.sign(
@@ -200,7 +200,7 @@ describe('Pub key test', () => {
     const address = wallet.getRandomEthAddress();
 
     const nonce = getRandomNonce();
-    const userDocRef = soonDb().doc(`${COL.MEMBER}/${address}`);
+    const userDocRef = build5Db().doc(`${COL.MEMBER}/${address}`);
     await userDocRef.create({ uid: address, nonce });
 
     const recoverPersonalSignatureMock = recoverPersonalSignature as jest.Mock;
@@ -225,7 +225,7 @@ describe('Pub key test', () => {
     const address = wallet.getRandomEthAddress();
 
     const nonce = getRandomNonce();
-    const userDocRef = soonDb().doc(`${COL.MEMBER}/${address}`);
+    const userDocRef = build5Db().doc(`${COL.MEMBER}/${address}`);
     await userDocRef.create({ uid: address, nonce });
 
     const request = {

@@ -1,6 +1,6 @@
 import { COL, Member, WenError } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { voteOnProposal } from '../../src/runtime/firebase/proposal';
 import { getAddress } from '../../src/utils/address.utils';
 import { expectThrow, mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -43,7 +43,7 @@ describe('Token based voting', () => {
     await helper.updatePropoasalDates(dayjs().subtract(2, 'd'), dayjs().add(2, 'd'));
     await helper.updateVoteTranCreatedOn(voteTransaction.uid, dayjs().subtract(3, 'd'));
 
-    const memberDocRef = soonDb().doc(`${COL.MEMBER}/${helper.member}`);
+    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${helper.member}`);
     const member = <Member>await memberDocRef.get();
     const memberAddress = await helper.walletService!.getAddressDetails(
       getAddress(member, helper.network),

@@ -5,7 +5,7 @@ import { COL, MilestoneTransaction, Network, SUB_COL } from '@build-5/interfaces
 import * as adminPackage from 'firebase-admin';
 
 import { last } from 'lodash';
-import { soonDb } from '../src/firebase/firestore/soondb';
+import { build5Db } from '../src/firebase/firestore/build5Db';
 
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
 
@@ -36,8 +36,8 @@ const syncMilestones = async (col: COL, network: Network) => {
       .get();
     lastDoc = last(snap.docs) || lastDoc;
 
-    const batch = soonDb().batch();
-    snap.docs.forEach((doc) => batch.create(soonDb().doc(doc.ref.path), doc.data()));
+    const batch = build5Db().batch();
+    snap.docs.forEach((doc) => batch.create(build5Db().doc(doc.ref.path), doc.data()));
     await batch.commit();
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -53,7 +53,7 @@ const syncTransactions = async (network: Network, wallet: SmrWallet, parentPath:
     const data = doc.data();
     const addresses = await getAddesses(data, network, wallet);
     if (await addressInDb(addresses)) {
-      await soonDb()
+      await build5Db()
         .doc(doc!.ref.path)
         .create({ ...doc!.data(), processed: false });
     }
@@ -73,7 +73,7 @@ const getAddesses = async (doc: any, network: Network, wallet: SmrWallet) => {
 
 const addressInDb = async (addresses: string[]) => {
   for (const address of addresses) {
-    const doc = await soonDb().collection(COL.MNEMONIC).doc(address).get();
+    const doc = await build5Db().collection(COL.MNEMONIC).doc(address).get();
     if (doc) {
       return true;
     }

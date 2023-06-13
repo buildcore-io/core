@@ -16,8 +16,8 @@ import { INodeInfo } from '@iota/iota.js-next';
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import bigDecimal from 'js-big-decimal';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { ITransaction } from '../../firebase/firestore/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { getAddress } from '../../utils/address.utils';
@@ -43,7 +43,7 @@ const createRoyaltyBillPayments = async (
   const promises = Object.entries(royaltyFees)
     .filter((entry) => entry[1] > 0)
     .map(async ([spaceId, fee]) => {
-      const space = await soonDb().doc(`${COL.SPACE}/${spaceId}`).get<Space>();
+      const space = await build5Db().doc(`${COL.SPACE}/${spaceId}`).get<Space>();
       const spaceAddress = getAddress(space, token.mintingData?.network!);
       const sellerAddress = getAddress(seller, token.mintingData?.network!);
       const output = packBasicOutput(spaceAddress, 0, undefined, info, sellerAddress);
@@ -238,13 +238,13 @@ export const matchMintedToken = async (
 ): Promise<Match> => {
   const wallet = (await WalletService.newWallet(token.mintingData?.network!)) as SmrWallet;
 
-  const seller = (await soonDb().doc(`${COL.MEMBER}/${sell.owner}`).get<Member>())!;
-  const buyer = (await soonDb().doc(`${COL.MEMBER}/${buy.owner}`).get<Member>())!;
+  const seller = (await build5Db().doc(`${COL.MEMBER}/${sell.owner}`).get<Member>())!;
+  const buyer = (await build5Db().doc(`${COL.MEMBER}/${buy.owner}`).get<Member>())!;
 
-  const buyOrderTran = (await soonDb()
+  const buyOrderTran = (await build5Db()
     .doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`)
     .get<Transaction>())!;
-  const sellOrderTran = (await soonDb()
+  const sellOrderTran = (await build5Db()
     .doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`)
     .get<Transaction>())!;
 
@@ -329,7 +329,9 @@ export const matchMintedToken = async (
     creditToBuyer,
   ]
     .filter((t) => t !== undefined)
-    .forEach((data) => transaction.create(soonDb().doc(`${COL.TRANSACTION}/${data!.uid}`), data!));
+    .forEach((data) =>
+      transaction.create(build5Db().doc(`${COL.TRANSACTION}/${data!.uid}`), data!),
+    );
 
   return {
     purchase: <TokenPurchase>{

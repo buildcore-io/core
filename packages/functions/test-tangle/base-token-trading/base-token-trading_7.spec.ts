@@ -10,7 +10,7 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { cancelExpiredSale } from '../../src/cron/token.cron';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -45,7 +45,7 @@ describe('Base token trading', () => {
         tradeOrder.payload.amount,
       );
 
-      const tradeQuery = soonDb()
+      const tradeQuery = build5Db()
         .collection(COL.TOKEN_MARKET)
         .where('token', '==', helper.token!.uid);
       await wait(async () => {
@@ -53,7 +53,7 @@ describe('Base token trading', () => {
         return snap.length > 0;
       });
       let trade = <TokenTradeOrder>(await tradeQuery.get())[0];
-      await soonDb()
+      await build5Db()
         .doc(`${COL.TOKEN_MARKET}/${trade.uid}`)
         .update({ expiresAt: dateToTimestamp(dayjs().subtract(1, 'd')) });
 
@@ -62,7 +62,7 @@ describe('Base token trading', () => {
       trade = <TokenTradeOrder>(await tradeQuery.get())[0];
       expect(trade.status).toBe(TokenTradeOrderStatus.EXPIRED);
 
-      const creditDocRef = soonDb().doc(`${COL.TRANSACTION}/${trade.creditTransactionId}`);
+      const creditDocRef = build5Db().doc(`${COL.TRANSACTION}/${trade.creditTransactionId}`);
       await wait(async () => {
         const credit = <Transaction>await creditDocRef.get();
         return credit.payload?.walletReference?.confirmed;

@@ -8,7 +8,7 @@ import {
   TransactionValidationType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { WalletService } from '../../services/wallet/wallet';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -33,7 +33,7 @@ export const depositNftControl = async (owner: string, params: Record<string, un
       void: false,
     },
   };
-  const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+  const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
   await orderDocRef.create(order);
   return order;
 };

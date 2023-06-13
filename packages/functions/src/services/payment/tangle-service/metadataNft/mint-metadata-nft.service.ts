@@ -26,7 +26,7 @@ import {
 import dayjs from 'dayjs';
 import Joi from 'joi';
 import { isEmpty } from 'lodash';
-import { soonDb } from '../../../../firebase/firestore/soondb';
+import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { packBasicOutput } from '../../../../utils/basic-output.utils';
 import {
   EMPTY_NFT_ID,
@@ -109,7 +109,7 @@ export class MintMetadataNftService {
     }
 
     if (aliasId === EMPTY_ALIAS_ID) {
-      const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space.uid}`);
+      const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
       this.transactionService.push({ ref: spaceDocRef, data: space, action: 'set' });
 
       const guardian = { uid: owner, parentId: space.uid, parentCol: COL.SPACE };
@@ -144,7 +144,7 @@ export class MintMetadataNftService {
         tag: match.msgId,
       },
     };
-    const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
     this.transactionService.push({ ref: orderDocRef, data: order, action: 'set' });
 
     this.transactionService.createUnlockTransaction(
@@ -168,7 +168,7 @@ const getAliasOutputAmount = async (owner: string, space: Space, wallet: SmrWall
   if (!space.alias?.address) {
     throw invalidArgument(WenError.not_alias_governor);
   }
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space.uid}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
   const guardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(owner);
   const guardian = await guardianDocRef.get<SpaceGuardian>();
 

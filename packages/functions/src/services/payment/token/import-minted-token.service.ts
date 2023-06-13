@@ -21,8 +21,8 @@ import {
 import { Converter } from '@iota/util.js-next';
 import Joi from 'joi';
 import { get, isEmpty } from 'lodash';
-import { soonDb } from '../../../firebase/firestore/soondb';
-import { soonStorage } from '../../../firebase/storage/soonStorage';
+import { build5Db } from '../../../firebase/firestore/build5Db';
+import { build5Storage } from '../../../firebase/storage/build5Storage';
 import { getBucket } from '../../../utils/config.utils';
 import { migrateUriToSotrage, uriToUrl } from '../../../utils/media.utils';
 import { isAliasGovernor } from '../../../utils/token-minting-utils/alias.utils';
@@ -37,7 +37,7 @@ export class ImportMintedTokenService {
     let error: { [key: string]: unknown } = {};
     try {
       const tokenId = order.payload.tokenId;
-      const existingTokenDocRef = soonDb().doc(`${COL.TOKEN}/${tokenId}`);
+      const existingTokenDocRef = build5Db().doc(`${COL.TOKEN}/${tokenId}`);
       const existingToken = await this.transactionService.get<Token>(existingTokenDocRef);
 
       if (existingToken) {
@@ -54,7 +54,7 @@ export class ImportMintedTokenService {
             order.member!,
             tokenId,
             uriToUrl(metadata.logoUrl),
-            soonStorage().bucket(getBucket()),
+            build5Storage().bucket(getBucket()),
           )
         : '';
 
@@ -98,7 +98,7 @@ export class ImportMintedTokenService {
         pricePerToken: 0,
         decimals: metadata.decimals,
       };
-      const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
+      const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
       this.transactionService.push({ ref: tokenDocRef, data: token, action: 'set' });
     } catch (err) {
       error = {

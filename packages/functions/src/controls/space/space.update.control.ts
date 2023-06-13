@@ -17,7 +17,7 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get, startCase } from 'lodash';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { cleanupParams } from '../../utils/schema.utils';
@@ -26,7 +26,7 @@ import { assertIsGuardian, getTokenForSpace } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const updateSpaceControl = async (owner: string, params: Record<string, unknown>) => {
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${params.uid}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
   const space = await spaceDocRef.get<Space>();
 
   if (!space) {
@@ -50,7 +50,7 @@ export const updateSpaceControl = async (owner: string, params: Record<string, u
     throw invalidArgument(WenError.ongoing_proposal);
   }
 
-  const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
+  const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
   const guardian = await guardianDocRef.get<Member>();
   const guardians = await spaceDocRef.collection(SUB_COL.GUARDIANS).get<SpaceGuardian>();
 
@@ -77,7 +77,7 @@ export const updateSpaceControl = async (owner: string, params: Record<string, u
     linkedTransactions: [],
   };
 
-  const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
   const memberPromisses = guardians.map((guardian) => {
     proposalDocRef
       .collection(SUB_COL.MEMBERS)
@@ -94,7 +94,7 @@ export const updateSpaceControl = async (owner: string, params: Record<string, u
   });
   await Promise.all(memberPromisses);
 
-  await soonDb().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`).create(voteTransaction);
+  await build5Db().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`).create(voteTransaction);
 
   await proposalDocRef.create(proposal);
 

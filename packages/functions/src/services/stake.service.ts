@@ -8,8 +8,8 @@ import {
   TokenDistribution,
   tokenTradingFeeDicountPercentage,
 } from '@build-5/interfaces';
+import { build5Db } from '../firebase/firestore/build5Db';
 import { ITransaction } from '../firebase/firestore/interfaces';
-import { soonDb } from '../firebase/firestore/soondb';
 import { getTokenSaleConfig, isProdEnv } from '../utils/config.utils';
 import { getSoonToken } from '../utils/token.utils';
 
@@ -19,7 +19,7 @@ export const hasStakedSoonTokens = async (member: string, type?: StakeType) => {
   }
 
   const soon = await getSoonToken();
-  const distributionDocRef = soonDb().doc(
+  const distributionDocRef = build5Db().doc(
     `${COL.TOKEN}/${soon.uid}/${SUB_COL.DISTRIBUTION}/${member}`,
   );
   const distribution = (await distributionDocRef.get<TokenDistribution>())!;
@@ -53,7 +53,7 @@ export const onStakeExpired = async (transaction: ITransaction, stake: Stake) =>
 };
 
 const getTokenDistribution = async (transaction: ITransaction, token: string, member: string) => {
-  const distirbutionDocRef = soonDb().doc(
+  const distirbutionDocRef = build5Db().doc(
     `${COL.TOKEN}/${token}/${SUB_COL.DISTRIBUTION}/${member}`,
   );
   return await transaction.get<TokenDistribution>(distirbutionDocRef);
@@ -74,7 +74,7 @@ const updateMemberTokenDiscountPercentage = (
   const discount = tokenTradingFeeDicountPercentage[tier] / 100;
   const tokenTradingFeePercentage = getTokenSaleConfig.percentage * (1 - discount);
 
-  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${member}`);
+  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${member}`);
   transaction.update(memberDocRef, { tokenTradingFeePercentage });
 };
 
@@ -93,13 +93,13 @@ const updateStakingMembersStats = (
   type: StakeType,
   stakeValueDiff: number,
 ) => {
-  const tokenStatsDocRef = soonDb().doc(`${COL.TOKEN}/${token}/${SUB_COL.STATS}/${token}`);
+  const tokenStatsDocRef = build5Db().doc(`${COL.TOKEN}/${token}/${SUB_COL.STATS}/${token}`);
 
   const prevStakedAmount = getStakeForType(distribution, type);
   if (!prevStakedAmount) {
     transaction.set(
       tokenStatsDocRef,
-      { stakes: { [type]: { stakingMembersCount: soonDb().inc(1) } } },
+      { stakes: { [type]: { stakingMembersCount: build5Db().inc(1) } } },
       true,
     );
     return;
@@ -109,7 +109,7 @@ const updateStakingMembersStats = (
   if (!currentStakedAmount) {
     transaction.set(
       tokenStatsDocRef,
-      { stakes: { [type]: { stakingMembersCount: soonDb().inc(-1) } } },
+      { stakes: { [type]: { stakingMembersCount: build5Db().inc(-1) } } },
       true,
     );
     return;
@@ -121,7 +121,7 @@ const removeMemberFromSpace = async (
   distribution: TokenDistribution | undefined,
   stake: Stake,
 ) => {
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${stake.space}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${stake.space}`);
   const space = (await spaceDocRef.get<Space>())!;
   const stakedValue = getStakeForType(distribution, stake.type) - stake.value;
   if (!space.tokenBased || stakedValue >= (space.minStakedValue || 0)) {
@@ -138,7 +138,7 @@ const removeMemberFromSpace = async (
     transaction.delete(memberDocRef);
   }
   transaction.update(spaceDocRef, {
-    totalGuardians: soonDb().inc(isGuardian && space.totalGuardians > 1 ? -1 : 0),
-    totalMembers: soonDb().inc(space.totalMembers > 1 ? -1 : 0),
+    totalGuardians: build5Db().inc(isGuardian && space.totalGuardians > 1 ? -1 : 0),
+    totalMembers: build5Db().inc(space.totalMembers > 1 ? -1 : 0),
   });
 };

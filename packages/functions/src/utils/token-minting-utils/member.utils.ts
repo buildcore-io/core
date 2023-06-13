@@ -4,13 +4,13 @@ import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
-import { getSnapshot, soonDb } from '../../firebase/firestore/soondb';
+import { build5Db, getSnapshot } from '../../firebase/firestore/build5Db';
 import { packBasicOutput } from '../basic-output.utils';
 
 export const getOwnedTokenTotal = async (token: string) => {
   let count = 0;
   let lastDocId = '';
-  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token}`);
+  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token}`);
   do {
     const lastDoc = lastDocId
       ? await getSnapshot(COL.TOKEN, token, SUB_COL.DISTRIBUTION, lastDocId)

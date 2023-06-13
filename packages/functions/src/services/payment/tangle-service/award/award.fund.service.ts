@@ -11,7 +11,7 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
-import { soonDb } from '../../../../firebase/firestore/soondb';
+import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { uidSchema } from '../../../../runtime/firebase/common';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
@@ -30,7 +30,7 @@ export class AwardFundService {
 
     const award = await getAwardForFunding(owner, request.uid as string);
     const order = await createAwardFundOrder(owner, award);
-    const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
     this.transactionService.push({ ref: orderDocRef, data: order, action: 'set' });
 
     const response = {
@@ -79,7 +79,7 @@ export const createAwardFundOrder = async (owner: string, award: Award) => {
 };
 
 export const getAwardForFunding = async (owner: string, awardId: string) => {
-  const awardDocRef = soonDb().doc(`${COL.AWARD}/${awardId}`);
+  const awardDocRef = build5Db().doc(`${COL.AWARD}/${awardId}`);
   const award = await awardDocRef.get<Award>();
 
   if (!award) {

@@ -11,7 +11,7 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { cancelExpiredSale } from '../../src/cron/token.cron';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, getRandomSymbol, wait } from './common';
@@ -36,9 +36,9 @@ describe('Expired sales cron', () => {
       status: TokenStatus.PRE_MINTED,
       approved: true,
     };
-    await soonDb().doc(`${COL.TOKEN}/${tokenId}`).set(token);
+    await build5Db().doc(`${COL.TOKEN}/${tokenId}`).set(token);
     const distribution = <TokenDistribution>{ tokenOwned: 1000 };
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}/${seller}`)
       .set(distribution);
   });
@@ -67,8 +67,8 @@ describe('Expired sales cron', () => {
       count: number,
     ) => {
       const sells = Array.from(Array(count)).map(() => getDummySell(status, type));
-      const batch = soonDb().batch();
-      sells.forEach((s) => batch.create(soonDb().doc(`${COL.TOKEN_MARKET}/${s.uid}`), s));
+      const batch = build5Db().batch();
+      sells.forEach((s) => batch.create(build5Db().doc(`${COL.TOKEN_MARKET}/${s.uid}`), s));
       await batch.commit();
       return sells;
     };
@@ -77,7 +77,7 @@ describe('Expired sales cron', () => {
     await createSales(TokenTradeOrderStatus.SETTLED, TokenTradeOrderType.SELL, 3);
 
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.TOKEN_MARKET)
         .where('owner', '==', seller)
         .where('status', '==', TokenTradeOrderStatus.ACTIVE)
@@ -91,7 +91,7 @@ describe('Expired sales cron', () => {
 
     await cancelExpiredSale();
 
-    const snap = await soonDb()
+    const snap = await build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', seller)
       .where('status', '==', TokenTradeOrderStatus.EXPIRED)

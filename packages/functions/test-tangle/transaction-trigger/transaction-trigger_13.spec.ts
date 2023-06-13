@@ -11,7 +11,7 @@ import {
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { retryWallet } from '../../src/cron/wallet.cron';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { IotaWallet } from '../../src/services/wallet/IotaWalletService';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails } from '../../src/services/wallet/wallet';
@@ -51,13 +51,13 @@ describe('Transaction trigger spec', () => {
         ),
         ignoreWallet: true,
       };
-      await soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
+      await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
       await new Promise((r) => setTimeout(r, 1000));
 
-      await soonDb()
+      await build5Db()
         .doc(`${COL.MNEMONIC}/${sourceAddress.bech32}`)
         .update({ lockedBy: billPayment.uid, consumedOutputIds: outputIds });
-      await soonDb()
+      await build5Db()
         .doc(`${COL.TRANSACTION}/${billPayment.uid}`)
         .update({
           ignoreWallet: false,
@@ -75,16 +75,16 @@ describe('Transaction trigger spec', () => {
         sourceAddress.bech32,
         targetAddress.bech32,
       );
-      await soonDb().doc(`${COL.TRANSACTION}/${billPayment2.uid}`).create(billPayment2);
+      await build5Db().doc(`${COL.TRANSACTION}/${billPayment2.uid}`).create(billPayment2);
 
       await retryWallet();
 
       await wait(async () => {
         const mnemonic = <Mnemonic>(
-          await soonDb().doc(`${COL.MNEMONIC}/${sourceAddress.bech32}`).get()
+          await build5Db().doc(`${COL.MNEMONIC}/${sourceAddress.bech32}`).get()
         );
         billPayment = <Transaction>(
-          await soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()
+          await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()
         );
         return (
           !billPayment.payload?.walletReference?.inProgress &&
@@ -96,7 +96,7 @@ describe('Transaction trigger spec', () => {
 
       await wait(async () => {
         billPayment2 = <Transaction>(
-          await soonDb().doc(`${COL.TRANSACTION}/${billPayment2.uid}`).get()
+          await build5Db().doc(`${COL.TRANSACTION}/${billPayment2.uid}`).get()
         );
         return billPayment2.payload?.walletReference?.confirmed;
       });

@@ -17,7 +17,7 @@ import {
   UnlockTypes,
 } from '@iota/iota.js-next';
 import { cloneDeep } from 'lodash';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { depositNft } from '../../src/runtime/firebase/nft';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
@@ -44,7 +44,7 @@ describe('Collection minting', () => {
 
   it('Should throw, nft not irc27', async () => {
     await mintAndDeposit({ collectionName: 'test-collection' }, { name: 'test' });
-    const query = soonDb()
+    const query = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.guardian)
       .where('type', '==', TransactionType.CREDIT_NFT);

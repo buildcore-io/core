@@ -73,7 +73,7 @@ export const tokenToFoundryMetadata = async (token: Token) => {
     url: head(token.links) || '',
     logoUrl: 'ipfs://' + (token.ipfsMedia || PLACEHOLDER_CID),
     issuerName: KEY_NAME_TANGLE,
-    soonaverseId: token.uid,
+    build5Id: token.uid,
     symbol: token.symbol.toLowerCase(),
     decimals: token.decimals,
   };

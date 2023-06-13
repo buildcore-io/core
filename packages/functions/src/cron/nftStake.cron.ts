@@ -1,7 +1,7 @@
 import { COL, NftStake } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
-import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
+import { build5Db, getSnapshot } from '../firebase/firestore/build5Db';
 
 export const processExpiredNftStakes = async () => {
   let lastDocId = '';
@@ -17,7 +17,7 @@ export const processExpiredNftStakes = async () => {
 
 const getExpiredNftStakesQuery = async (lastDocId = '') => {
   const lastDoc = await getSnapshot(COL.NFT_STAKE, lastDocId);
-  return soonDb()
+  return build5Db()
     .collection(COL.NFT_STAKE)
     .where('expiresAt', '<=', dayjs().toDate())
     .where('expirationProcessed', '==', false)
@@ -26,13 +26,13 @@ const getExpiredNftStakesQuery = async (lastDocId = '') => {
 };
 
 const processExpiredNftStake = async (nftStakeId: string) =>
-  soonDb().runTransaction(async (transaction) => {
-    const nftStakeDocRef = soonDb().doc(`${COL.NFT_STAKE}/${nftStakeId}`);
+  build5Db().runTransaction(async (transaction) => {
+    const nftStakeDocRef = build5Db().doc(`${COL.NFT_STAKE}/${nftStakeId}`);
     const nftStake = (await transaction.get<NftStake>(nftStakeDocRef))!;
 
     if (!nftStake.expirationProcessed) {
-      const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nftStake.collection}`);
-      transaction.update(collectionDocRef, { stakedNft: soonDb().inc(-1) });
+      const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nftStake.collection}`);
+      transaction.update(collectionDocRef, { stakedNft: build5Db().inc(-1) });
       transaction.update(nftStakeDocRef, { expirationProcessed: true });
     }
   });

@@ -8,7 +8,7 @@ import {
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { cancelTradeOrder } from '../../src/runtime/firebase/token/trading';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -30,7 +30,7 @@ describe('Token minting', () => {
     const sellOrder = await helper.createSellTradeOrder();
     const buyOrder = await helper.createBuyOrder(5, MIN_IOTA_AMOUNT);
 
-    const query = soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', helper.seller);
+    const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', helper.seller);
     await wait(async () => {
       const orders = (await query.get()).map((d) => <TokenTradeOrder>d);
       return orders.length === 1 && orders[0].fulfilled === 5;
@@ -41,7 +41,7 @@ describe('Token minting', () => {
     mockWalletReturnValue(helper.walletSpy, helper.seller!, { uid: sell.uid });
     await testEnv.wrap(cancelTradeOrder)({});
 
-    const billPaymentsQuery = soonDb()
+    const billPaymentsQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', 'in', [helper.seller, helper.buyer])
       .where('type', '==', TransactionType.BILL_PAYMENT);
@@ -78,7 +78,7 @@ describe('Token minting', () => {
     expect(paymentToBuyer.payload.storageReturn.amount).toBe(53800);
     expect(paymentToBuyer.payload.storageReturn.address).toBe(helper.sellerAddress?.bech32);
 
-    const sellerCreditSnap = await soonDb()
+    const sellerCreditSnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller)
       .where('type', '==', TransactionType.CREDIT)
@@ -89,7 +89,7 @@ describe('Token minting', () => {
     expect(sellerCredit.payload.nativeTokens[0].amount).toBe(5);
     expect(sellerCredit.payload.reason).toBe(CreditPaymentReason.TRADE_CANCELLED);
 
-    const buyerCreditSnap = await soonDb()
+    const buyerCreditSnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer)
       .where('type', '==', TransactionType.CREDIT)

@@ -7,7 +7,7 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 import { isEmpty } from 'lodash';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { CollectionMintHelper } from './Helper';
 
 describe('Collection minting', () => {
@@ -23,15 +23,15 @@ describe('Collection minting', () => {
 
   it('Should mint huge nfts', async () => {
     const count = 30;
-    await soonDb().doc(`${COL.COLLECTION}/${helper.collection}`).update({ total: count });
+    await build5Db().doc(`${COL.COLLECTION}/${helper.collection}`).update({ total: count });
     const promises = Array.from(Array(count)).map(() => {
       const nft = helper.createDummyNft(helper.collection!, helper.getRandomDescrptiron());
-      return soonDb().doc(`${COL.NFT}/${nft.uid}`).create(nft);
+      return build5Db().doc(`${COL.NFT}/${nft.uid}`).create(nft);
     });
     await Promise.all(promises);
     await helper.mintCollection();
 
-    const nftMintSnap = await soonDb()
+    const nftMintSnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.MINT_COLLECTION)
       .where('payload.type', '==', TransactionMintCollectionType.MINT_NFTS)
@@ -42,7 +42,7 @@ describe('Collection minting', () => {
     expect(nftMintSnap.reduce((acc, act) => acc && !isEmpty(act?.payload.nfts), true)).toBe(true);
 
     const nfts = (
-      await soonDb().collection(COL.NFT).where('collection', '==', helper.collection).get()
+      await build5Db().collection(COL.NFT).where('collection', '==', helper.collection).get()
     ).map((d) => <Nft>d);
     const allMinted = nfts.reduce((acc, act) => acc && act.status === NftStatus.MINTED, true);
     expect(allMinted).toBe(true);

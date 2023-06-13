@@ -20,7 +20,7 @@ import {
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions/v2';
 import { cloneDeep, get } from 'lodash';
-import { soonDb } from '../../../firebase/firestore/soondb';
+import { build5Db } from '../../../firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';
@@ -57,14 +57,14 @@ export class NftStakeService {
         get(order, 'payload.weeks', 0),
         get(order, 'payload.stakeType', StakeType.DYNAMIC),
       );
-      const withdrawOrderDocRef = soonDb().doc(`${COL.TRANSACTION}/${withdrawOrder.uid}`);
+      const withdrawOrderDocRef = build5Db().doc(`${COL.TRANSACTION}/${withdrawOrder.uid}`);
       this.transactionService.push({
         ref: withdrawOrderDocRef,
         data: withdrawOrder,
         action: 'set',
       });
 
-      const nftDocRef = soonDb().doc(`${COL.NFT}/${nftUpdateData.uid}`);
+      const nftDocRef = build5Db().doc(`${COL.NFT}/${nftUpdateData.uid}`);
       this.transactionService.push({
         ref: nftDocRef,
         data: nftUpdateData,
@@ -74,7 +74,7 @@ export class NftStakeService {
       await this.transactionService.createPayment(order, match);
       this.transactionService.markAsReconciled(order, match.msgId);
 
-      const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+      const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
       this.transactionService.push({
         ref: orderDocRef,
         data: { 'payload.nft': nft.uid, 'payload.collection': nft.collection },

@@ -9,7 +9,7 @@ import {
 } from '@build-5/interfaces';
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -47,7 +47,7 @@ describe('Token minting', () => {
       ],
     });
 
-    const query = soonDb()
+    const query = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.seller);
@@ -60,7 +60,7 @@ describe('Token minting', () => {
     expect(credit.payload.amount).toBe(sellOrder.payload.amount);
     expect(credit.payload.nativeTokens[0].id).toBe(MINTED_TOKEN_ID);
     expect(credit.payload.nativeTokens[0].amount).toBe(10);
-    const sellSnap = await soonDb()
+    const sellSnap = await build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.seller)
       .get();

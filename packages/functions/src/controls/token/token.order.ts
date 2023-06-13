@@ -12,7 +12,7 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { assertHasAccess } from '../../services/validators/access';
 import { WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress, getAddress } from '../../utils/address.utils';
@@ -27,11 +27,11 @@ export const orderTokenControl = async (
   params: Record<string, unknown>,
   customParams?: Record<string, unknown>,
 ) => {
-  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
+  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
   const member = await memberDocRef.get<Member>();
   assertMemberHasValidAddress(member, DEFAULT_NETWORK);
 
-  const token = await soonDb().doc(`${COL.TOKEN}/${params.token}`).get<Token>();
+  const token = await build5Db().doc(`${COL.TOKEN}/${params.token}`).get<Token>();
   if (!token) {
     throw invalidArgument(WenError.invalid_params);
   }
@@ -45,8 +45,8 @@ export const orderTokenControl = async (
   }
 
   const tranId = tokenOrderTransactionDocId(owner, token);
-  const orderDoc = soonDb().doc(`${COL.TRANSACTION}/${tranId}`);
-  const space = await soonDb().doc(`${COL.SPACE}/${token.space}`).get<Space>();
+  const orderDoc = build5Db().doc(`${COL.TRANSACTION}/${tranId}`);
+  const space = await build5Db().doc(`${COL.SPACE}/${token.space}`).get<Space>();
 
   await assertHasAccess(
     space!.uid,
@@ -59,7 +59,7 @@ export const orderTokenControl = async (
   const network = DEFAULT_NETWORK;
   const newWallet = await WalletService.newWallet(network);
   const targetAddress = await newWallet.getNewIotaAddressDetails();
-  await soonDb().runTransaction(async (transaction) => {
+  await build5Db().runTransaction(async (transaction) => {
     const order = await transaction.get(orderDoc);
     if (!order) {
       const data = <Transaction>{

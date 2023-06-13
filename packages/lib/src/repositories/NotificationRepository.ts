@@ -1,10 +1,10 @@
 import { Notification, Opr, PublicCollections } from '@build-5/interfaces';
-import { SoonEnv } from '../Config';
+import { Build5Env } from '../Config';
 import { CrudRepository } from './CrudRepository';
 
 export class NotificationRepository extends CrudRepository<Notification> {
-  constructor(env?: SoonEnv) {
-    super(env || SoonEnv.PROD, PublicCollections.NOTIFICATION);
+  constructor(env?: Build5Env) {
+    super(env || Build5Env.PROD, PublicCollections.NOTIFICATION);
   }
 
   public getByMemberLive = (member: string, startAfter?: string, limit?: number) => {

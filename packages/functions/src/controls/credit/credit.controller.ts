@@ -10,14 +10,14 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { WalletService } from '../../services/wallet/wallet';
 import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const creditUnrefundableControl = (owner: string, params: Record<string, unknown>) =>
-  soonDb().runTransaction(async (transaction) => {
-    const transactionDocRef = soonDb().doc(`${COL.TRANSACTION}/${params.transaction}`);
+  build5Db().runTransaction(async (transaction) => {
+    const transactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${params.transaction}`);
     const creditTtransaction = await transaction.get<Transaction>(transactionDocRef);
 
     if (
@@ -34,7 +34,7 @@ export const creditUnrefundableControl = (owner: string, params: Record<string, 
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
     const creditOrder = createCreditOrder(creditTtransaction, owner, targetAddress.bech32);
-    const creditDocRef = soonDb().doc(`${COL.TRANSACTION}/${creditOrder.uid}`);
+    const creditDocRef = build5Db().doc(`${COL.TRANSACTION}/${creditOrder.uid}`);
     transaction.create(creditDocRef, creditOrder);
 
     return creditOrder;

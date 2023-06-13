@@ -8,7 +8,7 @@ import {
   TokenDropStatus,
   TokenStatus,
 } from '@build-5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { serverTime } from '../../src/utils/dateTime.utils';
@@ -39,7 +39,7 @@ export class Helper {
   };
 
   public getAirdropsForMember = async (member: string, status = TokenDropStatus.UNCLAIMED) => {
-    const snap = await soonDb()
+    const snap = await build5Db()
       .collection(COL.AIRDROP)
       .where('member', '==', member)
       .where('status', '==', status)
@@ -75,7 +75,7 @@ export const saveToken = async (
     access: 0,
     icon: MEDIA,
   };
-  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token;
 };
 

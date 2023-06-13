@@ -1,11 +1,11 @@
 import { COL, Collection, WenError } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 
 export const rejectCollectionControl = async (owner: string, params: Record<string, unknown>) => {
-  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${params.uid}`);
+  const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${params.uid}`);
   const collection = await collectionDocRef.get<Collection>();
   if (!collection) {
     throw invalidArgument(WenError.collection_does_not_exists);

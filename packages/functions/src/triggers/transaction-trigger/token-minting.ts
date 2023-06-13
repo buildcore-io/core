@@ -18,7 +18,7 @@ import {
 } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions/v2';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { getAddress } from '../../utils/address.utils';
 import { indexToString } from '../../utils/block.utils';
 import { getTransactionPayloadHex } from '../../utils/smr.utils';
@@ -46,19 +46,19 @@ export const onTokenMintingUpdate = async (transaction: Transaction) => {
 
 const onAliasMinted = async (transaction: Transaction) => {
   const path = transaction.payload.walletReference.milestoneTransactionPath;
-  const milestoneTransaction = (await soonDb().doc(path).get<Record<string, unknown>>())!;
+  const milestoneTransaction = (await build5Db().doc(path).get<Record<string, unknown>>())!;
 
   const aliasOutputId =
     getTransactionPayloadHex(milestoneTransaction.payload as ITransactionPayload) +
     indexToString(0);
-  await soonDb()
+  await build5Db()
     .doc(`${COL.TOKEN}/${transaction.payload.token}`)
     .update({
       'mintingData.aliasBlockId': milestoneTransaction.blockId,
       'mintingData.aliasId': TransactionHelper.resolveIdFromOutputId(aliasOutputId),
     });
 
-  const token = <Token>await soonDb().doc(`${COL.TOKEN}/${transaction.payload.token}`).get();
+  const token = <Token>await build5Db().doc(`${COL.TOKEN}/${transaction.payload.token}`).get();
   const order = <Transaction>{
     type: TransactionType.MINT_TOKEN,
     uid: getRandomEthAddress(),
@@ -75,12 +75,12 @@ const onAliasMinted = async (transaction: Transaction) => {
       token: transaction.payload.token,
     },
   };
-  await soonDb().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+  await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
 };
 
 const onFoundryMinted = async (transaction: Transaction) => {
   const path = transaction.payload.walletReference.milestoneTransactionPath;
-  const milestoneTransaction = (await soonDb().doc(path).get<Record<string, unknown>>())!;
+  const milestoneTransaction = (await build5Db().doc(path).get<Record<string, unknown>>())!;
 
   const aliasOutput = <IAliasOutput>(
     ((milestoneTransaction.payload as ITransactionPayload).essence.outputs as OutputTypes[]).find(
@@ -101,7 +101,7 @@ const onFoundryMinted = async (transaction: Transaction) => {
   const meltedTokens = Number(foundryOutput.tokenScheme.meltedTokens);
   const totalSupply = Number(foundryOutput.tokenScheme.maximumSupply);
 
-  await soonDb()
+  await build5Db()
     .doc(`${COL.TOKEN}/${transaction.payload.token}`)
     .update({
       'mintingData.blockId': milestoneTransaction.blockId,
@@ -110,8 +110,8 @@ const onFoundryMinted = async (transaction: Transaction) => {
       'mintingData.circulatingSupply': totalSupply - meltedTokens,
     });
 
-  const token = <Token>await soonDb().doc(`${COL.TOKEN}/${transaction.payload.token}`).get();
-  const member = <Member>await soonDb().doc(`${COL.MEMBER}/${token.mintingData?.mintedBy}`).get();
+  const token = <Token>await build5Db().doc(`${COL.TOKEN}/${transaction.payload.token}`).get();
+  const member = <Member>await build5Db().doc(`${COL.MEMBER}/${token.mintingData?.mintedBy}`).get();
   const order = <Transaction>{
     type: TransactionType.MINT_TOKEN,
     uid: getRandomEthAddress(),
@@ -126,11 +126,11 @@ const onFoundryMinted = async (transaction: Transaction) => {
       token: transaction.payload.token,
     },
   };
-  await soonDb().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+  await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
 };
 
 const onAliasSendToGuardian = async (transaction: Transaction) => {
-  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${transaction.payload.token}`);
+  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${transaction.payload.token}`);
   const token = <Token>await tokenDocRef.get();
   await tokenDocRef.update({
     'mintingData.mintedOn': dayjs().toDate(),

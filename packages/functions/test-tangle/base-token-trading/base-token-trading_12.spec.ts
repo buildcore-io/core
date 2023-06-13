@@ -8,7 +8,7 @@ import {
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { wait } from '../../test/controls/common';
 import { getRmsSoonTangleResponse, getTangleOrder } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
@@ -40,7 +40,7 @@ describe('Base token trading', () => {
       },
     });
 
-    let query = soonDb()
+    let query = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller!.uid)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
@@ -53,7 +53,7 @@ describe('Base token trading', () => {
     const response = await getRmsSoonTangleResponse(snap[0], helper.rmsWallet!);
 
     await helper.atoiWallet!.send(atoiAddress, response.address, response.amount, {});
-    query = soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', helper.seller!.uid);
+    query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', helper.seller!.uid);
     await wait(async () => {
       const snap = await query.get();
       return snap.length > 0;
@@ -86,7 +86,7 @@ describe('Base token trading', () => {
       },
     );
 
-    const query = soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer!.uid);
+    const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer!.uid);
     await wait(async () => {
       const snap = await query.get();
       return snap.length > 0;

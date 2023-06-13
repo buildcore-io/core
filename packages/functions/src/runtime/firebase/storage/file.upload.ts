@@ -9,7 +9,7 @@ import mime from 'mime-types';
 import os from 'os';
 import path from 'path';
 import { onRequestConfig } from '../../../firebase/functions/onRequest';
-import { soonStorage } from '../../../firebase/storage/soonStorage';
+import { build5Storage } from '../../../firebase/storage/build5Storage';
 import { CommonJoi } from '../../../services/joi/common';
 import { getBucket } from '../../../utils/config.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
@@ -77,7 +77,7 @@ export const uploadFileControl = (req: functions.https.Request, res: express.Res
 
     const destination = `${member}/${uid}/${generateRandomFileName()}.${ext}`;
     const bucketName = getBucket();
-    const bucket = soonStorage().bucket(bucketName);
+    const bucket = build5Storage().bucket(bucketName);
     const dowloadUrl = await bucket.upload(params.filePath as string, destination, {});
 
     fs.rmSync(workdir, { recursive: true, force: true });

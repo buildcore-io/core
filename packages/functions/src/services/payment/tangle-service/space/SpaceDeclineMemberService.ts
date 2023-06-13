@@ -1,5 +1,5 @@
 import { COL, SUB_COL } from '@build-5/interfaces';
-import { soonDb } from '../../../../firebase/firestore/soondb';
+import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { editSpaceMemberSchema } from '../../../../runtime/firebase/space';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
@@ -13,7 +13,7 @@ export class SpaceDeclineMemberService {
 
     await assertIsGuardian(request.uid as string, owner);
 
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${request.uid}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${request.uid}`);
     const knockingMemberDocRef = spaceDocRef
       .collection(SUB_COL.KNOCKING_MEMBERS)
       .doc(request.member as string);
@@ -24,7 +24,7 @@ export class SpaceDeclineMemberService {
 
     this.transactionService.push({
       ref: spaceDocRef,
-      data: { totalPendingMembers: soonDb().inc(knockingMember ? -1 : 0) },
+      data: { totalPendingMembers: build5Db().inc(knockingMember ? -1 : 0) },
       action: 'update',
     });
 

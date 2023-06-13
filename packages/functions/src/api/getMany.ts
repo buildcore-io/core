@@ -12,7 +12,7 @@ import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
 import { get, isEmpty } from 'lodash';
 import { map } from 'rxjs';
-import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
+import { build5Db, getSnapshot } from '../firebase/firestore/build5Db';
 import { CommonJoi } from '../services/joi/common';
 import { invalidArgument } from '../utils/error.utils';
 import { getQueryLimit, getQueryParams, queryToObservable } from './common';
@@ -57,7 +57,7 @@ export const getMany = async (req: functions.https.Request, res: express.Respons
     body.subCollection && body.uid
       ? `${body.collection}/${body.uid}/${body.subCollection}`
       : body.collection;
-  let query = soonDb()
+  let query = build5Db()
     .collection(baseCollectionPath as COL)
     .limit(getQueryLimit(body.collection));
 

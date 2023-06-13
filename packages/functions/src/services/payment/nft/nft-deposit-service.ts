@@ -22,9 +22,9 @@ import {
 import { INftOutput } from '@iota/iota.js-next';
 import * as functions from 'firebase-functions/v2';
 import { head, isEmpty, set } from 'lodash';
+import { build5Db } from '../../../firebase/firestore/build5Db';
 import { ITransaction } from '../../../firebase/firestore/interfaces';
-import { soonDb } from '../../../firebase/firestore/soondb';
-import { soonStorage } from '../../../firebase/storage/soonStorage';
+import { build5Storage } from '../../../firebase/storage/build5Storage';
 import { getNftByMintingId } from '../../../utils/collection-minting-utils/nft.utils';
 import { getBucket } from '../../../utils/config.utils';
 import { serverTime } from '../../../utils/dateTime.utils';
@@ -55,7 +55,7 @@ export class NftDepositService {
       await this.transactionService.createPayment(order, match);
       this.transactionService.markAsReconciled(order, match.msgId);
 
-      const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+      const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
       this.transactionService.push({
         ref: orderDocRef,
         data: { 'payload.nft': nft.uid },
@@ -77,22 +77,22 @@ export class NftDepositService {
     }
     const nft = await getNftByMintingId(transactionEntry.nftOutput.nftId);
     if (!nft) {
-      return await this.depositNftMintedOutsideSoon(
+      return await this.depositNftMintedOutsideBuild5(
         order,
         match.msgId,
         transactionEntry.nftOutput!,
       );
     }
-    return await this.depositNftMintedOnSoon(nft, order, transactionEntry.nftOutput, match);
+    return await this.depositNftMintedOnBuild5(nft, order, transactionEntry.nftOutput, match);
   };
 
-  private depositNftMintedOnSoon = async (
+  private depositNftMintedOnBuild5 = async (
     nft: Nft,
     order: TransactionOrder,
     nftOutput: INftOutput,
     match: TransactionMatch,
   ) => {
-    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nft.collection}`);
+    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nft.collection}`);
     const collection = <Collection>await this.transactionService.get(collectionDocRef);
 
     if (!collection.approved) {
@@ -115,10 +115,10 @@ export class NftDepositService {
       isOwned: true,
       owner: order.member,
     };
-    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+    const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
     this.transactionService.push({ ref: nftDocRef, data, action: 'update' });
     this.transactionService.push({
-      ref: soonDb().doc(`${COL.TRANSACTION}/${order.uid}`),
+      ref: build5Db().doc(`${COL.TRANSACTION}/${order.uid}`),
       data: {
         space: nft.space,
         'payload.amount': match.to.amount,
@@ -129,7 +129,7 @@ export class NftDepositService {
     return { ...nft, ...data } as Nft;
   };
 
-  private depositNftMintedOutsideSoon = async (
+  private depositNftMintedOutsideBuild5 = async (
     order: TransactionOrder,
     blockId: string,
     nftOutput: INftOutput,
@@ -208,7 +208,7 @@ export class NftDepositService {
       placeholderNft: false,
     };
 
-    const bucket = soonStorage().bucket(getBucket());
+    const bucket = build5Storage().bucket(getBucket());
     const nftUrl = uriToUrl(metadata.nft.uri);
     const nftMedia = await migrateUriToSotrage(COL.NFT, nft.owner!, nft.uid, nftUrl, bucket);
     set(nft, 'media', nftMedia);
@@ -230,20 +230,20 @@ export class NftDepositService {
       }
     }
 
-    const collectionDocRef = soonDb().doc(
+    const collectionDocRef = build5Db().doc(
       `${COL.COLLECTION}/${(existingCollection || migratedCollection).uid}`,
     );
     this.transactionService.push({
       ref: collectionDocRef,
       data: existingCollection
-        ? { total: soonDb().inc(1) }
-        : { ...migratedCollection, total: soonDb().inc(1) },
+        ? { total: build5Db().inc(1) }
+        : { ...migratedCollection, total: build5Db().inc(1) },
       action: 'set',
       merge: true,
     });
 
     if (isNewSpace) {
-      const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space.uid}`);
+      const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
       this.transactionService.push({ ref: spaceDocRef, data: space, action: 'set' });
     }
 
@@ -256,7 +256,7 @@ export class NftDepositService {
         claimed: false,
         validatedAddress: { [order.network!]: royaltyAddress },
       };
-      const royaltySpaceDocRef = soonDb().doc(`${COL.SPACE}/${royaltySpace.uid}`);
+      const royaltySpaceDocRef = build5Db().doc(`${COL.SPACE}/${royaltySpace.uid}`);
       this.transactionService.push({
         ref: royaltySpaceDocRef,
         data: royaltySpace,
@@ -265,7 +265,7 @@ export class NftDepositService {
       });
     }
 
-    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+    const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
     this.transactionService.push({ ref: nftDocRef, data: nft, action: 'set' });
 
     return nft;
@@ -295,16 +295,16 @@ export class NftDepositService {
 }
 
 const getCollection = async (transaction: ITransaction, collectionId: string) => {
-  const collectionSnap = await soonDb()
+  const collectionSnap = await build5Db()
     .collection(COL.COLLECTION)
     .where('mintingData.nftId', '==', collectionId)
     .get<Collection>();
   if (collectionSnap.length) {
-    const docRef = soonDb().doc(`${COL.COLLECTION}/${collectionSnap[0].uid}`);
+    const docRef = build5Db().doc(`${COL.COLLECTION}/${collectionSnap[0].uid}`);
     return await transaction.get<Collection>(docRef);
   }
 
-  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${collectionId}`);
+  const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${collectionId}`);
   return await transaction.get<Collection>(collectionDocRef);
 };
 
@@ -314,12 +314,12 @@ const getSpace = async (
   collectionId: string,
 ) => {
   if (collection) {
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${collection.space}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${collection.space}`);
     const space = <Space>await spaceDocRef.get();
     return { space, isNewSpace: false };
   }
 
-  const awardsSnap = await soonDb()
+  const awardsSnap = await build5Db()
     .collection(COL.AWARD)
     .where('collectionId', '==', collectionId)
     .limit(1)
@@ -327,7 +327,7 @@ const getSpace = async (
 
   if (awardsSnap.length) {
     const award = awardsSnap[0];
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${award.space}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${award.space}`);
     const space = <Space>await spaceDocRef.get();
     return { space, isNewSpace: false };
   }

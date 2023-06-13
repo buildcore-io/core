@@ -22,7 +22,7 @@ export interface MilestoneTransaction extends Base {
   inputs: MilestoneTransactionEntry[];
   outputs: MilestoneTransactionEntry[];
   processed: boolean;
-  soonaverseTransactionId?: string;
+  build5TransactionId?: string;
 }
 
 export interface Milestone {
