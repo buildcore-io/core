@@ -16,12 +16,12 @@ import {
   TransactionMintCollectionType,
   TransactionType,
   UnsoldMintingOptions,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { IMetadataFeature, INftOutput, METADATA_FEATURE_TYPE } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js-next';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import {
   approveCollection,
   createCollection,
@@ -86,7 +86,7 @@ export class CollectionMintHelper {
     mockWalletReturnValue(this.walletSpy, this.guardian!, nft);
     nft = <Nft>await testEnv.wrap(createNft)({});
 
-    await soonDb()
+    await build5Db()
       .doc(`${COL.NFT}/${nft.uid}`)
       .update({ availableFrom: dayjs().subtract(1, 'h').toDate() });
 
@@ -95,7 +95,7 @@ export class CollectionMintHelper {
       nft: nft.uid,
     });
     await testEnv.wrap(orderNft)({});
-    return <Nft>await soonDb().doc(`${COL.NFT}/${nft.uid}`).get();
+    return <Nft>await build5Db().doc(`${COL.NFT}/${nft.uid}`).get();
   };
 
   public createAndOrderNft = async (buyAndAuctionId = false, shouldBid = false) => {
@@ -107,7 +107,7 @@ export class CollectionMintHelper {
     nft = await testEnv.wrap(createNft)({});
 
     if (buyAndAuctionId) {
-      await soonDb()
+      await build5Db()
         .doc(`${COL.NFT}/${nft.uid}`)
         .update({ availableFrom: dayjs().subtract(1, 'h').toDate() });
 
@@ -125,7 +125,7 @@ export class CollectionMintHelper {
       mockWalletReturnValue(this.walletSpy, this.guardian!, this.dummyAuctionData(nft.uid));
       await testEnv.wrap(setForSaleNft)({});
       await wait(
-        async () => (await soonDb().doc(`${COL.NFT}/${nft.uid}`).get<Nft>())?.available === 3,
+        async () => (await build5Db().doc(`${COL.NFT}/${nft.uid}`).get<Nft>())?.available === 3,
       );
 
       if (shouldBid) {
@@ -138,7 +138,7 @@ export class CollectionMintHelper {
         await milestoneProcessed(bidMilestone.milestone, bidMilestone.tranId);
       }
     }
-    return <Nft>await soonDb().doc(`${COL.NFT}/${nft.uid}`).get();
+    return <Nft>await build5Db().doc(`${COL.NFT}/${nft.uid}`).get();
   };
 
   public mintCollection = async (
@@ -160,7 +160,7 @@ export class CollectionMintHelper {
       collectionMintOrder.payload.targetAddress,
       collectionMintOrder.payload.amount,
     );
-    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${this.collection}`);
+    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${this.collection}`);
     await wait(async () => {
       const data = <Collection>await collectionDocRef.get();
       return data.status === CollectionStatus.MINTED;
@@ -174,7 +174,7 @@ export class CollectionMintHelper {
     expect(collectionData.mintingData?.nftsToMint).toBe(0);
 
     const ownerChangeTran = (
-      await soonDb()
+      await build5Db()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.MINT_COLLECTION)
         .where('payload.type', '==', TransactionMintCollectionType.SEND_ALIAS_TO_GUARDIAN)
@@ -188,7 +188,7 @@ export class CollectionMintHelper {
 
   public lockCollectionConfirmed = async () => {
     const lockTran = (
-      await soonDb()
+      await build5Db()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.MINT_COLLECTION)
         .where('payload.type', '==', TransactionMintCollectionType.LOCK_COLLECTION)

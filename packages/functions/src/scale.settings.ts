@@ -1,4 +1,4 @@
-import { COL, WEN_FUNC, WEN_FUNC_TRIGGER } from '@build5/interfaces';
+import { COL, WEN_FUNC, WEN_FUNC_TRIGGER } from '@build-5/interfaces';
 import { isProdEnv } from './utils/config.utils';
 export const lowCold = 0;
 export const lowWarm = isProdEnv() ? 1 : lowCold;

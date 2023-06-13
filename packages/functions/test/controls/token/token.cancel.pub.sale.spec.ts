@@ -10,9 +10,9 @@ import {
   TransactionCreditType,
   TransactionType,
   WEN_FUNC,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../../src/firebase/firestore/soondb';
+import { build5Db } from '../../../src/firebase/firestore/build5Db';
 import {
   cancelPublicSale,
   orderToken,
@@ -45,8 +45,8 @@ const setAvailableOrderAndCancelSale = async (
   memberAddress: string,
   miotas: number,
 ) => {
-  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
-  const distributionDocRef = soonDb().doc(
+  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
+  const distributionDocRef = build5Db().doc(
     `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`,
   );
   await tokenDocRef.update({
@@ -112,18 +112,18 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
       termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
       access: 0,
     };
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   });
 
   it('Should cancel public sale and refund buyers twice', async () => {
-    const distributionDocRef = soonDb().doc(
+    const distributionDocRef = build5Db().doc(
       `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`,
     );
     await setAvailableOrderAndCancelSale(token, memberAddress, 5);
     await setAvailableOrderAndCancelSale(token, memberAddress, 6);
     const distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.totalDeposit).toBe(0);
-    const creditDocs = await soonDb()
+    const creditDocs = await build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('payload.type', '==', TransactionCreditType.TOKEN_PURCHASE)
@@ -136,14 +136,14 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
   });
 
   it('Should cancel public sale and refund buyers twice, then finish sale', async () => {
-    const distributionDocRef = soonDb().doc(
+    const distributionDocRef = build5Db().doc(
       `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`,
     );
     await setAvailableOrderAndCancelSale(token, memberAddress, 5);
     await setAvailableOrderAndCancelSale(token, memberAddress, 6);
     let distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.totalDeposit).toBe(0);
-    const creditDocs = await soonDb()
+    const creditDocs = await build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('payload.type', '==', TransactionCreditType.TOKEN_PURCHASE)
@@ -154,7 +154,7 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
       6 * MIN_IOTA_AMOUNT,
     ]);
 
-    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
+    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
     await tokenDocRef.update({
       saleLength: 86400000 * 2,
       saleStartDate: dateToTimestamp(dayjs().subtract(1, 'd').toDate()),
@@ -187,7 +187,7 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
       saleLength: 86400000 * 2,
       coolDownLength: 86400000,
     };
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TOKEN}/${token.uid}`)
       .update({
         allocations: [{ title: 'public', percentage: 100, isPublicSale: true }],
@@ -204,7 +204,7 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
     await testEnv.wrap(cancelPublicSale)({});
 
     await wait(async () => {
-      const tokenData = <Token>await soonDb().doc(`${COL.TOKEN}/${token.uid}`).get();
+      const tokenData = <Token>await build5Db().doc(`${COL.TOKEN}/${token.uid}`).get();
       return tokenData.status === TokenStatus.AVAILABLE;
     });
   });

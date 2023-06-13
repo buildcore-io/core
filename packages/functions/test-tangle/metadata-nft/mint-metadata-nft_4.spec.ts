@@ -7,8 +7,8 @@ import {
   TangleRequestType,
   Transaction,
   TransactionType,
-} from '@build5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
@@ -48,7 +48,7 @@ describe('Metadata nft', () => {
       helper.network,
     );
 
-    const mintMetadataNftQuery = soonDb()
+    const mintMetadataNftQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.member)
       .where('type', '==', TransactionType.METADATA_NFT);
@@ -57,7 +57,7 @@ describe('Metadata nft', () => {
       return snap.length === 3;
     });
 
-    const creditQuery = soonDb()
+    const creditQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.member)
       .where('type', '==', TransactionType.CREDIT);
@@ -67,7 +67,7 @@ describe('Metadata nft', () => {
     });
     const credit = (await creditQuery.get<Transaction>())[0];
 
-    const space = <Space>await soonDb().doc(`${COL.SPACE}/${credit.space}`).get();
+    const space = <Space>await build5Db().doc(`${COL.SPACE}/${credit.space}`).get();
 
     await helper.walletService.send(
       helper.memberAddress,
@@ -97,11 +97,14 @@ describe('Metadata nft', () => {
       );
     });
 
-    const nfts = await soonDb().collection(COL.NFT).where('owner', '==', helper.member).get<Nft>();
+    const nfts = await build5Db()
+      .collection(COL.NFT)
+      .where('owner', '==', helper.member)
+      .get<Nft>();
     expect(nfts[0].collection).not.toBe(nfts[1].collection);
     expect(nfts[0].space).toBe(nfts[1].space);
 
-    const collections = await soonDb()
+    const collections = await build5Db()
       .collection(COL.COLLECTION)
       .where('space', '==', space.uid)
       .get<Collection>();

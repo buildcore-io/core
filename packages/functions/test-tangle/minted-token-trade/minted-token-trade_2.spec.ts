@@ -8,8 +8,8 @@ import {
   Transaction,
   TransactionCreditType,
   TransactionType,
-} from '@build5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { wait } from '../../test/controls/common';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { requestMintedTokenFromFaucet } from '../faucet';
@@ -30,7 +30,7 @@ describe('Token minting', () => {
     const sellOrder = await helper.createSellTradeOrder();
     const buyOrder = await helper.createBuyOrder(10, 2 * MIN_IOTA_AMOUNT);
 
-    const billPaymentsQuery = soonDb()
+    const billPaymentsQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', 'in', [helper.seller, helper.buyer])
       .where('type', '==', TransactionType.BILL_PAYMENT);
@@ -67,7 +67,7 @@ describe('Token minting', () => {
     expect(paymentToBuyer.payload.storageReturn.amount).toBe(53800);
     expect(paymentToBuyer.payload.storageReturn.address).toBe(helper.sellerAddress?.bech32);
 
-    const sellerCreditSnap = await soonDb()
+    const sellerCreditSnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller)
       .where('type', '==', TransactionType.CREDIT)
@@ -76,7 +76,7 @@ describe('Token minting', () => {
     const sellerCredit = sellerCreditSnap.map((d) => d as Transaction)[0];
     expect(sellerCredit.payload.amount).toBe(49600);
 
-    const buyerCreditSnap = await soonDb()
+    const buyerCreditSnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer)
       .where('type', '==', TransactionType.CREDIT)
@@ -103,7 +103,7 @@ describe('Token minting', () => {
     await helper.createSellTradeOrder(100, MIN_IOTA_AMOUNT / 100);
     const buyOrder = await helper.createBuyOrder(99, MIN_IOTA_AMOUNT);
 
-    const buyQuery = soonDb()
+    const buyQuery = build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('orderTransactionId', '==', buyOrder.uid);
     await wait(async () => {
@@ -112,12 +112,12 @@ describe('Token minting', () => {
     });
     let buy = (await buyQuery.get())[0] as TokenTradeOrder;
     let purchase = (
-      await soonDb().collection(COL.TOKEN_PURCHASE).where('buy', '==', buy.uid).get()
+      await build5Db().collection(COL.TOKEN_PURCHASE).where('buy', '==', buy.uid).get()
     )[0] as TokenPurchase;
     expect(purchase.price).toBe(MIN_IOTA_AMOUNT / 100);
 
     const buyOrder2 = await helper.createBuyOrder(1, MIN_IOTA_AMOUNT);
-    const buyQuery2 = soonDb()
+    const buyQuery2 = build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('orderTransactionId', '==', buyOrder2.uid);
     await wait(async () => {
@@ -127,7 +127,7 @@ describe('Token minting', () => {
 
     buy = (await buyQuery2.get())[0] as TokenTradeOrder;
     purchase = (
-      await soonDb().collection(COL.TOKEN_PURCHASE).where('buy', '==', buy.uid).get()
+      await build5Db().collection(COL.TOKEN_PURCHASE).where('buy', '==', buy.uid).get()
     )[0] as TokenPurchase;
     expect(purchase.price).toBe(MIN_IOTA_AMOUNT);
 

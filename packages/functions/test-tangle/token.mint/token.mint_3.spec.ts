@@ -11,9 +11,9 @@ import {
   TokenTradeOrderType,
   TransactionType,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { setTokenAvailableForSale } from '../../src/runtime/firebase/token/base';
 import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
@@ -58,7 +58,7 @@ describe('Token minting', () => {
     await milestoneProcessed(milestone2.milestone, milestone2.tranId);
 
     await wait(async () => {
-      const buySnap = await soonDb()
+      const buySnap = await build5Db()
         .collection(COL.TOKEN_MARKET)
         .where('type', '==', TokenTradeOrderType.BUY)
         .where('owner', '==', helper.guardian.uid)
@@ -77,14 +77,14 @@ describe('Token minting', () => {
       mintOrder.payload.amount,
     );
 
-    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${helper.token.uid}`);
+    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${helper.token.uid}`);
     await wait(async () => {
       const snap = await tokenDocRef.get<Token>();
       return snap?.status === TokenStatus.MINTING;
     });
 
     await wait(async () => {
-      const buySnap = await soonDb()
+      const buySnap = await build5Db()
         .collection(COL.TOKEN_MARKET)
         .where('type', '==', TokenTradeOrderType.BUY)
         .where('status', '==', TokenTradeOrderStatus.CANCELLED_MINTING_TOKEN)
@@ -94,7 +94,7 @@ describe('Token minting', () => {
     });
 
     await wait(async () => {
-      const creditSnap = await soonDb()
+      const creditSnap = await build5Db()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
         .where('member', '==', helper.guardian.uid)
@@ -128,12 +128,12 @@ describe('Token minting', () => {
     );
 
     await wait(async () => {
-      const snap = await soonDb().doc(`${COL.TOKEN}/${helper.token.uid}`).get<Token>();
+      const snap = await build5Db().doc(`${COL.TOKEN}/${helper.token.uid}`).get<Token>();
       return snap?.status === TokenStatus.MINTING;
     });
 
     await wait(async () => {
-      const sellSnap = await soonDb()
+      const sellSnap = await build5Db()
         .collection(COL.TOKEN_MARKET)
         .where('type', '==', TokenTradeOrderType.SELL)
         .where('status', '==', TokenTradeOrderStatus.CANCELLED_MINTING_TOKEN)
@@ -143,7 +143,7 @@ describe('Token minting', () => {
     });
 
     const distribution = <TokenDistribution>(
-      await soonDb()
+      await build5Db()
         .doc(`${COL.TOKEN}/${helper.token.uid}/${SUB_COL.DISTRIBUTION}/${helper.member}`)
         .get()
     );
@@ -158,7 +158,7 @@ describe('Token minting', () => {
       saleLength: 86400000 * 2,
       coolDownLength: 86400000,
     };
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TOKEN}/${helper.token.uid}`)
       .update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] });
     const updateData = { token: helper.token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };

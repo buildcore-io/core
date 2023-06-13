@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Bucket, COL, Collection, Nft, Transaction, TransactionType } from '@build5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
-import { soonStorage } from '../../src/firebase/storage/soonStorage';
+import { Bucket, COL, Collection, Nft, Transaction, TransactionType } from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
+import { build5Storage } from '../../src/firebase/storage/build5Storage';
 import { depositNft, withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -20,11 +20,11 @@ describe('Collection minting', () => {
     nft = await helper.createAndOrderNft();
     await helper.mintCollection();
 
-    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+    const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, { nft: nft.uid });
     await testEnv.wrap(withdrawNft)({});
 
-    const query = soonDb()
+    const query = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.WITHDRAW_NFT)
       .where('payload.nft', '==', nft.uid);
@@ -36,19 +36,22 @@ describe('Collection minting', () => {
   });
 
   const validateStorageFileCount = (owner: string, uid: string) =>
-    wait(async () => (await soonStorage().bucket(Bucket.DEV).getFilesCount(`${owner}/${uid}`)) > 0);
+    wait(async () => {
+      const bucket = build5Storage().bucket(Bucket.DEV);
+      return (await bucket.getFilesCount(`${owner}/${uid}`)) > 0;
+    });
 
   it('Should migrate media', async () => {
-    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+    const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
 
     await nftDocRef.delete();
-    await soonDb().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
+    await build5Db().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
 
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, { network: helper.network });
     const depositOrder = await testEnv.wrap(depositNft)({});
     await helper.sendNftToAddress(helper.guardianAddress!, depositOrder.payload.targetAddress);
 
-    const nftQuery = soonDb().collection(COL.NFT).where('owner', '==', helper.guardian);
+    const nftQuery = build5Db().collection(COL.NFT).where('owner', '==', helper.guardian);
     await wait(async () => {
       const snap = await nftQuery.get();
       return snap.length > 0;
@@ -58,7 +61,7 @@ describe('Collection minting', () => {
     const migratedNft = <Nft>snap[0];
     await validateStorageFileCount(helper.guardian!, migratedNft.uid);
 
-    const migratedCollectionDocRef = soonDb().doc(`${COL.COLLECTION}/${migratedNft.collection}`);
+    const migratedCollectionDocRef = build5Db().doc(`${COL.COLLECTION}/${migratedNft.collection}`);
     const migratedCollection = <Collection>await migratedCollectionDocRef.get();
     await validateStorageFileCount(migratedCollection.space, migratedCollection.uid);
   });

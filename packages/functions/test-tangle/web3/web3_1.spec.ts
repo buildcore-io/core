@@ -8,10 +8,10 @@ import {
   SUB_COL,
   Token,
   TokenStatus,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { Web3Storage } from 'web3.storage';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { getWeb3Token } from '../../src/utils/config.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
@@ -47,8 +47,8 @@ const saveToken = async (space: string, guardian: string, member: string) => {
     access: 0,
     icon: MEDIA,
   };
-  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
-  await soonDb()
+  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await build5Db()
     .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`)
     .set({ tokenOwned: 1000 });
   return <Token>token;
@@ -67,13 +67,15 @@ describe('Web3 cron test', () => {
     await collectionHelper.beforeEach();
 
     const count = 5;
-    await soonDb().doc(`${COL.COLLECTION}/${collectionHelper.collection}`).update({ total: count });
+    await build5Db()
+      .doc(`${COL.COLLECTION}/${collectionHelper.collection}`)
+      .update({ total: count });
     const promises = Array.from(Array(count)).map(() => {
       const nft = collectionHelper.createDummyNft(
         collectionHelper.collection!,
         collectionHelper.getRandomDescrptiron(),
       );
-      return soonDb().doc(`${COL.NFT}/${nft.uid}`).create(nft);
+      return build5Db().doc(`${COL.NFT}/${nft.uid}`).create(nft);
     });
     await Promise.all(promises);
     await collectionHelper.mintCollection();
@@ -81,14 +83,14 @@ describe('Web3 cron test', () => {
     await uploadMediaToWeb3();
 
     const client = new Web3Storage({ token: getWeb3Token() });
-    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${collectionHelper.collection}`);
+    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${collectionHelper.collection}`);
     const collection = <Collection>await collectionDocRef.get();
     expect(collection.mintingData?.nftMediaToUpload).toBe(0);
     const collectionWeb3Status = await client.status(collection.ipfsRoot!);
     expect(collectionWeb3Status?.pins[0]?.status).toBe('Pinned');
 
     const nfts = (
-      await soonDb()
+      await build5Db()
         .collection(COL.NFT)
         .where('collection', '==', collectionHelper.collection)
         .get()
@@ -106,14 +108,14 @@ describe('Web3 cron test', () => {
   it('Should upload token media on mint', async () => {
     const guardianId = await createMember(walletSpy);
     const member = await createMember(walletSpy);
-    const guardian = <Member>await soonDb().doc(`${COL.MEMBER}/${guardianId}`).get();
+    const guardian = <Member>await build5Db().doc(`${COL.MEMBER}/${guardianId}`).get();
     const space = await createSpace(walletSpy, guardian.uid);
     let token = await saveToken(space.uid, guardian.uid, member);
     mockWalletReturnValue(walletSpy, guardian.uid, { token: token.uid, network });
     const order = await testEnv.wrap(mintTokenOrder)({});
     await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount);
 
-    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
+    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
     await wait(async () => {
       const snap = await tokenDocRef.get<Token>();
       return snap?.status === TokenStatus.MINTED;
@@ -142,12 +144,12 @@ const cleanupPendingUploads = async () => {
   for (const col of [COL.TOKEN, COL.NFT, COL.COLLECTION]) {
     const snap = await pendingUploadsQuery(col).get<Record<string, unknown>>();
     const promises = snap.map((d) => {
-      const docRef = soonDb().doc(`${col}/${d.uid}`);
-      return docRef.update({ mediaStatus: soonDb().deleteField() });
+      const docRef = build5Db().doc(`${col}/${d.uid}`);
+      return docRef.update({ mediaStatus: build5Db().deleteField() });
     });
     await Promise.all(promises);
   }
 };
 
 const pendingUploadsQuery = (col: COL) =>
-  soonDb().collection(col).where('mediaStatus', '==', MediaStatus.PENDING_UPLOAD);
+  build5Db().collection(col).where('mediaStatus', '==', MediaStatus.PENDING_UPLOAD);

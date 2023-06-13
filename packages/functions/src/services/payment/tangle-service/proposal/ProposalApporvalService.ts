@@ -1,5 +1,5 @@
-import { COL, Proposal, TangleRequestType, WenError } from '@build5/interfaces';
-import { soonDb } from '../../../../firebase/firestore/soondb';
+import { COL, Proposal, TangleRequestType, WenError } from '@build-5/interfaces';
+import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { TransactionService } from '../../transaction-service';
@@ -14,7 +14,7 @@ export class ProposalApprovalService {
       params.uid as string,
       requestType === TangleRequestType.PROPOSAL_APPROVE,
     );
-    const docRef = soonDb().doc(`${COL.PROPOSAL}/${params.uid}`);
+    const docRef = build5Db().doc(`${COL.PROPOSAL}/${params.uid}`);
     this.transactionService.push({ ref: docRef, data, action: 'update' });
 
     return { status: 'success' };
@@ -26,7 +26,7 @@ export const getProposalApprovalData = async (
   proposalId: string,
   approve: boolean,
 ) => {
-  const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposalId}`);
+  const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposalId}`);
   const proposal = await proposalDocRef.get<Proposal>();
   if (!proposal) {
     throw invalidArgument(WenError.proposal_does_not_exists);

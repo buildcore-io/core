@@ -1,9 +1,9 @@
-import { PublicCollections, PublicSubCollections, TokenStats } from '@build5/interfaces';
-import { SoonEnv } from '../../Config';
+import { PublicCollections, PublicSubCollections, TokenStats } from '@build-5/interfaces';
+import { Build5Env } from '../../Config';
 import { SubCrudRepository } from '../SubCrudRepository';
 
 export class TokenStatsRepository extends SubCrudRepository<TokenStats> {
-  constructor(env?: SoonEnv) {
-    super(env || SoonEnv.PROD, PublicCollections.TOKEN, PublicSubCollections.STATS);
+  constructor(env?: Build5Env) {
+    super(env || Build5Env.PROD, PublicCollections.TOKEN, PublicSubCollections.STATS);
   }
 }

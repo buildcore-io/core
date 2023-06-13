@@ -9,9 +9,9 @@ import {
   TransactionType,
   TransactionUnlockType,
   TransactionValidationType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../../../firebase/firestore/soondb';
+import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet';
@@ -44,7 +44,7 @@ export class NftDepositService {
         void: false,
       },
     };
-    const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
     this.transactionService.push({ ref: orderDocRef, data: order, action: 'set' });
 
     this.transactionService.createUnlockTransaction(

@@ -1,13 +1,13 @@
-import { Award, Opr, PublicCollections } from '@build5/interfaces';
+import { Award, Opr, PublicCollections } from '@build-5/interfaces';
 import { switchMap } from 'rxjs';
-import { SoonEnv } from '../../Config';
+import { Build5Env } from '../../Config';
 import { CrudRepository } from '../CrudRepository';
 import { AwardFilter, AwardParticipantRepository } from './index';
 
 export class AwardRepository extends CrudRepository<Award> {
   private participantRepo: AwardParticipantRepository;
-  constructor(env?: SoonEnv) {
-    super(env || SoonEnv.PROD, PublicCollections.AWARD);
+  constructor(env?: Build5Env) {
+    super(env || Build5Env.PROD, PublicCollections.AWARD);
     this.participantRepo = new AwardParticipantRepository(env);
   }
 

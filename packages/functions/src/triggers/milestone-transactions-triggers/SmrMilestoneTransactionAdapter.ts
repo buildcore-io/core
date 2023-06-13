@@ -1,4 +1,4 @@
-import { MilestoneTransaction, MilestoneTransactionEntry, Network } from '@build5/interfaces';
+import { MilestoneTransaction, MilestoneTransactionEntry, Network } from '@build-5/interfaces';
 import {
   BASIC_OUTPUT_TYPE,
   Bech32Helper,
@@ -93,7 +93,7 @@ export class SmrMilestoneTransactionAdapter {
       });
     }
 
-    const soonaverseTransactionId = await getMilestoneTransactionIdForSmr(data);
+    const build5TransactionId = await getMilestoneTransactionIdForSmr(data);
 
     return {
       uid: data.uid,
@@ -103,7 +103,7 @@ export class SmrMilestoneTransactionAdapter {
       inputs,
       outputs,
       processed: data.processed,
-      soonaverseTransactionId: soonaverseTransactionId || undefined,
+      build5TransactionId: build5TransactionId || undefined,
     };
   };
 }

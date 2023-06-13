@@ -4,9 +4,9 @@ import {
   TangleRequestType,
   Transaction,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { approveProposal } from '../../src/runtime/firebase/proposal';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -49,7 +49,7 @@ describe('Create proposal via tangle request', () => {
     );
     await MnemonicService.store(helper.guardianAddress.bech32, helper.guardianAddress.mnemonic);
 
-    const orderQuery = soonDb()
+    const orderQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.VOTE)
       .where('member', '==', helper.guardian);

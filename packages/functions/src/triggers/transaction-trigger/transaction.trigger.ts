@@ -17,12 +17,12 @@ import {
   TransactionUnlockType,
   WEN_FUNC_TRIGGER,
   WalletResult,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions/v2';
 import { isEmpty } from 'lodash';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { ITransaction } from '../../firebase/firestore/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
 import { scale } from '../../scale.settings';
 import { NativeTokenWallet } from '../../services/wallet/NativeTokenWallet';
 import { NftWallet } from '../../services/wallet/NftWallet';
@@ -77,7 +77,7 @@ export const transactionWrite = functions.firestore.onDocumentWritten(
     const shouldRetry = !prev?.shouldRetry && curr?.shouldRetry;
 
     if (isCreate) {
-      const docRef = soonDb().doc(`${COL.TRANSACTION}/${curr.uid}`);
+      const docRef = build5Db().doc(`${COL.TRANSACTION}/${curr.uid}`);
       await docRef.update({ isOrderType: curr.type === TransactionType.ORDER });
     }
 
@@ -105,16 +105,16 @@ export const transactionWrite = functions.firestore.onDocumentWritten(
     }
 
     if (curr.type === TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED && isConfirmed(prev, curr)) {
-      await soonDb()
+      await build5Db()
         .doc(`${COL.TRANSACTION}/${curr.payload.transaction}`)
         .update({
           'payload.walletReference.confirmed': true,
           'payload.walletReference.inProgress': false,
-          'payload.walletReference.count': soonDb().inc(1),
+          'payload.walletReference.count': build5Db().inc(1),
           'payload.walletReference.processedOn': dayjs().toDate(),
           'payload.walletReference.chainReference':
             curr.payload?.walletReference?.chainReference || '',
-          'payload.walletReference.chainReferences': soonDb().arrayUnion(
+          'payload.walletReference.chainReferences': build5Db().arrayUnion(
             curr.payload?.walletReference?.chainReference || '',
           ),
         });
@@ -177,8 +177,8 @@ export const transactionWrite = functions.firestore.onDocumentWritten(
       curr.payload.award &&
       curr.payload.type === BillPaymentType.MINTED_AIRDROP_CLAIM
     ) {
-      const awardDocRef = soonDb().doc(`${COL.AWARD}/${curr.payload.award}`);
-      await awardDocRef.update({ airdropClaimed: soonDb().inc(1) });
+      const awardDocRef = build5Db().doc(`${COL.AWARD}/${curr.payload.award}`);
+      await awardDocRef.update({ airdropClaimed: build5Db().inc(1) });
     }
   },
 );
@@ -189,7 +189,7 @@ const executeTransaction = async (transactionId: string) => {
     return;
   }
 
-  const docRef = soonDb().doc(`${COL.TRANSACTION}/${transactionId}`);
+  const docRef = build5Db().doc(`${COL.TRANSACTION}/${transactionId}`);
   const transaction = <Transaction>await docRef.get();
   const payload = transaction.payload;
 
@@ -246,7 +246,7 @@ const executeTransaction = async (transactionId: string) => {
     await docRef.update({
       'payload.walletReference.processedOn': dayjs().toDate(),
       'payload.walletReference.chainReference': chainReference,
-      'payload.walletReference.chainReferences': soonDb().arrayUnion(chainReference),
+      'payload.walletReference.chainReferences': build5Db().arrayUnion(chainReference),
     });
   } catch (error) {
     functions.logger.error(transaction.uid, error);
@@ -410,8 +410,8 @@ const submitUnlockTransaction = async (
 };
 
 const prepareTransaction = (transactionId: string) =>
-  soonDb().runTransaction(async (transaction) => {
-    const docRef = soonDb().doc(`${COL.TRANSACTION}/${transactionId}`);
+  build5Db().runTransaction(async (transaction) => {
+    const docRef = build5Db().doc(`${COL.TRANSACTION}/${transactionId}`);
     const tranData = await transaction.get<Transaction>(docRef);
     if (
       isEmulatorEnv() &&
@@ -471,7 +471,7 @@ const getMnemonic = async (transaction: ITransaction, address: string): Promise<
   if (isEmpty(address)) {
     return {};
   }
-  const docRef = soonDb().doc(`${COL.MNEMONIC}/${address}`);
+  const docRef = build5Db().doc(`${COL.MNEMONIC}/${address}`);
   return (await transaction.get(docRef)) || {};
 };
 
@@ -479,7 +479,7 @@ const lockMnemonic = (transaction: ITransaction, lockedBy: string, address: stri
   if (isEmpty(address)) {
     return;
   }
-  const docRef = soonDb().doc(`${COL.MNEMONIC}/${address}`);
+  const docRef = build5Db().doc(`${COL.MNEMONIC}/${address}`);
   transaction.update(docRef, {
     lockedBy,
     consumedOutputIds: [],
@@ -506,7 +506,7 @@ const isConfirmed = (prev: Transaction | undefined, curr: Transaction | undefine
   !prev?.payload?.walletReference?.confirmed && curr?.payload?.walletReference?.confirmed;
 
 const onMintedAirdropCleared = async (curr: Transaction) => {
-  const member = <Member>await soonDb().doc(`${COL.MEMBER}/${curr.member}`).get();
+  const member = <Member>await build5Db().doc(`${COL.MEMBER}/${curr.member}`).get();
   const credit = <Transaction>{
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
@@ -523,5 +523,5 @@ const onMintedAirdropCleared = async (curr: Transaction) => {
       token: curr.payload.token,
     },
   };
-  await soonDb().doc(`${COL.TRANSACTION}/${credit.uid}`).create(credit);
+  await build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`).create(credit);
 };

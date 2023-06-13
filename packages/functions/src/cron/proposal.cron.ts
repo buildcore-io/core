@@ -1,11 +1,11 @@
-import { COL, Proposal } from '@build5/interfaces';
+import { COL, Proposal } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../firebase/firestore/soondb';
+import { build5Db } from '../firebase/firestore/build5Db';
 
 export const markExpiredProposalCompleted = async () => {
   let size = 0;
   do {
-    const snap = await soonDb()
+    const snap = await build5Db()
       .collection(COL.PROPOSAL)
       .where('completed', '==', false)
       .where('settings.endDate', '<', dayjs().toDate())
@@ -13,9 +13,9 @@ export const markExpiredProposalCompleted = async () => {
       .get<Proposal>();
     size = snap.length;
 
-    const batch = soonDb().batch();
+    const batch = build5Db().batch();
     snap.forEach((proposal) => {
-      const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+      const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
       batch.update(proposalDocRef, { completed: true });
     });
     await batch.commit();

@@ -1,9 +1,9 @@
-import { GetByIdRequest, PublicCollections, PublicSubCollections } from '@build5/interfaces';
+import { GetByIdRequest, PublicCollections, PublicSubCollections } from '@build-5/interfaces';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
 import { map } from 'rxjs';
-import { soonDb } from '../firebase/firestore/soondb';
+import { build5Db } from '../firebase/firestore/build5Db';
 import { CommonJoi } from '../services/joi/common';
 import { maxAddressLength } from '../utils/wallet.utils';
 import { documentToObservable, getQueryParams, isHiddenNft } from './common';
@@ -31,7 +31,7 @@ export const getById = async (req: functions.https.Request, res: express.Respons
     body.parentUid && body.subCollection
       ? `${body.collection}/${body.parentUid}/${body.subCollection}/${body.uid}`
       : `${body.collection}/${body.uid}`;
-  const docRef = soonDb().doc(docPath);
+  const docRef = build5Db().doc(docPath);
 
   if (body.sessionId) {
     const observable = documentToObservable<Record<string, unknown>>(docRef).pipe(

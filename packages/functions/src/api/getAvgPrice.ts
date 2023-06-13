@@ -1,9 +1,9 @@
-import { GetAvgPriceRequest, PublicCollections } from '@build5/interfaces';
+import { GetAvgPriceRequest, PublicCollections } from '@build-5/interfaces';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
 import { combineLatest, map } from 'rxjs';
-import { soonDb } from '../firebase/firestore/soondb';
+import { build5Db } from '../firebase/firestore/build5Db';
 import { CommonJoi } from '../services/joi/common';
 import { getHeadCountObs, getQueryParams } from './common';
 import { sendLiveUpdates } from './keepAlive';
@@ -33,13 +33,13 @@ const getAvgLive = (token: string) => {
 
 const purchaseQuery = (token: string, lowest?: boolean) => {
   if (lowest === undefined) {
-    soonDb()
+    build5Db()
       .collection(PublicCollections.TOKEN_PURCHASE)
       .where('token', '==', token)
       .orderBy('createdOn', 'desc')
       .limit(1);
   }
-  return soonDb()
+  return build5Db()
     .collection(PublicCollections.TOKEN_PURCHASE)
     .where('token', '==', token)
     .where('in7d', '==', true)

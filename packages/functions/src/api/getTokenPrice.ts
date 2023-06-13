@@ -8,13 +8,13 @@ import {
   TokenTradeOrder,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
 import { head } from 'lodash';
 import { combineLatest, map } from 'rxjs';
-import { soonDb } from '../firebase/firestore/soondb';
+import { build5Db } from '../firebase/firestore/build5Db';
 import { CommonJoi } from '../services/joi/common';
 import { documentToObservable, getQueryParams, queryToObservable } from './common';
 import { sendLiveUpdates } from './keepAlive';
@@ -24,7 +24,7 @@ const getTokenPriceSchema = Joi.object({
   sessionId: CommonJoi.sessionId(),
 });
 
-const tickerDocRef = soonDb().doc(`${COL.TICKER}/${TICKERS.SMRUSD}`);
+const tickerDocRef = build5Db().doc(`${COL.TICKER}/${TICKERS.SMRUSD}`);
 
 export const getTokenPrice = async (req: functions.https.Request, res: express.Response) => {
   const body = getQueryParams<GetTokenPrice>(req, res, getTokenPriceSchema);
@@ -32,7 +32,7 @@ export const getTokenPrice = async (req: functions.https.Request, res: express.R
     return;
   }
 
-  const lowestSellQuery = soonDb()
+  const lowestSellQuery = build5Db()
     .collection(PublicCollections.TOKEN_MARKET)
     .where('status', '==', TokenTradeOrderStatus.ACTIVE)
     .where('token', '==', body.token)
@@ -40,7 +40,7 @@ export const getTokenPrice = async (req: functions.https.Request, res: express.R
     .orderBy('price')
     .limit(1);
 
-  const highestBuyQuery = soonDb()
+  const highestBuyQuery = build5Db()
     .collection(PublicCollections.TOKEN_MARKET)
     .where('status', '==', TokenTradeOrderStatus.ACTIVE)
     .where('token', '==', body.token)

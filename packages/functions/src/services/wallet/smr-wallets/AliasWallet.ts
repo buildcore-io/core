@@ -1,4 +1,4 @@
-import { Transaction } from '@build5/interfaces';
+import { Transaction } from '@build-5/interfaces';
 import {
   Bech32Helper,
   GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE,

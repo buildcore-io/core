@@ -1,4 +1,4 @@
-import { BLOCKED_COUNTRIES, WenError } from '@build5/interfaces';
+import { BLOCKED_COUNTRIES, WenError } from '@build-5/interfaces';
 import IPinfoWrapper from 'node-ipinfo';
 import { invalidArgument } from './error.utils';
 /**

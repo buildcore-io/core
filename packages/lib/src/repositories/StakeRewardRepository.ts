@@ -1,10 +1,10 @@
-import { Opr, PublicCollections, StakeReward } from '@build5/interfaces';
-import { SoonEnv } from '../Config';
+import { Opr, PublicCollections, StakeReward } from '@build-5/interfaces';
+import { Build5Env } from '../Config';
 import { CrudRepository } from './CrudRepository';
 
 export class StakeRewardRepository extends CrudRepository<StakeReward> {
-  constructor(env?: SoonEnv) {
-    super(env || SoonEnv.PROD, PublicCollections.STAKE_REWARD);
+  constructor(env?: Build5Env) {
+    super(env || Build5Env.PROD, PublicCollections.STAKE_REWARD);
   }
 
   public getByTokenLive = (token: string, startAfter?: string) => {

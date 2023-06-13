@@ -16,12 +16,12 @@ import {
   TokenStats,
   TokenStatus,
   Transaction,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { depositStake } from '../../src/runtime/firebase/stake';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
@@ -61,13 +61,15 @@ export class Helper {
 
   public beforeEach = async () => {
     const memberId = await createMember(this.walletSpy);
-    this.member = <Member>await soonDb().doc(`${COL.MEMBER}/${memberId}`).get();
+    this.member = <Member>await build5Db().doc(`${COL.MEMBER}/${memberId}`).get();
     this.memberAddress = await this.walletService?.getNewIotaAddressDetails();
 
     this.space = await createSpace(this.walletSpy, memberId);
     this.token = await this.saveToken(this.space!.uid, this.member!.uid);
     this.tokenStats = <TokenStats>(
-      await soonDb().doc(`${COL.TOKEN}/${this.token.uid}/${SUB_COL.STATS}/${this.token.uid}`).get()
+      await build5Db()
+        .doc(`${COL.TOKEN}/${this.token.uid}/${SUB_COL.STATS}/${this.token.uid}`)
+        .get()
     );
     await requestFundsFromFaucet(this.network, this.memberAddress!.bech32, 10 * MIN_IOTA_AMOUNT);
     await requestMintedTokenFromFaucet(
@@ -99,7 +101,7 @@ export class Helper {
       access: 0,
       icon: MEDIA,
     };
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
     return <Token>token;
   };
 
@@ -111,7 +113,7 @@ export class Helper {
     customMetadata?: { [key: string]: string },
     memberUid?: string,
   ) => {
-    const member = <Member>await soonDb()
+    const member = <Member>await build5Db()
       .doc(`${COL.MEMBER}/${memberUid || this.member?.uid}`)
       .get();
     mockWalletReturnValue(this.walletSpy, member.uid, {
@@ -131,7 +133,7 @@ export class Helper {
       nativeTokens: [{ id: this.TOKEN_ID, amount: HexHelper.fromBigInt256(bigInt(amount)) }],
     });
     await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
-    const query = soonDb().collection(COL.STAKE).where('orderId', '==', order.uid);
+    const query = build5Db().collection(COL.STAKE).where('orderId', '==', order.uid);
     await wait(async () => {
       const snap = await query.get();
       return snap.length == 1;
@@ -147,7 +149,7 @@ export class Helper {
 
     await wait(async () => {
       const currTokenStats = <TokenStats | undefined>(
-        await soonDb()
+        await build5Db()
           .doc(`${COL.TOKEN}/${this.token?.uid}/${SUB_COL.STATS}/${this.token?.uid}`)
           .get()
       );
@@ -157,7 +159,7 @@ export class Helper {
       );
     });
 
-    const billPaymentDocRef = soonDb().doc(`${COL.TRANSACTION}/${stake.billPaymentId}`);
+    const billPaymentDocRef = build5Db().doc(`${COL.TRANSACTION}/${stake.billPaymentId}`);
     await wait(async () => {
       const billPayment = <Transaction>await billPaymentDocRef.get();
       return billPayment.payload.walletReference?.confirmed;
@@ -181,7 +183,7 @@ export class Helper {
     membersCount: number,
   ) => {
     this.tokenStats = <TokenStats>(
-      await soonDb()
+      await build5Db()
         .doc(`${COL.TOKEN}/${this.token!.uid}/${SUB_COL.STATS}/${this.token?.uid}`)
         .get()
     );
@@ -200,7 +202,7 @@ export class Helper {
     type: StakeType,
     member?: string,
   ) => {
-    const distribution = <TokenDistribution>await soonDb()
+    const distribution = <TokenDistribution>await build5Db()
       .doc(`${COL.TOKEN}/${this.token!.uid}/${SUB_COL.DISTRIBUTION}/${member || this.member!.uid}`)
       .get();
     expect(distribution.stakes![type].amount).toBe(stakeAmount);
@@ -210,7 +212,7 @@ export class Helper {
   };
 
   public assertDistributionStakeExpiry = async (stake: Stake) => {
-    const distributionDocRef = soonDb().doc(
+    const distributionDocRef = build5Db().doc(
       `${COL.TOKEN}/${this.token?.uid}/${SUB_COL.DISTRIBUTION}/${this.member!.uid}`,
     );
     const distirbution = <TokenDistribution>await distributionDocRef.get();
@@ -218,17 +220,17 @@ export class Helper {
   };
 
   public updateStakeExpiresAt = async (stake: Stake, expiresAt: dayjs.Dayjs) => {
-    await soonDb()
+    await build5Db()
       .doc(`${COL.STAKE}/${stake.uid}`)
       .update({ expiresAt: dateToTimestamp(expiresAt.toDate()) });
-    const distributionDocRef = soonDb().doc(
+    const distributionDocRef = build5Db().doc(
       `${COL.TOKEN}/${this.token?.uid}/${SUB_COL.DISTRIBUTION}/${this.member!.uid}`,
     );
     await distributionDocRef.set(
       {
         stakeExpiry: {
           [stake.type]: {
-            [stake.expiresAt.toMillis()]: soonDb().deleteField(),
+            [stake.expiresAt.toMillis()]: build5Db().deleteField(),
             [dateToTimestamp(expiresAt.toDate()).toMillis()]: stake.value,
           },
         },
@@ -238,7 +240,7 @@ export class Helper {
   };
 
   public assertStakeExpiryCleared = async (type: StakeType) => {
-    const distributionDocRef = soonDb().doc(
+    const distributionDocRef = build5Db().doc(
       `${COL.TOKEN}/${this.token?.uid}/${SUB_COL.DISTRIBUTION}/${this.member!.uid}`,
     );
     const distribution = <TokenDistribution>await distributionDocRef.get();

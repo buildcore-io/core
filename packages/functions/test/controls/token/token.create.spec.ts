@@ -10,9 +10,9 @@ import {
   TokenAllocation,
   WEN_FUNC,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../../src/firebase/firestore/soondb';
+import { build5Db } from '../../../src/firebase/firestore/build5Db';
 import { createToken } from '../../../src/runtime/firebase/token/base';
 import * as config from '../../../src/utils/config.utils';
 import { dateToTimestamp } from '../../../src/utils/dateTime.utils';
@@ -87,7 +87,7 @@ describe('Token controller: ' + WEN_FUNC.createToken, () => {
   });
 
   it('Should create token, verify soon', async () => {
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TOKEN}/${soonTokenId}/${SUB_COL.DISTRIBUTION}/${memberAddress}`)
       .create({
         stakes: {
@@ -160,7 +160,7 @@ describe('Token controller: ' + WEN_FUNC.createToken, () => {
   it('Should only allow two tokens if first rejected', async () => {
     mockWalletReturnValue(walletSpy, memberAddress, token);
     const cToken = await testEnv.wrap(createToken)({});
-    await soonDb().doc(`${COL.TOKEN}/${cToken.uid}`).update({ approved: false, rejected: true });
+    await build5Db().doc(`${COL.TOKEN}/${cToken.uid}`).update({ approved: false, rejected: true });
     mockWalletReturnValue(walletSpy, memberAddress, dummyToken(space.uid));
     const secondToken = await testEnv.wrap(createToken)({});
     expect(secondToken.uid).toBeDefined();
@@ -196,7 +196,7 @@ describe('Token controller: ' + WEN_FUNC.createToken, () => {
 
   it('Should throw, no valid space address', async () => {
     space = await createSpace(walletSpy, memberAddress);
-    await soonDb().doc(`${COL.SPACE}/${space.uid}`).update({ validatedAddress: {} });
+    await build5Db().doc(`${COL.SPACE}/${space.uid}`).update({ validatedAddress: {} });
     token.space = space.uid;
     mockWalletReturnValue(walletSpy, memberAddress, token);
     await expectThrow(
@@ -304,7 +304,7 @@ describe('Token controller: ' + WEN_FUNC.createToken, () => {
   it('Should not throw, token symbol not unique but prev token is rejected', async () => {
     mockWalletReturnValue(walletSpy, memberAddress, token);
     const newToken = await testEnv.wrap(createToken)({});
-    await soonDb().doc(`${COL.TOKEN}/${newToken.uid}`).update({ rejected: true });
+    await build5Db().doc(`${COL.TOKEN}/${newToken.uid}`).update({ rejected: true });
 
     const space = await createSpace(walletSpy, memberAddress);
     mockWalletReturnValue(walletSpy, memberAddress, {

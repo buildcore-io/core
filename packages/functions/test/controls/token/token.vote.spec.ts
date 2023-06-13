@@ -1,5 +1,5 @@
-import { COL, Space, SUB_COL, TokenAllocation, TokenStats, WenError } from '@build5/interfaces';
-import { soonDb } from '../../../src/firebase/firestore/soondb';
+import { COL, Space, SUB_COL, TokenAllocation, TokenStats, WenError } from '@build-5/interfaces';
+import { build5Db } from '../../../src/firebase/firestore/build5Db';
 import { createToken } from '../../../src/runtime/firebase/token/base';
 import { voteController } from '../../../src/runtime/firebase/vote';
 import * as config from '../../../src/utils/config.utils';
@@ -78,7 +78,7 @@ describe('Token vote test', () => {
 
   const validateStats = async (upvotes: number, downvotes: number, diff: number) => {
     await wait(async () => {
-      const statsDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.STATS}/${token.uid}`);
+      const statsDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.STATS}/${token.uid}`);
       const stats = <TokenStats | undefined>await statsDocRef.get();
       return (
         stats?.votes?.upvotes === upvotes &&

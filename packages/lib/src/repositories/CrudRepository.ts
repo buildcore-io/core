@@ -1,19 +1,19 @@
-import { GetManyAdvancedRequest, Opr, PublicCollections } from '@build5/interfaces';
-import { Observable, combineLatest, map } from 'rxjs';
+import { GetManyAdvancedRequest, Opr, PublicCollections } from '@build-5/interfaces';
+import { Observable as RxjsObservable, combineLatest, map } from 'rxjs';
 import {
+  Build5Env,
   SESSION_ID,
-  SoonEnv,
   getByIdUrl,
   getManyAdvancedUrl,
   getManyUrl,
   getUpdatedAfterUrl,
 } from '../Config';
 import { toQueryParams, wrappedFetch } from '../fetch.utils';
-import { SoonObservable } from '../soon_observable';
+import { Observable } from '../observable';
 import { processObject, processObjectArray } from '../utils';
 
 export class CrudRepository<T> {
-  constructor(protected readonly env: SoonEnv, protected readonly col: PublicCollections) {}
+  constructor(protected readonly env: Build5Env, protected readonly col: PublicCollections) {}
 
   /**
    * Returns one entity by id
@@ -32,10 +32,10 @@ export class CrudRepository<T> {
    * @param uid
    * @returns Observable with the entity
    */
-  public getByIdLive = (uid: string): Observable<T | undefined> => {
+  public getByIdLive = (uid: string): RxjsObservable<T | undefined> => {
     const params = { collection: this.col, uid, sessionId: SESSION_ID };
     const url = getByIdUrl(this.env) + toQueryParams(params);
-    const observable = new SoonObservable<T>(this.env, url);
+    const observable = new Observable<T>(this.env, url);
     return observable.pipe(
       map((result) => {
         const keys = Object.keys(result as Record<string, unknown>);
@@ -49,7 +49,7 @@ export class CrudRepository<T> {
     return await Promise.all(promises);
   };
 
-  public getManyByIdLive = (uids: string[]): Observable<T[]> => {
+  public getManyByIdLive = (uids: string[]): RxjsObservable<T[]> => {
     const streams = uids.map(this.getByIdLive);
     return combineLatest(streams).pipe(map((objects) => objects.filter((o) => !!o).map((o) => o!)));
   };
@@ -91,7 +91,7 @@ export class CrudRepository<T> {
       sessionId: SESSION_ID,
     };
     const url = getManyUrl(this.env) + toQueryParams(params);
-    return new SoonObservable<T[]>(this.env, url);
+    return new Observable<T[]>(this.env, url);
   };
 
   /**
@@ -145,7 +145,7 @@ export class CrudRepository<T> {
   public getAllUpdatedAfterLive = (updatedAfter: number, startAfter?: string): Observable<T[]> => {
     const params = { collection: this.col, updatedAfter, startAfter, sessionId: SESSION_ID };
     const url = getUpdatedAfterUrl(this.env) + toQueryParams(params);
-    return new SoonObservable<T[]>(this.env, url);
+    return new Observable<T[]>(this.env, url);
   };
 
   public getTopLive = (startAfter?: string, limit?: number): Observable<T[]> => {
@@ -164,6 +164,6 @@ export class CrudRepository<T> {
 
   protected getManyAdvancedLive = (params: GetManyAdvancedRequest): Observable<T[]> => {
     const url = getManyAdvancedUrl(this.env) + toQueryParams({ ...params, sessionId: SESSION_ID });
-    return new SoonObservable<T[]>(this.env, url);
+    return new Observable<T[]>(this.env, url);
   };
 }

@@ -6,17 +6,17 @@ import {
   Opr,
   PublicCollections,
   TokenPurchase,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { map } from 'rxjs';
-import { Observable } from 'rxjs/internal/Observable';
-import { SESSION_ID, SoonEnv, getAvgPriceUrl, getPriceChangeUrl } from '../../Config';
+import { Observable as RxjsObservable } from 'rxjs/internal/Observable';
+import { Build5Env, SESSION_ID, getAvgPriceUrl, getPriceChangeUrl } from '../../Config';
 import { toQueryParams } from '../../fetch.utils';
-import { SoonObservable } from '../../soon_observable';
+import { Observable } from '../../observable';
 import { CrudRepository } from '../CrudRepository';
 
 export class TokenPurchaseRepository extends CrudRepository<TokenPurchase> {
-  constructor(env?: SoonEnv) {
-    super(env || SoonEnv.PROD, PublicCollections.TOKEN_PURCHASE);
+  constructor(env?: Build5Env) {
+    super(env || Build5Env.PROD, PublicCollections.TOKEN_PURCHASE);
   }
 
   public getPuchasesLive = (token: string, startAfter?: string) => {
@@ -32,16 +32,16 @@ export class TokenPurchaseRepository extends CrudRepository<TokenPurchase> {
     return this.getManyAdvancedLive(params);
   };
 
-  public getAvgPriceLive = (token: string): Observable<number> => {
+  public getAvgPriceLive = (token: string): RxjsObservable<number> => {
     const params = { token, sessionId: SESSION_ID } as GetAvgPriceRequest;
     const url = getAvgPriceUrl(this.env) + toQueryParams({ ...params });
-    return new SoonObservable<GetAvgPriceResponse>(this.env, url).pipe(map((result) => result.avg));
+    return new Observable<GetAvgPriceResponse>(this.env, url).pipe(map((result) => result.avg));
   };
 
-  public getPriceChangeLive = (token: string): Observable<number> => {
+  public getPriceChangeLive = (token: string): RxjsObservable<number> => {
     const params = { token, sessionId: SESSION_ID } as GetPriceChangeRequest;
     const url = getPriceChangeUrl(this.env) + toQueryParams({ ...params });
-    return new SoonObservable<GetPriceChangeResponse>(this.env, url).pipe(
+    return new Observable<GetPriceChangeResponse>(this.env, url).pipe(
       map((result) => result.change),
     );
   };

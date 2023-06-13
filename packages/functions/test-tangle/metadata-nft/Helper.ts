@@ -1,5 +1,5 @@
-import { COL, MIN_IOTA_AMOUNT, Member, Network, Space, Token } from '@build5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { COL, MIN_IOTA_AMOUNT, Member, Network, Space, Token } from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
@@ -26,7 +26,7 @@ export class Helper {
   public beforeEach = async () => {
     this.member = await createMember(this.walletSpy);
 
-    const memberData = await soonDb().doc(`${COL.MEMBER}/${this.member}`).get<Member>();
+    const memberData = await build5Db().doc(`${COL.MEMBER}/${this.member}`).get<Member>();
     const memberAddress = getAddress(memberData, this.network);
     this.memberAddress = await this.walletService.getAddressDetails(memberAddress);
     await requestFundsFromFaucet(this.network, memberAddress, 10 * MIN_IOTA_AMOUNT);

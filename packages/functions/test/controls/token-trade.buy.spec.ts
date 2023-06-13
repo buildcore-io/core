@@ -10,8 +10,8 @@ import {
   TransactionCreditType,
   TransactionType,
   WenError,
-} from '@build5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { cancelTradeOrder, tradeToken } from '../../src/runtime/firebase/token/trading';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
@@ -44,7 +44,7 @@ describe('Trade controller, buy token', () => {
       status: TokenStatus.AVAILABLE,
       approved: true,
     };
-    await soonDb().doc(`${COL.TOKEN}/${tokenId}`).set(token);
+    await build5Db().doc(`${COL.TOKEN}/${tokenId}`).set(token);
   });
 
   it('Should create buy order and cancel it', async () => {
@@ -59,7 +59,7 @@ describe('Trade controller, buy token', () => {
     const milestone = await submitMilestoneFunc(order.payload.targetAddress, MIN_IOTA_AMOUNT * 5);
     await milestoneProcessed(milestone.milestone, milestone.tranId);
 
-    const buySnap = await soonDb()
+    const buySnap = await build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('type', '==', TokenTradeOrderType.BUY)
       .where('owner', '==', memberAddress)
@@ -76,7 +76,7 @@ describe('Trade controller, buy token', () => {
     const cancelled = await testEnv.wrap(cancelTradeOrder)({});
     expect(cancelled.status).toBe(TokenTradeOrderStatus.CANCELLED);
 
-    const creditSnap = await soonDb()
+    const creditSnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', memberAddress)
@@ -102,13 +102,13 @@ describe('Trade controller, buy token', () => {
     const milestone2 = await submitMilestoneFunc(order.payload.targetAddress, MIN_IOTA_AMOUNT * 5);
     await milestoneProcessed(milestone2.milestone, milestone2.tranId);
 
-    const buysSnap = await soonDb()
+    const buysSnap = await build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', memberAddress)
       .get();
     expect(buysSnap.length).toBe(1);
 
-    const creditSnap = await soonDb()
+    const creditSnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', memberAddress)
@@ -118,7 +118,7 @@ describe('Trade controller, buy token', () => {
   });
 
   it('Should throw, token not approved', async () => {
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false });
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false });
     const request = {
       symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,

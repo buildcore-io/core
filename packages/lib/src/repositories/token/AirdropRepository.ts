@@ -1,9 +1,9 @@
-import { PublicCollections, TokenDrop } from '@build5/interfaces';
-import { SoonEnv } from '../../Config';
+import { PublicCollections, TokenDrop } from '@build-5/interfaces';
+import { Build5Env } from '../../Config';
 import { CrudRepository } from '../CrudRepository';
 
 export class AirdropRepository extends CrudRepository<TokenDrop> {
-  constructor(env?: SoonEnv) {
-    super(env || SoonEnv.PROD, PublicCollections.AIRDROP);
+  constructor(env?: Build5Env) {
+    super(env || Build5Env.PROD, PublicCollections.AIRDROP);
   }
 }

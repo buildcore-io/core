@@ -1,4 +1,4 @@
-import { NativeToken, Network, Timestamp, Transaction } from '@build5/interfaces';
+import { NativeToken, Network, Timestamp, Transaction } from '@build-5/interfaces';
 import { Bip32Path } from '@iota/crypto.js-next';
 import {
   ADDRESS_UNLOCK_CONDITION_TYPE,

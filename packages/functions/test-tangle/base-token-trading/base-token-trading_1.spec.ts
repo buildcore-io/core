@@ -9,10 +9,10 @@ import {
   TokenTradeOrderType,
   Transaction,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -56,7 +56,7 @@ describe('Base token trading', () => {
       2 * MIN_IOTA_AMOUNT,
     );
 
-    const sellQuery = soonDb()
+    const sellQuery = build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.seller!.uid);
     await wait(async () => {
@@ -67,7 +67,9 @@ describe('Base token trading', () => {
     const sell = <TokenTradeOrder>(await sellQuery.get())[0];
     expect(sell.tokenStatus).toBe(TokenStatus.BASE);
 
-    const buyQuery = soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer!.uid);
+    const buyQuery = build5Db()
+      .collection(COL.TOKEN_MARKET)
+      .where('owner', '==', helper.buyer!.uid);
     await wait(async () => {
       const snap = await buyQuery.get();
       return snap.length !== 0;
@@ -75,7 +77,7 @@ describe('Base token trading', () => {
     const buy = <TokenTradeOrder>(await buyQuery.get())[0];
     expect(buy.tokenStatus).toBe(TokenStatus.BASE);
 
-    const purchaseQuery = soonDb()
+    const purchaseQuery = build5Db()
       .collection(COL.TOKEN_PURCHASE)
       .where('sell', '==', sell.uid)
       .where('buy', '==', buy.uid);
@@ -93,7 +95,7 @@ describe('Base token trading', () => {
     expect(purchase.sellerTier).toBe(0);
     expect(purchase.sellerTokenTradingFeePercentage).toBeNull();
 
-    const sellerBillPaymentsSnap = await soonDb()
+    const sellerBillPaymentsSnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller!.uid)
       .where('type', '==', TransactionType.BILL_PAYMENT)
@@ -119,14 +121,14 @@ describe('Base token trading', () => {
       expect(sellerBillPayment.payload.tokenSymbol).toBe(helper.token!.symbol);
       expect(sellerBillPayment.payload.type).toBe(BillPaymentType.BASE_TOKEN_TRADE);
     });
-    const sellerCreditSnap = await soonDb()
+    const sellerCreditSnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller!.uid)
       .where('type', '==', TransactionType.CREDIT)
       .get();
     expect(sellerCreditSnap.length).toBe(0);
 
-    const buyerBillPaymentsSnap = await soonDb()
+    const buyerBillPaymentsSnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer!.uid)
       .where('type', '==', TransactionType.BILL_PAYMENT)
@@ -169,7 +171,7 @@ describe('Base token trading', () => {
           bp.payload.targetAddress === getAddress(helper.seller, helper.targetNetwork),
       ),
     ).toBeDefined();
-    const buyerCreditnap = await soonDb()
+    const buyerCreditnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer!.uid)
       .where('type', '==', TransactionType.CREDIT)
@@ -205,7 +207,9 @@ describe('Base token trading', () => {
       expiresAt,
     );
 
-    const buyQuery = soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer!.uid);
+    const buyQuery = build5Db()
+      .collection(COL.TOKEN_MARKET)
+      .where('owner', '==', helper.buyer!.uid);
     await wait(async () => {
       const snap = await buyQuery.get();
       return snap.length !== 0;
@@ -234,7 +238,7 @@ describe('Base token trading', () => {
     );
 
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
         .where('member', '==', helper.buyer?.uid)

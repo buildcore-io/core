@@ -6,9 +6,9 @@ import {
   TangleRequestType,
   Transaction,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { IndexerPluginClient } from '@iota/iota.js-next';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
@@ -46,7 +46,7 @@ describe('Minted nft trading', () => {
     await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
 
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.TRANSACTION)
         .where('member', '==', address.bech32)
         .where('type', '==', TransactionType.WITHDRAW_NFT)

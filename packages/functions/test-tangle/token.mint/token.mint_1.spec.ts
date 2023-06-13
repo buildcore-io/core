@@ -9,11 +9,11 @@ import {
   Transaction,
   TransactionMintTokenType,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { IFoundryOutput, IndexerPluginClient, addressBalance } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { isEqual } from 'lodash';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -45,7 +45,7 @@ describe('Token minting', () => {
       expiresAt,
     );
 
-    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${helper.token.uid}`);
+    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${helper.token.uid}`);
     await wait(async () => {
       const snap = await tokenDocRef.get<Token>();
       return snap?.status === TokenStatus.MINTED;
@@ -76,7 +76,7 @@ describe('Token minting', () => {
       );
       return Number(Object.values(balance.nativeTokens)[0]) === 1000;
     });
-    const guardianData = <Member>await soonDb().doc(`${COL.MEMBER}/${helper.guardian.uid}`).get();
+    const guardianData = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.guardian.uid}`).get();
     await wait(async () => {
       const balance = await addressBalance(
         helper.walletService.client,
@@ -95,7 +95,7 @@ describe('Token minting', () => {
     });
 
     const mintTransactions = (
-      await soonDb()
+      await build5Db()
         .collection(COL.TRANSACTION)
         .where('payload.token', '==', helper.token.uid)
         .where('type', '==', TransactionType.MINT_TOKEN)
@@ -127,7 +127,7 @@ describe('Token minting', () => {
     expect(metadata.name).toBe(helper.token.name);
     expect(metadata.logoUrl).toBeDefined();
     expect(metadata.issuerName).toBe(KEY_NAME_TANGLE);
-    expect(metadata.soonaverseId).toBe(helper.token.uid);
+    expect(metadata.build5Id).toBe(helper.token.uid);
     expect(metadata.symbol).toBe(helper.token.symbol.toLowerCase());
     expect(metadata.decimals).toBe(5);
   });

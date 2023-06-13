@@ -11,7 +11,7 @@ import {
   TRANSACTION_AUTO_EXPIRY_MS,
   TRANSACTION_MAX_EXPIRY_MS,
   WEN_FUNC,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import Joi from 'joi';
 import { airdropTokenControl } from '../../../../controls/token/token.airdrop';

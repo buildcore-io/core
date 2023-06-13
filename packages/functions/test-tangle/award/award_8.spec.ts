@@ -7,9 +7,9 @@ import {
   Space,
   Token,
   TransactionAwardType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -54,7 +54,7 @@ describe('Create award, base', () => {
     const order = await testEnv.wrap(fundAward)({});
     await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount);
 
-    const awardDocRef = soonDb().doc(`${COL.AWARD}/${awardId}`);
+    const awardDocRef = build5Db().doc(`${COL.AWARD}/${awardId}`);
     await wait(async () => {
       const award = <Award>await awardDocRef.get();
       return award.approved && award.funded;
@@ -71,7 +71,7 @@ describe('Create award, base', () => {
     });
     await Promise.all(promises);
 
-    const nttQuery = soonDb()
+    const nttQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
       .where('payload.type', '==', TransactionAwardType.BADGE);
@@ -80,7 +80,7 @@ describe('Create award, base', () => {
       return snap.length === 6;
     });
 
-    const memberDocRef = soonDb().doc(`${COL.MEMBER}/${member}`);
+    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${member}`);
     const memberData = <Member>await memberDocRef.get();
 
     assertMemberSpaceAwardStats(

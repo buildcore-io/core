@@ -1,6 +1,6 @@
-import { COL, Collection, MediaStatus, Space } from '@build5/interfaces';
+import { COL, Collection, MediaStatus, Space } from '@build-5/interfaces';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { collectionToIpfsMetadata, nftToIpfsMetadata } from '../../src/utils/car.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, wait } from '../../test/controls/common';
@@ -20,7 +20,7 @@ describe('Web3 cron test', () => {
     await collectionHelper.beforeAll();
     await collectionHelper.beforeEach();
 
-    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${collectionHelper.collection}`);
+    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${collectionHelper.collection}`);
     const collection = <Collection>await collectionDocRef.get();
     const nft = collectionHelper.createDummyNft(collection.uid, collectionHelper.space!.uid) as any;
 
@@ -52,7 +52,7 @@ describe('Web3 cron test', () => {
 
     await uploadMediaToWeb3();
 
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space.uid}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
     await wait(async () => {
       space = <Space>await spaceDocRef.get();
       return space.mediaStatus === MediaStatus.UPLOADED;
@@ -68,12 +68,12 @@ const cleanupPendingUploads = async () => {
   for (const col of [COL.TOKEN, COL.NFT, COL.COLLECTION]) {
     const snap = await pendingUploadsQuery(col).get<Record<string, unknown>>();
     const promises = snap.map((d) => {
-      const docRef = soonDb().doc(`${col}/${d.uid}`);
-      return docRef.update({ mediaStatus: soonDb().deleteField() });
+      const docRef = build5Db().doc(`${col}/${d.uid}`);
+      return docRef.update({ mediaStatus: build5Db().deleteField() });
     });
     await Promise.all(promises);
   }
 };
 
 const pendingUploadsQuery = (col: COL) =>
-  soonDb().collection(col).where('mediaStatus', '==', MediaStatus.PENDING_UPLOAD);
+  build5Db().collection(col).where('mediaStatus', '==', MediaStatus.PENDING_UPLOAD);

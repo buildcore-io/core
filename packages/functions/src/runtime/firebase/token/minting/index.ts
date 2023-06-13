@@ -1,4 +1,4 @@
-import { WEN_FUNC } from '@build5/interfaces';
+import { WEN_FUNC } from '@build-5/interfaces';
 import Joi from 'joi';
 import { AVAILABLE_NETWORKS } from '../../../../controls/common';
 import { airdropMintedTokenControl } from '../../../../controls/token-minting/airdrop-minted-token';

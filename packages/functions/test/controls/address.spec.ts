@@ -1,6 +1,6 @@
-import { COL, Member, Network, Proposal, Space, WenError } from '@build5/interfaces';
+import { COL, Member, Network, Proposal, Space, WenError } from '@build-5/interfaces';
 import { isEmpty } from 'lodash';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { validateAddress } from '../../src/runtime/firebase/address';
 import { WalletService } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
@@ -20,7 +20,7 @@ import {
 
 const waitForAddressValidation = async (id: string, col: COL) => {
   await wait(async () => {
-    const doc = await soonDb().doc(`${col}/${id}`).get<Record<string, unknown>>();
+    const doc = await build5Db().doc(`${col}/${id}`).get<Record<string, unknown>>();
     return !isEmpty(getAddress(doc, Network.IOTA));
   });
 };
@@ -33,9 +33,9 @@ describe('Address validation test', () => {
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     member = await createMember(walletSpy);
-    await soonDb().doc(`${COL.MEMBER}/${member}`).update({ validatedAddress: {} });
+    await build5Db().doc(`${COL.MEMBER}/${member}`).update({ validatedAddress: {} });
     space = (await createSpace(walletSpy, member)).uid;
-    await soonDb().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} });
+    await build5Db().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} });
   });
 
   it('Should validate member address', async () => {
@@ -50,7 +50,7 @@ describe('Address validation test', () => {
     async (network: Network) => {
       const wallet = await WalletService.newWallet(network);
       const address = await wallet.getNewIotaAddressDetails();
-      const memberDocRef = soonDb().doc(`${COL.MEMBER}/${address.bech32}`);
+      const memberDocRef = build5Db().doc(`${COL.MEMBER}/${address.bech32}`);
       await memberDocRef.create({ uid: address.bech32 });
       await expectThrow(
         validateMemberAddressFunc(walletSpy, address.bech32, network),
@@ -64,7 +64,7 @@ describe('Address validation test', () => {
     const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
     await milestoneProcessed(milestone.milestone, milestone.tranId);
 
-    const proposalQuery = soonDb().collection(COL.PROPOSAL).where('space', '==', space);
+    const proposalQuery = build5Db().collection(COL.PROPOSAL).where('space', '==', space);
     await wait(async () => {
       const snap = await proposalQuery.get();
       return snap.length > 0;
@@ -93,10 +93,10 @@ describe('Address validation test', () => {
     });
 
     await wait(async () => {
-      const spaceData = await soonDb().doc(`${COL.SPACE}/${space}`).get<Space>();
+      const spaceData = await build5Db().doc(`${COL.SPACE}/${space}`).get<Space>();
       return getAddress(spaceData, order.network!) === milestone2.fromAdd;
     });
-    const spaceData = await soonDb().doc(`${COL.SPACE}/${space}`).get<Space>();
+    const spaceData = await build5Db().doc(`${COL.SPACE}/${space}`).get<Space>();
     expect(spaceData?.prevValidatedAddresses).toEqual([milestone.fromAdd]);
   });
 
@@ -131,7 +131,7 @@ describe('Address validation test', () => {
     await validate();
     await waitForAddressValidation(member, COL.MEMBER);
 
-    const docRef = soonDb().doc(`${COL.MEMBER}/${member}`);
+    const docRef = build5Db().doc(`${COL.MEMBER}/${member}`);
     const memberData = <Member>await docRef.get();
     await validate();
     await wait(async () => {

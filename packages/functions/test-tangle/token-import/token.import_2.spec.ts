@@ -1,5 +1,5 @@
-import { COL, MIN_IOTA_AMOUNT, Transaction } from '@build5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { COL, MIN_IOTA_AMOUNT, Transaction } from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { importMintedToken } from '../../src/runtime/firebase/token/minting';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -22,7 +22,7 @@ describe('Token import', () => {
     const order = await testEnv.wrap(importMintedToken)({});
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, 2 * MIN_IOTA_AMOUNT);
 
-    const creditQuery = soonDb()
+    const creditQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.guardian.uid)
       .where('payload.response.code', '==', 2122);
@@ -30,7 +30,7 @@ describe('Token import', () => {
       const snap = await creditQuery.get<Transaction>();
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
-    const migratedTokenDocRef = soonDb().doc(`${COL.TOKEN}/${helper.token.mintingData?.tokenId}`);
+    const migratedTokenDocRef = build5Db().doc(`${COL.TOKEN}/${helper.token.mintingData?.tokenId}`);
     expect((await migratedTokenDocRef.get()) !== undefined).toBe(false);
   });
 });

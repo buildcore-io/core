@@ -1,11 +1,11 @@
-import { COL, GetAddressesRequest, MAX_MILLISECONDS, Mnemonic, Network } from '@build5/interfaces';
+import { COL, GetAddressesRequest, MAX_MILLISECONDS, Mnemonic, Network } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
 import { get } from 'lodash';
 import { map } from 'rxjs';
-import { soonDb } from '../firebase/firestore/soondb';
+import { build5Db } from '../firebase/firestore/build5Db';
 import { CommonJoi } from '../services/joi/common';
 import { getQueryParams, queryToObservable } from './common';
 import { sendLiveUpdates } from './keepAlive';
@@ -24,7 +24,7 @@ export const getAddresses = async (req: functions.https.Request, res: express.Re
     return;
   }
 
-  const query = soonDb()
+  const query = build5Db()
     .collection(COL.MNEMONIC)
     .where('network', '==', body.network)
     .orderBy('createdOn')

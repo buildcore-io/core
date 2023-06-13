@@ -6,9 +6,9 @@ import {
   TokenAllocation,
   TokenStatus,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { merge } from 'lodash';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { hasStakedSoonTokens } from '../../services/stake.service';
 import { assertSpaceHasValidAddress } from '../../utils/address.utils';
 import { isProdEnv } from '../../utils/config.utils';
@@ -24,7 +24,7 @@ export const createTokenControl = async (owner: string, params: Record<string, u
     throw invalidArgument(WenError.no_staked_soon);
   }
 
-  const tokens = await soonDb()
+  const tokens = await build5Db()
     .collection(COL.TOKEN)
     .where('space', '==', params.space)
     .get<Token>();
@@ -36,7 +36,7 @@ export const createTokenControl = async (owner: string, params: Record<string, u
     throw invalidArgument(WenError.token_already_exists_for_space);
   }
 
-  const symbolSnapshot = await soonDb()
+  const symbolSnapshot = await build5Db()
     .collection(COL.TOKEN)
     .where('symbol', '==', params.symbol)
     .where('rejected', '==', false)
@@ -47,7 +47,7 @@ export const createTokenControl = async (owner: string, params: Record<string, u
 
   await assertIsGuardian(params.space as string, owner);
 
-  const space = await soonDb().doc(`${COL.SPACE}/${params.space}`).get<Space>();
+  const space = await build5Db().doc(`${COL.SPACE}/${params.space}`).get<Space>();
   assertSpaceHasValidAddress(space, DEFAULT_NETWORK);
 
   const publicSaleTimeFrames = shouldSetPublicSaleTimeFrames(
@@ -76,6 +76,6 @@ export const createTokenControl = async (owner: string, params: Record<string, u
     tradingDisabled: true,
   };
   const data = merge(params, publicSaleTimeFrames, extraData);
-  await soonDb().collection(COL.TOKEN).doc(tokenUid).set(data);
-  return await soonDb().doc(`${COL.TOKEN}/${tokenUid}`).get<Token>();
+  await build5Db().collection(COL.TOKEN).doc(tokenUid).set(data);
+  return await build5Db().doc(`${COL.TOKEN}/${tokenUid}`).get<Token>();
 };

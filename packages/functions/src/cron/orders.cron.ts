@@ -1,10 +1,10 @@
-import { COL, Transaction, TransactionType } from '@build5/interfaces';
+import { COL, Transaction, TransactionType } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../firebase/firestore/soondb';
+import { build5Db } from '../firebase/firestore/build5Db';
 import { ProcessingService } from '../services/payment/payment-processing';
 
 export const voidExpiredOrdersCron = async () => {
-  const snap = await soonDb()
+  const snap = await build5Db()
     .collection(COL.TRANSACTION)
     .where('type', '==', TransactionType.ORDER)
     .where('payload.void', '==', false)
@@ -13,8 +13,8 @@ export const voidExpiredOrdersCron = async () => {
     .get<Transaction>();
 
   for (const tran of snap) {
-    await soonDb().runTransaction(async (transaction) => {
-      const tranDocRef = soonDb().doc(`${COL.TRANSACTION}/${tran.uid}`);
+    await build5Db().runTransaction(async (transaction) => {
+      const tranDocRef = build5Db().doc(`${COL.TRANSACTION}/${tran.uid}`);
       const tranData = (await transaction.get<Transaction>(tranDocRef))!;
       const service: ProcessingService = new ProcessingService(transaction);
       await service.markAsVoid(tranData);

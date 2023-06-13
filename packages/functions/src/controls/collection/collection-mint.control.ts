@@ -14,11 +14,11 @@ import {
   TransactionValidationType,
   UnsoldMintingOptions,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { AddressTypes, ED25519_ADDRESS_TYPE, INodeInfo } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
-import { getSnapshot, soonDb } from '../../firebase/firestore/soondb';
+import { build5Db, getSnapshot } from '../../firebase/firestore/build5Db';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress, assertSpaceHasValidAddress } from '../../utils/address.utils';
@@ -41,11 +41,11 @@ export const mintCollectionOrderControl = async (
 ) => {
   const network = params.network as Network;
 
-  const member = await soonDb().doc(`${COL.MEMBER}/${owner}`).get<Member>();
+  const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();
   assertMemberHasValidAddress(member, network);
 
-  return await soonDb().runTransaction(async (transaction) => {
-    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${params.collection}`);
+  return await build5Db().runTransaction(async (transaction) => {
+    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${params.collection}`);
     const collection = await transaction.get<Collection>(collectionDocRef);
 
     if (!collection) {
@@ -76,10 +76,10 @@ export const mintCollectionOrderControl = async (
 
     assertIsGuardian(collection.space, owner);
 
-    const space = await soonDb().doc(`${COL.SPACE}/${collection.space}`).get<Space>();
+    const space = await build5Db().doc(`${COL.SPACE}/${collection.space}`).get<Space>();
     assertSpaceHasValidAddress(space, network);
 
-    const royaltySpace = await soonDb()
+    const royaltySpace = await build5Db()
       .doc(`${COL.SPACE}/${collection.royaltiesSpace}`)
       .get<Space>();
     assertSpaceHasValidAddress(royaltySpace, network);
@@ -126,7 +126,7 @@ export const mintCollectionOrderControl = async (
         nftsToMint,
       },
     };
-    const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
     transaction.create(orderDocRef, order);
     return order;
   });
@@ -143,7 +143,7 @@ const getNftsTotalStorageDeposit = async (
   let lastUid = '';
   do {
     const lastDoc = await getSnapshot(COL.NFT, lastUid);
-    const nfts = await soonDb()
+    const nfts = await build5Db()
       .collection(COL.NFT)
       .where('collection', '==', collection.uid)
       .where('placeholderNft', '==', false)

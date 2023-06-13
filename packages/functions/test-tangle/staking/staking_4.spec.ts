@@ -12,13 +12,13 @@ import {
   Transaction,
   TransactionIgnoreWalletReason,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { addressBalance } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { stakeRewardCronTask } from '../../src/cron/stakeReward.cron';
 import { retryWallet } from '../../src/cron/wallet.cron';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
@@ -41,7 +41,7 @@ describe('Stake reward test test', () => {
   });
 
   const verifyMemberAirdrop = async (member: string, count: number) => {
-    const airdropQuery = soonDb().collection(COL.AIRDROP).where('member', '==', member);
+    const airdropQuery = build5Db().collection(COL.AIRDROP).where('member', '==', member);
     await wait(async () => {
       const snap = await airdropQuery.get();
       return snap.length > 0;
@@ -55,7 +55,7 @@ describe('Stake reward test test', () => {
     expect(dayjs().add(1, 'y').subtract(5, 'm').isBefore(airdrops[0].vestingAt.toDate())).toBe(
       true,
     );
-    const distributionDocRef = soonDb().doc(
+    const distributionDocRef = build5Db().doc(
       `${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${member}`,
     );
     const distribution = <TokenDistribution>await distributionDocRef.get();
@@ -73,7 +73,7 @@ describe('Stake reward test test', () => {
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
     };
-    const stakeRewardDocRef = soonDb().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+    const stakeRewardDocRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     await stakeRewardDocRef.create(stakeReward);
     await stakeRewardCronTask();
 
@@ -95,7 +95,7 @@ describe('Stake reward test test', () => {
     await helper.validateStatsStakeAmount(1000, 1000, 1490, 1490, StakeType.DYNAMIC, 1);
 
     const member2Uid = await createMember(helper.walletSpy);
-    const member2 = <Member>await soonDb().doc(`${COL.MEMBER}/${member2Uid}`).get();
+    const member2 = <Member>await build5Db().doc(`${COL.MEMBER}/${member2Uid}`).get();
     const member2Address = await helper.walletService?.getAddressDetails(
       getAddress(member2, helper.network)!,
     )!;
@@ -120,7 +120,7 @@ describe('Stake reward test test', () => {
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
     };
-    const stakeRewardDocRef = soonDb().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+    const stakeRewardDocRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     await stakeRewardDocRef.create(stakeReward);
     await stakeRewardCronTask();
 
@@ -159,7 +159,7 @@ describe('Stake reward test test', () => {
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
     };
-    const stakeRewardDocRef = soonDb().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+    const stakeRewardDocRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     await stakeRewardDocRef.create(stakeReward);
     await stakeRewardCronTask();
 
@@ -176,7 +176,7 @@ describe('Stake reward test test', () => {
     );
 
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.TRANSACTION)
         .where('member', '==', helper.member!.uid)
         .where('type', '==', TransactionType.BILL_PAYMENT)
@@ -186,7 +186,7 @@ describe('Stake reward test test', () => {
 
     await awaitTransactionConfirmationsForToken(helper.token?.uid!);
 
-    const member = <Member>await soonDb().doc(`${COL.MEMBER}/${helper.member?.uid}`).get();
+    const member = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.member?.uid}`).get();
     for (const address of [helper.memberAddress?.bech32!, getAddress(member, Network.RMS)]) {
       const outputs = await helper.walletService!.getOutputs(address, [], false, true);
       const nativeTokens = Object.values(outputs).reduce(
@@ -196,7 +196,7 @@ describe('Stake reward test test', () => {
       expect(nativeTokens).toBe(address === helper.memberAddress?.bech32! ? 100 : 149);
     }
 
-    const distributionDocRef = soonDb().doc(
+    const distributionDocRef = build5Db().doc(
       `${COL.TOKEN}/${helper.token?.uid}/${SUB_COL.DISTRIBUTION}/${helper.member?.uid}`,
     );
     await wait(async () => {
@@ -221,7 +221,7 @@ describe('Stake reward test test', () => {
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
     };
-    const stakeRewardDocRef = soonDb().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+    const stakeRewardDocRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     await stakeRewardDocRef.create(stakeReward);
     await stakeRewardCronTask();
 
@@ -237,7 +237,7 @@ describe('Stake reward test test', () => {
       claimOrder.payload.amount,
     );
 
-    const query = soonDb()
+    const query = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.member!.uid)
       .where('type', '==', TransactionType.BILL_PAYMENT);
@@ -266,7 +266,7 @@ describe('Stake reward test test', () => {
     });
 
     if (failed) {
-      const docRef = soonDb().doc(`${COL.TRANSACTION}/${failed.uid}`);
+      const docRef = build5Db().doc(`${COL.TRANSACTION}/${failed.uid}`);
       await docRef.update({
         'payload.walletReference.count': 4,
         'payload.walletReference.processedOn': dateToTimestamp(dayjs().subtract(1, 'h')),
@@ -276,7 +276,7 @@ describe('Stake reward test test', () => {
 
     await awaitTransactionConfirmationsForToken(helper.token?.uid!);
 
-    const member = <Member>await soonDb().doc(`${COL.MEMBER}/${helper.member?.uid}`).get();
+    const member = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.member?.uid}`).get();
     for (const address of [helper.memberAddress?.bech32!, getAddress(member, Network.RMS)]) {
       const outputs = await helper.walletService!.getOutputs(address, [], false, true);
       const nativeTokens = Object.values(outputs).reduce(
@@ -301,14 +301,14 @@ describe('Stake reward test test', () => {
     await helper.stakeAmount(50, 26);
     await helper.stakeAmount(25, 26);
     const stake = await helper.stakeAmount(12, 26);
-    await soonDb()
+    await build5Db()
       .doc(`${COL.STAKE}/${stake.uid}`)
       .update({
         createdOn: dateToTimestamp(dayjs().subtract(3, 'h')),
         expiresAt: dateToTimestamp(dayjs().subtract(2, 'h')),
       });
     const stake2 = await helper.stakeAmount(13, 26);
-    await soonDb()
+    await build5Db()
       .doc(`${COL.STAKE}/${stake2.uid}`)
       .update({
         createdOn: dateToTimestamp(dayjs().add(2, 'h')),
@@ -325,7 +325,7 @@ describe('Stake reward test test', () => {
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
     };
-    const stakeRewardDocRef = soonDb().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+    const stakeRewardDocRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     await stakeRewardDocRef.create(stakeReward);
     await stakeRewardCronTask();
 
@@ -340,7 +340,7 @@ describe('Stake reward test test', () => {
   });
 
   it('Should claim extras properly', async () => {
-    const distributionDocRef = soonDb().doc(
+    const distributionDocRef = build5Db().doc(
       `${COL.TOKEN}/${helper.token?.uid!}/${SUB_COL.DISTRIBUTION}/${helper.member?.uid}`,
     );
     await distributionDocRef.set({ extraStakeRewards: 400 }, true);
@@ -367,10 +367,10 @@ describe('Stake reward test test', () => {
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
     };
-    const stakeRewardDocRef = soonDb().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+    const stakeRewardDocRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     await stakeRewardDocRef.create(stakeReward);
 
-    const billPaymentQuery = soonDb()
+    const billPaymentQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.member?.uid)
       .where('ignoreWalletReason', '==', TransactionIgnoreWalletReason.EXTRA_STAKE_REWARD);
@@ -406,7 +406,7 @@ describe('Stake reward test test', () => {
     distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.extraStakeRewards).toBe(-47);
 
-    const airdropSnap = await soonDb()
+    const airdropSnap = await build5Db()
       .collection(COL.AIRDROP)
       .where('member', '==', helper.member?.uid)
       .get();

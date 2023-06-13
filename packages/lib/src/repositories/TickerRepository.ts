@@ -1,9 +1,9 @@
-import { PublicCollections, Ticker } from '@build5/interfaces';
-import { SoonEnv } from '../Config';
+import { PublicCollections, Ticker } from '@build-5/interfaces';
+import { Build5Env } from '../Config';
 import { CrudRepository } from './CrudRepository';
 
 export class TickerRepository extends CrudRepository<Ticker> {
-  constructor(env?: SoonEnv) {
-    super(env || SoonEnv.PROD, PublicCollections.TICKER);
+  constructor(env?: Build5Env) {
+    super(env || Build5Env.PROD, PublicCollections.TICKER);
   }
 }

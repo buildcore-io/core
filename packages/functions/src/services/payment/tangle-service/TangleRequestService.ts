@@ -8,10 +8,10 @@ import {
   Transaction,
   TransactionOrder,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
 import { get } from 'lodash';
-import { soonDb } from '../../../firebase/firestore/soondb';
+import { build5Db } from '../../../firebase/firestore/build5Db';
 import { getOutputMetadata } from '../../../utils/basic-output.utils';
 import { invalidArgument } from '../../../utils/error.utils';
 import { getRandomNonce } from '../../../utils/wallet.utils';
@@ -44,7 +44,7 @@ export class TangleRequestService {
     tran: MilestoneTransaction,
     tranEntry: MilestoneTransactionEntry,
     match: TransactionMatch,
-    soonTransaction?: Transaction,
+    build5Transaction?: Transaction,
   ) => {
     let owner = match.from.address;
     let payment: Transaction | undefined;
@@ -61,7 +61,7 @@ export class TangleRequestService {
         tranEntry,
         owner,
         request,
-        soonTransaction,
+        build5Transaction,
       );
       if (response) {
         this.transactionService.createTangleCredit(payment, match, response, tranEntry.outputId!);
@@ -92,7 +92,7 @@ export class TangleRequestService {
     tranEntry: MilestoneTransactionEntry,
     owner: string,
     request: Record<string, unknown>,
-    soonTransaction?: Transaction,
+    build5Transaction?: Transaction,
   ) => {
     if (tranEntry.nftOutput) {
       const service = new NftDepositService(this.transactionService);
@@ -113,7 +113,7 @@ export class TangleRequestService {
           tranEntry,
           owner,
           request,
-          soonTransaction,
+          build5Transaction,
         );
       }
       case TangleRequestType.STAKE: {
@@ -200,7 +200,7 @@ export class TangleRequestService {
   };
 
   private getOwner = async (senderAddress: string, network: Network) => {
-    const snap = await soonDb()
+    const snap = await build5Db()
       .collection(COL.MEMBER)
       .where(`validatedAddress.${network}`, '==', senderAddress)
       .get<Member>();
@@ -213,7 +213,7 @@ export class TangleRequestService {
       return snap[0].uid;
     }
 
-    const docRef = soonDb().doc(`${COL.MEMBER}/${senderAddress}`);
+    const docRef = build5Db().doc(`${COL.MEMBER}/${senderAddress}`);
     const member = <Member | undefined>await docRef.get();
     if (!member) {
       const memberData = {

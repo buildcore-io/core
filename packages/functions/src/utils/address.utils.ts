@@ -1,4 +1,4 @@
-import { Member, Network, Space, ValidatedAddress, WenError } from '@build5/interfaces';
+import { Member, Network, Space, ValidatedAddress, WenError } from '@build-5/interfaces';
 import { invalidArgument } from './error.utils';
 
 export const assertMemberHasValidAddress = (member: Member | undefined, network: Network) => {

@@ -1,10 +1,10 @@
-import { Collection, Opr, PublicCollections } from '@build5/interfaces';
-import { SoonEnv } from '../../Config';
+import { Collection, Opr, PublicCollections } from '@build-5/interfaces';
+import { Build5Env } from '../../Config';
 import { CrudRepository } from '../CrudRepository';
 
 export class CollectionRepository extends CrudRepository<Collection> {
-  constructor(env?: SoonEnv) {
-    super(env || SoonEnv.PROD, PublicCollections.COLLECTION);
+  constructor(env?: Build5Env) {
+    super(env || Build5Env.PROD, PublicCollections.COLLECTION);
   }
 
   public getAllPendingLive = (space: string, startAfter?: string) => {

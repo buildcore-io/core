@@ -10,10 +10,10 @@ import {
   TokenStatus,
   TokenTradeOrderType,
   Transaction,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
@@ -61,7 +61,7 @@ export class Helper {
     this.token = (await saveToken(this.space.uid, this.guardian, this.walletService!)) as Token;
 
     this.seller = await createMember(this.walletSpy);
-    const sellerDoc = <Member>await soonDb().doc(`${COL.MEMBER}/${this.seller}`).get();
+    const sellerDoc = <Member>await build5Db().doc(`${COL.MEMBER}/${this.seller}`).get();
     this.sellerAddress = await this.walletService!.getAddressDetails(
       getAddress(sellerDoc, this.network!),
     );
@@ -74,7 +74,7 @@ export class Helper {
     );
 
     this.buyer = await createMember(this.walletSpy);
-    const buyerDoc = <Member>await soonDb().doc(`${COL.MEMBER}/${this.buyer}`).get();
+    const buyerDoc = <Member>await build5Db().doc(`${COL.MEMBER}/${this.buyer}`).get();
     this.buyerAddress = await this.walletService!.getAddressDetails(
       getAddress(buyerDoc, this.network),
     );
@@ -104,7 +104,7 @@ export class Helper {
         : undefined,
     });
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.TOKEN_MARKET)
         .where('orderTransactionId', '==', sellOrder.uid)
         .get();
@@ -133,7 +133,7 @@ export class Helper {
       expiresAt,
     );
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.TOKEN_MARKET)
         .where('orderTransactionId', '==', buyOrder.uid)
         .get();
@@ -169,7 +169,7 @@ export const saveToken = async (
     access: 0,
     icon: MEDIA,
   };
-  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token;
 };
 

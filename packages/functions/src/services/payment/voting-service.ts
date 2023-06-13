@@ -7,10 +7,10 @@ import {
   TransactionOrder,
   TransactionType,
   VoteTransaction,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get, head } from 'lodash';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { getTokenForSpace } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from './transaction-service';
@@ -50,7 +50,7 @@ export class VotingService {
       return;
     }
 
-    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposalId}`);
+    const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposalId}`);
     const proposal = <Proposal>await proposalDocRef.get();
 
     const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(order.member!);
@@ -72,10 +72,10 @@ export class VotingService {
       ref: proposalMemberDocRef,
       data: {
         voted: true,
-        voteTransactions: soonDb().inc(1),
+        voteTransactions: build5Db().inc(1),
         tranId: voteTransaction.uid,
-        weightPerAnswer: { [values[0]]: soonDb().inc(weight) },
-        values: soonDb().arrayUnion({
+        weightPerAnswer: { [values[0]]: build5Db().inc(weight) },
+        values: build5Db().arrayUnion({
           [values[0]]: weight,
           voteTransaction: voteTransaction.uid,
         }),
@@ -86,9 +86,9 @@ export class VotingService {
 
     const data = {
       results: {
-        total: soonDb().inc(weight),
-        voted: soonDb().inc(weight),
-        answers: { [`${values[0]}`]: soonDb().inc(weight) },
+        total: build5Db().inc(weight),
+        voted: build5Db().inc(weight),
+        answers: { [`${values[0]}`]: build5Db().inc(weight) },
       },
     };
     this.transactionService.push({
@@ -126,7 +126,7 @@ export class VotingService {
       linkedTransactions: [],
     };
 
-    const voteTransactionDocRef = soonDb().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`);
+    const voteTransactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`);
     this.transactionService.push({
       ref: voteTransactionDocRef,
       data: voteTransaction,

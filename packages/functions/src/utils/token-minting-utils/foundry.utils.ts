@@ -1,4 +1,4 @@
-import { KEY_NAME_TANGLE, Token } from '@build5/interfaces';
+import { KEY_NAME_TANGLE, Token } from '@build-5/interfaces';
 import * as lib from '@iota/iota.js-next';
 import { IFoundryOutput, INodeInfo, TransactionHelper } from '@iota/iota.js-next';
 import { Converter, HexHelper } from '@iota/util.js-next';
@@ -73,7 +73,7 @@ export const tokenToFoundryMetadata = async (token: Token) => {
     url: head(token.links) || '',
     logoUrl: 'ipfs://' + (token.ipfsMedia || PLACEHOLDER_CID),
     issuerName: KEY_NAME_TANGLE,
-    soonaverseId: token.uid,
+    build5Id: token.uid,
     symbol: token.symbol.toLowerCase(),
     decimals: token.decimals,
   };

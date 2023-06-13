@@ -1,10 +1,10 @@
-import { Award, COL, WenError } from '@build5/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { Award, COL, WenError } from '@build-5/interfaces';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 
 export const rejectAwardControl = async (owner: string, params: Record<string, unknown>) => {
-  const awardDocRef = soonDb().doc(`${COL.AWARD}/${params.uid}`);
+  const awardDocRef = build5Db().doc(`${COL.AWARD}/${params.uid}`);
   const award = await awardDocRef.get<Award>();
   if (!award) {
     throw invalidArgument(WenError.award_does_not_exists);

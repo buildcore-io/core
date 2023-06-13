@@ -1,13 +1,13 @@
-import { COL, Token, TokenStatus, WenError } from '@build5/interfaces';
+import { COL, Token, TokenStatus, WenError } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 
 export const cancelPublicSaleControl = async (owner: string, params: Record<string, unknown>) => {
-  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${params.token}`);
+  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
 
-  await soonDb().runTransaction(async (transaction) => {
+  await build5Db().runTransaction(async (transaction) => {
     const token = await transaction.get<Token>(tokenDocRef);
 
     if (!token) {
@@ -21,9 +21,9 @@ export const cancelPublicSaleControl = async (owner: string, params: Record<stri
     await assertIsGuardian(token.space, owner);
 
     transaction.update(tokenDocRef, {
-      saleStartDate: soonDb().deleteField(),
-      saleLength: soonDb().deleteField(),
-      coolDownEnd: soonDb().deleteField(),
+      saleStartDate: build5Db().deleteField(),
+      saleLength: build5Db().deleteField(),
+      coolDownEnd: build5Db().deleteField(),
       status: TokenStatus.CANCEL_SALE,
       totalDeposit: 0,
     });

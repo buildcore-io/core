@@ -1,5 +1,5 @@
-import { Observable, Subscriber } from 'rxjs';
-import { SoonEnv } from './Config';
+import { Observable as RxjsObservable, Subscriber } from 'rxjs';
+import { Build5Env } from './Config';
 import { processObject, processObjectArray } from './utils';
 
 const HEADERS = {
@@ -8,10 +8,10 @@ const HEADERS = {
   Connection: 'keep-alive',
 };
 
-export class SoonObservable<T> extends Observable<T> {
+export class Observable<T> extends RxjsObservable<T> {
   private observer: Subscriber<T> | undefined;
 
-  constructor(protected readonly env: SoonEnv, private readonly url: string) {
+  constructor(protected readonly env: Build5Env, private readonly url: string) {
     super((observer) => {
       this.observer = observer;
       this.init();

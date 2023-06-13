@@ -9,12 +9,12 @@ import {
   TokenTradeOrderType,
   Transaction,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { cancelExpiredSale } from '../../src/cron/token.cron';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -41,7 +41,7 @@ describe('Token minting', () => {
 
     await wait(async () => {
       const orders = (
-        await soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer).get()
+        await build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer).get()
       ).map((d) => <TokenTradeOrder>d);
       const fulfilled = orders.filter((o) => o.count === o.fulfilled);
       return fulfilled.length === orders.length;
@@ -62,11 +62,11 @@ describe('Token minting', () => {
         await helper.createBuyOrder(10, MIN_IOTA_AMOUNT, expiresAt);
       }
 
-      const member = <Member>await soonDb()
+      const member = <Member>await build5Db()
         .doc(`${COL.MEMBER}/${type === TokenTradeOrderType.SELL ? helper.seller! : helper.buyer!}`)
         .get();
 
-      const tradeQuery = soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', member.uid);
+      const tradeQuery = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', member.uid);
       await wait(async () => {
         const snap = await tradeQuery.get();
         return snap.length === 1;
@@ -74,13 +74,13 @@ describe('Token minting', () => {
       const trade = <TokenTradeOrder>(await tradeQuery.get())[0];
       expect(dayjs(trade.expiresAt.toDate()).isSame(dayjs(expiresAt.toDate()))).toBe(true);
 
-      await soonDb()
+      await build5Db()
         .doc(`${COL.TOKEN_MARKET}/${trade.uid}`)
         .update({ expiresAt: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
       await cancelExpiredSale();
 
       await wait(async () => {
-        const snap = await soonDb()
+        const snap = await build5Db()
           .collection(COL.TRANSACTION)
           .where('type', '==', TransactionType.CREDIT)
           .where('member', '==', member.uid)
@@ -103,7 +103,7 @@ describe('Token minting', () => {
       type: TokenTradeOrderType.SELL,
     });
     const sellOrder: Transaction = await testEnv.wrap(tradeToken)({});
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TRANSACTION}/${sellOrder.uid}`)
       .update({ 'payload.expiresOn': dateToTimestamp(dayjs().subtract(2, 'h').toDate()) });
 
@@ -120,7 +120,7 @@ describe('Token minting', () => {
     });
 
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
         .where('member', '==', helper.seller)

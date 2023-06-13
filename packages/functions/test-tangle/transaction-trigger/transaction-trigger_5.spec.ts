@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build5/interfaces';
+import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { retryWallet } from '../../src/cron/wallet.cron';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -42,7 +42,7 @@ describe('Transaction trigger spec', () => {
         void: false,
       },
     };
-    const docRef = soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+    const docRef = build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
     await docRef.create(billPayment);
 
     await wait(async () => {
@@ -68,7 +68,9 @@ describe('Transaction trigger spec', () => {
     });
 
     await wait(async () => {
-      billPayment = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get();
+      billPayment = <Transaction>(
+        await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()
+      );
       return billPayment.payload?.walletReference?.confirmed;
     });
   });

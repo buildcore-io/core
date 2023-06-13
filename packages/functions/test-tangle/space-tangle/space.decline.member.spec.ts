@@ -5,8 +5,8 @@ import {
   Space,
   TangleRequestType,
   Transaction,
-} from '@build5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -25,7 +25,7 @@ describe('Block space member', () => {
   });
 
   it('Should block member', async () => {
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${helper.space.uid}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${helper.space.uid}`);
     await spaceDocRef.update({ open: false });
 
     mockWalletReturnValue(helper.walletSpy, helper.member, { uid: helper.space.uid });

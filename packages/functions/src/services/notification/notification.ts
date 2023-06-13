@@ -1,4 +1,4 @@
-import { Member, Nft, Notification, NotificationType, Transaction } from '@build5/interfaces';
+import { Member, Nft, Notification, NotificationType, Transaction } from '@build-5/interfaces';
 import { OrderPayBillCreditTransaction } from '../../utils/common.utils';
 import { serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';

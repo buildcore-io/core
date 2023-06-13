@@ -1,5 +1,5 @@
-import { COL, SpaceMember, SUB_COL, WenError } from '@build5/interfaces';
-import { soonDb } from '../../../../firebase/firestore/soondb';
+import { COL, SpaceMember, SUB_COL, WenError } from '@build-5/interfaces';
+import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { editSpaceMemberSchema } from '../../../../runtime/firebase/space';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
@@ -18,7 +18,7 @@ export class SpaceAcceptMemberService {
       request.member as string,
     );
 
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${request.uid}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${request.uid}`);
     const spaceMemberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(spaceMember.uid);
     const knockingMemberDocRef = spaceDocRef
       .collection(SUB_COL.KNOCKING_MEMBERS)
@@ -43,7 +43,7 @@ export class SpaceAcceptMemberService {
 export const acceptSpaceMember = async (owner: string, space: string, member: string) => {
   await assertIsGuardian(space, owner);
 
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space}`);
   const knockingMember = await spaceDocRef
     .collection(SUB_COL.KNOCKING_MEMBERS)
     .doc(member)
@@ -59,8 +59,8 @@ export const acceptSpaceMember = async (owner: string, space: string, member: st
   };
 
   const spaceUpdateData = {
-    totalMembers: soonDb().inc(1),
-    totalPendingMembers: soonDb().inc(-1),
+    totalMembers: build5Db().inc(1),
+    totalPendingMembers: build5Db().inc(-1),
   };
 
   return { spaceMember, space: spaceUpdateData };

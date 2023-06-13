@@ -13,9 +13,9 @@ import {
   TransactionMetadataNftType,
   TransactionOrder,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { get } from 'lodash';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import {
   getCollectionByMintingId,
   getNftByMintingId,
@@ -54,7 +54,7 @@ export class MetadataNftService {
         },
       };
       this.transactionService.push({
-        ref: soonDb().doc(`${COL.TRANSACTION}/${mintAlias.uid}`),
+        ref: build5Db().doc(`${COL.TRANSACTION}/${mintAlias.uid}`),
         data: mintAlias,
         action: 'set',
       });
@@ -63,10 +63,10 @@ export class MetadataNftService {
 
     if (!collectionId) {
       const collection = createMetadataCollection(order.space!);
-      const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${collection.uid}`);
+      const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${collection.uid}`);
       this.transactionService.push({ ref: collectionDocRef, data: collection, action: 'set' });
 
-      const space = await soonDb().doc(`${COL.SPACE}/${order.space}`).get<Space>();
+      const space = await build5Db().doc(`${COL.SPACE}/${order.space}`).get<Space>();
       const mintCollectionOrder = createMintMetadataCollectionOrder(
         order,
         collection.uid,
@@ -74,7 +74,7 @@ export class MetadataNftService {
         order.uid,
         space?.alias?.address!,
       );
-      const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${mintCollectionOrder.uid}`);
+      const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${mintCollectionOrder.uid}`);
       this.transactionService.push({ ref: orderDocRef, data: mintCollectionOrder, action: 'set' });
       return;
     }
@@ -89,11 +89,11 @@ export class MetadataNftService {
           get(order, 'payload.metadata', {}),
         );
     if (!nftId) {
-      const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+      const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
       this.transactionService.push({ ref: nftDocRef, data: nft, action: 'set' });
     }
 
-    const space = await soonDb().doc(`${COL.SPACE}/${order.space}`).get<Space>();
+    const space = await build5Db().doc(`${COL.SPACE}/${order.space}`).get<Space>();
 
     const mintNftOrder = createMintMetadataNftOrder(
       nft,
@@ -105,7 +105,7 @@ export class MetadataNftService {
       get(order, 'payload.collectionId', ''),
       order.uid,
     );
-    const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${mintNftOrder.uid}`);
+    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${mintNftOrder.uid}`);
     this.transactionService.push({ ref: orderDocRef, data: mintNftOrder, action: 'set' });
     return;
   }

@@ -12,12 +12,12 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { packBasicOutput } from '../../utils/basic-output.utils';
@@ -28,8 +28,8 @@ import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { TokenDropRequest } from '../token/token.airdrop';
 
 export const airdropMintedTokenControl = async (owner: string, params: Record<string, unknown>) => {
-  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${params.token}`);
-  await soonDb().runTransaction(async (transaction) => {
+  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
+  await build5Db().runTransaction(async (transaction) => {
     const token = await transaction.get<Token>(tokenDocRef);
 
     if (!token) {
@@ -86,13 +86,13 @@ export const airdropMintedTokenControl = async (owner: string, params: Record<st
 
   const chunks = chunk(airdrops, 500);
   for (const chunk of chunks) {
-    const batch = soonDb().batch();
+    const batch = build5Db().batch();
     chunk.forEach((airdrop) => {
-      const docRef = soonDb().doc(`${COL.AIRDROP}/${airdrop.uid}`);
+      const docRef = build5Db().doc(`${COL.AIRDROP}/${airdrop.uid}`);
       batch.create(docRef, airdrop);
     });
     await batch.commit();
   }
-  await soonDb().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+  await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
   return order;
 };

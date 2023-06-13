@@ -4,9 +4,9 @@ import {
   TokenPurchase,
   TokenPurchaseAge,
   WEN_FUNC_TRIGGER,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { scale } from '../../scale.settings';
 
 export const onTokenPurchaseCreated = functions.firestore.onDocumentCreated(
@@ -20,23 +20,23 @@ export const onTokenPurchaseCreated = functions.firestore.onDocumentCreated(
     if (!data.token) {
       return;
     }
-    const batch = soonDb().batch();
+    const batch = build5Db().batch();
 
-    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${data.token}`);
+    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${data.token}`);
     const statsDocRef = tokenDocRef.collection(SUB_COL.STATS).doc(data.token);
     const volume = Object.values(TokenPurchaseAge).reduce(
-      (acc, act) => ({ ...acc, [act]: soonDb().inc(data.count) }),
+      (acc, act) => ({ ...acc, [act]: build5Db().inc(data.count) }),
       {},
     );
     const statsData = {
       parentId: data.token,
       parentCol: COL.TOKEN,
-      volumeTotal: soonDb().inc(data.count),
+      volumeTotal: build5Db().inc(data.count),
       volume,
     };
     batch.set(statsDocRef, statsData, true);
 
-    const purchaseDocRef = soonDb().doc(`${COL.TOKEN_PURCHASE}/${data.uid}`);
+    const purchaseDocRef = build5Db().doc(`${COL.TOKEN_PURCHASE}/${data.uid}`);
     const age = Object.values(TokenPurchaseAge).reduce((acc, act) => ({ ...acc, [act]: true }), {});
     batch.update(purchaseDocRef, { age });
 

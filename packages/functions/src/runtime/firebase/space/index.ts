@@ -4,7 +4,7 @@ import {
   ProposalType,
   TWITTER_REGEXP,
   WEN_FUNC,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import Joi from 'joi';
 import { acceptSpaceMemberControl } from '../../../controls/space/member.accept.control';
 import { blockMemberControl } from '../../../controls/space/member.block.control';

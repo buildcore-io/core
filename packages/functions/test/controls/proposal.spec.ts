@@ -10,9 +10,9 @@ import {
   TokenStatus,
   WEN_FUNC,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -75,7 +75,7 @@ describe('ProposalController: ' + WEN_FUNC.rejectProposal + ' NATIVE', () => {
     body = dummyBody(space.uid);
 
     const tokenId = wallet.getRandomEthAddress();
-    await soonDb().doc(`${COL.TOKEN}/${tokenId}`).create({
+    await build5Db().doc(`${COL.TOKEN}/${tokenId}`).create({
       uid: tokenId,
       space: space.uid,
       status: TokenStatus.MINTED,
@@ -257,7 +257,7 @@ describe('ProposalController: ' + WEN_FUNC.createProposal + ' MEMBERS', () => {
     const award = await testEnv.wrap(createAward)({});
     expect(award?.uid).toBeDefined();
 
-    await soonDb().doc(`${COL.AWARD}/${award.uid}`).update({ approved: true, address: '' });
+    await build5Db().doc(`${COL.AWARD}/${award.uid}`).update({ approved: true, address: '' });
 
     // Participate
     mockWalletReturnValue(walletSpy, address, { uid: award?.uid });
@@ -303,7 +303,7 @@ describe('ProposalController: ' + WEN_FUNC.createProposal + ' MEMBERS', () => {
     expect(vResult?.payload?.weight).toEqual(1);
     await vote(memberId, proposal, [2]);
 
-    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+    const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
     proposal = <Proposal>await proposalDocRef.get();
 
     expect(proposal.results.answers[2]).toBe(1);
@@ -320,7 +320,7 @@ describe('ProposalController: ' + WEN_FUNC.createProposal + ' MEMBERS', () => {
     expect(vResult?.payload?.weight).toEqual(1);
     await vote(memberId, proposal, [1]);
 
-    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+    const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
     proposal = <Proposal>await proposalDocRef.get();
 
     expect(proposal.results.answers[2]).toBe(0);
@@ -470,6 +470,6 @@ export const saveBaseToken = async (space: string, guardian: string) => {
       network: Network.RMS,
     },
   };
-  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token as Token;
 };

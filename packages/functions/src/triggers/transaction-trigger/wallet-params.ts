@@ -6,10 +6,10 @@ import {
   Nft,
   Transaction,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { isProdEnv } from '../../utils/config.utils';
 
 export const getWalletParams = (transaction: Transaction, network: Network) => {
@@ -56,7 +56,7 @@ const getParams = async (transaction: Transaction) => {
     }
     if (payload.nft) {
       details.nft = payload.nft;
-      const nft = await soonDb().doc(`${COL.NFT}/${payload.nft}`).get<Nft>();
+      const nft = await build5Db().doc(`${COL.NFT}/${payload.nft}`).get<Nft>();
       if (nft && nft.ipfsMedia) {
         details.ipfsMedia = 'ipfs://' + nft.ipfsMedia;
       }

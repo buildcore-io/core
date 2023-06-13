@@ -4,7 +4,7 @@ import {
   Transaction,
   TransactionCreditType,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import * as admin from 'firebase-admin';
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';

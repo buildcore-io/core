@@ -8,10 +8,10 @@ import {
   TokenStatus,
   Transaction,
   TransactionAwardType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { INftOutput, IndexerPluginClient } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
@@ -57,7 +57,7 @@ describe('Create award, base', () => {
     mockWalletReturnValue(walletSpy, guardian, awardRequest(space.uid, token.symbol));
     award = await testEnv.wrap(createAward)({});
 
-    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${guardian}`);
+    const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${guardian}`);
     const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, network);
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
@@ -80,7 +80,7 @@ describe('Create award, base', () => {
     });
     await MnemonicService.store(guardianAddress.bech32, guardianAddress.mnemonic);
 
-    const awardDocRef = soonDb().doc(`${COL.AWARD}/${award.uid}`);
+    const awardDocRef = build5Db().doc(`${COL.AWARD}/${award.uid}`);
     await wait(async () => {
       award = <Award>await awardDocRef.get();
       return award.approved && award.funded;
@@ -89,11 +89,11 @@ describe('Create award, base', () => {
     mockWalletReturnValue(walletSpy, guardian, { award: award.uid, members: [member, member] });
     await testEnv.wrap(approveAwardParticipant)({});
 
-    const memberDocRef = soonDb().doc(`${COL.MEMBER}/${member}`);
+    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${member}`);
     const memberData = <Member>await memberDocRef.get();
     const memberBech32 = getAddress(memberData, network);
 
-    const nttQuery = soonDb()
+    const nttQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
       .where('payload.type', '==', TransactionAwardType.BADGE);
@@ -109,7 +109,7 @@ describe('Create award, base', () => {
       return response.items.length === 2;
     });
 
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space.uid}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
     space = <Space>await spaceDocRef.get();
     expect(space.ipfsMedia).toBeDefined();
 
@@ -123,7 +123,7 @@ describe('Create award, base', () => {
     expect(collectionMetadata.name).toBe('award');
     expect(collectionMetadata.description).toBe('awarddesc');
     expect(collectionMetadata.issuerName).toBe('Soonaverse');
-    expect(collectionMetadata.soonaverseId).toBe(award.uid);
+    expect(collectionMetadata.build5Id).toBe(award.uid);
 
     const nttItems = (await indexer.nfts({ addressBech32: memberBech32 })).items;
     const promises = nttItems.map(
@@ -146,7 +146,7 @@ describe('Create award, base', () => {
       expect(nttMetadata.collectionId).toBe(award.collectionId);
       expect(nttMetadata.collectionName).toBe('award');
 
-      const transactionDocRef = soonDb().doc(`${COL.TRANSACTION}/${nttMetadata.soonaverseId}`);
+      const transactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${nttMetadata.build5Id}`);
       const transaction = <Transaction>await transactionDocRef.get();
       expect(getAttributeValue(nttMetadata, 'award')).toBe(award.uid);
       expect(getAttributeValue(nttMetadata, 'tokenReward')).toBe(5);
@@ -199,7 +199,7 @@ const saveToken = async (space: string, guardian: string) => {
       tokenId: MINTED_TOKEN_ID,
     },
   };
-  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token as Token;
 };
 

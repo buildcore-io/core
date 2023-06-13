@@ -6,9 +6,9 @@ import {
   StakeReward,
   StakeRewardStatus,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { voteOnProposal } from '../../src/runtime/firebase/proposal';
 import { removeStakeReward } from '../../src/runtime/firebase/stake';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -40,7 +40,7 @@ describe('Delete stake reward', () => {
     await addGuardianToSpace(space.uid, member);
 
     token = wallet.getRandomEthAddress();
-    await soonDb().doc(`${COL.TOKEN}/${token}`).create({ uid: token, space: space.uid });
+    await build5Db().doc(`${COL.TOKEN}/${token}`).create({ uid: token, space: space.uid });
   });
 
   const createStakeRewards = async () => {
@@ -66,14 +66,14 @@ describe('Delete stake reward', () => {
       },
     ];
     for (const stakeReward of stakeRewards) {
-      await soonDb().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`).create(stakeReward);
+      await build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`).create(stakeReward);
     }
     return stakeRewards;
   };
 
   const getStakeRewards = async (stakeRewardIds: string[]) => {
     const promises = stakeRewardIds.map(async (stakeRewardId) => {
-      const docRef = soonDb().doc(`${COL.STAKE_REWARD}/${stakeRewardId}`);
+      const docRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeRewardId}`);
       return <StakeReward>await docRef.get();
     });
     return await Promise.all(promises);
@@ -123,7 +123,7 @@ describe('Delete stake reward', () => {
       return allDeleted;
     });
 
-    proposal = <Proposal>await soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`).get();
+    proposal = <Proposal>await build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`).get();
     expect(dayjs(proposal.settings.endDate.toDate()).isBefore(dayjs())).toBe(true);
   });
 
@@ -140,7 +140,7 @@ describe('Delete stake reward', () => {
 
   it('Should throw, multiple tokens', async () => {
     const stakeRewards = await createStakeRewards();
-    await soonDb().doc(`${COL.STAKE_REWARD}/${stakeRewards[0].uid}`).update({ token: 'asd' });
+    await build5Db().doc(`${COL.STAKE_REWARD}/${stakeRewards[0].uid}`).update({ token: 'asd' });
     const stakeRewardIds = stakeRewards.map((reward) => reward.uid);
     mockWalletReturnValue(walletSpy, guardian, { stakeRewardIds });
     await expectThrow(testEnv.wrap(removeStakeReward)({}), WenError.invalid_params.key);
@@ -158,7 +158,7 @@ describe('Delete stake reward', () => {
 
   it('Should throw, stake reward expired', async () => {
     const stakeRewards = await createStakeRewards();
-    const docRef = soonDb().doc(`${COL.STAKE_REWARD}/${stakeRewards[1].uid}`);
+    const docRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeRewards[1].uid}`);
     await docRef.update({ startDate: dateToTimestamp(dayjs().subtract(1, 'm')) });
 
     const stakeRewardIds = stakeRewards.map((reward) => reward.uid);

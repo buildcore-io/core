@@ -10,8 +10,8 @@ import {
   Transaction,
   TransactionType,
   WenError,
-} from '@build5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { getAddress } from '../../src/utils/address.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -44,8 +44,8 @@ describe('Simple token trading', () => {
       status: TokenStatus.AVAILABLE,
       approved: true,
     };
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`).create({
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`).create({
       parentId: token.uid,
       parentCol: COL.TOKEN,
       tokenOwned: 100,
@@ -55,7 +55,7 @@ describe('Simple token trading', () => {
   });
 
   it('Should credit on simple token buy', async () => {
-    const memberData = <Member>await soonDb().doc(`${COL.MEMBER}/${member}`).get();
+    const memberData = <Member>await build5Db().doc(`${COL.MEMBER}/${member}`).get();
     const rmsAddress = await rmsWallet.getAddressDetails(getAddress(memberData, Network.RMS)!);
     await requestFundsFromFaucet(Network.RMS, rmsAddress.bech32, 5 * MIN_IOTA_AMOUNT);
 
@@ -70,7 +70,7 @@ describe('Simple token trading', () => {
       },
     });
 
-    const query = soonDb()
+    const query = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
@@ -88,7 +88,7 @@ describe('Simple token trading', () => {
   });
 
   it('Should credit on simple token sell', async () => {
-    const memberData = <Member>await soonDb().doc(`${COL.MEMBER}/${member}`).get();
+    const memberData = <Member>await build5Db().doc(`${COL.MEMBER}/${member}`).get();
     const rmsAddress = await rmsWallet.getAddressDetails(getAddress(memberData, Network.RMS)!);
     await requestFundsFromFaucet(Network.RMS, rmsAddress.bech32, 5 * MIN_IOTA_AMOUNT);
 
@@ -103,7 +103,7 @@ describe('Simple token trading', () => {
       },
     });
 
-    const query = soonDb()
+    const query = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);

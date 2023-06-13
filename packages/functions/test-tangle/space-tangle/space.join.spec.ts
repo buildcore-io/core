@@ -7,8 +7,8 @@ import {
   SUB_COL,
   TangleRequestType,
   Transaction,
-} from '@build5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { wait } from '../../test/controls/common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
@@ -48,7 +48,7 @@ describe('Join space', () => {
     const credit = snap[0] as Transaction;
     expect(credit.payload.response.status).toBe('success');
 
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${helper.space.uid}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${helper.space.uid}`);
     helper.space = <Space>await spaceDocRef.get();
     expect(helper.space.totalMembers).toBe(2);
 

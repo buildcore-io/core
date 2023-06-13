@@ -7,8 +7,8 @@ import {
   Transaction,
   TransactionIgnoreWalletReason,
   TransactionType,
-} from '@build5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { creditUnrefundable } from '../../src/runtime/firebase/credit';
 import { stakeNft } from '../../src/runtime/firebase/nft';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -29,7 +29,7 @@ describe('Stake nft', () => {
 
   it('Should stake with storage dep', async () => {
     let nft = await helper.createAndOrderNft();
-    let nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+    let nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
     await helper.mintCollection();
     nft = <Nft>await nftDocRef.get();
     await helper.withdrawNftAndAwait(nft.uid);
@@ -50,7 +50,7 @@ describe('Stake nft', () => {
       true,
     );
 
-    const creditQuery = soonDb()
+    const creditQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_NFT)
       .where('member', '==', helper.guardian)

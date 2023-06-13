@@ -1,8 +1,8 @@
-import { COL, MediaStatus, Network, SUB_COL } from '@build5/interfaces';
+import { COL, MediaStatus, Network, SUB_COL } from '@build-5/interfaces';
 import Joi from 'joi';
 import { get, set } from 'lodash';
-import { soonDb } from '../../../../firebase/firestore/soondb';
-import { soonStorage } from '../../../../firebase/storage/soonStorage';
+import { build5Db } from '../../../../firebase/firestore/build5Db';
+import { build5Storage } from '../../../../firebase/storage/build5Storage';
 import { createSpaceSchema } from '../../../../runtime/firebase/space';
 import { downloadMediaAndPackCar } from '../../../../utils/car.utils';
 import { getBucket, isProdEnv } from '../../../../utils/config.utils';
@@ -24,7 +24,7 @@ export class SpaceCreateService {
 
     const { space, guardian, member } = await getCreateSpaceData(owner, request);
 
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space.uid}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
     this.transactionService.push({ ref: spaceDocRef, data: space, action: 'set' });
 
     const spaceGuardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(owner);
@@ -40,7 +40,7 @@ export class SpaceCreateService {
       action: 'set',
     });
 
-    const memberDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
+    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
     this.transactionService.push({
       ref: memberDocRef,
       data: member,
@@ -74,7 +74,7 @@ export const getCreateSpaceData = async (owner: string, params: Record<string, u
     const metadata = spaceToIpfsMetadata(space as any);
 
     if (!isStorageUrl(bannerUrl)) {
-      const bucket = soonStorage().bucket(getBucket());
+      const bucket = build5Storage().bucket(getBucket());
       bannerUrl = await migrateUriToSotrage(
         COL.SPACE,
         owner,

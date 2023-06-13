@@ -8,11 +8,11 @@ import {
   Token,
   TokenStatus,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import Joi from 'joi';
 import { isEmpty, set } from 'lodash';
-import { soonDb } from '../../../../firebase/firestore/soondb';
-import { soonStorage } from '../../../../firebase/storage/soonStorage';
+import { build5Db } from '../../../../firebase/firestore/build5Db';
+import { build5Storage } from '../../../../firebase/storage/build5Storage';
 import { awardBageSchema, createAwardSchema } from '../../../../runtime/firebase/award';
 import { downloadMediaAndPackCar } from '../../../../utils/car.utils';
 import { getBucket } from '../../../../utils/config.utils';
@@ -41,7 +41,7 @@ export class AwardCreateService {
 
     const { award, owner: awardOwner } = await createAward(owner, request);
 
-    const awardDocRef = soonDb().doc(`${COL.AWARD}/${award.uid}`);
+    const awardDocRef = build5Db().doc(`${COL.AWARD}/${award.uid}`);
     this.transactionService.push({
       ref: awardDocRef,
       data: award,
@@ -55,7 +55,7 @@ export class AwardCreateService {
     });
 
     const order = await createAwardFundOrder(owner, award);
-    const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
     this.transactionService.push({ ref: orderDocRef, data: order, action: 'set' });
 
     const response = {
@@ -90,7 +90,7 @@ export const createAward = async (owner: string, params: Record<string, unknown>
   if (badge?.image) {
     let imageUrl = badge.image as string;
     if (!isStorageUrl(imageUrl)) {
-      const bucket = soonStorage().bucket(getBucket());
+      const bucket = build5Storage().bucket(getBucket());
       imageUrl = await migrateUriToSotrage(COL.AWARD, owner, awardUid, uriToUrl(imageUrl), bucket);
       set(badge, 'image', imageUrl);
     }

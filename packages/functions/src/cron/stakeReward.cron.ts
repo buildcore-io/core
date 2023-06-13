@@ -14,18 +14,18 @@ import {
   Transaction,
   TransactionIgnoreWalletReason,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions/v2';
 import { isEmpty, last } from 'lodash';
-import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
+import { build5Db, getSnapshot } from '../firebase/firestore/build5Db';
 import { serverTime } from '../utils/dateTime.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 export const stakeRewardCronTask = async () => {
   const stakeRewards = await getDueStakeRewards();
 
   for (const stakeReward of stakeRewards) {
-    const stakeRewardDocRef = soonDb().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+    const stakeRewardDocRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     await stakeRewardDocRef.update({ status: StakeRewardStatus.PROCESSED });
     try {
       const { totalAirdropped, totalStaked } = await executeStakeRewardDistribution(stakeReward);
@@ -40,7 +40,7 @@ export const stakeRewardCronTask = async () => {
 const executeStakeRewardDistribution = async (stakeReward: StakeReward) => {
   const stakedPerMember = await getStakedPerMember(stakeReward);
   if (isEmpty(stakedPerMember)) {
-    await soonDb()
+    await build5Db()
       .doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`)
       .update({ status: StakeRewardStatus.PROCESSED_NO_STAKES });
     return { totalStaked: 0, totalAirdropped: 0 };
@@ -48,7 +48,7 @@ const executeStakeRewardDistribution = async (stakeReward: StakeReward) => {
 
   const totalStaked = Object.values(stakedPerMember).reduce((acc, act) => acc + act, 0);
 
-  const token = <Token>await soonDb().doc(`${COL.TOKEN}/${stakeReward.token}`).get();
+  const token = <Token>await build5Db().doc(`${COL.TOKEN}/${stakeReward.token}`).get();
   const totalAirdropped = await createAirdrops(token, stakeReward, totalStaked, stakedPerMember);
   return { totalStaked, totalAirdropped };
 };
@@ -59,7 +59,7 @@ export const getStakedPerMember = async (stakeReward: StakeReward) => {
   const rewardEndDate = stakeReward.endDate.toDate();
   do {
     const lastDoc = await getSnapshot(COL.STAKE, lastDocId);
-    const snap = await soonDb()
+    const snap = await build5Db()
       .collection(COL.STAKE)
       .where('token', '==', stakeReward.token)
       .where('type', '==', StakeType.DYNAMIC)
@@ -82,7 +82,7 @@ export const getStakedPerMember = async (stakeReward: StakeReward) => {
 };
 
 const getDueStakeRewards = () =>
-  soonDb()
+  build5Db()
     .collection(COL.STAKE_REWARD)
     .where('status', '==', StakeRewardStatus.UNPROCESSED)
     .where('endDate', '<=', serverTime())
@@ -94,7 +94,7 @@ const createAirdrops = async (
   totalStaked: number,
   stakedPerMember: { [key: string]: number },
 ) => {
-  const space = <Space>await soonDb().doc(`${COL.SPACE}/${token.space}`).get();
+  const space = <Space>await build5Db().doc(`${COL.SPACE}/${token.space}`).get();
 
   const rewards = Object.entries(stakedPerMember)
     .map(([member, staked]) => ({
@@ -118,13 +118,13 @@ const createAirdrops = async (
       return 0;
     }
 
-    const distributionDocRef = soonDb().doc(
+    const distributionDocRef = build5Db().doc(
       `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${reward.member}`,
     );
     const distribution = <TokenDistribution>await distributionDocRef.get();
 
     if (distribution.extraStakeRewards && distribution.extraStakeRewards > 0) {
-      await distributionDocRef.update({ extraStakeRewards: soonDb().inc(-reward.value) });
+      await distributionDocRef.update({ extraStakeRewards: build5Db().inc(-reward.value) });
 
       const billPayment = <Transaction>{
         type: TransactionType.BILL_PAYMENT,
@@ -147,7 +147,7 @@ const createAirdrops = async (
           stakeReward: stakeReward.uid,
         },
       };
-      await soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
+      await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
 
       const remainingExtra = distribution.extraStakeRewards - reward.value;
       if (remainingExtra >= 0) {
@@ -156,7 +156,7 @@ const createAirdrops = async (
       reward.value = Math.abs(remainingExtra);
     }
 
-    const batch = soonDb().batch();
+    const batch = build5Db().batch();
     const airdrop: TokenDrop = {
       uid: getRandomEthAddress(),
       createdBy: 'system',
@@ -169,10 +169,10 @@ const createAirdrops = async (
       stakeRewardId: stakeReward.uid,
       stakeType: StakeType.DYNAMIC,
     };
-    const airdropDocRef = soonDb().doc(`${COL.AIRDROP}/${airdrop.uid}`);
+    const airdropDocRef = build5Db().doc(`${COL.AIRDROP}/${airdrop.uid}`);
     batch.create(airdropDocRef, airdrop);
 
-    batch.set(distributionDocRef, { stakeRewards: soonDb().inc(reward.value) }, true);
+    batch.set(distributionDocRef, { stakeRewards: build5Db().inc(reward.value) }, true);
     await batch.commit();
 
     return reward.value;

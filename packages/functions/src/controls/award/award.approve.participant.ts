@@ -1,6 +1,6 @@
-import { Transaction } from '@build5/interfaces';
+import { Transaction } from '@build-5/interfaces';
 import { get } from 'lodash';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { approveAwardParticipant } from '../../services/payment/tangle-service/award/award.approve.participant.service';
 
 export const approveAwardParticipantControl = async (
@@ -14,7 +14,9 @@ export const approveAwardParticipantControl = async (
 
   for (const member of members) {
     try {
-      const badge = await soonDb().runTransaction(approveAwardParticipant(owner, awardId, member));
+      const badge = await build5Db().runTransaction(
+        approveAwardParticipant(owner, awardId, member),
+      );
       badges[badge.uid] = badge;
     } catch (error) {
       errors[member] = {

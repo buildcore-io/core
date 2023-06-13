@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -41,7 +41,7 @@ describe('Transaction trigger spec', () => {
           void: false,
         },
       };
-      await soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
+      await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
       await wait(async () => {
         const balance = await wallet.getBalance(targetAddress.bech32);
         return balance === MIN_IOTA_AMOUNT;
@@ -49,7 +49,7 @@ describe('Transaction trigger spec', () => {
 
       await wait(async () => {
         billPayment = <Transaction>(
-          await soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()
+          await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()
         );
         return billPayment.payload?.walletReference?.confirmed;
       });

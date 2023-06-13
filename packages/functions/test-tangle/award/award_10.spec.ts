@@ -1,8 +1,8 @@
-import { Award, COL, Member, Network, Space, Token, TokenStatus } from '@build5/interfaces';
+import { Award, COL, Member, Network, Space, Token, TokenStatus } from '@build-5/interfaces';
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
@@ -51,7 +51,7 @@ describe('Create award, native', () => {
     mockWalletReturnValue(walletSpy, member, awardRequest(space.uid, token.symbol));
     award = await testEnv.wrap(createAward)({});
 
-    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${guardian}`);
+    const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${guardian}`);
     const guardianData = await guardianDocRef.get<Member>();
     const guardianBech32 = getAddress(guardianData, network);
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
@@ -74,7 +74,7 @@ describe('Create award, native', () => {
     });
     await MnemonicService.store(guardianAddress.bech32, guardianAddress.mnemonic);
 
-    const awardDocRef = soonDb().doc(`${COL.AWARD}/${award.uid}`);
+    const awardDocRef = build5Db().doc(`${COL.AWARD}/${award.uid}`);
     await wait(async () => {
       const award = <Award>await awardDocRef.get();
       return award.approved && award.funded;
@@ -86,7 +86,7 @@ describe('Create award, native', () => {
     });
     await testEnv.wrap(approveAwardParticipant)({});
 
-    const snap = await soonDb().collection(COL.AIRDROP).where('member', '==', member).get();
+    const snap = await build5Db().collection(COL.AIRDROP).where('member', '==', member).get();
     expect(snap.length).toBe(1);
   });
 });
@@ -126,7 +126,7 @@ const saveToken = async (space: string, guardian: string) => {
       tokenId: MINTED_TOKEN_ID,
     },
   };
-  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token as Token;
 };
 

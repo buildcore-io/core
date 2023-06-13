@@ -8,7 +8,7 @@ import {
   NftStatus,
   Space,
   Transaction,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import {
   ADDRESS_UNLOCK_CONDITION_TYPE,
   ALIAS_ADDRESS_TYPE,
@@ -36,7 +36,7 @@ import { Converter } from '@iota/util.js-next';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions/v2';
 import { cloneDeep, get, head, isEmpty } from 'lodash';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { getAddress } from '../../utils/address.utils';
 import { mergeOutputs } from '../../utils/basic-output.utils';
 import { isValidBlockSize, packEssence, packPayload, submitBlock } from '../../utils/block.utils';
@@ -100,7 +100,7 @@ export class NftWallet {
     }
     nextAliasOutput.stateIndex++;
 
-    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${transaction.payload.collection}`);
+    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${transaction.payload.collection}`);
     const collection = <Collection>await collectionDocRef.get();
 
     const collectionMetadata = await this.getCollectionMetadata(transaction.network!, collection);
@@ -152,7 +152,7 @@ export class NftWallet {
     if (collection.type === CollectionType.METADATA) {
       return { immutableMetadata: '', mutableMetadata: '' };
     }
-    const royaltySpaceDocRef = soonDb().doc(`${COL.SPACE}/${collection.royaltiesSpace}`);
+    const royaltySpaceDocRef = build5Db().doc(`${COL.SPACE}/${collection.royaltiesSpace}`);
     const royaltySpace = <Space>await royaltySpaceDocRef.get();
     const royaltySpaceAddress = getAddress(royaltySpace, network);
     const collectionMetadata = await collectionToMetadata(collection, royaltySpaceAddress);
@@ -180,14 +180,14 @@ export class NftWallet {
     nextAliasOutput.aliasId = TransactionHelper.resolveIdFromOutputId(aliasOutputId);
     nextAliasOutput.stateIndex++;
 
-    const awardDocRef = soonDb().doc(`${COL.AWARD}/${transaction.payload.award}`);
+    const awardDocRef = build5Db().doc(`${COL.AWARD}/${transaction.payload.award}`);
     const award = <Award>await awardDocRef.get();
 
     const issuerAddress: AddressTypes = {
       type: ALIAS_ADDRESS_TYPE,
       aliasId: TransactionHelper.resolveIdFromOutputId(aliasOutputId),
     };
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${award.space}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${award.space}`);
     const space = <Space>await spaceDocRef.get();
     const metadata = await awardToCollectionMetadata(award, space);
     const collectionOutput = createNftOutput(
@@ -247,10 +247,10 @@ export class NftWallet {
         : collectionOutput.nftId;
 
     const collection = <Collection>(
-      await soonDb().doc(`${COL.COLLECTION}/${transaction.payload.collection}`).get()
+      await build5Db().doc(`${COL.COLLECTION}/${transaction.payload.collection}`).get()
     );
     const royaltySpace = <Space>(
-      await soonDb().doc(`${COL.SPACE}/${collection.royaltiesSpace}`).get()
+      await build5Db().doc(`${COL.SPACE}/${collection.royaltiesSpace}`).get()
     );
     const royaltySpaceAddress = getAddress(royaltySpace, transaction.network!);
 
@@ -292,15 +292,15 @@ export class NftWallet {
     }
 
     const nftOutputsToMint = nftOutputs.slice(0, nftsToMint);
-    const batch = soonDb().batch();
+    const batch = build5Db().batch();
     nftOutputsToMint.forEach((output, i) => {
-      batch.update(soonDb().doc(`${COL.NFT}/${nfts[i].uid}`), {
+      batch.update(build5Db().doc(`${COL.NFT}/${nfts[i].uid}`), {
         'mintingData.address': nftMintAddresses[i].bech32,
         'mintingData.storageDeposit': Number(output.amount),
       });
     });
     await batch.commit();
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TRANSACTION}/${transaction.uid}`)
       .update({
         'payload.amount': nftOutputsToMint.reduce((acc, act) => acc + Number(act.amount), 0),
@@ -346,7 +346,7 @@ export class NftWallet {
         ? TransactionHelper.resolveIdFromOutputId(collectionOutputId)
         : collectionOutput.nftId;
 
-    const awardDocRef = soonDb().doc(`${COL.AWARD}/${transaction.payload.award}`);
+    const awardDocRef = build5Db().doc(`${COL.AWARD}/${transaction.payload.award}`);
     const award = <Award>await awardDocRef.get();
 
     const issuerAddress: INftAddress = { type: NFT_ADDRESS_TYPE, nftId: collectionNftId };
@@ -438,7 +438,7 @@ export class NftWallet {
       nextCollectionOutput.nftId = TransactionHelper.resolveIdFromOutputId(collectionOutputId);
     }
 
-    const order = await soonDb()
+    const order = await build5Db()
       .doc(`${COL.TRANSACTION}/${transaction.payload.orderId}`)
       .get<Transaction>();
     const issuerAddress: INftAddress = {
@@ -523,7 +523,7 @@ export class NftWallet {
     const collectionOutput = (await this.wallet.client.output(collectionOutputId))
       .output as INftOutput;
 
-    const nft = <Nft>await soonDb().doc(`${COL.NFT}/${transaction.payload.nft}`).get();
+    const nft = <Nft>await build5Db().doc(`${COL.NFT}/${transaction.payload.nft}`).get();
     const nftOwnerAddressBech = nft.mintingData?.address || nft.depositData?.address!;
     const nftOwnerAddress = await this.wallet.getAddressDetails(nftOwnerAddressBech);
     const nftResult = await indexer.nft(nft.mintingData?.nftId!);
@@ -546,7 +546,7 @@ export class NftWallet {
       nextCollectionOutput.nftId = TransactionHelper.resolveIdFromOutputId(collectionOutputId);
     }
 
-    const order = await soonDb()
+    const order = await build5Db()
       .doc(`${COL.TRANSACTION}/${transaction.payload.orderId}`)
       .get<Transaction>();
     const mutableMetadata = JSON.stringify(get(order, 'payload.metadata', {}));
@@ -792,7 +792,7 @@ const getNftMintingAddress = (nfts: Nft[], wallet: SmrWallet) => {
 };
 
 const getPreMintedNfts = (collection: string, limit = 100) =>
-  soonDb()
+  build5Db()
     .collection(COL.NFT)
     .where('collection', '==', collection)
     .where('status', '==', NftStatus.PRE_MINTED)

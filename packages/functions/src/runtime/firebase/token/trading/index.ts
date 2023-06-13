@@ -3,7 +3,7 @@ import {
   MAX_TOTAL_TOKEN_SUPPLY,
   TokenTradeOrderType,
   WEN_FUNC,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import Joi from 'joi';
 import { cancelTradeOrderControl } from '../../../../controls/token-trading/token-trade-cancel.controller';
 import { tradeTokenControl } from '../../../../controls/token-trading/token-trade.controller';

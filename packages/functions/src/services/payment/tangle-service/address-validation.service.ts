@@ -12,10 +12,10 @@ import {
   TransactionUnlockType,
   TransactionValidationType,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
-import { soonDb } from '../../../firebase/firestore/soondb';
+import { build5Db } from '../../../firebase/firestore/build5Db';
 import { validateAddressSchema } from '../../../runtime/firebase/address';
 import { generateRandomAmount } from '../../../utils/common.utils';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
@@ -50,7 +50,7 @@ export class TangleAddressValidationService {
     set(order, 'payload.amount', tranEntry.amount);
 
     this.transactionService.push({
-      ref: soonDb().doc(`${COL.TRANSACTION}/${order.uid}`),
+      ref: build5Db().doc(`${COL.TRANSACTION}/${order.uid}`),
       data: order,
       action: 'set',
     });
@@ -75,7 +75,7 @@ export const createAddressValidationOrder = async (
   network: Network,
   spaceId?: string,
 ) => {
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${spaceId}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${spaceId}`);
   const space = spaceId ? <Space | undefined>await spaceDocRef.get() : undefined;
   if (spaceId && !space) {
     throw invalidArgument(WenError.space_does_not_exists);

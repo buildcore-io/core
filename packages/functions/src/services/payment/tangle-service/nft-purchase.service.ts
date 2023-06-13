@@ -21,11 +21,11 @@ import {
   TransactionUnlockType,
   TransactionValidationType,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
 import { AVAILABLE_NETWORKS } from '../../../controls/common';
-import { soonDb } from '../../../firebase/firestore/soondb';
+import { build5Db } from '../../../firebase/firestore/build5Db';
 import { nftPurchaseSchema } from '../../../runtime/firebase/nft';
 import { assertHasAccess } from '../../../services/validators/access';
 import { WalletService } from '../../../services/wallet/wallet';
@@ -60,7 +60,7 @@ export class TangleNftPurchaseService {
     set(order, 'payload.tanglePuchase', true);
 
     this.transactionService.push({
-      ref: soonDb().doc(`${COL.TRANSACTION}/${order.uid}`),
+      ref: build5Db().doc(`${COL.TRANSACTION}/${order.uid}`),
       data: order,
       action: 'set',
     });
@@ -160,7 +160,7 @@ export const createNftPuchaseOrder = async (
 };
 
 const getCollection = async (id: string) => {
-  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${id}`);
+  const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${id}`);
   const collection = await collectionDocRef.get<Collection>();
   if (!collection) {
     throw invalidArgument(WenError.collection_does_not_exists);
@@ -177,13 +177,13 @@ const getCollection = async (id: string) => {
 };
 
 const getMember = async (id: string) => {
-  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${id}`);
+  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${id}`);
   return <Member>await memberDocRef.get();
 };
 
 const getNft = async (collection: Collection, nftId: string | undefined) => {
   if (nftId) {
-    const docRef = soonDb().doc(`${COL.NFT}/${nftId}`);
+    const docRef = build5Db().doc(`${COL.NFT}/${nftId}`);
     const nft = (await getNftByMintingId(nftId)) || (await docRef.get<Nft>());
     if (nft) {
       return nft;
@@ -211,7 +211,7 @@ const getNft = async (collection: Collection, nftId: string | undefined) => {
 };
 
 const getNftAbove = (collection: Collection, position: number) =>
-  soonDb()
+  build5Db()
     .collection(COL.NFT)
     .where('sold', '==', false)
     .where('locked', '==', false)
@@ -223,7 +223,7 @@ const getNftAbove = (collection: Collection, position: number) =>
     .get<Nft>();
 
 const getNftBelow = (collection: Collection, position: number) =>
-  soonDb()
+  build5Db()
     .collection(COL.NFT)
     .where('sold', '==', false)
     .where('locked', '==', false)
@@ -290,7 +290,7 @@ const assertUserHasAccess = (space: Space, collection: Collection, owner: string
   );
 
 const assertUserHasOnlyOneNft = async (collection: Collection, owner: string) => {
-  const snap = await soonDb()
+  const snap = await build5Db()
     .collection(COL.TRANSACTION)
     .where('member', '==', owner)
     .where('type', '==', TransactionType.BILL_PAYMENT)
@@ -303,7 +303,7 @@ const assertUserHasOnlyOneNft = async (collection: Collection, owner: string) =>
 };
 
 const assertNoOrderInProgress = async (owner: string) => {
-  const orderInProgress = await soonDb()
+  const orderInProgress = await build5Db()
     .collection(COL.TRANSACTION)
     .where('payload.reconciled', '==', false)
     .where('payload.type', '==', TransactionOrderType.NFT_PURCHASE)
@@ -342,8 +342,8 @@ const getDiscount = (collection: Collection, member: Member) => {
 };
 
 const lockNft = async (nftId: string, orderId: string) =>
-  soonDb().runTransaction(async (transaction) => {
-    const docRef = soonDb().doc(`${COL.NFT}/${nftId}`);
+  build5Db().runTransaction(async (transaction) => {
+    const docRef = build5Db().doc(`${COL.NFT}/${nftId}`);
     const nft = <Nft>await transaction.get(docRef);
     if (nft.locked) {
       throw invalidArgument(WenError.nft_locked_for_sale);
@@ -389,7 +389,7 @@ export const createNftWithdrawOrder = (
     uid: nft.uid,
     status: stakeType ? NftStatus.STAKED : NftStatus.WITHDRAWN,
     hidden: true,
-    depositData: soonDb().deleteField(),
+    depositData: build5Db().deleteField(),
     owner: null,
     isOwned: false,
   };

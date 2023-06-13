@@ -1,4 +1,4 @@
-import { Bucket } from '@build5/interfaces';
+import { Bucket } from '@build-5/interfaces';
 import { Bucket as FBucket } from '@google-cloud/storage';
 import { Storage } from 'firebase-admin/storage';
 import { FirebaseApp } from '../app/app';

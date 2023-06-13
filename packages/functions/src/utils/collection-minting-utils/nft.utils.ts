@@ -1,4 +1,4 @@
-import { COL, Collection, KEY_NAME_TANGLE, Nft } from '@build5/interfaces';
+import { COL, Collection, KEY_NAME_TANGLE, Nft } from '@build-5/interfaces';
 import {
   ADDRESS_UNLOCK_CONDITION_TYPE,
   AddressTypes,
@@ -14,7 +14,7 @@ import {
 import { Converter } from '@iota/util.js-next';
 import dayjs from 'dayjs';
 import { head } from 'lodash';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { PLACEHOLDER_CID } from '../car.utils';
 import { getContentType } from '../storage.utils';
 import { propsToAttributes } from './nft.prop.utils';
@@ -92,7 +92,7 @@ export const nftToMetadata = async (
       [royaltySpaceAddress]: collection.royaltiesFee,
     },
 
-    soonaverseId: nft.uid,
+    build5Id: nft.uid,
   };
 };
 
@@ -108,12 +108,12 @@ export const collectionToMetadata = async (collection: Collection, royaltySpaceA
     royalties: {
       [royaltySpaceAddress]: collection.royaltiesFee,
     },
-    soonaverseId: collection.uid,
+    build5Id: collection.uid,
   };
 };
 
 export const getNftByMintingId = async (nftId: string) => {
-  const snap = await soonDb()
+  const snap = await build5Db()
     .collection(COL.NFT)
     .where('mintingData.nftId', '==', nftId)
     .get<Nft>();
@@ -121,7 +121,7 @@ export const getNftByMintingId = async (nftId: string) => {
 };
 
 export const getCollectionByMintingId = async (collectionId: string) => {
-  const snap = await soonDb()
+  const snap = await build5Db()
     .collection(COL.COLLECTION)
     .where('mintingData.nftId', '==', collectionId)
     .get<Collection>();

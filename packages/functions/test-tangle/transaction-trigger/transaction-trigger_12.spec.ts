@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build5/interfaces';
+import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build-5/interfaces';
 import { ITransactionPayload, TRANSACTION_ID_LENGTH } from '@iota/iota.js';
 import {
   ITransactionPayload as NextITransactionPayload,
@@ -9,7 +9,7 @@ import { Converter, WriteStream } from '@iota/util.js';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { retryWallet } from '../../src/cron/wallet.cron';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { IotaWallet } from '../../src/services/wallet/IotaWalletService';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
@@ -51,7 +51,7 @@ describe('Transaction trigger spec', () => {
           2 * MIN_IOTA_AMOUNT,
         ),
       };
-      const billPaymentDocRef = soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+      const billPaymentDocRef = build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
       await billPaymentDocRef.create(billPayment);
 
       await wait(async () => {

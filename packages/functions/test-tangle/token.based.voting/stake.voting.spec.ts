@@ -1,6 +1,6 @@
-import { COL, SUB_COL } from '@build5/interfaces';
+import { COL, SUB_COL } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { approveProposal, createProposal } from '../../src/runtime/firebase/proposal';
 import { mockWalletReturnValue } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -16,7 +16,7 @@ describe('Staked oken based voting', () => {
   beforeEach(async () => {
     await helper.beforeEach();
 
-    const distributionDocRef = soonDb()
+    const distributionDocRef = build5Db()
       .collection(COL.TOKEN)
       .doc(helper.tokenId)
       .collection(SUB_COL.DISTRIBUTION)

@@ -7,8 +7,8 @@ import {
   TokenStatus,
   Transaction,
   WenError,
-} from '@build5/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import {
   getProposal,
   getProposalMember,
@@ -31,28 +31,30 @@ export const voteOnProposalControl = async (owner: string, params: Record<string
     }
 
     if (params.voteWithStakedTokes) {
-      return await soonDb().runTransaction(async (transaction) =>
+      return await build5Db().runTransaction(async (transaction) =>
         voteWithStakedTokens(transaction, owner, proposal, values),
       );
     }
 
     const order = await createVoteTransactionOrder(owner, proposal, values, token);
-    const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
     await orderDocRef.create(order);
 
     return await orderDocRef.get<Transaction>();
   }
 
   const voteData = await executeSimpleVoting(proposalMember, proposal, values);
-  const batch = soonDb().batch();
+  const batch = build5Db().batch();
 
-  const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
   batch.set(proposalDocRef, voteData.proposal, true);
 
   const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(proposalMember.uid);
   batch.set(proposalMemberDocRef, voteData.proposalMember, true);
 
-  const voteTransactionDocRef = soonDb().doc(`${COL.TRANSACTION}/${voteData.voteTransaction.uid}`);
+  const voteTransactionDocRef = build5Db().doc(
+    `${COL.TRANSACTION}/${voteData.voteTransaction.uid}`,
+  );
   batch.create(voteTransactionDocRef, voteData.voteTransaction);
   await batch.commit();
 

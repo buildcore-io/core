@@ -10,9 +10,9 @@ import {
   TransactionOrder,
   TransactionOrderType,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import chance from 'chance';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { validateAddress } from '../../src/runtime/firebase/address';
 import { createMember as createMemberFunc } from '../../src/runtime/firebase/member';
 import { createSpace as createSpaceFunc } from '../../src/runtime/firebase/space/index';
@@ -44,7 +44,7 @@ export const milestoneProcessed = async (
 ) => {
   for (let attempt = 0; attempt < 400; ++attempt) {
     await new Promise((r) => setTimeout(r, 500));
-    const doc = await soonDb()
+    const doc = await build5Db()
       .doc(
         `${COL.MILESTONE + (network ? `_${network}` : '')}/${nextMilestone}/${
           SUB_COL.TRANSACTIONS
@@ -62,7 +62,7 @@ export const submitMilestoneFunc = async (address: string, amount: number, netwo
   submitMilestoneOutputsFunc([{ address, amount }], network);
 
 export const submitMilestoneOutputsFunc = async <T>(outputs: T[], network?: Network) => {
-  const milestoneColl = soonDb().collection(
+  const milestoneColl = build5Db().collection(
     (COL.MILESTONE + (network ? `_${network}` : '')) as COL,
   );
   const nextMilestone = wallet.getRandomEthAddress();
@@ -112,7 +112,7 @@ export const createMember = async (spy: any): Promise<string> => {
   for (const network of Object.values(Network)) {
     const wallet = await getWallet(network);
     const address = await wallet.getNewIotaAddressDetails();
-    await soonDb()
+    await build5Db()
       .doc(`${COL.MEMBER}/${memberAddress}`)
       .update({ [`validatedAddress.${network}`]: address.bech32, name: getRandomSymbol() });
   }
@@ -122,7 +122,7 @@ export const createMember = async (spy: any): Promise<string> => {
 export const createSpace = async (spy: any, guardian: string): Promise<Space> => {
   mockWalletReturnValue(spy, guardian, { name: 'Space A', bannerUrl: MEDIA });
   const space = await testEnv.wrap(createSpaceFunc)({});
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space.uid}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
   for (const network of Object.values(Network)) {
     const wallet = await getWallet(network);
     const address = await wallet.getNewIotaAddressDetails();
@@ -133,8 +133,8 @@ export const createSpace = async (spy: any, guardian: string): Promise<Space> =>
 
 export const tokenProcessed = (tokenId: string, distributionLength: number, reconciled: boolean) =>
   wait(async () => {
-    const doc = await soonDb().doc(`${COL.TOKEN}/${tokenId}`).get<Token>();
-    const distributionsSnap = await soonDb()
+    const doc = await build5Db().doc(`${COL.TOKEN}/${tokenId}`).get<Token>();
+    const distributionsSnap = await build5Db()
       .doc(`${COL.TOKEN}/${tokenId}`)
       .collection(SUB_COL.DISTRIBUTION)
       .get<TokenDistribution>();
@@ -186,13 +186,13 @@ export const createRoyaltySpaces = async () => {
   const guardian = await createMember(walletSpy);
 
   const spaceIdSpy = jest.spyOn(wallet, 'getRandomEthAddress');
-  const spaceOneDoc = await soonDb().doc(`${COL.SPACE}/${spaceOneId}`).get();
+  const spaceOneDoc = await build5Db().doc(`${COL.SPACE}/${spaceOneId}`).get();
   if (!spaceOneDoc) {
     spaceIdSpy.mockReturnValue(spaceOneId);
     await createSpace(walletSpy, guardian);
   }
 
-  const spaceTwoDoc = await soonDb().doc(`${COL.SPACE}/${spaceTwoId}`).get();
+  const spaceTwoDoc = await build5Db().doc(`${COL.SPACE}/${spaceTwoId}`).get();
   if (!spaceTwoDoc) {
     spaceIdSpy.mockReturnValue(spaceTwoId);
     await createSpace(walletSpy, guardian);
@@ -203,7 +203,7 @@ export const createRoyaltySpaces = async () => {
 };
 
 export const addGuardianToSpace = async (space: string, member: string) => {
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space}`);
   const guardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member);
   const guardian = await guardianDocRef.get();
   if (guardian) {
@@ -214,18 +214,21 @@ export const addGuardianToSpace = async (space: string, member: string) => {
     parentId: space,
     parentCol: COL.SPACE,
   });
-  await spaceDocRef.update({ totalGuardians: soonDb().inc(1), totalMembers: soonDb().inc(1) });
+  await spaceDocRef.update({ totalGuardians: build5Db().inc(1), totalMembers: build5Db().inc(1) });
 };
 
 export const removeGuardianFromSpace = async (space: string, member: string) => {
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space}`);
   const guardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member);
   await guardianDocRef.delete();
-  await spaceDocRef.update({ totalGuardians: soonDb().inc(-1), totalMembers: soonDb().inc(-11) });
+  await spaceDocRef.update({
+    totalGuardians: build5Db().inc(-1),
+    totalMembers: build5Db().inc(-11),
+  });
 };
 
 export const saveSoon = async () => {
   const soonTokenId = '0xa381bfccaf121e38e31362d85b5ad30cd7fc0d06';
-  await soonDb().doc(`${COL.TOKEN}/${soonTokenId}`).set({ uid: soonTokenId, symbol: 'SOON' });
+  await build5Db().doc(`${COL.TOKEN}/${soonTokenId}`).set({ uid: soonTokenId, symbol: 'SOON' });
   return soonTokenId;
 };

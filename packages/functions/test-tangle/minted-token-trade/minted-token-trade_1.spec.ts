@@ -11,8 +11,8 @@ import {
   Transaction,
   TransactionCreditType,
   TransactionType,
-} from '@build5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { wait } from '../../test/controls/common';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { Helper } from './Helper';
@@ -39,7 +39,7 @@ describe('Token minting', () => {
       buyOrder = await helper.createBuyOrder();
     }
 
-    const billPaymentsQuery = soonDb()
+    const billPaymentsQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', 'in', [helper.seller, helper.buyer])
       .where('type', '==', TransactionType.BILL_PAYMENT);
@@ -49,7 +49,7 @@ describe('Token minting', () => {
     });
 
     const trades = (
-      await soonDb().collection(COL.TOKEN_MARKET).where('token', '==', helper.token!.uid).get()
+      await build5Db().collection(COL.TOKEN_MARKET).where('token', '==', helper.token!.uid).get()
     ).map((d) => <TokenTradeOrder>d);
     const allHaveTokenStatus = trades.reduce(
       (acc, act) => acc && act.tokenStatus === TokenStatus.MINTED,
@@ -92,7 +92,7 @@ describe('Token minting', () => {
     expect(paymentToBuyer.payload.storageReturn.amount).toBe(53800);
     expect(paymentToBuyer.payload.storageReturn.address).toBe(helper.sellerAddress?.bech32);
 
-    const sellerCreditSnap = await soonDb()
+    const sellerCreditSnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller!)
       .where('type', '==', TransactionType.CREDIT)
@@ -105,7 +105,7 @@ describe('Token minting', () => {
     expect(sellerCredit.payload.type).toBe(TransactionCreditType.TOKEN_TRADE_FULLFILLMENT);
 
     const purchase = (
-      await soonDb().collection(COL.TOKEN_PURCHASE).where('token', '==', helper.token!.uid).get()
+      await build5Db().collection(COL.TOKEN_PURCHASE).where('token', '==', helper.token!.uid).get()
     )[0] as TokenPurchase;
     expect(purchase.triggeredBy).toBe(
       saveBuyFirst ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY,

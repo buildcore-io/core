@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build5/interfaces';
+import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -46,28 +46,32 @@ describe('Transaction trigger spec', () => {
       sourceAddress.bech32,
       targetAddress.bech32,
     );
-    const batch = soonDb().batch();
-    batch.create(soonDb().doc(`${COL.TRANSACTION}/${billPayment1.uid}`), billPayment1);
-    batch.create(soonDb().doc(`${COL.TRANSACTION}/${credit.uid}`), credit);
-    batch.create(soonDb().doc(`${COL.TRANSACTION}/${billPayment2.uid}`), billPayment2);
+    const batch = build5Db().batch();
+    batch.create(build5Db().doc(`${COL.TRANSACTION}/${billPayment1.uid}`), billPayment1);
+    batch.create(build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`), credit);
+    batch.create(build5Db().doc(`${COL.TRANSACTION}/${billPayment2.uid}`), billPayment2);
     await batch.commit();
     await wait(async () => {
       billPayment1 = <Transaction>(
-        await soonDb().doc(`${COL.TRANSACTION}/${billPayment1.uid}`).get()
+        await build5Db().doc(`${COL.TRANSACTION}/${billPayment1.uid}`).get()
       );
       billPayment2 = <Transaction>(
-        await soonDb().doc(`${COL.TRANSACTION}/${billPayment2.uid}`).get()
+        await build5Db().doc(`${COL.TRANSACTION}/${billPayment2.uid}`).get()
       );
-      credit = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${credit.uid}`).get();
+      credit = <Transaction>await build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`).get();
       return (
         billPayment1?.payload?.walletReference?.confirmed &&
         billPayment2?.payload?.walletReference?.confirmed &&
         credit?.payload?.walletReference?.confirmed
       );
     });
-    billPayment1 = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${billPayment1.uid}`).get();
-    billPayment2 = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${billPayment2.uid}`).get();
-    credit = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${credit.uid}`).get();
+    billPayment1 = <Transaction>(
+      await build5Db().doc(`${COL.TRANSACTION}/${billPayment1.uid}`).get()
+    );
+    billPayment2 = <Transaction>(
+      await build5Db().doc(`${COL.TRANSACTION}/${billPayment2.uid}`).get()
+    );
+    credit = <Transaction>await build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`).get();
 
     expect(
       dayjs(billPayment1?.payload?.walletReference?.processedOn?.toDate()).isBefore(

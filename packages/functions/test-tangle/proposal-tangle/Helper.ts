@@ -12,10 +12,10 @@ import {
   TokenStatus,
   Transaction,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { IQuery } from '../../src/firebase/firestore/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
@@ -48,7 +48,7 @@ export class Helper {
   public beforeEach = async () => {
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
     this.guardian = await createMember(this.walletSpy);
-    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${this.guardian}`);
+    const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${this.guardian}`);
     const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, this.network);
     this.guardianAddress = await this.walletService.getAddressDetails(guardianBech32);
@@ -56,7 +56,7 @@ export class Helper {
     this.space = await createSpace(this.walletSpy, this.guardian);
 
     this.tokenId = wallet.getRandomEthAddress();
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TOKEN}/${this.tokenId}`)
       .create({
         uid: this.tokenId,
@@ -66,14 +66,14 @@ export class Helper {
         approved: true,
       });
 
-    const distributionDocRef = soonDb()
+    const distributionDocRef = build5Db()
       .collection(COL.TOKEN)
       .doc(this.tokenId)
       .collection(SUB_COL.DISTRIBUTION)
       .doc(this.guardian);
     await distributionDocRef.create({});
 
-    this.guardianCreditQuery = soonDb()
+    this.guardianCreditQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST)
       .where('member', '==', this.guardian);
@@ -132,12 +132,12 @@ export class Helper {
       uid: wallet.getRandomEthAddress(),
       token: this.tokenId,
     };
-    const docRef = soonDb().doc(`${COL.STAKE}/${stake.uid}`);
+    const docRef = build5Db().doc(`${COL.STAKE}/${stake.uid}`);
     await docRef.create(stake);
   };
 
   public assertProposalWeights = async (total: number, voted: number) => {
-    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${this.proposalUid}`);
+    const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${this.proposalUid}`);
     const proposal = <Proposal>await proposalDocRef.get();
     expect(+proposal.results?.total.toFixed(0)).toBe(total);
     expect(+proposal.results?.voted.toFixed(0)).toBe(voted);
@@ -148,14 +148,14 @@ export class Helper {
     weight: number,
     answer: number,
   ) => {
-    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${this.proposalUid}`);
+    const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${this.proposalUid}`);
     const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(member);
     const proposalMember = <ProposalMember>await proposalMemberDocRef.get();
     expect(+proposalMember.weightPerAnswer![answer].toFixed(0)).toBe(weight);
   };
 
   public updatePropoasalDates = (startDate: dayjs.Dayjs, endDate: dayjs.Dayjs) =>
-    soonDb()
+    build5Db()
       .doc(`${COL.PROPOSAL}/${this.proposalUid}`)
       .set(
         {
@@ -168,12 +168,12 @@ export class Helper {
       );
 
   public updateVoteTranCreatedOn = (voteTransactionId: string, createdOn: dayjs.Dayjs) =>
-    soonDb()
+    build5Db()
       .doc(`${COL.TRANSACTION}/${voteTransactionId}`)
       .update({ createdOn: dateToTimestamp(createdOn) });
 
   public getVoteTransactionForCredit = async (creditId: string) => {
-    const query = soonDb()
+    const query = build5Db()
       .collection(COL.TRANSACTION)
       .where('payload.creditId', '==', creditId)
       .where('type', '==', TransactionType.VOTE);

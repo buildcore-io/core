@@ -14,11 +14,11 @@ import {
   Transaction,
   TransactionCreditType,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { ITransaction } from '../../firebase/firestore/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { getAddress } from '../../utils/address.utils';
@@ -42,7 +42,7 @@ const createIotaPayments = async (
   if (balance !== 0 && balance < MIN_IOTA_AMOUNT) {
     return [];
   }
-  const sellOrder = await soonDb()
+  const sellOrder = await build5Db()
     .doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`)
     .get<Transaction>();
   const billPayment = <Transaction>{
@@ -105,7 +105,7 @@ const createRoyaltyPayment = async (
   fee: number,
   info: INodeInfo,
 ) => {
-  const space = (await soonDb().doc(`${COL.SPACE}/${spaceId}`).get<Space>())!;
+  const space = (await build5Db().doc(`${COL.SPACE}/${spaceId}`).get<Space>())!;
   const spaceAddress = getAddress(space, buy.sourceNetwork!);
   const sellerAddress = getAddress(seller, buy.sourceNetwork!);
   const output = packBasicOutput(spaceAddress, 0, undefined, info, sellerAddress);
@@ -148,7 +148,7 @@ const createSmrPayments = async (
 ): Promise<Transaction[]> => {
   const wallet = (await WalletService.newWallet(buy.sourceNetwork!)) as SmrWallet;
   const tmpAddress = await wallet.getNewIotaAddressDetails(false);
-  const buyOrder = await soonDb()
+  const buyOrder = await build5Db()
     .doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`)
     .get<Transaction>();
 
@@ -247,8 +247,8 @@ export const matchBaseToken = async (
   triggeredBy: TokenTradeOrderType,
 ): Promise<Match> => {
   const tokensToTrade = Math.min(sell.count - sell.fulfilled, buy.count - buy.fulfilled);
-  const seller = await soonDb().doc(`${COL.MEMBER}/${sell.owner}`).get<Member>();
-  const buyer = await soonDb().doc(`${COL.MEMBER}/${buy.owner}`).get<Member>();
+  const seller = await build5Db().doc(`${COL.MEMBER}/${sell.owner}`).get<Member>();
+  const buyer = await build5Db().doc(`${COL.MEMBER}/${buy.owner}`).get<Member>();
 
   const iotaPayments = await createIotaPayments(token, sell, seller!, buyer!, tokensToTrade);
   const smrPayments = await createSmrPayments(
@@ -264,7 +264,7 @@ export const matchBaseToken = async (
     return { sellerCreditId: undefined, buyerCreditId: undefined, purchase: undefined };
   }
   [...iotaPayments, ...smrPayments].forEach((payment) => {
-    const docRef = soonDb().doc(`${COL.TRANSACTION}/${payment.uid}`);
+    const docRef = build5Db().doc(`${COL.TRANSACTION}/${payment.uid}`);
     transaction.create(docRef, payment);
   });
   return {

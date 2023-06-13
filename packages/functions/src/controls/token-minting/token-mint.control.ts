@@ -10,10 +10,10 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { TransactionHelper } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
@@ -34,8 +34,8 @@ import {
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const mintTokenControl = (owner: string, params: Record<string, unknown>) =>
-  soonDb().runTransaction(async (transaction) => {
-    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${params.token}`);
+  build5Db().runTransaction(async (transaction) => {
+    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
     const token = await transaction.get<Token>(tokenDocRef);
     if (!token) {
       throw invalidArgument(WenError.invalid_params);
@@ -48,7 +48,7 @@ export const mintTokenControl = (owner: string, params: Record<string, unknown>)
     assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED]);
 
     await assertIsGuardian(token.space, owner);
-    const member = await soonDb().doc(`${COL.MEMBER}/${owner}`).get<Member>();
+    const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();
     assertMemberHasValidAddress(member, params.network as Network);
 
     const wallet = (await WalletService.newWallet(params.network as Network)) as SmrWallet;
@@ -82,7 +82,7 @@ export const mintTokenControl = (owner: string, params: Record<string, unknown>)
         tokensInVault: totalDistributed,
       },
     };
-    transaction.create(soonDb().doc(`${COL.TRANSACTION}/${order.uid}`), order);
+    transaction.create(build5Db().doc(`${COL.TRANSACTION}/${order.uid}`), order);
     return order;
   });
 

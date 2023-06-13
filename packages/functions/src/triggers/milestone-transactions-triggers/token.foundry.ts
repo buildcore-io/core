@@ -1,4 +1,4 @@
-import { COL } from '@build5/interfaces';
+import { COL } from '@build-5/interfaces';
 import {
   FOUNDRY_OUTPUT_TYPE,
   IAddressUnlockCondition,
@@ -9,7 +9,7 @@ import {
   OutputTypes,
   TransactionHelper,
 } from '@iota/iota.js-next';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { getTokenByMintId } from '../../utils/token.utils';
 
 export const updateTokenSupplyData = async (data: Record<string, unknown>) => {
@@ -28,7 +28,7 @@ export const updateTokenSupplyData = async (data: Record<string, unknown>) => {
     }
     const meltedTokens = Number(foundryOutput.tokenScheme.meltedTokens);
     const totalSupply = Number(foundryOutput.tokenScheme.maximumSupply);
-    const tokendDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
+    const tokendDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
     await tokendDocRef.update({
       'mintingData.meltedTokens': meltedTokens,
       'mintingData.circulatingSupply': totalSupply - meltedTokens,

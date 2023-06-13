@@ -1,6 +1,6 @@
-import { COL, StakeReward, StakeRewardStatus, Token, WenError } from '@build5/interfaces';
+import { COL, StakeReward, StakeRewardStatus, Token, WenError } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
@@ -14,7 +14,7 @@ interface StakeRewardItem {
 }
 
 export const stakeRewardControl = async (owner: string, params: Record<string, unknown>) => {
-  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${params.token}`);
+  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
   const token = await tokenDocRef.get<Token>();
   if (!token) {
     throw invalidArgument(WenError.token_does_not_exist);
@@ -31,9 +31,9 @@ export const stakeRewardControl = async (owner: string, params: Record<string, u
     status: StakeRewardStatus.UNPROCESSED,
   }));
 
-  const batch = soonDb().batch();
+  const batch = build5Db().batch();
   stakeRewards.forEach((stakeReward) => {
-    const docRef = soonDb().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+    const docRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     batch.create(docRef, stakeReward);
   });
   await batch.commit();

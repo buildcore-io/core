@@ -1,7 +1,7 @@
-import { COL } from '@build5/interfaces';
+import { COL } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { markExpiredProposalCompleted } from '../../src/cron/proposal.cron';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 
@@ -11,7 +11,7 @@ describe('Set proposal completed', () => {
     const count = 600;
     const ids = Array.from(Array(count)).map(() => getRandomEthAddress());
 
-    let batch = soonDb().batch();
+    let batch = build5Db().batch();
     for (let i = 0; i < count; ++i) {
       const proposal = {
         uid: ids[i],
@@ -22,25 +22,25 @@ describe('Set proposal completed', () => {
         createdBy: member,
         completed: i < 550,
       };
-      const docRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+      const docRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
       batch.create(docRef, proposal);
       if (i > 0 && i % 499 === 0) {
         await batch.commit();
-        batch = soonDb().batch();
+        batch = build5Db().batch();
       }
     }
     await batch.commit();
 
     await markExpiredProposalCompleted();
 
-    const completed = await soonDb()
+    const completed = await build5Db()
       .collection(COL.PROPOSAL)
       .where('createdBy', '==', member)
       .where('completed', '==', true)
       .get();
     expect(completed.length).toBe(550);
 
-    const inProgress = await soonDb()
+    const inProgress = await build5Db()
       .collection(COL.PROPOSAL)
       .where('createdBy', '==', member)
       .where('completed', '==', false)

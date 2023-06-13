@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { COL, MIN_IOTA_AMOUNT, TokenTradeOrderType, WenError } from '@build5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { COL, MIN_IOTA_AMOUNT, TokenTradeOrderType, WenError } from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -21,7 +21,7 @@ describe('Token minting', () => {
 
   it('Should create sell order, not approved, but public', async () => {
     // Should throw at sell, not approved, not public
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TOKEN}/${helper.token!.uid}`)
       .update({ approved: false, public: false });
     mockWalletReturnValue(helper.walletSpy, helper.seller!, {
@@ -33,7 +33,7 @@ describe('Token minting', () => {
     await expectThrow(testEnv.wrap(tradeToken)({}), WenError.token_does_not_exist.key);
 
     // Should throw at buy, not approved, not public
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TOKEN}/${helper.token!.uid}`)
       .update({ approved: false, public: false });
     mockWalletReturnValue(helper.walletSpy, helper.buyer!, {
@@ -45,7 +45,7 @@ describe('Token minting', () => {
     await expectThrow(testEnv.wrap(tradeToken)({}), WenError.token_does_not_exist.key);
 
     // Should create sell order, not approved, but public
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TOKEN}/${helper.token!.uid}`)
       .update({ approved: false, public: true });
     mockWalletReturnValue(helper.walletSpy, helper.seller!, {
@@ -57,7 +57,7 @@ describe('Token minting', () => {
     expect(await testEnv.wrap(tradeToken)({})).toBeDefined();
 
     // Should create buy order, not approved, but public'
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TOKEN}/${helper.token!.uid}`)
       .update({ approved: false, public: true });
     mockWalletReturnValue(helper.walletSpy, helper.seller!, {

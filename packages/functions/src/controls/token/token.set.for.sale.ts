@@ -1,5 +1,5 @@
-import { COL, Token, TokenStatus, WenError } from '@build5/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { COL, Token, TokenStatus, WenError } from '@build-5/interfaces';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
@@ -9,9 +9,9 @@ export const setTokenAvailableForSaleControl = async (
   owner: string,
   params: Record<string, unknown>,
 ) => {
-  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${params.token}`);
+  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
 
-  await soonDb().runTransaction(async (transaction) => {
+  await build5Db().runTransaction(async (transaction) => {
     const token = await transaction.get<Token>(tokenDocRef);
     if (!token) {
       throw invalidArgument(WenError.invalid_params);

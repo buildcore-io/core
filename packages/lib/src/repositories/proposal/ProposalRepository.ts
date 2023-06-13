@@ -1,11 +1,11 @@
-import { Opr, Proposal, PublicCollections } from '@build5/interfaces';
-import { SoonEnv } from '../../Config';
+import { Opr, Proposal, PublicCollections } from '@build-5/interfaces';
+import { Build5Env } from '../../Config';
 import { CrudRepository } from '../CrudRepository';
 import { ProposalFilter } from './intex';
 
 export class ProposalRepository extends CrudRepository<Proposal> {
-  constructor(env?: SoonEnv) {
-    super(env || SoonEnv.PROD, PublicCollections.PROPOSAL);
+  constructor(env?: Build5Env) {
+    super(env || Build5Env.PROD, PublicCollections.PROPOSAL);
   }
 
   public getActiveLive = (startAfter?: string) => {

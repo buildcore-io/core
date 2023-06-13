@@ -7,8 +7,8 @@ import {
   TangleRequestType,
   Transaction,
   TransactionType,
-} from '@build5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { WalletService } from '../../src/services/wallet/wallet';
 import { wait } from '../../test/controls/common';
@@ -46,7 +46,7 @@ describe('Minted nft trading', () => {
     });
     await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
 
-    const creditQuery = soonDb()
+    const creditQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', address.bech32)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
@@ -57,7 +57,7 @@ describe('Minted nft trading', () => {
     const snap = await creditQuery.get();
     const credit = snap[0] as Transaction;
 
-    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${helper.nft?.collection}`);
+    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${helper.nft?.collection}`);
     const collection = <Collection>await collectionDocRef.get();
     expect(collection.availableNfts).toBe(1);
     expect(collection.nftsOnSale).toBe(0);
@@ -74,7 +74,7 @@ describe('Minted nft trading', () => {
       {},
     );
 
-    const nftDocRef = soonDb().doc(`${COL.NFT}/${helper.nft?.uid}`);
+    const nftDocRef = build5Db().doc(`${COL.NFT}/${helper.nft?.uid}`);
     await wait(async () => {
       const nft = <Nft>await nftDocRef.get();
       return nft.sold || false;
@@ -83,7 +83,7 @@ describe('Minted nft trading', () => {
     expect(nft.owner).toBe(address.bech32);
 
     await wait(async () => {
-      const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${helper.nft?.collection}`);
+      const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${helper.nft?.collection}`);
       const collection = <Collection>await collectionDocRef.get();
       return !collection.availableNfts && !collection.nftsOnSale && !collection.nftsOnAuction;
     });

@@ -1,5 +1,5 @@
-import { Access, COL, Nft, SUB_COL, TransactionAwardType, WenError } from '@build5/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { Access, COL, Nft, SUB_COL, TransactionAwardType, WenError } from '@build-5/interfaces';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { invalidArgument } from '../../utils/error.utils';
 
 export const assertHasAccess = async (
@@ -14,20 +14,20 @@ export const assertHasAccess = async (
   }
 
   if (access === Access.MEMBERS_ONLY) {
-    if (!(await soonDb().doc(`${COL.SPACE}/${spaceId}/${SUB_COL.MEMBERS}/${member}`).get())) {
+    if (!(await build5Db().doc(`${COL.SPACE}/${spaceId}/${SUB_COL.MEMBERS}/${member}`).get())) {
       throw invalidArgument(WenError.you_are_not_part_of_space);
     }
   }
 
   if (access === Access.GUARDIANS_ONLY) {
-    if (!(await soonDb().doc(`${COL.SPACE}/${spaceId}/${SUB_COL.GUARDIANS}/${member}`).get())) {
+    if (!(await build5Db().doc(`${COL.SPACE}/${spaceId}/${SUB_COL.GUARDIANS}/${member}`).get())) {
       throw invalidArgument(WenError.you_are_not_guardian_of_space);
     }
   }
 
   if (access === Access.MEMBERS_WITH_BADGE) {
     for (const award of accessAwards) {
-      const snapshot = await soonDb()
+      const snapshot = await build5Db()
         .collection(COL.TRANSACTION)
         .where('payload.type', '==', TransactionAwardType.BADGE)
         .where('member', '==', member)
@@ -42,7 +42,7 @@ export const assertHasAccess = async (
 
   if (access === Access.MEMBERS_WITH_NFT_FROM_COLLECTION) {
     const includedCollections: string[] = [];
-    const snapshot = await soonDb().collection(COL.NFT).where('owner', '==', member).get<Nft>();
+    const snapshot = await build5Db().collection(COL.NFT).where('owner', '==', member).get<Nft>();
     if (snapshot.length > 0 && accessCollections?.length) {
       for (const data of snapshot) {
         if (

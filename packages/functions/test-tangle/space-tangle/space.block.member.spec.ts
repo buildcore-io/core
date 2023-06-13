@@ -5,8 +5,8 @@ import {
   Space,
   TangleRequestType,
   Transaction,
-} from '@build5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -49,7 +49,7 @@ describe('Block space member', () => {
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
 
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${helper.space.uid}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${helper.space.uid}`);
     helper.space = <Space>await spaceDocRef.get();
     expect(helper.space.totalMembers).toBe(1);
   });

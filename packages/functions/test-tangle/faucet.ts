@@ -1,4 +1,4 @@
-import { Network, Timestamp } from '@build5/interfaces';
+import { Network, Timestamp } from '@build-5/interfaces';
 import { SingleNodeClient } from '@iota/iota.js';
 import { SingleNodeClient as SingleNodeClientNext } from '@iota/iota.js-next';
 import { HexHelper } from '@iota/util.js-next';

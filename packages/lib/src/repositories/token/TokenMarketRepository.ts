@@ -4,11 +4,11 @@ import {
   TokenTradeOrder,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
-} from '@build5/interfaces';
-import { Observable } from 'rxjs';
-import { SESSION_ID, SoonEnv, getTokenPriceUrl } from '../../Config';
+} from '@build-5/interfaces';
+import { Observable as RxjsObservable } from 'rxjs';
+import { Build5Env, SESSION_ID, getTokenPriceUrl } from '../../Config';
 import { toQueryParams, wrappedFetch } from '../../fetch.utils';
-import { SoonObservable } from '../../soon_observable';
+import { Observable } from '../../observable';
 import { CrudRepository } from '../CrudRepository';
 
 export interface TokenPriceResponse {
@@ -18,8 +18,8 @@ export interface TokenPriceResponse {
 }
 
 export class TokenMarketRepository extends CrudRepository<TokenTradeOrder> {
-  constructor(env?: SoonEnv) {
-    super(env || SoonEnv.PROD, PublicCollections.TOKEN_MARKET);
+  constructor(env?: Build5Env) {
+    super(env || Build5Env.PROD, PublicCollections.TOKEN_MARKET);
   }
 
   /**
@@ -32,10 +32,10 @@ export class TokenMarketRepository extends CrudRepository<TokenTradeOrder> {
     return (response as Record<string, unknown>).price;
   };
 
-  public getTokenPriceLive = (token: string): Observable<TokenPriceResponse> => {
+  public getTokenPriceLive = (token: string): RxjsObservable<TokenPriceResponse> => {
     const params = { token, sessionId: SESSION_ID };
     const url = getTokenPriceUrl(this.env) + toQueryParams(params);
-    return new SoonObservable<TokenPriceResponse>(this.env, url);
+    return new Observable<TokenPriceResponse>(this.env, url);
   };
 
   /**

@@ -7,9 +7,9 @@ import {
   TokenDropStatus,
   TokenStatus,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { chunk } from 'lodash';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
@@ -31,8 +31,8 @@ const hasAvailableTokenToAirdrop = (token: Token, count: number) => {
 export const airdropTokenControl = async (owner: string, params: Record<string, unknown>) => {
   const chunks = chunk(params.drops as TokenDropRequest[], 200);
   for (const chunk of chunks) {
-    await soonDb().runTransaction(async (transaction) => {
-      const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${params.token}`);
+    await build5Db().runTransaction(async (transaction) => {
+      const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
       const token = await transaction.get<Token>(tokenDocRef);
 
       if (!token) {
@@ -49,7 +49,7 @@ export const airdropTokenControl = async (owner: string, params: Record<string, 
         throw invalidArgument(WenError.no_tokens_available_for_airdrop);
       }
 
-      transaction.update(tokenDocRef, { totalAirdropped: soonDb().inc(totalDropped) });
+      transaction.update(tokenDocRef, { totalAirdropped: build5Db().inc(totalDropped) });
 
       for (const drop of chunk) {
         const airdrop: TokenDrop = {
@@ -61,7 +61,7 @@ export const airdropTokenControl = async (owner: string, params: Record<string, 
           count: drop.count,
           status: TokenDropStatus.UNCLAIMED,
         };
-        const docRef = soonDb().doc(`${COL.AIRDROP}/${airdrop.uid}`);
+        const docRef = build5Db().doc(`${COL.AIRDROP}/${airdrop.uid}`);
         transaction.create(docRef, airdrop);
 
         const distributionDocRef = tokenDocRef
@@ -73,7 +73,7 @@ export const airdropTokenControl = async (owner: string, params: Record<string, 
             parentId: token.uid,
             parentCol: COL.TOKEN,
             uid: drop.recipient.toLowerCase(),
-            totalUnclaimedAirdrop: soonDb().inc(drop.count),
+            totalUnclaimedAirdrop: build5Db().inc(drop.count),
           },
           true,
         );

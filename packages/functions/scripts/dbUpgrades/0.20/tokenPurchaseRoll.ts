@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { COL, SUB_COL, TokenPurchase, TokenPurchaseAge } from '@build5/interfaces';
+import { COL, SUB_COL, TokenPurchase, TokenPurchaseAge } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty, last } from 'lodash';
 import { FirebaseApp } from '../../../src/firebase/app/app';
 import { Firestore } from '../../../src/firebase/firestore/firestore';
-import { getSnapshot, soonDb } from '../../../src/firebase/firestore/soondb';
+import { build5Db, getSnapshot } from '../../../src/firebase/firestore/build5Db';
 
 export const tokenPurchaseRoll = async (app: FirebaseApp) => {
   const db = new Firestore(app);
@@ -36,7 +36,7 @@ export const tokenPurchaseRoll = async (app: FirebaseApp) => {
         const tokenDocRef = db.doc(`${COL.TOKEN}/${purchase.token}`);
         const statDocRef = tokenDocRef.collection(SUB_COL.STATS).doc(purchase.token);
         const volume = Object.values(TokenPurchaseAge).reduce(
-          (acc, act) => ({ ...acc, [act]: soonDb().inc(purchase.count) }),
+          (acc, act) => ({ ...acc, [act]: build5Db().inc(purchase.count) }),
           {},
         );
         batch.set(statDocRef, { volume }, true);

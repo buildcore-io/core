@@ -8,21 +8,21 @@ import {
   NftAccess,
   Timestamp,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 
 export const setForSaleNftControl = async (owner: string, params: Record<string, unknown>) => {
-  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
+  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
   const member = await memberDocRef.get<Member>();
   if (!member) {
     throw invalidArgument(WenError.member_does_not_exists);
   }
 
-  const nftDocRef = soonDb().doc(`${COL.NFT}/${params.nft}`);
+  const nftDocRef = build5Db().doc(`${COL.NFT}/${params.nft}`);
   const nft = await nftDocRef.get<Nft>();
   if (!nft) {
     throw invalidArgument(WenError.nft_does_not_exists);
@@ -58,7 +58,7 @@ export const setForSaleNftControl = async (owner: string, params: Record<string,
     throw invalidArgument(WenError.nft_auction_already_in_progress);
   }
 
-  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nft.collection}`);
+  const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nft.collection}`);
   const collection = await collectionDocRef.get<Collection>();
   if (![CollectionStatus.PRE_MINTED, CollectionStatus.MINTED].includes(collection?.status!)) {
     throw invalidArgument(WenError.invalid_collection_status);

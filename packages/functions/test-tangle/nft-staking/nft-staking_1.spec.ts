@@ -6,9 +6,9 @@ import {
   NftStake,
   StakeType,
   Transaction,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { stakeNft } from '../../src/runtime/firebase/nft';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -30,7 +30,7 @@ describe('Stake nft', () => {
     'Should stake nft',
     async (stakeType: StakeType) => {
       let nft = await helper.createAndOrderNft();
-      const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+      const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
       await helper.mintCollection();
       await helper.withdrawNftAndAwait(nft.uid);
 
@@ -48,7 +48,7 @@ describe('Stake nft', () => {
         nft.mintingData?.nftId,
       );
 
-      const stakeQuery = soonDb().collection(COL.NFT_STAKE).where('nft', '==', nft.uid);
+      const stakeQuery = build5Db().collection(COL.NFT_STAKE).where('nft', '==', nft.uid);
       await wait(async () => {
         const snap = await stakeQuery.get();
         return snap.length === 1;
@@ -65,11 +65,11 @@ describe('Stake nft', () => {
       expect(nftStake.expirationProcessed).toBe(false);
       expect(nftStake.type).toBe(stakeType);
 
-      const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nftStake.collection}`);
+      const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nftStake.collection}`);
       const collection = <Collection>await collectionDocRef.get();
       expect(collection.stakedNft).toBe(1);
 
-      const stakeNftOrderDocRef = soonDb().doc(`${COL.TRANSACTION}/${stakeNftOrder.uid}`);
+      const stakeNftOrderDocRef = build5Db().doc(`${COL.TRANSACTION}/${stakeNftOrder.uid}`);
       stakeNftOrder = <Transaction>await stakeNftOrderDocRef.get();
       expect(stakeNftOrder.payload.nft).toBe(nft.uid);
       expect(stakeNftOrder.payload.collection).toBe(nft.collection);

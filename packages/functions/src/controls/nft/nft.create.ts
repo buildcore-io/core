@@ -8,10 +8,10 @@ import {
   NftAccess,
   Timestamp,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -30,7 +30,7 @@ export const createBatchNftControl = async (owner: string, params: Record<string
 };
 
 const getCollection = async (owner: string, collectionId: string) => {
-  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${collectionId}`);
+  const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${collectionId}`);
   const collection = await collectionDocRef.get<Collection>();
   if (!collection) {
     throw invalidArgument(WenError.collection_does_not_exists);
@@ -116,15 +116,15 @@ const processOneCreateNft = async (
     placeholderNft: false,
     status: CollectionStatus.PRE_MINTED,
   };
-  const batch = soonDb().batch();
-  const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+  const batch = build5Db().batch();
+  const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
   batch.create(nftDocRef, nft);
 
-  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${collection.uid}`);
-  batch.update(collectionDocRef, { total: soonDb().inc(1) });
+  const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${collection.uid}`);
+  batch.update(collectionDocRef, { total: build5Db().inc(1) });
 
   if (collection.placeholderNft) {
-    const placeholderNftDocRef = soonDb().doc(`${COL.NFT}/${collection.placeholderNft}`);
+    const placeholderNftDocRef = build5Db().doc(`${COL.NFT}/${collection.placeholderNft}`);
     batch.update(placeholderNftDocRef, {
       sold: false,
       availableFrom: params.availableFrom,

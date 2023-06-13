@@ -1,5 +1,5 @@
 {
-  "name": "@build5/functions",
+  "name": "@build-5/functions",
   "version": "0.0.0",
   "description": "",
   "license": "Apache-2.0",
@@ -76,7 +76,7 @@
     "typescript": "4.8.4"
   },
   "dependencies": {
-    "@build5/interfaces": "*",
+    "@build-5/interfaces": "*",
     "@ffmpeg-installer/ffmpeg": "1.1.0",
     "@ffprobe-installer/ffprobe": "2.0.0",
     "@iota/crypto.js": "1.8.6",

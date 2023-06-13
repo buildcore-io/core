@@ -7,9 +7,9 @@ import {
   SUB_COL,
   TokenStatus,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import Joi from 'joi';
-import { soonDb } from '../../../../firebase/firestore/soondb';
+import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { createProposalSchema } from '../../../../runtime/firebase/proposal';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
@@ -27,7 +27,7 @@ export class ProposalCreateService {
 
     const { proposal, proposalOwner } = await createProposal(owner, request);
 
-    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+    const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
     this.transactionService.push({ ref: proposalDocRef, data: proposal, action: 'set' });
 
     const proposalOwnerDocRef = proposalDocRef.collection(SUB_COL.OWNERS).doc(proposalOwner.uid);
@@ -42,7 +42,7 @@ export class ProposalCreateService {
 }
 
 export const createProposal = async (owner: string, params: Record<string, unknown>) => {
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${params.space}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.space}`);
   const spaceMemberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner);
   const spaceMember = await spaceMemberDocRef.get<SpaceMember>();
   if (!spaceMember) {
@@ -91,13 +91,13 @@ export const createProposal = async (owner: string, params: Record<string, unkno
 
 const createProposalMembersAndGetTotalWeight = async (proposal: Proposal) => {
   const subCol = proposal.settings.onlyGuardians ? SUB_COL.GUARDIANS : SUB_COL.MEMBERS;
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${proposal.space}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${proposal.space}`);
   const spaceMembers = await spaceDocRef.collection(subCol).get<SpaceMember>();
 
   const promises = spaceMembers.map(async (spaceMember) => {
     const proposalMember = await createProposalMember(proposal, spaceMember);
     if (proposalMember.weight || proposal.type === ProposalType.NATIVE) {
-      const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+      const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
       await proposalDocRef
         .collection(SUB_COL.MEMBERS)
         .doc(proposalMember.uid)

@@ -7,11 +7,11 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { IndexerPluginClient } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { generateRandomAmount } from '../../utils/common.utils';
@@ -21,10 +21,10 @@ import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const importMintedTokenControl = async (owner: string, params: Record<string, unknown>) =>
-  soonDb().runTransaction(async (transaction) => {
+  build5Db().runTransaction(async (transaction) => {
     await assertIsGuardian(params.space as string, owner);
 
-    const existingTokenDocRef = soonDb().doc(`${COL.TOKEN}/${params.tokenId}`);
+    const existingTokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.tokenId}`);
     const existingToken = await transaction.get(existingTokenDocRef);
     if (existingToken) {
       throw invalidArgument(WenError.token_already_exists_for_space);
@@ -56,7 +56,7 @@ export const importMintedTokenControl = async (owner: string, params: Record<str
         tokenId: params.tokenId,
       },
     };
-    const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
     transaction.create(orderDocRef, order);
     return order;
   });

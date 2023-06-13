@@ -10,10 +10,10 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { WalletService } from '../../services/wallet/wallet';
 import { getAddress } from '../../utils/address.utils';
 import { generateRandomAmount } from '../../utils/common.utils';
@@ -26,7 +26,7 @@ export const claimAirdroppedTokenControl = async (
   owner: string,
   params: Record<string, unknown>,
 ) => {
-  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${params.token}`);
+  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
   const token = await tokenDocRef.get<Token>();
   if (!token) {
     throw invalidArgument(WenError.invalid_params);
@@ -34,16 +34,16 @@ export const claimAirdroppedTokenControl = async (
 
   assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED]);
 
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${token.space}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${token.space}`);
   const space = await spaceDocRef.get<Space>();
 
   const tranId = getRandomEthAddress();
-  const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${tranId}`);
+  const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${tranId}`);
 
   const wallet = await WalletService.newWallet();
   const targetAddress = await wallet.getNewIotaAddressDetails();
 
-  await soonDb().runTransaction(async (transaction) => {
+  await build5Db().runTransaction(async (transaction) => {
     const claimableDrops = await getUnclaimedDrops(params.token as string, owner);
     if (isEmpty(claimableDrops)) {
       throw invalidArgument(WenError.no_airdrop_to_claim);

@@ -5,9 +5,9 @@ import {
   TokenAllocation,
   WEN_FUNC,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../../src/firebase/firestore/soondb';
+import { build5Db } from '../../../src/firebase/firestore/build5Db';
 import { createToken, setTokenAvailableForSale } from '../../../src/runtime/firebase/token/base';
 import { dateToTimestamp } from '../../../src/utils/dateTime.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
@@ -52,18 +52,18 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
     space = await createSpace(walletSpy, memberAddress);
     mockWalletReturnValue(walletSpy, memberAddress, dummyToken(space.uid));
     token = await testEnv.wrap(createToken)({});
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true });
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true });
   });
 
   it('Should throw, not approved', async () => {
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false });
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false });
     const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };
     mockWalletReturnValue(walletSpy, memberAddress, updateData);
     await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.token_not_approved.key);
   });
 
   it('Should throw, rejected', async () => {
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true, rejected: true });
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true, rejected: true });
     const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };
     mockWalletReturnValue(walletSpy, memberAddress, updateData);
     await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.token_not_approved.key);
@@ -88,7 +88,7 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
   });
 
   it('Should set public availability', async () => {
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TOKEN}/${token.uid}`)
       .update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] });
     const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };
@@ -109,7 +109,7 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
   });
 
   it('Should set public availability', async () => {
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TOKEN}/${token.uid}`)
       .update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] });
     const updateData = {
@@ -135,7 +135,7 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
   });
 
   it('Should throw, can not set public availability twice', async () => {
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TOKEN}/${token.uid}`)
       .update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] });
     mockWalletReturnValue(walletSpy, memberAddress, {
@@ -157,7 +157,7 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
   });
 
   it('Should set no cool down length', async () => {
-    const docRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
+    const docRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
     await docRef.update({
       allocations: [{ title: 'public', percentage: 100, isPublicSale: true }],
     });

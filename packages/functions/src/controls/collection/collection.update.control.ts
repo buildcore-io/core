@@ -7,11 +7,11 @@ import {
   Nft,
   NftStatus,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import Joi from 'joi';
 import { isEmpty, last, set } from 'lodash';
-import { getSnapshot, soonDb } from '../../firebase/firestore/soondb';
+import { build5Db, getSnapshot } from '../../firebase/firestore/build5Db';
 import {
   updateCollectionSchema,
   updateMintedCollectionSchema,
@@ -24,7 +24,7 @@ import { assertIsGuardian } from '../../utils/token.utils';
 import { populateTokenUidOnDiscounts } from './common';
 
 export const updateCollectionControl = async (owner: string, params: Record<string, unknown>) => {
-  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${params.uid}`);
+  const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${params.uid}`);
   const collection = await collectionDocRef.get<Collection>();
   if (!collection) {
     throw invalidArgument(WenError.collection_does_not_exists);
@@ -35,7 +35,7 @@ export const updateCollectionControl = async (owner: string, params: Record<stri
   const schema = Joi.object({ uid: CommonJoi.uid(), ...updateSchemaObj });
   await assertValidationAsync(schema, params);
 
-  const member = await soonDb().doc(`${COL.MEMBER}/${owner}`).get<Member>();
+  const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();
   if (!member) {
     throw invalidArgument(WenError.member_does_not_exists);
   }
@@ -57,7 +57,7 @@ export const updateCollectionControl = async (owner: string, params: Record<stri
 
   await assertIsGuardian(collection.space, owner);
 
-  const batch = soonDb().batch();
+  const batch = build5Db().batch();
 
   const price = (params.price as number) || collection.price;
   const collectionUpdateData = {
@@ -81,7 +81,7 @@ export const updateCollectionControl = async (owner: string, params: Record<stri
       space: collection.space,
       type: collection.type,
     };
-    const nftDocRef = soonDb().doc(`${COL.NFT}/${collection.placeholderNft}`);
+    const nftDocRef = build5Db().doc(`${COL.NFT}/${collection.placeholderNft}`);
     batch.update(nftDocRef, data);
   }
   await batch.commit();
@@ -99,7 +99,7 @@ export const updateCollectionControl = async (owner: string, params: Record<stri
       let lastNftId = '';
       do {
         const lastDoc = await getSnapshot(COL.NFT, lastNftId);
-        const nfts = await soonDb()
+        const nfts = await build5Db()
           .collection(COL.NFT)
           .where('collection', '==', collection.uid)
           .where('isOwned', '==', false)
@@ -109,14 +109,14 @@ export const updateCollectionControl = async (owner: string, params: Record<stri
           .get<Nft>();
         lastNftId = last(nfts)?.uid || '';
 
-        const batch = soonDb().batch();
+        const batch = build5Db().batch();
         for (const nft of nfts) {
-          batch.update(soonDb().doc(`${COL.NFT}/${nft.uid}`), nftUpdateData);
+          batch.update(build5Db().doc(`${COL.NFT}/${nft.uid}`), nftUpdateData);
         }
         await batch.commit();
       } while (lastNftId);
     }
   }
 
-  return await soonDb().doc(`${COL.COLLECTION}/${params.uid}`).get();
+  return await build5Db().doc(`${COL.COLLECTION}/${params.uid}`).get();
 };

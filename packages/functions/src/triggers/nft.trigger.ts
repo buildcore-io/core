@@ -5,9 +5,9 @@ import {
   Nft,
   NftAvailable,
   WEN_FUNC_TRIGGER,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
-import { soonDb } from '../firebase/firestore/soondb';
+import { build5Db } from '../firebase/firestore/build5Db';
 import { scale } from '../scale.settings';
 import { downloadMediaAndPackCar, nftToIpfsMetadata } from '../utils/car.utils';
 
@@ -51,11 +51,11 @@ export const nftWrite = functions.firestore.onDocumentWritten(
       );
       const availableNfts = getAvailableNftsChange(prevAvailability, currAvailability, prev?.owner);
 
-      const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${curr.collection}`);
+      const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${curr.collection}`);
       await collectionDocRef.update({
-        nftsOnSale: soonDb().inc(nftsOnSale),
-        nftsOnAuction: soonDb().inc(nftsOnAuction),
-        availableNfts: soonDb().inc(availableNfts),
+        nftsOnSale: build5Db().inc(nftsOnSale),
+        nftsOnAuction: build5Db().inc(nftsOnAuction),
+        availableNfts: build5Db().inc(availableNfts),
       });
 
       await event.data!.after.ref.update({ available: currAvailability });
@@ -68,9 +68,9 @@ export const nftWrite = functions.firestore.onDocumentWritten(
 );
 
 const prepareNftMedia = async (nft: Nft) => {
-  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nft.collection}`);
-  const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
-  const batch = soonDb().batch();
+  const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nft.collection}`);
+  const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
+  const batch = build5Db().batch();
 
   if (nft.ipfsRoot) {
     batch.update(nftDocRef, { mediaStatus: MediaStatus.PENDING_UPLOAD });
@@ -86,7 +86,7 @@ const prepareNftMedia = async (nft: Nft) => {
     });
   }
 
-  batch.update(collectionDocRef, { 'mintingData.nftMediaToPrepare': soonDb().inc(-1) });
+  batch.update(collectionDocRef, { 'mintingData.nftMediaToPrepare': build5Db().inc(-1) });
   await batch.commit();
 };
 

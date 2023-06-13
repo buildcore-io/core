@@ -1,5 +1,5 @@
-import { COL, UnsoldMintingOptions, WenError } from '@build5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { COL, UnsoldMintingOptions, WenError } from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { mintCollection } from '../../src/runtime/firebase/collection/index';
 import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -17,7 +17,7 @@ describe('Collection minting', () => {
   });
 
   it('Should throw, member has no valid address', async () => {
-    await soonDb().doc(`${COL.MEMBER}/${helper.guardian}`).update({ validatedAddress: {} });
+    await build5Db().doc(`${COL.MEMBER}/${helper.guardian}`).update({ validatedAddress: {} });
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
       collection: helper.collection,
       network: helper.network,
@@ -30,7 +30,7 @@ describe('Collection minting', () => {
   });
 
   it('Should throw, space has no valid address', async () => {
-    await soonDb().doc(`${COL.SPACE}/${helper.space!.uid}`).update({ validatedAddress: {} });
+    await build5Db().doc(`${COL.SPACE}/${helper.space!.uid}`).update({ validatedAddress: {} });
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
       collection: helper.collection,
       network: helper.network,
@@ -43,7 +43,9 @@ describe('Collection minting', () => {
   });
 
   it('Should throw, royalty space has no valid address', async () => {
-    await soonDb().doc(`${COL.SPACE}/${helper.royaltySpace!.uid}`).update({ validatedAddress: {} });
+    await build5Db()
+      .doc(`${COL.SPACE}/${helper.royaltySpace!.uid}`)
+      .update({ validatedAddress: {} });
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
       collection: helper.collection,
       network: helper.network,

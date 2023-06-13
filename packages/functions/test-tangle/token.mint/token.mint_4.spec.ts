@@ -7,9 +7,9 @@ import {
   TokenStatus,
   Transaction,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { cancelPublicSale, setTokenAvailableForSale } from '../../src/runtime/firebase/token/base';
 import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -38,7 +38,7 @@ describe('Token minting', () => {
       saleLength: 86400000 * 2,
       coolDownLength: 86400000,
     };
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TOKEN}/${helper.token.uid}`)
       .update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] });
     const updateData = { token: helper.token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };
@@ -47,7 +47,7 @@ describe('Token minting', () => {
 
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, order.payload.amount);
 
-    const creditQuery = soonDb()
+    const creditQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.guardian.uid);
@@ -73,7 +73,7 @@ describe('Token minting', () => {
       saleLength: 86400000 * 2,
       coolDownLength: 86400000,
     };
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TOKEN}/${helper.token.uid}`)
       .update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] });
     const updateData = { token: helper.token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };
@@ -82,7 +82,7 @@ describe('Token minting', () => {
 
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, order.payload.amount);
 
-    const creditQuery = soonDb()
+    const creditQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.guardian.uid);
@@ -98,7 +98,7 @@ describe('Token minting', () => {
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, order.payload.amount);
 
     await wait(async () => {
-      const tokenData = <Token>await soonDb().doc(`${COL.TOKEN}/${helper.token.uid}`).get();
+      const tokenData = <Token>await build5Db().doc(`${COL.TOKEN}/${helper.token.uid}`).get();
       return tokenData.status === TokenStatus.MINTED;
     });
   });

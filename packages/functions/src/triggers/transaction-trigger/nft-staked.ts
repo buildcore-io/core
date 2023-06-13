@@ -1,9 +1,9 @@
-import { COL, Nft, Transaction } from '@build5/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { COL, Nft, Transaction } from '@build-5/interfaces';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const onNftStaked = async (transaction: Transaction) => {
-  const nftDocRef = soonDb().doc(`${COL.NFT}/${transaction.payload.nft}`);
+  const nftDocRef = build5Db().doc(`${COL.NFT}/${transaction.payload.nft}`);
   const nft = (await nftDocRef.get<Nft>())!;
 
   const nftStake = {
@@ -18,13 +18,13 @@ export const onNftStaked = async (transaction: Transaction) => {
     type: transaction.payload.stakeType,
   };
 
-  const batch = soonDb().batch();
+  const batch = build5Db().batch();
 
-  const nftStakeDocRef = soonDb().doc(`${COL.NFT_STAKE}/${nftStake.uid}`);
+  const nftStakeDocRef = build5Db().doc(`${COL.NFT_STAKE}/${nftStake.uid}`);
   batch.create(nftStakeDocRef, nftStake);
 
-  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nft.collection}`);
-  batch.update(collectionDocRef, { stakedNft: soonDb().inc(1) });
+  const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nft.collection}`);
+  batch.update(collectionDocRef, { stakedNft: build5Db().inc(1) });
 
   await batch.commit();
 };

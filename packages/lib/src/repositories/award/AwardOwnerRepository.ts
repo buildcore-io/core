@@ -1,9 +1,9 @@
-import { AwardOwner, PublicCollections, PublicSubCollections } from '@build5/interfaces';
-import { SoonEnv } from '../../Config';
+import { AwardOwner, PublicCollections, PublicSubCollections } from '@build-5/interfaces';
+import { Build5Env } from '../../Config';
 import { SubCrudRepository } from '../SubCrudRepository';
 
 export class AwardOwnerRepository extends SubCrudRepository<AwardOwner> {
-  constructor(env?: SoonEnv) {
-    super(env || SoonEnv.PROD, PublicCollections.AWARD, PublicSubCollections.OWNERS);
+  constructor(env?: Build5Env) {
+    super(env || Build5Env.PROD, PublicCollections.AWARD, PublicSubCollections.OWNERS);
   }
 }

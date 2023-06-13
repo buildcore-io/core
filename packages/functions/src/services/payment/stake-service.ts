@@ -10,10 +10,10 @@ import {
   TransactionCreditType,
   TransactionOrder,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get } from 'lodash';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from './transaction-service';
@@ -47,7 +47,7 @@ export class StakeService {
     const expiresAt = dateToTimestamp(dayjs().add(weeks, 'week').toDate());
 
     const tokenUid = get(order, 'payload.token', '');
-    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${tokenUid}`);
+    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${tokenUid}`);
     const token = <Token>await tokenDocRef.get();
 
     const billPayment = <Transaction>{
@@ -94,13 +94,13 @@ export class StakeService {
     billPayment.payload.stake = stake.uid;
 
     this.transactionService.push({
-      ref: soonDb().doc(`${COL.STAKE}/${stake.uid}`),
+      ref: build5Db().doc(`${COL.STAKE}/${stake.uid}`),
       data: stake,
       action: 'set',
     });
 
     this.transactionService.push({
-      ref: soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`),
+      ref: build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`),
       data: billPayment,
       action: 'set',
     });

@@ -7,10 +7,10 @@ import {
   Transaction,
   TransactionIgnoreWalletReason,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { creditUnrefundable } from '../../src/runtime/firebase/credit/index';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -43,7 +43,7 @@ describe('Token minting', () => {
       ],
       storageDepositReturnAddress: helper.sellerAddress?.bech32,
     });
-    const query = soonDb()
+    const query = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.seller);
@@ -69,7 +69,7 @@ describe('Token minting', () => {
     });
     const creditStorageTran = <Transaction>(
       (
-        await soonDb()
+        await build5Db()
           .collection(COL.TRANSACTION)
           .where('type', '==', TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED)
           .where('member', '==', helper.seller)
@@ -114,7 +114,7 @@ describe('Token minting', () => {
       ],
       storageDepositReturnAddress: helper.sellerAddress?.bech32,
     });
-    const query = soonDb()
+    const query = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.seller);
@@ -142,7 +142,7 @@ describe('Token minting', () => {
     );
 
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
         .where('member', '==', helper.seller)
@@ -150,7 +150,9 @@ describe('Token minting', () => {
       return snap.length == 2;
     });
 
-    const transaction = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${snap[0].uid}`).get();
+    const transaction = <Transaction>(
+      await build5Db().doc(`${COL.TRANSACTION}/${snap[0].uid}`).get()
+    );
     expect(transaction.payload.unlockedBy).toBeDefined();
   });
 });

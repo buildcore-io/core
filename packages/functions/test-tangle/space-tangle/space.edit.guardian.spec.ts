@@ -6,8 +6,8 @@ import {
   ProposalType,
   TangleRequestType,
   Transaction,
-} from '@build5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { addGuardianToSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -59,7 +59,7 @@ describe('Edit guardian space', () => {
       const credit = snap[0] as Transaction;
       const proposalId = credit.payload.response.proposal;
 
-      const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposalId}`);
+      const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposalId}`);
       const proposal = <Proposal>await proposalDocRef.get();
       expect(proposal.type).toBe(
         requestType === TangleRequestType.SPACE_ADD_GUARDIAN

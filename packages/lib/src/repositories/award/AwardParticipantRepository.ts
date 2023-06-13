@@ -1,10 +1,15 @@
-import { AwardParticipant, Opr, PublicCollections, PublicSubCollections } from '@build5/interfaces';
-import { SoonEnv } from '../../Config';
+import {
+  AwardParticipant,
+  Opr,
+  PublicCollections,
+  PublicSubCollections,
+} from '@build-5/interfaces';
+import { Build5Env } from '../../Config';
 import { SubCrudRepository } from '../SubCrudRepository';
 
 export class AwardParticipantRepository extends SubCrudRepository<AwardParticipant> {
-  constructor(env?: SoonEnv) {
-    super(env || SoonEnv.PROD, PublicCollections.AWARD, PublicSubCollections.PARTICIPANTS);
+  constructor(env?: Build5Env) {
+    super(env || Build5Env.PROD, PublicCollections.AWARD, PublicSubCollections.PARTICIPANTS);
   }
 
   public getParticipantsLive = (

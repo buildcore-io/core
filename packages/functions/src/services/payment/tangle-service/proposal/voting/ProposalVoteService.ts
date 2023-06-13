@@ -15,9 +15,9 @@ import {
   TransactionUnlockType,
   VoteTransaction,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../../../../firebase/firestore/soondb';
+import { build5Db } from '../../../../../firebase/firestore/build5Db';
 import { voteOnProposalSchema } from '../../../../../runtime/firebase/proposal';
 import { invalidArgument } from '../../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../../utils/schema.utils';
@@ -83,7 +83,7 @@ export class ProposalVoteService {
     milestoneTranEntry: MilestoneTransactionEntry,
   ) => {
     const order = await createVoteTransactionOrder(owner, proposal, values, token);
-    const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
 
     this.transactionService.push({
       ref: orderDocRef,
@@ -105,7 +105,7 @@ export class ProposalVoteService {
     proposalMember: ProposalMember,
     values: number[],
   ) => {
-    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+    const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
     const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(proposalMember.uid);
 
     const voteData = await executeSimpleVoting(proposalMember, proposal, values);
@@ -124,7 +124,7 @@ export class ProposalVoteService {
       merge: true,
     });
 
-    const voteTransactionDocRef = soonDb().doc(
+    const voteTransactionDocRef = build5Db().doc(
       `${COL.TRANSACTION}/${voteData.voteTransaction.uid}`,
     );
     this.transactionService.push({
@@ -138,7 +138,7 @@ export class ProposalVoteService {
 }
 
 export const getProposal = async (proposalUid: string) => {
-  const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposalUid}`);
+  const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposalUid}`);
   const proposal = await proposalDocRef.get<Proposal>();
   if (!proposal) {
     throw invalidArgument(WenError.proposal_does_not_exists);
@@ -169,7 +169,7 @@ export const getProposal = async (proposalUid: string) => {
 };
 
 export const getProposalMember = async (owner: string, proposal: Proposal, value: number) => {
-  const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
   const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(owner);
   const proposalMember = await proposalMemberDocRef.get<ProposalMember>();
   if (!proposalMember) {

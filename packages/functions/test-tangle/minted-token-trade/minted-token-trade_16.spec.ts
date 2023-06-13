@@ -7,10 +7,10 @@ import {
   TokenTradeOrderType,
   Transaction,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { cancelTradeOrder, tradeToken } from '../../src/runtime/firebase/token/trading';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -48,7 +48,7 @@ describe('Token minting', () => {
       },
     );
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.TOKEN_MARKET)
         .where('orderTransactionId', '==', sellOrder.uid)
         .get();
@@ -62,7 +62,7 @@ describe('Token minting', () => {
 
     const sell = <TokenTradeOrder>(
       (
-        await soonDb()
+        await build5Db()
           .collection(COL.TOKEN_MARKET)
           .where('orderTransactionId', '==', sellOrder.uid)
           .get()
@@ -72,7 +72,7 @@ describe('Token minting', () => {
     mockWalletReturnValue(helper.walletSpy, helper.seller!, { uid: sell.uid });
     await testEnv.wrap(cancelTradeOrder)({});
 
-    const sellerCreditSnap = await soonDb()
+    const sellerCreditSnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller)
       .where('type', '==', TransactionType.CREDIT)
@@ -105,7 +105,7 @@ describe('Token minting', () => {
       },
     );
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.TOKEN_MARKET)
         .where('orderTransactionId', '==', sellOrder.uid)
         .get();
@@ -118,14 +118,14 @@ describe('Token minting', () => {
     );
 
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.TOKEN_PURCHASE)
         .where('token', '==', helper.token!.uid)
         .get();
       return snap.length === 1;
     });
 
-    const sellerCreditSnap = await soonDb()
+    const sellerCreditSnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller)
       .where('type', '==', TransactionType.CREDIT)

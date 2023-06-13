@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, PublicCollections, PublicSubCollections, SUB_COL } from '@build5/interfaces';
+import { COL, PublicCollections, PublicSubCollections, SUB_COL } from '@build-5/interfaces';
 import admin from 'firebase-admin';
 import { isEmpty } from 'lodash';
 import { FirebaseApp } from '../app/app';

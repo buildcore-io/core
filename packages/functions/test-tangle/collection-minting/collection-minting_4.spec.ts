@@ -12,9 +12,9 @@ import {
   Space,
   Transaction,
   TransactionType,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import { IndexerPluginClient, INftOutput } from '@iota/iota.js-next';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { getAddress } from '../../src/utils/address.utils';
 import { EMPTY_NFT_ID } from '../../src/utils/collection-minting-utils/nft.utils';
 import { CollectionMintHelper, getNftMetadata } from './Helper';
@@ -37,13 +37,13 @@ describe('Collection minting', () => {
       await helper.createAndOrderNft(true);
       const nft = await helper.createAndOrderNft(true, true);
       let placeholderNft = await helper.createAndOrderNft(true, false);
-      await soonDb().doc(`${COL.NFT}/${placeholderNft.uid}`).update({ placeholderNft: true });
-      await soonDb()
+      await build5Db().doc(`${COL.NFT}/${placeholderNft.uid}`).update({ placeholderNft: true });
+      await build5Db()
         .doc(`${COL.COLLECTION}/${helper.collection}`)
-        .update({ total: soonDb().inc(-1) });
+        .update({ total: build5Db().inc(-1) });
 
       if (limited) {
-        await soonDb()
+        await build5Db()
           .doc(`${COL.COLLECTION}/${helper.collection}`)
           .update({ limitedEdition: limited });
       }
@@ -52,7 +52,7 @@ describe('Collection minting', () => {
         await helper.lockCollectionConfirmed();
         const indexer = new IndexerPluginClient(helper.walletService?.client!);
         const collection = <Collection>(
-          await soonDb().doc(`${COL.COLLECTION}/${helper.collection}`).get()
+          await build5Db().doc(`${COL.COLLECTION}/${helper.collection}`).get()
         );
         const outputId = (await indexer.nft(collection.mintingData?.nftId!)).items[0];
         const output = <INftOutput>(await helper.walletService!.client.output(outputId)).output;
@@ -60,7 +60,7 @@ describe('Collection minting', () => {
       }
 
       const bidCredit = (
-        await soonDb()
+        await build5Db()
           .collection(COL.TRANSACTION)
           .where('payload.collection', '==', helper.collection)
           .where('type', '==', TransactionType.CREDIT)
@@ -68,14 +68,14 @@ describe('Collection minting', () => {
       ).map((d) => <Transaction>d);
       expect(bidCredit.length).toBe(1);
       expect(bidCredit[0].payload.amount).toBe(2 * MIN_IOTA_AMOUNT);
-      const bidder = <Member>await soonDb().doc(`${COL.MEMBER}/${helper.member}`).get();
+      const bidder = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.member}`).get();
       const order = <Transaction>(
-        await soonDb().doc(`${COL.TRANSACTION}/${nft.auctionHighestTransaction}`).get()
+        await build5Db().doc(`${COL.TRANSACTION}/${nft.auctionHighestTransaction}`).get()
       );
       expect(bidCredit[0].payload.targetAddress).toBe(getAddress(bidder, DEFAULT_NETWORK));
       expect(bidCredit[0].payload.sourceAddress).toBe(order.payload.targetAddress);
 
-      const nftsQuery = soonDb()
+      const nftsQuery = build5Db()
         .collection(COL.NFT)
         .where('collection', '==', helper.collection)
         .where('placeholderNft', '==', false);
@@ -96,10 +96,10 @@ describe('Collection minting', () => {
       expect(allCancelled).toBe(true);
 
       const collection = <Collection>(
-        await soonDb().doc(`${COL.COLLECTION}/${helper.collection}`).get()
+        await build5Db().doc(`${COL.COLLECTION}/${helper.collection}`).get()
       );
       const royaltySpace = <Space>(
-        await soonDb().doc(`${COL.SPACE}/${collection.royaltiesSpace}`).get()
+        await build5Db().doc(`${COL.SPACE}/${collection.royaltiesSpace}`).get()
       );
 
       const collectionOutput = await helper.nftWallet!.getNftOutputs(
@@ -117,7 +117,7 @@ describe('Collection minting', () => {
       expect(collectionMetadata.royalties[getAddress(royaltySpace, Network.RMS)]).toBe(
         collection.royaltiesFee,
       );
-      expect(collectionMetadata.soonaverseId).toBe(collection.uid);
+      expect(collectionMetadata.build5Id).toBe(collection.uid);
 
       for (const nft of nfts) {
         const nftOutputs = await helper.nftWallet!.getNftOutputs(nft.mintingData?.nftId, undefined);
@@ -135,10 +135,10 @@ describe('Collection minting', () => {
         expect(metadata.royalties[getAddress(royaltySpace, Network.RMS)]).toBe(
           collection.royaltiesFee,
         );
-        expect(metadata.soonaverseId).toBe(nft.uid);
+        expect(metadata.build5Id).toBe(nft.uid);
       }
 
-      placeholderNft = <Nft>await soonDb().doc(`${COL.NFT}/${placeholderNft.uid}`).get();
+      placeholderNft = <Nft>await build5Db().doc(`${COL.NFT}/${placeholderNft.uid}`).get();
       expect(placeholderNft.status).toBe(NftStatus.PRE_MINTED);
     },
   );
@@ -147,11 +147,11 @@ describe('Collection minting', () => {
     let lockedNft = await helper.createLockedNft();
     await helper.mintCollection();
     const lockedNftOrder = <Transaction>(
-      await soonDb().doc(`${COL.TRANSACTION}/${lockedNft.lockedBy}`).get()
+      await build5Db().doc(`${COL.TRANSACTION}/${lockedNft.lockedBy}`).get()
     );
     expect(lockedNftOrder.payload.void).toBe(true);
 
-    lockedNft = <Nft>await soonDb().doc(`${COL.NFT}/${lockedNft.uid}`).get();
+    lockedNft = <Nft>await build5Db().doc(`${COL.NFT}/${lockedNft.uid}`).get();
     expect(lockedNft.locked).toBe(false);
     expect(lockedNft.lockedBy).toBe(null);
     expect(lockedNft.mintingData).toBeDefined();

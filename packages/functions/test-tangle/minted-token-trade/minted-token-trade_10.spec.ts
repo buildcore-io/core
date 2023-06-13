@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { COL, MIN_IOTA_AMOUNT, TokenPurchase } from '@build5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { COL, MIN_IOTA_AMOUNT, TokenPurchase } from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { wait } from '../../test/controls/common';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { Helper } from './Helper';
@@ -22,7 +22,7 @@ describe('Token minting', () => {
     await helper.createSellTradeOrder(5, 2 * MIN_IOTA_AMOUNT);
     await helper.createBuyOrder(5, 2 * MIN_IOTA_AMOUNT);
 
-    const purchaseQuery = soonDb()
+    const purchaseQuery = build5Db()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {

@@ -8,13 +8,13 @@ import {
   PublicSubCollections,
   TransactionType,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
 import { get, isEmpty, isEqual } from 'lodash';
 import { map } from 'rxjs';
-import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
+import { build5Db, getSnapshot } from '../firebase/firestore/build5Db';
 import { CommonJoi } from '../services/joi/common';
 import { invalidArgument } from '../utils/error.utils';
 import { getQueryLimit, getQueryParams, queryToObservable } from './common';
@@ -149,8 +149,8 @@ const getFilters = (fieldNames?: string[], fieldValues?: unknown[], fieldOperato
 
 const getBaseQuery = (col: PublicCollections, uid?: string, subCol?: PublicSubCollections) => {
   if (!uid && subCol) {
-    return soonDb().collectionGroup(subCol);
+    return build5Db().collectionGroup(subCol);
   }
   const path = subCol && uid ? `${col}/${uid}/${subCol}` : col;
-  return soonDb().collection(path as COL);
+  return build5Db().collection(path as COL);
 };

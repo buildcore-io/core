@@ -8,11 +8,11 @@ import {
   TokenTradeOrderStatus,
   TokenTradeOrderType,
   WEN_FUNC_TRIGGER,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
 import { DocumentOptions } from 'firebase-functions/v2/firestore';
 import bigDecimal from 'js-big-decimal';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { scale } from '../../scale.settings';
 import { getStakeForType, getTier } from '../../services/stake.service';
 import { cancelTradeOrderUtil } from '../../utils/token-trade.utils';
@@ -38,8 +38,8 @@ export const onTokenTradeOrderWrite = functions.firestore.onDocumentWritten(
       return await matchTradeOrder(next);
     }
 
-    return await soonDb().runTransaction(async (transaction) => {
-      const tradeOrderDocRef = soonDb().doc(`${COL.TOKEN_MARKET}/${next.uid}`);
+    return await build5Db().runTransaction(async (transaction) => {
+      const tradeOrderDocRef = build5Db().doc(`${COL.TOKEN_MARKET}/${next.uid}`);
       const tradeOrder = await transaction.get<TokenTradeOrder>(tradeOrderDocRef);
       if (tradeOrder && isActiveBuy(tradeOrder) && needsHigherBuyAmount(tradeOrder!)) {
         await cancelTradeOrderUtil(
@@ -65,7 +65,7 @@ const needsHigherBuyAmount = (buy: TokenTradeOrder) => {
 
 export const getMemberTier = async (member: Member) => {
   const soon = await getSoonToken();
-  const distributionDocRef = soonDb()
+  const distributionDocRef = build5Db()
     .collection(COL.TOKEN)
     .doc(soon.uid)
     .collection(SUB_COL.DISTRIBUTION)

@@ -6,9 +6,9 @@ import {
   TokenDrop,
   TokenDropStatus,
   WenError,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../../src/firebase/firestore/soondb';
+import { build5Db } from '../../../src/firebase/firestore/build5Db';
 import { airdropToken, createToken } from '../../../src/runtime/firebase/token/base';
 import { dateToTimestamp } from '../../../src/utils/dateTime.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
@@ -58,11 +58,11 @@ describe('Token airdrop test', () => {
     mockWalletReturnValue(walletSpy, guardian, dummyTokenData);
     token = await testEnv.wrap(createToken)({});
     member = await createMember(walletSpy);
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true });
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true });
   });
 
   it('Should fail, token not approved', async () => {
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false });
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false });
     const airdropRequest = {
       token: token.uid,
       drops: [{ count: 900, recipient: guardian, vestingAt: dayjs().toDate() }],
@@ -195,11 +195,11 @@ describe('Token airdrop test', () => {
 });
 
 const getAirdropsForMember = async (member: string) => {
-  const snap = await soonDb().collection(COL.AIRDROP).where('member', '==', member).get();
+  const snap = await build5Db().collection(COL.AIRDROP).where('member', '==', member).get();
   return snap.map((d) => d as TokenDrop);
 };
 
 const getAirdropsForToken = async (token: string) => {
-  const snap = await soonDb().collection(COL.AIRDROP).where('token', '==', token).get();
+  const snap = await build5Db().collection(COL.AIRDROP).where('token', '==', token).get();
   return snap.map((d) => d as TokenDrop);
 };

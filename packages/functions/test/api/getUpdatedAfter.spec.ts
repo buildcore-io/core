@@ -1,8 +1,8 @@
-import { PublicCollections, QUERY_MAX_LENGTH } from '@build5/interfaces';
+import { PublicCollections, QUERY_MAX_LENGTH } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty, last } from 'lodash';
 import { getUpdatedAfter } from '../../src/api/getUpdatedAfter';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 
@@ -17,9 +17,9 @@ describe('Get many by id', () => {
   });
 
   const createMany = async (col: PublicCollections, customData: any = {}) => {
-    const batch = soonDb().batch();
+    const batch = build5Db().batch();
     uids.forEach((uid, i) => {
-      const docRef = soonDb().doc(`${col}/${uid}`);
+      const docRef = build5Db().doc(`${col}/${uid}`);
       batch.create(docRef, { uid, updatedOn: dateToTimestamp(updatedOn), ...customData });
     });
     await batch.commit();
@@ -60,7 +60,7 @@ describe('Get many by id', () => {
   it('Should get all nfts', async () => {
     const collection = PublicCollections.NFT;
     await createMany(collection, { hidden: false });
-    soonDb()
+    build5Db()
       .doc(`${collection}/${getRandomEthAddress()}`)
       .create({ updatedOn: dateToTimestamp(updatedOn), hidden: true });
 
@@ -77,7 +77,7 @@ describe('Get many by id', () => {
     const collection = PublicCollections.TRANSACTION;
     const custom = { isOrderType: false, ignoreWallet: true, payload: {} };
     await createMany(collection, custom);
-    soonDb()
+    build5Db()
       .doc(`${collection}/${getRandomEthAddress()}`)
       .create({ updatedOn: dateToTimestamp(updatedOn), ...custom, isOrderType: true });
 

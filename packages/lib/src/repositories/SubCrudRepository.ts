@@ -3,23 +3,23 @@ import {
   Opr,
   PublicCollections,
   PublicSubCollections,
-} from '@build5/interfaces';
-import { Observable, map } from 'rxjs';
+} from '@build-5/interfaces';
+import { Observable as RxjsObservable, map } from 'rxjs';
 import {
+  Build5Env,
   SESSION_ID,
-  SoonEnv,
   getByIdUrl,
   getManyAdvancedUrl,
   getManyUrl,
   getUpdatedAfterUrl,
 } from '../Config';
 import { toQueryParams, wrappedFetch } from '../fetch.utils';
-import { SoonObservable } from '../soon_observable';
+import { Observable } from '../observable';
 import { processObject, processObjectArray } from '../utils';
 
 export abstract class SubCrudRepository<T> {
   constructor(
-    protected readonly env: SoonEnv,
+    protected readonly env: Build5Env,
     protected readonly col: PublicCollections,
     protected readonly subCol: PublicSubCollections,
   ) {}
@@ -38,12 +38,12 @@ export abstract class SubCrudRepository<T> {
   };
 
   /**
-   * Returns entity in the sub collection as Observable
+   * Returns entity in the sub collection as RxjsObservable
    * @param parent - Parrent entity id
    * @param uid - Entity id
    * @returns
    */
-  public getByIdLive = (parent: string, uid: string): Observable<T | undefined> => {
+  public getByIdLive = (parent: string, uid: string): RxjsObservable<T | undefined> => {
     const params = {
       collection: this.col,
       parentUid: parent,
@@ -52,7 +52,7 @@ export abstract class SubCrudRepository<T> {
       sessionId: SESSION_ID,
     };
     const url = getByIdUrl(this.env) + toQueryParams(params);
-    const observable = new SoonObservable<T>(this.env, url);
+    const observable = new Observable<T>(this.env, url);
     return observable.pipe(
       map((result) => {
         const keys = Object.keys(result as Record<string, unknown>);
@@ -144,8 +144,8 @@ export abstract class SubCrudRepository<T> {
     return this.getManyAdvancedLive(params);
   };
 
-  protected getManyAdvancedLive = (params: GetManyAdvancedRequest): Observable<T[]> => {
+  protected getManyAdvancedLive = (params: GetManyAdvancedRequest): RxjsObservable<T[]> => {
     const url = getManyAdvancedUrl(this.env) + toQueryParams({ ...params, sessionId: SESSION_ID });
-    return new SoonObservable<T[]>(this.env, url);
+    return new Observable<T[]>(this.env, url);
   };
 }

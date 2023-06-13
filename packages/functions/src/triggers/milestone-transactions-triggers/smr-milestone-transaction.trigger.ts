@@ -1,9 +1,9 @@
-import { COL, Network, SUB_COL } from '@build5/interfaces';
+import { COL, Network, SUB_COL } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { DocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions/v2';
 import { FirestoreEvent } from 'firebase-functions/v2/firestore';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { ProcessingService } from '../../services/payment/payment-processing';
 import { SmrMilestoneTransactionAdapter } from './SmrMilestoneTransactionAdapter';
 import { confirmTransaction, milestoneTriggerConfig } from './common';
@@ -22,8 +22,8 @@ const handleMilestoneTransactionWrite =
       return;
     }
     try {
-      return soonDb().runTransaction(async (transaction) => {
-        const docRef = soonDb().doc(event.data!.after.ref.path);
+      return build5Db().runTransaction(async (transaction) => {
+        const docRef = build5Db().doc(event.data!.after.ref.path);
         const data = await transaction.get<Record<string, unknown>>(docRef);
         if (!data || data.processed) {
           return;

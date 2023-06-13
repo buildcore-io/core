@@ -1,6 +1,6 @@
-import { COL, MediaStatus, Space } from '@build5/interfaces';
+import { COL, MediaStatus, Space } from '@build-5/interfaces';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { updateSpace } from '../../src/runtime/firebase/space';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -18,7 +18,7 @@ describe('Web3 cron test', () => {
     const guardian = await createMember(walletSpy);
     let space = await createSpace(walletSpy, guardian);
 
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space.uid}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
     await spaceDocRef.update({ bannerUrl: '' });
 
     mockWalletReturnValue(walletSpy, guardian, { uid: space?.uid, bannerUrl: MEDIA });
@@ -41,7 +41,7 @@ describe('Web3 cron test', () => {
     const guardian = await createMember(walletSpy);
     let space = await createSpace(walletSpy, guardian);
 
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space.uid}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
     await spaceDocRef.update({ bannerUrl: 'asd' });
 
     await uploadMediaToWeb3();
@@ -61,7 +61,7 @@ describe('Web3 cron test', () => {
     const guardian = await createMember(walletSpy);
     let space = await createSpace(walletSpy, guardian);
 
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space.uid}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
     await spaceDocRef.update({ bannerUrl: 'asd' });
 
     for (let i = 0; i < 6; ++i) {
@@ -81,12 +81,12 @@ const cleanupPendingUploads = async () => {
   for (const col of [COL.TOKEN, COL.NFT, COL.COLLECTION]) {
     const snap = await pendingUploadsQuery(col).get<Record<string, unknown>>();
     const promises = snap.map((d) => {
-      const docRef = soonDb().doc(`${col}/${d.uid}`);
-      return docRef.update({ mediaStatus: soonDb().deleteField() });
+      const docRef = build5Db().doc(`${col}/${d.uid}`);
+      return docRef.update({ mediaStatus: build5Db().deleteField() });
     });
     await Promise.all(promises);
   }
 };
 
 const pendingUploadsQuery = (col: COL) =>
-  soonDb().collection(col).where('mediaStatus', '==', MediaStatus.PENDING_UPLOAD);
+  build5Db().collection(col).where('mediaStatus', '==', MediaStatus.PENDING_UPLOAD);

@@ -7,9 +7,9 @@ import {
   TokenDistribution,
   TokenDropStatus,
   TokenStatus,
-} from '@build5/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../../src/firebase/firestore/soondb';
+import { build5Db } from '../../../src/firebase/firestore/build5Db';
 import {
   airdropToken,
   claimAirdroppedToken,
@@ -78,7 +78,7 @@ describe('Order and claim airdropped token test', () => {
       access: 0,
       decimals: 6,
     };
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
 
     const airdropRequest = {
       token: token.uid,
@@ -89,7 +89,7 @@ describe('Order and claim airdropped token test', () => {
   });
 
   it('Should order and claim dropped', async () => {
-    const distributionDocRef = soonDb().doc(
+    const distributionDocRef = build5Db().doc(
       `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`,
     );
     let distribution = <TokenDistribution>await distributionDocRef.get();
@@ -111,7 +111,7 @@ describe('Order and claim airdropped token test', () => {
     await milestoneProcessed(milestone.milestone, milestone.tranId);
 
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.AIRDROP)
         .where('member', '==', memberAddress)
         .where('status', '==', TokenDropStatus.CLAIMED)
@@ -119,7 +119,7 @@ describe('Order and claim airdropped token test', () => {
       return snap.length === 1;
     });
 
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.PROCESSING });
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.PROCESSING });
     await tokenProcessed(token.uid, 1, true);
 
     distribution = <TokenDistribution>await distributionDocRef.get();

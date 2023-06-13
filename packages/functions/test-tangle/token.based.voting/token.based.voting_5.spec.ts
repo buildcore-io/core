@@ -1,5 +1,5 @@
-import { COL, TokenStatus } from '@build5/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { COL, TokenStatus } from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { Helper } from './Helper';
 
@@ -22,7 +22,7 @@ describe('Token based voting', () => {
       status: TokenStatus.PRE_MINTED,
       approved: false,
     };
-    await soonDb().doc(`${COL.TOKEN}/${falseToken}`).create(falseToken);
+    await build5Db().doc(`${COL.TOKEN}/${falseToken}`).create(falseToken);
 
     const voteTransactionOrder = await helper.voteOnProposal(1);
 
