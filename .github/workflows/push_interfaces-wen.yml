@@ -9,7 +9,7 @@ jobs:
   push_interfaces:
     runs-on: ubuntu-latest
     env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
     steps:
     - uses: actions/checkout@v3
 
@@ -31,7 +31,7 @@ jobs:
   push_lib:
     runs-on: ubuntu-latest
     env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
     steps:
     - uses: actions/checkout@v3
 
