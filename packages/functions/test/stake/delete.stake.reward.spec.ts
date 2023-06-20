@@ -86,7 +86,7 @@ describe('Delete stake reward', () => {
       stakeRewardIds,
     });
     let proposal: Proposal = await testEnv.wrap(removeStakeReward)({});
-    expect(proposal.settings.stakeRewardIds.sort()).toEqual(stakeRewardIds.sort());
+    expect(proposal.settings.stakeRewardIds!.sort()).toEqual(stakeRewardIds.sort());
     expect(
       dayjs(proposal.settings.endDate.toDate()).isSame(dayjs(stakeRewards[1].startDate.toDate())),
     ).toBe(true);
@@ -110,7 +110,7 @@ describe('Delete stake reward', () => {
         `| ${stakeRewards[0].tokensToDistribute} |`,
     );
 
-    mockWalletReturnValue(walletSpy, member, { uid: proposal.uid, values: [1] });
+    mockWalletReturnValue(walletSpy, member, { uid: proposal.uid, value: 1 });
     await testEnv.wrap(voteOnProposal)({});
     await new Promise((resolve) => setTimeout(resolve, 1000));
 

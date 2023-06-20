@@ -67,8 +67,12 @@ export class IotaWallet implements Wallet<WalletParams> {
     private readonly network: Network,
   ) {}
 
-  public getBalance = async (addressBech32: string) =>
-    (await this.client.address(addressBech32))?.balance || 0;
+  public getBalance = async (addressBech32: string | undefined) => {
+    if (!addressBech32) {
+      return 0;
+    }
+    return (await this.client.address(addressBech32))?.balance || 0;
+  };
 
   public getNewIotaAddressDetails = async () => {
     const address = await this.getIotaAddressDetails(generateMnemonic() + ' ' + generateMnemonic());

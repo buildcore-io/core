@@ -1,16 +1,18 @@
 import {
+  ApiError,
   Award,
+  AwardApproveParticipantTangleResponse,
   AwardBadgeType,
   AwardParticipant,
   COL,
+  IgnoreWalletReason,
   Member,
   Network,
   SUB_COL,
   TokenDrop,
   TokenDropStatus,
   Transaction,
-  TransactionAwardType,
-  TransactionIgnoreWalletReason,
+  TransactionPayloadType,
   TransactionType,
   WenError,
 } from '@build-5/interfaces';
@@ -33,7 +35,7 @@ export class AwardApproveParticipantService {
   public handleApproveParticipantRequest = async (
     owner: string,
     request: Record<string, unknown>,
-  ) => {
+  ): Promise<AwardApproveParticipantTangleResponse> => {
     const params = {
       award: request.award as string,
       members: request.members as string[],
@@ -41,7 +43,7 @@ export class AwardApproveParticipantService {
     await assertValidationAsync(approveAwardParticipantSchema, params);
 
     const badges: { [key: string]: string } = {};
-    const errors: { [key: string]: unknown } = {};
+    const errors: { [key: string]: ApiError } = {};
 
     for (const member of params.members.map((m) => m.toLowerCase())) {
       try {
@@ -51,7 +53,7 @@ export class AwardApproveParticipantService {
         badges[badge.uid] = member;
       } catch (error) {
         errors[member] = {
-          code: get(error, 'details.code', ''),
+          code: get(error, 'details.code', 0),
           message: get(error, 'details.key', ''),
         };
         break;
@@ -105,24 +107,25 @@ export const approveAwardParticipant =
     };
     transaction.set(participantDocRef, participantUpdateData, true);
 
-    const badgeTransaction = {
+    const badgeTransaction: Transaction = {
       type: TransactionType.AWARD,
       uid: getRandomEthAddress(),
       member: memberId,
       space: award.space,
       network: award.network,
       ignoreWallet: isEmpty(memberAddress),
-      ignoreWalletReason: isEmpty(memberAddress)
-        ? TransactionIgnoreWalletReason.MISSING_TARGET_ADDRESS
-        : null,
+      ignoreWalletReason: isEmpty(memberAddress) ? IgnoreWalletReason.MISSING_TARGET_ADDRESS : null,
       payload: {
-        type: TransactionAwardType.BADGE,
+        amount: 0,
+        type: TransactionPayloadType.BADGE,
         sourceAddress: award.address,
         targetAddress: memberAddress,
         award: award.uid,
         tokenReward: award.badge.tokenReward,
         edition: (participant?.count || 0) + 1,
         participatedOn: participant?.createdOn || serverTime(),
+        reconciled: false,
+        void: false,
       },
     };
     const badgeTransactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${badgeTransaction.uid}`);
@@ -184,7 +187,7 @@ export const approveAwardParticipant =
       transaction.set(distributionDocRef, distribution, true);
     }
 
-    return badgeTransaction as Transaction;
+    return badgeTransaction;
   };
 
 const getMember = async (network: Network, uidOrAddress: string) => {

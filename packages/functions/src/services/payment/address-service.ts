@@ -11,12 +11,9 @@ import {
   Space,
   SpaceGuardian,
   Transaction,
-  TransactionAwardType,
-  TransactionCreditType,
-  TransactionOrder,
+  TransactionPayloadType,
   TransactionType,
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
-  VoteTransaction,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
@@ -30,13 +27,13 @@ export class AddressService {
   constructor(readonly transactionService: TransactionService) {}
 
   public async handleAddressValidationRequest(
-    order: TransactionOrder,
+    order: Transaction,
     match: TransactionMatch,
     type: Entity,
   ) {
     const payment = await this.transactionService.createPayment(order, match);
     const credit = await this.transactionService.createCredit(
-      TransactionCreditType.ADDRESS_VALIDATION,
+      TransactionPayloadType.ADDRESS_VALIDATION,
       payment,
       match,
     );
@@ -45,7 +42,7 @@ export class AddressService {
       if (type === Entity.MEMBER) {
         await claimBadges(
           order.member!,
-          credit.payload.targetAddress,
+          credit.payload.targetAddress!,
           order.network || DEFAULT_NETWORK,
         );
       }
@@ -53,13 +50,10 @@ export class AddressService {
     this.transactionService.markAsReconciled(order, match.msgId);
   }
 
-  public async handleSpaceAddressValidationRequest(
-    order: TransactionOrder,
-    match: TransactionMatch,
-  ) {
+  public async handleSpaceAddressValidationRequest(order: Transaction, match: TransactionMatch) {
     const payment = await this.transactionService.createPayment(order, match);
     await this.transactionService.createCredit(
-      TransactionCreditType.ADDRESS_VALIDATION,
+      TransactionPayloadType.ADDRESS_VALIDATION,
       payment,
       match,
     );
@@ -80,13 +74,13 @@ export class AddressService {
       guardians.length,
     );
 
-    const voteTransaction = <Transaction>{
+    const voteTransaction = {
       type: TransactionType.VOTE,
       uid: getRandomEthAddress(),
       member: owner!.uid,
       space: space!.uid,
       network: DEFAULT_NETWORK,
-      payload: <VoteTransaction>{
+      payload: {
         proposalId: proposal.uid,
         weight: 1,
         values: [1],
@@ -151,7 +145,7 @@ const claimBadges = async (member: string, memberAddress: string, network: Netwo
       .where('type', '==', TransactionType.AWARD)
       .where('member', '==', member)
       .where('ignoreWallet', '==', true)
-      .where('payload.type', '==', TransactionAwardType.BADGE)
+      .where('payload.type', '==', TransactionPayloadType.BADGE)
       .limit(500)
       .startAfter(lastDoc)
       .get<Transaction>();
@@ -179,7 +173,7 @@ const updateBadgeTransaction = async (transactionId: string, memberAddress: stri
   });
 
 const createUpdateSpaceValidatedAddressProposal = (
-  order: TransactionOrder,
+  order: Transaction,
   validatedAddress: string,
   owner: Member,
   space: Space,

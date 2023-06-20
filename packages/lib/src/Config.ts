@@ -2,13 +2,11 @@ import { ApiRoutes, PING_INTERVAL } from '@build-5/interfaces';
 import { wrappedFetch } from './fetch.utils';
 import { randomString } from './utils';
 
-const BRAND = 'soonaverse';
-
 export enum Build5Env {
-  PROD = `https://api.${BRAND}.com/api`,
-  TEST = `https://api-wen2.${BRAND}.com/api`,
-  DEV = `https://${BRAND}-dev.web.app/api`,
-  LOCAL = `http://127.0.0.1:5001/${BRAND}-dev/us-central1/api`,
+  PROD = 'https://api.soonaverse.com/api',
+  TEST = 'https://api-wen2.soonaverse.com/api',
+  DEV = 'https://soonaverse-dev.web.app/api',
+  LOCAL = 'http://127.0.0.1:5001/soonaverse-dev/us-central1/api',
 }
 
 export const getByIdUrl = (baseUrl: Build5Env) => baseUrl + ApiRoutes.GET_BY_ID;

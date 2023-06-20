@@ -16,7 +16,6 @@ import {
   PropStats,
   Space,
   Transaction,
-  TransactionOrder,
   WenError,
 } from '@build-5/interfaces';
 import { INftOutput } from '@iota/iota.js-next';
@@ -88,7 +87,7 @@ export class NftDepositService {
 
   private depositNftMintedOnBuild5 = async (
     nft: Nft,
-    order: TransactionOrder,
+    order: Transaction,
     nftOutput: INftOutput,
     match: TransactionMatch,
   ) => {
@@ -130,7 +129,7 @@ export class NftDepositService {
   };
 
   private depositNftMintedOutsideBuild5 = async (
-    order: TransactionOrder,
+    order: Transaction,
     blockId: string,
     nftOutput: INftOutput,
   ) => {
@@ -161,7 +160,7 @@ export class NftDepositService {
       description: metadata.nft.description,
       collection: migratedCollection.uid,
       space: space.uid,
-      owner: order.member,
+      owner: order.member!,
       isOwned: true,
       mintingData: {
         network: order.network,
@@ -172,7 +171,7 @@ export class NftDepositService {
         address: order.payload.targetAddress,
         network: order.network,
         mintedOn: serverTime(),
-        mintedBy: order.member,
+        mintedBy: order.member!,
         blockId,
         nftId: nftOutput.nftId,
         storageDeposit: Number(nftOutput.amount),
@@ -271,7 +270,7 @@ export class NftDepositService {
     return nft;
   };
 
-  private validateInputAndGetMetadata = async (order: TransactionOrder, nftOutput: INftOutput) => {
+  private validateInputAndGetMetadata = async (order: Transaction, nftOutput: INftOutput) => {
     const nftMetadata = getNftOutputMetadata(nftOutput);
     set(nftMetadata, 'collectionId', getIssuerNftId(nftOutput));
     if (!isMetadataIrc27(nftMetadata, nftIrc27Schema)) {

@@ -10,8 +10,7 @@ import {
   NftStatus,
   Space,
   Transaction,
-  TransactionMetadataNftType,
-  TransactionOrder,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import { get } from 'lodash';
@@ -26,7 +25,7 @@ import { TransactionMatch, TransactionService } from './transaction-service';
 export class MetadataNftService {
   constructor(readonly transactionService: TransactionService) {}
 
-  public async handleMintMetadataNftRequest(order: TransactionOrder, match: TransactionMatch) {
+  public async handleMintMetadataNftRequest(order: Transaction, match: TransactionMatch) {
     const payment = await this.transactionService.createPayment(order, match);
     this.transactionService.markAsReconciled(order, match.msgId);
 
@@ -35,14 +34,14 @@ export class MetadataNftService {
     const nftId = get(order, 'payload.nftId');
 
     if (!aliasId) {
-      const mintAlias = <Transaction>{
+      const mintAlias: Transaction = {
         type: TransactionType.METADATA_NFT,
         uid: getRandomEthAddress(),
         space: order.space,
         member: order.member,
         network: order.network,
         payload: {
-          type: TransactionMetadataNftType.MINT_ALIAS,
+          type: TransactionPayloadType.MINT_ALIAS,
           amount: get(order, 'payload.aliasOutputAmount', 0),
           sourceAddress: order.payload.targetAddress,
           targetAddress: order.payload.targetAddress,
@@ -83,8 +82,8 @@ export class MetadataNftService {
     const nft = nftId
       ? (await getNftByMintingId(nftId))!
       : createMetadataNft(
-          get(order, 'member', ''),
-          get(order, 'space', ''),
+          get(order, 'member', '')!,
+          get(order, 'space', '')!,
           collection!.uid,
           get(order, 'payload.metadata', {}),
         );
@@ -98,9 +97,9 @@ export class MetadataNftService {
     const mintNftOrder = createMintMetadataNftOrder(
       nft,
       order.network!,
-      order.payload.targetAddress,
+      order.payload.targetAddress!,
       space?.alias?.address!,
-      order.payload.targetAddress,
+      order.payload.targetAddress!,
       get(order, 'payload.aliasId', ''),
       get(order, 'payload.collectionId', ''),
       order.uid,
@@ -160,24 +159,23 @@ export const createMintMetadataCollectionOrder = (
   orderId: string,
   aliasGovAddress: string,
   aliasBlockId = '',
-) =>
-  <Transaction>{
-    type: TransactionType.METADATA_NFT,
-    uid: getRandomEthAddress(),
-    member: transaction.member,
-    space: transaction.space,
-    network: transaction.network,
-    payload: {
-      type: TransactionMetadataNftType.MINT_COLLECTION,
-      sourceAddress: transaction.payload.targetAddress,
-      targetAddress: transaction.payload.targetAddress,
-      collection,
-      aliasId,
-      aliasBlockId,
-      aliasGovAddress,
-      orderId,
-    },
-  };
+): Transaction => ({
+  type: TransactionType.METADATA_NFT,
+  uid: getRandomEthAddress(),
+  member: transaction.member,
+  space: transaction.space,
+  network: transaction.network,
+  payload: {
+    type: TransactionPayloadType.MINT_COLLECTION,
+    sourceAddress: transaction.payload.targetAddress,
+    targetAddress: transaction.payload.targetAddress,
+    collection,
+    aliasId,
+    aliasBlockId,
+    aliasGovAddress,
+    orderId,
+  },
+});
 
 export const createMintMetadataNftOrder = (
   nft: Nft,
@@ -188,24 +186,23 @@ export const createMintMetadataNftOrder = (
   aliasId: string,
   collectionId: string,
   baseOrderId: string,
-) =>
-  <Transaction>{
-    type: TransactionType.METADATA_NFT,
-    uid: getRandomEthAddress(),
-    member: nft.owner,
-    space: nft.space,
-    network: network,
-    payload: {
-      type: nft.mintingData?.nftId
-        ? TransactionMetadataNftType.UPDATE_MINTED_NFT
-        : TransactionMetadataNftType.MINT_NFT,
-      sourceAddress,
-      aliasGovAddress,
-      targetAddress,
-      aliasId,
-      collectionId,
-      orderId: baseOrderId,
-      nft: nft.uid,
-      nftId: nft.mintingData?.nftId || '',
-    },
-  };
+): Transaction => ({
+  type: TransactionType.METADATA_NFT,
+  uid: getRandomEthAddress(),
+  member: nft.owner,
+  space: nft.space,
+  network: network,
+  payload: {
+    type: nft.mintingData?.nftId
+      ? TransactionPayloadType.UPDATE_MINTED_NFT
+      : TransactionPayloadType.MINT_NFT,
+    sourceAddress,
+    aliasGovAddress,
+    targetAddress,
+    aliasId,
+    collectionId,
+    orderId: baseOrderId,
+    nft: nft.uid,
+    nftId: nft.mintingData?.nftId || '',
+  },
+});

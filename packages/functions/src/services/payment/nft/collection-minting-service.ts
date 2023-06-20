@@ -2,8 +2,8 @@ import {
   COL,
   Collection,
   CollectionStatus,
-  TransactionCreditType,
-  TransactionOrder,
+  Transaction,
+  TransactionPayloadType,
   UnsoldMintingOptions,
 } from '@build-5/interfaces';
 import { get } from 'lodash';
@@ -13,17 +13,14 @@ import { TransactionMatch, TransactionService } from '../transaction-service';
 export class CollectionMintingService {
   constructor(readonly transactionService: TransactionService) {}
 
-  public handleCollectionMintingRequest = async (
-    order: TransactionOrder,
-    match: TransactionMatch,
-  ) => {
+  public handleCollectionMintingRequest = async (order: Transaction, match: TransactionMatch) => {
     const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${order.payload.collection}`);
     const collection = <Collection>await this.transactionService.get(collectionDocRef);
 
     const payment = await this.transactionService.createPayment(order, match);
     if (collection.status !== CollectionStatus.PRE_MINTED) {
       await this.transactionService.createCredit(
-        TransactionCreditType.DATA_NO_LONGER_VALID,
+        TransactionPayloadType.DATA_NO_LONGER_VALID,
         payment,
         match,
       );

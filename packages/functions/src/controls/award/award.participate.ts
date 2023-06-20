@@ -1,9 +1,20 @@
-import { Award, COL, SUB_COL, WenError } from '@build-5/interfaces';
+import {
+  Award,
+  AwardParticipant,
+  AwardParticpateRequest,
+  COL,
+  SUB_COL,
+  WenError,
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { build5Db } from '../../firebase/firestore/build5Db';
+import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 
-export const awardParticipateControl = async (owner: string, params: Record<string, unknown>) => {
+export const awardParticipateControl = async (
+  owner: string,
+  params: AwardParticpateRequest,
+): Promise<AwardParticipant> => {
   const awardDocRef = build5Db().doc(`${COL.AWARD}/${params.uid}`);
   const award = await awardDocRef.get<Award>();
   if (!award) {
@@ -27,12 +38,15 @@ export const awardParticipateControl = async (owner: string, params: Record<stri
     throw invalidArgument(WenError.member_is_already_participant_of_space);
   }
 
-  const participant = {
+  const participant: AwardParticipant = {
     uid: owner,
-    comment: (params.comment as string) || null,
+    comment: params.comment || null,
     parentId: award.uid,
     completed: false,
     parentCol: COL.AWARD,
+    count: 0,
+    tokenReward: 0,
+    createdOn: dateToTimestamp(dayjs()),
   };
   await awardDocRef.collection(SUB_COL.PARTICIPANTS).doc(owner).create(participant);
   return participant;

@@ -3,6 +3,7 @@ import {
   COL,
   Member,
   MIN_IOTA_AMOUNT,
+  NativeToken,
   Network,
   Space,
   TangleRequestType,
@@ -58,7 +59,7 @@ describe('Award tangle request', () => {
   it('Should create and fund with tangle request', async () => {
     const newAward = awardRequest(space.uid, token.symbol);
     await requestFundsFromFaucet(Network.RMS, guardianAddress.bech32, 5 * MIN_IOTA_AMOUNT);
-    await walletService.send(guardianAddress, tangleOrder.payload.targetAddress, MIN_IOTA_AMOUNT, {
+    await walletService.send(guardianAddress, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
       customMetadata: {
         request: {
           requestType: TangleRequestType.AWARD_CREATE,
@@ -79,21 +80,21 @@ describe('Award tangle request', () => {
     let snap = await creditQuery.get();
     let credit = snap[0] as Transaction;
     expect(credit.payload.amount).toBe(MIN_IOTA_AMOUNT);
-    const awardDocRef = build5Db().doc(`${COL.AWARD}/${credit.payload.response.award}`);
+    const awardDocRef = build5Db().doc(`${COL.AWARD}/${credit.payload.response!.award}`);
 
     await requestMintedTokenFromFaucet(
       walletService,
       guardianAddress,
       MINTED_TOKEN_ID,
       VAULT_MNEMONIC,
-      credit.payload.response.nativeTokens[0].amount,
+      (credit.payload.response!.nativeTokens! as any)[0].amount,
     );
     await walletService.send(
       guardianAddress,
-      credit.payload.response.address,
-      credit.payload.response.amount,
+      credit.payload.response!.address as string,
+      credit.payload.response!.amount as number,
       {
-        nativeTokens: credit.payload.response.nativeTokens.map((nt: any) => ({
+        nativeTokens: (credit.payload.response!.nativeTokens as NativeToken[]).map((nt: any) => ({
           ...nt,
           amount: HexHelper.fromBigInt256(bigInt(nt.amount)),
         })),

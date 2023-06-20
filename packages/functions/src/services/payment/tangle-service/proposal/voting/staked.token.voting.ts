@@ -104,7 +104,7 @@ const expireStakeVoteTransaction = async (
     .collection(SUB_COL.MEMBERS)
     .doc(voteTransaction.member!);
 
-  const stakes = await getStakesById(voteTransaction.payload.stakes);
+  const stakes = await getStakesById(voteTransaction.payload.stakes!);
   const weight = getWeightForStakes(
     proposal,
     dayjs(voteTransaction.createdOn!.toDate()),
@@ -118,8 +118,8 @@ const expireStakeVoteTransaction = async (
     'payload.outputConsumedOn': dayjs().toDate(),
   });
 
-  const prevWeight = voteTransaction.payload.weight;
-  const prevValue = voteTransaction.payload.values[0];
+  const prevWeight = voteTransaction.payload.weight!;
+  const prevValue = voteTransaction.payload.values![0];
 
   transaction.set(
     proposalMemberDocRef,

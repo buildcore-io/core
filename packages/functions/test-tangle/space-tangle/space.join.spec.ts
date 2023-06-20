@@ -28,7 +28,7 @@ describe('Join space', () => {
     await requestFundsFromFaucet(Network.RMS, helper.memberAddress.bech32, MIN_IOTA_AMOUNT);
     await helper.walletService.send(
       helper.memberAddress,
-      helper.tangleOrder.payload.targetAddress,
+      helper.tangleOrder.payload.targetAddress!,
       MIN_IOTA_AMOUNT,
       {
         customMetadata: {
@@ -46,7 +46,7 @@ describe('Join space', () => {
     });
     const snap = await helper.memberCreditQuery.get();
     const credit = snap[0] as Transaction;
-    expect(credit.payload.response.status).toBe('success');
+    expect(credit.payload.response!.status).toBe('success');
 
     const spaceDocRef = build5Db().doc(`${COL.SPACE}/${helper.space.uid}`);
     helper.space = <Space>await spaceDocRef.get();

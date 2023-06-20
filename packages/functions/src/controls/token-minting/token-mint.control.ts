@@ -1,12 +1,12 @@
 import {
   COL,
   Member,
-  Network,
   TRANSACTION_AUTO_EXPIRY_MS,
   Token,
+  TokenMintRequest,
   TokenStatus,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
   WenError,
@@ -33,7 +33,7 @@ import {
 } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
-export const mintTokenControl = (owner: string, params: Record<string, unknown>) =>
+export const mintTokenControl = (owner: string, params: TokenMintRequest) =>
   build5Db().runTransaction(async (transaction) => {
     const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
     const token = await transaction.get<Token>(tokenDocRef);
@@ -49,9 +49,9 @@ export const mintTokenControl = (owner: string, params: Record<string, unknown>)
 
     await assertIsGuardian(token.space, owner);
     const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();
-    assertMemberHasValidAddress(member, params.network as Network);
+    assertMemberHasValidAddress(member, params.network);
 
-    const wallet = (await WalletService.newWallet(params.network as Network)) as SmrWallet;
+    const wallet = (await WalletService.newWallet(params.network)) as SmrWallet;
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
     const totalDistributed =
@@ -63,14 +63,14 @@ export const mintTokenControl = (owner: string, params: Record<string, unknown>)
       wallet,
     );
 
-    const order = <Transaction>{
+    const order: Transaction = {
       type: TransactionType.ORDER,
       uid: getRandomEthAddress(),
       member: owner,
       space: token!.space,
       network: params.network,
       payload: {
-        type: TransactionOrderType.MINT_TOKEN,
+        type: TransactionPayloadType.MINT_TOKEN,
         amount: Object.values(storageDeposits).reduce((acc, act) => acc + act, 0),
         targetAddress: targetAddress.bech32,
         expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),

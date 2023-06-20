@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   COL,
+  IgnoreWalletReason,
   Member,
   Network,
   Nft,
   Transaction,
-  TransactionIgnoreWalletReason,
   TransactionType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
@@ -85,7 +85,7 @@ describe('Collection minting', () => {
     const credit = snap[0] as Transaction;
     expect(credit.ignoreWallet).toBe(true);
     expect(credit.ignoreWalletReason).toBe(
-      TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION,
+      IgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION,
     );
 
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, { transaction: credit.uid });

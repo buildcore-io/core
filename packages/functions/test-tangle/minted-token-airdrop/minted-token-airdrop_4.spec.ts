@@ -102,7 +102,7 @@ describe('Minted token airdrop tangle claim', () => {
 
     await helper.walletService!.send(
       memberAddress,
-      tangleOrder.payload.targetAddress,
+      tangleOrder.payload.targetAddress!,
       1 * MIN_IOTA_AMOUNT,
       {
         customMetadata: {
@@ -128,8 +128,8 @@ describe('Minted token airdrop tangle claim', () => {
     const claimOrder = <Transaction>(await orderQuery.get())[0];
     await helper.walletService!.send(
       memberAddress,
-      claimOrder.payload.response.address,
-      claimOrder.payload.response.amount,
+      claimOrder.payload.response!.address as string,
+      claimOrder.payload.response!.amount as number,
       {},
     );
 

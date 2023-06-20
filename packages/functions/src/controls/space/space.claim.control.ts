@@ -2,9 +2,10 @@ import {
   COL,
   Collection,
   Space,
+  SpaceClaimRequest,
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
   WenError,
@@ -17,8 +18,8 @@ import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
-export const claimSpaceControl = async (owner: string, params: Record<string, unknown>) => {
-  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.space}`);
+export const claimSpaceControl = async (owner: string, params: SpaceClaimRequest) => {
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
   const space = await spaceDocRef.get<Space>();
   if (!space) {
     throw invalidArgument(WenError.space_does_not_exists);
@@ -34,14 +35,14 @@ export const claimSpaceControl = async (owner: string, params: Record<string, un
 
   const wallet = await WalletService.newWallet(collection?.mintingData?.network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
-  const order = <Transaction>{
+  const order: Transaction = {
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,
     space: space?.uid || null,
-    network: collection?.mintingData?.network,
+    network: collection?.mintingData?.network!,
     payload: {
-      type: TransactionOrderType.CLAIM_SPACE,
+      type: TransactionPayloadType.CLAIM_SPACE,
       amount: generateRandomAmount(),
       targetAddress: targetAddress.bech32,
       expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),

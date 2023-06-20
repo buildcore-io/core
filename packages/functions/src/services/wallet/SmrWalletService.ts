@@ -82,7 +82,10 @@ export class SmrWallet implements Wallet<SmrParams> {
     private readonly network: Network,
   ) {}
 
-  public getBalance = async (addressBech32: string) => {
+  public getBalance = async (addressBech32: string | undefined) => {
+    if (!addressBech32) {
+      return 0;
+    }
     const balance = await addressBalance(this.client, addressBech32);
     return Number(balance.balance);
   };
@@ -110,8 +113,8 @@ export class SmrWallet implements Wallet<SmrParams> {
     return { mnemonic, keyPair, hex, bech32 };
   };
 
-  public getAddressDetails = async (bech32: string) => {
-    const mnemonic = await MnemonicService.get(bech32);
+  public getAddressDetails = async (bech32: string | undefined) => {
+    const mnemonic = await MnemonicService.get(bech32 || '');
     return this.getIotaAddressDetails(mnemonic);
   };
 
@@ -306,16 +309,16 @@ export class SmrWallet implements Wallet<SmrParams> {
   };
 
   public creditLocked = async (credit: Transaction, params: SmrParams) => {
-    const mnemonicData = await MnemonicService.getData(credit.payload.sourceAddress);
+    const mnemonicData = await MnemonicService.getData(credit.payload.sourceAddress!);
     const prevSourceConsumedOutputIds = mnemonicData.consumedOutputIds || [];
     const sourceConsumedOutputs = await this.getOutputs(
-      credit.payload.sourceAddress,
+      credit.payload.sourceAddress!,
       prevSourceConsumedOutputIds,
       true,
     );
 
     const sourceBasicOutputs = Object.values(sourceConsumedOutputs).map((o) =>
-      packBasicOutput(credit.payload.targetAddress, Number(o.amount), o.nativeTokens, this.info),
+      packBasicOutput(credit.payload.targetAddress!, Number(o.amount), o.nativeTokens, this.info),
     );
 
     const nftWallet = new NftWallet(this);
@@ -325,7 +328,7 @@ export class SmrWallet implements Wallet<SmrParams> {
       mnemonicData.consumedNftOutputIds,
     );
     const targetAddress = Bech32Helper.addressFromBech32(
-      credit.payload.targetAddress,
+      credit.payload.targetAddress!,
       this.info.protocol.bech32Hrp,
     );
     const sourceNftOutputs = Object.values(sourceConsumedNftOutputs).map((nftOutput) => {
@@ -337,15 +340,15 @@ export class SmrWallet implements Wallet<SmrParams> {
     const sourceOutputs = [...sourceBasicOutputs, ...sourceNftOutputs];
 
     const prevStorageDepConsumedOutputIds =
-      (await MnemonicService.getData(credit.payload.storageDepositSourceAddress))
+      (await MnemonicService.getData(credit.payload.storageDepositSourceAddress!))
         .consumedOutputIds || [];
     const storageDepConsumedOutputs = await this.getOutputs(
-      credit.payload.storageDepositSourceAddress,
+      credit.payload.storageDepositSourceAddress!,
       prevStorageDepConsumedOutputIds,
       false,
     );
     const storageDepOutputs = Object.values(storageDepConsumedOutputs).map((o) =>
-      packBasicOutput(credit.payload.targetAddress, Number(o.amount), o.nativeTokens, this.info),
+      packBasicOutput(credit.payload.targetAddress!, Number(o.amount), o.nativeTokens, this.info),
     );
 
     const inputs = [
@@ -406,7 +409,7 @@ const subtractNativeTokens = (output: IBasicOutput, tokens: NativeToken[] | unde
       if (!tokenToSubtract) {
         return token;
       }
-      return { id: token.id, amount: subtractHex(token.amount, tokenToSubtract) };
+      return { id: token.id, amount: subtractHex(token.amount, tokenToSubtract as string) };
     })
     .filter((nt) => Number(nt.amount) !== 0);
 };

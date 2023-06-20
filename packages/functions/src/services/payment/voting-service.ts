@@ -3,10 +3,8 @@ import {
   Proposal,
   SUB_COL,
   Transaction,
-  TransactionCreditType,
-  TransactionOrder,
+  TransactionPayloadType,
   TransactionType,
-  VoteTransaction,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get, head } from 'lodash';
@@ -18,7 +16,7 @@ import { TransactionMatch, TransactionService } from './transaction-service';
 export class VotingService {
   constructor(readonly transactionService: TransactionService) {}
 
-  public async handleTokenVoteRequest(order: TransactionOrder, match: TransactionMatch) {
+  public async handleTokenVoteRequest(order: Transaction, match: TransactionMatch) {
     const payment = await this.transactionService.createPayment(order, match);
     this.transactionService.markAsReconciled(order, match.msgId);
     const token = await getTokenForSpace(order.space!);
@@ -29,9 +27,9 @@ export class VotingService {
     const values = get(order, 'payload.voteValues', []);
     const customData = hasValidToken ? { proposalId, values } : undefined;
 
-    const storageReturn = match.to.amount >= order.payload.amount ? match.from.address : undefined;
+    const storageReturn = match.to.amount >= order.payload.amount! ? match.from.address : undefined;
     const credit = await this.transactionService.createCredit(
-      TransactionCreditType.TOKEN_VOTE,
+      TransactionPayloadType.TOKEN_VOTE,
       payment,
       match,
       undefined,
@@ -40,7 +38,7 @@ export class VotingService {
       storageReturn
         ? {
             address: storageReturn,
-            amount: order.payload.amount,
+            amount: order.payload.amount!,
           }
         : undefined,
       customData,
@@ -100,20 +98,20 @@ export class VotingService {
   }
 
   private createVoteTransaction = (
-    order: TransactionOrder,
+    order: Transaction,
     credit: Transaction,
     proposal: Proposal,
     tokenAmount: number,
     weightMultiplier: number,
     values: number[],
   ) => {
-    const voteTransaction = <Transaction>{
+    const voteTransaction: Transaction = {
       type: TransactionType.VOTE,
       uid: getRandomEthAddress(),
       member: order.member,
       space: proposal.space,
       network: order.network,
-      payload: <VoteTransaction>{
+      payload: {
         proposalId: proposal.uid,
         tokenAmount,
         weightMultiplier,

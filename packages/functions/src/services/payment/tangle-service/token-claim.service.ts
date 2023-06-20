@@ -1,5 +1,6 @@
 import {
   COL,
+  ClaimAirdroppedTokensTangleRequest,
   Member,
   SUB_COL,
   TRANSACTION_AUTO_EXPIRY_MS,
@@ -8,13 +9,13 @@ import {
   TokenDropStatus,
   TokenStatus,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
   WenError,
 } from '@build-5/interfaces';
+import { BaseTangleResponse } from '@build-5/interfaces/lib/api/tangle/common';
 import dayjs from 'dayjs';
-import Joi from 'joi';
 import { isEmpty } from 'lodash';
 import { build5Db } from '../../../firebase/firestore/build5Db';
 import { assertMemberHasValidAddress } from '../../../utils/address.utils';
@@ -24,10 +25,12 @@ import { assertValidationAsync } from '../../../utils/schema.utils';
 import { dropToOutput } from '../../../utils/token-minting-utils/member.utils';
 import { getTokenBySymbol, getUnclaimedDrops } from '../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
-import { CommonJoi } from '../../joi/common';
+import { CommonJoi, toJoiObject } from '../../joi/common';
 import { SmrWallet } from '../../wallet/SmrWalletService';
 import { WalletService } from '../../wallet/wallet';
 import { TransactionService } from '../transaction-service';
+
+const schema = toJoiObject<ClaimAirdroppedTokensTangleRequest>({ symbol: CommonJoi.tokenSymbol() });
 
 export class TangleTokenClaimService {
   constructor(readonly transactionService: TransactionService) {}
@@ -35,22 +38,22 @@ export class TangleTokenClaimService {
   public handleMintedTokenAirdropRequest = async (
     owner: string,
     request: Record<string, unknown>,
-  ) => {
-    const params = { symbol: request.symbol };
-    await assertValidationAsync(Joi.object({ symbol: CommonJoi.tokenSymbol() }), params);
-
+  ): Promise<BaseTangleResponse> => {
+    const params = await assertValidationAsync(schema, { symbol: request.symbol });
     const order = await createMintedTokenAirdropCalimOrder(owner, params.symbol as string);
     this.transactionService.push({
       ref: build5Db().doc(`${COL.TRANSACTION}/${order.uid}`),
       data: order,
       action: 'set',
     });
-
-    return { amount: order.payload.amount, address: order.payload.targetAddress };
+    return { amount: order.payload.amount!, address: order.payload.targetAddress! };
   };
 }
 
-export const createMintedTokenAirdropCalimOrder = async (owner: string, symbol: string) => {
+export const createMintedTokenAirdropCalimOrder = async (
+  owner: string,
+  symbol: string,
+): Promise<Transaction> => {
   const token = await getTokenBySymbol(symbol);
   if (!token) {
     throw invalidArgument(WenError.token_does_not_exist);
@@ -75,14 +78,14 @@ export const createMintedTokenAirdropCalimOrder = async (owner: string, symbol: 
     return acc + Number(output.amount);
   }, 0);
 
-  return <Transaction>{
+  return {
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,
     space: token!.space,
     network: token.mintingData?.network!,
     payload: {
-      type: TransactionOrderType.CLAIM_MINTED_TOKEN,
+      type: TransactionPayloadType.CLAIM_MINTED_TOKEN,
       amount: storageDeposit,
       targetAddress: targetAddress.bech32,
       expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),

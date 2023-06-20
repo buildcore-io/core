@@ -36,8 +36,8 @@ describe('Collection minting', () => {
     });
     const snap = await query.get();
     const credit = <Transaction>snap[0];
-    expect(credit.payload.response.code).toBe(2118);
-    expect(credit.payload.response.message).toBe('Maximum media size is 100 MB');
-    await helper.isInvalidPayment(credit.payload.sourceTransaction[0]);
+    expect(credit.payload.response!.code).toBe(2118);
+    expect(credit.payload.response!.message).toBe('Maximum media size is 100 MB');
+    await helper.isInvalidPayment(credit.payload.sourceTransaction![0]);
   });
 });

@@ -1,4 +1,4 @@
-import { Access, COL, Nft, SUB_COL, TransactionAwardType, WenError } from '@build-5/interfaces';
+import { Access, COL, Nft, SUB_COL, TransactionPayloadType, WenError } from '@build-5/interfaces';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { invalidArgument } from '../../utils/error.utils';
 
@@ -29,7 +29,7 @@ export const assertHasAccess = async (
     for (const award of accessAwards) {
       const snapshot = await build5Db()
         .collection(COL.TRANSACTION)
-        .where('payload.type', '==', TransactionAwardType.BADGE)
+        .where('payload.type', '==', TransactionPayloadType.BADGE)
         .where('member', '==', member)
         .where('payload.award', '==', award)
         .limit(1)

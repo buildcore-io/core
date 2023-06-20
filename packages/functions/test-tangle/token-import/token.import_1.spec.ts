@@ -6,7 +6,7 @@ import {
   Token,
   TokenStatus,
   Transaction,
-  TransactionCreditType,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
@@ -83,7 +83,7 @@ describe('Token import', () => {
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.guardian.uid)
       .where('type', '==', TransactionType.CREDIT)
-      .where('payload.type', '==', TransactionCreditType.IMPORT_TOKEN);
+      .where('payload.type', '==', TransactionPayloadType.IMPORT_TOKEN);
     await wait(async () => {
       const snap = await creditQuery.get<Transaction>();
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
@@ -92,7 +92,7 @@ describe('Token import', () => {
     expect(snap[0]?.payload.amount).toBe(2 * MIN_IOTA_AMOUNT);
 
     const payment = await build5Db()
-      .doc(`${COL.TRANSACTION}/${snap[0].payload.sourceTransaction[0]}`)
+      .doc(`${COL.TRANSACTION}/${snap[0].payload.sourceTransaction![0]}`)
       .get<Transaction>();
     expect(payment?.payload.invalidPayment).toBe(false);
   });

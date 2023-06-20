@@ -7,8 +7,7 @@ import {
   Space,
   Token,
   Transaction,
-  TransactionAwardType,
-  TransactionCreditType,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import {
@@ -43,7 +42,7 @@ export class AwardService {
 
     if (award.funded) {
       await this.transactionService.createCredit(
-        TransactionCreditType.DATA_NO_LONGER_VALID,
+        TransactionPayloadType.DATA_NO_LONGER_VALID,
         payment,
         match,
       );
@@ -57,7 +56,7 @@ export class AwardService {
       const nativeTokensExpected = award.badge.total * award.badge.tokenReward;
       if (nativeTokens.length !== 1 || nativeTokensReceived !== nativeTokensExpected) {
         await this.transactionService.createCredit(
-          TransactionCreditType.INVALID_AMOUNT,
+          TransactionPayloadType.INVALID_AMOUNT,
           payment,
           match,
         );
@@ -85,7 +84,7 @@ export class AwardService {
       space: order.space,
       network: order.network,
       payload: {
-        type: TransactionAwardType.MINT_ALIAS,
+        type: TransactionPayloadType.MINT_ALIAS,
         amount: award.aliasStorageDeposit,
         sourceAddress: order.payload.targetAddress,
         targetAddress: order.payload.targetAddress,

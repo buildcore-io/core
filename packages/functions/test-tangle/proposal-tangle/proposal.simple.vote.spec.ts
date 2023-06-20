@@ -31,14 +31,14 @@ describe('Create proposal via tangle request', () => {
 
     await helper.walletService.send(
       helper.guardianAddress,
-      helper.tangleOrder.payload.targetAddress,
+      helper.tangleOrder.payload.targetAddress!,
       MIN_IOTA_AMOUNT,
       {
         customMetadata: {
           request: {
             requestType: TangleRequestType.PROPOSAL_VOTE,
             uid: proposalUid,
-            values: [1],
+            value: 1,
           },
         },
       },
@@ -55,14 +55,14 @@ describe('Create proposal via tangle request', () => {
 
     await helper.walletService.send(
       helper.guardianAddress,
-      helper.tangleOrder.payload.targetAddress,
+      helper.tangleOrder.payload.targetAddress!,
       MIN_IOTA_AMOUNT,
       {
         customMetadata: {
           request: {
             requestType: TangleRequestType.PROPOSAL_VOTE,
             uid: proposalUid,
-            values: [2],
+            value: 2,
           },
         },
       },

@@ -23,7 +23,7 @@ describe('Token based voting', () => {
     await helper.updatePropoasalDates(dayjs().add(3, 'd'), dayjs().add(5, 'd'));
     mockWalletReturnValue(helper.walletSpy, helper.guardian, {
       uid: helper.proposal!.uid,
-      values: [1],
+      value: 1,
     });
     await expectThrow(testEnv.wrap(voteOnProposal)({}), WenError.vote_is_no_longer_active.key);
   });
@@ -51,7 +51,7 @@ describe('Token based voting', () => {
     await helper.sendTokensToVote(memberAddress.bech32);
     await wait(async () => {
       const voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
-      return +voteTransaction.payload.weight.toFixed(2) === 5;
+      return +voteTransaction.payload.weight!.toFixed(2) === 5;
     });
     await helper.assertProposalWeights(5, 5);
     await helper.assertProposalMemberWeightsPerAnser(helper.guardian, 5, 1);
@@ -63,7 +63,7 @@ describe('Token based voting', () => {
     );
 
     voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
-    expect(+voteTransaction.payload.weight.toFixed(2)).toBe(5);
+    expect(+voteTransaction.payload.weight!.toFixed(2)).toBe(5);
     await helper.assertProposalWeights(10, 10);
     await helper.assertProposalMemberWeightsPerAnser(helper.member, 5, 1);
   });

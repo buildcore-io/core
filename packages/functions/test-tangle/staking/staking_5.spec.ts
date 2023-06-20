@@ -42,7 +42,7 @@ describe('Stake reward test test', () => {
         100,
       );
 
-      await helper.walletService!.send(tmp, tangleOrder.payload.targetAddress, MIN_IOTA_AMOUNT, {
+      await helper.walletService!.send(tmp, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
         nativeTokens: [
           { id: helper.token?.mintingData?.tokenId!, amount: HexHelper.fromBigInt256(bigInt(100)) },
         ],

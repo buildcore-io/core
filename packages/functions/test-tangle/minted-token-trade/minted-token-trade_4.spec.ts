@@ -41,7 +41,7 @@ describe('Token minting', () => {
     expect(sellerCreditSnap.length).toBe(1);
     const sellerCredit = sellerCreditSnap[0] as Transaction;
     expect(sellerCredit.payload.amount).toBe(49600);
-    expect(sellerCredit.payload.nativeTokens[0].amount).toBe(10);
+    expect(sellerCredit.payload.nativeTokens![0].amount).toBe('10');
     expect(sellerCredit.payload.reason).toBe(CreditPaymentReason.TRADE_CANCELLED);
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid);

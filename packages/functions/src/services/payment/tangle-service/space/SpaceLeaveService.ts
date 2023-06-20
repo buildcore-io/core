@@ -1,19 +1,27 @@
-import { COL, Space, SUB_COL, WenError } from '@build-5/interfaces';
+import { COL, Space, SpaceLeaveTangleRequest, SUB_COL, WenError } from '@build-5/interfaces';
+import { BaseTangleResponse } from '@build-5/interfaces/lib/api/tangle/common';
 import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { uidSchema } from '../../../../runtime/firebase/common';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
+import { toJoiObject } from '../../../joi/common';
 import { TransactionService } from '../../transaction-service';
+
+const schema = toJoiObject<SpaceLeaveTangleRequest>(uidSchema);
 
 export class SpaceLeaveService {
   constructor(readonly transactionService: TransactionService) {}
 
-  public handleLeaveSpaceRequest = async (owner: string, request: Record<string, unknown>) => {
-    await assertValidationAsync(uidSchema, request, { allowUnknown: true });
+  public handleLeaveSpaceRequest = async (
+    owner: string,
+    request: Record<string, unknown>,
+  ): Promise<BaseTangleResponse> => {
+    delete request.requestType;
+    const params = await assertValidationAsync(schema, request);
 
-    const { space, member } = await getLeaveSpaceData(owner, request.uid as string);
+    const { space, member } = await getLeaveSpaceData(owner, params.uid);
 
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${request.uid}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
 
     this.transactionService.push({
       ref: spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner),

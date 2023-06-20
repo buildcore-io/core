@@ -40,7 +40,10 @@ describe('Address validation test', () => {
 
   it('Should validate member address', async () => {
     const order = await validateMemberAddressFunc(walletSpy, member);
-    const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
+    const milestone = await submitMilestoneFunc(
+      order.payload.targetAddress!,
+      order.payload.amount!,
+    );
     await milestoneProcessed(milestone.milestone, milestone.tranId);
     await waitForAddressValidation(member, COL.MEMBER);
   });
@@ -61,7 +64,10 @@ describe('Address validation test', () => {
 
   it('Should validate space address', async () => {
     let order = await validateSpaceAddressFunc(walletSpy, member, space);
-    const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
+    const milestone = await submitMilestoneFunc(
+      order.payload.targetAddress!,
+      order.payload.amount!,
+    );
     await milestoneProcessed(milestone.milestone, milestone.tranId);
 
     const proposalQuery = build5Db().collection(COL.PROPOSAL).where('space', '==', space);
@@ -76,15 +82,18 @@ describe('Address validation test', () => {
     expect(proposal.questions[0].additionalInfo).toBe(
       `IOTA: ${milestone.fromAdd} (previously: None)\n`,
     );
-    expect(proposal.settings.spaceUpdateData.validatedAddress[Network.IOTA]).toBe(
+    expect((proposal.settings.spaceUpdateData!.validatedAddress as any)![Network.IOTA]).toBe(
       milestone.fromAdd,
     );
-    expect(proposal.settings.spaceUpdateData.uid).toBe(space);
+    expect(proposal.settings.spaceUpdateData!.uid).toBe(space);
 
     await waitForAddressValidation(space, COL.SPACE);
 
     order = await validateSpaceAddressFunc(walletSpy, member, space);
-    const milestone2 = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
+    const milestone2 = await submitMilestoneFunc(
+      order.payload.targetAddress!,
+      order.payload.amount!,
+    );
     await milestoneProcessed(milestone2.milestone, milestone2.tranId);
 
     await wait(async () => {
@@ -123,8 +132,8 @@ describe('Address validation test', () => {
     const validate = async () => {
       const order = await validateMemberAddressFunc(walletSpy, member);
       const milestone = await submitMilestoneFunc(
-        order.payload.targetAddress,
-        order.payload.amount,
+        order.payload.targetAddress!,
+        order.payload.amount!,
       );
       await milestoneProcessed(milestone.milestone, milestone.tranId);
     };

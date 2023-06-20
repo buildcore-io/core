@@ -7,7 +7,7 @@ import {
   TokenTradeOrderStatus,
   TokenTradeOrderType,
   Transaction,
-  TransactionCreditType,
+  TransactionPayloadType,
   TransactionType,
   WenError,
 } from '@build-5/interfaces';
@@ -80,7 +80,7 @@ describe('Trade controller, buy token', () => {
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', memberAddress)
-      .where('payload.type', '==', TransactionCreditType.TOKEN_BUY)
+      .where('payload.type', '==', TransactionPayloadType.TOKEN_BUY)
       .get<Transaction>();
     expect(creditSnap.length).toBe(1);
     expect(creditSnap[0]?.payload?.amount).toBe(5 * MIN_IOTA_AMOUNT);

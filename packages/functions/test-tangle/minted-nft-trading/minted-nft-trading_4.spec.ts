@@ -7,7 +7,7 @@ import {
   NftStatus,
   TangleRequestType,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import { IndexerPluginClient } from '@iota/iota.js-next';
@@ -38,7 +38,7 @@ describe('Minted nft trading', () => {
     await helper.createAndOrderNft();
     await helper.mintCollection();
 
-    await helper.walletService!.send(address, tangleOrder.payload.targetAddress, MIN_IOTA_AMOUNT, {
+    await helper.walletService!.send(address, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
       customMetadata: {
         request: {
           requestType: TangleRequestType.NFT_PURCHASE,
@@ -65,7 +65,7 @@ describe('Minted nft trading', () => {
     expect(collection.nftsOnSale).toBe(1);
     expect(collection.nftsOnAuction).toBe(0);
 
-    await helper.walletService!.send(address, tangleOrder.payload.targetAddress, MIN_IOTA_AMOUNT, {
+    await helper.walletService!.send(address, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
       customMetadata: {
         request: {
           requestType: TangleRequestType.NFT_PURCHASE,
@@ -100,16 +100,16 @@ describe('Minted nft trading', () => {
 
     const orders = await build5Db()
       .collection(COL.TRANSACTION)
-      .where('payload.type', '==', TransactionOrderType.NFT_PURCHASE)
+      .where('payload.type', '==', TransactionPayloadType.NFT_PURCHASE)
       .where('payload.nft', '==', helper.nft!.uid)
       .get<Transaction>();
     for (const order of orders) {
-      expect(order.payload.restrictions.collection).toEqual({
+      expect(order.payload.restrictions!.collection).toEqual({
         access: collection.access,
         accessAwards: collection.accessAwards || [],
         accessCollections: collection.accessCollections || [],
       });
-      expect(order.payload.restrictions.nft).toEqual({
+      expect(order.payload.restrictions!.nft).toEqual({
         saleAccess: helper.nft!.saleAccess || null,
         saleAccessMembers: helper.nft!.saleAccessMembers || [],
       });

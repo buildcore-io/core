@@ -4,7 +4,7 @@ import {
   Token,
   TokenStatus,
   Transaction,
-  TransactionMintTokenType,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import {
@@ -25,15 +25,15 @@ import { getTransactionPayloadHex } from '../../utils/smr.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 export const onTokenMintingUpdate = async (transaction: Transaction) => {
   switch (transaction.payload.type) {
-    case TransactionMintTokenType.MINT_ALIAS: {
+    case TransactionPayloadType.MINT_ALIAS: {
       await onAliasMinted(transaction);
       break;
     }
-    case TransactionMintTokenType.MINT_FOUNDRY: {
+    case TransactionPayloadType.MINT_FOUNDRY: {
       await onFoundryMinted(transaction);
       break;
     }
-    case TransactionMintTokenType.SEND_ALIAS_TO_GUARDIAN: {
+    case TransactionPayloadType.SEND_ALIAS_TO_GUARDIAN: {
       await onAliasSendToGuardian(transaction);
       break;
     }
@@ -45,7 +45,7 @@ export const onTokenMintingUpdate = async (transaction: Transaction) => {
 };
 
 const onAliasMinted = async (transaction: Transaction) => {
-  const path = transaction.payload.walletReference.milestoneTransactionPath;
+  const path = transaction.payload.walletReference?.milestoneTransactionPath!;
   const milestoneTransaction = (await build5Db().doc(path).get<Record<string, unknown>>())!;
 
   const aliasOutputId =
@@ -66,7 +66,7 @@ const onAliasMinted = async (transaction: Transaction) => {
     space: transaction.space,
     network: transaction.network,
     payload: {
-      type: TransactionMintTokenType.MINT_FOUNDRY,
+      type: TransactionPayloadType.MINT_FOUNDRY,
       amount:
         token.mintingData?.foundryStorageDeposit! +
         token.mintingData?.vaultStorageDeposit! +
@@ -79,7 +79,7 @@ const onAliasMinted = async (transaction: Transaction) => {
 };
 
 const onFoundryMinted = async (transaction: Transaction) => {
-  const path = transaction.payload.walletReference.milestoneTransactionPath;
+  const path = transaction.payload.walletReference?.milestoneTransactionPath!;
   const milestoneTransaction = (await build5Db().doc(path).get<Record<string, unknown>>())!;
 
   const aliasOutput = <IAliasOutput>(
@@ -119,7 +119,7 @@ const onFoundryMinted = async (transaction: Transaction) => {
     space: transaction.space,
     network: transaction.network,
     payload: {
-      type: TransactionMintTokenType.SEND_ALIAS_TO_GUARDIAN,
+      type: TransactionPayloadType.SEND_ALIAS_TO_GUARDIAN,
       amount: token.mintingData?.aliasStorageDeposit!,
       sourceAddress: transaction.payload.sourceAddress,
       targetAddress: getAddress(member, token.mintingData?.network!),

@@ -1,5 +1,4 @@
 import {
-  BillPaymentType,
   COL,
   Entity,
   Member,
@@ -9,7 +8,7 @@ import {
   TokenTradeOrder,
   TokenTradeOrderType,
   Transaction,
-  TransactionCreditType,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import { INodeInfo } from '@iota/iota.js-next';
@@ -54,7 +53,7 @@ const createRoyaltyBillPayments = async (
         member: buyer.uid,
         network: token.mintingData?.network!,
         payload: {
-          type: BillPaymentType.MINTED_TOKEN_TRADE,
+          type: TransactionPayloadType.MINTED_TOKEN_TRADE,
           amount: Number(output.amount) + fee,
           storageReturn: {
             amount: Number(output.amount),
@@ -96,7 +95,7 @@ const createBillPaymentToSeller = (
     member: buyer.uid,
     network: token.mintingData?.network!,
     payload: {
-      type: BillPaymentType.MINTED_TOKEN_TRADE,
+      type: TransactionPayloadType.MINTED_TOKEN_TRADE,
       amount: Number(output.amount),
       sourceAddress: buyOrderTran.payload.targetAddress,
       targetAddress: sellerAddress,
@@ -123,7 +122,7 @@ const createBillPaymentWithNativeTokens = (
   sell: TokenTradeOrder,
   tokensToSell: number,
   info: INodeInfo,
-) => {
+): Transaction => {
   const sellerAddress = getAddress(seller, token.mintingData?.network!);
   const buyerAddress = getAddress(buyer, token.mintingData?.network!);
   const output = packBasicOutput(
@@ -133,16 +132,16 @@ const createBillPaymentWithNativeTokens = (
     info,
     sellerAddress,
   );
-  return <Transaction>{
+  return {
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
     space: token.space,
     member: seller.uid,
     network: token.mintingData?.network!,
     payload: {
-      type: BillPaymentType.MINTED_TOKEN_TRADE,
+      type: TransactionPayloadType.MINTED_TOKEN_TRADE,
       amount: Number(output.amount),
-      nativeTokens: [{ id: token.mintingData?.tokenId!, amount: tokensToSell }],
+      nativeTokens: [{ id: token.mintingData?.tokenId!, amount: tokensToSell.toString() }],
       sourceAddress: sellOrderTran.payload.targetAddress,
       storageDepositSourceAddress: buyOrderTran.payload.targetAddress,
       storageReturn: {
@@ -154,7 +153,7 @@ const createBillPaymentWithNativeTokens = (
       previousOwner: seller.uid,
       ownerEntity: Entity.MEMBER,
       owner: buyer.uid,
-      sourceTransaction: [sell.paymentTransactionId, buy.paymentTransactionId],
+      sourceTransaction: [sell.paymentTransactionId!, buy.paymentTransactionId!],
       royalty: false,
       void: false,
       token: token.uid,
@@ -177,7 +176,7 @@ const createCreditToSeller = (
     member: seller.uid,
     network: token.mintingData?.network!,
     payload: {
-      type: TransactionCreditType.TOKEN_TRADE_FULLFILLMENT,
+      type: TransactionPayloadType.TOKEN_TRADE_FULLFILLMENT,
       dependsOnBillPayment: true,
       amount: sellOrderTran.payload.amount,
       sourceAddress: sellOrderTran.payload.targetAddress,
@@ -210,7 +209,7 @@ const createCreditToBuyer = (
     member: buyer.uid,
     network: token.mintingData?.network!,
     payload: {
-      type: TransactionCreditType.TOKEN_TRADE_FULLFILLMENT,
+      type: TransactionPayloadType.TOKEN_TRADE_FULLFILLMENT,
       dependsOnBillPayment: true,
       amount,
       sourceAddress: buyOrderTran.payload.targetAddress,
@@ -280,7 +279,7 @@ export const matchMintedToken = async (
     wallet.info,
   );
   royaltyBillPayments.forEach((o) => {
-    salePrice -= o.payload.amount;
+    salePrice -= o.payload.amount!;
   });
 
   const billPaymentWithNativeTokens = createBillPaymentWithNativeTokens(
@@ -294,7 +293,7 @@ export const matchMintedToken = async (
     tokensToTrade,
     wallet.info,
   );
-  salePrice -= billPaymentWithNativeTokens.payload.amount;
+  salePrice -= billPaymentWithNativeTokens.payload.amount!;
 
   const billPaymentToSeller = createBillPaymentToSeller(
     token,
@@ -305,7 +304,7 @@ export const matchMintedToken = async (
     salePrice,
     wallet.info,
   );
-  salePrice -= billPaymentToSeller.payload.amount;
+  salePrice -= billPaymentToSeller.payload.amount!;
 
   if (salePrice !== 0) {
     return { purchase: undefined, sellerCreditId: undefined, buyerCreditId: undefined };

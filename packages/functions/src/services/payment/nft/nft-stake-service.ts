@@ -5,8 +5,7 @@ import {
   StakeType,
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
-  TransactionOrder,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
   WenError,
@@ -32,7 +31,7 @@ export class NftStakeService {
   constructor(readonly transactionService: TransactionService) {}
 
   public handleNftStake = async (
-    order: TransactionOrder,
+    order: Transaction,
     match: TransactionMatch,
     tranEntry: MilestoneTransactionEntry,
   ) => {
@@ -88,10 +87,7 @@ export class NftStakeService {
     }
   };
 
-  private getNftOutputAmount = async (
-    order: TransactionOrder,
-    tranEntry: MilestoneTransactionEntry,
-  ) => {
+  private getNftOutputAmount = async (order: Transaction, tranEntry: MilestoneTransactionEntry) => {
     const wallet = (await WalletService.newWallet(order.network)) as SmrWallet;
     const weeks = get(order, 'payload.weeks', 0);
     const output = cloneDeep(tranEntry.nftOutput as INftOutput);
@@ -112,17 +108,18 @@ export const createNftStakeOrder = async (
   network: Network,
   weeks: number,
   stakeType: StakeType,
-) => {
+): Promise<Transaction> => {
   const wallet = await WalletService.newWallet(network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
-  return <Transaction>{
+  return {
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member,
     space: '',
     network,
     payload: {
-      type: TransactionOrderType.STAKE_NFT,
+      amount: 0,
+      type: TransactionPayloadType.STAKE_NFT,
       targetAddress: targetAddress.bech32,
       validationType: TransactionValidationType.ADDRESS,
       expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),

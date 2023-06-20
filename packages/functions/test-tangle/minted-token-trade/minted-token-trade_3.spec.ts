@@ -107,7 +107,7 @@ describe('Token minting', () => {
       .doc(`${COL.TRANSACTION}/${sellOrder.uid}`)
       .update({ 'payload.expiresOn': dateToTimestamp(dayjs().subtract(2, 'h').toDate()) });
 
-    await helper.walletService!.send(helper.sellerAddress!, sellOrder.payload.targetAddress, 0, {
+    await helper.walletService!.send(helper.sellerAddress!, sellOrder.payload.targetAddress!, 0, {
       nativeTokens: [
         { amount: HexHelper.fromBigInt256(bigInt(10)), id: helper.token!.mintingData?.tokenId! },
       ],

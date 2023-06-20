@@ -91,7 +91,7 @@ describe('Token minting', () => {
     const seller = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.seller!}`).get();
     expect(credit.payload.targetAddress).toBe(getAddress(seller, Network.RMS));
     expect(credit.payload.amount).toBe(49600);
-    expect(credit.payload.nativeTokens[0].amount).toBe(5);
+    expect(credit.payload.nativeTokens![0].amount).toBe('5');
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
   });

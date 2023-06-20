@@ -1,5 +1,6 @@
 import { COL, SUB_COL } from '@build-5/interfaces';
 import dayjs from 'dayjs';
+import { set } from 'lodash';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { approveProposal, createProposal } from '../../src/runtime/firebase/proposal';
 import { mockWalletReturnValue } from '../../test/controls/common';
@@ -58,9 +59,12 @@ describe('Staked oken based voting', () => {
   it('Should vote on 2 proposals', async () => {
     await helper.createStake(dayjs().subtract(2, 'd'), dayjs().add(1, 'y'));
 
-    let proposal = dummyProposal(helper.space!.uid);
-    mockWalletReturnValue(helper.walletSpy, helper.guardian, proposal);
-    proposal = await testEnv.wrap(createProposal)({});
+    const { uid, ...requestData } = dummyProposal(helper.space!.uid);
+    set(requestData, 'settings.startDate', requestData.settings.startDate.toDate());
+    set(requestData, 'settings.endDate', requestData.settings.endDate.toDate());
+    mockWalletReturnValue(helper.walletSpy, helper.guardian, requestData);
+
+    const proposal = await testEnv.wrap(createProposal)({});
     mockWalletReturnValue(helper.walletSpy, helper.guardian, { uid: proposal!.uid });
     await testEnv.wrap(approveProposal)({});
 

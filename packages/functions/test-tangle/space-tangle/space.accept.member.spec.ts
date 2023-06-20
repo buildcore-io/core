@@ -29,7 +29,7 @@ describe('Join space', () => {
     await requestFundsFromFaucet(Network.RMS, helper.memberAddress.bech32, MIN_IOTA_AMOUNT);
     await helper.walletService.send(
       helper.memberAddress,
-      helper.tangleOrder.payload.targetAddress,
+      helper.tangleOrder.payload.targetAddress!,
       MIN_IOTA_AMOUNT,
       {
         customMetadata: {
@@ -47,7 +47,7 @@ describe('Join space', () => {
     });
     let snap = await helper.memberCreditQuery.get();
     let credit = snap[0] as Transaction;
-    expect(credit.payload.response.status).toBe('success');
+    expect(credit.payload.response!.status).toBe('success');
 
     helper.space = <Space>await spaceDocRef.get();
     expect(helper.space.totalMembers).toBe(1);
@@ -56,7 +56,7 @@ describe('Join space', () => {
     await requestFundsFromFaucet(Network.RMS, helper.guardianAddress.bech32, MIN_IOTA_AMOUNT);
     await helper.walletService.send(
       helper.guardianAddress,
-      helper.tangleOrder.payload.targetAddress,
+      helper.tangleOrder.payload.targetAddress!,
       MIN_IOTA_AMOUNT,
       {
         customMetadata: {
@@ -75,7 +75,7 @@ describe('Join space', () => {
     });
     snap = await helper.guardianCreditQuery.get();
     credit = snap[0] as Transaction;
-    expect(credit.payload.response.status).toBe('success');
+    expect(credit.payload.response!.status).toBe('success');
 
     helper.space = <Space>await spaceDocRef.get();
     expect(helper.space.totalMembers).toBe(2);

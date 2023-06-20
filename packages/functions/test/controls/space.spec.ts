@@ -153,7 +153,7 @@ describe('SpaceController: ' + WEN_FUNC.updateSpace, () => {
 
     space = <Space>await build5Db().doc(`${COL.SPACE}/${space.uid}`).get();
     const updatedOn = space.updatedOn;
-    mockWalletReturnValue(walletSpy, member, { uid: proposal.uid, values: [1] });
+    mockWalletReturnValue(walletSpy, member, { uid: proposal.uid, value: 1 });
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
@@ -192,7 +192,7 @@ describe('SpaceController: ' + WEN_FUNC.updateSpace, () => {
     const proposal = await testEnv.wrap(updateSpace)({});
     await expectThrow(testEnv.wrap(updateSpace)({}), WenError.ongoing_proposal.key);
 
-    mockWalletReturnValue(walletSpy, member, { uid: proposal.uid, values: [1] });
+    mockWalletReturnValue(walletSpy, member, { uid: proposal.uid, value: 1 });
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
@@ -363,7 +363,7 @@ describe('SpaceController: member management', () => {
       });
       const proposal = await testEnv.wrap(updateSpace)({});
 
-      mockWalletReturnValue(walletSpy, guardian2, { uid: proposal.uid, values: [1] });
+      mockWalletReturnValue(walletSpy, guardian2, { uid: proposal.uid, value: 1 });
       await testEnv.wrap(voteOnProposal)({});
 
       await wait(async () => {
@@ -390,7 +390,7 @@ describe('SpaceController: member management', () => {
       });
       const proposal = await testEnv.wrap(updateSpace)({});
 
-      mockWalletReturnValue(walletSpy, guardian2, { uid: proposal.uid, values: [1] });
+      mockWalletReturnValue(walletSpy, guardian2, { uid: proposal.uid, value: 1 });
       await testEnv.wrap(voteOnProposal)({});
 
       await wait(async () => {
@@ -508,10 +508,10 @@ describe('Add guardian', () => {
 
     const proposal = await createProposal(ProposalType.ADD_GUARDIAN, 3);
 
-    mockWalletReturnValue(walletSpy, guardians[1], { uid: proposal.uid, values: [0] });
+    mockWalletReturnValue(walletSpy, guardians[1], { uid: proposal.uid, value: 0 });
     await new Promise((resolve) => setTimeout(resolve, 2000));
     await testEnv.wrap(voteOnProposal)({});
-    mockWalletReturnValue(walletSpy, guardians[2], { uid: proposal.uid, values: [1] });
+    mockWalletReturnValue(walletSpy, guardians[2], { uid: proposal.uid, value: 1 });
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
@@ -520,14 +520,14 @@ describe('Add guardian', () => {
       const guardian = await spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member).get();
       return space.totalGuardians === guardianCount + 1 && guardian !== undefined;
     });
-    mockWalletReturnValue(walletSpy, guardians[0], { uid: proposal.uid, values: [0] });
+    mockWalletReturnValue(walletSpy, guardians[0], { uid: proposal.uid, value: 0 });
     await expectThrow(testEnv.wrap(voteOnProposal)({}), WenError.vote_is_no_longer_active.key);
 
     const removeProposal = await createProposal(ProposalType.REMOVE_GUARDIAN, 4);
 
-    mockWalletReturnValue(walletSpy, guardians[1], { uid: removeProposal.uid, values: [1] });
+    mockWalletReturnValue(walletSpy, guardians[1], { uid: removeProposal.uid, value: 1 });
     await testEnv.wrap(voteOnProposal)({});
-    mockWalletReturnValue(walletSpy, guardians[2], { uid: removeProposal.uid, values: [1] });
+    mockWalletReturnValue(walletSpy, guardians[2], { uid: removeProposal.uid, value: 1 });
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
@@ -536,7 +536,7 @@ describe('Add guardian', () => {
       const guardian = await spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member).get();
       return space.totalGuardians === guardianCount && guardian === undefined;
     });
-    mockWalletReturnValue(walletSpy, guardians[0], { uid: removeProposal.uid, values: [0] });
+    mockWalletReturnValue(walletSpy, guardians[0], { uid: removeProposal.uid, value: 0 });
     await expectThrow(testEnv.wrap(voteOnProposal)({}), WenError.vote_is_no_longer_active.key);
   });
 
@@ -546,13 +546,13 @@ describe('Add guardian', () => {
 
     const proposal = await createProposal(ProposalType.ADD_GUARDIAN, 3);
 
-    mockWalletReturnValue(walletSpy, guardians[1], { uid: proposal.uid, values: [0] });
+    mockWalletReturnValue(walletSpy, guardians[1], { uid: proposal.uid, value: 0 });
     await testEnv.wrap(voteOnProposal)({});
-    mockWalletReturnValue(walletSpy, guardians[2], { uid: proposal.uid, values: [0] });
+    mockWalletReturnValue(walletSpy, guardians[2], { uid: proposal.uid, value: 0 });
     await testEnv.wrap(voteOnProposal)({});
 
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    mockWalletReturnValue(walletSpy, guardians[1], { uid: proposal.uid, values: [1] });
+    mockWalletReturnValue(walletSpy, guardians[1], { uid: proposal.uid, value: 1 });
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
@@ -561,7 +561,7 @@ describe('Add guardian', () => {
       const guardian = await spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member).get();
       return space.totalGuardians === guardianCount + 1 && guardian !== undefined;
     });
-    mockWalletReturnValue(walletSpy, guardians[0], { uid: proposal.uid, values: [0] });
+    mockWalletReturnValue(walletSpy, guardians[0], { uid: proposal.uid, value: 0 });
     await expectThrow(testEnv.wrap(voteOnProposal)({}), WenError.vote_is_no_longer_active.key);
   });
 
@@ -590,7 +590,7 @@ describe('Add guardian', () => {
 
     let proposal = await createProposal(ProposalType.ADD_GUARDIAN, 3);
     await expectThrow(createProposal(ProposalType.ADD_GUARDIAN, 3), WenError.ongoing_proposal.key);
-    mockWalletReturnValue(walletSpy, guardians[1], { uid: proposal.uid, values: [1] });
+    mockWalletReturnValue(walletSpy, guardians[1], { uid: proposal.uid, value: 1 });
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
@@ -610,9 +610,9 @@ describe('Add guardian', () => {
       createProposal(ProposalType.REMOVE_GUARDIAN, 4),
       WenError.ongoing_proposal.key,
     );
-    mockWalletReturnValue(walletSpy, guardians[1], { uid: removeProposal.uid, values: [1] });
+    mockWalletReturnValue(walletSpy, guardians[1], { uid: removeProposal.uid, value: 1 });
     await testEnv.wrap(voteOnProposal)({});
-    mockWalletReturnValue(walletSpy, guardians[2], { uid: removeProposal.uid, values: [1] });
+    mockWalletReturnValue(walletSpy, guardians[2], { uid: removeProposal.uid, value: 1 });
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
@@ -624,7 +624,7 @@ describe('Add guardian', () => {
 
     proposal = await createProposal(ProposalType.ADD_GUARDIAN, 3);
     await expectThrow(createProposal(ProposalType.ADD_GUARDIAN, 3), WenError.ongoing_proposal.key);
-    mockWalletReturnValue(walletSpy, guardians[1], { uid: proposal.uid, values: [1] });
+    mockWalletReturnValue(walletSpy, guardians[1], { uid: proposal.uid, value: 1 });
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
@@ -674,7 +674,7 @@ describe('Token based space', () => {
     mockWalletReturnValue(walletSpy, guardian, updateParams);
     const proposal = await testEnv.wrap(updateSpace)({});
 
-    mockWalletReturnValue(walletSpy, guardian2, { uid: proposal.uid, values: [1] });
+    mockWalletReturnValue(walletSpy, guardian2, { uid: proposal.uid, value: 1 });
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
@@ -701,7 +701,7 @@ describe('Token based space', () => {
     const name = 'second update';
     mockWalletReturnValue(walletSpy, guardian, { uid: space.uid, name });
     const proposal2 = await testEnv.wrap(updateSpace)({});
-    mockWalletReturnValue(walletSpy, guardian2, { uid: proposal2.uid, values: [1] });
+    mockWalletReturnValue(walletSpy, guardian2, { uid: proposal2.uid, value: 1 });
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
@@ -719,7 +719,7 @@ describe('Token based space', () => {
     mockWalletReturnValue(walletSpy, guardian, updateParams);
     const proposal = await testEnv.wrap(updateSpace)({});
 
-    mockWalletReturnValue(walletSpy, guardian2, { uid: proposal.uid, values: [1] });
+    mockWalletReturnValue(walletSpy, guardian2, { uid: proposal.uid, value: 1 });
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
@@ -753,7 +753,7 @@ describe('Token based space', () => {
     mockWalletReturnValue(walletSpy, guardian, updateParams);
     const proposal = await testEnv.wrap(updateSpace)({});
 
-    mockWalletReturnValue(walletSpy, guardian2, { uid: proposal.uid, values: [1] });
+    mockWalletReturnValue(walletSpy, guardian2, { uid: proposal.uid, value: 1 });
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {
@@ -780,7 +780,7 @@ describe('Token based space', () => {
     mockWalletReturnValue(walletSpy, guardian, updateParams);
     const proposal = await testEnv.wrap(updateSpace)({});
 
-    mockWalletReturnValue(walletSpy, guardian2, { uid: proposal.uid, values: [1] });
+    mockWalletReturnValue(walletSpy, guardian2, { uid: proposal.uid, value: 1 });
     await testEnv.wrap(voteOnProposal)({});
 
     await wait(async () => {

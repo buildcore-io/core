@@ -1,5 +1,4 @@
 import {
-  BillPaymentType,
   COL,
   MIN_IOTA_AMOUNT,
   Timestamp,
@@ -8,6 +7,7 @@ import {
   TokenTradeOrder,
   TokenTradeOrderType,
   Transaction,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
@@ -119,7 +119,7 @@ describe('Base token trading', () => {
     sellerBillPayments.forEach((sellerBillPayment) => {
       expect(sellerBillPayment.payload.token).toBe(helper.token!.uid);
       expect(sellerBillPayment.payload.tokenSymbol).toBe(helper.token!.symbol);
-      expect(sellerBillPayment.payload.type).toBe(BillPaymentType.BASE_TOKEN_TRADE);
+      expect(sellerBillPayment.payload.type).toBe(TransactionPayloadType.BASE_TOKEN_TRADE);
     });
     const sellerCreditSnap = await build5Db()
       .collection(COL.TRANSACTION)
@@ -146,14 +146,14 @@ describe('Base token trading', () => {
     buyerBillPayments.forEach((buyerBillPayment) => {
       expect(buyerBillPayment.payload.token).toBe(helper.token!.uid);
       expect(buyerBillPayment.payload.tokenSymbol).toBe(helper.token!.symbol);
-      expect(buyerBillPayment.payload.type).toBe(BillPaymentType.BASE_TOKEN_TRADE);
+      expect(buyerBillPayment.payload.type).toBe(TransactionPayloadType.BASE_TOKEN_TRADE);
     });
     expect(
       buyerBillPayments.find(
         (bp) =>
           bp.payload.amount === 91800 &&
           isEmpty(bp.payload.nativeTokens) &&
-          bp.payload.storageReturn.amount === 46800,
+          bp.payload.storageReturn!.amount === 46800,
       ),
     ).toBeDefined();
     expect(
@@ -161,7 +161,7 @@ describe('Base token trading', () => {
         (bp) =>
           bp.payload.amount === 51800 &&
           isEmpty(bp.payload.nativeTokens) &&
-          bp.payload.storageReturn.amount === 46800,
+          bp.payload.storageReturn!.amount === 46800,
       ),
     ).toBeDefined();
     expect(

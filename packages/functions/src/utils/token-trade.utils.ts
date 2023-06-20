@@ -10,7 +10,7 @@ import {
   TokenTradeOrderStatus,
   TokenTradeOrderType,
   Transaction,
-  TransactionCreditType,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import bigDecimal from 'js-big-decimal';
@@ -38,7 +38,7 @@ export const creditBuyer = async (transaction: ITransaction, buy: TokenTradeOrde
     network,
     payload: {
       reason: CreditPaymentReason.TRADE_CANCELLED,
-      type: TransactionCreditType.TOKEN_BUY,
+      type: TransactionPayloadType.TOKEN_BUY,
       amount: buy.balance,
       sourceAddress: order.payload.targetAddress,
       targetAddress: getAddress(member, network),
@@ -75,7 +75,7 @@ const creditBaseTokenSale = async (
     network,
     payload: {
       reason: CreditPaymentReason.TRADE_CANCELLED,
-      type: TransactionCreditType.TOKEN_BUY,
+      type: TransactionPayloadType.TOKEN_BUY,
       amount: sale.balance,
       sourceAddress: order.payload.targetAddress,
       targetAddress: getAddress(member, network),
@@ -138,7 +138,7 @@ const cancelMintedSell = async (transaction: ITransaction, sell: TokenTradeOrder
 
   const tokensLeft = sell.count - sell.fulfilled;
   const network = order.network || DEFAULT_NETWORK;
-  const data = <Transaction>{
+  const data: Transaction = {
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: token.space,
@@ -146,12 +146,12 @@ const cancelMintedSell = async (transaction: ITransaction, sell: TokenTradeOrder
     network,
     payload: {
       reason: CreditPaymentReason.TRADE_CANCELLED,
-      type: TransactionCreditType.TOKEN_BUY,
+      type: TransactionPayloadType.TOKEN_BUY,
       amount: order.payload.amount,
-      nativeTokens: [{ amount: tokensLeft, id: token.mintingData?.tokenId! }],
+      nativeTokens: [{ amount: tokensLeft.toString(), id: token.mintingData?.tokenId! }],
       sourceAddress: order.payload.targetAddress,
       targetAddress: getAddress(seller, network),
-      sourceTransaction: [sell.paymentTransactionId],
+      sourceTransaction: [sell.paymentTransactionId!],
       reconciled: true,
       void: false,
       token: token.uid,

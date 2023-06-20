@@ -2,10 +2,10 @@
 
 import {
   COL,
+  IgnoreWalletReason,
   MIN_IOTA_AMOUNT,
   TokenTradeOrderType,
   Transaction,
-  TransactionIgnoreWalletReason,
   TransactionType,
 } from '@build-5/interfaces';
 import { HexHelper } from '@iota/util.js-next';
@@ -37,7 +37,7 @@ describe('Token minting', () => {
       type: TokenTradeOrderType.SELL,
     });
     const sellOrder: Transaction = await testEnv.wrap(tradeToken)({});
-    await helper.walletService!.send(helper.sellerAddress!, sellOrder.payload.targetAddress, 0, {
+    await helper.walletService!.send(helper.sellerAddress!, sellOrder.payload.targetAddress!, 0, {
       nativeTokens: [
         { amount: HexHelper.fromBigInt256(bigInt(10)), id: helper.token!.mintingData?.tokenId! },
       ],
@@ -52,7 +52,7 @@ describe('Token minting', () => {
       return (
         snap.length === 1 &&
         snap[0]!.ignoreWalletReason ===
-          TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION &&
+          IgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION &&
         snap[0]!.payload.targetAddress === helper.sellerAddress!.bech32
       );
     });
@@ -108,7 +108,7 @@ describe('Token minting', () => {
       type: TokenTradeOrderType.SELL,
     });
     const sellOrder: Transaction = await testEnv.wrap(tradeToken)({});
-    await helper.walletService!.send(helper.sellerAddress!, sellOrder.payload.targetAddress, 0, {
+    await helper.walletService!.send(helper.sellerAddress!, sellOrder.payload.targetAddress!, 0, {
       nativeTokens: [
         { amount: HexHelper.fromBigInt256(bigInt(10)), id: helper.token!.mintingData?.tokenId! },
       ],
@@ -123,7 +123,7 @@ describe('Token minting', () => {
       return (
         snap.length === 1 &&
         snap[0]!.ignoreWalletReason ===
-          TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION &&
+          IgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION &&
         snap[0]!.payload.targetAddress === helper.sellerAddress!.bech32
       );
     });

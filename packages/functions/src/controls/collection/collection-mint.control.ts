@@ -1,15 +1,15 @@
 import {
   COL,
   Collection,
+  CollectionMintRequest,
   CollectionStatus,
   CollectionType,
   Member,
-  Network,
   Nft,
   Space,
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
   UnsoldMintingOptions,
@@ -35,11 +35,8 @@ import { createAliasOutput } from '../../utils/token-minting-utils/alias.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
-export const mintCollectionOrderControl = async (
-  owner: string,
-  params: Record<string, unknown>,
-) => {
-  const network = params.network as Network;
+export const mintCollectionOrderControl = async (owner: string, params: CollectionMintRequest) => {
+  const network = params.network;
 
   const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();
   assertMemberHasValidAddress(member, network);
@@ -89,7 +86,7 @@ export const mintCollectionOrderControl = async (
 
     const { storageDeposit: nftsStorageDeposit, nftsToMint } = await getNftsTotalStorageDeposit(
       collection,
-      params.unsoldMintingOptions as UnsoldMintingOptions,
+      params.unsoldMintingOptions,
       targetAddress,
       wallet.info,
     );
@@ -103,14 +100,14 @@ export const mintCollectionOrderControl = async (
     );
     const aliasStorageDeposit = Number(createAliasOutput(targetAddress, wallet.info).amount);
 
-    const order = <Transaction>{
+    const order: Transaction = {
       type: TransactionType.ORDER,
       uid: getRandomEthAddress(),
       member: owner,
       space: collection.space,
       network,
       payload: {
-        type: TransactionOrderType.MINT_COLLECTION,
+        type: TransactionPayloadType.MINT_COLLECTION,
         amount: collectionStorageDeposit + nftsStorageDeposit + aliasStorageDeposit,
         targetAddress: targetAddress.bech32,
         validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,

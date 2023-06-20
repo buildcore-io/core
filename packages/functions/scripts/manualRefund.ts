@@ -2,7 +2,7 @@ import {
   COL,
   Network,
   Transaction,
-  TransactionCreditType,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import * as admin from 'firebase-admin';
@@ -38,7 +38,7 @@ db.collection(COL.MEMBER)
           createdOn: admin.firestore.Timestamp.now(),
           network: Network.SMR,
           payload: {
-            type: TransactionCreditType.TOKEN_BUY,
+            type: TransactionPayloadType.TOKEN_BUY,
             amount: refundAmount,
             sourceAddress: sourceAddress,
             targetAddress: (member.data()?.validatedAddress || {})[Network.SMR] || '',

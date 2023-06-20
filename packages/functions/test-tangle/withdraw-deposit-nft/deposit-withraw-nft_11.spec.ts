@@ -69,7 +69,7 @@ describe('Nft depositing', () => {
     const nft1DocRef = build5Db().doc(`${COL.NFT}/${nft1.mintingData!.nftId}`);
     nft1 = <Nft>await nft1DocRef.get();
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, { space: nft1.space });
+    mockWalletReturnValue(helper.walletSpy, helper.guardian!, { uid: nft1.space });
     const order = await testEnv.wrap(claimSpace)({});
     await helper.walletService!.send(
       helper.guardianAddress!,

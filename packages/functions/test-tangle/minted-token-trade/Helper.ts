@@ -92,7 +92,7 @@ export class Helper {
       type: TokenTradeOrderType.SELL,
     });
     const sellOrder: Transaction = await testEnv.wrap(tradeToken)({});
-    await this.walletService!.send(this.sellerAddress!, sellOrder.payload.targetAddress, 0, {
+    await this.walletService!.send(this.sellerAddress!, sellOrder.payload.targetAddress!, 0, {
       nativeTokens: [
         { amount: HexHelper.fromBigInt256(bigInt(count)), id: this.token!.mintingData?.tokenId! },
       ],
@@ -128,8 +128,8 @@ export class Helper {
     const buyOrder: Transaction = await testEnv.wrap(tradeToken)({});
     await requestFundsFromFaucet(
       this.network,
-      buyOrder.payload.targetAddress,
-      buyOrder.payload.amount,
+      buyOrder.payload.targetAddress!,
+      buyOrder.payload.amount!,
       expiresAt,
     );
     await wait(async () => {

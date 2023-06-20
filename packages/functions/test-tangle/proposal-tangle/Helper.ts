@@ -84,7 +84,7 @@ export class Helper {
   public sendCreateProposalRequest = async () => {
     await this.walletService.send(
       this.guardianAddress,
-      this.tangleOrder.payload.targetAddress,
+      this.tangleOrder.payload.targetAddress!,
       MIN_IOTA_AMOUNT,
       {
         customMetadata: {
@@ -106,10 +106,10 @@ export class Helper {
     const credit = snap[0] as Transaction;
     expect(credit.payload.amount).toBe(MIN_IOTA_AMOUNT);
 
-    expect(credit.payload.response.proposal).toBeDefined();
+    expect(credit.payload.response!.proposal).toBeDefined();
 
-    this.proposalUid = credit.payload.response.proposal;
-    return credit.payload.response.proposal;
+    this.proposalUid = credit.payload.response!.proposal as string;
+    return credit.payload.response!.proposal as string;
   };
 
   public requestFunds = async () => {

@@ -11,7 +11,7 @@ import {
   NotificationType,
   Space,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
   WenError,
@@ -218,7 +218,7 @@ describe('Nft bidding', () => {
     await bidNft(members[0], MIN_IOTA_AMOUNT);
     const snap = await build5Db()
       .collection(COL.TRANSACTION)
-      .where('payload.type', '==', TransactionOrderType.NFT_BID)
+      .where('payload.type', '==', TransactionPayloadType.NFT_BID)
       .where('member', '==', members[0])
       .get();
     expect(snap.length).toBe(1);
@@ -274,7 +274,7 @@ describe('Nft bidding', () => {
     expect(tran.payload.reconciled).toBe(true);
     expect(tran.payload.sourceAddress).toBeDefined();
     expect(tran.payload.targetAddress).toBeDefined();
-    expect(tran.payload.sourceTransaction.length).toBe(1);
+    expect(tran.payload.sourceTransaction!.length).toBe(1);
   });
 
   it('Should reject smaller bid', async () => {

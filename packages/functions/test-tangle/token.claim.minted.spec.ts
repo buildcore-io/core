@@ -77,7 +77,7 @@ describe('Token minting', () => {
     });
     const billPayment = (await query.get())[0] as Transaction;
     expect(billPayment.payload.amount).toBe(order.payload.amount);
-    expect(billPayment.payload.nativeTokens[0].amount).toBe(1);
+    expect(billPayment.payload.nativeTokens![0].amount).toBe('1');
 
     const tokenData = <Token>await build5Db().doc(`${COL.TOKEN}/${token.uid}`).get();
     expect(tokenData.mintingData?.tokensInVault).toBe(9);
@@ -118,11 +118,11 @@ describe('Token minting', () => {
     const billPayments = (await query.get()).map((d) => d as Transaction);
     const vesting = billPayments.filter((bp) => !isEmpty(bp.payload.vestingAt))[0];
     expect(vesting.payload.amount).toBe(50100);
-    expect(vesting.payload.nativeTokens[0].amount).toBe(1);
+    expect(vesting.payload.nativeTokens![0].amount).toBe('1');
 
     const unlocked = billPayments.filter((bp) => isEmpty(bp.payload.vestingAt))[0];
     expect(unlocked.payload.amount).toBe(order.payload.amount - 50100);
-    expect(unlocked.payload.nativeTokens[0].amount).toBe(1);
+    expect(unlocked.payload.nativeTokens![0].amount).toBe('1');
 
     const tokenData = <Token>await build5Db().doc(`${COL.TOKEN}/${token.uid}`).get();
     expect(tokenData.mintingData?.tokensInVault).toBe(8);
@@ -199,7 +199,7 @@ describe('Token minting', () => {
 
     await wait(async () => {
       const snap = await query.get<Transaction>();
-      const confirmed = snap.filter((d) => d!.payload.walletReference.confirmed).length;
+      const confirmed = snap.filter((d) => d!.payload.walletReference?.confirmed).length;
       if (confirmed !== 3) {
         await retryWallet();
         await new Promise((resolve) => setTimeout(resolve, 2000));

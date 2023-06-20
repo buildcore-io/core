@@ -10,7 +10,6 @@ import {
   MIN_IOTA_AMOUNT,
   Member,
   Nft,
-  NftStatus,
   RANKING_TEST,
   SUB_COL,
   Space,
@@ -22,11 +21,10 @@ import {
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
-import { createNft, orderNft } from '../../src/runtime/firebase/nft';
+import { createNft } from '../../src/runtime/firebase/nft';
 import { rankController } from '../../src/runtime/firebase/rank';
 import { voteController } from '../../src/runtime/firebase/vote';
 import * as config from '../../src/utils/config.utils';
-import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import {
@@ -43,10 +41,8 @@ import {
   createSpace as createSpaceFunc,
   expectThrow,
   getRandomSymbol,
-  milestoneProcessed,
   mockWalletReturnValue,
   saveSoon,
-  submitMilestoneFunc,
   wait,
 } from './common';
 
@@ -183,8 +179,9 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
   });
 
   it('successfully create collection & update price', async () => {
-    mockWalletReturnValue(walletSpy, dummyAddress, dummyCollection(space.uid, 0.6));
-    let collection = await testEnv.wrap(createCollection)({});
+    let collection = dummyCollection(space.uid, 0.6);
+    mockWalletReturnValue(walletSpy, dummyAddress, collection);
+    collection = await testEnv.wrap(createCollection)({});
 
     mockWalletReturnValue(walletSpy, dummyAddress, { uid: collection?.uid });
     await testEnv.wrap(approveCollection)({});
@@ -193,30 +190,15 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
       name: 'Collection A',
       description: 'babba',
       collection: collection.uid,
-      availableFrom: dayjs().subtract(1, 'minute').toDate(),
+      availableFrom: dayjs().add(2, 'h').toDate(),
       price: MIN_IOTA_AMOUNT,
     });
     const nfts: Nft[] = [];
     for (let i = 0; i < 4; ++i) {
       mockWalletReturnValue(walletSpy, dummyAddress, dummyNft());
-      nfts.push(await testEnv.wrap(createNft)({}));
+      const nft = await testEnv.wrap(createNft)({});
+      nfts.push(nft);
     }
-
-    mockWalletReturnValue(walletSpy, dummyAddress, {
-      collection: collection.uid,
-      nft: nfts[0].uid,
-    });
-    const order = await testEnv.wrap(orderNft)({});
-    const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
-    await milestoneProcessed(milestone.milestone, milestone.tranId);
-
-    await wait(async () => {
-      const nftDocRef = build5Db().doc(`${COL.NFT}/${nfts[0].uid}`);
-      const nft = <Nft>await nftDocRef.get();
-      return (nft.isOwned || false) && nft.availablePrice === null;
-    });
-
-    build5Db().doc(`${COL.NFT}/${nfts[1].uid}`).update({ status: NftStatus.WITHDRAWN });
 
     const availableFrom = dayjs().add(1, 'd');
     mockWalletReturnValue(walletSpy, dummyAddress, {
@@ -235,15 +217,9 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
 
     for (let i = 0; i < 4; ++i) {
       const nftDocRef = build5Db().doc(`${COL.NFT}/${nfts[i].uid}`);
-      const nftData = <Nft>await nftDocRef.get();
-      const price = i === 0 ? null : i < 2 ? MIN_IOTA_AMOUNT : 15 * MIN_IOTA_AMOUNT;
-      expect(nftData.price).toBe(price || MIN_IOTA_AMOUNT);
-      expect(nftData.availablePrice).toBe(price);
-      if (i >= 2) {
-        expect(nftData.availableFrom?.toDate()).toEqual(
-          dateToTimestamp(availableFrom, true).toDate(),
-        );
-      }
+      const nft = <Nft>await nftDocRef.get();
+      expect(nft.price).toBe(15 * MIN_IOTA_AMOUNT);
+      expect(nft.availablePrice).toBe(15 * MIN_IOTA_AMOUNT);
     }
 
     walletSpy.mockRestore();

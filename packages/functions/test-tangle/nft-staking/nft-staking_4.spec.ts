@@ -60,10 +60,11 @@ describe('Stake nft', () => {
 
     const snap = await creditQuery.get();
     const credit = snap[0] as Transaction;
-    expect(credit.payload.response.code).toBe(WenError.not_enough_base_token.code);
-    expect(credit.payload.response.message).toBe(WenError.not_enough_base_token.key);
+    expect(credit.payload.response!.code).toBe(WenError.not_enough_base_token.code);
+    expect(credit.payload.response!.message).toBe(WenError.not_enough_base_token.key);
 
-    const extraRequired = credit.payload.response.requiredAmount - nft.mintingData?.storageDeposit!;
+    const extraRequired =
+      (credit.payload.response!.requiredAmount as number) - nft.mintingData?.storageDeposit!;
     await helper.sendNftToAddress(
       helper.guardianAddress!,
       stakeNftOrder.payload.targetAddress,

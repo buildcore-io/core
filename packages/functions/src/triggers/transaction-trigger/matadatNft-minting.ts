@@ -7,8 +7,7 @@ import {
   NftStatus,
   Space,
   Transaction,
-  TransactionCreditType,
-  TransactionMetadataNftType,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import { ITransactionPayload, TransactionHelper } from '@iota/iota.js-next';
@@ -30,19 +29,19 @@ import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const onMetadataNftMintUpdate = async (transaction: Transaction) => {
   switch (transaction.payload.type) {
-    case TransactionMetadataNftType.MINT_ALIAS: {
+    case TransactionPayloadType.MINT_ALIAS: {
       await onAliasMinted(transaction);
       break;
     }
-    case TransactionMetadataNftType.MINT_COLLECTION: {
+    case TransactionPayloadType.MINT_COLLECTION: {
       await onCollectionMinted(transaction);
       break;
     }
-    case TransactionMetadataNftType.MINT_NFT: {
+    case TransactionPayloadType.MINT_NFT: {
       await onNftMinted(transaction);
       break;
     }
-    case TransactionMetadataNftType.UPDATE_MINTED_NFT: {
+    case TransactionPayloadType.UPDATE_MINTED_NFT: {
       await onNftUpdated(transaction);
       break;
     }
@@ -50,7 +49,7 @@ export const onMetadataNftMintUpdate = async (transaction: Transaction) => {
 };
 
 const onAliasMinted = async (transaction: Transaction) => {
-  const path = transaction.payload.walletReference.milestoneTransactionPath;
+  const path = transaction.payload.walletReference?.milestoneTransactionPath!;
   const milestoneTransaction = (await build5Db().doc(path).get<Record<string, unknown>>())!;
   const aliasOutputId =
     getTransactionPayloadHex(milestoneTransaction.payload as ITransactionPayload) +
@@ -79,7 +78,7 @@ const onAliasMinted = async (transaction: Transaction) => {
     collection.uid,
     aliasId,
     get(transaction, 'payload.orderId', ''),
-    transaction.payload.targetAddress,
+    transaction.payload.targetAddress!,
     milestoneTransaction.blockId as string,
   );
   const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
@@ -89,7 +88,7 @@ const onAliasMinted = async (transaction: Transaction) => {
 };
 
 const onCollectionMinted = async (transaction: Transaction) => {
-  const path = transaction.payload.walletReference.milestoneTransactionPath;
+  const path = transaction.payload.walletReference?.milestoneTransactionPath!;
   const milestoneTransaction = (await build5Db().doc(path).get<Record<string, unknown>>())!;
   const collectionOutputId =
     getTransactionPayloadHex(milestoneTransaction.payload as ITransactionPayload) +
@@ -120,7 +119,7 @@ const onCollectionMinted = async (transaction: Transaction) => {
   const nft = createMetadataNft(
     transaction.member!,
     transaction.space!,
-    transaction.payload.collection,
+    transaction.payload.collection!,
     get(order, 'payload.metadata', {}),
   );
   const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
@@ -131,9 +130,9 @@ const onCollectionMinted = async (transaction: Transaction) => {
   const nftMintOrder = createMintMetadataNftOrder(
     nft,
     transaction.network!,
-    transaction.payload.targetAddress,
+    transaction.payload.targetAddress!,
     space?.alias?.address!,
-    transaction.payload.targetAddress,
+    transaction.payload.targetAddress!,
     get(transaction, 'payload.aliasId', ''),
     collectionId,
     get(transaction, 'payload.orderId', ''),
@@ -145,7 +144,7 @@ const onCollectionMinted = async (transaction: Transaction) => {
 };
 
 const onNftMinted = async (transaction: Transaction) => {
-  const path = transaction.payload.walletReference.milestoneTransactionPath;
+  const path = transaction.payload.walletReference?.milestoneTransactionPath!;
   const milestoneTransaction = (await build5Db().doc(path).get<Record<string, unknown>>())!;
   const nftOutputId =
     getTransactionPayloadHex(milestoneTransaction.payload as ITransactionPayload) +
@@ -187,8 +186,8 @@ const onNftMinted = async (transaction: Transaction) => {
     member: transaction.member,
     network: order.network,
     payload: {
-      type: TransactionCreditType.MINT_METADATA_NFT,
-      amount: order.payload.amount - storageDepositTotal,
+      type: TransactionPayloadType.MINT_METADATA_NFT,
+      amount: order.payload.amount! - storageDepositTotal,
       sourceAddress: order.payload.targetAddress,
       targetAddress: getAddress(member, order.network || DEFAULT_NETWORK),
       reconciled: true,
@@ -233,7 +232,7 @@ const onNftUpdated = async (transaction: Transaction) => {
     member: transaction.member,
     network: order.network,
     payload: {
-      type: TransactionCreditType.MINT_METADATA_NFT,
+      type: TransactionPayloadType.MINT_METADATA_NFT,
       amount: balance,
       sourceAddress: order.payload.targetAddress,
       targetAddress: getAddress(member, order.network || DEFAULT_NETWORK),

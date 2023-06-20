@@ -1,21 +1,19 @@
 import {
-  BillPaymentType,
   COL,
   DEFAULT_NETWORK,
   Entity,
+  MIN_IOTA_AMOUNT,
   MediaStatus,
   Member,
-  MIN_IOTA_AMOUNT,
-  Space,
   SUB_COL,
+  Space,
   Token,
   TokenDistribution,
   TokenStatus,
   TokenTradeOrder,
   TokenTradeOrderStatus,
   Transaction,
-  TransactionCreditType,
-  TransactionMintTokenType,
+  TransactionPayloadType,
   TransactionType,
   WEN_FUNC_TRIGGER,
 } from '@build-5/interfaces';
@@ -32,8 +30,8 @@ import { guardedRerun } from '../utils/common.utils';
 import { getRoyaltyFees } from '../utils/royalty.utils';
 import { cancelTradeOrderUtil } from '../utils/token-trade.utils';
 import {
-  allPaymentsQuery,
   BIG_DECIMAL_PRECISION,
+  allPaymentsQuery,
   getTotalPublicSupply,
   memberDocRef,
   orderDocRef,
@@ -156,7 +154,7 @@ const createBillAndRoyaltyPayment = async (
       member: distribution.uid,
       network,
       payload: {
-        type: BillPaymentType.TOKEN_PURCHASE,
+        type: TransactionPayloadType.TOKEN_PURCHASE,
         amount: fee,
         sourceAddress: order.payload.targetAddress,
         targetAddress: getAddress(royaltySpace, network),
@@ -184,7 +182,7 @@ const createBillAndRoyaltyPayment = async (
     member: distribution.uid,
     network,
     payload: {
-      type: BillPaymentType.TOKEN_PURCHASE,
+      type: TransactionPayloadType.TOKEN_PURCHASE,
       amount: balance,
       sourceAddress: order.payload.targetAddress,
       targetAddress: getAddress(space, network),
@@ -228,7 +226,7 @@ const createCredit = async (
     network,
     payload: {
       dependsOnBillPayment: true,
-      type: TransactionCreditType.TOKEN_PURCHASE,
+      type: TransactionPayloadType.TOKEN_PURCHASE,
       amount: distribution.refundedAmount,
       sourceAddress: order.payload.targetAddress,
       targetAddress: getAddress(member, network),
@@ -393,7 +391,7 @@ const mintToken = async (token: Token) => {
     space: token!.space,
     network: token.mintingData?.network,
     payload: {
-      type: TransactionMintTokenType.MINT_ALIAS,
+      type: TransactionPayloadType.MINT_ALIAS,
       amount: token.mintingData?.aliasStorageDeposit,
       sourceAddress: token.mintingData?.vaultAddress,
       token: token.uid,
@@ -450,7 +448,7 @@ const onTokenVaultEmptied = async (token: Token) => {
     member: minter!.uid,
     network: token.mintingData?.network,
     payload: {
-      type: TransactionCreditType.TOKEN_VAULT_EMPTIED,
+      type: TransactionPayloadType.TOKEN_VAULT_EMPTIED,
       dependsOnBillPayment: true,
       amount: vaultBalance,
       sourceAddress: token.mintingData?.vaultAddress!,

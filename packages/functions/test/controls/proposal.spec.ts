@@ -224,8 +224,8 @@ describe('ProposalController: ' + WEN_FUNC.createProposal + ' MEMBERS', () => {
     return pr;
   };
 
-  const vote = async (address: string, proposal: any, values: any) => {
-    mockWalletReturnValue(walletSpy, address, { uid: proposal.uid, values: values });
+  const vote = async (address: string, proposal: any, value: number) => {
+    mockWalletReturnValue(walletSpy, address, { uid: proposal.uid, value });
     const pr = await testEnv.wrap(voteOnProposal)({});
     expect(proposal?.uid).toBeDefined();
     return pr;
@@ -298,10 +298,10 @@ describe('ProposalController: ' + WEN_FUNC.createProposal + ' MEMBERS', () => {
 
     await apprProposal(memberId, proposal);
 
-    const vResult = await vote(memberId, proposal, [2]);
+    const vResult = await vote(memberId, proposal, 2);
     expect(vResult?.payload).toBeDefined();
     expect(vResult?.payload?.weight).toEqual(1);
-    await vote(memberId, proposal, [2]);
+    await vote(memberId, proposal, 2);
 
     const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
     proposal = <Proposal>await proposalDocRef.get();
@@ -315,10 +315,10 @@ describe('ProposalController: ' + WEN_FUNC.createProposal + ' MEMBERS', () => {
 
     await apprProposal(memberId, proposal);
 
-    const vResult = await vote(memberId, proposal, [2]);
+    const vResult = await vote(memberId, proposal, 2);
     expect(vResult?.payload).toBeDefined();
     expect(vResult?.payload?.weight).toEqual(1);
-    await vote(memberId, proposal, [1]);
+    await vote(memberId, proposal, 1);
 
     const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
     proposal = <Proposal>await proposalDocRef.get();
@@ -344,26 +344,27 @@ describe('ProposalController: ' + WEN_FUNC.createProposal + ' MEMBERS', () => {
     await jSpace(memberId5, space);
     await jSpace(memberId6, space);
     await jSpace(memberId7, space);
-    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS);
+    let proposal = await cProposal(memberId, space, ProposalType.MEMBERS);
 
-    // Approve proposal.
     await apprProposal(memberId, proposal);
 
-    // Let's vote.
-    await vote(memberId1, proposal, [1]);
-    await vote(memberId2, proposal, [1]);
-    await vote(memberId3, proposal, [1]);
-    await vote(memberId4, proposal, [1]);
-    await vote(memberId5, proposal, [1]);
-    // const v6: any = await vote(memberId6, proposal, [1]);
-    await vote(memberId7, proposal, [1]);
-    const v = await vote(memberId, proposal, [1]);
+    await vote(memberId1, proposal, 1);
+    await vote(memberId2, proposal, 1);
+    await vote(memberId3, proposal, 1);
+    await vote(memberId4, proposal, 1);
+    await vote(memberId5, proposal, 1);
+    await vote(memberId7, proposal, 1);
+
+    const v = await vote(memberId, proposal, 1);
     expect(v?.payload).toBeDefined();
     expect(v?.payload?.weight).toEqual(1);
-    expect(v._relatedRecs.proposal.results.answers['1']).toEqual(7);
-    expect(v._relatedRecs.proposal.results.voted).toEqual(7);
-    expect(v._relatedRecs.proposal.results.total).toEqual(8);
-    expect(v._relatedRecs.proposal.totalWeight).toEqual(8);
+
+    const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+    proposal = await proposalDocRef.get<Proposal>();
+    expect(proposal.results.answers['1']).toEqual(7);
+    expect(proposal.results.voted).toEqual(7);
+    expect(proposal.results.total).toEqual(8);
+    expect(proposal.totalWeight).toEqual(8);
   });
 
   it('create proposal, approve & vote - 7 ppl 4/3', async () => {
@@ -383,27 +384,27 @@ describe('ProposalController: ' + WEN_FUNC.createProposal + ' MEMBERS', () => {
     await jSpace(memberId5, space);
     await jSpace(memberId6, space);
     await jSpace(memberId7, space);
-    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS);
+    let proposal = await cProposal(memberId, space, ProposalType.MEMBERS);
 
-    // Approve proposal.
     await apprProposal(memberId, proposal);
 
-    // Let's vote.
-    await vote(memberId1, proposal, [1]);
-    await vote(memberId2, proposal, [1]);
-    await vote(memberId3, proposal, [2]);
-    await vote(memberId4, proposal, [2]);
-    await vote(memberId5, proposal, [2]);
-    // const v6: any = await vote(memberId6, proposal, [1]);
-    await vote(memberId7, proposal, [1]);
-    const v = await vote(memberId, proposal, [1]);
+    await vote(memberId1, proposal, 1);
+    await vote(memberId2, proposal, 1);
+    await vote(memberId3, proposal, 2);
+    await vote(memberId4, proposal, 2);
+    await vote(memberId5, proposal, 2);
+    await vote(memberId7, proposal, 1);
+    const v = await vote(memberId, proposal, 1);
     expect(v?.payload).toBeDefined();
     expect(v?.payload?.weight).toEqual(1);
-    expect(v._relatedRecs.proposal.results.answers['1']).toEqual(4);
-    expect(v._relatedRecs.proposal.results.answers['2']).toEqual(3);
-    expect(v._relatedRecs.proposal.results.voted).toEqual(7);
-    expect(v._relatedRecs.proposal.results.total).toEqual(8);
-    expect(v._relatedRecs.proposal.totalWeight).toEqual(8);
+
+    const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+    proposal = await proposalDocRef.get<Proposal>();
+    expect(proposal.results.answers['1']).toEqual(4);
+    expect(proposal.results.answers['2']).toEqual(3);
+    expect(proposal.results.voted).toEqual(7);
+    expect(proposal.results.total).toEqual(8);
+    expect(proposal.totalWeight).toEqual(8);
   });
 
   it('create proposal, approve & vote - 4 ppl badges', async () => {
@@ -432,24 +433,27 @@ describe('ProposalController: ' + WEN_FUNC.createProposal + ' MEMBERS', () => {
     await giveBadge(memberId, memberId4, space, token.symbol, 30); // 60
     await giveBadge(memberId, memberId5, space, token.symbol, 200);
 
-    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS);
+    let proposal = await cProposal(memberId, space, ProposalType.MEMBERS);
 
     // Approve proposal.
     await apprProposal(memberId, proposal);
 
     // Let's vote.
-    await vote(memberId2, proposal, [2]);
-    await vote(memberId3, proposal, [2]);
-    await vote(memberId1, proposal, [1]);
-    await vote(memberId, proposal, [1]); // 150
-    const v = await vote(memberId4, proposal, [2]); // 75
+    await vote(memberId2, proposal, 2);
+    await vote(memberId3, proposal, 2);
+    await vote(memberId1, proposal, 1);
+    await vote(memberId, proposal, 1); // 150
+    const v = await vote(memberId4, proposal, 2); // 75
     expect(v?.payload).toBeDefined();
     expect(v?.payload?.weight).toEqual(1);
-    expect(v._relatedRecs.proposal.results.answers['1']).toEqual(2);
-    expect(v._relatedRecs.proposal.results.answers['2']).toEqual(3);
-    expect(v._relatedRecs.proposal.results.voted).toEqual(5);
-    expect(v._relatedRecs.proposal.results.total).toEqual(6);
-    expect(v._relatedRecs.proposal.totalWeight).toEqual(6);
+
+    const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+    proposal = await proposalDocRef.get<Proposal>();
+    expect(proposal.results.answers['1']).toEqual(2);
+    expect(proposal.results.answers['2']).toEqual(3);
+    expect(proposal.results.voted).toEqual(5);
+    expect(proposal.results.total).toEqual(6);
+    expect(proposal.totalWeight).toEqual(6);
   });
 });
 

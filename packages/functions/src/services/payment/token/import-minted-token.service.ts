@@ -5,7 +5,7 @@ import {
   Token,
   TokenStatus,
   Transaction,
-  TransactionCreditType,
+  TransactionPayloadType,
   WenError,
 } from '@build-5/interfaces';
 import {
@@ -36,7 +36,7 @@ export class ImportMintedTokenService {
   public handleMintedTokenImport = async (order: Transaction, match: TransactionMatch) => {
     let error: { [key: string]: unknown } = {};
     try {
-      const tokenId = order.payload.tokenId;
+      const tokenId = order.payload.tokenId!;
       const existingTokenDocRef = build5Db().doc(`${COL.TOKEN}/${tokenId}`);
       const existingToken = await this.transactionService.get<Token>(existingTokenDocRef);
 
@@ -61,7 +61,7 @@ export class ImportMintedTokenService {
       const vaultAddress = await wallet.getNewIotaAddressDetails();
       const totalSupply = Number(foundry.tokenScheme.maximumSupply);
       const token: Token = {
-        createdBy: order.member,
+        createdBy: order.member || '',
         uid: tokenId,
         name: metadata.name,
         title: metadata.name,
@@ -109,7 +109,7 @@ export class ImportMintedTokenService {
     } finally {
       const payment = await this.transactionService.createPayment(order, match, !isEmpty(error));
       await this.transactionService.createCredit(
-        TransactionCreditType.IMPORT_TOKEN,
+        TransactionPayloadType.IMPORT_TOKEN,
         payment,
         match,
         undefined,
@@ -129,7 +129,7 @@ export class ImportMintedTokenService {
     match: TransactionMatch,
   ) => {
     const indexer = new IndexerPluginClient(wallet.client);
-    const foundry = await indexer.foundry(order.payload.tokenId);
+    const foundry = await indexer.foundry(order.payload.tokenId!);
     const foundryOutput = <IFoundryOutput>(await wallet.client.output(foundry.items[0])).output;
 
     const unlockCondition = <IImmutableAliasUnlockCondition>(

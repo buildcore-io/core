@@ -3,7 +3,7 @@ import {
   Nft,
   NftStatus,
   Transaction,
-  TransactionMintCollectionType,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import { isEmpty } from 'lodash';
@@ -34,11 +34,11 @@ describe('Collection minting', () => {
     const nftMintSnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.MINT_COLLECTION)
-      .where('payload.type', '==', TransactionMintCollectionType.MINT_NFTS)
+      .where('payload.type', '==', TransactionPayloadType.MINT_NFTS)
       .where('payload.collection', '==', helper.collection)
       .get<Transaction>();
     expect(nftMintSnap.length).toBeGreaterThan(1);
-    expect(nftMintSnap.reduce((acc, act) => acc && act?.payload.amount > 0, true)).toBe(true);
+    expect(nftMintSnap.reduce((acc, act) => acc && act?.payload.amount! > 0, true)).toBe(true);
     expect(nftMintSnap.reduce((acc, act) => acc && !isEmpty(act?.payload.nfts), true)).toBe(true);
 
     const nfts = (

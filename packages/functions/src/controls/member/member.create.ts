@@ -10,5 +10,5 @@ export const createMemberControl = async (owner: string) => {
     await memberDocRef.create({ uid: owner, nonce: getRandomNonce() });
   }
 
-  return await memberDocRef.get<Member>();
+  return (await memberDocRef.get<Member>())!;
 };

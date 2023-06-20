@@ -1,8 +1,7 @@
 import {
-  BillPaymentType,
   COL,
-  Space,
   SUB_COL,
+  Space,
   Token,
   TokenAllocation,
   TokenDistribution,
@@ -10,7 +9,7 @@ import {
   TokenDropStatus,
   TokenStatus,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
   WenError,
 } from '@build-5/interfaces';
@@ -100,7 +99,7 @@ describe('Claim airdropped token test', () => {
 
     const orderTran = <Transaction>await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).get();
     expect(orderTran.member).toBe(guardian);
-    expect(orderTran.payload.type).toBe(TransactionOrderType.TOKEN_AIRDROP);
+    expect(orderTran.payload.type).toBe(TransactionPayloadType.TOKEN_AIRDROP);
 
     await waitAllClaimed(token.uid);
 
@@ -137,7 +136,7 @@ describe('Claim airdropped token test', () => {
 
     const orderTran = <Transaction>await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).get();
     expect(orderTran.member).toBe(guardian);
-    expect(orderTran.payload.type).toBe(TransactionOrderType.TOKEN_AIRDROP);
+    expect(orderTran.payload.type).toBe(TransactionPayloadType.TOKEN_AIRDROP);
 
     await waitAllClaimed(token.uid);
 
@@ -184,7 +183,7 @@ describe('Claim airdropped token test', () => {
 
     const orderTran = <Transaction>await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).get();
     expect(orderTran.member).toBe(guardian);
-    expect(orderTran.payload.type).toBe(TransactionOrderType.TOKEN_AIRDROP);
+    expect(orderTran.payload.type).toBe(TransactionPayloadType.TOKEN_AIRDROP);
     await waitAllClaimed(token.uid, 1);
 
     const paymentsSnap = await build5Db()
@@ -244,7 +243,7 @@ describe('Claim airdropped token test', () => {
     const billPayment = billPaymentSnap[0]!;
     expect(billPayment.payload.token).toBe(token.uid);
     expect(billPayment.payload.tokenSymbol).toBe(token.symbol);
-    expect(billPayment.payload.type).toBe(BillPaymentType.PRE_MINTED_AIRDROP_CLAIM);
+    expect(billPayment.payload.type).toBe(TransactionPayloadType.PRE_MINTED_AIRDROP_CLAIM);
   });
 
   it('Should throw, token is minted', async () => {
@@ -277,7 +276,7 @@ describe('Claim airdropped token test', () => {
 
     const orderTran = <Transaction>await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).get();
     expect(orderTran.member).toBe(guardian);
-    expect(orderTran.payload.type).toBe(TransactionOrderType.TOKEN_AIRDROP);
+    expect(orderTran.payload.type).toBe(TransactionPayloadType.TOKEN_AIRDROP);
     await waitAllClaimed(token.uid, 700);
   });
 });

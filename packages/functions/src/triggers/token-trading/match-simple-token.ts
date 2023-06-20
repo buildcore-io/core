@@ -1,18 +1,17 @@
 import {
-  BillPaymentType,
   COL,
   DEFAULT_NETWORK,
   Entity,
-  Member,
   MIN_IOTA_AMOUNT,
-  Space,
+  Member,
   SUB_COL,
+  Space,
   Token,
   TokenPurchase,
   TokenTradeOrder,
   TokenTradeOrderType,
   Transaction,
-  TransactionCreditType,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import bigDecimal from 'js-big-decimal';
@@ -66,7 +65,7 @@ const createBuyPayments = async (
         member: buy.owner,
         network: buy.targetNetwork || DEFAULT_NETWORK,
         payload: {
-          type: BillPaymentType.PRE_MINTED_TOKEN_TRADE,
+          type: TransactionPayloadType.PRE_MINTED_TOKEN_TRADE,
           amount: fee,
           sourceAddress: buyOrder.payload.targetAddress,
           targetAddress: getAddress(spaceData, buy.sourceNetwork || DEFAULT_NETWORK),
@@ -86,7 +85,7 @@ const createBuyPayments = async (
     });
   const royaltyPayments = await Promise.all(royaltyPaymentPromises);
   royaltyPayments.forEach((p) => {
-    salePrice -= p.ignoreWallet ? 0 : p.payload.amount;
+    salePrice -= p.ignoreWallet ? 0 : p.payload.amount!;
   });
   if (salePrice < MIN_IOTA_AMOUNT) {
     return [];
@@ -98,7 +97,7 @@ const createBuyPayments = async (
     member: buy.owner,
     network: buy.targetNetwork || DEFAULT_NETWORK,
     payload: {
-      type: BillPaymentType.PRE_MINTED_TOKEN_TRADE,
+      type: TransactionPayloadType.PRE_MINTED_TOKEN_TRADE,
       amount: salePrice,
       sourceAddress: buyOrder.payload.targetAddress,
       targetAddress: getAddress(seller, buy.sourceNetwork || DEFAULT_NETWORK),
@@ -124,7 +123,7 @@ const createBuyPayments = async (
     member: buy.owner,
     network: buy.targetNetwork || DEFAULT_NETWORK,
     payload: {
-      type: TransactionCreditType.TOKEN_TRADE_FULLFILLMENT,
+      type: TransactionPayloadType.TOKEN_TRADE_FULLFILLMENT,
       dependsOnBillPayment: true,
       amount: balanceLeft,
       sourceAddress: buyOrder.payload.targetAddress,

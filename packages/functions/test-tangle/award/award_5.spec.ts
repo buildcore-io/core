@@ -9,8 +9,7 @@ import {
   TokenDropStatus,
   TokenStatus,
   Transaction,
-  TransactionAwardType,
-  TransactionCreditType,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import { IndexerPluginClient } from '@iota/iota.js-next';
@@ -129,7 +128,7 @@ describe('Create award, native', () => {
     const nttQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
-      .where('payload.type', '==', TransactionAwardType.BADGE);
+      .where('payload.type', '==', TransactionPayloadType.BADGE);
     await wait(async () => {
       const snap = await nttQuery.get();
       return snap.length === 1;
@@ -183,11 +182,11 @@ describe('Create award, native', () => {
     const credit = <Transaction>(await creditQuery.get())[0];
     expect(credit.payload.token).toBe(token.uid);
     expect(credit.payload.tokenSymbol).toBe(token.symbol);
-    expect(credit.payload.type).toBe(TransactionCreditType.AWARD_COMPLETED);
+    expect(credit.payload.type).toBe(TransactionPayloadType.AWARD_COMPLETED);
 
     const burnAliasQuery = build5Db()
       .collection(COL.TRANSACTION)
-      .where('payload.type', '==', TransactionAwardType.BURN_ALIAS)
+      .where('payload.type', '==', TransactionPayloadType.BURN_ALIAS)
       .where('member', '==', guardian);
     await wait(async () => {
       const snap = await burnAliasQuery.get<Transaction>();

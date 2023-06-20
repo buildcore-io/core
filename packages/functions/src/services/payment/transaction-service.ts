@@ -1,6 +1,7 @@
 import {
   COL,
   DEFAULT_NETWORK,
+  IgnoreWalletReason,
   MIN_AMOUNT_TO_TRANSFER,
   MilestoneTransaction,
   MilestoneTransactionEntry,
@@ -10,12 +11,8 @@ import {
   Timestamp,
   Token,
   Transaction,
-  TransactionCreditType,
-  TransactionIgnoreWalletReason,
-  TransactionOrder,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
-  TransactionUnlockType,
   TransactionValidationType,
 } from '@build-5/interfaces';
 import {
@@ -81,7 +78,7 @@ export class TransactionService {
     if (order.type !== TransactionType.ORDER) {
       throw new Error('Order was not provided as transaction.');
     }
-    const data: Transaction = <Transaction>{
+    const data: Transaction = {
       type: TransactionType.PAYMENT,
       uid: getRandomEthAddress(),
       member: order.member || '',
@@ -92,14 +89,14 @@ export class TransactionService {
         amount: tran.to.amount,
         nativeTokens: (tran.to.nativeTokens || []).map((nt) => ({
           ...nt,
-          amount: Number(nt.amount),
+          amount: Number(nt.amount).toString(),
         })),
         sourceAddress: tran.from.address,
         targetAddress: order.payload.targetAddress,
         reconciled: true,
         void: false,
         sourceTransaction: [order.uid],
-        chainReference: tran.msgId,
+        chainReference: tran.msgId || null,
         nft: order.payload.nft || null,
         collection: order.payload.collection || null,
         invalidPayment,
@@ -119,7 +116,7 @@ export class TransactionService {
       data,
       action: 'set',
     });
-    if (order.payload.type !== TransactionOrderType.TANGLE_REQUEST) {
+    if (order.payload.type !== TransactionPayloadType.TANGLE_REQUEST) {
       this.linkedTransactions.push(data.uid);
     }
     return data;
@@ -131,9 +128,9 @@ export class TransactionService {
     }
     const transOut: Transaction[] = [];
     let royaltyAmt = order.payload.royaltiesSpaceAddress
-      ? Math.ceil(order.payload.amount * (order.payload.royaltiesFee || 0))
+      ? Math.ceil(order.payload.amount! * (order.payload.royaltiesFee || 0))
       : 0;
-    let finalAmt = payment.payload.amount - royaltyAmt;
+    let finalAmt = payment.payload.amount! - royaltyAmt;
 
     if (royaltyAmt < MIN_AMOUNT_TO_TRANSFER) {
       finalAmt = finalAmt + royaltyAmt;
@@ -210,18 +207,18 @@ export class TransactionService {
   }
 
   public async createCredit(
-    type: TransactionCreditType,
+    type: TransactionPayloadType,
     payment: Transaction,
     tran: TransactionMatch,
     createdOn = serverTime(),
     setLink = true,
-    ignoreWalletReason = TransactionIgnoreWalletReason.NONE,
+    ignoreWalletReason = IgnoreWalletReason.NONE,
     storageReturn?: StorageReturn,
     customPayload?: { [key: string]: unknown },
     response: { [key: string]: unknown } = {},
   ): Promise<Transaction | undefined> {
-    if (payment.payload.amount > 0) {
-      const data = <Transaction>{
+    if (payment.payload.amount! > 0) {
+      const data: Transaction = {
         type: TransactionType.CREDIT,
         uid: getRandomEthAddress(),
         space: payment.space,
@@ -233,7 +230,7 @@ export class TransactionService {
           amount: payment.payload.amount,
           nativeTokens: (tran.to.nativeTokens || []).map((nt) => ({
             ...nt,
-            amount: Number(nt.amount),
+            amount: Number(nt.amount).toString(),
           })),
           sourceAddress: tran.to.address,
           targetAddress: tran.from.address,
@@ -278,7 +275,7 @@ export class TransactionService {
     response: Record<string, unknown>,
     outputToConsume: string,
   ) {
-    if (payment.payload.amount > 0) {
+    if (payment.payload.amount! > 0) {
       const data: Transaction = {
         type: TransactionType.CREDIT_TANGLE_REQUEST,
         uid: getRandomEthAddress(),
@@ -289,7 +286,7 @@ export class TransactionService {
           amount: payment.payload.amount,
           nativeTokens: (tran.to.nativeTokens || []).map((nt) => ({
             ...nt,
-            amount: Number(nt.amount),
+            amount: Number(nt.amount).toString(),
           })),
           sourceAddress: tran.to.address,
           targetAddress: tran.from.address,
@@ -316,7 +313,7 @@ export class TransactionService {
     tran: TransactionMatch,
     error?: Record<string, unknown>,
     customErrorParams: Record<string, unknown> = {},
-    ignoreWalletReason = TransactionIgnoreWalletReason.NONE,
+    ignoreWalletReason = IgnoreWalletReason.NONE,
   ) {
     const response = error
       ? { status: 'error', code: error.code || '', message: error.key || '', ...customErrorParams }
@@ -365,12 +362,12 @@ export class TransactionService {
 
   private getFromAddress = async (
     tran: MilestoneTransaction,
-    order: TransactionOrder,
+    order: Transaction,
     build5Transaction?: Transaction,
   ) => {
     if (build5Transaction?.type === TransactionType.UNLOCK) {
       const doc = (await build5Db()
-        .doc(build5Transaction.payload.milestoneTransactionPath)
+        .doc(build5Transaction.payload?.milestoneTransactionPath!)
         .get<Record<string, unknown>>())!;
       const adapter = new SmrMilestoneTransactionAdapter(order.network!);
       const milestoneTransaction = await adapter.toMilestoneTransaction(doc);
@@ -382,7 +379,7 @@ export class TransactionService {
   public async isMatch(
     tran: MilestoneTransaction,
     tranOutput: MilestoneTransactionEntry,
-    order: TransactionOrder,
+    order: Transaction,
     build5Transaction?: Transaction,
   ): Promise<TransactionMatch | undefined> {
     const unsupportedUnlockCondition = this.getUnsupportedUnlockCondition(
@@ -427,7 +424,7 @@ export class TransactionService {
 
   public async processAsInvalid(
     tran: MilestoneTransaction,
-    order: TransactionOrder,
+    order: Transaction,
     tranOutput: MilestoneTransactionEntry,
     build5Transaction?: Transaction,
   ): Promise<void> {
@@ -449,7 +446,7 @@ export class TransactionService {
         return;
       }
       await this.createCredit(
-        TransactionCreditType.INVALID_PAYMENT,
+        TransactionPayloadType.INVALID_PAYMENT,
         payment,
         match,
         serverTime(),
@@ -461,31 +458,31 @@ export class TransactionService {
 
   private getIngnoreWalletReason = (
     unlockConditions: UnlockConditionTypes[],
-  ): TransactionIgnoreWalletReason => {
+  ): IgnoreWalletReason => {
     const hasTimelock =
       unlockConditions.find((u) => u.type === TIMELOCK_UNLOCK_CONDITION_TYPE) !== undefined;
     if (hasTimelock) {
-      return TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_TIMELOCK_CONDITION;
+      return IgnoreWalletReason.UNREFUNDABLE_DUE_TIMELOCK_CONDITION;
     }
     const hasStorageDepositLock =
       unlockConditions.find((u) => u.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE) !==
       undefined;
     if (hasStorageDepositLock) {
-      return TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION;
+      return IgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION;
     }
-    return TransactionIgnoreWalletReason.NONE;
+    return IgnoreWalletReason.NONE;
   };
 
   public createUnlockTransaction = async (
-    order: TransactionOrder,
+    order: Transaction,
     tran: MilestoneTransaction,
     tranOutput: MilestoneTransactionEntry,
-    type: TransactionUnlockType,
+    type: TransactionPayloadType,
     outputToConsume = '',
     expiresOn?: Timestamp,
   ) => {
     const network = order.network || DEFAULT_NETWORK;
-    const data = <Transaction>{
+    const data: Transaction = {
       type: TransactionType.UNLOCK,
       uid: getRandomEthAddress(),
       space: order.space || '',
@@ -496,12 +493,12 @@ export class TransactionService {
         amount: tranOutput.amount,
         nativeTokens: (tranOutput.nativeTokens || []).map((nt) => ({
           ...nt,
-          amount: Number(nt.amount),
+          amount: Number(nt.amount).toString(),
         })),
         sourceAddress: tranOutput.address,
         targetAddress: [
-          TransactionUnlockType.TANGLE_TRANSFER,
-          TransactionUnlockType.UNLOCK_NFT,
+          TransactionPayloadType.TANGLE_TRANSFER,
+          TransactionPayloadType.UNLOCK_NFT,
         ].includes(type)
           ? order.payload.targetAddress
           : tranOutput.address,

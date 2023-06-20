@@ -3,7 +3,7 @@ import {
   Network,
   Token,
   TokenStatus,
-  TransactionAwardType,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
@@ -23,7 +23,7 @@ export const awaitAllTransactionsForAward = async (awardId: string) => {
   const nttQuery = build5Db()
     .collection(COL.TRANSACTION)
     .where('payload.award', '==', awardId)
-    .where('payload.type', '==', TransactionAwardType.BADGE);
+    .where('payload.type', '==', TransactionPayloadType.BADGE);
   await allConfirmed(nttQuery);
 };
 

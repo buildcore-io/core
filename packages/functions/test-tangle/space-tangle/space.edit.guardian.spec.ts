@@ -38,7 +38,7 @@ describe('Edit guardian space', () => {
       await requestFundsFromFaucet(Network.RMS, helper.guardianAddress.bech32, MIN_IOTA_AMOUNT);
       await helper.walletService.send(
         helper.guardianAddress,
-        helper.tangleOrder.payload.targetAddress,
+        helper.tangleOrder.payload.targetAddress!,
         MIN_IOTA_AMOUNT,
         {
           customMetadata: {
@@ -57,7 +57,7 @@ describe('Edit guardian space', () => {
       });
       const snap = await helper.guardianCreditQuery.get();
       const credit = snap[0] as Transaction;
-      const proposalId = credit.payload.response.proposal;
+      const proposalId = credit.payload.response!.proposal;
 
       const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposalId}`);
       const proposal = <Proposal>await proposalDocRef.get();

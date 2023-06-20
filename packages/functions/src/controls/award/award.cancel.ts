@@ -1,10 +1,10 @@
-import { Award, COL, WenError } from '@build-5/interfaces';
+import { Award, AwardCancelRequest, COL, WenError } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 
-export const cancelAwardControl = (owner: string, params: Record<string, unknown>) =>
+export const cancelAwardControl = (owner: string, params: AwardCancelRequest): Promise<Award> =>
   build5Db().runTransaction(async (transaction) => {
     const awardDocRef = build5Db().doc(`${COL.AWARD}/${params.uid}`);
     const award = await transaction.get<Award>(awardDocRef);
@@ -23,4 +23,6 @@ export const cancelAwardControl = (owner: string, params: Record<string, unknown
 
     const data = { uid: award.uid, completed: true };
     transaction.update(awardDocRef, data);
+
+    return { ...award, ...data };
   });

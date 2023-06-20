@@ -29,7 +29,7 @@ describe('Base token trading', () => {
     await requestFundsFromFaucet(helper.sourceNetwork, atoiAddress.bech32, 5 * MIN_IOTA_AMOUNT);
     await requestFundsFromFaucet(helper.targetNetwork, rmsAddress.bech32, 5 * MIN_IOTA_AMOUNT);
 
-    await helper.rmsWallet!.send(rmsAddress, tangleOrder.payload.targetAddress, MIN_IOTA_AMOUNT, {
+    await helper.rmsWallet!.send(rmsAddress, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
       customMetadata: {
         request: {
           requestType: TangleRequestType.SELL_TOKEN,
@@ -72,7 +72,7 @@ describe('Base token trading', () => {
 
     await helper.rmsWallet!.send(
       rmsAddress,
-      tangleOrder.payload.targetAddress,
+      tangleOrder.payload.targetAddress!,
       1.5 * MIN_IOTA_AMOUNT,
       {
         customMetadata: {

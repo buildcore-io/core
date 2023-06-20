@@ -1,4 +1,11 @@
-import { COL, StakeReward, StakeRewardStatus, Token, WenError } from '@build-5/interfaces';
+import {
+  COL,
+  StakeReward,
+  StakeRewardStatus,
+  Token,
+  TokenStakeRewardsRequest,
+  WenError,
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
@@ -6,14 +13,7 @@ import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
-interface StakeRewardItem {
-  readonly startDate: number;
-  readonly endDate: number;
-  readonly tokenVestingDate: number;
-  readonly tokensToDistribute: number;
-}
-
-export const stakeRewardControl = async (owner: string, params: Record<string, unknown>) => {
+export const stakeRewardControl = async (owner: string, params: TokenStakeRewardsRequest) => {
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
   const token = await tokenDocRef.get<Token>();
   if (!token) {
@@ -21,13 +21,13 @@ export const stakeRewardControl = async (owner: string, params: Record<string, u
   }
   await assertIsGuardian(token.space, owner);
 
-  const stakeRewards = (params.items as StakeRewardItem[]).map<StakeReward>((item) => ({
+  const stakeRewards = params.items.map<StakeReward>((item) => ({
     uid: getRandomEthAddress(),
     startDate: dateToTimestamp(dayjs(item.startDate)),
     endDate: dateToTimestamp(dayjs(item.endDate)),
     tokenVestingDate: dateToTimestamp(dayjs(item.tokenVestingDate)),
     tokensToDistribute: item.tokensToDistribute,
-    token: params.token as string,
+    token: params.token,
     status: StakeRewardStatus.UNPROCESSED,
   }));
 

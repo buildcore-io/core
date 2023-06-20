@@ -1,11 +1,11 @@
 import {
   COL,
+  IgnoreWalletReason,
   MIN_IOTA_AMOUNT,
   Network,
   Nft,
   StakeType,
   Transaction,
-  TransactionIgnoreWalletReason,
   TransactionType,
 } from '@build-5/interfaces';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
@@ -57,7 +57,7 @@ describe('Stake nft', () => {
       .where(
         'ignoreWalletReason',
         '==',
-        TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION,
+        IgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION,
       );
     await wait(async () => {
       const snap = await creditQuery.get<Transaction>();

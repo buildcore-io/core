@@ -38,8 +38,8 @@ describe('Collection minting', () => {
     });
     const snap = await query.get();
     const credit = <Transaction>snap[0];
-    expect(credit.payload.response.code).toBe(2117);
-    expect(credit.payload.response.message).toBe('Could not get data from ipfs');
-    await helper.isInvalidPayment(credit.payload.sourceTransaction[0]);
+    expect(credit.payload.response!.code).toBe(2117);
+    expect(credit.payload.response!.message).toBe('Could not get data from ipfs');
+    await helper.isInvalidPayment(credit.payload.sourceTransaction![0]);
   });
 });

@@ -7,7 +7,7 @@ import {
   Token,
   TokenStatus,
   Transaction,
-  TransactionMintTokenType,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import { IFoundryOutput, IndexerPluginClient, addressBalance } from '@iota/iota.js-next';
@@ -102,11 +102,11 @@ describe('Token minting', () => {
         .get()
     ).map((d) => <Transaction>d);
     const aliasTran = mintTransactions.find(
-      (t) => t.payload.type === TransactionMintTokenType.MINT_ALIAS,
+      (t) => t.payload.type === TransactionPayloadType.MINT_ALIAS,
     );
     expect(aliasTran?.payload?.amount).toBe(helper.token.mintingData?.aliasStorageDeposit);
     const foundryTran = mintTransactions.find(
-      (t) => t.payload.type === TransactionMintTokenType.MINT_FOUNDRY,
+      (t) => t.payload.type === TransactionPayloadType.MINT_FOUNDRY,
     );
     expect(foundryTran?.payload?.amount).toBe(
       helper.token.mintingData?.foundryStorageDeposit! +
@@ -114,7 +114,7 @@ describe('Token minting', () => {
         helper.token.mintingData?.guardianStorageDeposit!,
     );
     const aliasTransferTran = mintTransactions.find(
-      (t) => t.payload.type === TransactionMintTokenType.SEND_ALIAS_TO_GUARDIAN,
+      (t) => t.payload.type === TransactionPayloadType.SEND_ALIAS_TO_GUARDIAN,
     );
     expect(aliasTransferTran?.payload?.amount).toBe(helper.token.mintingData?.aliasStorageDeposit);
 

@@ -1,6 +1,5 @@
 import {
   Award,
-  BillPaymentType,
   COL,
   MIN_IOTA_AMOUNT,
   Network,
@@ -9,6 +8,7 @@ import {
   TokenDrop,
   TokenDropStatus,
   Transaction,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import { IndexerPluginClient } from '@iota/iota.js-next';
@@ -126,7 +126,7 @@ describe('Award', () => {
     billPayments.forEach((billPayment) => {
       expect(billPayment.payload.token).toBe(token.uid);
       expect(billPayment.payload.tokenSymbol).toBe(token.symbol);
-      expect(billPayment.payload.type).toBe(BillPaymentType.BASE_AIRDROP_CLAIM);
+      expect(billPayment.payload.type).toBe(TransactionPayloadType.BASE_AIRDROP_CLAIM);
     });
   });
 });

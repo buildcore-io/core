@@ -1,8 +1,7 @@
 import {
   COL,
-  Proposal,
   ProposalType,
-  RelatedRecordsResponse,
+  ProposalVoteRequest,
   SUB_COL,
   TokenStatus,
   Transaction,
@@ -19,10 +18,12 @@ import { createVoteTransactionOrder } from '../../services/payment/tangle-servic
 import { invalidArgument } from '../../utils/error.utils';
 import { getTokenForSpace } from '../../utils/token.utils';
 
-export const voteOnProposalControl = async (owner: string, params: Record<string, unknown>) => {
-  const values = params.values as number[];
-  const proposal = await getProposal(params.uid as string);
-  const proposalMember = await getProposalMember(owner, proposal, values[0]);
+export const voteOnProposalControl = async (
+  owner: string,
+  params: ProposalVoteRequest,
+): Promise<Transaction> => {
+  const proposal = await getProposal(params.uid);
+  const proposalMember = await getProposalMember(owner, proposal, params.value);
 
   if (proposal.type === ProposalType.NATIVE) {
     const token = await getTokenForSpace(proposal.space);
@@ -31,19 +32,20 @@ export const voteOnProposalControl = async (owner: string, params: Record<string
     }
 
     if (params.voteWithStakedTokes) {
-      return await build5Db().runTransaction(async (transaction) =>
-        voteWithStakedTokens(transaction, owner, proposal, values),
+      const voteTransaction = await build5Db().runTransaction(async (transaction) =>
+        voteWithStakedTokens(transaction, owner, proposal, [params.value]),
       );
+      return voteTransaction;
     }
 
-    const order = await createVoteTransactionOrder(owner, proposal, values, token);
+    const order = await createVoteTransactionOrder(owner, proposal, [params.value], token);
     const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
     await orderDocRef.create(order);
 
-    return await orderDocRef.get<Transaction>();
+    return (await orderDocRef.get<Transaction>())!;
   }
 
-  const voteData = await executeSimpleVoting(proposalMember, proposal, values);
+  const voteData = await executeSimpleVoting(proposalMember, proposal, [params.value]);
   const batch = build5Db().batch();
 
   const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
@@ -59,14 +61,5 @@ export const voteOnProposalControl = async (owner: string, params: Record<string
   await batch.commit();
 
   const voteTransaction = await voteTransactionDocRef.get<Transaction>();
-  if (RelatedRecordsResponse.status) {
-    return {
-      ...voteTransaction,
-      ...{
-        _relatedRecs: { proposal: await proposalDocRef.get<Proposal>() },
-      },
-    };
-  } else {
-    return voteTransaction;
-  }
+  return voteTransaction!;
 };

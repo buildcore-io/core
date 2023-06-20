@@ -59,24 +59,24 @@ describe('Token minting', () => {
     expect(paymentToSeller.payload.storageReturn).toBeUndefined();
 
     const royaltyOnePayment = billPayments.find((bp) => bp.payload.amount === 159300)!;
-    expect(royaltyOnePayment.payload.storageReturn.address).toBe(helper.sellerAddress!.bech32);
+    expect(royaltyOnePayment.payload.storageReturn!.address).toBe(helper.sellerAddress!.bech32);
     expect(royaltyOnePayment.payload.sourceAddress).toBe(buyOrder.payload.targetAddress);
-    expect(royaltyOnePayment.payload.storageReturn.amount).toBe(46800);
+    expect(royaltyOnePayment.payload.storageReturn!.amount).toBe(46800);
 
     const royaltyTwoPayment = billPayments.find((bp) => bp.payload.amount === 59300)!;
-    expect(royaltyTwoPayment.payload.storageReturn.address).toBe(helper.sellerAddress!.bech32);
+    expect(royaltyTwoPayment.payload.storageReturn!.address).toBe(helper.sellerAddress!.bech32);
     expect(royaltyTwoPayment.payload.sourceAddress).toBe(buyOrder.payload.targetAddress);
-    expect(royaltyTwoPayment.payload.storageReturn.amount).toBe(46800);
+    expect(royaltyTwoPayment.payload.storageReturn!.amount).toBe(46800);
 
     const paymentToBuyer = billPayments.find(
       (bp) => bp.payload.targetAddress === helper.buyerAddress!.bech32,
     )!;
     expect(paymentToBuyer.payload.amount).toBe(53800);
-    expect(paymentToBuyer.payload.nativeTokens[0].amount).toBe(5);
+    expect(paymentToBuyer.payload.nativeTokens![0].amount).toBe('5');
     expect(paymentToBuyer.payload.sourceAddress).toBe(sellOrder.payload.targetAddress);
     expect(paymentToBuyer.payload.storageDepositSourceAddress).toBe(buyOrder.payload.targetAddress);
-    expect(paymentToBuyer.payload.storageReturn.amount).toBe(53800);
-    expect(paymentToBuyer.payload.storageReturn.address).toBe(helper.sellerAddress?.bech32);
+    expect(paymentToBuyer.payload.storageReturn!.amount).toBe(53800);
+    expect(paymentToBuyer.payload.storageReturn!.address).toBe(helper.sellerAddress?.bech32);
 
     const sellerCreditSnap = await build5Db()
       .collection(COL.TRANSACTION)
@@ -86,7 +86,7 @@ describe('Token minting', () => {
     expect(sellerCreditSnap.length).toBe(1);
     const sellerCredit = sellerCreditSnap.map((d) => d as Transaction)[0];
     expect(sellerCredit.payload.amount).toBe(49600);
-    expect(sellerCredit.payload.nativeTokens[0].amount).toBe(5);
+    expect(sellerCredit.payload.nativeTokens![0].amount).toBe('5');
     expect(sellerCredit.payload.reason).toBe(CreditPaymentReason.TRADE_CANCELLED);
 
     const buyerCreditSnap = await build5Db()

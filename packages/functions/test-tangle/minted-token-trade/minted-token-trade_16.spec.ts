@@ -39,7 +39,7 @@ describe('Token minting', () => {
     const sellOrder: Transaction = await testEnv.wrap(tradeToken)({});
     await helper.walletService!.send(
       helper.sellerAddress!,
-      sellOrder.payload.targetAddress,
+      sellOrder.payload.targetAddress!,
       12 * MIN_IOTA_AMOUNT,
       {
         nativeTokens: [
@@ -96,7 +96,7 @@ describe('Token minting', () => {
     const sellOrder: Transaction = await testEnv.wrap(tradeToken)({});
     await helper.walletService!.send(
       helper.sellerAddress!,
-      sellOrder.payload.targetAddress,
+      sellOrder.payload.targetAddress!,
       12 * MIN_IOTA_AMOUNT,
       {
         nativeTokens: [

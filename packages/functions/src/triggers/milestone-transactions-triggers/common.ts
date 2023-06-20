@@ -43,7 +43,7 @@ export const confirmTransaction = async (
   await unclockMnemonic(transaction.payload.aliasGovAddress);
 };
 
-export const unclockMnemonic = async (address: string) => {
+export const unclockMnemonic = async (address: string | undefined) => {
   if (isEmpty(address)) {
     return;
   }

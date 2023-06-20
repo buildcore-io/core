@@ -14,10 +14,10 @@ import {
   TokenTradeOrder,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
+  TradeTokenTangleRequest,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
-  TransactionUnlockType,
   TransactionValidationType,
   WenError,
   getNetworkPair,
@@ -46,10 +46,10 @@ import {
   getTokenBySymbol,
 } from '../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
-import { CommonJoi } from '../../joi/common';
+import { CommonJoi, toJoiObject } from '../../joi/common';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 
-const sellMintedTokenSchema = Joi.object({
+const sellMintedTokenSchema = toJoiObject<TradeTokenTangleRequest>({
   symbol: CommonJoi.tokenSymbol(),
   price: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).required(),
   type: Joi.string().equal(TokenTradeOrderType.SELL, TokenTradeOrderType.BUY).required(),
@@ -68,7 +68,7 @@ export class TangleTokenTradeService {
     build5Transaction?: Transaction,
   ) => {
     const type =
-      request.requestType === TransactionOrderType.BUY_TOKEN
+      request.requestType === TransactionPayloadType.BUY_TOKEN
         ? TokenTradeOrderType.BUY
         : TokenTradeOrderType.SELL;
     const params = {
@@ -134,7 +134,7 @@ export class TangleTokenTradeService {
       tradeOrderTransaction,
       tran,
       tranEntry,
-      TransactionUnlockType.TANGLE_TRANSFER,
+      TransactionPayloadType.TANGLE_TRANSFER,
       tranEntry.outputId,
       build5Transaction?.payload?.expiresOn ||
         dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms')),
@@ -241,20 +241,21 @@ const createTradeOrderTransaction = async (
   isSell: boolean,
   count: number,
   price: number,
-) => {
+): Promise<Transaction> => {
   const wallet = await WalletService.newWallet(network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
   const isMinted = token.status === TokenStatus.MINTED;
-  return <Transaction>{
+  return {
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member,
     space: token.space || '',
     network,
     payload: {
-      type: isSell ? TransactionOrderType.SELL_TOKEN : TransactionOrderType.BUY_TOKEN,
+      type: isSell ? TransactionPayloadType.SELL_TOKEN : TransactionPayloadType.BUY_TOKEN,
       amount: await getAmount(token, count, price, isSell),
-      nativeTokens: isMinted && isSell ? [{ id: token.mintingData?.tokenId!, amount: count }] : [],
+      nativeTokens:
+        isMinted && isSell ? [{ id: token.mintingData?.tokenId!, amount: count.toString() }] : [],
       targetAddress: targetAddress.bech32,
       expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS)),
       validationType: getValidationType(token, isSell),

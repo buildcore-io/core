@@ -7,12 +7,13 @@ import {
   Proposal,
   ProposalType,
   Space,
+  SpaceGuardianUpsertTangleResponse,
   SpaceMember,
+  SpaceMemberUpsertTangleRequest,
   SUB_COL,
   TangleRequestType,
   Transaction,
   TransactionType,
-  VoteTransaction,
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
@@ -23,19 +24,31 @@ import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
+import { toJoiObject } from '../../../joi/common';
 import { TransactionService } from '../../transaction-service';
+
+const schema = toJoiObject<SpaceMemberUpsertTangleRequest>(editSpaceMemberSchema);
 
 export class SpaceGuardianService {
   constructor(readonly transactionService: TransactionService) {}
 
-  public handleEditGuardianRequest = async (owner: string, request: Record<string, unknown>) => {
-    await assertValidationAsync(editSpaceMemberSchema, request, { allowUnknown: true });
-
+  public handleEditGuardianRequest = async (
+    owner: string,
+    request: Record<string, unknown>,
+  ): Promise<SpaceGuardianUpsertTangleResponse> => {
     const type =
       request.requestType == TangleRequestType.SPACE_ADD_GUARDIAN
         ? ProposalType.ADD_GUARDIAN
         : ProposalType.REMOVE_GUARDIAN;
-    const { proposal, voteTransaction, members } = await addRemoveGuardian(owner, request, type);
+
+    delete request.requestType;
+    const params = await assertValidationAsync(schema, request);
+
+    const { proposal, voteTransaction, members } = await addRemoveGuardian(
+      owner,
+      { ...params },
+      type,
+    );
 
     const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
     const memberPromisses = members.map((member) => {
@@ -119,13 +132,13 @@ export const addRemoveGuardian = async (
     guardians.length,
   );
 
-  const voteTransaction = <Transaction>{
+  const voteTransaction: Transaction = {
     type: TransactionType.VOTE,
     uid: getRandomEthAddress(),
     member: owner,
-    space: params.uid,
+    space: params.uid as string,
     network: DEFAULT_NETWORK,
-    payload: <VoteTransaction>{
+    payload: {
       proposalId: proposal.uid,
       weight: 1,
       values: [1],

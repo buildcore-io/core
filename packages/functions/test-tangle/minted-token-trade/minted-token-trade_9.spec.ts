@@ -58,8 +58,8 @@ describe('Token minting', () => {
     const snap = await query.get();
     const credit = <Transaction>snap[0];
     expect(credit.payload.amount).toBe(sellOrder.payload.amount);
-    expect(credit.payload.nativeTokens[0].id).toBe(MINTED_TOKEN_ID);
-    expect(credit.payload.nativeTokens[0].amount).toBe(10);
+    expect(credit.payload.nativeTokens![0].id).toBe(MINTED_TOKEN_ID);
+    expect(credit.payload.nativeTokens![0].amount).toBe('10');
     const sellSnap = await build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.seller)

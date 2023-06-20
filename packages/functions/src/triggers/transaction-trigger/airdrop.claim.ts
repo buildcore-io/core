@@ -1,22 +1,20 @@
 import {
-  BillPaymentType,
-  calcStakedMultiplier,
   COL,
   Entity,
+  IgnoreWalletReason,
   Member,
+  SUB_COL,
   Stake,
   StakeType,
-  SUB_COL,
   Token,
   TokenDistribution,
   TokenDrop,
   TokenDropStatus,
   TokenStatus,
   Transaction,
-  TransactionIgnoreWalletReason,
-  TransactionOrder,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
+  calcStakedMultiplier,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { head } from 'lodash';
@@ -35,7 +33,7 @@ export const onAirdropClaim = async (order: Transaction) => {
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${order.payload.token}`);
   const token = (await tokenDocRef.get<Token>())!;
 
-  if (order.payload.type === TransactionOrderType.TOKEN_AIRDROP) {
+  if (order.payload.type === TransactionPayloadType.TOKEN_AIRDROP) {
     return await onPreMintedAirdropClaim(order, token);
   }
   return await onMintedAirdropClaim(order, token);
@@ -52,19 +50,19 @@ const onPreMintedAirdropClaim = async (order: Transaction, token: Token) => {
   )((transaction, airdrop) => {
     const airdropDocRef = build5Db().doc(`${COL.AIRDROP}/${airdrop.uid}`);
 
-    const billPayment = <Transaction>{
+    const billPayment: Transaction = {
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       space: order.space,
       member: order.member,
       network: order.network,
       ignoreWallet: true,
-      ignoreWalletReason: TransactionIgnoreWalletReason.PRE_MINTED_AIRDROP_CLAIM,
+      ignoreWalletReason: IgnoreWalletReason.PRE_MINTED_AIRDROP_CLAIM,
       payload: {
-        type: BillPaymentType.PRE_MINTED_AIRDROP_CLAIM,
+        type: TransactionPayloadType.PRE_MINTED_AIRDROP_CLAIM,
         amount: 0,
         sourceTransaction: [order.uid],
-        quantity: order.payload.quantity || null,
+        quantity: order.payload.quantity || 0,
         airdropId: airdrop.uid,
         token: token.uid,
         tokenSymbol: token.symbol,
@@ -93,7 +91,7 @@ const onPreMintedAirdropClaim = async (order: Transaction, token: Token) => {
       },
       true,
     );
-    return billPayment.payload.amount;
+    return billPayment.payload.amount!;
   });
 };
 
@@ -158,10 +156,10 @@ const onMintedAirdropClaim = async (order: Transaction, token: Token) => {
       status: TokenDropStatus.CLAIMED,
       billPaymentId: billPayment.uid,
     });
-    return airdrop.isBaseToken ? 0 : billPayment.payload.amount;
+    return airdrop.isBaseToken ? 0 : billPayment.payload.amount!;
   });
 
-  if (storageDepositUsed < order.payload.amount) {
+  if (storageDepositUsed < order.payload.amount!) {
     const credit = <Transaction>{
       type: TransactionType.CREDIT,
       uid: getRandomEthAddress(),
@@ -169,7 +167,7 @@ const onMintedAirdropClaim = async (order: Transaction, token: Token) => {
       member: member.uid,
       network: order.network,
       payload: {
-        amount: order.payload.amount - storageDepositUsed,
+        amount: order.payload.amount! - storageDepositUsed,
         sourceAddress: order.payload.targetAddress,
         targetAddress: getAddress(member, order.network!),
         sourceTransaction: paymentsId,
@@ -227,21 +225,21 @@ const claimOwnedMintedTokens = (
     transaction.update(tokenDocRef, {
       'mintingData.tokensInVault': build5Db().inc(-airdrop.count),
     });
-    return billPayment.payload.amount;
+    return billPayment.payload.amount!;
   });
 
 const mintedDropToBillPayment = (
-  order: TransactionOrder,
+  order: Transaction,
   sourceTransaction: string[],
   token: Token,
   drop: TokenDrop,
   member: Member,
   wallet: SmrWallet,
-) => {
+): Transaction => {
   const memberAddress = getAddress(member, token.mintingData?.network!);
   const output = dropToOutput(token, drop, memberAddress, wallet.info);
-  const nativeTokens = [{ id: head(output.nativeTokens)?.id, amount: drop.count }];
-  return <Transaction>{
+  const nativeTokens = [{ id: head(output.nativeTokens)?.id!, amount: drop.count.toString() }];
+  return {
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
     space: token.space,
@@ -249,14 +247,14 @@ const mintedDropToBillPayment = (
     network: order.network,
     payload: {
       type: drop.isBaseToken
-        ? BillPaymentType.BASE_AIRDROP_CLAIM
-        : BillPaymentType.MINTED_AIRDROP_CLAIM,
+        ? TransactionPayloadType.BASE_AIRDROP_CLAIM
+        : TransactionPayloadType.MINTED_AIRDROP_CLAIM,
       amount: drop.isBaseToken ? drop.count : Number(output.amount),
       nativeTokens: drop.isBaseToken ? [] : nativeTokens,
       previousOwnerEntity: Entity.SPACE,
       previousOwner: token.space,
       ownerEntity: Entity.MEMBER,
-      owner: order.member,
+      owner: order.member!,
       storageDepositSourceAddress: drop.isBaseToken ? '' : order.payload.targetAddress,
       vestingAt: dayjs(drop.vestingAt.toDate()).isAfter(dayjs()) ? drop.vestingAt : null,
       sourceAddress: drop.sourceAddress || token.mintingData?.vaultAddress!,
@@ -270,7 +268,7 @@ const mintedDropToBillPayment = (
   };
 };
 
-const mintedDropToStake = (order: TransactionOrder, drop: TokenDrop, billPayment: Transaction) => {
+const mintedDropToStake = (order: Transaction, drop: TokenDrop, billPayment: Transaction) => {
   const vestingAt = dayjs(drop.vestingAt.toDate());
   const weeks = vestingAt.diff(dayjs(), 'w');
   if (weeks < 1 || drop.isBaseToken) {

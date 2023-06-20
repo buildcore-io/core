@@ -35,7 +35,7 @@ describe('Minted toke trading tangle request', () => {
     const tmp = await helper.walletService!.getNewIotaAddressDetails();
     await requestFundsFromFaucet(Network.RMS, tmp.bech32, 10 * MIN_IOTA_AMOUNT);
 
-    await helper.walletService!.send(tmp, tangleOrder.payload.targetAddress, 5 * MIN_IOTA_AMOUNT, {
+    await helper.walletService!.send(tmp, tangleOrder.payload.targetAddress!, 5 * MIN_IOTA_AMOUNT, {
       customMetadata: {
         request: {
           requestType: TangleRequestType.BUY_TOKEN,
@@ -76,7 +76,7 @@ describe('Minted toke trading tangle request', () => {
 
       await helper.walletService!.send(
         helper.sellerAddress!,
-        tangleOrder.payload.targetAddress,
+        tangleOrder.payload.targetAddress!,
         MIN_IOTA_AMOUNT,
         {
           customMetadata: {
@@ -121,7 +121,7 @@ describe('Minted toke trading tangle request', () => {
     const tmp = await helper.walletService!.getNewIotaAddressDetails();
     await requestFundsFromFaucet(Network.RMS, tmp.bech32, 10 * MIN_IOTA_AMOUNT);
 
-    await helper.walletService!.send(tmp, tangleOrder.payload.targetAddress, 5 * MIN_IOTA_AMOUNT, {
+    await helper.walletService!.send(tmp, tangleOrder.payload.targetAddress!, 5 * MIN_IOTA_AMOUNT, {
       customMetadata: {
         request: {
           requestType: TangleRequestType.BUY_TOKEN,
@@ -144,6 +144,6 @@ describe('Minted toke trading tangle request', () => {
 
     const snap = await creditQuery.get();
     const credit = <Transaction>snap[0];
-    expect(credit.payload.response.code).toBe(2111);
+    expect(credit.payload.response!.code).toBe(2111);
   });
 });

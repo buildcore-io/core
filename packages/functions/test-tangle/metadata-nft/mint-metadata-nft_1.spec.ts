@@ -33,7 +33,7 @@ describe('Metadata nft', () => {
     const metadata = { mytest: 'mytest', asd: 'asdasdasd' };
     const blockId = await helper.walletService.send(
       helper.memberAddress,
-      tangleOrder.payload.targetAddress,
+      tangleOrder.payload.targetAddress!,
       MIN_IOTA_AMOUNT,
       {
         customMetadata: {
@@ -69,7 +69,7 @@ describe('Metadata nft', () => {
     });
     const credit = (await creditQuery.get<Transaction>())[0];
     const block = await helper.walletService.client.block(
-      credit.payload.walletReference.chainReference,
+      credit.payload.walletReference!.chainReference!,
     );
     const payload = block.payload! as ITransactionPayload;
     const output = payload.essence.outputs[0] as IBasicOutput;

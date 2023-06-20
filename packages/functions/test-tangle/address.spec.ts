@@ -2,15 +2,15 @@
 
 import {
   COL,
-  Member,
   MIN_IOTA_AMOUNT,
+  Member,
   Network,
   Space,
   TangleRequestType,
   Timestamp,
   Transaction,
+  TransactionPayloadType,
   TransactionType,
-  TransactionUnlockType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
@@ -69,8 +69,8 @@ describe('Address validation', () => {
     const order = await validateMemberAddressFunc(walletSpy, member, network);
     const { faucetAddress } = await requestFundsFromFaucet(
       network,
-      order.payload.targetAddress,
-      order.payload.amount,
+      order.payload.targetAddress!,
+      order.payload.amount!,
       expiresAt,
     );
 
@@ -97,8 +97,8 @@ describe('Address validation', () => {
     const order = await validateSpaceAddressFunc(walletSpy, member, space, network);
     const { faucetAddress } = await requestFundsFromFaucet(
       network,
-      order.payload.targetAddress,
-      order.payload.amount,
+      order.payload.targetAddress!,
+      order.payload.amount!,
     );
 
     await awaitSpaceAddressValidation(space, network);
@@ -136,8 +136,8 @@ describe('Address validation', () => {
     const memberDocRef = build5Db().doc(`${COL.MEMBER}/${member}`);
     let memberData = <Member>await memberDocRef.get();
 
-    await requestFundsFromFaucet(network, tmpAddress.bech32, order.payload.amount);
-    await walletService.send(tmpAddress, order.payload.targetAddress, order.payload.amount, {
+    await requestFundsFromFaucet(network, tmpAddress.bech32, order.payload.amount!);
+    await walletService.send(tmpAddress, order.payload.targetAddress!, order.payload.amount!, {
       expiration: { expiresAt, returnAddressBech32: tmpAddress.bech32 },
     });
 
@@ -153,7 +153,7 @@ describe('Address validation', () => {
         .where('member', '==', member)
         .get()
     )[0] as Transaction;
-    expect(dayjs(unlock.payload.expiresOn.toDate()).isSame(dayjs(expiresAt.toDate()))).toBe(true);
+    expect(dayjs(unlock.payload.expiresOn!.toDate()).isSame(dayjs(expiresAt.toDate()))).toBe(true);
 
     await wait(async () => {
       const snap = await build5Db()
@@ -188,7 +188,7 @@ describe('Address validation', () => {
         requestType: TangleRequestType.ADDRESS_VALIDATION,
       };
       validateSpace && set(request, 'space', space);
-      await wallet.send(tmp, tangleOrder.payload.targetAddress, MIN_IOTA_AMOUNT, {
+      await wallet.send(tmp, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
         customMetadata: { request },
       });
 
@@ -214,7 +214,7 @@ describe('Address validation', () => {
       const snap = await build5Db()
         .collection(COL.TRANSACTION)
         .where('member', '==', member)
-        .where('payload.type', '==', TransactionUnlockType.TANGLE_TRANSFER)
+        .where('payload.type', '==', TransactionPayloadType.TANGLE_TRANSFER)
         .get();
       expect(snap.length).toBe(1);
     },
@@ -244,7 +244,7 @@ describe('Address validation', () => {
         network: Network.ATOI,
       };
       validateSpace && set(request, 'space', space);
-      await rmsWallet.send(rmsTmp, tangleOrder.payload.targetAddress, MIN_IOTA_AMOUNT, {
+      await rmsWallet.send(rmsTmp, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
         customMetadata: { request },
       });
 
@@ -283,7 +283,7 @@ describe('Address validation', () => {
       snap = await build5Db()
         .collection(COL.TRANSACTION)
         .where('member', '==', memberId)
-        .where('payload.type', '==', TransactionUnlockType.TANGLE_TRANSFER)
+        .where('payload.type', '==', TransactionPayloadType.TANGLE_TRANSFER)
         .get();
       expect(snap.length).toBe(0);
     },

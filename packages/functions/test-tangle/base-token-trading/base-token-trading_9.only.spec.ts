@@ -35,7 +35,7 @@ describe('Base token trading', () => {
     const orders: Transaction[] = await Promise.all(promises);
     await requestFundsForManyFromFaucet(
       Network.RMS,
-      orders.map((o) => ({ toAddress: o.payload.targetAddress, amount: o.payload.amount })),
+      orders.map((o) => ({ toAddress: o.payload.targetAddress!, amount: o.payload.amount! })),
     );
 
     const tradeQuery = build5Db()

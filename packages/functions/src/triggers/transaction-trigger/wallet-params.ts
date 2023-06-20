@@ -43,10 +43,10 @@ const getParams = async (transaction: Transaction) => {
   if (transaction.type === TransactionType.BILL_PAYMENT) {
     details.payment = true;
 
-    details.previousOwner = payload.previousOwner || '';
-    details.previousOwnerEntity = payload.previousOwnerEntity || '';
-    details.owner = payload.owner || '';
-    details.ownerEntity = payload.ownerEntity || '';
+    details.previousOwner = payload.previousOwner || null;
+    details.previousOwnerEntity = payload.previousOwnerEntity || null;
+    details.owner = payload.owner || null;
+    details.ownerEntity = payload.ownerEntity || null;
 
     if (payload.royalty) {
       details.royalty = payload.royalty;
@@ -66,7 +66,7 @@ const getParams = async (transaction: Transaction) => {
     }
     if (payload.token) {
       details.token = payload.token;
-      details.tokenSymbol = payload.token.tokenSymbol || '';
+      details.tokenSymbol = payload.tokenSymbol || '';
       details.quantity = payload.quantity || 0;
     }
   }

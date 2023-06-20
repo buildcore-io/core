@@ -4,6 +4,7 @@ import {
   CollectionStatus,
   CollectionType,
   DEFAULT_NETWORK,
+  Entity,
   MIN_AMOUNT_TO_TRANSFER,
   Member,
   MilestoneTransaction,
@@ -16,12 +17,12 @@ import {
   StakeType,
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
-  TransactionUnlockType,
   TransactionValidationType,
   WenError,
 } from '@build-5/interfaces';
+import { BaseTangleResponse } from '@build-5/interfaces/lib/api/tangle/common';
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
 import { AVAILABLE_NETWORKS } from '../../../controls/common';
@@ -49,14 +50,11 @@ export class TangleNftPurchaseService {
     tranEntry: MilestoneTransactionEntry,
     owner: string,
     request: Record<string, unknown>,
-  ) => {
-    await assertValidationAsync(nftPurchaseSchema, request, { allowUnknown: true });
+  ): Promise<BaseTangleResponse | undefined> => {
+    delete request.requestType;
+    const params = await assertValidationAsync(nftPurchaseSchema, request);
 
-    const order = await createNftPuchaseOrder(
-      request.collection as string,
-      request.nft as string,
-      owner,
-    );
+    const order = await createNftPuchaseOrder(params.collection, params.nft, owner);
     set(order, 'payload.tanglePuchase', true);
 
     this.transactionService.push({
@@ -69,19 +67,19 @@ export class TangleNftPurchaseService {
 
     if (isMintedNft && tranEntry.amount !== order.payload.amount) {
       return {
-        requiredAmount: order.payload.amount,
         status: 'error',
+        amount: order.payload.amount!,
+        address: order.payload.targetAddress!,
         code: WenError.invalid_base_token_amount.code,
         message: WenError.invalid_base_token_amount.key,
-        address: order.payload.targetAddress,
       };
     }
 
     if (!isMintedNft) {
       return {
         status: 'success',
-        amount: order.payload.amount,
-        address: order.payload.targetAddress,
+        amount: order.payload.amount!,
+        address: order.payload.targetAddress!,
       };
     }
 
@@ -89,7 +87,7 @@ export class TangleNftPurchaseService {
       order,
       tran,
       tranEntry,
-      TransactionUnlockType.TANGLE_TRANSFER,
+      TransactionPayloadType.TANGLE_TRANSFER,
       tranEntry.outputId,
     );
     return;
@@ -98,10 +96,10 @@ export class TangleNftPurchaseService {
 
 export const createNftPuchaseOrder = async (
   collectionId: string,
-  nftId: string,
+  nftId: string | undefined,
   owner: string,
   ip = '',
-) => {
+): Promise<Transaction> => {
   const collection = await getCollection(collectionId);
   const space = (await getSpace(collection.space))!;
 
@@ -130,17 +128,17 @@ export const createNftPuchaseOrder = async (
   const discount = getDiscount(collection, member);
   const finalPrice = getNftFinalPrice(nft, discount);
 
-  return <Transaction>{
+  return {
     type: TransactionType.ORDER,
     uid: nftPurchaseOrderId,
     member: owner,
     space: space.uid,
     network,
     payload: {
-      type: TransactionOrderType.NFT_PURCHASE,
+      type: TransactionPayloadType.NFT_PURCHASE,
       amount: finalPrice,
       targetAddress: targetAddress.bech32,
-      beneficiary: nft.owner ? 'member' : 'space',
+      beneficiary: nft.owner ? Entity.MEMBER : Entity.SPACE,
       beneficiaryUid: nft.owner || collection.space,
       beneficiaryAddress: getAddress(currentOwner, network),
       royaltiesFee: collection.royaltiesFee,
@@ -238,7 +236,7 @@ const assertNftCanBePurchased = async (
   space: Space,
   collection: Collection,
   nft: Nft,
-  nftIdParam: string,
+  nftIdParam: string | undefined,
   owner: string,
 ) => {
   if (collection.type !== CollectionType.CLASSIC && nftIdParam && !nft.owner) {
@@ -306,7 +304,7 @@ const assertNoOrderInProgress = async (owner: string) => {
   const orderInProgress = await build5Db()
     .collection(COL.TRANSACTION)
     .where('payload.reconciled', '==', false)
-    .where('payload.type', '==', TransactionOrderType.NFT_PURCHASE)
+    .where('payload.type', '==', TransactionPayloadType.NFT_PURCHASE)
     .where('member', '==', owner)
     .where('type', '==', TransactionType.ORDER)
     .where('payload.void', '==', false)
@@ -332,7 +330,7 @@ const getDiscount = (collection: Collection, member: Member) => {
   const spaceRewards = (member.spaces || {})[collection.space] || {};
   const descDiscounts = [...(collection.discounts || [])].sort((a, b) => b.amount - a.amount);
   for (const discount of descDiscounts) {
-    const awardStat = (spaceRewards.awardStat || {})[discount.tokenUid];
+    const awardStat = (spaceRewards.awardStat || {})[discount.tokenUid!];
     const memberTotalReward = awardStat?.totalReward || 0;
     if (memberTotalReward >= discount.tokenReward) {
       return 1 - discount.amount;

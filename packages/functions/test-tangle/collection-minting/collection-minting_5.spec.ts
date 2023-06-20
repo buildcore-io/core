@@ -81,7 +81,7 @@ describe('Collection minting', () => {
     await wait(async () => {
       const snap = await creditQuery.get<Transaction>();
       const allConfirmed = snap.reduce(
-        (acc, act) => acc && act.payload?.walletReference?.confirmed,
+        (acc, act) => acc && (act.payload?.walletReference?.confirmed || false),
         true,
       );
       return snap.length > 0 && allConfirmed;

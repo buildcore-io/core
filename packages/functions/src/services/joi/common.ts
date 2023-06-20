@@ -1,15 +1,15 @@
 import { Bucket } from '@build-5/interfaces';
-import Joi, { AnySchema } from 'joi';
+import Joi, { SchemaMap } from 'joi';
 import { isEmpty } from 'lodash';
 import { isEmulatorEnv, isProdEnv } from '../../utils/config.utils';
 import { maxAddressLength, minAddressLength } from './../../utils/wallet.utils';
 
 export class CommonJoi {
-  public static uid(required = true): AnySchema {
+  public static uid(required = true): Joi.StringSchema<string> {
     const base = Joi.string().alphanum().min(minAddressLength).max(maxAddressLength).lowercase();
     return required ? base.required() : base;
   }
-  public static storageUrl(required = true): AnySchema {
+  public static storageUrl(required = true): Joi.StringSchema<string> {
     const base = Joi.string().custom((url: string, helpers) => {
       if (isStorageUrl(url)) {
         return url;
@@ -22,7 +22,7 @@ export class CommonJoi {
     const base = Joi.string().alphanum().min(1).max(100);
     return required ? base.required() : base.optional();
   };
-  public static tokenSymbol(): AnySchema {
+  public static tokenSymbol(): Joi.StringSchema<string> {
     return Joi.string().min(2).max(5).regex(RegExp('^\\$?[A-Z]+$')).required();
   }
 }
@@ -45,3 +45,5 @@ const startsWithBaseUrl = (url: string) => {
   }
   return url.startsWith(BASE_URLS[Bucket.TEST]);
 };
+
+export const toJoiObject = <T>(object: SchemaMap<T, true>) => Joi.object<T>(object);

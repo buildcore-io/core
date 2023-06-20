@@ -2,20 +2,20 @@ import {
   COL,
   Collection,
   Network,
+  SUB_COL,
   Space,
   SpaceMember,
-  SUB_COL,
-  TransactionCreditType,
-  TransactionOrder,
+  Transaction,
+  TransactionPayloadType,
 } from '@build-5/interfaces';
 import {
   GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE,
   IAliasOutput,
   IGovernorAddressUnlockCondition,
   IIssuerFeature,
-  IndexerPluginClient,
   INftOutput,
   ISSUER_FEATURE_TYPE,
+  IndexerPluginClient,
 } from '@iota/iota.js-next';
 import { build5Db } from '../../../firebase/firestore/build5Db';
 import { Bech32AddressHelper } from '../../../utils/bech32-address.helper';
@@ -27,9 +27,13 @@ import { TransactionMatch, TransactionService } from '../transaction-service';
 export class SpaceService {
   constructor(readonly transactionService: TransactionService) {}
 
-  public handleSpaceClaim = async (order: TransactionOrder, match: TransactionMatch) => {
+  public handleSpaceClaim = async (order: Transaction, match: TransactionMatch) => {
     const payment = await this.transactionService.createPayment(order, match);
-    await this.transactionService.createCredit(TransactionCreditType.SPACE_CALIMED, payment, match);
+    await this.transactionService.createCredit(
+      TransactionPayloadType.SPACE_CALIMED,
+      payment,
+      match,
+    );
 
     const spaceDocRef = build5Db().doc(`${COL.SPACE}/${order.space}`);
     const space = <Space>await this.transactionService.get(spaceDocRef);
