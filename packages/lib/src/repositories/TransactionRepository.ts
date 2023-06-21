@@ -3,7 +3,7 @@ import {
   Opr,
   PublicCollections,
   Transaction,
-  TransactionAwardType,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import { Build5Env } from '../Config';
@@ -23,7 +23,7 @@ export class TransactionRepository extends CrudRepository<Transaction> {
     const params = {
       collection: this.col,
       fieldName,
-      fieldValue: [member, TransactionType.AWARD, TransactionAwardType.BADGE],
+      fieldValue: [member, TransactionType.AWARD, TransactionPayloadType.BADGE],
       operator: fieldName.map(() => Opr.EQUAL),
       startAfter,
       orderBy,

@@ -4,6 +4,14 @@ import {
   MIN_IOTA_AMOUNT,
   MIN_WEEKS_TO_STAKE,
   NftAccess,
+  NftBidRequest,
+  NftCreateRequest,
+  NftDepositRequest,
+  NftPurchaseRequest,
+  NftSetForSaleRequest,
+  NftStakeRequest,
+  NftUpdateUnsoldRequest,
+  NftWithdrawRequest,
   StakeType,
   TRANSACTION_AUTO_EXPIRY_MS,
   TRANSACTION_MAX_EXPIRY_MS,
@@ -21,7 +29,7 @@ import { nftStakeControl } from '../../../controls/nft/nft.stake';
 import { updateUnsoldNftControl } from '../../../controls/nft/nft.update.unsold';
 import { withdrawNftControl } from '../../../controls/nft/nft.withdraw';
 import { onRequest } from '../../../firebase/functions/onRequest';
-import { CommonJoi } from '../../../services/joi/common';
+import { CommonJoi, toJoiObject } from '../../../services/joi/common';
 import { networks } from '../../../utils/config.utils';
 
 const nftCreateSchema = {
@@ -29,9 +37,7 @@ const nftCreateSchema = {
   description: Joi.string().allow(null, '').required(),
   collection: CommonJoi.uid(),
   media: CommonJoi.storageUrl(false),
-  // On test we allow now.
   availableFrom: Joi.date().required(),
-  // Minimum 10Mi price required and max 1Ti
   price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
   url: Joi.string()
     .allow(null, '')
@@ -39,23 +45,25 @@ const nftCreateSchema = {
       scheme: ['https', 'http'],
     })
     .optional(),
-  // TODO Validate.
   properties: Joi.object().optional(),
   stats: Joi.object().optional(),
   saleAccessMembers: Joi.array().items(CommonJoi.uid(false)).optional(),
 };
 export const createNft = onRequest(WEN_FUNC.createNft)(
-  Joi.object(nftCreateSchema),
+  toJoiObject<NftCreateRequest>(nftCreateSchema),
   createNftControl,
 );
 
-const createBatchNftSchema = Joi.array().items(Joi.object().keys(nftCreateSchema)).min(1).max(500);
+const createBatchNftSchema = Joi.array<NftCreateRequest[]>()
+  .items(Joi.object().keys(nftCreateSchema))
+  .min(1)
+  .max(500);
 export const createBatchNft = onRequest(WEN_FUNC.createBatchNft, {
   timeoutSeconds: 300,
   memory: '4GiB',
 })(createBatchNftSchema, createBatchNftControl);
 
-const updateUnsoldNftSchema = Joi.object({
+const updateUnsoldNftSchema = toJoiObject<NftUpdateUnsoldRequest>({
   uid: CommonJoi.uid(),
   price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
 });
@@ -64,7 +72,7 @@ export const updateUnsoldNft = onRequest(WEN_FUNC.updateUnsoldNft)(
   updateUnsoldNftControl,
 );
 
-const setNftForSaleSchema = Joi.object({
+const setNftForSaleSchema = toJoiObject<NftSetForSaleRequest>({
   nft: CommonJoi.uid().required(),
   price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT),
   availableFrom: Joi.date().greater(dayjs().subtract(600000, 'ms').toDate()),
@@ -72,7 +80,7 @@ const setNftForSaleSchema = Joi.object({
   auctionFloorPrice: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT),
   auctionLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS),
   access: Joi.number().equal(NftAccess.OPEN, NftAccess.MEMBERS),
-  accessMembers: Joi.when('access', {
+  accessMembers: Joi.array().when('access', {
     is: Joi.exist().valid(NftAccess.MEMBERS),
     then: Joi.array().items(CommonJoi.uid(false)).min(1),
   }),
@@ -82,24 +90,24 @@ export const setForSaleNft = onRequest(WEN_FUNC.setForSaleNft)(
   setForSaleNftControl,
 );
 
-const nftWithdrawSchema = Joi.object({ nft: CommonJoi.uid() });
+const nftWithdrawSchema = toJoiObject<NftWithdrawRequest>({ nft: CommonJoi.uid() });
 export const withdrawNft = onRequest(WEN_FUNC.withdrawNft)(nftWithdrawSchema, withdrawNftControl);
 
 const availaibleNetworks = AVAILABLE_NETWORKS.filter((n) => networks.includes(n));
-const depositNftSchema = Joi.object({
+const depositNftSchema = toJoiObject<NftDepositRequest>({
   network: Joi.string()
     .equal(...availaibleNetworks)
     .required(),
 });
 export const depositNft = onRequest(WEN_FUNC.depositNft)(depositNftSchema, depositNftControl);
 
-export const nftPurchaseSchema = Joi.object({
+export const nftPurchaseSchema = toJoiObject<NftPurchaseRequest>({
   collection: CommonJoi.uid(),
   nft: CommonJoi.uid(false),
 });
 export const orderNft = onRequest(WEN_FUNC.orderNft)(nftPurchaseSchema, orderNftControl);
 
-const stakeNftSchema = Joi.object({
+const stakeNftSchema = toJoiObject<NftStakeRequest>({
   network: Joi.string()
     .equal(...availaibleNetworks)
     .required(),
@@ -110,5 +118,5 @@ const stakeNftSchema = Joi.object({
 });
 export const stakeNft = onRequest(WEN_FUNC.stakeNft)(stakeNftSchema, nftStakeControl);
 
-const nftBidSchema = Joi.object({ nft: CommonJoi.uid() });
+const nftBidSchema = toJoiObject<NftBidRequest>({ nft: CommonJoi.uid() });
 export const openBid = onRequest(WEN_FUNC.openBid)(nftBidSchema, nftBidControl);

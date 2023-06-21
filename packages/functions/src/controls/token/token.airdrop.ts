@@ -10,6 +10,7 @@ import {
 } from '@build-5/interfaces';
 import { chunk } from 'lodash';
 import { build5Db } from '../../firebase/firestore/build5Db';
+import { CreateAirdropsRequest } from '../../runtime/firebase/token/trading';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
@@ -28,8 +29,8 @@ const hasAvailableTokenToAirdrop = (token: Token, count: number) => {
   return token.totalSupply - totalPublicSupply - token.totalAirdropped >= count;
 };
 
-export const airdropTokenControl = async (owner: string, params: Record<string, unknown>) => {
-  const chunks = chunk(params.drops as TokenDropRequest[], 200);
+export const airdropTokenControl = async (owner: string, params: CreateAirdropsRequest) => {
+  const chunks = chunk(params.drops, 200);
   for (const chunk of chunks) {
     await build5Db().runTransaction(async (transaction) => {
       const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);

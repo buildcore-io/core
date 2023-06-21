@@ -1,4 +1,5 @@
 import {
+  BaseTangleResponse,
   COL,
   Collection,
   MIN_IOTA_AMOUNT,
@@ -7,7 +8,7 @@ import {
   NftStatus,
   TangleRequestType,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import { IndexerPluginClient } from '@iota/iota.js-next';
@@ -42,7 +43,7 @@ describe('Minted nft trading', () => {
 
     await helper.walletService!.send(
       address,
-      tangleOrder.payload.targetAddress,
+      tangleOrder.payload.targetAddress!,
       0.5 * MIN_IOTA_AMOUNT,
       {
         customMetadata: {
@@ -67,13 +68,9 @@ describe('Minted nft trading', () => {
 
     const snap = await creditQuery.get<Transaction>();
     const credit = snap[0];
+    const response = credit.payload.response as BaseTangleResponse;
 
-    await helper.walletService!.send(
-      address,
-      credit.payload.response.address,
-      credit.payload.response.requiredAmount,
-      {},
-    );
+    await helper.walletService!.send(address, response.address!, response.amount!, {});
     await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
 
     const nftDocRef = build5Db().doc(`${COL.NFT}/${helper.nft?.uid}`);
@@ -102,7 +99,7 @@ describe('Minted nft trading', () => {
 
     const orders = await build5Db()
       .collection(COL.TRANSACTION)
-      .where('payload.type', '==', TransactionOrderType.NFT_PURCHASE)
+      .where('payload.type', '==', TransactionPayloadType.NFT_PURCHASE)
       .where('payload.nft', '==', helper.nft!.uid)
       .get<Transaction>();
 

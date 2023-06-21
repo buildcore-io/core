@@ -80,7 +80,7 @@ describe('Transaction trigger spec', () => {
       consumedOutputIds = [];
       if (network === Network.ATOI) {
         const block = await (wallet as IotaWallet).client.message(
-          billPayment.payload.walletReference.chainReference,
+          billPayment.payload.walletReference!.chainReference!,
         );
         const inputs = (block.payload as ITransactionPayload).essence.inputs;
         consumedOutputIds = inputs.map((input) =>
@@ -88,7 +88,7 @@ describe('Transaction trigger spec', () => {
         );
       } else {
         const block = await (wallet as SmrWallet).client.block(
-          billPayment.payload.walletReference.chainReference,
+          billPayment.payload.walletReference!.chainReference!,
         );
         const inputs = (block.payload as NextITransactionPayload).essence.inputs;
         consumedOutputIds = inputs.map((input) =>

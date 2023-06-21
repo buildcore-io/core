@@ -62,9 +62,9 @@ describe('Stake nft', () => {
 
       const snap = await creditQuery.get();
       const credit = snap[0] as Transaction;
-      expect(credit.payload.response.code).toBe(WenError.not_enough_base_token.code);
-      expect(credit.payload.response.message).toBe(WenError.not_enough_base_token.key);
-      expect(credit.payload.response.requiredAmount).toBeDefined();
+      expect(credit.payload.response!.code).toBe(WenError.not_enough_base_token.code);
+      expect(credit.payload.response!.message).toBe(WenError.not_enough_base_token.key);
+      expect(credit.payload.response!.requiredAmount).toBeDefined();
 
       if (migration) {
         nftDocRef = build5Db().doc(`${COL.NFT}/${nft.mintingData?.nftId}`);

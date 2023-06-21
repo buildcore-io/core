@@ -1,5 +1,4 @@
-import { Base, BaseRecord, BaseSubCollection, Timestamp } from './base';
-import { Space } from './space';
+import { BaseRecord, BaseSubCollection, Timestamp } from './base';
 
 export enum BaseProposalAnswerValue {
   YES = 1,
@@ -27,19 +26,22 @@ export interface ProposalMember extends BaseSubCollection {
 export interface ProposalSettings {
   startDate: Timestamp;
   endDate: Timestamp;
-  guardiansOnly: boolean;
+  guardiansOnly?: boolean;
 
   addRemoveGuardian?: string;
-  spaceUpdateData?: Space;
+  spaceUpdateData?: Record<string, unknown>;
+  onlyGuardians?: boolean;
+
+  stakeRewardIds?: string[];
 }
 
-export interface ProposalAnswer extends Base {
+export interface ProposalAnswer {
   text: string;
   value: number;
   additionalInfo: string;
 }
 
-export interface ProposalQuestion extends Base {
+export interface ProposalQuestion {
   text: string;
   additionalInfo: string;
   answers: ProposalAnswer[];
@@ -61,11 +63,7 @@ export interface Proposal extends BaseRecord {
   rejectedBy?: string;
 
   eventId?: string;
-  owners: {
-    // Owner / from date
-    [propName: string]: Date;
-  };
-  settings: any;
+  settings: ProposalSettings;
   totalWeight?: number;
   questions: ProposalQuestion[];
   results?: any;

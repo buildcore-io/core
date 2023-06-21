@@ -7,12 +7,12 @@ import {
   ProposalType,
   Space,
   SpaceGuardian,
+  SpaceUpdateRequest,
   SUB_COL,
   TokenStatus,
   Transaction,
   TransactionType,
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
-  VoteTransaction,
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
@@ -25,7 +25,7 @@ import { hasActiveEditProposal } from '../../utils/space.utils';
 import { assertIsGuardian, getTokenForSpace } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
-export const updateSpaceControl = async (owner: string, params: Record<string, unknown>) => {
+export const updateSpaceControl = async (owner: string, params: SpaceUpdateRequest) => {
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
   const space = await spaceDocRef.get<Space>();
 
@@ -59,16 +59,16 @@ export const updateSpaceControl = async (owner: string, params: Record<string, u
     guardian!,
     space.uid,
     guardians.length,
-    cleanupParams(params) as Space,
+    cleanupParams({ ...params }) as Space,
   );
 
-  const voteTransaction = <Transaction>{
+  const voteTransaction: Transaction = {
     type: TransactionType.VOTE,
     uid: getRandomEthAddress(),
     member: owner,
     space: params.uid,
     network: DEFAULT_NETWORK,
-    payload: <VoteTransaction>{
+    payload: {
       proposalId: proposal.uid,
       weight: 1,
       values: [1],
@@ -98,7 +98,7 @@ export const updateSpaceControl = async (owner: string, params: Record<string, u
 
   await proposalDocRef.create(proposal);
 
-  return await proposalDocRef.get<Proposal>();
+  return (await proposalDocRef.get<Proposal>())!;
 };
 
 const createUpdateSpaceProposal = (
@@ -126,7 +126,7 @@ const createUpdateSpaceProposal = (
       startDate: dateToTimestamp(dayjs().toDate()),
       endDate: dateToTimestamp(dayjs().add(1, 'w').toDate()),
       guardiansOnly: true,
-      spaceUpdateData,
+      spaceUpdateData: { ...spaceUpdateData },
     },
     questions: [
       {

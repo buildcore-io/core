@@ -52,7 +52,7 @@ describe('Tangle request spec', () => {
       .doc(`${COL.MEMBER}/${member2}`)
       .set({ validatedAddress: { [Network.RMS]: rmsAddress.bech32 } }, true);
 
-    await rmsWallet.send(rmsAddress, tangleOrder.payload.targetAddress, 5 * MIN_IOTA_AMOUNT, {
+    await rmsWallet.send(rmsAddress, tangleOrder.payload.targetAddress!, 5 * MIN_IOTA_AMOUNT, {
       customMetadata: {
         request: {
           requestType: TangleRequestType.BUY_TOKEN,
@@ -82,7 +82,7 @@ describe('Tangle request spec', () => {
 
   it('Should process multiple request at the same time', async () => {
     const requests = Array.from(Array(10)).map(() => ({
-      toAddress: tangleOrder.payload.targetAddress,
+      toAddress: tangleOrder.payload.targetAddress!,
       amount: MIN_IOTA_AMOUNT,
       customMetadata: {
         request: {
@@ -102,7 +102,7 @@ describe('Tangle request spec', () => {
   });
 
   it('Should throw, invalid request type', async () => {
-    await rmsWallet.send(rmsAddress, tangleOrder.payload.targetAddress, 5 * MIN_IOTA_AMOUNT, {
+    await rmsWallet.send(rmsAddress, tangleOrder.payload.targetAddress!, 5 * MIN_IOTA_AMOUNT, {
       customMetadata: { request: { requestType: 'wrong_request' } },
     });
 

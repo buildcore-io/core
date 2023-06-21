@@ -5,9 +5,8 @@ import {
   StakeType,
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
-  TransactionUnlockType,
   TransactionValidationType,
   WenError,
 } from '@build-5/interfaces';
@@ -63,7 +62,7 @@ export class TangleStakeService {
       order,
       tran,
       tranEntry,
-      TransactionUnlockType.TANGLE_TRANSFER,
+      TransactionPayloadType.TANGLE_TRANSFER,
       tranEntry.outputId,
     );
     return;
@@ -76,7 +75,7 @@ export const createStakeOrder = async (
   weeks: number,
   type: StakeType,
   customMetadata?: Record<string, unknown>,
-) => {
+): Promise<Transaction> => {
   const token = await getTokenBySymbol(symbol);
   if (!token?.mintingData?.tokenId) {
     throw invalidArgument(WenError.token_not_minted);
@@ -105,7 +104,7 @@ export const createStakeOrder = async (
     undefined,
     customMetadata,
   );
-  return <Transaction>{
+  return {
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,
@@ -113,7 +112,7 @@ export const createStakeOrder = async (
     createdOn: serverTime(),
     network,
     payload: {
-      type: TransactionOrderType.STAKE,
+      type: TransactionPayloadType.STAKE,
       amount: Number(output.amount),
       targetAddress: targetAddress.bech32,
       expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
@@ -124,7 +123,7 @@ export const createStakeOrder = async (
       token: token.uid,
       tokenId: token.mintingData?.tokenId,
       stakeType: type,
-      customMetadata: customMetadata || {},
+      customMetadata: (customMetadata || {}) as { [key: string]: string },
     },
   };
 };

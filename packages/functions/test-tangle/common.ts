@@ -3,7 +3,7 @@ import {
   MAX_WALLET_RETRY,
   Network,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
 } from '@build-5/interfaces';
@@ -37,7 +37,7 @@ export const awaitTransactionConfirmationsForToken = async (token: string) => {
     const transactions = (await query.get()).map((d) => <Transaction>d);
     const hasErrors = transactions.filter((t) => {
       t.payload?.walletReference?.error ||
-        t.payload?.walletReference?.count > MAX_WALLET_RETRY ||
+        t.payload?.walletReference?.count! > MAX_WALLET_RETRY ||
         (!t.payload?.walletReference?.chainReference &&
           !isEmpty(t.payload?.walletReference?.chainReferences));
     });
@@ -45,14 +45,14 @@ export const awaitTransactionConfirmationsForToken = async (token: string) => {
       throw Error('Transaction failed:' + JSON.stringify(hasErrors));
     }
     const allConfirmed = transactions.reduce(
-      (acc, act) => acc && act.payload?.walletReference?.confirmed,
+      (acc, act) => acc && act.payload?.walletReference?.confirmed!,
       true,
     );
     return allConfirmed;
   }, 1800);
   const transactions = (await query.get()).map((d) => <Transaction>d);
   const allConfirmed = transactions.reduce(
-    (acc, act) => acc && act.payload?.walletReference?.confirmed,
+    (acc, act) => acc && act.payload?.walletReference?.confirmed!,
     true,
   );
   expect(allConfirmed).toBe(true);
@@ -71,7 +71,7 @@ export const getTangleOrder = async () => {
     network: Network.RMS,
     createdOn: serverTime(),
     payload: {
-      type: TransactionOrderType.TANGLE_REQUEST,
+      type: TransactionPayloadType.TANGLE_REQUEST,
       amount: generateRandomAmount(),
       targetAddress: targetAddress.bech32,
       expiresOn: dateToTimestamp(dayjs().add(100, 'y')),
@@ -88,7 +88,7 @@ export const getTangleOrder = async () => {
 };
 
 export const getRmsSoonTangleResponse = async (doc: Transaction, wallet: SmrWallet) => {
-  const blockId = doc?.payload?.walletReference?.chainReference;
+  const blockId = doc?.payload?.walletReference?.chainReference!;
   const block = await wallet!.client.block(blockId);
   const hexData = (<ITransactionPayload>block.payload)?.essence?.payload?.data || '';
   const { response } = JSON.parse(Converter.hexToUtf8(hexData));

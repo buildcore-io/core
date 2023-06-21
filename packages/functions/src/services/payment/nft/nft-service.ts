@@ -7,19 +7,14 @@ import {
   Nft,
   NftAccess,
   Notification,
-  PaymentTransaction,
   Transaction,
-  TransactionCreditType,
-  TransactionOrder,
-  TransactionOrderType,
-  TransactionPayment,
+  TransactionPayloadType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get, last } from 'lodash';
 import { AVAILABLE_NETWORKS } from '../../../controls/common';
 import { build5Db } from '../../../firebase/firestore/build5Db';
 import { getAddress } from '../../../utils/address.utils';
-import { OrderPayBillCreditTransaction } from '../../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
 import { NotificationService } from '../../notification/notification';
 import { createNftWithdrawOrder } from '../tangle-service/nft-purchase.service';
@@ -31,7 +26,7 @@ export class NftService {
   public async handleNftPurchaseRequest(
     tran: MilestoneTransaction,
     tranOutput: MilestoneTransactionEntry,
-    order: TransactionOrder,
+    order: Transaction,
     match: TransactionMatch,
     build5Transaction: Transaction | undefined,
   ) {
@@ -75,7 +70,7 @@ export class NftService {
   public async handleNftBidRequest(
     tran: MilestoneTransaction,
     tranOutput: MilestoneTransactionEntry,
-    order: TransactionOrder,
+    order: Transaction,
     match: TransactionMatch,
     build5Transaction: Transaction | undefined,
   ) {
@@ -100,7 +95,7 @@ export class NftService {
       const highestPayDocRef = build5Db().doc(
         `${COL.TRANSACTION}/${nft.auctionHighestTransaction}`,
       );
-      const highestPay = <TransactionPayment>await highestPayDocRef.get();
+      const highestPay = (await highestPayDocRef.get<Transaction>())!;
 
       const orderId = Array.isArray(highestPay.payload.sourceTransaction)
         ? last(highestPay.payload.sourceTransaction)!
@@ -111,7 +106,7 @@ export class NftService {
         throw new Error('Unable to find ORDER linked to PAYMENT');
       }
 
-      this.transactionService.markAsReconciled(order, highestPay.payload.chainReference);
+      this.transactionService.markAsReconciled(order, highestPay.payload.chainReference!);
       this.transactionService.createBillPayment(order, highestPay);
       await this.setNftOwner(order, highestPay);
 
@@ -151,12 +146,12 @@ export class NftService {
     }
   }
 
-  public async markAsVoid(transaction: TransactionOrder): Promise<void> {
+  public async markAsVoid(transaction: Transaction): Promise<void> {
     const refSource = build5Db().doc(`${COL.TRANSACTION}/${transaction.uid}`);
     const data = (await this.transactionService.get<Transaction>(refSource))!;
     if (transaction.payload.nft) {
-      if (transaction.payload.type === TransactionOrderType.NFT_PURCHASE) {
-        const payload = <OrderPayBillCreditTransaction>data.payload;
+      if (transaction.payload.type === TransactionPayloadType.NFT_PURCHASE) {
+        const payload = data.payload;
         payload.void = true;
         this.transactionService.push({ ref: refSource, data: data, action: 'update' });
 
@@ -167,7 +162,7 @@ export class NftService {
           data: { locked: false, lockedBy: null },
           action: 'update',
         });
-      } else if (transaction.payload.type === TransactionOrderType.NFT_BID) {
+      } else if (transaction.payload.type === TransactionPayloadType.NFT_BID) {
         const payments = await build5Db()
           .collection(COL.TRANSACTION)
           .where('payload.invalidPayment', '==', false)
@@ -175,26 +170,25 @@ export class NftService {
           .orderBy('payload.amount', 'desc')
           .get();
         if (payments.length === 0) {
-          // No orders, we just void.
-          const payload = <OrderPayBillCreditTransaction>data.payload;
+          const payload = data.payload;
           payload.void = true;
           this.transactionService.push({ ref: refSource, data: data, action: 'update' });
         }
       }
     } else {
-      const payload = <OrderPayBillCreditTransaction>data.payload;
+      const payload = data.payload;
       payload.void = true;
       this.transactionService.push({ ref: refSource, data, action: 'update' });
     }
   }
 
   private async addNewBid(transaction: Transaction, payment: Transaction): Promise<void> {
-    const nftDocRef = build5Db().collection(COL.NFT).doc(transaction.payload.nft);
+    const nftDocRef = build5Db().collection(COL.NFT).doc(transaction.payload.nft!);
     const paymentDocRef = build5Db().doc(`${COL.TRANSACTION}/${payment.uid}`);
     const nft = await this.transactionService.get<Nft>(nftDocRef);
     let newValidPayment = false;
-    let previousHighestPay: TransactionPayment | undefined;
-    const paymentPayload = <PaymentTransaction>payment.payload;
+    let previousHighestPay: Transaction | undefined;
+    const paymentPayload = payment.payload;
     if (nft?.auctionHighestTransaction) {
       const previousHighestPayRef = build5Db().doc(
         `${COL.TRANSACTION}/${nft?.auctionHighestTransaction}`,
@@ -202,13 +196,13 @@ export class NftService {
       previousHighestPay = (await this.transactionService.get<Transaction>(previousHighestPayRef))!;
 
       if (
-        previousHighestPay.payload.amount < paymentPayload.amount &&
-        paymentPayload.amount >= (nft?.auctionFloorPrice || 0)
+        previousHighestPay.payload.amount! < paymentPayload.amount! &&
+        paymentPayload.amount! >= (nft?.auctionFloorPrice || 0)
       ) {
         newValidPayment = true;
       }
     } else {
-      if (paymentPayload.amount >= (nft?.auctionFloorPrice || 0)) {
+      if (paymentPayload.amount! >= (nft?.auctionFloorPrice || 0)) {
         newValidPayment = true;
       }
     }
@@ -226,17 +220,17 @@ export class NftService {
       // Mark as invalid and create credit.
       const sameOwner = previousHighestPay.member === transaction.member;
       const credit = await this.transactionService.createCredit(
-        TransactionCreditType.DATA_NO_LONGER_VALID,
+        TransactionPayloadType.DATA_NO_LONGER_VALID,
         previousHighestPay,
         {
-          msgId: previousHighestPay.payload.chainReference,
+          msgId: previousHighestPay.payload.chainReference!,
           to: {
-            address: previousHighestPay.payload.targetAddress,
-            amount: previousHighestPay.payload.amount,
+            address: previousHighestPay.payload.targetAddress!,
+            amount: previousHighestPay.payload.amount!,
           },
           from: {
-            address: previousHighestPay.payload.sourceAddress,
-            amount: previousHighestPay.payload.amount,
+            address: previousHighestPay.payload.sourceAddress!,
+            amount: previousHighestPay.payload.amount!,
           },
         },
         dateToTimestamp(dayjs(payment.createdOn?.toDate()).subtract(1, 's')),
@@ -287,7 +281,7 @@ export class NftService {
       this.transactionService.push({
         ref: nftDocRef,
         data: {
-          auctionHighestBid: (<OrderPayBillCreditTransaction>payment.payload).amount,
+          auctionHighestBid: payment.payload.amount,
           auctionHighestBidder: payment.member,
           auctionHighestTransaction: payment.uid,
         },
@@ -309,22 +303,22 @@ export class NftService {
       this.transactionService.push({ ref: paymentDocRef, data: payment, action: 'update' });
 
       // No valid payment so we credit anyways.
-      await this.transactionService.createCredit(TransactionCreditType.INVALID_PAYMENT, payment, {
-        msgId: paymentPayload.chainReference,
+      await this.transactionService.createCredit(TransactionPayloadType.INVALID_PAYMENT, payment, {
+        msgId: paymentPayload.chainReference!,
         to: {
-          address: paymentPayload.targetAddress,
-          amount: paymentPayload.amount,
+          address: paymentPayload.targetAddress!,
+          amount: paymentPayload.amount!,
         },
         from: {
-          address: paymentPayload.sourceAddress,
-          amount: paymentPayload.amount,
+          address: paymentPayload.sourceAddress!,
+          amount: paymentPayload.amount!,
         },
       });
     }
   }
 
   private async setNftOwner(order: Transaction, payment: Transaction): Promise<void> {
-    const nftDocRef = build5Db().collection(COL.NFT).doc(payment.payload.nft);
+    const nftDocRef = build5Db().collection(COL.NFT).doc(payment.payload.nft!);
     const nft = <Nft>await this.transactionService.get(nftDocRef);
 
     const nftUpdateData = {
@@ -354,11 +348,14 @@ export class NftService {
       action: 'update',
     });
 
-    if (nft.auctionHighestTransaction && order.payload.type === TransactionOrderType.NFT_PURCHASE) {
+    if (
+      nft.auctionHighestTransaction &&
+      order.payload.type === TransactionPayloadType.NFT_PURCHASE
+    ) {
       const highestTranDocRef = build5Db().doc(
         `${COL.TRANSACTION}/${nft.auctionHighestTransaction}`,
       );
-      const highestPay = <TransactionPayment>await highestTranDocRef.get();
+      const highestPay = (await highestTranDocRef.get<Transaction>())!;
       this.transactionService.push({
         ref: highestTranDocRef,
         data: { invalidPayment: true },
@@ -367,17 +364,17 @@ export class NftService {
 
       const sameOwner = highestPay.member === order.member;
       const credit = await this.transactionService.createCredit(
-        TransactionCreditType.NONE,
+        TransactionPayloadType.NONE,
         highestPay,
         {
-          msgId: highestPay.payload.chainReference,
+          msgId: highestPay.payload.chainReference || '',
           to: {
-            address: highestPay.payload.targetAddress,
-            amount: highestPay.payload.amount,
+            address: highestPay.payload.targetAddress!,
+            amount: highestPay.payload.amount!,
           },
           from: {
-            address: highestPay.payload.sourceAddress,
-            amount: highestPay.payload.amount,
+            address: highestPay.payload.sourceAddress!,
+            amount: highestPay.payload.amount!,
           },
         },
         serverTime(),

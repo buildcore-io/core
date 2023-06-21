@@ -1,9 +1,9 @@
-import { COL, SUB_COL } from '@build-5/interfaces';
+import { COL, SUB_COL, SpaceLeaveRequest } from '@build-5/interfaces';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { getLeaveSpaceData } from '../../services/payment/tangle-service/space/SpaceLeaveService';
 
-export const leaveSpaceControl = async (owner: string, params: Record<string, unknown>) => {
-  const { space, member } = await getLeaveSpaceData(owner, params.uid as string);
+export const leaveSpaceControl = async (owner: string, params: SpaceLeaveRequest) => {
+  const { space, member } = await getLeaveSpaceData(owner, params.uid);
 
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
 

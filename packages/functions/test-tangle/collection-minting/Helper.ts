@@ -13,7 +13,7 @@ import {
   NftStatus,
   Space,
   Transaction,
-  TransactionMintCollectionType,
+  TransactionPayloadType,
   TransactionType,
   UnsoldMintingOptions,
 } from '@build-5/interfaces';
@@ -177,7 +177,7 @@ export class CollectionMintHelper {
       await build5Db()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.MINT_COLLECTION)
-        .where('payload.type', '==', TransactionMintCollectionType.SEND_ALIAS_TO_GUARDIAN)
+        .where('payload.type', '==', TransactionPayloadType.SEND_ALIAS_TO_GUARDIAN)
         .where('member', '==', this.guardian)
         .get()
     ).map((d) => <Transaction>d);
@@ -191,7 +191,7 @@ export class CollectionMintHelper {
       await build5Db()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.MINT_COLLECTION)
-        .where('payload.type', '==', TransactionMintCollectionType.LOCK_COLLECTION)
+        .where('payload.type', '==', TransactionPayloadType.LOCK_COLLECTION)
         .where('member', '==', this.guardian)
         .get()
     ).map((d) => <Transaction>d);

@@ -1,21 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-  BillPaymentType,
-  calcStakedMultiplier,
   COL,
-  Member,
   MIN_IOTA_AMOUNT,
+  Member,
   Network,
+  SUB_COL,
   Space,
   Stake,
   StakeType,
-  SUB_COL,
   Timestamp,
   Token,
   TokenDistribution,
   TokenStats,
   TokenStatus,
   Transaction,
+  TransactionPayloadType,
+  calcStakedMultiplier,
 } from '@build-5/interfaces';
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
@@ -23,8 +23,8 @@ import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { depositStake } from '../../src/runtime/firebase/stake';
-import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
+import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
@@ -36,7 +36,7 @@ import {
   mockWalletReturnValue,
   wait,
 } from '../../test/controls/common';
-import { getWallet, MEDIA, testEnv } from '../../test/set-up';
+import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 
 export class Helper {
@@ -165,9 +165,9 @@ export class Helper {
       return billPayment.payload.walletReference?.confirmed;
     });
     const billPayment = <Transaction>await billPaymentDocRef.get();
-    expect(billPayment.payload.nativeTokens[0].amount).toBe(stake.amount);
+    expect(Number(billPayment.payload.nativeTokens![0].amount)).toBe(stake.amount);
     expect(billPayment.payload.targetAddress).toBe(address.bech32);
-    expect(billPayment.payload.type).toBe(BillPaymentType.STAKE);
+    expect(billPayment.payload.type).toBe(TransactionPayloadType.STAKE);
     expect(billPayment.payload.token).toBe(this.token!.uid);
     expect(billPayment.payload.tokenSymbol).toBe(this.token!.symbol);
 

@@ -1,4 +1,4 @@
-import { TangleRequestType } from './models/tangleRequest';
+import { TangleRequestType } from './api/tangle';
 
 export const WenError = {
   unknown: { code: 1000, key: 'Unknown error' },

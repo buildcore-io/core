@@ -1,18 +1,18 @@
 import {
   COL,
   Entity,
+  IgnoreWalletReason,
+  SUB_COL,
   Space,
   Stake,
   StakeReward,
   StakeRewardStatus,
   StakeType,
-  SUB_COL,
   Token,
   TokenDistribution,
   TokenDrop,
   TokenDropStatus,
   Transaction,
-  TransactionIgnoreWalletReason,
   TransactionType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
@@ -126,20 +126,20 @@ const createAirdrops = async (
     if (distribution.extraStakeRewards && distribution.extraStakeRewards > 0) {
       await distributionDocRef.update({ extraStakeRewards: build5Db().inc(-reward.value) });
 
-      const billPayment = <Transaction>{
+      const billPayment: Transaction = {
         type: TransactionType.BILL_PAYMENT,
         uid: getRandomEthAddress(),
         member: reward.member,
         space: token.space,
-        network: token.mintingData!.network,
+        network: token.mintingData!.network!,
         ignoreWallet: true,
-        ignoreWalletReason: TransactionIgnoreWalletReason.EXTRA_STAKE_REWARD,
+        ignoreWalletReason: IgnoreWalletReason.EXTRA_STAKE_REWARD,
         payload: {
           amount: 0,
           nativeTokens: [
             {
               id: token.mintingData!.tokenId!,
-              amount: Math.min(distribution.extraStakeRewards, reward.value),
+              amount: Math.min(distribution.extraStakeRewards, reward.value).toString(),
             },
           ],
           ownerEntity: Entity.MEMBER,

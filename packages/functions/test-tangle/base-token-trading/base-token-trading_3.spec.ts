@@ -108,12 +108,12 @@ describe('Base token trading', () => {
     expect(buyerBillPayments.filter((bp) => bp.payload.amount === 881400).length).toBe(2);
     expect(
       buyerBillPayments.filter(
-        (bp) => bp.payload.amount === 69300 && bp.payload.storageReturn.amount === 46800,
+        (bp) => bp.payload.amount === 69300 && bp.payload.storageReturn!.amount === 46800,
       ).length,
     ).toBe(2);
     expect(
       buyerBillPayments.filter(
-        (bp) => bp.payload.amount === 49300 && bp.payload.storageReturn.amount === 46800,
+        (bp) => bp.payload.amount === 49300 && bp.payload.storageReturn!.amount === 46800,
       ).length,
     ).toBe(2);
     const buyerCreditnap = await build5Db()

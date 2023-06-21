@@ -1,12 +1,12 @@
 import {
   COL,
+  ClaimPreMintedAirdroppedTokensRequest,
   DEFAULT_NETWORK,
-  Space,
   TRANSACTION_AUTO_EXPIRY_MS,
   Token,
   TokenStatus,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
   WenError,
@@ -15,7 +15,6 @@ import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { WalletService } from '../../services/wallet/wallet';
-import { getAddress } from '../../utils/address.utils';
 import { generateRandomAmount } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
@@ -24,8 +23,8 @@ import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const claimAirdroppedTokenControl = async (
   owner: string,
-  params: Record<string, unknown>,
-) => {
+  params: ClaimPreMintedAirdroppedTokensRequest,
+): Promise<Transaction> => {
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
   const token = await tokenDocRef.get<Token>();
   if (!token) {
@@ -34,9 +33,6 @@ export const claimAirdroppedTokenControl = async (
 
   assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED]);
 
-  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${token.space}`);
-  const space = await spaceDocRef.get<Space>();
-
   const tranId = getRandomEthAddress();
   const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${tranId}`);
 
@@ -44,25 +40,22 @@ export const claimAirdroppedTokenControl = async (
   const targetAddress = await wallet.getNewIotaAddressDetails();
 
   await build5Db().runTransaction(async (transaction) => {
-    const claimableDrops = await getUnclaimedDrops(params.token as string, owner);
+    const claimableDrops = await getUnclaimedDrops(params.token, owner);
     if (isEmpty(claimableDrops)) {
       throw invalidArgument(WenError.no_airdrop_to_claim);
     }
     const quantity = claimableDrops.reduce((sum, act) => sum + act.count, 0);
 
-    const order = <Transaction>{
+    const order: Transaction = {
       type: TransactionType.ORDER,
       uid: tranId,
       member: owner,
       space: token.space,
       network: DEFAULT_NETWORK,
       payload: {
-        type: TransactionOrderType.TOKEN_AIRDROP,
+        type: TransactionPayloadType.TOKEN_AIRDROP,
         amount: generateRandomAmount(),
         targetAddress: targetAddress.bech32,
-        beneficiary: 'space',
-        beneficiaryUid: token.space,
-        beneficiaryAddress: getAddress(space, DEFAULT_NETWORK),
         expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
         validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
         reconciled: false,
@@ -74,5 +67,5 @@ export const claimAirdroppedTokenControl = async (
     transaction.create(orderDocRef, order);
   });
 
-  return await orderDocRef.get<Transaction>();
+  return (await orderDocRef.get())!;
 };

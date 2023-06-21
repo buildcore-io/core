@@ -1,9 +1,9 @@
 import {
   COL,
+  IgnoreWalletReason,
   Network,
   Transaction,
-  TransactionIgnoreWalletReason,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
 } from '@build-5/interfaces';
@@ -29,11 +29,11 @@ describe('Transaction match', () => {
   beforeEach(async () => {
     order = await saveOrder(wallet);
     address = await wallet.getNewIotaAddressDetails();
-    await requestFundsFromFaucet(Network.RMS, address.bech32, order.payload.amount);
+    await requestFundsFromFaucet(Network.RMS, address.bech32, order.payload.amount!);
   });
 
   it('Should create invalid payment, time unlock condition', async () => {
-    await wallet.send(address, order.payload.targetAddress, order.payload.amount, {
+    await wallet.send(address, order.payload.targetAddress!, order.payload.amount!, {
       vestingAt: serverTime(),
     });
     const creditSnapQuery = build5Db()
@@ -46,13 +46,11 @@ describe('Transaction match', () => {
     });
     const credit = <Transaction>(await creditSnapQuery.get())[0];
     expect(credit.ignoreWallet).toBe(true);
-    expect(credit.ignoreWalletReason).toBe(
-      TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_TIMELOCK_CONDITION,
-    );
+    expect(credit.ignoreWalletReason).toBe(IgnoreWalletReason.UNREFUNDABLE_DUE_TIMELOCK_CONDITION);
   });
 
   it('Should create invalid payment, storage unlock condition', async () => {
-    await wallet.send(address, order.payload.targetAddress, order.payload.amount, {
+    await wallet.send(address, order.payload.targetAddress!, order.payload.amount!, {
       storageDepositReturnAddress: address.bech32,
     });
     const creditSnapQuery = build5Db()
@@ -66,7 +64,7 @@ describe('Transaction match', () => {
     const credit = <Transaction>(await creditSnapQuery.get())[0];
     expect(credit.ignoreWallet).toBe(true);
     expect(credit.ignoreWalletReason).toBe(
-      TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION,
+      IgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION,
     );
   });
 });
@@ -81,7 +79,7 @@ const saveOrder = async (wallet: SmrWallet) => {
     createdOn: serverTime(),
     network: Network.RMS,
     payload: {
-      type: TransactionOrderType.SELL_TOKEN,
+      type: TransactionPayloadType.SELL_TOKEN,
       amount: generateRandomAmount(),
       targetAddress: targetAddress.bech32,
       validationType: TransactionValidationType.ADDRESS,

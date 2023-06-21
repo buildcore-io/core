@@ -1,4 +1,4 @@
-import { COL, Transaction, TransactionAwardType, TransactionType } from '@build-5/interfaces';
+import { COL, Transaction, TransactionPayloadType, TransactionType } from '@build-5/interfaces';
 import { ITransactionPayload, TransactionHelper } from '@iota/iota.js-next';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { indexToString } from '../../utils/block.utils';
@@ -7,15 +7,15 @@ import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const onAwardUpdate = async (transaction: Transaction) => {
   switch (transaction.payload.type) {
-    case TransactionAwardType.MINT_ALIAS: {
+    case TransactionPayloadType.MINT_ALIAS: {
       await onAliasMinted(transaction);
       break;
     }
-    case TransactionAwardType.MINT_COLLECTION: {
+    case TransactionPayloadType.MINT_COLLECTION: {
       await onCollectionMinted(transaction);
       break;
     }
-    case TransactionAwardType.BADGE: {
+    case TransactionPayloadType.BADGE: {
       await onBadgeMinted(transaction);
       break;
     }
@@ -23,7 +23,7 @@ export const onAwardUpdate = async (transaction: Transaction) => {
 };
 
 const onAliasMinted = async (transaction: Transaction) => {
-  const path = transaction.payload.walletReference.milestoneTransactionPath;
+  const path = transaction.payload.walletReference?.milestoneTransactionPath!;
   const milestoneTransaction = (await build5Db().doc(path).get<Record<string, unknown>>())!;
   const aliasOutputId =
     getTransactionPayloadHex(milestoneTransaction.payload as ITransactionPayload) +
@@ -42,7 +42,7 @@ const onAliasMinted = async (transaction: Transaction) => {
     space: transaction.space,
     network: transaction.network,
     payload: {
-      type: TransactionAwardType.MINT_COLLECTION,
+      type: TransactionPayloadType.MINT_COLLECTION,
       sourceAddress: transaction.payload.sourceAddress,
       award: transaction.payload.award,
     },
@@ -51,7 +51,7 @@ const onAliasMinted = async (transaction: Transaction) => {
 };
 
 const onCollectionMinted = async (transaction: Transaction) => {
-  const path = transaction.payload.walletReference.milestoneTransactionPath;
+  const path = transaction.payload.walletReference?.milestoneTransactionPath!;
   const milestoneTransaction = (await build5Db().doc(path).get<Record<string, unknown>>())!;
   const collectionOutputId =
     getTransactionPayloadHex(milestoneTransaction.payload as ITransactionPayload) +

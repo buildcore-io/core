@@ -3,6 +3,7 @@ import {
   Collection,
   CollectionStatus,
   CollectionType,
+  CreateCollectionRequest,
   DEFAULT_NETWORK,
   DiscountLine,
   Member,
@@ -19,7 +20,7 @@ import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { populateTokenUidOnDiscounts } from './common';
 
-export const createCollectionControl = async (owner: string, params: Record<string, unknown>) => {
+export const createCollectionControl = async (owner: string, params: CreateCollectionRequest) => {
   const hasStakedSoons = await hasStakedSoonTokens(owner);
   if (!hasStakedSoons) {
     throw invalidArgument(WenError.no_staked_soon);
@@ -43,7 +44,7 @@ export const createCollectionControl = async (owner: string, params: Record<stri
   assertSpaceHasValidAddress(royaltySpace, DEFAULT_NETWORK);
 
   if (params.availableFrom) {
-    params.availableFrom = dateToTimestamp(params.availableFrom as Date, true);
+    params.availableFrom = dateToTimestamp(params.availableFrom, true).toDate();
   }
 
   const batch = build5Db().batch();

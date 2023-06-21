@@ -1,10 +1,10 @@
-import { COL, WEN_FUNC } from '@build-5/interfaces';
+import { COL, VoteRequest, WEN_FUNC } from '@build-5/interfaces';
 import Joi from 'joi';
 import { voteControl } from '../../../controls/vote.control';
 import { onRequest } from '../../../firebase/functions/onRequest';
-import { CommonJoi } from '../../../services/joi/common';
+import { CommonJoi, toJoiObject } from '../../../services/joi/common';
 
-const voteSchema = Joi.object({
+const voteSchema = toJoiObject<VoteRequest>({
   collection: Joi.string().equal(COL.COLLECTION, COL.TOKEN).required(),
   uid: CommonJoi.uid().required(),
   direction: Joi.number().equal(-1, 0, 1).required(),

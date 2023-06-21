@@ -23,7 +23,7 @@ describe('Proposal approval via tangle request', () => {
 
       await helper.walletService.send(
         helper.guardianAddress,
-        helper.tangleOrder.payload.targetAddress,
+        helper.tangleOrder.payload.targetAddress!,
         MIN_IOTA_AMOUNT,
         {
           customMetadata: {

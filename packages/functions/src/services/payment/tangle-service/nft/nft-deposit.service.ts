@@ -5,9 +5,8 @@ import {
   Network,
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
-  TransactionUnlockType,
   TransactionValidationType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
@@ -36,7 +35,7 @@ export class NftDepositService {
       space: '',
       network,
       payload: {
-        type: TransactionOrderType.DEPOSIT_NFT,
+        type: TransactionPayloadType.DEPOSIT_NFT,
         targetAddress: targetAddress.bech32,
         validationType: TransactionValidationType.ADDRESS,
         expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
@@ -51,7 +50,7 @@ export class NftDepositService {
       order,
       tran,
       tranEntry,
-      TransactionUnlockType.UNLOCK_NFT,
+      TransactionPayloadType.UNLOCK_NFT,
       tranEntry.outputId,
     );
     return;

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {
-  BillPaymentType,
   COL,
   MIN_IOTA_AMOUNT,
   TokenPurchase,
@@ -9,7 +8,7 @@ import {
   TokenTradeOrder,
   TokenTradeOrderType,
   Transaction,
-  TransactionCreditType,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
@@ -62,7 +61,7 @@ describe('Token minting', () => {
     billPayments.forEach((billPayment) => {
       expect(billPayment.payload.token).toBe(helper.token!.uid);
       expect(billPayment.payload.tokenSymbol).toBe(helper.token!.symbol);
-      expect(billPayment.payload.type).toBe(BillPaymentType.MINTED_TOKEN_TRADE);
+      expect(billPayment.payload.type).toBe(TransactionPayloadType.MINTED_TOKEN_TRADE);
     });
 
     const paymentToSeller = billPayments.find(
@@ -73,24 +72,24 @@ describe('Token minting', () => {
     expect(paymentToSeller.payload.storageReturn).toBeUndefined();
 
     const royaltyOnePayment = billPayments.find((bp) => bp.payload.amount === 271800)!;
-    expect(royaltyOnePayment.payload.storageReturn.address).toBe(helper.sellerAddress!.bech32);
-    expect(royaltyOnePayment.payload.sourceAddress).toBe(buyOrder.payload.targetAddress);
-    expect(royaltyOnePayment.payload.storageReturn.amount).toBe(46800);
+    expect(royaltyOnePayment.payload.storageReturn!.address).toBe(helper.sellerAddress!.bech32);
+    expect(royaltyOnePayment.payload.sourceAddress!).toBe(buyOrder.payload.targetAddress);
+    expect(royaltyOnePayment.payload.storageReturn!.amount).toBe(46800);
 
     const royaltyTwoPayment = billPayments.find((bp) => bp.payload.amount === 71800)!;
-    expect(royaltyTwoPayment.payload.storageReturn.address).toBe(helper.sellerAddress!.bech32);
+    expect(royaltyTwoPayment.payload.storageReturn!.address).toBe(helper.sellerAddress!.bech32);
     expect(royaltyTwoPayment.payload.sourceAddress).toBe(buyOrder.payload.targetAddress);
-    expect(royaltyTwoPayment.payload.storageReturn.amount).toBe(46800);
+    expect(royaltyTwoPayment.payload.storageReturn!.amount).toBe(46800);
 
     const paymentToBuyer = billPayments.find(
       (bp) => bp.payload.targetAddress === helper.buyerAddress!.bech32,
     )!;
     expect(paymentToBuyer.payload.amount).toBe(53800);
-    expect(paymentToBuyer.payload.nativeTokens[0].amount).toBe(10);
+    expect(paymentToBuyer.payload.nativeTokens![0].amount).toBe('10');
     expect(paymentToBuyer.payload.sourceAddress).toBe(sellOrder.payload.targetAddress);
     expect(paymentToBuyer.payload.storageDepositSourceAddress).toBe(buyOrder.payload.targetAddress);
-    expect(paymentToBuyer.payload.storageReturn.amount).toBe(53800);
-    expect(paymentToBuyer.payload.storageReturn.address).toBe(helper.sellerAddress?.bech32);
+    expect(paymentToBuyer.payload.storageReturn!.amount).toBe(53800);
+    expect(paymentToBuyer.payload.storageReturn!.address).toBe(helper.sellerAddress?.bech32);
 
     const sellerCreditSnap = await build5Db()
       .collection(COL.TRANSACTION)
@@ -102,7 +101,7 @@ describe('Token minting', () => {
     expect(sellerCredit.payload.amount).toBe(49600);
     expect(sellerCredit.payload.token).toBe(helper.token!.uid);
     expect(sellerCredit.payload.tokenSymbol).toBe(helper.token!.symbol);
-    expect(sellerCredit.payload.type).toBe(TransactionCreditType.TOKEN_TRADE_FULLFILLMENT);
+    expect(sellerCredit.payload.type).toBe(TransactionPayloadType.TOKEN_TRADE_FULLFILLMENT);
 
     const purchase = (
       await build5Db().collection(COL.TOKEN_PURCHASE).where('token', '==', helper.token!.uid).get()

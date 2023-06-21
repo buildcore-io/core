@@ -54,9 +54,9 @@ describe('Collection minting', () => {
     });
     const snap = await query.get();
     const credit = <Transaction>snap[0];
-    expect(credit.payload.response.code).toBe(WenError.nft_not_irc27_compilant.code);
-    expect(credit.payload.response.message).toBe(WenError.nft_not_irc27_compilant.key);
-    await helper.isInvalidPayment(credit.payload.sourceTransaction[0]);
+    expect(credit.payload.response!.code).toBe(WenError.nft_not_irc27_compilant.code);
+    expect(credit.payload.response!.message).toBe(WenError.nft_not_irc27_compilant.key);
+    await helper.isInvalidPayment(credit.payload.sourceTransaction![0]);
   });
 
   const mintAndDeposit = async (nftMetadata: any, collectionMetadata: any) => {

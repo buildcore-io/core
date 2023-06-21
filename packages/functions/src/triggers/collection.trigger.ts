@@ -7,7 +7,7 @@ import {
   Member,
   Nft,
   Transaction,
-  TransactionMintCollectionType,
+  TransactionPayloadType,
   TransactionType,
   UnsoldMintingOptions,
   WEN_FUNC_TRIGGER,
@@ -103,7 +103,7 @@ const onCollectionMinted = async (collection: Collection) => {
       space: collection.space,
       network: collection.mintingData?.network,
       payload: {
-        type: TransactionMintCollectionType.LOCK_COLLECTION,
+        type: TransactionPayloadType.LOCK_COLLECTION,
         amount: 0,
         sourceAddress: collection.mintingData?.address,
         collection: collection.uid,
@@ -122,7 +122,7 @@ const onCollectionMinted = async (collection: Collection) => {
     space: collection.space,
     network: collection.mintingData?.network,
     payload: {
-      type: TransactionMintCollectionType.SEND_ALIAS_TO_GUARDIAN,
+      type: TransactionPayloadType.SEND_ALIAS_TO_GUARDIAN,
       amount: collection.mintingData?.aliasStorageDeposit,
       sourceAddress: collection.mintingData?.address,
       targetAddress: getAddress(member, collection.mintingData?.network!),
@@ -160,7 +160,7 @@ const onNftMediaPrepared = async (collection: Collection) => {
     space: collection.space,
     network: collection.mintingData?.network,
     payload: {
-      type: TransactionMintCollectionType.MINT_ALIAS,
+      type: TransactionPayloadType.MINT_ALIAS,
       amount: collection.mintingData?.aliasStorageDeposit || 0,
       sourceAddress: collection.mintingData?.address,
       collection: collection.uid,

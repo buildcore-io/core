@@ -1,10 +1,10 @@
-import { COL, Token, TokenStatus, WenError } from '@build-5/interfaces';
+import { COL, CanelPublicSaleRequest, Token, TokenStatus, WenError } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 
-export const cancelPublicSaleControl = async (owner: string, params: Record<string, unknown>) => {
+export const cancelPublicSaleControl = async (owner: string, params: CanelPublicSaleRequest) => {
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
 
   await build5Db().runTransaction(async (transaction) => {
@@ -29,5 +29,5 @@ export const cancelPublicSaleControl = async (owner: string, params: Record<stri
     });
   });
 
-  return await tokenDocRef.get<Token>();
+  return (await tokenDocRef.get<Token>())!;
 };

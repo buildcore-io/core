@@ -15,6 +15,7 @@ import {
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
+import { set } from 'lodash';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import {
   approveProposal,
@@ -74,9 +75,12 @@ export class Helper {
         approved: true,
       });
 
-    mockWalletReturnValue(this.walletSpy, this.guardian, this.proposal);
+    const { uid, ...requestData } = this.proposal;
+    set(requestData, 'settings.startDate', this.proposal.settings.startDate.toDate());
+    set(requestData, 'settings.endDate', this.proposal.settings.endDate.toDate());
+    mockWalletReturnValue(this.walletSpy, this.guardian, requestData);
     this.proposal = await testEnv.wrap(createProposal)({});
-    mockWalletReturnValue(this.walletSpy, this.guardian, { uid: this.proposal!.uid });
+    mockWalletReturnValue(this.walletSpy, this.guardian, { uid: this.proposal?.uid });
     await testEnv.wrap(approveProposal)({});
   };
 
@@ -176,7 +180,7 @@ export class Helper {
   ) => {
     mockWalletReturnValue(this.walletSpy, member, {
       uid: proposalId,
-      values: [value],
+      value,
       voteWithStakedTokes,
     });
     return await testEnv.wrap(voteOnProposal)({});
@@ -201,28 +205,33 @@ export class Helper {
   };
 }
 
-export const dummyProposal = (space: string) =>
-  <Proposal>{
-    name: 'All 4 HORNET',
-    space,
-    additionalInfo: 'The biggest governance decision in the history of IOTA',
-    settings: {
-      startDate: dayjs().add(1, 'd').toDate(),
-      endDate: dayjs().add(5, 'd').toDate(),
-      onlyGuardians: false,
+export const dummyProposal = (space: string): Proposal => ({
+  uid: '',
+  description: '',
+  name: 'All 4 HORNET',
+  space,
+  additionalInfo: 'The biggest governance decision in the history of IOTA',
+  settings: {
+    startDate: dateToTimestamp(dayjs().add(1, 'd')),
+    endDate: dateToTimestamp(dayjs().add(5, 'd')),
+    onlyGuardians: false,
+  },
+  type: ProposalType.NATIVE,
+  questions: [
+    {
+      text: 'Give all the funds to the HORNET developers?',
+      answers: [
+        { value: 1, text: 'YES', additionalInfo: 'Go team!' },
+        {
+          value: 2,
+          text: 'Doh! Of course!',
+          additionalInfo: 'There is no other option',
+        },
+      ],
+      additionalInfo: 'This would fund the development of HORNET indefinitely',
     },
-    type: ProposalType.NATIVE,
-    questions: [
-      {
-        text: 'Give all the funds to the HORNET developers?',
-        answers: [
-          { value: 1, text: 'YES', additionalInfo: 'Go team!' },
-          { value: 2, text: 'Doh! Of course!', additionalInfo: 'There is no other option' },
-        ],
-        additionalInfo: 'This would fund the development of HORNET indefinitely',
-      },
-    ],
-  };
+  ],
+});
 
 export const VAULT_MNEMONIC =
   'offer kingdom rate never hurt follow wrestle cloud alien admit bird usage avoid cloth soldier evidence crawl harsh electric wheat ten mushroom glare reject';

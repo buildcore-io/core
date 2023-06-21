@@ -2,6 +2,7 @@ import {
   COL,
   DEFAULT_NETWORK,
   MilestoneTransactionEntry,
+  NativeToken,
   SUB_COL,
   TRANSACTION_MAX_EXPIRY_MS,
   Token,
@@ -13,9 +14,7 @@ import {
   TokenTradeOrderStatus,
   TokenTradeOrderType,
   Transaction,
-  TransactionCreditType,
-  TransactionOrder,
-  TransactionOrderType,
+  TransactionPayloadType,
   getNetworkPair,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
@@ -30,15 +29,15 @@ import { TransactionMatch, TransactionService } from '../transaction-service';
 export class TokenService {
   constructor(readonly transactionService: TransactionService) {}
 
-  public async handleTokenPurchaseRequest(order: TransactionOrder, match: TransactionMatch) {
+  public async handleTokenPurchaseRequest(order: Transaction, match: TransactionMatch) {
     const payment = await this.transactionService.createPayment(order, match);
     await this.updateTokenDistribution(order, match, payment);
   }
 
-  public async handleTokenAirdropClaim(order: TransactionOrder, match: TransactionMatch) {
+  public async handleTokenAirdropClaim(order: Transaction, match: TransactionMatch) {
     const payment = await this.transactionService.createPayment(order, match);
     await this.transactionService.createCredit(
-      TransactionCreditType.PRE_MINTED_CLAIM,
+      TransactionPayloadType.PRE_MINTED_CLAIM,
       payment,
       match,
     );
@@ -46,7 +45,7 @@ export class TokenService {
   }
 
   public async handleMintedTokenAirdrop(
-    order: TransactionOrder,
+    order: Transaction,
     tranOutput: MilestoneTransactionEntry,
     match: TransactionMatch,
   ) {
@@ -61,7 +60,7 @@ export class TokenService {
 
     if (tokensSent !== tokensExpected || (tranOutput.nativeTokens || []).length > 1) {
       await this.transactionService.createCredit(
-        TransactionCreditType.INVALID_AMOUNT,
+        TransactionPayloadType.INVALID_AMOUNT,
         payment,
         match,
       );
@@ -113,20 +112,20 @@ export class TokenService {
   }
 
   public async handleTokenTradeRequest(
-    order: TransactionOrder,
+    order: Transaction,
     tran: MilestoneTransactionEntry,
     match: TransactionMatch,
     build5Transaction?: Transaction,
   ) {
     const payment = await this.transactionService.createPayment(order, match);
 
-    const nativeTokenId = head(order.payload.nativeTokens)?.id;
+    const nativeTokenId = head(order.payload.nativeTokens as NativeToken[])?.id;
     const nativeTokens = nativeTokenId
       ? Number(tran.nativeTokens?.find((n) => n.id === nativeTokenId)?.amount || 0)
       : 0;
     if (nativeTokenId && (!nativeTokens || (tran.nativeTokens?.length || 0) > 1)) {
       await this.transactionService.createCredit(
-        TransactionCreditType.INVALID_AMOUNT,
+        TransactionPayloadType.INVALID_AMOUNT,
         payment,
         match,
       );
@@ -143,7 +142,7 @@ export class TokenService {
       token: token.uid,
       tokenStatus: token.status,
       type:
-        order.payload.type === TransactionOrderType.SELL_TOKEN
+        order.payload.type === TransactionPayloadType.SELL_TOKEN
           ? TokenTradeOrderType.SELL
           : TokenTradeOrderType.BUY,
       count: nativeTokens || get(order, 'payload.count', 0),
@@ -165,7 +164,7 @@ export class TokenService {
     this.transactionService.push({ ref, data, action: 'set' });
 
     if (
-      order.payload.type === TransactionOrderType.SELL_TOKEN &&
+      order.payload.type === TransactionPayloadType.SELL_TOKEN &&
       token.status === TokenStatus.MINTED
     ) {
       const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
@@ -188,7 +187,7 @@ export class TokenService {
     const token = <Token>await this.transactionService.get(tokenRef);
     if (token.status !== TokenStatus.AVAILABLE) {
       await this.transactionService.createCredit(
-        TransactionCreditType.DATA_NO_LONGER_VALID,
+        TransactionPayloadType.DATA_NO_LONGER_VALID,
         payment,
         tran,
       );

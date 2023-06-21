@@ -22,7 +22,7 @@ export const retryWallet = async () => {
 
 const rerunTransaction = async (transaction: ITransaction, data: Transaction) => {
   const docRef = build5Db().doc(`${COL.TRANSACTION}/${data.uid}`);
-  const walletReference = data.payload.walletReference;
+  const walletReference = data.payload.walletReference!;
   const processedOn = dayjs(walletReference.processedOn.toDate());
   if (
     walletReference.confirmed ||

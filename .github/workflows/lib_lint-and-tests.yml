@@ -9,9 +9,6 @@ jobs:
   soon_lib:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    defaults:
-      run:
-        working-directory: packages/lib
     steps:
       - name: Collect Workflow Telemetry
         uses: runforesight/foresight-workflow-kit-action@v1
@@ -25,8 +22,8 @@ jobs:
       - name: Install Dependencies
         run: npm run build:lib
       - name: Prettier
-        run: npx prettier --check .
+        run: npm run prettier:lib
       - name: Lint
-        run: npm run lint
+        run: cd packages/lib && npm run lint
       - name: Test
-        run: npm run test
+        run: cd packages/lib && npm run test

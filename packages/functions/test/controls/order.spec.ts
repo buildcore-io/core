@@ -1,7 +1,7 @@
 import {
   Access,
-  Categories,
   COL,
+  Categories,
   Collection,
   CollectionType,
   MIN_IOTA_AMOUNT,
@@ -9,8 +9,7 @@ import {
   NftAccess,
   Space,
   Transaction,
-  TransactionAwardType,
-  TransactionOrder,
+  TransactionPayloadType,
   TransactionType,
   WenError,
 } from '@build-5/interfaces';
@@ -340,7 +339,7 @@ describe('Ordering flows', () => {
         await createNftFunc(member, dummyNft(collection, price));
       }
 
-      const orders: TransactionOrder[] = [];
+      const orders: Transaction[] = [];
       for (let i = 0; i < batchSize; i++) {
         orders.push(await submitOrderFunc(members[i], { collection: collection.uid }));
       }
@@ -497,7 +496,7 @@ describe('Ordering flows', () => {
       member,
       type: TransactionType.AWARD,
       uid: wallet.getRandomEthAddress(),
-      payload: { type: TransactionAwardType.BADGE, award: awards[0] },
+      payload: { type: TransactionPayloadType.BADGE, award: awards[0] },
     };
     await build5Db().doc(`${COL.TRANSACTION}/${badge.uid}`).create(badge);
     await expectThrow(
@@ -509,7 +508,7 @@ describe('Ordering flows', () => {
       member,
       type: TransactionType.AWARD,
       uid: wallet.getRandomEthAddress(),
-      payload: { type: TransactionAwardType.BADGE, award: awards[1] },
+      payload: { type: TransactionPayloadType.BADGE, award: awards[1] },
     };
     await build5Db().doc(`${COL.TRANSACTION}/${badge.uid}`).create(badge);
     const order = await submitOrderFunc(member, { collection: collection.uid, nft: nft.uid });

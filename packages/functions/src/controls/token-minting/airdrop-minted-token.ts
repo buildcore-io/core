@@ -8,7 +8,7 @@ import {
   TokenDropStatus,
   TokenStatus,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
   WenError,
@@ -18,6 +18,7 @@ import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
 import { build5Db } from '../../firebase/firestore/build5Db';
+import { CreateAirdropsRequest } from '../../runtime/firebase/token/trading';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { packBasicOutput } from '../../utils/basic-output.utils';
@@ -25,9 +26,8 @@ import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-import { TokenDropRequest } from '../token/token.airdrop';
 
-export const airdropMintedTokenControl = async (owner: string, params: Record<string, unknown>) => {
+export const airdropMintedTokenControl = async (owner: string, params: CreateAirdropsRequest) => {
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
   await build5Db().runTransaction(async (transaction) => {
     const token = await transaction.get<Token>(tokenDocRef);
@@ -41,7 +41,7 @@ export const airdropMintedTokenControl = async (owner: string, params: Record<st
   });
 
   const token = (await tokenDocRef.get<Token>())!;
-  const drops = params.drops as TokenDropRequest[];
+  const drops = params.drops;
 
   const totalDropped = drops.reduce((acc, act) => acc + act.count, 0);
   const wallet = (await WalletService.newWallet(token.mintingData?.network)) as SmrWallet;
@@ -51,14 +51,14 @@ export const airdropMintedTokenControl = async (owner: string, params: Record<st
     id: token.mintingData?.tokenId!,
   };
   const output = packBasicOutput(targetAddress.bech32, 0, [nativeToken], wallet.info);
-  const order = <Transaction>{
+  const order: Transaction = {
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,
     space: token.space,
-    network: token.mintingData?.network,
+    network: token.mintingData?.network!,
     payload: {
-      type: TransactionOrderType.AIRDROP_MINTED_TOKEN,
+      type: TransactionPayloadType.AIRDROP_MINTED_TOKEN,
       amount: Number(output.amount),
       targetAddress: targetAddress.bech32,
       expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),

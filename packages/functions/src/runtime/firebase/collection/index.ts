@@ -1,10 +1,14 @@
 import {
   Access,
+  ApproveCollectionRequest,
   Categories,
+  CollectionMintRequest,
   CollectionType,
+  CreateCollectionRequest,
   DISCORD_REGEXP,
   MAX_IOTA_AMOUNT,
   MIN_IOTA_AMOUNT,
+  RejectCollectionRequest,
   TWITTER_REGEXP,
   UnsoldMintingOptions,
   WEN_FUNC,
@@ -19,11 +23,12 @@ import { rejectCollectionControl } from '../../../controls/collection/collection
 import { updateCollectionControl } from '../../../controls/collection/collection.update.control';
 import { AVAILABLE_NETWORKS } from '../../../controls/common';
 import { onRequest } from '../../../firebase/functions/onRequest';
-import { CommonJoi } from '../../../services/joi/common';
+import { CommonJoi, toJoiObject } from '../../../services/joi/common';
 import { networks } from '../../../utils/config.utils';
-import { uidSchema } from '../common';
+import { uidSchema, uidSchemaObj } from '../common';
 
 export const updateMintedCollectionSchema = {
+  uid: CommonJoi.uid(),
   discounts: Joi.array()
     .items(
       Joi.object().keys({
@@ -46,12 +51,12 @@ export const updateMintedCollectionSchema = {
   access: Joi.number()
     .equal(...Object.values(Access))
     .optional(),
-  accessAwards: Joi.when('access', {
+  accessAwards: Joi.array().when('access', {
     is: Joi.exist().valid(Access.MEMBERS_WITH_BADGE),
     then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
     otherwise: Joi.forbidden(),
   }),
-  accessCollections: Joi.when('access', {
+  accessCollections: Joi.array().when('access', {
     is: Joi.exist().valid(Access.MEMBERS_WITH_NFT_FROM_COLLECTION),
     then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
     otherwise: Joi.forbidden(),
@@ -80,6 +85,7 @@ export const updateCollectionSchema = {
 
 const createCollectionSchema = {
   ...updateCollectionSchema,
+  uid: CommonJoi.uid(false),
   type: Joi.number()
     .equal(CollectionType.CLASSIC, CollectionType.GENERATED, CollectionType.SFT)
     .required(),
@@ -90,34 +96,34 @@ const createCollectionSchema = {
     .required(),
   // On test we allow now.
   availableFrom: Joi.date().greater(dayjs().subtract(600000).toDate()).required(),
-  category: Joi.number()
+  category: Joi.string()
     .equal(...Object.keys(Categories))
     .required(),
   limitedEdition: Joi.boolean().optional(),
 };
 
 export const createCollection = onRequest(WEN_FUNC.createCollection)(
-  Joi.object(createCollectionSchema),
+  toJoiObject<CreateCollectionRequest>(createCollectionSchema),
   createCollectionControl,
 );
 
 export const updateCollection = onRequest(WEN_FUNC.updateCollection)(
-  uidSchema,
+  uidSchemaObj,
   updateCollectionControl,
   true,
 );
 
 export const approveCollection = onRequest(WEN_FUNC.approveCollection)(
-  uidSchema,
+  toJoiObject<ApproveCollectionRequest>(uidSchema),
   approveCollectionControl,
 );
 export const rejectCollection = onRequest(WEN_FUNC.rejectCollection)(
-  uidSchema,
+  toJoiObject<RejectCollectionRequest>(uidSchema),
   rejectCollectionControl,
 );
 
 const availaibleNetworks = AVAILABLE_NETWORKS.filter((n) => networks.includes(n));
-const mintCollectionSchema = Joi.object({
+const mintCollectionSchema = toJoiObject<CollectionMintRequest>({
   collection: CommonJoi.uid(),
   network: Joi.string()
     .equal(...availaibleNetworks)
@@ -125,7 +131,7 @@ const mintCollectionSchema = Joi.object({
   unsoldMintingOptions: Joi.string()
     .equal(...Object.values(UnsoldMintingOptions))
     .required(),
-  price: Joi.when('unsoldMintingOptions', {
+  price: Joi.number().when('unsoldMintingOptions', {
     is: Joi.exist().valid(UnsoldMintingOptions.SET_NEW_PRICE),
     then: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).integer().required(),
   }),

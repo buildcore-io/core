@@ -31,7 +31,7 @@ describe('Metadata nft', () => {
     const metadata = { mytest: 'mytest', asd: 'asdasdasd' };
     await helper.walletService.send(
       helper.memberAddress,
-      tangleOrder.payload.targetAddress,
+      tangleOrder.payload.targetAddress!,
       MIN_IOTA_AMOUNT,
       {
         customMetadata: {
@@ -71,7 +71,7 @@ describe('Metadata nft', () => {
 
     await helper.walletService.send(
       helper.memberAddress,
-      tangleOrder.payload.targetAddress,
+      tangleOrder.payload.targetAddress!,
       MIN_IOTA_AMOUNT,
       {
         customMetadata: {
@@ -93,7 +93,7 @@ describe('Metadata nft', () => {
       const snap = await creditQuery.get<Transaction>();
       return (
         snap.length === 2 &&
-        snap.reduce((acc, act) => acc && act.payload?.walletReference?.confirmed, true)
+        snap.reduce((acc, act) => acc && (act.payload?.walletReference?.confirmed || false), true)
       );
     });
 

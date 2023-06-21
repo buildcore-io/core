@@ -2,6 +2,7 @@ import {
   COL,
   MilestoneTransaction,
   MilestoneTransactionEntry,
+  MintMetadataNftTangleRequest,
   Network,
   NftStatus,
   SUB_COL,
@@ -9,9 +10,8 @@ import {
   SpaceGuardian,
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
-  TransactionUnlockType,
   TransactionValidationType,
   WenError,
 } from '@build-5/interfaces';
@@ -43,12 +43,12 @@ import {
   createAliasOutput,
 } from '../../../../utils/token-minting-utils/alias.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { CommonJoi } from '../../../joi/common';
+import { CommonJoi, toJoiObject } from '../../../joi/common';
 import { SmrWallet } from '../../../wallet/SmrWalletService';
 import { WalletService } from '../../../wallet/wallet';
 import { TransactionMatch, TransactionService } from '../../transaction-service';
 
-const schema = Joi.object({
+const schema = toJoiObject<MintMetadataNftTangleRequest>({
   nftId: CommonJoi.uid(false),
   collectionId: CommonJoi.uid(false),
   aliasId: CommonJoi.uid(false),
@@ -67,22 +67,17 @@ export class MintMetadataNftService {
     tranEntry: MilestoneTransactionEntry,
   ) => {
     delete request.requestType;
-    await assertValidationAsync(schema, request);
+    const params = await assertValidationAsync(schema, request);
 
     const wallet = (await WalletService.newWallet(network)) as SmrWallet;
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
-    const { nftId, collectionId, aliasId } = await getIds(request, wallet);
+    const { nftId, collectionId, aliasId } = await getIds(params, wallet);
 
     const space = await getSpace(owner, aliasId);
     const aliasOutputAmount = await getAliasOutputAmount(owner, space, wallet);
     const collectionOutputAmount = await getCollectionOutputAmount(aliasId, collectionId, wallet);
-    const nftOutputAmount = await getNftOutputAmount(
-      collectionId,
-      nftId,
-      request.metadata as Record<string, unknown>,
-      wallet,
-    );
+    const nftOutputAmount = await getNftOutputAmount(collectionId, nftId, params.metadata, wallet);
 
     const amount = aliasOutputAmount + collectionOutputAmount + nftOutputAmount;
 
@@ -127,7 +122,7 @@ export class MintMetadataNftService {
       space: space.uid,
       network,
       payload: {
-        type: TransactionOrderType.MINT_METADATA_NFT,
+        type: TransactionPayloadType.MINT_METADATA_NFT,
         amount: match.to.amount,
         targetAddress: targetAddress.bech32,
         validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
@@ -151,7 +146,7 @@ export class MintMetadataNftService {
       order,
       tran,
       tranEntry,
-      TransactionUnlockType.TANGLE_TRANSFER,
+      TransactionPayloadType.TANGLE_TRANSFER,
       tranEntry.outputId,
     );
     return;
@@ -249,7 +244,7 @@ const getNftOutputAmount = async (
   throw invalidArgument(WenError.nft_not_deposited);
 };
 
-const getIds = async (request: Record<string, unknown>, wallet: SmrWallet) => {
+const getIds = async (request: MintMetadataNftTangleRequest, wallet: SmrWallet) => {
   try {
     const indexer = new IndexerPluginClient(wallet.client);
     const nftId = request.nftId as string;

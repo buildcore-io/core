@@ -36,7 +36,7 @@ describe('Base token trading', () => {
 
     await requestFundsForManyFromFaucet(
       Network.ATOI,
-      orders.map((o) => ({ toAddress: o.payload.targetAddress, amount: o.payload.amount })),
+      orders.map((o) => ({ toAddress: o.payload.targetAddress!, amount: o.payload.amount! })),
     );
 
     const tradeQuery = build5Db()

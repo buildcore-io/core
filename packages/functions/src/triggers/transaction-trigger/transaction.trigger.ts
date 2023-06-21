@@ -1,5 +1,4 @@
 import {
-  BillPaymentType,
   COL,
   DEFAULT_NETWORK,
   DEF_WALLET_PAY_IN_PROGRESS,
@@ -8,13 +7,8 @@ import {
   Mnemonic,
   Network,
   Transaction,
-  TransactionAwardType,
-  TransactionMetadataNftType,
-  TransactionMintCollectionType,
-  TransactionMintTokenType,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
-  TransactionUnlockType,
   WEN_FUNC_TRIGGER,
   WalletResult,
 } from '@build-5/interfaces';
@@ -86,7 +80,7 @@ export const transactionWrite = functions.firestore.onDocumentWritten(
     }
 
     if (
-      curr.payload.type === TransactionOrderType.AIRDROP_MINTED_TOKEN &&
+      curr.payload.type === TransactionPayloadType.AIRDROP_MINTED_TOKEN &&
       prev?.payload?.unclaimedAirdrops &&
       curr.payload.unclaimedAirdrops === 0
     ) {
@@ -131,12 +125,12 @@ export const transactionWrite = functions.firestore.onDocumentWritten(
     }
 
     const airdropOrderTypes = [
-      TransactionOrderType.TOKEN_AIRDROP,
-      TransactionOrderType.CLAIM_MINTED_TOKEN,
-      TransactionOrderType.CLAIM_BASE_TOKEN,
+      TransactionPayloadType.TOKEN_AIRDROP,
+      TransactionPayloadType.CLAIM_MINTED_TOKEN,
+      TransactionPayloadType.CLAIM_BASE_TOKEN,
     ];
     if (
-      airdropOrderTypes.includes(curr.payload.type) &&
+      airdropOrderTypes.includes(curr.payload.type!) &&
       !prev?.payload.reconciled &&
       curr.payload.reconciled
     ) {
@@ -175,7 +169,7 @@ export const transactionWrite = functions.firestore.onDocumentWritten(
     if (
       isConfirmed(prev, curr) &&
       curr.payload.award &&
-      curr.payload.type === BillPaymentType.MINTED_AIRDROP_CLAIM
+      curr.payload.type === TransactionPayloadType.MINTED_AIRDROP_CLAIM
     ) {
       const awardDocRef = build5Db().doc(`${COL.AWARD}/${curr.payload.award}`);
       await awardDocRef.update({ airdropClaimed: build5Db().inc(1) });
@@ -196,7 +190,7 @@ const executeTransaction = async (transactionId: string) => {
   const params = await getWalletParams(transaction, transaction.network || DEFAULT_NETWORK);
   try {
     const walletService = await WalletService.newWallet(transaction.network || DEFAULT_NETWORK);
-    const sourceAddress = await walletService.getAddressDetails(payload.sourceAddress);
+    const sourceAddress = await walletService.getAddressDetails(payload.sourceAddress!);
 
     const submit = () => {
       switch (transaction.type) {
@@ -205,8 +199,8 @@ const executeTransaction = async (transactionId: string) => {
         case TransactionType.CREDIT_TANGLE_REQUEST:
           return walletService.send(
             sourceAddress,
-            payload.targetAddress,
-            payload.amount,
+            payload.targetAddress!,
+            payload.amount!,
             params,
             transaction.payload.outputToConsume,
           );
@@ -255,7 +249,7 @@ const executeTransaction = async (transactionId: string) => {
       'payload.walletReference.processedOn': dayjs().toDate(),
       'payload.walletReference.error': JSON.stringify(error),
     });
-    await unclockMnemonic(payload.sourceAddress);
+    await unclockMnemonic(payload.sourceAddress!);
   }
 };
 
@@ -265,23 +259,23 @@ const submitCollectionMintTransactions = (
   params: SmrParams,
 ) => {
   switch (transaction.payload.type) {
-    case TransactionMintCollectionType.MINT_ALIAS: {
+    case TransactionPayloadType.MINT_ALIAS: {
       const aliasWallet = new AliasWallet(wallet);
       return aliasWallet.mintAlias(transaction, params);
     }
-    case TransactionMintCollectionType.MINT_COLLECTION: {
+    case TransactionPayloadType.MINT_COLLECTION: {
       const nftWallet = new NftWallet(wallet);
       return nftWallet.mintCollection(transaction, params);
     }
-    case TransactionMintCollectionType.MINT_NFTS: {
+    case TransactionPayloadType.MINT_NFTS: {
       const nftWallet = new NftWallet(wallet);
       return nftWallet.mintNfts(transaction, params);
     }
-    case TransactionMintCollectionType.LOCK_COLLECTION: {
+    case TransactionPayloadType.LOCK_COLLECTION: {
       const nftWallet = new NftWallet(wallet);
       return nftWallet.lockCollection(transaction, params);
     }
-    case TransactionMintCollectionType.SEND_ALIAS_TO_GUARDIAN: {
+    case TransactionPayloadType.SEND_ALIAS_TO_GUARDIAN: {
       const aliasWallet = new AliasWallet(wallet);
       return aliasWallet.changeAliasOwner(transaction, params);
     }
@@ -298,15 +292,15 @@ const submitTokenMintTransactions = (
   params: SmrParams,
 ) => {
   switch (transaction.payload.type) {
-    case TransactionMintTokenType.MINT_ALIAS: {
+    case TransactionPayloadType.MINT_ALIAS: {
       const aliasWallet = new AliasWallet(wallet);
       return aliasWallet.mintAlias(transaction, params);
     }
-    case TransactionMintTokenType.MINT_FOUNDRY: {
+    case TransactionPayloadType.MINT_FOUNDRY: {
       const nativeTokenWallet = new NativeTokenWallet(wallet);
       return nativeTokenWallet.mintFoundry(transaction, params);
     }
-    case TransactionMintTokenType.SEND_ALIAS_TO_GUARDIAN: {
+    case TransactionPayloadType.SEND_ALIAS_TO_GUARDIAN: {
       const aliasWallet = new AliasWallet(wallet);
       return aliasWallet.changeAliasOwner(transaction, params);
     }
@@ -323,19 +317,19 @@ const submitCreateAwardTransaction = (
   params: SmrParams,
 ) => {
   switch (transaction.payload.type) {
-    case TransactionAwardType.MINT_ALIAS: {
+    case TransactionPayloadType.MINT_ALIAS: {
       const aliasWallet = new AliasWallet(wallet);
       return aliasWallet.mintAlias(transaction, params);
     }
-    case TransactionAwardType.MINT_COLLECTION: {
+    case TransactionPayloadType.MINT_COLLECTION: {
       const nftWallet = new NftWallet(wallet);
       return nftWallet.mintAwardCollection(transaction, params);
     }
-    case TransactionAwardType.BADGE: {
+    case TransactionPayloadType.BADGE: {
       const nftWallet = new NftWallet(wallet);
       return nftWallet.mintNtt(transaction, params);
     }
-    case TransactionAwardType.BURN_ALIAS: {
+    case TransactionPayloadType.BURN_ALIAS: {
       const aliasWallet = new AliasWallet(wallet);
       return aliasWallet.burnAlias(transaction, params);
     }
@@ -355,19 +349,19 @@ const submitMintMetadataTransaction = async (
   params: SmrParams,
 ) => {
   switch (transaction.payload.type) {
-    case TransactionMetadataNftType.MINT_ALIAS: {
+    case TransactionPayloadType.MINT_ALIAS: {
       const aliasWallet = new AliasWallet(wallet);
       return aliasWallet.mintAlias(transaction, params);
     }
-    case TransactionMetadataNftType.MINT_COLLECTION: {
+    case TransactionPayloadType.MINT_COLLECTION: {
       const nftWallet = new NftWallet(wallet);
       return nftWallet.mintCollection(transaction, params);
     }
-    case TransactionMetadataNftType.MINT_NFT: {
+    case TransactionPayloadType.MINT_NFT: {
       const nftWallet = new NftWallet(wallet);
       return nftWallet.mintMetadataNft(transaction, params);
     }
-    case TransactionMetadataNftType.UPDATE_MINTED_NFT: {
+    case TransactionPayloadType.UPDATE_MINTED_NFT: {
       const nftWallet = new NftWallet(wallet);
       return nftWallet.updateMetadataNft(transaction, params);
     }
@@ -387,18 +381,18 @@ const submitUnlockTransaction = async (
   params: SmrParams,
 ) => {
   switch (transaction.payload.type) {
-    case TransactionUnlockType.UNLOCK_FUNDS:
-    case TransactionUnlockType.TANGLE_TRANSFER: {
-      const sourceAddress = await wallet.getAddressDetails(transaction.payload.sourceAddress);
+    case TransactionPayloadType.UNLOCK_FUNDS:
+    case TransactionPayloadType.TANGLE_TRANSFER: {
+      const sourceAddress = await wallet.getAddressDetails(transaction.payload.sourceAddress!);
       return wallet.send(
         sourceAddress,
-        transaction.payload.targetAddress,
-        transaction.payload.amount,
+        transaction.payload.targetAddress!,
+        transaction.payload.amount!,
         params,
         transaction.payload.outputToConsume,
       );
     }
-    case TransactionUnlockType.UNLOCK_NFT: {
+    case TransactionPayloadType.UNLOCK_NFT: {
       const nftWallet = new NftWallet(wallet);
       return nftWallet.changeNftOwner(transaction, params);
     }
@@ -467,7 +461,10 @@ const emptyWalletResult = (): WalletResult => ({
   count: 0,
 });
 
-const getMnemonic = async (transaction: ITransaction, address: string): Promise<Mnemonic> => {
+const getMnemonic = async (
+  transaction: ITransaction,
+  address: string | undefined,
+): Promise<Mnemonic> => {
   if (isEmpty(address)) {
     return {};
   }
@@ -475,7 +472,7 @@ const getMnemonic = async (transaction: ITransaction, address: string): Promise<
   return (await transaction.get(docRef)) || {};
 };
 
-const lockMnemonic = (transaction: ITransaction, lockedBy: string, address: string) => {
+const lockMnemonic = (transaction: ITransaction, lockedBy: string, address: string | undefined) => {
   if (isEmpty(address)) {
     return;
   }

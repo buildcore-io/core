@@ -60,7 +60,7 @@ export class AliasWallet {
     const [aliasOutputId, aliasOutput] = Object.entries(aliasOutputs)[0];
 
     const targetAddress = Bech32Helper.addressFromBech32(
-      transaction.payload.targetAddress,
+      transaction.payload.targetAddress!,
       this.wallet.info.protocol.bech32Hrp,
     );
     const nextAliasOutput = cloneDeep(aliasOutput);
@@ -91,7 +91,7 @@ export class AliasWallet {
     const [aliasOutputId, aliasOutput] = Object.entries(aliasOutputs)[0];
 
     const remainder = packBasicOutput(
-      transaction.payload.targetAddress,
+      transaction.payload.targetAddress!,
       Number(aliasOutput.amount),
       [],
       this.wallet.info,

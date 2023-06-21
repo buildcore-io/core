@@ -1,10 +1,20 @@
-import { COL, Proposal, ProposalType, SUB_COL } from '@build-5/interfaces';
+import {
+  COL,
+  Proposal,
+  ProposalType,
+  SUB_COL,
+  SpaceMemberUpsertRequest,
+} from '@build-5/interfaces';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { addRemoveGuardian } from '../../services/payment/tangle-service/space/SpaceGuardianService';
 
 export const editGuardianControl =
-  (type: ProposalType) => async (owner: string, params: Record<string, unknown>) => {
-    const { proposal, voteTransaction, members } = await addRemoveGuardian(owner, params, type);
+  (type: ProposalType) => async (owner: string, params: SpaceMemberUpsertRequest) => {
+    const { proposal, voteTransaction, members } = await addRemoveGuardian(
+      owner,
+      { ...params },
+      type,
+    );
 
     const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
     const memberPromisses = members.map((member) => {

@@ -1,4 +1,4 @@
-import { COL, Token, TokenStatus, WenError } from '@build-5/interfaces';
+import { COL, SetTokenForSaleRequest, Token, TokenStatus, WenError } from '@build-5/interfaces';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
@@ -7,7 +7,7 @@ import { getPublicSaleTimeFrames, shouldSetPublicSaleTimeFrames } from './common
 
 export const setTokenAvailableForSaleControl = async (
   owner: string,
-  params: Record<string, unknown>,
+  params: SetTokenForSaleRequest,
 ) => {
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
 
@@ -30,11 +30,11 @@ export const setTokenAvailableForSaleControl = async (
 
     await assertIsGuardian(token.space, owner);
 
-    shouldSetPublicSaleTimeFrames(params, token.allocations);
+    shouldSetPublicSaleTimeFrames({ ...params }, token.allocations);
     const timeFrames = getPublicSaleTimeFrames(
-      dateToTimestamp(params.saleStartDate as Date, true),
-      params.saleLength as number,
-      params.coolDownLength as number,
+      dateToTimestamp(params.saleStartDate, true),
+      params.saleLength,
+      params.coolDownLength,
     );
     transaction.update(tokenDocRef, {
       ...timeFrames,

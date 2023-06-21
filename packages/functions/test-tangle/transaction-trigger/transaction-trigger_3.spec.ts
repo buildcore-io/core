@@ -43,14 +43,14 @@ describe('Transaction trigger spec', () => {
     );
     await requestFundsFromFaucet(network, sourceAddress.bech32, Number(output.amount));
 
-    let billPayment = <Transaction>{
+    let billPayment: Transaction = {
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       createdOn: serverTime(),
       network,
       payload: {
         amount: Number(output.amount),
-        nativeTokens: [{ amount: 1, id: MINTED_TOKEN_ID }],
+        nativeTokens: [{ amount: '1', id: MINTED_TOKEN_ID }],
         storageDepositSourceAddress: sourceAddress.bech32,
         sourceAddress: vaultAddress.bech32,
         targetAddress: targetAddress.bech32,

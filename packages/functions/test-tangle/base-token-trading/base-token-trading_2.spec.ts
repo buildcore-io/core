@@ -134,7 +134,7 @@ describe('Base token trading', () => {
         (bp) =>
           bp.payload.amount === 69300 &&
           isEmpty(bp.payload.nativeTokens) &&
-          bp.payload.storageReturn.amount === 46800,
+          bp.payload.storageReturn!.amount === 46800,
       ),
     ).toBeDefined();
     expect(
@@ -142,7 +142,7 @@ describe('Base token trading', () => {
         (bp) =>
           bp.payload.amount === 49300 &&
           isEmpty(bp.payload.nativeTokens) &&
-          bp.payload.storageReturn.amount === 46800,
+          bp.payload.storageReturn!.amount === 46800,
       ),
     ).toBeDefined();
     expect(

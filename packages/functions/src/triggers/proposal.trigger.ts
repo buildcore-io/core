@@ -74,7 +74,7 @@ const onAddRemoveGuardianProposalApproved = async (proposal: Proposal) => {
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${proposal.space}`);
   const guardianDocRef = spaceDocRef
     .collection(SUB_COL.GUARDIANS)
-    .doc(proposal.settings.addRemoveGuardian);
+    .doc(proposal.settings.addRemoveGuardian!);
   const isAddGuardian = proposal.type === ProposalType.ADD_GUARDIAN;
 
   const batch = build5Db().batch();
@@ -97,13 +97,17 @@ const onAddRemoveGuardianProposalApproved = async (proposal: Proposal) => {
 };
 
 const onEditSpaceProposalApproved = async (proposal: Proposal) => {
-  const spaceUpdateData: Space = proposal.settings.spaceUpdateData;
+  const spaceUpdateData = proposal.settings.spaceUpdateData!;
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${spaceUpdateData.uid}`);
 
   if (spaceUpdateData.bannerUrl) {
     const space = (await spaceDocRef.get<Space>())!;
     const metadata = spaceToIpfsMetadata({ ...space, ...spaceUpdateData });
-    const ipfs = await downloadMediaAndPackCar(space.uid, spaceUpdateData.bannerUrl, metadata);
+    const ipfs = await downloadMediaAndPackCar(
+      space.uid,
+      spaceUpdateData.bannerUrl as string,
+      metadata,
+    );
     set(spaceUpdateData, 'ipfsMedia', ipfs.ipfsMedia);
     set(spaceUpdateData, 'ipfsMetadata', ipfs.ipfsMetadata);
     set(spaceUpdateData, 'ipfsRoot', ipfs.ipfsRoot);
@@ -145,7 +149,9 @@ const onEditSpaceProposalApproved = async (proposal: Proposal) => {
     });
 };
 
-const removeMembersAndGuardiansThatDontHaveEnoughStakes = async (updateData: Space) => {
+const removeMembersAndGuardiansThatDontHaveEnoughStakes = async (
+  updateData: Record<string, unknown>,
+) => {
   if (!updateData.tokenBased) {
     return { removedMembers: 0, removedGuardians: 0 };
   }
@@ -165,7 +171,7 @@ const removeMembersAndGuardiansThatDontHaveEnoughStakes = async (updateData: Spa
     const hasEnoughStaked = await memberHasEnoughStakedValues(
       token?.uid!,
       member.uid,
-      updateData.minStakedValue || 0,
+      (updateData.minStakedValue as number) || 0,
     );
     if (!hasEnoughStaked) {
       removedMembers++;
@@ -194,7 +200,7 @@ const memberHasEnoughStakedValues = async (token: string, member: string, minSta
 const onRemoveStakeRewardApporved = async (proposal: Proposal) => {
   const batch = build5Db().batch();
 
-  const stakeRewardIds = proposal.settings.stakeRewardIds as string[];
+  const stakeRewardIds = proposal.settings.stakeRewardIds || [];
   stakeRewardIds.forEach((rewardId) => {
     const docRef = build5Db().doc(`${COL.STAKE_REWARD}/${rewardId}`);
     batch.update(docRef, { status: StakeRewardStatus.DELETED });

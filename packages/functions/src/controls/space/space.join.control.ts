@@ -1,9 +1,9 @@
-import { COL, Space, SUB_COL, WenError } from '@build-5/interfaces';
+import { COL, Space, SpaceJoinRequest, SUB_COL, WenError } from '@build-5/interfaces';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { getJoinSpaceData } from '../../services/payment/tangle-service/space/SpaceJoinService';
 import { invalidArgument } from '../../utils/error.utils';
 
-export const joinSpaceControl = async (owner: string, params: Record<string, unknown>) => {
+export const joinSpaceControl = async (owner: string, params: SpaceJoinRequest) => {
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
   const space = await spaceDocRef.get<Space>();
   if (!space) {

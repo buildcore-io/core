@@ -56,7 +56,7 @@ describe('Award tangle request', () => {
   it('Should create with tangle request, fund and approve', async () => {
     const newAward = awardRequest(space.uid, token.symbol);
     await requestFundsFromFaucet(Network.RMS, guardianAddress.bech32, 5 * MIN_IOTA_AMOUNT);
-    await walletService.send(guardianAddress, tangleOrder.payload.targetAddress, MIN_IOTA_AMOUNT, {
+    await walletService.send(guardianAddress, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
       customMetadata: { request: { requestType: TangleRequestType.AWARD_CREATE, ...newAward } },
     });
     await MnemonicService.store(guardianAddress.bech32, guardianAddress.mnemonic);
@@ -73,21 +73,21 @@ describe('Award tangle request', () => {
     let credit = snap[0] as Transaction;
     await requestFundsFromFaucet(
       Network.RMS,
-      credit.payload.response.address,
-      credit.payload.response.amount,
+      credit.payload.response!.address as string,
+      credit.payload.response!.amount as number,
     );
 
-    const awardDocRef = build5Db().doc(`${COL.AWARD}/${credit.payload.response.award}`);
+    const awardDocRef = build5Db().doc(`${COL.AWARD}/${credit.payload.response!.award}`);
     await wait(async () => {
       const award = (await awardDocRef.get()) as Award;
       return award.approved;
     });
 
-    await walletService.send(guardianAddress, tangleOrder.payload.targetAddress, MIN_IOTA_AMOUNT, {
+    await walletService.send(guardianAddress, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
       customMetadata: {
         request: {
           requestType: TangleRequestType.AWARD_APPROVE_PARTICIPANT,
-          award: credit.payload.response.award,
+          award: credit.payload.response!.award,
           members: Array.from(Array(150)).map(() => guardian),
         },
       },
@@ -97,12 +97,12 @@ describe('Award tangle request', () => {
       const snap = await creditQuery.get<Transaction>();
       return (
         snap.length === 2 &&
-        snap.reduce((acc, act) => acc && act?.payload?.walletReference?.confirmed, true)
+        snap.reduce((acc, act) => acc && (act?.payload?.walletReference?.confirmed || false), true)
       );
     });
     snap = await creditQuery.get<Transaction>();
     credit = snap.find((d) => !isEmpty(d?.payload?.response?.badges))!;
-    expect(Object.keys(credit.payload.response.badges).length).toBe(150);
+    expect(Object.keys(credit.payload.response!.badges as any).length).toBe(150);
 
     await wait(async () => {
       const snap = await build5Db().collection(COL.AIRDROP).where('member', '==', guardian).get();

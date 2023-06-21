@@ -1,5 +1,4 @@
 import {
-  BillPaymentType,
   COL,
   CreditPaymentReason,
   DEFAULT_NETWORK,
@@ -19,7 +18,7 @@ import {
   TokenTradeOrderStatus,
   TokenTradeOrderType,
   Transaction,
-  TransactionCreditType,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import bigDecimal from 'js-big-decimal';
@@ -211,11 +210,11 @@ describe('Trade trigger', () => {
     expect(billPayment.payload.targetAddress).toBe(getAddress(sellerData, Network.IOTA));
     expect(billPayment.payload.token).toBe(token.uid);
     expect(billPayment.payload.tokenSymbol).toBe(token.symbol);
-    expect(billPayment.payload.type).toBe(BillPaymentType.PRE_MINTED_TOKEN_TRADE);
+    expect(billPayment.payload.type).toBe(TransactionPayloadType.PRE_MINTED_TOKEN_TRADE);
 
     const paymentSnap = await getBillPayments(buyer);
     expect(paymentSnap.length).toBe(3);
-    const payments = paymentSnap.sort((a, b) => a.payload.amount - b.payload.amount);
+    const payments = paymentSnap.sort((a, b) => a.payload.amount! - b.payload.amount!);
     expect(payments.map((d) => d.payload.amount)).toEqual(
       getRoyaltyDistribution(MIN_IOTA_AMOUNT * tokenCount),
     );
@@ -283,11 +282,11 @@ describe('Trade trigger', () => {
     expect(billPayment.payload.targetAddress).toBe(getAddress(sellerData, Network.IOTA));
     expect(billPayment.payload.token).toBe(token.uid);
     expect(billPayment.payload.tokenSymbol).toBe(token.symbol);
-    expect(billPayment.payload.type).toBe(BillPaymentType.PRE_MINTED_TOKEN_TRADE);
+    expect(billPayment.payload.type).toBe(TransactionPayloadType.PRE_MINTED_TOKEN_TRADE);
 
     const paymentSnap = await getBillPayments(buyer);
     expect(paymentSnap.length).toBe(3);
-    const payments = paymentSnap.sort((a, b) => a.payload.amount - b.payload.amount);
+    const payments = paymentSnap.sort((a, b) => a.payload.amount! - b.payload.amount!);
     expect(payments.map((d) => d.payload.amount)).toEqual(
       getRoyaltyDistribution(MIN_IOTA_AMOUNT * tokenCount),
     );
@@ -350,7 +349,7 @@ describe('Trade trigger', () => {
 
     const paymentSnap = await getBillPayments(buyer);
     expect(paymentSnap.length).toBe(6);
-    const amounts = paymentSnap.map((d) => d.payload.amount).sort((a, b) => a - b);
+    const amounts = paymentSnap.map((d) => d.payload.amount!).sort((a, b) => a - b);
     expect(amounts).toEqual(
       [
         ...getRoyaltyDistribution(MIN_IOTA_AMOUNT * tokenCount),
@@ -536,7 +535,7 @@ describe('Trade trigger', () => {
 
     const paymentSnap = await getBillPayments(buyer);
     expect(paymentSnap.length).toBe(9);
-    const amounts = paymentSnap.map((d) => d.payload.amount).sort((a, b) => a - b);
+    const amounts = paymentSnap.map((d) => d.payload.amount!).sort((a, b) => a - b);
     const sortedAmount = getRoyaltyDistribution(MIN_IOTA_AMOUNT * tokenCount);
     expect(amounts).toEqual(
       [...sortedAmount, ...sortedAmount, ...sortedAmount].sort((a, b) => a - b),
@@ -581,7 +580,7 @@ describe('Trade trigger', () => {
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', buyer)
-      .where('payload.type', '==', TransactionCreditType.TOKEN_BUY)
+      .where('payload.type', '==', TransactionPayloadType.TOKEN_BUY)
       .get<Transaction>();
     expect(creditSnap.length).toBe(1);
     expect(creditSnap[0]?.payload?.amount).toBe(tokenCount * MIN_IOTA_AMOUNT);
@@ -632,7 +631,7 @@ describe('Trade trigger', () => {
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', buyer)
-      .where('payload.type', '==', TransactionCreditType.TOKEN_BUY)
+      .where('payload.type', '==', TransactionPayloadType.TOKEN_BUY)
       .get<Transaction>();
     expect(creditSnap.length).toBe(1);
     expect(creditSnap[0]?.payload?.amount).toBe(tokenCount * MIN_IOTA_AMOUNT + 1);
@@ -994,7 +993,7 @@ describe('Trade trigger', () => {
     });
     const paymentSnap = await getBillPayments(buyer);
     expect(paymentSnap.length).toBe(3);
-    const sortedPayments = paymentSnap.sort((a, b) => a.payload.amount - b.payload.amount);
+    const sortedPayments = paymentSnap.sort((a, b) => a.payload.amount! - b.payload.amount!);
     expect(sortedPayments.map((d) => d.payload.amount)).toEqual(
       getRoyaltyDistribution(MIN_IOTA_AMOUNT * tokenCount),
     );

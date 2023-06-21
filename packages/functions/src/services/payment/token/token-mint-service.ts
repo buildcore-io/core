@@ -1,10 +1,4 @@
-import {
-  COL,
-  Token,
-  TokenStatus,
-  TransactionCreditType,
-  TransactionOrder,
-} from '@build-5/interfaces';
+import { COL, Token, TokenStatus, Transaction, TransactionPayloadType } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get } from 'lodash';
 import { build5Db } from '../../../firebase/firestore/build5Db';
@@ -13,14 +7,14 @@ import { TransactionMatch, TransactionService } from '../transaction-service';
 export class TokenMintService {
   constructor(readonly transactionService: TransactionService) {}
 
-  public handleMintingRequest = async (order: TransactionOrder, match: TransactionMatch) => {
+  public handleMintingRequest = async (order: Transaction, match: TransactionMatch) => {
     const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${order.payload.token}`);
     const token = <Token>await this.transactionService.get(tokenDocRef);
 
     const payment = await this.transactionService.createPayment(order, match);
     if (![TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED].includes(token.status)) {
       await this.transactionService.createCredit(
-        TransactionCreditType.DATA_NO_LONGER_VALID,
+        TransactionPayloadType.DATA_NO_LONGER_VALID,
         payment,
         match,
       );
@@ -29,7 +23,7 @@ export class TokenMintService {
 
     if (token.coolDownEnd && dayjs().subtract(1, 'm').isBefore(dayjs(token.coolDownEnd.toDate()))) {
       await this.transactionService.createCredit(
-        TransactionCreditType.DATA_NO_LONGER_VALID,
+        TransactionPayloadType.DATA_NO_LONGER_VALID,
         payment,
         match,
       );

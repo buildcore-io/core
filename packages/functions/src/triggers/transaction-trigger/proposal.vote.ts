@@ -4,7 +4,7 @@ import { SmrMilestoneTransactionAdapter } from '../milestone-transactions-trigge
 
 export const onProposalVoteCreditConfirmed = async (transaction: Transaction) => {
   const milestoneDoc = (await build5Db()
-    .doc(transaction.payload.walletReference.milestoneTransactionPath)
+    .doc(transaction.payload.walletReference?.milestoneTransactionPath!)
     .get<Record<string, unknown>>())!;
   const adapter = new SmrMilestoneTransactionAdapter(transaction.network!);
   const milestoneTransaction = await adapter.toMilestoneTransaction(milestoneDoc);

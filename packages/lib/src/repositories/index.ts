@@ -7,7 +7,6 @@ export * from './StakeRewardRepository';
 export * from './TickerRepository';
 export * from './TransactionRepository';
 export * from './award/index';
-export * from './collection/CollectionRepository';
 export * from './collection/index';
 export * from './proposal/intex';
 export * from './space/index';

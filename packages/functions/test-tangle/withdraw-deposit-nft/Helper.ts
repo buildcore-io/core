@@ -16,7 +16,7 @@ import {
   Space,
   Timestamp,
   Transaction,
-  TransactionMintCollectionType,
+  TransactionPayloadType,
   TransactionType,
   UnsoldMintingOptions,
 } from '@build-5/interfaces';
@@ -161,7 +161,7 @@ export class Helper {
       await build5Db()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.MINT_COLLECTION)
-        .where('payload.type', '==', TransactionMintCollectionType.SEND_ALIAS_TO_GUARDIAN)
+        .where('payload.type', '==', TransactionPayloadType.SEND_ALIAS_TO_GUARDIAN)
         .where('member', '==', this.guardian)
         .get()
     ).map((d) => <Transaction>d);
@@ -183,7 +183,7 @@ export class Helper {
     storageReturnAddress?: string,
   ) => {
     if (!expiresOn) {
-      const order = <Transaction>{
+      const order: Transaction = {
         type: TransactionType.WITHDRAW_NFT,
         uid: getRandomEthAddress(),
         member: this.guardian,
@@ -340,7 +340,7 @@ export class Helper {
   });
 
   public claimSpaceFunc = async (spaceId: string) => {
-    mockWalletReturnValue(this.walletSpy, this.guardian!, { space: spaceId });
+    mockWalletReturnValue(this.walletSpy, this.guardian!, { uid: spaceId });
     const order = await testEnv.wrap(claimSpace)({});
     await this.walletService!.send(
       this.guardianAddress!,

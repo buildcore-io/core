@@ -6,7 +6,7 @@ import {
   Member,
   Nft,
   NftAccess,
-  Timestamp,
+  NftSetForSaleRequest,
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
@@ -15,7 +15,10 @@ import { assertMemberHasValidAddress } from '../../utils/address.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 
-export const setForSaleNftControl = async (owner: string, params: Record<string, unknown>) => {
+export const setForSaleNftControl = async (
+  owner: string,
+  params: NftSetForSaleRequest,
+): Promise<Nft> => {
   const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
   const member = await memberDocRef.get<Member>();
   if (!member) {
@@ -47,11 +50,11 @@ export const setForSaleNftControl = async (owner: string, params: Record<string,
   assertMemberHasValidAddress(member, nft.mintingData?.network || DEFAULT_NETWORK);
 
   if (params.availableFrom) {
-    params.availableFrom = dateToTimestamp(params.availableFrom as Date, true);
+    params.availableFrom = dateToTimestamp(params.availableFrom, true).toDate();
   }
 
   if (params.auctionFrom) {
-    params.auctionFrom = dateToTimestamp(params.auctionFrom as Date, true);
+    params.auctionFrom = dateToTimestamp(params.auctionFrom, true).toDate();
   }
 
   if (params.auctionFrom && nft.auctionFrom && dayjs(nft.auctionFrom.toDate()).isBefore(dayjs())) {
@@ -65,10 +68,10 @@ export const setForSaleNftControl = async (owner: string, params: Record<string,
   }
 
   await nftDocRef.update(getNftUpdateData(params));
-  return await nftDocRef.get<Nft>();
+  return (await nftDocRef.get<Nft>())!;
 };
 
-const getNftUpdateData = (params: Record<string, unknown>) => {
+const getNftUpdateData = (params: NftSetForSaleRequest) => {
   const update: Record<string, unknown> = {
     saleAccess: params.access || NftAccess.OPEN,
     saleAccessMembers: params.accessMembers || [],
@@ -76,11 +79,9 @@ const getNftUpdateData = (params: Record<string, unknown>) => {
 
   if (params.auctionFrom) {
     update.auctionFrom = params.auctionFrom;
-    update.auctionTo = dayjs((params.auctionFrom as Timestamp).toDate())
-      .add(parseInt(params.auctionLength as string), 'ms')
-      .toDate();
-    update.auctionFloorPrice = parseInt(params.auctionFloorPrice as string);
-    update.auctionLength = parseInt(params.auctionLength as string);
+    update.auctionTo = dayjs(params.auctionFrom).add(params.auctionLength, 'ms').toDate();
+    update.auctionFloorPrice = params.auctionFloorPrice;
+    update.auctionLength = params.auctionLength;
     update.auctionHighestBid = 0;
     update.auctionHighestBidder = null;
     update.auctionHighestTransaction = null;
@@ -96,7 +97,7 @@ const getNftUpdateData = (params: Record<string, unknown>) => {
 
   if (params.availableFrom) {
     update.availableFrom = params.availableFrom;
-    update.availablePrice = parseInt(params.price as string);
+    update.availablePrice = params.price;
   } else {
     update.availableFrom = null;
     update.availablePrice = null;

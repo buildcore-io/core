@@ -1,15 +1,13 @@
 import {
-  BillPaymentType,
-  calcStakedMultiplier,
   COL,
   Entity,
   Stake,
   StakeType,
   Token,
   Transaction,
-  TransactionCreditType,
-  TransactionOrder,
+  TransactionPayloadType,
   TransactionType,
+  calcStakedMultiplier,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get } from 'lodash';
@@ -21,20 +19,17 @@ import { TransactionMatch, TransactionService } from './transaction-service';
 export class StakeService {
   constructor(readonly transactionService: TransactionService) {}
 
-  public handleStakeOrder = async (order: TransactionOrder, match: TransactionMatch) => {
+  public handleStakeOrder = async (order: Transaction, match: TransactionMatch) => {
     const payment = await this.transactionService.createPayment(order, match);
 
     const matchAmount = match.to.amount;
-    const nativeTokens = (match.to.nativeTokens || []).map((nt) => ({
-      ...nt,
-      amount: Number(nt.amount),
-    }));
+    const nativeTokens = (match.to.nativeTokens || []).map((nt) => ({ ...nt, amount: nt.amount }));
     const tokenId = get(order, 'payload.tokenId', '');
     const stakeAmount = Number(nativeTokens.find((nt) => nt.id === tokenId)?.amount || 0);
 
-    if (!stakeAmount || nativeTokens.length > 1 || matchAmount < order.payload.amount) {
+    if (!stakeAmount || nativeTokens.length > 1 || matchAmount < order.payload.amount!) {
       await this.transactionService.createCredit(
-        TransactionCreditType.INVALID_AMOUNT,
+        TransactionPayloadType.INVALID_AMOUNT,
         payment,
         match,
       );
@@ -50,22 +45,22 @@ export class StakeService {
     const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${tokenUid}`);
     const token = <Token>await tokenDocRef.get();
 
-    const billPayment = <Transaction>{
+    const billPayment: Transaction = {
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       member: order.member,
       space: order.space,
       network: order.network,
       payload: {
-        type: BillPaymentType.STAKE,
+        type: TransactionPayloadType.STAKE,
         amount: matchAmount,
         nativeTokens,
         sourceAddress: order.payload.targetAddress,
         targetAddress: match.from.address,
         previousOwnerEntity: Entity.MEMBER,
-        previousOwner: order.member,
+        previousOwner: order.member!,
         ownerEntity: Entity.MEMBER,
-        owner: order.member,
+        owner: order.member!,
         sourceTransaction: [payment.uid],
         royalty: false,
         void: false,

@@ -1,14 +1,12 @@
-import { COL, SUB_COL } from '@build-5/interfaces';
+import { COL, SUB_COL, SpaceMemberUpsertRequest } from '@build-5/interfaces';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { assertIsGuardian } from '../../utils/token.utils';
 
-export const declineMemberControl = async (owner: string, params: Record<string, unknown>) => {
-  await assertIsGuardian(params.uid as string, owner);
+export const declineMemberControl = async (owner: string, params: SpaceMemberUpsertRequest) => {
+  await assertIsGuardian(params.uid, owner);
 
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
-  const knockingMemberDocRef = spaceDocRef
-    .collection(SUB_COL.KNOCKING_MEMBERS)
-    .doc(params.member as string);
+  const knockingMemberDocRef = spaceDocRef.collection(SUB_COL.KNOCKING_MEMBERS).doc(params.member);
 
   const knockingMemberDoc = await knockingMemberDocRef.get();
 

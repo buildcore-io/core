@@ -1,12 +1,14 @@
 import {
   COL,
   DEFAULT_NETWORK,
+  Entity,
   Member,
+  OrderTokenRequest,
   Space,
   Token,
   TokenStatus,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
   WenError,
@@ -24,7 +26,7 @@ import { tokenIsInPublicSalePeriod, tokenOrderTransactionDocId } from '../../uti
 
 export const orderTokenControl = async (
   owner: string,
-  params: Record<string, unknown>,
+  params: OrderTokenRequest,
   customParams?: Record<string, unknown>,
 ) => {
   const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
@@ -60,19 +62,19 @@ export const orderTokenControl = async (
   const newWallet = await WalletService.newWallet(network);
   const targetAddress = await newWallet.getNewIotaAddressDetails();
   await build5Db().runTransaction(async (transaction) => {
-    const order = await transaction.get(orderDoc);
+    const order = await transaction.get<Transaction>(orderDoc);
     if (!order) {
-      const data = <Transaction>{
+      const data: Transaction = {
         type: TransactionType.ORDER,
         uid: tranId,
         member: owner,
         space: token.space,
         network,
         payload: {
-          type: TransactionOrderType.TOKEN_PURCHASE,
+          type: TransactionPayloadType.TOKEN_PURCHASE,
           amount: token.pricePerToken,
           targetAddress: targetAddress.bech32,
-          beneficiary: 'space',
+          beneficiary: Entity.SPACE,
           beneficiaryUid: token.space,
           beneficiaryAddress: getAddress(space, network),
           expiresOn: dateToTimestamp(
@@ -90,5 +92,5 @@ export const orderTokenControl = async (
     }
   });
 
-  return await orderDoc.get<Transaction>();
+  return (await orderDoc.get<Transaction>())!;
 };

@@ -1,18 +1,17 @@
 import { INodeInfo } from '@iota/iota.js-next';
 
 import {
-  BillPaymentType,
   COL,
   Entity,
-  Member,
   MIN_IOTA_AMOUNT,
+  Member,
   Space,
   Token,
   TokenPurchase,
   TokenTradeOrder,
   TokenTradeOrderType,
   Transaction,
-  TransactionCreditType,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import bigDecimal from 'js-big-decimal';
@@ -52,7 +51,7 @@ const createIotaPayments = async (
     space: token.space,
     network: sell.sourceNetwork!,
     payload: {
-      type: BillPaymentType.BASE_TOKEN_TRADE,
+      type: TransactionPayloadType.BASE_TOKEN_TRADE,
       amount: count,
       sourceAddress: sellOrder!.payload.targetAddress,
       targetAddress: getAddress(buyer, sell.sourceNetwork!),
@@ -77,7 +76,7 @@ const createIotaPayments = async (
     network: sell.sourceNetwork,
     space: token.space,
     payload: {
-      type: TransactionCreditType.TOKEN_TRADE_FULLFILLMENT,
+      type: TransactionPayloadType.TOKEN_TRADE_FULLFILLMENT,
       dependsOnBillPayment: true,
       amount: balance,
       sourceAddress: sellOrder!.payload.targetAddress,
@@ -116,7 +115,7 @@ const createRoyaltyPayment = async (
     member: buy.owner,
     network: buy.sourceNetwork,
     payload: {
-      type: BillPaymentType.BASE_TOKEN_TRADE,
+      type: TransactionPayloadType.BASE_TOKEN_TRADE,
       amount: Number(output.amount) + fee,
       storageReturn: {
         amount: Number(output.amount),
@@ -178,7 +177,7 @@ const createSmrPayments = async (
     );
   const royaltyPayments = await Promise.all(royaltyPaymentPromises);
   royaltyPayments.forEach((rp) => {
-    salePrice -= rp.payload.amount;
+    salePrice -= rp.payload.amount!;
   });
 
   const billPaymentOutput = packBasicOutput(tmpAddress.bech32, salePrice, undefined, wallet.info);
@@ -193,7 +192,7 @@ const createSmrPayments = async (
     space: token.space,
     network: buy.sourceNetwork!,
     payload: {
-      type: BillPaymentType.BASE_TOKEN_TRADE,
+      type: TransactionPayloadType.BASE_TOKEN_TRADE,
       amount: salePrice,
       sourceAddress: buyOrder!.payload.targetAddress,
       targetAddress: getAddress(seller, buy.sourceNetwork!),
@@ -219,7 +218,7 @@ const createSmrPayments = async (
     network: buy.sourceNetwork,
     space: token.space,
     payload: {
-      type: TransactionCreditType.TOKEN_TRADE_FULLFILLMENT,
+      type: TransactionPayloadType.TOKEN_TRADE_FULLFILLMENT,
       dependsOnBillPayment: true,
       amount: balanceLeft,
       sourceAddress: buyOrder!.payload.targetAddress,

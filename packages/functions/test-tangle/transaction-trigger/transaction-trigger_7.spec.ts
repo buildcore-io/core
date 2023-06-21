@@ -56,7 +56,7 @@ describe('Transaction trigger spec', () => {
       await wait(async () => {
         const snap = await query.get<Transaction>();
         const allConfirmed = snap.reduce(
-          (acc, act) => acc && act?.payload?.walletReference?.confirmed,
+          (acc, act) => acc && (act?.payload?.walletReference?.confirmed || false),
           true,
         );
         return snap.length === count && allConfirmed;

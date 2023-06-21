@@ -57,7 +57,7 @@ describe('Award tangle request', () => {
     await requestFundsFromFaucet(Network.RMS, guardianAddress.bech32, 5 * MIN_IOTA_AMOUNT);
     await walletService.send(
       guardianAddress,
-      tangleOrder.payload.targetAddress,
+      tangleOrder.payload.targetAddress!,
       5 * MIN_IOTA_AMOUNT,
       {
         customMetadata: {
@@ -83,11 +83,11 @@ describe('Award tangle request', () => {
 
     await requestFundsFromFaucet(
       Network.RMS,
-      credit.payload.response.address,
-      credit.payload.response.amount,
+      credit.payload.response!.address as string,
+      credit.payload.response!.amount as number,
     );
 
-    const awardDocRef = build5Db().doc(`${COL.AWARD}/${credit.payload.response.award}`);
+    const awardDocRef = build5Db().doc(`${COL.AWARD}/${credit.payload.response!.award}`);
     await wait(async () => {
       const award = (await awardDocRef.get()) as Award;
       return award.funded;
@@ -97,7 +97,7 @@ describe('Award tangle request', () => {
   it('Should create and fund award with new tangle request', async () => {
     const newAward = awardRequest(space.uid, token.symbol);
     await requestFundsFromFaucet(Network.RMS, guardianAddress.bech32, 5 * MIN_IOTA_AMOUNT);
-    await walletService.send(guardianAddress, tangleOrder.payload.targetAddress, MIN_IOTA_AMOUNT, {
+    await walletService.send(guardianAddress, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
       customMetadata: {
         request: {
           requestType: TangleRequestType.AWARD_CREATE,
@@ -118,13 +118,13 @@ describe('Award tangle request', () => {
     let snap = await creditQuery.get<Transaction>();
     let credit = snap[0] as Transaction;
     expect(credit.payload.amount).toBe(MIN_IOTA_AMOUNT);
-    const awardDocRef = build5Db().doc(`${COL.AWARD}/${credit.payload.response.award}`);
+    const awardDocRef = build5Db().doc(`${COL.AWARD}/${credit.payload.response!.award}`);
 
-    await walletService.send(guardianAddress, tangleOrder.payload.targetAddress, MIN_IOTA_AMOUNT, {
+    await walletService.send(guardianAddress, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
       customMetadata: {
         request: {
           requestType: TangleRequestType.AWARD_FUND,
-          uid: credit.payload.response.award,
+          uid: credit.payload.response!.award,
         },
       },
     });
@@ -136,8 +136,8 @@ describe('Award tangle request', () => {
     credit = snap.find((doc) => doc?.payload?.response?.award === undefined)!;
     await requestFundsFromFaucet(
       Network.RMS,
-      credit.payload.response.address,
-      credit.payload.response.amount,
+      credit.payload.response!.address as string,
+      credit.payload.response!.amount as number,
     );
 
     await wait(async () => {

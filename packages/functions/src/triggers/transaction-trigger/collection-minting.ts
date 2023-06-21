@@ -5,7 +5,7 @@ import {
   Member,
   NftStatus,
   Transaction,
-  TransactionMintCollectionType,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import { ITransactionPayload, TransactionHelper } from '@iota/iota.js-next';
@@ -20,23 +20,23 @@ import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const onCollectionMintingUpdate = async (transaction: Transaction) => {
   switch (transaction.payload.type) {
-    case TransactionMintCollectionType.MINT_ALIAS: {
+    case TransactionPayloadType.MINT_ALIAS: {
       await onCollectionAliasMinted(transaction);
       break;
     }
-    case TransactionMintCollectionType.MINT_COLLECTION: {
+    case TransactionPayloadType.MINT_COLLECTION: {
       await onCollectionMinted(transaction);
       break;
     }
-    case TransactionMintCollectionType.MINT_NFTS: {
+    case TransactionPayloadType.MINT_NFTS: {
       await onNftMintSuccess(transaction);
       break;
     }
-    case TransactionMintCollectionType.LOCK_COLLECTION: {
+    case TransactionPayloadType.LOCK_COLLECTION: {
       await onCollectionLocked(transaction);
       break;
     }
-    case TransactionMintCollectionType.SEND_ALIAS_TO_GUARDIAN: {
+    case TransactionPayloadType.SEND_ALIAS_TO_GUARDIAN: {
       await onCollectionAliasTransfered(transaction);
       break;
     }
@@ -48,7 +48,7 @@ export const onCollectionMintingUpdate = async (transaction: Transaction) => {
 };
 
 const onCollectionAliasMinted = async (transaction: Transaction) => {
-  const path = transaction.payload.walletReference.milestoneTransactionPath;
+  const path = transaction.payload.walletReference?.milestoneTransactionPath!;
   const milestoneTransaction = (await build5Db().doc(path).get<Record<string, unknown>>())!;
 
   const aliasOutputId =
@@ -69,7 +69,7 @@ const onCollectionAliasMinted = async (transaction: Transaction) => {
     space: transaction.space,
     network: transaction.network,
     payload: {
-      type: TransactionMintCollectionType.MINT_COLLECTION,
+      type: TransactionPayloadType.MINT_COLLECTION,
       amount: get(transaction, 'payload.collectionStorageDeposit', 0),
       sourceAddress: transaction.payload.sourceAddress,
       collection: transaction.payload.collection,
@@ -79,7 +79,7 @@ const onCollectionAliasMinted = async (transaction: Transaction) => {
 };
 
 const onCollectionMinted = async (transaction: Transaction) => {
-  const path = transaction.payload.walletReference.milestoneTransactionPath;
+  const path = transaction.payload.walletReference?.milestoneTransactionPath!;
   const milestoneTransaction = (await build5Db().doc(path).get<Record<string, unknown>>())!;
   const collectionOutputId =
     getTransactionPayloadHex(milestoneTransaction.payload as ITransactionPayload) +
@@ -116,10 +116,10 @@ const onNftMintSuccess = async (transaction: Transaction) => {
   await build5Db()
     .doc(`${COL.COLLECTION}/${transaction.payload.collection}`)
     .update({
-      'mintingData.nftsToMint': build5Db().inc(-transaction.payload.nfts.length),
+      'mintingData.nftsToMint': build5Db().inc(-transaction.payload.nfts!.length),
     });
   const milestoneTransaction = (await build5Db()
-    .doc(transaction.payload.walletReference.milestoneTransactionPath)
+    .doc(transaction.payload.walletReference?.milestoneTransactionPath!)
     .get<Record<string, unknown>>())!;
   const promises = (transaction.payload.nfts as string[]).map((nftId, i) => {
     const outputId =
@@ -137,7 +137,7 @@ const onNftMintSuccess = async (transaction: Transaction) => {
       });
   });
   await Promise.all(promises);
-  if (collection.mintingData?.nftsToMint! - transaction.payload.nfts.length > 0) {
+  if (collection.mintingData?.nftsToMint! - transaction.payload.nfts!.length > 0) {
     const order = createMintNftsTransaction(transaction);
     await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
   }
@@ -151,7 +151,7 @@ const createMintNftsTransaction = (transaction: Transaction) =>
     space: transaction.space,
     network: transaction.network,
     payload: {
-      type: TransactionMintCollectionType.MINT_NFTS,
+      type: TransactionPayloadType.MINT_NFTS,
       sourceAddress: transaction.payload.sourceAddress,
       collection: transaction.payload.collection,
     },
@@ -166,7 +166,7 @@ const onCollectionLocked = async (transaction: Transaction) => {
     space: transaction.space,
     network: transaction.network,
     payload: {
-      type: TransactionMintCollectionType.SEND_ALIAS_TO_GUARDIAN,
+      type: TransactionPayloadType.SEND_ALIAS_TO_GUARDIAN,
       amount: transaction.payload.aliasStorageDeposit,
       sourceAddress: transaction.payload.sourceAddress,
       targetAddress: getAddress(member, transaction.network!),

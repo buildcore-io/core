@@ -6,7 +6,6 @@ import {
   Network,
   TangleRequestType,
   Transaction,
-  TransactionOrder,
   WenError,
 } from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
@@ -40,7 +39,7 @@ export class TangleRequestService {
   constructor(readonly transactionService: TransactionService) {}
 
   public onTangleRequest = async (
-    order: TransactionOrder,
+    order: Transaction,
     tran: MilestoneTransaction,
     tranEntry: MilestoneTransactionEntry,
     match: TransactionMatch,
@@ -64,7 +63,12 @@ export class TangleRequestService {
         build5Transaction,
       );
       if (response) {
-        this.transactionService.createTangleCredit(payment, match, response, tranEntry.outputId!);
+        this.transactionService.createTangleCredit(
+          payment,
+          match,
+          { ...response },
+          tranEntry.outputId!,
+        );
       }
     } catch (error) {
       functions.logger.warn(owner, error);
@@ -85,7 +89,7 @@ export class TangleRequestService {
   };
 
   public handleTangleRequest = async (
-    order: TransactionOrder,
+    order: Transaction,
     match: TransactionMatch,
     payment: Transaction,
     tran: MilestoneTransaction,

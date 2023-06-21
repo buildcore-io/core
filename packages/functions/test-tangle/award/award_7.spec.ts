@@ -7,7 +7,7 @@ import {
   Token,
   TokenStatus,
   Transaction,
-  TransactionAwardType,
+  TransactionPayloadType,
 } from '@build-5/interfaces';
 import { INftOutput, IndexerPluginClient } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
@@ -96,7 +96,7 @@ describe('Create award, base', () => {
     const nttQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
-      .where('payload.type', '==', TransactionAwardType.BADGE);
+      .where('payload.type', '==', TransactionPayloadType.BADGE);
     await wait(async () => {
       const snap = await nttQuery.get();
       return snap.length === 2;
@@ -152,9 +152,9 @@ describe('Create award, base', () => {
       expect(getAttributeValue(nttMetadata, 'tokenReward')).toBe(5);
       expect(getAttributeValue(nttMetadata, 'tokenId')).toBe(MINTED_TOKEN_ID);
       expect(getAttributeValue(nttMetadata, 'edition')).toBe(transaction.payload.edition);
-      editions.push(transaction.payload.edition);
+      editions.push(transaction.payload.edition!);
       expect(getAttributeValue(nttMetadata, 'participated_on')).toBe(
-        dayjs(transaction.payload.participatedOn.toDate()).unix(),
+        dayjs(transaction.payload.participatedOn!.toDate()).unix(),
       );
     }
     expect(editions.sort()).toEqual([1, 2]);

@@ -16,7 +16,7 @@ export const onRequest =
     joiOptions?: Joi.ValidationOptions,
   ) =>
   <P, R>(
-    schema: Joi.Schema,
+    schema: Joi.AnySchema<P>,
     func: (owner: string, params: P, customParams?: Record<string, unknown>) => Promise<R>,
     validateOnlyUid = false,
   ) =>

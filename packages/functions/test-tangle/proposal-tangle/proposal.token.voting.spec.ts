@@ -34,14 +34,14 @@ describe('Create proposal via tangle request', () => {
   it('Should vote full, then 50%', async () => {
     await helper.walletService.send(
       helper.guardianAddress,
-      helper.tangleOrder.payload.targetAddress,
+      helper.tangleOrder.payload.targetAddress!,
       MIN_IOTA_AMOUNT,
       {
         customMetadata: {
           request: {
             requestType: TangleRequestType.PROPOSAL_VOTE,
             uid: proposalUid,
-            values: [1],
+            value: 1,
           },
         },
         nativeTokens: [{ amount: '0xa', id: MINTED_TOKEN_ID }],

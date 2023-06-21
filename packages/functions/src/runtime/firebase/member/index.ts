@@ -1,6 +1,8 @@
 import {
+  CreateMemberRequest,
   DISCORD_REGEXP,
   GITHUB_REGEXP,
+  MemberUpdateRequest,
   TWITTER_REGEXP,
   WEN_FUNC,
   WenError,
@@ -11,16 +13,20 @@ import Joi from 'joi';
 import { createMemberControl } from '../../../controls/member/member.create';
 import { updateMemberControl } from '../../../controls/member/member.update';
 import { onRequest, onRequestConfig } from '../../../firebase/functions/onRequest';
-import { CommonJoi } from '../../../services/joi/common';
+import { CommonJoi, toJoiObject } from '../../../services/joi/common';
 import { assertValidationAsync } from '../../../utils/schema.utils';
-export const updateMemberSchema = Joi.object({
+
+export const updateMemberSchema = toJoiObject<MemberUpdateRequest>({
   name: Joi.string().allow(null, '').optional(),
   about: Joi.string().allow(null, '').optional(),
   discord: Joi.string().allow(null, '').regex(DISCORD_REGEXP).optional(),
   github: Joi.string().allow(null, '').regex(GITHUB_REGEXP).optional(),
   twitter: Joi.string().allow(null, '').regex(TWITTER_REGEXP).optional(),
   avatarNft: CommonJoi.uid(false),
+  avatar: CommonJoi.uid(false),
 });
+
+const createMemberSchema = toJoiObject<CreateMemberRequest>({ address: CommonJoi.uid() });
 
 export const createMember = functions.https.onRequest(
   onRequestConfig(WEN_FUNC.createMember),
@@ -28,8 +34,7 @@ export const createMember = functions.https.onRequest(
     cors({ origin: true })(req, res, async () => {
       try {
         const address = req.body.data;
-        const schema = Joi.object({ address: CommonJoi.uid() });
-        await assertValidationAsync(schema, { address });
+        await assertValidationAsync(createMemberSchema, { address });
         res.send({ data: await createMemberControl(address) });
       } catch {
         res.status(401);

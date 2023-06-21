@@ -1,4 +1,4 @@
-import { COL, SUB_COL, Token, TokenTradeOrderType, WenError } from '@build-5/interfaces';
+import { COL, SUB_COL, Token, TradeTokenRequest, WenError } from '@build-5/interfaces';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { createTokenTradeOrder } from '../../services/payment/tangle-service/token-trade.service';
 import { invalidArgument } from '../../utils/error.utils';
@@ -6,10 +6,10 @@ import { getTokenBySymbol } from '../../utils/token.utils';
 
 export const tradeTokenControl = async (
   owner: string,
-  params: Record<string, unknown>,
+  params: TradeTokenRequest,
   customParams?: Record<string, unknown>,
 ) => {
-  let token = await getTokenBySymbol(params.symbol as string);
+  let token = await getTokenBySymbol(params.symbol);
 
   return await build5Db().runTransaction(async (transaction) => {
     const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token?.uid}`);
@@ -25,9 +25,9 @@ export const tradeTokenControl = async (
       transaction,
       owner,
       token,
-      params.type as TokenTradeOrderType,
-      params.count as number,
-      params.price as number,
+      params.type,
+      params.count,
+      params.price,
       customParams?.ip as string | undefined,
     );
     if (tradeOrder) {

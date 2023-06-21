@@ -22,7 +22,7 @@ describe('Token based voting', () => {
       status: TokenStatus.PRE_MINTED,
       approved: false,
     };
-    await build5Db().doc(`${COL.TOKEN}/${falseToken}`).create(falseToken);
+    await build5Db().doc(`${COL.TOKEN}/${falseToken.uid}`).create(falseToken);
 
     const voteTransactionOrder = await helper.voteOnProposal(1);
 

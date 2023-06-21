@@ -1,9 +1,9 @@
 import {
   COL,
-  Network,
+  NftDepositRequest,
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
 } from '@build-5/interfaces';
@@ -13,19 +13,23 @@ import { WalletService } from '../../services/wallet/wallet';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
-export const depositNftControl = async (owner: string, params: Record<string, unknown>) => {
-  const network = params.network as Network;
+export const depositNftControl = async (
+  owner: string,
+  params: NftDepositRequest,
+): Promise<Transaction> => {
+  const network = params.network;
   const wallet = await WalletService.newWallet(network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
 
-  const order = <Transaction>{
+  const order: Transaction = {
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,
     space: '',
     network,
     payload: {
-      type: TransactionOrderType.DEPOSIT_NFT,
+      amount: 0,
+      type: TransactionPayloadType.DEPOSIT_NFT,
       targetAddress: targetAddress.bech32,
       validationType: TransactionValidationType.ADDRESS,
       expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),

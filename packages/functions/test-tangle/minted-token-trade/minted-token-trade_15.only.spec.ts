@@ -84,12 +84,12 @@ describe('Token minting', () => {
       expect(billPayments.length).toBe(2);
 
       const billPaymentToBuyer = billPayments.find(
-        (bp) => (head(bp.payload.nativeTokens) as any)?.amount === 20,
+        (bp) => Number((head(bp.payload.nativeTokens) as any)?.amount) === 20,
       );
       expect(billPaymentToBuyer).toBeDefined();
 
       const billPaymentToSeller = billPayments.find(
-        (bp) => bp.payload.amount === MIN_IOTA_AMOUNT * 20 - billPaymentToBuyer?.payload?.amount,
+        (bp) => bp.payload.amount === MIN_IOTA_AMOUNT * 20 - billPaymentToBuyer?.payload?.amount!,
       );
       expect(billPaymentToSeller).toBeDefined();
 
@@ -135,7 +135,7 @@ describe('Token minting', () => {
     expect(billPaymentToSpaceTwo).toBeDefined();
 
     const billPaymentToBuyer = billPayments.find(
-      (bp) => (head(bp.payload.nativeTokens) as any)?.amount === 20,
+      (bp) => Number((head(bp.payload.nativeTokens) as any)?.amount) === 20,
     );
     expect(billPaymentToBuyer).toBeDefined();
 
@@ -145,7 +145,7 @@ describe('Token minting', () => {
         MIN_IOTA_AMOUNT * 20 * 0.99 -
           billPaymentToSpaceOne?.payload?.storageReturn?.amount! -
           billPaymentToSpaceTwo?.payload?.storageReturn?.amount! -
-          billPaymentToBuyer?.payload?.amount,
+          billPaymentToBuyer?.payload?.amount!,
     );
     expect(billPaymentToSeller).toBeDefined();
 
@@ -182,7 +182,7 @@ describe('Token minting', () => {
     expect(billPaymentToSpaceOne).toBeDefined();
 
     const billPaymentToBuyer = billPayments.find(
-      (bp) => (head(bp.payload.nativeTokens) as any)?.amount === 20,
+      (bp) => Number((head(bp.payload.nativeTokens) as any)?.amount) === 20,
     );
     expect(billPaymentToBuyer).toBeDefined();
 
@@ -191,7 +191,7 @@ describe('Token minting', () => {
         bp.payload.amount ===
         MIN_IOTA_AMOUNT * 20 -
           billPaymentToSpaceOne?.payload?.storageReturn?.amount! -
-          billPaymentToBuyer?.payload?.amount,
+          billPaymentToBuyer?.payload?.amount!,
     );
     expect(billPaymentToSeller).toBeDefined();
 

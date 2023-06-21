@@ -34,7 +34,7 @@ describe('Token based voting', () => {
     await helper.sendTokensToVote(tmp.bech32);
     await wait(async () => {
       const voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
-      return +voteTransaction.payload.weight.toFixed(2) === 5;
+      return +voteTransaction.payload.weight!.toFixed(2) === 5;
     });
     await helper.assertProposalWeights(5, 5);
     await helper.assertProposalMemberWeightsPerAnser(helper.guardian, 5, 1);

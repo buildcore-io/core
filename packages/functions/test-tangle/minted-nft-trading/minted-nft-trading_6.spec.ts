@@ -35,7 +35,7 @@ describe('Minted nft trading', () => {
     await helper.createAndOrderNft(false);
     await helper.mintCollection();
 
-    await helper.walletService!.send(address, tangleOrder.payload.targetAddress, MIN_IOTA_AMOUNT, {
+    await helper.walletService!.send(address, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
       customMetadata: {
         request: {
           requestType: TangleRequestType.NFT_PURCHASE,

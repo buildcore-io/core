@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {
-  BillPaymentType,
   COL,
-  Member,
   MIN_IOTA_AMOUNT,
-  StakeType,
+  Member,
   SUB_COL,
+  StakeType,
   Token,
   TokenDistribution,
   TokenDrop,
   TokenDropStatus,
   TokenStats,
   Transaction,
+  TransactionPayloadType,
   TransactionType,
   WenError,
 } from '@build-5/interfaces';
@@ -141,7 +141,7 @@ describe('Minted token airdrop', () => {
     billPayments.forEach((billPayment) => {
       expect(billPayment.payload.token).toBe(helper.token!.uid);
       expect(billPayment.payload.tokenSymbol).toBe(helper.token!.symbol);
-      expect(billPayment.payload.type).toBe(BillPaymentType.MINTED_AIRDROP_CLAIM);
+      expect(billPayment.payload.type).toBe(TransactionPayloadType.MINTED_AIRDROP_CLAIM);
     });
     for (let i = 0; i < drops.length; ++i) {
       expect(

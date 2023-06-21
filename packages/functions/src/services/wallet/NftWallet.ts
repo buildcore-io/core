@@ -351,7 +351,7 @@ export class NftWallet {
 
     const issuerAddress: INftAddress = { type: NFT_ADDRESS_TYPE, nftId: collectionNftId };
     const ownerAddress = Bech32Helper.addressFromBech32(
-      transaction.payload.targetAddress,
+      transaction.payload.targetAddress!,
       this.wallet.info.protocol.bech32Hrp,
     );
 
@@ -359,7 +359,7 @@ export class NftWallet {
       award,
       collectionNftId,
       transaction.uid,
-      dayjs(get(transaction, 'payload.participatedOn').toDate()),
+      dayjs(get(transaction, 'payload.participatedOn')!.toDate()),
       get(transaction, 'payload.edition', 0),
     );
     const ntt = createNftOutput(
@@ -418,7 +418,7 @@ export class NftWallet {
     );
     const [aliasOutputId, aliasOutput] = Object.entries(aliasOutputs)[0];
 
-    const collectionResult = await indexer.nft(transaction.payload.collectionId);
+    const collectionResult = await indexer.nft(transaction.payload.collectionId!);
     const collectionOutputId = collectionResult.items[0];
     const collectionOutput = (await this.wallet.client.output(collectionOutputId))
       .output as INftOutput;
@@ -443,10 +443,10 @@ export class NftWallet {
       .get<Transaction>();
     const issuerAddress: INftAddress = {
       type: NFT_ADDRESS_TYPE,
-      nftId: transaction.payload.collectionId,
+      nftId: transaction.payload.collectionId!,
     };
     const ownerAddress = Bech32Helper.addressFromBech32(
-      transaction.payload.targetAddress,
+      transaction.payload.targetAddress!,
       this.wallet.info.protocol.bech32Hrp,
     );
     const mutableMetadata = JSON.stringify(get(order, 'payload.metadata', {}));
@@ -518,7 +518,7 @@ export class NftWallet {
     );
     const [aliasOutputId, aliasOutput] = Object.entries(aliasOutputs)[0];
 
-    const collectionResult = await indexer.nft(transaction.payload.collectionId);
+    const collectionResult = await indexer.nft(transaction.payload.collectionId!);
     const collectionOutputId = collectionResult.items[0];
     const collectionOutput = (await this.wallet.client.output(collectionOutputId))
       .output as INftOutput;
@@ -666,7 +666,7 @@ export class NftWallet {
   public changeNftOwner = async (transaction: Transaction, params: SmrParams) => {
     const sourceMnemonic = await MnemonicService.getData(transaction.payload.sourceAddress);
     const nftOutputs = await this.getNftOutputs(
-      transaction.payload.nftId,
+      transaction.payload.nftId || undefined,
       transaction.payload.sourceAddress,
       sourceMnemonic.consumedNftOutputIds,
     );
@@ -675,7 +675,7 @@ export class NftWallet {
 
     const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress);
     const targetAddress = Bech32Helper.addressFromBech32(
-      transaction.payload.targetAddress,
+      transaction.payload.targetAddress!,
       this.wallet.info.protocol.bech32Hrp,
     );
     const output = cloneDeep(nftOutput);

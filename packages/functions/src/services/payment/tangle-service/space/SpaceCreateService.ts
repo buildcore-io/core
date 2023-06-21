@@ -1,4 +1,4 @@
-import { COL, MediaStatus, Network, SUB_COL } from '@build-5/interfaces';
+import { COL, MediaStatus, Network, SUB_COL, SpaceCreateTangleRequest } from '@build-5/interfaces';
 import Joi from 'joi';
 import { get, set } from 'lodash';
 import { build5Db } from '../../../../firebase/firestore/build5Db';
@@ -10,7 +10,7 @@ import { migrateUriToSotrage, uriToUrl } from '../../../../utils/media.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { spaceToIpfsMetadata } from '../../../../utils/space.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { isStorageUrl } from '../../../joi/common';
+import { isStorageUrl, toJoiObject } from '../../../joi/common';
 import { WalletService } from '../../../wallet/wallet';
 import { TransactionService } from '../../transaction-service';
 
@@ -18,9 +18,12 @@ export class SpaceCreateService {
   constructor(readonly transactionService: TransactionService) {}
 
   public handleSpaceCreateRequest = async (owner: string, request: Record<string, unknown>) => {
+    delete request.requestType;
+
     const schema = createSpaceSchema;
     set(schema, 'bannerUrl', Joi.string().uri().optional());
-    await assertValidationAsync(Joi.object(schema), request, { allowUnknown: true });
+    const schemaObj = toJoiObject<SpaceCreateTangleRequest>(schema);
+    await assertValidationAsync(schemaObj, request);
 
     const { space, guardian, member } = await getCreateSpaceData(owner, request);
 

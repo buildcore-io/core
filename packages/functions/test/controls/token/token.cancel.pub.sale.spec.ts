@@ -7,7 +7,7 @@ import {
   TokenDistribution,
   TokenStatus,
   Transaction,
-  TransactionCreditType,
+  TransactionPayloadType,
   TransactionType,
   WEN_FUNC,
 } from '@build-5/interfaces';
@@ -126,10 +126,10 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
     const creditDocs = await build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
-      .where('payload.type', '==', TransactionCreditType.TOKEN_PURCHASE)
+      .where('payload.type', '==', TransactionPayloadType.TOKEN_PURCHASE)
       .where('member', '==', memberAddress)
       .get<Transaction>();
-    expect(creditDocs.map((d) => d?.payload?.amount).sort((a, b) => a - b)).toEqual([
+    expect(creditDocs.map((d) => d?.payload?.amount!).sort((a, b) => a - b)).toEqual([
       5 * MIN_IOTA_AMOUNT,
       6 * MIN_IOTA_AMOUNT,
     ]);
@@ -146,10 +146,10 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
     const creditDocs = await build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
-      .where('payload.type', '==', TransactionCreditType.TOKEN_PURCHASE)
+      .where('payload.type', '==', TransactionPayloadType.TOKEN_PURCHASE)
       .where('member', '==', memberAddress)
       .get<Transaction>();
-    expect(creditDocs.map((d) => d?.payload?.amount).sort((a, b) => a - b)).toEqual([
+    expect(creditDocs.map((d) => d?.payload?.amount!).sort((a, b) => a - b)).toEqual([
       5 * MIN_IOTA_AMOUNT,
       6 * MIN_IOTA_AMOUNT,
     ]);

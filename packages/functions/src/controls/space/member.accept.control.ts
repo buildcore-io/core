@@ -1,15 +1,11 @@
-import { COL, SpaceMember, SUB_COL } from '@build-5/interfaces';
+import { COL, SpaceMember, SpaceMemberUpsertRequest, SUB_COL } from '@build-5/interfaces';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { acceptSpaceMember } from '../../services/payment/tangle-service/space/SpaceAcceptMemberService';
 
-export const acceptSpaceMemberControl = async (owner: string, params: Record<string, unknown>) => {
-  const { spaceMember, space } = await acceptSpaceMember(
-    owner,
-    params.uid as string,
-    params.member as string,
-  );
+export const acceptSpaceMemberControl = async (owner: string, params: SpaceMemberUpsertRequest) => {
+  const { spaceMember, space } = await acceptSpaceMember(owner, params.uid, params.member);
 
-  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid as string}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
   const memberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(spaceMember.uid);
   const knockingMemberDocRef = spaceDocRef
     .collection(SUB_COL.KNOCKING_MEMBERS)

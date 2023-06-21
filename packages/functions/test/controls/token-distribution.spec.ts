@@ -1,5 +1,4 @@
 import {
-  BillPaymentType,
   COL,
   MIN_IOTA_AMOUNT,
   Member,
@@ -11,6 +10,7 @@ import {
   TokenDistribution,
   TokenStatus,
   Transaction,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
@@ -410,7 +410,7 @@ describe('Token trigger test', () => {
         expect(paymentDoc?.payload?.targetAddress).toBe(getAddress(space, Network.IOTA));
         expect(paymentDoc?.payload?.token).toBe(token.uid);
         expect(paymentDoc?.payload?.tokenSymbol).toBe(token.symbol);
-        expect(paymentDoc?.payload?.type).toBe(BillPaymentType.TOKEN_PURCHASE);
+        expect(paymentDoc?.payload?.type).toBe(TransactionPayloadType.TOKEN_PURCHASE);
       }
 
       const totalPaid =

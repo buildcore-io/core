@@ -6,7 +6,7 @@ import {
   Network,
   Space,
   Token,
-  TransactionAwardType,
+  TransactionPayloadType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
@@ -74,7 +74,7 @@ describe('Create award, base', () => {
     const nttQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
-      .where('payload.type', '==', TransactionAwardType.BADGE);
+      .where('payload.type', '==', TransactionPayloadType.BADGE);
     await wait(async () => {
       const snap = await nttQuery.get();
       return snap.length === 6;

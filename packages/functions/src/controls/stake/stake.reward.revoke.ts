@@ -11,9 +11,9 @@ import {
   SUB_COL,
   Timestamp,
   Token,
+  TokenStakeRewardsRemoveRequest,
   Transaction,
   TransactionType,
-  VoteTransaction,
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
@@ -24,7 +24,10 @@ import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
-export const removeStakeRewardControl = async (owner: string, params: Record<string, unknown>) => {
+export const removeStakeRewardControl = async (
+  owner: string,
+  params: TokenStakeRewardsRemoveRequest,
+) => {
   const stakeRewardIds = params.stakeRewardIds as string[];
   const stakeRewardPromises = stakeRewardIds.map(async (stakeId) => {
     const docRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeId}`);
@@ -76,13 +79,13 @@ export const removeStakeRewardControl = async (owner: string, params: Record<str
     proposalEndDate,
   );
 
-  const voteTransaction = <Transaction>{
+  const voteTransaction: Transaction = {
     type: TransactionType.VOTE,
     uid: getRandomEthAddress(),
     member: owner,
     space: token.space,
     network: DEFAULT_NETWORK,
-    payload: <VoteTransaction>{
+    payload: {
       proposalId: proposal.uid,
       weight: 1,
       values: [1],
@@ -112,7 +115,7 @@ export const removeStakeRewardControl = async (owner: string, params: Record<str
 
   await proposalDocRef.create(proposal);
 
-  return await proposalDocRef.get<Proposal>();
+  return (await proposalDocRef.get<Proposal>())!;
 };
 
 const createUpdateSpaceProposal = (
@@ -128,6 +131,7 @@ const createUpdateSpaceProposal = (
     `${REMOVE_STAKE_REWARDS_THRESHOLD_PERCENTAGE} % must agree for this action to proceed <br /><br />`;
   return <Proposal>{
     createdBy: owner.uid,
+    description: '',
     uid: getRandomEthAddress(),
     name: 'Remove stake rewards',
     additionalInfo: additionalInfo + getDescription(stakeRewards),
@@ -152,6 +156,7 @@ const createUpdateSpaceProposal = (
             additionalInfo: '',
           },
           {
+            uid: getRandomEthAddress(),
             text: 'Yes',
             value: BaseProposalAnswerValue.YES,
             additionalInfo: '',

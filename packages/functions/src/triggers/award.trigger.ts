@@ -5,8 +5,7 @@ import {
   Member,
   Token,
   Transaction,
-  TransactionAwardType,
-  TransactionCreditType,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
@@ -39,7 +38,7 @@ export const awardUpdateTrigger = functions.firestore.onDocumentUpdated(
         member: curr.fundedBy,
         network: curr.network,
         payload: {
-          type: TransactionAwardType.BURN_ALIAS,
+          type: TransactionPayloadType.BURN_ALIAS,
           sourceAddress: curr.address,
           targetAddress,
           reconciled: false,
@@ -60,7 +59,7 @@ export const awardUpdateTrigger = functions.firestore.onDocumentUpdated(
           member: curr.fundedBy,
           network: curr.network,
           payload: {
-            type: TransactionCreditType.AWARD_COMPLETED,
+            type: TransactionPayloadType.AWARD_COMPLETED,
             amount: remainingBadges * curr.badge.tokenReward,
             sourceAddress: curr.address,
             targetAddress,
@@ -90,17 +89,22 @@ export const awardUpdateTrigger = functions.firestore.onDocumentUpdated(
       const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${curr.badge.tokenUid}`);
       const token = (await tokenDocRef.get<Token>())!;
 
-      const nativeTokensCredit = <Transaction>{
+      const nativeTokensCredit: Transaction = {
         type: TransactionType.CREDIT,
         uid: getRandomEthAddress(),
         space: curr.space,
         member: curr.fundedBy,
         network: curr.network,
         payload: {
-          type: TransactionCreditType.AWARD_COMPLETED,
+          type: TransactionPayloadType.AWARD_COMPLETED,
           amount: curr.nativeTokenStorageDeposit,
           nativeTokens: remainingBadges
-            ? [{ id: curr.badge.tokenId, amount: remainingBadges * curr.badge.tokenReward }]
+            ? [
+                {
+                  id: curr.badge.tokenId!,
+                  amount: (remainingBadges * curr.badge.tokenReward).toString(),
+                },
+              ]
             : [],
           sourceAddress: curr.address,
           targetAddress,

@@ -1,25 +1,28 @@
-import { COL, Space, SUB_COL, WenError } from '@build-5/interfaces';
+import { COL, Space, SpaceMemberUpsertTangleRequest, SUB_COL, WenError } from '@build-5/interfaces';
+import { BaseTangleResponse } from '@build-5/interfaces/lib/api/tangle/common';
 import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { editSpaceMemberSchema } from '../../../../runtime/firebase/space';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
+import { toJoiObject } from '../../../joi/common';
 import { TransactionService } from '../../transaction-service';
 
+const schema = toJoiObject<SpaceMemberUpsertTangleRequest>(editSpaceMemberSchema);
 export class SpaceBlockMemberService {
   constructor(readonly transactionService: TransactionService) {}
 
-  public handleBlockMemberRequest = async (owner: string, request: Record<string, unknown>) => {
-    await assertValidationAsync(editSpaceMemberSchema, request, { allowUnknown: true });
+  public handleBlockMemberRequest = async (
+    owner: string,
+    request: Record<string, unknown>,
+  ): Promise<BaseTangleResponse> => {
+    delete request.requestType;
+    const params = await assertValidationAsync(schema, request);
 
-    const member = request.member as string;
-    const { space, blockedMember } = await getBlockMemberUpdateData(
-      owner,
-      request.uid as string,
-      member,
-    );
+    const member = params.member;
+    const { space, blockedMember } = await getBlockMemberUpdateData(owner, params.uid, member);
 
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${request.uid}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
     const blockedMemberDocRef = spaceDocRef.collection(SUB_COL.BLOCKED_MEMBERS).doc(member);
 
     this.transactionService.push({

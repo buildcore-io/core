@@ -6,7 +6,7 @@ import {
   Nft,
   StakeType,
   Transaction,
-  TransactionAwardType,
+  TransactionPayloadType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
@@ -57,7 +57,7 @@ describe('Stake nft', () => {
     const nttQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.guardian!)
-      .where('payload.type', '==', TransactionAwardType.BADGE);
+      .where('payload.type', '==', TransactionPayloadType.BADGE);
     await wait(async () => {
       const snap = await nttQuery.get<Transaction>();
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;

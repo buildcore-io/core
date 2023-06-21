@@ -35,16 +35,16 @@ export const processConsumedVoteOutputs = async (
       continue;
     }
 
-    const prevWeight = voteTransaction.payload.weight;
+    const prevWeight = voteTransaction.payload.weight!;
 
     const currWeightMultiplier = getTokenVoteMultiplier(
       proposal,
       dayjs(voteTransaction.createdOn?.toDate()),
       dayjs(),
     );
-    const currWeight = voteTransaction.payload.tokenAmount * currWeightMultiplier;
+    const currWeight = voteTransaction.payload.tokenAmount! * currWeightMultiplier;
 
-    const value = voteTransaction.payload.values[0];
+    const value = voteTransaction.payload.values![0];
     const data = {
       results: {
         total: build5Db().inc(-prevWeight + currWeight),

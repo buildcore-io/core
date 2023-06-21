@@ -1,16 +1,16 @@
 import {
   COL,
-  Member,
+  IgnoreWalletReason,
   MIN_IOTA_AMOUNT,
+  Member,
   Network,
+  SUB_COL,
   StakeReward,
   StakeRewardStatus,
   StakeType,
-  SUB_COL,
   TokenDistribution,
   TokenDrop,
   Transaction,
-  TransactionIgnoreWalletReason,
   TransactionType,
 } from '@build-5/interfaces';
 import { addressBalance } from '@iota/iota.js-next';
@@ -373,7 +373,7 @@ describe('Stake reward test test', () => {
     const billPaymentQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.member?.uid)
-      .where('ignoreWalletReason', '==', TransactionIgnoreWalletReason.EXTRA_STAKE_REWARD);
+      .where('ignoreWalletReason', '==', IgnoreWalletReason.EXTRA_STAKE_REWARD);
 
     // No reward, 149 reduction
     await stakeRewardCronTask();
@@ -383,7 +383,7 @@ describe('Stake reward test test', () => {
     let distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.extraStakeRewards).toBe(251);
     snap = await billPaymentQuery.get<Transaction>();
-    expect(snap[0]?.payload.nativeTokens[0]?.amount).toBe(149);
+    expect(snap[0]?.payload.nativeTokens![0]?.amount).toBe('149');
 
     // No reward, 149 reduction
     await stakeRewardCronTask();
@@ -417,6 +417,6 @@ describe('Stake reward test test', () => {
     //149, full reward
     expect(airdrops[1]?.count).toBe(149);
 
-    expect(snap.find((d) => d?.payload.nativeTokens[0]?.amount === 102)).toBeDefined();
+    expect(snap.find((d) => Number(d?.payload.nativeTokens![0]?.amount!) === 102)).toBeDefined();
   });
 });

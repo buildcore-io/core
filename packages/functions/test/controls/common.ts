@@ -7,8 +7,8 @@ import {
   Token,
   TokenDistribution,
   TokenStatus,
-  TransactionOrder,
-  TransactionOrderType,
+  Transaction,
+  TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
 import chance from 'chance';
@@ -93,16 +93,16 @@ export const validateSpaceAddressFunc = async (
   mockWalletReturnValue(spy, adr, network ? { space, network } : { space });
   const order = await testEnv.wrap(validateAddress)({});
   expect(order?.type).toBe(TransactionType.ORDER);
-  expect(order?.payload.type).toBe(TransactionOrderType.SPACE_ADDRESS_VALIDATION);
-  return <TransactionOrder>order;
+  expect(order?.payload.type).toBe(TransactionPayloadType.SPACE_ADDRESS_VALIDATION);
+  return <Transaction>order;
 };
 
 export const validateMemberAddressFunc = async (spy: any, adr: string, network?: Network) => {
   mockWalletReturnValue(spy, adr, network ? { network } : {});
   const order = await testEnv.wrap(validateAddress)({});
   expect(order?.type).toBe(TransactionType.ORDER);
-  expect(order?.payload.type).toBe(TransactionOrderType.MEMBER_ADDRESS_VALIDATION);
-  return <TransactionOrder>order;
+  expect(order?.payload.type).toBe(TransactionPayloadType.MEMBER_ADDRESS_VALIDATION);
+  return <Transaction>order;
 };
 
 export const createMember = async (spy: any): Promise<string> => {
@@ -148,7 +148,11 @@ export const tokenProcessed = (tokenId: string, distributionLength: number, reco
     return distributionsOk && doc?.status === TokenStatus.PRE_MINTED;
   });
 
-export const wait = async (func: () => Promise<boolean>, maxAttempt = 1200, delay = 500) => {
+export const wait = async (
+  func: () => Promise<boolean | undefined>,
+  maxAttempt = 1200,
+  delay = 500,
+) => {
   for (let attempt = 0; attempt < maxAttempt; ++attempt) {
     if (await func()) {
       return;

@@ -1,9 +1,12 @@
-import { COL, Token, WenError } from '@build-5/interfaces';
+import { COL, EnableTokenTradingRequest, Token, WenError } from '@build-5/interfaces';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 
-export const enableTokenTradingControl = async (owner: string, params: Record<string, unknown>) => {
+export const enableTokenTradingControl = async (
+  owner: string,
+  params: EnableTokenTradingRequest,
+) => {
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.uid}`);
   const token = await tokenDocRef.get<Token>();
   if (!token) {
@@ -18,5 +21,5 @@ export const enableTokenTradingControl = async (owner: string, params: Record<st
 
   await tokenDocRef.update({ tradingDisabled: build5Db().deleteField() });
 
-  return await tokenDocRef.get<Token>();
+  return (await tokenDocRef.get<Token>())!;
 };
