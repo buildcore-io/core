@@ -3,8 +3,8 @@ import { wrappedFetch } from './fetch.utils';
 import { randomString } from './utils';
 
 export enum Build5Env {
-  PROD = 'https://api.soonaverse.com/api',
-  TEST = 'https://api-wen2.soonaverse.com/api',
+  PROD = 'https://api.build5.com/api',
+  TEST = 'https://api-wen.build5.com/api',
   DEV = 'https://soonaverse-dev.web.app/api',
   LOCAL = 'http://127.0.0.1:5001/soonaverse-dev/us-central1/api',
 }
