@@ -1,21 +1,10 @@
 # About
 
-Your Enterprise ready web3 plug & play platform
+Build.5 - Your Enterprise ready web3 plug & play platform
 
-# Framework
+# Overview
 
-The platform is designed to eventually transition away from all centralized services. It has been build using modern development tools and primarely using Typescript language.
-
-Back-end is written as serverless functions (see /packages/functions)
-
-Library for third parties is located under /packages/lib and /packages/interfaces
-
-### /packages/functions
-
-- Typescript Functions
-- Firestore (Database)
-- Typescript
-
+Build.5 library to interact with our APIs.
 
 # 🤝 Contributing
 
