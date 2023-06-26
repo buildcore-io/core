@@ -47,6 +47,7 @@ export interface GetAddressesRequest extends BaseRequest {
 
 export interface KeepAliveRequest {
   readonly sessionId: string;
+  readonly close?: boolean;
 }
 
 export enum Opr {
