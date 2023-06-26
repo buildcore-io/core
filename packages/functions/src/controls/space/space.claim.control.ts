@@ -39,7 +39,7 @@ export const claimSpaceControl = async (owner: string, params: SpaceClaimRequest
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,
-    space: space?.uid || null,
+    space: space?.uid || '',
     network: collection?.mintingData?.network!,
     payload: {
       type: TransactionPayloadType.CLAIM_SPACE,

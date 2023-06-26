@@ -119,8 +119,8 @@ export interface Transaction extends BaseRecord {
   network: Network;
   type: TransactionType;
   isOrderType?: boolean;
-  member?: EthAddress | null;
-  space?: EthAddress | null;
+  member?: EthAddress;
+  space?: EthAddress;
   shouldRetry?: boolean;
   ignoreWallet?: boolean;
   linkedTransactions?: EthAddress[];
@@ -190,3 +190,34 @@ export const getNetworkPair = (network: Network) => {
       return Network.ATOI;
   }
 };
+
+export const NETWORK_DETAIL = {
+  [Network.IOTA]: {
+    label: 'MIOTA',
+    divideBy: 1000 * 1000,
+    decimals: 6,
+  },
+  [Network.ATOI]: {
+    label: 'MATOI',
+    divideBy: 1000 * 1000,
+    decimals: 6,
+  },
+  [Network.SMR]: {
+    label: Network.SMR.toUpperCase(),
+    divideBy: 1000 * 1000,
+    decimals: 6,
+  },
+  [Network.RMS]: {
+    label: Network.RMS.toUpperCase(),
+    divideBy: 1000 * 1000,
+    decimals: 6,
+  },
+};
+
+export const DEFAULT_NETWORK_DECIMALS = 6;
+
+export const getDefDecimalIfNotSet = (v?: number | null) => {
+  return v !== undefined && v !== null && v > -1 ? v : DEFAULT_NETWORK_DECIMALS;
+};
+
+export type Units = 'Pi' | 'Ti' | 'Gi' | 'Mi' | 'Ki' | 'i';

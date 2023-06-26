@@ -52,4 +52,4 @@ export enum ApiRoutes {
   KEEP_ALIVE = '/keepAlive',
 }
 
-export const PING_INTERVAL = 30000;
+export const PING_INTERVAL = 10000;

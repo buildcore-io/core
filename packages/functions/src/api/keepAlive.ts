@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BaseRecord, COL, KeepAliveRequest, PING_INTERVAL } from '@build-5/interfaces';
+import { randomUUID } from 'crypto';
 import dayjs from 'dayjs';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
@@ -12,6 +13,7 @@ import { Observable } from 'rxjs';
 
 const keepAliveSchema = Joi.object({
   sessionId: CommonJoi.sessionId(),
+  close: Joi.boolean().optional(),
 });
 
 export const keepAlive = async (req: functions.https.Request, res: express.Response) => {
@@ -20,6 +22,13 @@ export const keepAlive = async (req: functions.https.Request, res: express.Respo
     return;
   }
   const docRef = build5Db().doc(`${COL.KEEP_ALIVE}/${body.sessionId}`);
+
+  if (body.close) {
+    await docRef.delete();
+    res.status(200).send({ update: true });
+    return;
+  }
+
   await docRef.set({}, true);
   res.status(200).send({ update: true });
 };
@@ -33,6 +42,11 @@ export const sendLiveUpdates = async <T>(
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
 
+  const instanceId = randomUUID().replace(/-/g, '');
+  const instanceIdDocRef = build5Db().doc(`${COL.KEEP_ALIVE}/${instanceId}`);
+  await instanceIdDocRef.create({});
+  res.write(`event: instance\ndata: ${instanceId}\n\n`);
+
   const keepAliveDocRef = build5Db().doc(`${COL.KEEP_ALIVE}/${sessionId}`);
   await keepAliveDocRef.set({}, true);
 
@@ -40,7 +54,7 @@ export const sendLiveUpdates = async <T>(
     const instance = await keepAliveDocRef.get<BaseRecord>();
     const diff = dayjs().diff(dayjs(instance?.updatedOn?.toDate()));
     if (!instance || diff > PING_INTERVAL) {
-      await closeConnection();
+      closeConnection();
     }
   };
 
@@ -48,18 +62,22 @@ export const sendLiveUpdates = async <T>(
     await ping();
   }, PING_INTERVAL);
 
+  const instanceIdSub = instanceIdDocRef.onSnapshot((data) => {
+    if (data === undefined) {
+      closeConnection();
+    }
+  });
+
   const subscription = observable.subscribe((data) => {
     res.write(`event: update\ndata: ${JSON.stringify(data)}\n\n`);
   });
 
-  res.on('close', async () => {
-    await closeConnection();
-  });
-
   const closeConnection = async () => {
-    subscription.unsubscribe();
     clearInterval(pingInterval);
+    instanceIdSub();
+    subscription.unsubscribe();
     await keepAliveDocRef.delete();
+    await instanceIdDocRef.delete();
     res.end();
   };
 };

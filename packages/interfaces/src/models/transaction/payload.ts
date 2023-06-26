@@ -139,6 +139,7 @@ export interface TransactionPayload {
   votes?: number[];
   creditId?: EthAddress;
   outputConsumed?: boolean;
+  outputConsumedOn?: Timestamp;
   stakes?: EthAddress[];
   stakeReward?: EthAddress;
 }

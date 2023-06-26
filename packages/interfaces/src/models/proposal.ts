@@ -33,6 +33,7 @@ export interface ProposalSettings {
   onlyGuardians?: boolean;
 
   stakeRewardIds?: string[];
+  awards?: string[];
 }
 
 export interface ProposalAnswer {

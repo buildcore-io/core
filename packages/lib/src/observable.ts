@@ -1,5 +1,6 @@
 import { Observable as RxjsObservable, Subscriber } from 'rxjs';
-import { Build5Env } from './Config';
+import { Build5Env, getKeepAliveUrl } from './Config';
+import { wrappedFetch } from './fetch.utils';
 import { processObject, processObjectArray } from './utils';
 
 const HEADERS = {
@@ -7,14 +8,23 @@ const HEADERS = {
   'Cache-Control': 'no-cache',
   Connection: 'keep-alive',
 };
-
 export class Observable<T> extends RxjsObservable<T> {
   private observer: Subscriber<T> | undefined;
+  private instaceId = '';
+  private isRunning = true;
 
   constructor(protected readonly env: Build5Env, private readonly url: string) {
     super((observer) => {
       this.observer = observer;
       this.init();
+
+      return async () => {
+        this.isRunning = false;
+        if (this.instaceId) {
+          const url = getKeepAliveUrl(env);
+          await wrappedFetch(url, { sessionId: this.instaceId, close: true });
+        }
+      };
     });
   }
 
@@ -31,7 +41,7 @@ export class Observable<T> extends RxjsObservable<T> {
       let buffer = '';
 
       // eslint-disable-next-line no-constant-condition
-      while (true) {
+      while (this.isRunning) {
         const result = await reader.read();
 
         if (result.done) {
@@ -61,6 +71,8 @@ export class Observable<T> extends RxjsObservable<T> {
       const processed = Array.isArray(parsed) ? processObjectArray(parsed) : processObject(parsed);
       this.observer!.next(processed as T);
       return;
+    } else if (type === 'instance') {
+      this.instaceId = data;
     }
   };
 

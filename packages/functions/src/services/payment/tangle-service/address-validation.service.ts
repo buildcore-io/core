@@ -90,7 +90,7 @@ export const createAddressValidationOrder = async (
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,
-    space: space?.uid || null,
+    space: space?.uid || '',
     network,
     payload: {
       type: space
