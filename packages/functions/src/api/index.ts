@@ -14,7 +14,7 @@ import { getUpdatedAfter } from './getUpdatedAfter';
 import { keepAlive } from './keepAlive';
 
 export const api = functions.https.onRequest(
-  onRequestConfig(WEN_FUNC.api, { timeoutSeconds: 1800, concurrency: 1000 }),
+  onRequestConfig(WEN_FUNC.api, { timeoutSeconds: 1800, concurrency: 500, minInstances: 5 }),
   (req, res) =>
     cors({ origin: true })(req, res, async () => {
       getHandler(req.url)(req, res);
