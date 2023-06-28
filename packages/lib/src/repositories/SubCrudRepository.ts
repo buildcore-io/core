@@ -10,6 +10,7 @@ import {
   SESSION_ID,
   getByIdUrl,
   getManyAdvancedUrl,
+  getManyByIdUrl,
   getManyUrl,
   getUpdatedAfterUrl,
 } from '../Config';
@@ -37,6 +38,12 @@ export abstract class SubCrudRepository<T> {
     return keys.length ? processObject<T>(result) : undefined;
   };
 
+  public getManyById = async (uids: string[], parent?: string) => {
+    const params = { collection: this.col, parentUid: parent, subCollection: this.subCol, uids };
+    const result = await wrappedFetch<T[]>(getManyByIdUrl(this.env), params);
+    return processObjectArray(result);
+  };
+
   /**
    * Returns entity in the sub collection as RxjsObservable
    * @param parent - Parrent entity id
@@ -59,6 +66,18 @@ export abstract class SubCrudRepository<T> {
         return keys.length ? result : undefined;
       }),
     );
+  };
+
+  public getManyByIdLive = (uids: string[], parent?: string): RxjsObservable<T[]> => {
+    const params = {
+      collection: this.col,
+      parentUid: parent,
+      subCollection: this.subCol,
+      uids,
+      sessionId: SESSION_ID,
+    };
+    const url = getManyByIdUrl(this.env) + toQueryParams(params);
+    return new Observable<T[]>(this.env, url);
   };
 
   /**

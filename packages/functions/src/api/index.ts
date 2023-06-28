@@ -8,13 +8,17 @@ import { getAvgPrice } from './getAvgPrice';
 import { getById } from './getById';
 import { getMany } from './getMany';
 import { getManyAdvanced } from './getManyAdvanced';
+import { getManyById } from './getManyById';
 import { getPriceChange } from './getPriceChange';
 import { getTokenPrice } from './getTokenPrice';
 import { getUpdatedAfter } from './getUpdatedAfter';
 import { keepAlive } from './keepAlive';
 
 export const api = functions.https.onRequest(
-  onRequestConfig(WEN_FUNC.api, { timeoutSeconds: 1800, concurrency: 500, minInstances: 5 }),
+  onRequestConfig(WEN_FUNC.api, {
+    timeoutSeconds: 1800,
+    minInstances: 5,
+  }),
   (req, res) =>
     cors({ origin: true })(req, res, async () => {
       getHandler(req.url)(req, res);
@@ -26,6 +30,8 @@ const getHandler = (url: string) => {
   switch (route) {
     case ApiRoutes.GET_BY_ID:
       return getById;
+    case ApiRoutes.GET_MANY_BY_ID:
+      return getManyById;
     case ApiRoutes.GET_MANY:
       return getMany;
     case ApiRoutes.GET_MANY_ADVANCED:

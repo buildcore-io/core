@@ -11,6 +11,8 @@ export enum Build5Env {
 
 export const getByIdUrl = (baseUrl: Build5Env) => baseUrl + ApiRoutes.GET_BY_ID;
 
+export const getManyByIdUrl = (baseUrl: Build5Env) => baseUrl + ApiRoutes.GET_MANY_BY_ID;
+
 export const getManyUrl = (baseUrl: Build5Env) => baseUrl + ApiRoutes.GET_MANY;
 
 export const getManyAdvancedUrl = (baseUrl: Build5Env) => baseUrl + ApiRoutes.GET_MANY_ADVANCED;

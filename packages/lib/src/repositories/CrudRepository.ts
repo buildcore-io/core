@@ -1,10 +1,16 @@
-import { GetManyAdvancedRequest, Opr, PublicCollections } from '@build-5/interfaces';
-import { Observable as RxjsObservable, combineLatest, map } from 'rxjs';
+import {
+  GetManyAdvancedRequest,
+  GetManyByIdRequest,
+  Opr,
+  PublicCollections,
+} from '@build-5/interfaces';
+import { Observable as RxjsObservable, map } from 'rxjs';
 import {
   Build5Env,
   SESSION_ID,
   getByIdUrl,
   getManyAdvancedUrl,
+  getManyByIdUrl,
   getManyUrl,
   getUpdatedAfterUrl,
 } from '../Config';
@@ -27,6 +33,12 @@ export class CrudRepository<T> {
     return keys.length ? processObject<T>(result) : undefined;
   };
 
+  public getManyById = async (uids: string[]) => {
+    const params: GetManyByIdRequest = { collection: this.col, uids };
+    const result = await wrappedFetch<T[]>(getManyByIdUrl(this.env), { ...params });
+    return processObjectArray<T>(result);
+  };
+
   /**
    * Returns one entity by id
    * @param uid
@@ -44,14 +56,10 @@ export class CrudRepository<T> {
     );
   };
 
-  public getManyById = async (uids: string[]) => {
-    const promises = uids.map(this.getById);
-    return await Promise.all(promises);
-  };
-
   public getManyByIdLive = (uids: string[]): RxjsObservable<T[]> => {
-    const streams = uids.map(this.getByIdLive);
-    return combineLatest(streams).pipe(map((objects) => objects.filter((o) => !!o).map((o) => o!)));
+    const params: GetManyByIdRequest = { collection: this.col, uids, sessionId: SESSION_ID };
+    const url = getManyByIdUrl(this.env) + toQueryParams({ ...params });
+    return new Observable<T[]>(this.env, url);
   };
 
   /**

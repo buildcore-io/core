@@ -12,6 +12,13 @@ export interface GetByIdRequest extends BaseRequest {
   readonly subCollection?: PublicSubCollections;
 }
 
+export interface GetManyByIdRequest extends BaseRequest {
+  readonly collection: PublicCollections;
+  readonly uids: string[];
+  readonly parentUid?: string;
+  readonly subCollection?: PublicSubCollections;
+}
+
 export interface GetManyRequest extends BaseRequest {
   readonly collection: PublicCollections;
 
