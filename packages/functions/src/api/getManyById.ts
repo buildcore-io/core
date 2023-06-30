@@ -31,7 +31,9 @@ export const getManyById = async (req: functions.https.Request, res: express.Res
 
   const baseQuery = getBaseQuery(body);
 
-  const queries = chunk(uniq(body.uids), 10).map((uids) => baseQuery.where('uid', 'in', uids));
+  const queries = chunk(uniq(body.uids), 10).map((uids) =>
+    baseQuery.where(build5Db().uidField(), 'in', uids),
+  );
 
   if (body.sessionId) {
     const observables = queries.map(queryToObservable<Record<string, unknown>>);

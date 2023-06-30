@@ -1,4 +1,4 @@
-import { Observable as RxjsObservable, Subscriber } from 'rxjs';
+import { Observable as RxjsObservable, Subscriber, map, shareReplay } from 'rxjs';
 import { Build5Env, getKeepAliveUrl } from './Config';
 import { wrappedFetch } from './fetch.utils';
 import { processObject, processObjectArray } from './utils';
@@ -8,7 +8,8 @@ const HEADERS = {
   'Cache-Control': 'no-cache',
   Connection: 'keep-alive',
 };
-export class Observable<T> extends RxjsObservable<T> {
+
+class Observable<T> extends RxjsObservable<T> {
   private observer: Subscriber<T> | undefined;
   private instaceId = '';
   private isRunning = true;
@@ -80,3 +81,14 @@ export class Observable<T> extends RxjsObservable<T> {
 
   private getData = (event: string) => event.split('data: ')[1];
 }
+
+export const fetchLive = <T>(env: Build5Env, url: string): RxjsObservable<T> =>
+  new Observable<T>(env, url).pipe(
+    map((r) => {
+      if (Array.isArray(r)) {
+        return processObjectArray(r) as T;
+      }
+      return processObject(r) as T;
+    }),
+    shareReplay({ refCount: true }),
+  );

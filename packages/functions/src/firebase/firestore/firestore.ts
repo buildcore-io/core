@@ -44,6 +44,8 @@ export class Firestore implements IDatabase {
   public arrayRemove = <T>(...value: T[]) => admin.firestore.FieldValue.arrayRemove(...value);
 
   public deleteField = () => admin.firestore.FieldValue.delete();
+
+  public uidField = () => admin.firestore.FieldPath.documentId();
 }
 
 export class FirestoreBatch implements IBatch {
