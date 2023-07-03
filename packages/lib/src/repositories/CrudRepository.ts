@@ -4,7 +4,7 @@ import {
   Opr,
   PublicCollections,
 } from '@build-5/interfaces';
-import { Observable } from 'rxjs';
+import { Observable, from, switchMap } from 'rxjs';
 import {
   Build5Env,
   SESSION_ID,
@@ -41,7 +41,8 @@ export class CrudRepository<T> {
    * @param uid
    * @returns Observable with the entity
    */
-  public getByIdLive = (uid: string) => this.getByIdGroupedLive.get(uid);
+  public getByIdLive = (uid: string) =>
+    from(this.getByIdGroupedLive.get(uid)).pipe(switchMap((inner) => inner));
 
   public getManyByIdLive = (uids: string[]): Observable<T[]> => {
     const params: GetManyByIdRequest = { collection: this.col, uids, sessionId: SESSION_ID };

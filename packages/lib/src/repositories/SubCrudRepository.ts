@@ -4,7 +4,7 @@ import {
   PublicCollections,
   PublicSubCollections,
 } from '@build-5/interfaces';
-import { Observable as RxjsObservable } from 'rxjs';
+import { Observable as RxjsObservable, from, switchMap } from 'rxjs';
 import {
   Build5Env,
   SESSION_ID,
@@ -50,7 +50,8 @@ export abstract class SubCrudRepository<T> {
    * @param uid - Entity id
    * @returns
    */
-  public getByIdLive = (parent: string, uid: string) => this.getByIdGroupedLive.get(uid, parent);
+  public getByIdLive = (parent: string, uid: string) =>
+    from(this.getByIdGroupedLive.get(uid, parent)).pipe(switchMap((inner) => inner));
 
   public getManyByIdLive = (uids: string[], parent?: string): RxjsObservable<T[]> => {
     const params = {
