@@ -7,8 +7,8 @@ import {
 } from '@build-5/interfaces';
 import { Observable as RxjsObservable } from 'rxjs';
 import { Build5Env, SESSION_ID, getTokenPriceUrl } from '../../Config';
-import { toQueryParams, wrappedFetch } from '../../fetch.utils';
-import { Observable } from '../../observable';
+import { wrappedFetch, toQueryParams } from '../../fetch.utils';
+import { fetchLive } from '../../observable';
 import { CrudRepository } from '../CrudRepository';
 
 export interface TokenPriceResponse {
@@ -35,7 +35,7 @@ export class TokenMarketRepository extends CrudRepository<TokenTradeOrder> {
   public getTokenPriceLive = (token: string): RxjsObservable<TokenPriceResponse> => {
     const params = { token, sessionId: SESSION_ID };
     const url = getTokenPriceUrl(this.env) + toQueryParams(params);
-    return new Observable<TokenPriceResponse>(this.env, url);
+    return fetchLive<TokenPriceResponse>(this.env, url);
   };
 
   /**
