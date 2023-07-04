@@ -7,9 +7,9 @@ import {
   PublicCollections,
   TokenPurchase,
 } from '@build-5/interfaces';
-import { map } from 'rxjs';
-import { Observable as RxjsObservable } from 'rxjs/internal/Observable';
-import { Build5Env, SESSION_ID, getAvgPriceUrl, getPriceChangeUrl } from '../../Config';
+import { Observable, map } from 'rxjs';
+import { Build5Env, getAvgPriceUrl, getPriceChangeUrl } from '../../Config';
+import { getSessionId } from '../../Session';
 import { toQueryParams } from '../../fetch.utils';
 import { fetchLive } from '../../observable';
 import { CrudRepository } from '../CrudRepository';
@@ -32,14 +32,14 @@ export class TokenPurchaseRepository extends CrudRepository<TokenPurchase> {
     return this.getManyAdvancedLive(params);
   };
 
-  public getAvgPriceLive = (token: string): RxjsObservable<number> => {
-    const params = { token, sessionId: SESSION_ID } as GetAvgPriceRequest;
+  public getAvgPriceLive = (token: string): Observable<number> => {
+    const params = { token, sessionId: getSessionId(this.env) } as GetAvgPriceRequest;
     const url = getAvgPriceUrl(this.env) + toQueryParams({ ...params });
     return fetchLive<GetAvgPriceResponse>(this.env, url).pipe(map((result) => result.avg));
   };
 
-  public getPriceChangeLive = (token: string): RxjsObservable<number> => {
-    const params = { token, sessionId: SESSION_ID } as GetPriceChangeRequest;
+  public getPriceChangeLive = (token: string): Observable<number> => {
+    const params = { token, sessionId: getSessionId(this.env) } as GetPriceChangeRequest;
     const url = getPriceChangeUrl(this.env) + toQueryParams({ ...params });
     return fetchLive<GetPriceChangeResponse>(this.env, url).pipe(map((result) => result.change));
   };

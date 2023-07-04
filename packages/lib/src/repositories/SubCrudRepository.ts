@@ -4,15 +4,15 @@ import {
   PublicCollections,
   PublicSubCollections,
 } from '@build-5/interfaces';
-import { Observable as RxjsObservable } from 'rxjs';
+import { Observable, from, switchMap } from 'rxjs';
 import {
   Build5Env,
-  SESSION_ID,
   getManyAdvancedUrl,
   getManyByIdUrl,
   getManyUrl,
   getUpdatedAfterUrl,
 } from '../Config';
+import { getSessionId } from '../Session';
 import { toQueryParams, wrappedFetch } from '../fetch.utils';
 import { fetchLive } from '../observable';
 import { GetByIdGrouped } from './getById/GetByIdGrouped';
@@ -45,20 +45,21 @@ export abstract class SubCrudRepository<T> {
   };
 
   /**
-   * Returns entity in the sub collection as RxjsObservable
+   * Returns entity in the sub collection as Observable
    * @param parent - Parrent entity id
    * @param uid - Entity id
    * @returns
    */
-  public getByIdLive = (parent: string, uid: string) => this.getByIdGroupedLive.get(uid, parent);
+  public getByIdLive = (parent: string, uid: string) =>
+    from(this.getByIdGroupedLive.get(uid, parent)).pipe(switchMap((inner) => inner));
 
-  public getManyByIdLive = (uids: string[], parent?: string): RxjsObservable<T[]> => {
+  public getManyByIdLive = (uids: string[], parent?: string): Observable<T[]> => {
     const params = {
       collection: this.col,
       parentUid: parent,
       subCollection: this.subCol,
       uids,
-      sessionId: SESSION_ID,
+      sessionId: getSessionId(this.env),
     };
     const url = getManyByIdUrl(this.env) + toQueryParams(params);
     return fetchLive<T[]>(this.env, url);
@@ -144,8 +145,10 @@ export abstract class SubCrudRepository<T> {
     return this.getManyAdvancedLive(params);
   };
 
-  protected getManyAdvancedLive = (params: GetManyAdvancedRequest): RxjsObservable<T[]> => {
-    const url = getManyAdvancedUrl(this.env) + toQueryParams({ ...params, sessionId: SESSION_ID });
+  protected getManyAdvancedLive = (params: GetManyAdvancedRequest): Observable<T[]> => {
+    const url =
+      getManyAdvancedUrl(this.env) +
+      toQueryParams({ ...params, sessionId: getSessionId(this.env) });
     return fetchLive<T[]>(this.env, url);
   };
 }

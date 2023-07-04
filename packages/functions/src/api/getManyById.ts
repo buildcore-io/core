@@ -1,25 +1,30 @@
-import { GetManyByIdRequest, PublicCollections, PublicSubCollections } from '@build-5/interfaces';
+import {
+  GetManyByIdRequest,
+  PublicCollections,
+  PublicSubCollections,
+  QUERY_MAX_LENGTH,
+} from '@build-5/interfaces';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
-import { chunk, uniq } from 'lodash';
 import { combineLatest, map } from 'rxjs';
 import { build5Db } from '../firebase/firestore/build5Db';
 import { CommonJoi } from '../services/joi/common';
 import { maxAddressLength } from '../utils/wallet.utils';
-import { getQueryParams, isHiddenNft, queryToObservable } from './common';
+import { documentToObservable, getQueryParams, isHiddenNft } from './common';
 import { sendLiveUpdates } from './keepAlive';
 
 const uidSchema = Joi.string().alphanum().min(5).max(maxAddressLength).required();
+
 const getManyByIdSchema = Joi.object({
   collection: Joi.string()
     .equal(...Object.values(PublicCollections))
     .required(),
-  parentUid: CommonJoi.uid(false),
+  parentUids: Joi.array().items(CommonJoi.uid(false)).max(QUERY_MAX_LENGTH),
   subCollection: Joi.string()
     .equal(...Object.values(PublicSubCollections))
     .optional(),
-  uids: Joi.array().items(uidSchema).max(100),
+  uids: Joi.array().items(uidSchema).min(1).max(QUERY_MAX_LENGTH).required(),
   sessionId: CommonJoi.sessionId(),
 });
 
@@ -29,14 +34,8 @@ export const getManyById = async (req: functions.https.Request, res: express.Res
     return;
   }
 
-  const baseQuery = getBaseQuery(body);
-
-  const queries = chunk(uniq(body.uids), 10).map((uids) =>
-    baseQuery.where(build5Db().uidField(), 'in', uids),
-  );
-
   if (body.sessionId) {
-    const observables = queries.map(queryToObservable<Record<string, unknown>>);
+    const observables = getQueries(body).map(documentToObservable<Record<string, unknown>>);
     const observable = combineLatest(observables).pipe(
       map((all) => all.flat().filter((record) => record && !isHiddenNft(body.collection, record))),
     );
@@ -44,21 +43,20 @@ export const getManyById = async (req: functions.https.Request, res: express.Res
     return;
   }
 
-  const promises = queries.map((query) => query.get<Record<string, unknown>>());
-  const data = (await Promise.all(promises)).flat();
+  const promises = getQueries(body).map((query) => query.get<Record<string, unknown>>());
+  const data = await Promise.all(promises);
 
   res.send(data);
 };
 
-const getBaseQuery = (body: GetManyByIdRequest) => {
-  if (body.subCollection) {
-    if (body.parentUid) {
+const getQueries = (body: GetManyByIdRequest) =>
+  body.uids.map((uid, i) => {
+    if (body.subCollection && body.parentUids?.[i]) {
       return build5Db()
         .collection(body.collection)
-        .doc(body.parentUid)
-        .collection(body.subCollection);
+        .doc(body.parentUids?.[i])
+        .collection(body.subCollection)
+        .doc(uid);
     }
-    return build5Db().collectionGroup(body.subCollection).where('parentCol', '==', body.collection);
-  }
-  return build5Db().collection(body.collection);
-};
+    return build5Db().doc(`${body.collection}/${uid}`);
+  });

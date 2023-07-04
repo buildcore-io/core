@@ -6,6 +6,7 @@ import {
   Opr,
   PublicCollections,
   PublicSubCollections,
+  QUERY_MAX_LENGTH,
   TransactionType,
   WenError,
 } from '@build-5/interfaces';
@@ -45,7 +46,7 @@ const getManyAdvancedSchema = Joi.object({
   orderBy: Joi.array().min(1).items(fieldNameSchema).optional(),
   orderByDir: Joi.array().min(1).items(Joi.string().valid('asc', 'desc')).optional(),
 
-  limit: Joi.number().min(1).max(100).optional(),
+  limit: Joi.number().min(1).max(QUERY_MAX_LENGTH).optional(),
 
   startAfter: CommonJoi.uid(false),
   sessionId: CommonJoi.sessionId(),

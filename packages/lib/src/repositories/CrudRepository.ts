@@ -4,15 +4,15 @@ import {
   Opr,
   PublicCollections,
 } from '@build-5/interfaces';
-import { Observable } from 'rxjs';
+import { Observable, from, switchMap } from 'rxjs';
 import {
   Build5Env,
-  SESSION_ID,
   getManyAdvancedUrl,
   getManyByIdUrl,
   getManyUrl,
   getUpdatedAfterUrl,
 } from '../Config';
+import { getSessionId } from '../Session';
 import { toQueryParams, wrappedFetch } from '../fetch.utils';
 import { fetchLive } from '../observable';
 import { GetByIdGrouped } from './getById/GetByIdGrouped';
@@ -21,6 +21,7 @@ import { GetByIdGroupedLive } from './getById/GetByIdGroupedLive';
 export class CrudRepository<T> {
   private readonly getByIdGroupedLive: GetByIdGroupedLive<T>;
   private readonly getByIdGrouped: GetByIdGrouped<T>;
+
   constructor(protected readonly env: Build5Env, protected readonly col: PublicCollections) {
     this.getByIdGroupedLive = new GetByIdGroupedLive<T>(env, col);
     this.getByIdGrouped = new GetByIdGrouped<T>(env, col);
@@ -41,10 +42,15 @@ export class CrudRepository<T> {
    * @param uid
    * @returns Observable with the entity
    */
-  public getByIdLive = (uid: string) => this.getByIdGroupedLive.get(uid);
+  public getByIdLive = (uid: string) =>
+    from(this.getByIdGroupedLive.get(uid)).pipe(switchMap((inner) => inner));
 
   public getManyByIdLive = (uids: string[]): Observable<T[]> => {
-    const params: GetManyByIdRequest = { collection: this.col, uids, sessionId: SESSION_ID };
+    const params: GetManyByIdRequest = {
+      collection: this.col,
+      uids,
+      sessionId: getSessionId(this.env),
+    };
     const url = getManyByIdUrl(this.env) + toQueryParams({ ...params });
     return fetchLive<T[]>(this.env, url);
   };
@@ -82,7 +88,7 @@ export class CrudRepository<T> {
       fieldName,
       fieldValue,
       startAfter,
-      sessionId: SESSION_ID,
+      sessionId: getSessionId(this.env),
     };
     const url = getManyUrl(this.env) + toQueryParams(params);
     return fetchLive<T[]>(this.env, url);
@@ -135,7 +141,12 @@ export class CrudRepository<T> {
    * @returns
    */
   public getAllUpdatedAfterLive = (updatedAfter: number, startAfter?: string): Observable<T[]> => {
-    const params = { collection: this.col, updatedAfter, startAfter, sessionId: SESSION_ID };
+    const params = {
+      collection: this.col,
+      updatedAfter,
+      startAfter,
+      sessionId: getSessionId(this.env),
+    };
     const url = getUpdatedAfterUrl(this.env) + toQueryParams(params);
     return fetchLive<T[]>(this.env, url);
   };
@@ -155,7 +166,9 @@ export class CrudRepository<T> {
   };
 
   protected getManyAdvancedLive = (params: GetManyAdvancedRequest): Observable<T[]> => {
-    const url = getManyAdvancedUrl(this.env) + toQueryParams({ ...params, sessionId: SESSION_ID });
+    const url =
+      getManyAdvancedUrl(this.env) +
+      toQueryParams({ ...params, sessionId: getSessionId(this.env) });
     return fetchLive<T[]>(this.env, url);
   };
 }
