@@ -1,32 +1,23 @@
-import {
-  COL,
-  Transaction,
-  TransactionCreditType,
-  TransactionOrder,
-  TransactionType,
-} from '@soonaverse/interfaces';
+import { COL, Transaction, TransactionPayloadType, TransactionType } from '@build-5/interfaces';
 import { get, isEmpty } from 'lodash';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from './transaction-service';
 
 export class CreditService {
   constructor(readonly transactionService: TransactionService) {}
 
-  public handleCreditUnrefundableOrder = async (
-    order: TransactionOrder,
-    match: TransactionMatch,
-  ) => {
+  public handleCreditUnrefundableOrder = async (order: Transaction, match: TransactionMatch) => {
     const payment = await this.transactionService.createPayment(order, match);
 
-    const transactionDocRef = soonDb().doc(
+    const transactionDocRef = build5Db().doc(
       `${COL.TRANSACTION}/${get(order, 'payload.transaction', '')}`,
     );
     const transaction = <Transaction>await transactionDocRef.get();
 
     if (!isEmpty(transaction.payload.unlockedBy)) {
       await this.transactionService.createCredit(
-        TransactionCreditType.TRANSACTION_ALREADY_UNLOCKED,
+        TransactionPayloadType.TRANSACTION_ALREADY_UNLOCKED,
         payment,
         match,
       );
@@ -41,11 +32,11 @@ export class CreditService {
       member: order.member,
       network: order.network,
       payload: {
-        amount: order.payload.amount + transaction.payload.amount,
+        amount: order.payload.amount! + transaction.payload.amount!,
         nativeTokens: transaction.payload.nativeTokens || [],
         sourceAddress: transaction.payload.sourceAddress,
         targetAddress: transaction.payload.targetAddress,
-        sourceTransaction: [payment.uid, ...transaction.payload.sourceTransaction],
+        sourceTransaction: [payment.uid, ...transaction.payload.sourceTransaction!],
         storageDepositSourceAddress: order.payload.targetAddress,
         reconciled: false,
         void: false,
@@ -53,7 +44,7 @@ export class CreditService {
       },
     };
     this.transactionService.push({
-      ref: soonDb().doc(`${COL.TRANSACTION}/${credit.uid}`),
+      ref: build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`),
       data: credit,
       action: 'set',
     });

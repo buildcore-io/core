@@ -3,18 +3,20 @@ import {
   Collection,
   CollectionStatus,
   DEFAULT_NETWORK,
+  Entity,
   Member,
   MIN_AMOUNT_TO_TRANSFER,
   Nft,
   NftAccess,
+  NftBidRequest,
   Space,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@soonaverse/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress, getAddress } from '../../utils/address.utils';
 import { getRestrictions } from '../../utils/common.utils';
@@ -26,16 +28,16 @@ import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const nftBidControl = async (
   owner: string,
-  params: Record<string, unknown>,
+  params: NftBidRequest,
   customParams?: Record<string, unknown>,
-) => {
-  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
+): Promise<Transaction> => {
+  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
   const member = await memberDocRef.get();
   if (!member) {
     throw invalidArgument(WenError.member_does_not_exists);
   }
 
-  const nftDocRef = soonDb().doc(`${COL.NFT}/${params.nft}`);
+  const nftDocRef = build5Db().doc(`${COL.NFT}/${params.nft}`);
   const nft = await nftDocRef.get<Nft>();
   if (!nft) {
     throw invalidArgument(WenError.nft_does_not_exists);
@@ -45,10 +47,10 @@ export const nftBidControl = async (
     await assertIpNotBlocked((customParams?.ip as string) || '', nft.uid, 'nft');
   }
 
-  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nft.collection}`);
+  const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nft.collection}`);
   const collection = (await collectionDocRef.get<Collection>())!;
 
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${collection.space}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${collection.space}`);
   const space = await spaceDocRef.get<Space>();
 
   if (!collection.approved) {
@@ -76,7 +78,7 @@ export const nftBidControl = async (
   }
   const network = nft.mintingData?.network || DEFAULT_NETWORK;
 
-  const prevOwnerDocRef = soonDb().doc(`${COL.MEMBER}/${nft.owner}`);
+  const prevOwnerDocRef = build5Db().doc(`${COL.MEMBER}/${nft.owner}`);
   const prevOwner = await prevOwnerDocRef.get<Member | undefined>();
   assertMemberHasValidAddress(prevOwner, network);
 
@@ -87,23 +89,23 @@ export const nftBidControl = async (
   const auctionFloorPrice = nft.auctionFloorPrice || MIN_AMOUNT_TO_TRANSFER;
   const finalPrice = Number(Math.max(auctionFloorPrice, MIN_AMOUNT_TO_TRANSFER).toPrecision(2));
 
-  const bidTransaction = {
+  const bidTransaction: Transaction = {
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,
     space: collection.space,
     network,
     payload: {
-      type: TransactionOrderType.NFT_BID,
+      type: TransactionPayloadType.NFT_BID,
       amount: finalPrice,
       targetAddress: targetAddress.bech32,
-      beneficiary: nft.owner ? 'member' : 'space',
+      beneficiary: nft.owner ? Entity.MEMBER : Entity.SPACE,
       beneficiaryUid: nft.owner || collection.space,
       beneficiaryAddress: getAddress(nft.owner ? prevOwner : space, network),
       royaltiesFee: collection.royaltiesFee,
       royaltiesSpace: collection.royaltiesSpace,
       royaltiesSpaceAddress: getAddress(royaltySpace, network),
-      expiresOn: nft.auctionTo,
+      expiresOn: nft.auctionTo!,
       reconciled: false,
       validationType: TransactionValidationType.ADDRESS,
       void: false,
@@ -114,8 +116,8 @@ export const nftBidControl = async (
     },
     linkedTransactions: [],
   };
-  const transactionDocRef = soonDb().doc(`${COL.TRANSACTION}/${bidTransaction.uid}`);
+  const transactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${bidTransaction.uid}`);
   await transactionDocRef.create(bidTransaction);
 
-  return await transactionDocRef.get<Transaction>();
+  return (await transactionDocRef.get())!;
 };

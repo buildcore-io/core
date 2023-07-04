@@ -1,24 +1,23 @@
 import {
-  BillPaymentType,
   COL,
   DEFAULT_NETWORK,
   Entity,
-  Member,
   MIN_IOTA_AMOUNT,
-  Space,
+  Member,
   SUB_COL,
+  Space,
   Token,
   TokenPurchase,
   TokenTradeOrder,
   TokenTradeOrderType,
   Transaction,
-  TransactionCreditType,
+  TransactionPayloadType,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty, tail } from 'lodash';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { ITransaction } from '../../firebase/firestore/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
 import { getAddress } from '../../utils/address.utils';
 import { getRoyaltyFees } from '../../utils/royalty.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -36,7 +35,7 @@ const createBuyPayments = async (
 ) => {
   let salePrice = Number(bigDecimal.floor(bigDecimal.multiply(tokensToTrade, price)));
   const fulfilled = buy.fulfilled + tokensToTrade === buy.count;
-  const buyOrder = (await soonDb()
+  const buyOrder = (await build5Db()
     .doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`)
     .get<Transaction>())!;
   const royaltyFees = await getRoyaltyFees(salePrice, seller.tokenTradingFeePercentage);
@@ -58,7 +57,7 @@ const createBuyPayments = async (
   const royaltyPaymentPromises = Object.entries(royaltyFees)
     .filter((entry) => entry[1] > 0)
     .map(async ([space, fee]) => {
-      const spaceData = await soonDb().doc(`${COL.SPACE}/${space}`).get<Space>();
+      const spaceData = await build5Db().doc(`${COL.SPACE}/${space}`).get<Space>();
       return <Transaction>{
         type: TransactionType.BILL_PAYMENT,
         uid: getRandomEthAddress(),
@@ -66,7 +65,7 @@ const createBuyPayments = async (
         member: buy.owner,
         network: buy.targetNetwork || DEFAULT_NETWORK,
         payload: {
-          type: BillPaymentType.PRE_MINTED_TOKEN_TRADE,
+          type: TransactionPayloadType.PRE_MINTED_TOKEN_TRADE,
           amount: fee,
           sourceAddress: buyOrder.payload.targetAddress,
           targetAddress: getAddress(spaceData, buy.sourceNetwork || DEFAULT_NETWORK),
@@ -86,7 +85,7 @@ const createBuyPayments = async (
     });
   const royaltyPayments = await Promise.all(royaltyPaymentPromises);
   royaltyPayments.forEach((p) => {
-    salePrice -= p.ignoreWallet ? 0 : p.payload.amount;
+    salePrice -= p.ignoreWallet ? 0 : p.payload.amount!;
   });
   if (salePrice < MIN_IOTA_AMOUNT) {
     return [];
@@ -98,7 +97,7 @@ const createBuyPayments = async (
     member: buy.owner,
     network: buy.targetNetwork || DEFAULT_NETWORK,
     payload: {
-      type: BillPaymentType.PRE_MINTED_TOKEN_TRADE,
+      type: TransactionPayloadType.PRE_MINTED_TOKEN_TRADE,
       amount: salePrice,
       sourceAddress: buyOrder.payload.targetAddress,
       targetAddress: getAddress(seller, buy.sourceNetwork || DEFAULT_NETWORK),
@@ -124,7 +123,7 @@ const createBuyPayments = async (
     member: buy.owner,
     network: buy.targetNetwork || DEFAULT_NETWORK,
     payload: {
-      type: TransactionCreditType.TOKEN_TRADE_FULLFILLMENT,
+      type: TransactionPayloadType.TOKEN_TRADE_FULLFILLMENT,
       dependsOnBillPayment: true,
       amount: balanceLeft,
       sourceAddress: buyOrder.payload.targetAddress,
@@ -149,11 +148,11 @@ const updateSaleLock = (
   sell: TokenTradeOrder,
 ) => {
   const diff = sell.fulfilled - prev.fulfilled;
-  const docRef = soonDb().doc(`${COL.TOKEN}/${sell.token}/${SUB_COL.DISTRIBUTION}/${sell.owner}`);
+  const docRef = build5Db().doc(`${COL.TOKEN}/${sell.token}/${SUB_COL.DISTRIBUTION}/${sell.owner}`);
   const data = {
-    lockedForSale: soonDb().inc(-diff),
-    sold: soonDb().inc(diff),
-    tokenOwned: soonDb().inc(-diff),
+    lockedForSale: build5Db().inc(-diff),
+    sold: build5Db().inc(diff),
+    tokenOwned: build5Db().inc(-diff),
   };
   transaction.set(docRef, data, true);
 };
@@ -164,10 +163,10 @@ const updateBuyerDistribution = (
   buy: TokenTradeOrder,
 ) => {
   const diff = buy.fulfilled - prev.fulfilled;
-  const docRef = soonDb().doc(`${COL.TOKEN}/${buy.token}/${SUB_COL.DISTRIBUTION}/${buy.owner}`);
+  const docRef = build5Db().doc(`${COL.TOKEN}/${buy.token}/${SUB_COL.DISTRIBUTION}/${buy.owner}`);
   const data = {
-    totalPurchased: soonDb().inc(diff),
-    tokenOwned: soonDb().inc(diff),
+    totalPurchased: build5Db().inc(diff),
+    tokenOwned: build5Db().inc(diff),
   };
   transaction.set(docRef, data, true);
 };
@@ -182,8 +181,8 @@ export const matchSimpleToken = async (
 ): Promise<Match> => {
   const tokensToTrade = Math.min(sell.count - sell.fulfilled, buy.count - buy.fulfilled);
 
-  const seller = (await soonDb().doc(`${COL.MEMBER}/${sell.owner}`).get<Member>())!;
-  const buyer = (await soonDb().doc(`${COL.MEMBER}/${buy.owner}`).get<Member>())!;
+  const seller = (await build5Db().doc(`${COL.MEMBER}/${sell.owner}`).get<Member>())!;
+  const buyer = (await build5Db().doc(`${COL.MEMBER}/${buy.owner}`).get<Member>())!;
   const buyerPayments = await createBuyPayments(
     token,
     buy,
@@ -197,7 +196,9 @@ export const matchSimpleToken = async (
   if (isEmpty(buyerPayments)) {
     return { purchase: undefined, buyerCreditId: undefined, sellerCreditId: undefined };
   }
-  buyerPayments.forEach((p) => transaction.create(soonDb().doc(`${COL.TRANSACTION}/${p.uid}`), p));
+  buyerPayments.forEach((p) =>
+    transaction.create(build5Db().doc(`${COL.TRANSACTION}/${p.uid}`), p),
+  );
 
   return {
     purchase: <TokenPurchase>{

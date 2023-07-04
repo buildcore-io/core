@@ -38,11 +38,11 @@ function init(outputFile) {
   fs.appendFileSync(outputFile, '    timeout-minutes: 10\n');
   fs.appendFileSync(outputFile, '    steps:\n');
   // Foresight telemetry
-  fs.appendFileSync(outputFile, '      - name: Collect Workflow Telemetry\n');
-  fs.appendFileSync(outputFile, '        uses: runforesight/foresight-workflow-kit-action@v1\n');
-  fs.appendFileSync(outputFile, '        if: ${{ always() }}\n');
-  fs.appendFileSync(outputFile, '        with:\n');
-  fs.appendFileSync(outputFile, '          api_key: ${{ secrets.FORESIGHT_KEY }}\n');
+  // fs.appendFileSync(outputFile, '      - name: Collect Workflow Telemetry\n');
+  // fs.appendFileSync(outputFile, '        uses: runforesight/foresight-workflow-kit-action@v1\n');
+  // fs.appendFileSync(outputFile, '        if: ${{ always() }}\n');
+  // fs.appendFileSync(outputFile, '        with:\n');
+  // fs.appendFileSync(outputFile, '          api_key: ${{ secrets.FORESIGHT_KEY }}\n');
   // end
   fs.appendFileSync(outputFile, '      - uses: actions/checkout@v3\n');
   fs.appendFileSync(outputFile, '      - uses: actions/setup-node@v3\n');
@@ -61,10 +61,7 @@ function init(outputFile) {
   );
   fs.appendFileSync(outputFile, '      - name: Install Dependencies\n');
   fs.appendFileSync(outputFile, "        if: steps.cache.outputs.cache-hit != 'true'\n");
-  fs.appendFileSync(
-    outputFile,
-    '        run: npx lerna bootstrap --scope=@soonaverse/functions\n\n',
-  );
+  fs.appendFileSync(outputFile, '        run: npm run build:functions\n\n');
 }
 
 function job(outputFile, chunk, files, commandName) {
@@ -73,17 +70,17 @@ function job(outputFile, chunk, files, commandName) {
   fs.appendFileSync(outputFile, `    runs-on: ubuntu-latest\n`);
   fs.appendFileSync(outputFile, `    timeout-minutes: 20\n`);
   fs.appendFileSync(outputFile, `    steps:\n`);
-  // Foresight telemetry
-  fs.appendFileSync(outputFile, '      - name: Collect Workflow Telemetry\n');
-  fs.appendFileSync(outputFile, '        uses: runforesight/foresight-workflow-kit-action@v1\n');
-  fs.appendFileSync(outputFile, '        if: ${{ always() }}\n');
-  fs.appendFileSync(outputFile, '        with:\n');
-  fs.appendFileSync(outputFile, '          api_key: ${{ secrets.FORESIGHT_KEY }}\n');
+  // // Foresight telemetry
+  // fs.appendFileSync(outputFile, '      - name: Collect Workflow Telemetry\n');
+  // fs.appendFileSync(outputFile, '        uses: runforesight/foresight-workflow-kit-action@v1\n');
+  // fs.appendFileSync(outputFile, '        if: ${{ always() }}\n');
+  // fs.appendFileSync(outputFile, '        with:\n');
+  // fs.appendFileSync(outputFile, '          api_key: ${{ secrets.FORESIGHT_KEY }}\n');
   // end
   fs.appendFileSync(outputFile, `      - uses: actions/checkout@v3\n`);
   fs.appendFileSync(outputFile, `      - uses: actions/setup-node@v3\n`);
   fs.appendFileSync(outputFile, `        with:\n`);
-  fs.appendFileSync(outputFile, `          node-version: '16.x'\n`);
+  fs.appendFileSync(outputFile, `          node-version: 16.x\n`);
   fs.appendFileSync(outputFile, `      - uses: actions/cache@v3\n`);
   fs.appendFileSync(outputFile, `        with:\n`);
   fs.appendFileSync(outputFile, `          path: |\n`);
@@ -144,16 +141,16 @@ function job(outputFile, chunk, files, commandName) {
   fs.appendFileSync(outputFile, `           path: ./packages/functions/firestore-data/\n`);
   fs.appendFileSync(outputFile, `           retention-days: 1\n`);
 
-  fs.appendFileSync(outputFile, `      - name: Analyze Test and Coverage Results\n`);
-  fs.appendFileSync(outputFile, `        uses: runforesight/foresight-test-kit-action@v1\n`);
-  fs.appendFileSync(outputFile, `        if: \${{ always() }}\n`);
-  fs.appendFileSync(outputFile, `        with:\n`);
-  fs.appendFileSync(outputFile, `          api_key: \${{ secrets.FORESIGHT_KEY }}\n`);
-  fs.appendFileSync(outputFile, `          test_format: JUNIT\n`);
-  fs.appendFileSync(outputFile, `          test_framework: JEST\n`);
-  fs.appendFileSync(outputFile, `          test_path: packages/functions/reports/test\n`);
-  fs.appendFileSync(outputFile, `          coverage_format: COBERTURA/XML\n`);
-  fs.appendFileSync(outputFile, `          coverage_path: packages/functions/reports/coverage\n\n`);
+  // fs.appendFileSync(outputFile, `      - name: Analyze Test and Coverage Results\n`);
+  // fs.appendFileSync(outputFile, `        uses: runforesight/foresight-test-kit-action@v1\n`);
+  // fs.appendFileSync(outputFile, `        if: \${{ always() }}\n`);
+  // fs.appendFileSync(outputFile, `        with:\n`);
+  // fs.appendFileSync(outputFile, `          api_key: \${{ secrets.FORESIGHT_KEY }}\n`);
+  // fs.appendFileSync(outputFile, `          test_format: JUNIT\n`);
+  // fs.appendFileSync(outputFile, `          test_framework: JEST\n`);
+  // fs.appendFileSync(outputFile, `          test_path: packages/functions/reports/test\n`);
+  // fs.appendFileSync(outputFile, `          coverage_format: COBERTURA/XML\n`);
+  // fs.appendFileSync(outputFile, `          coverage_path: packages/functions/reports/coverage\n\n`);
 }
 
 const tangleChunkSize = 3;

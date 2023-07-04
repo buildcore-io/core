@@ -1,7 +1,7 @@
 import {
   STAKE_REWARD_CRON_INTERVAL_CONFIG,
   STAKE_REWARD_TEST_CRON_INTERVAL_CONFIG,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
 import { processExpiredAwards } from './cron/award.cron';
 import { getLatestBitfinexPricesCron } from './cron/bitfinex.cron';
@@ -14,6 +14,7 @@ import { markExpiredProposalCompleted } from './cron/proposal.cron';
 import { removeExpiredStakesFromSpace } from './cron/stake.cron';
 import { stakeRewardCronTask } from './cron/stakeReward.cron';
 import { cancelExpiredSale, tokenCoolDownOver } from './cron/token.cron';
+import { removePurchasesFromVolumeStats } from './cron/token.purchase.cron';
 import { retryWallet } from './cron/wallet.cron';
 import { isProdEnv, isProdOrTestEnv } from './utils/config.utils';
 
@@ -91,6 +92,11 @@ const markExpiredProposalCompletedCron = functions.scheduler.onSchedule(
   markExpiredProposalCompleted,
 );
 
+const removePurchasesFromVolumeStatsCron = functions.scheduler.onSchedule(
+  'every 1 minutes',
+  removePurchasesFromVolumeStats,
+);
+
 export const cron = isProdOrTestEnv()
   ? {
       retrywalletcron: retryWalletCron,
@@ -107,5 +113,6 @@ export const cron = isProdOrTestEnv()
       removeexpirednftstakes: removeExpiredNftStakes,
       updatefloorpriceoncollectionscron: updateFloorPriceOnCollectionsCron,
       markexpiredproposalcompletedcron: markExpiredProposalCompletedCron,
+      removepurchasesfromvolumestatscron: removePurchasesFromVolumeStatsCron,
     }
   : {};

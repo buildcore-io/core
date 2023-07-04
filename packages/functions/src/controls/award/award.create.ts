@@ -1,13 +1,13 @@
-import { Award, COL, SUB_COL } from '@soonaverse/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { Award, AwardCreateRequest, COL, SUB_COL } from '@build-5/interfaces';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { createAward } from '../../services/payment/tangle-service/award/award.create.service';
 
-export const createAwardControl = async (owner: string, params: Record<string, unknown>) => {
+export const createAwardControl = async (owner: string, params: AwardCreateRequest) => {
   const { owner: awardOwner, award } = await createAward(owner, params);
 
-  const batch = soonDb().batch();
+  const batch = build5Db().batch();
 
-  const awardDocRef = soonDb().doc(`${COL.AWARD}/${award.uid}`);
+  const awardDocRef = build5Db().doc(`${COL.AWARD}/${award.uid}`);
   batch.create(awardDocRef, award);
 
   const ownerDocRef = awardDocRef.collection(SUB_COL.OWNERS).doc(owner);

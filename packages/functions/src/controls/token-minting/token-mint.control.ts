@@ -1,19 +1,19 @@
-import { TransactionHelper } from '@iota/iota.js-next';
 import {
   COL,
   Member,
-  Network,
   TRANSACTION_AUTO_EXPIRY_MS,
   Token,
+  TokenMintRequest,
   TokenStatus,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
+import { TransactionHelper } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
@@ -33,9 +33,9 @@ import {
 } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
-export const mintTokenControl = (owner: string, params: Record<string, unknown>) =>
-  soonDb().runTransaction(async (transaction) => {
-    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${params.token}`);
+export const mintTokenControl = (owner: string, params: TokenMintRequest) =>
+  build5Db().runTransaction(async (transaction) => {
+    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
     const token = await transaction.get<Token>(tokenDocRef);
     if (!token) {
       throw invalidArgument(WenError.invalid_params);
@@ -48,10 +48,10 @@ export const mintTokenControl = (owner: string, params: Record<string, unknown>)
     assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED]);
 
     await assertIsGuardian(token.space, owner);
-    const member = await soonDb().doc(`${COL.MEMBER}/${owner}`).get<Member>();
-    assertMemberHasValidAddress(member, params.network as Network);
+    const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();
+    assertMemberHasValidAddress(member, params.network);
 
-    const wallet = (await WalletService.newWallet(params.network as Network)) as SmrWallet;
+    const wallet = (await WalletService.newWallet(params.network)) as SmrWallet;
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
     const totalDistributed =
@@ -63,14 +63,14 @@ export const mintTokenControl = (owner: string, params: Record<string, unknown>)
       wallet,
     );
 
-    const order = <Transaction>{
+    const order: Transaction = {
       type: TransactionType.ORDER,
       uid: getRandomEthAddress(),
       member: owner,
       space: token!.space,
       network: params.network,
       payload: {
-        type: TransactionOrderType.MINT_TOKEN,
+        type: TransactionPayloadType.MINT_TOKEN,
         amount: Object.values(storageDeposits).reduce((acc, act) => acc + act, 0),
         targetAddress: targetAddress.bech32,
         expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
@@ -82,7 +82,7 @@ export const mintTokenControl = (owner: string, params: Record<string, unknown>)
         tokensInVault: totalDistributed,
       },
     };
-    transaction.create(soonDb().doc(`${COL.TRANSACTION}/${order.uid}`), order);
+    transaction.create(build5Db().doc(`${COL.TRANSACTION}/${order.uid}`), order);
     return order;
   });
 

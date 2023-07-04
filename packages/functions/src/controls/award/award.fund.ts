@@ -1,15 +1,18 @@
-import { COL } from '@soonaverse/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { AwardFundRequest, COL, Transaction } from '@build-5/interfaces';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import {
   createAwardFundOrder,
   getAwardForFunding,
 } from '../../services/payment/tangle-service/award/award.fund.service';
 
-export const fundAwardControl = async (owner: string, params: Record<string, unknown>) => {
-  const award = await getAwardForFunding(owner, params.uid as string);
+export const fundAwardControl = async (
+  owner: string,
+  params: AwardFundRequest,
+): Promise<Transaction> => {
+  const award = await getAwardForFunding(owner, params.uid);
   const order = await createAwardFundOrder(owner, award);
 
-  await soonDb().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+  await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
 
   return order;
 };

@@ -5,8 +5,8 @@ import {
   Space,
   TangleRequestType,
   Transaction,
-} from '@soonaverse/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -28,14 +28,14 @@ describe('Join space', () => {
     mockWalletReturnValue(helper.walletSpy, helper.member, { uid: helper.space.uid });
     await testEnv.wrap(joinSpace)({});
 
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${helper.space.uid}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${helper.space.uid}`);
     helper.space = <Space>await spaceDocRef.get();
     expect(helper.space.totalMembers).toBe(2);
 
     await requestFundsFromFaucet(Network.RMS, helper.memberAddress.bech32, MIN_IOTA_AMOUNT);
     await helper.walletService.send(
       helper.memberAddress,
-      helper.tangleOrder.payload.targetAddress,
+      helper.tangleOrder.payload.targetAddress!,
       MIN_IOTA_AMOUNT,
       {
         customMetadata: {
@@ -53,7 +53,7 @@ describe('Join space', () => {
     });
     let snap = await helper.memberCreditQuery.get();
     let credit = snap[0] as Transaction;
-    expect(credit.payload.response.status).toBe('success');
+    expect(credit.payload.response!.status).toBe('success');
 
     helper.space = <Space>await spaceDocRef.get();
     expect(helper.space.totalMembers).toBe(1);

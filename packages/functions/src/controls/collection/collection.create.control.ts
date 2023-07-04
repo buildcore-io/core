@@ -3,6 +3,7 @@ import {
   Collection,
   CollectionStatus,
   CollectionType,
+  CreateCollectionRequest,
   DEFAULT_NETWORK,
   DiscountLine,
   Member,
@@ -10,8 +11,8 @@ import {
   Space,
   SUB_COL,
   WenError,
-} from '@soonaverse/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { hasStakedSoonTokens } from '../../services/stake.service';
 import { assertSpaceHasValidAddress } from '../../utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
@@ -19,12 +20,12 @@ import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { populateTokenUidOnDiscounts } from './common';
 
-export const createCollectionControl = async (owner: string, params: Record<string, unknown>) => {
+export const createCollectionControl = async (owner: string, params: CreateCollectionRequest) => {
   const hasStakedSoons = await hasStakedSoonTokens(owner);
   if (!hasStakedSoons) {
     throw invalidArgument(WenError.no_staked_soon);
   }
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${params.space}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.space}`);
   const space = await spaceDocRef.get<Space>();
   if (!space) {
     throw invalidArgument(WenError.space_does_not_exists);
@@ -36,17 +37,17 @@ export const createCollectionControl = async (owner: string, params: Record<stri
     throw invalidArgument(WenError.you_are_not_part_of_space);
   }
 
-  const royaltySpace = await soonDb().doc(`${COL.SPACE}/${params.royaltiesSpace}`).get<Space>();
+  const royaltySpace = await build5Db().doc(`${COL.SPACE}/${params.royaltiesSpace}`).get<Space>();
   if (!royaltySpace) {
     throw invalidArgument(WenError.space_does_not_exists);
   }
   assertSpaceHasValidAddress(royaltySpace, DEFAULT_NETWORK);
 
   if (params.availableFrom) {
-    params.availableFrom = dateToTimestamp(params.availableFrom as Date, true);
+    params.availableFrom = dateToTimestamp(params.availableFrom, true).toDate();
   }
 
-  const batch = soonDb().batch();
+  const batch = build5Db().batch();
 
   const discounts = <DiscountLine[]>(params.discounts || []);
   const placeholderNftId = params.type !== CollectionType.CLASSIC ? getRandomEthAddress() : null;
@@ -65,7 +66,7 @@ export const createCollectionControl = async (owner: string, params: Record<stri
     placeholderNft: placeholderNftId || null,
     status: CollectionStatus.PRE_MINTED,
   };
-  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${collection.uid}`);
+  const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${collection.uid}`);
   batch.create(collectionDocRef, collection);
 
   if (placeholderNftId) {
@@ -94,7 +95,7 @@ export const createCollectionControl = async (owner: string, params: Record<stri
       createdBy: owner,
       status: NftStatus.PRE_MINTED,
     };
-    const placeholderNftDocRef = soonDb().doc(`${COL.NFT}/${placeholderNft.uid}`);
+    const placeholderNftDocRef = build5Db().doc(`${COL.NFT}/${placeholderNft.uid}`);
     batch.create(placeholderNftDocRef, placeholderNft);
   }
   await batch.commit();

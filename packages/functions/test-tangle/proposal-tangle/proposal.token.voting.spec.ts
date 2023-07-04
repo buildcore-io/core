@@ -4,9 +4,9 @@ import {
   TangleRequestType,
   Transaction,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { approveProposal } from '../../src/runtime/firebase/proposal';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -34,14 +34,14 @@ describe('Create proposal via tangle request', () => {
   it('Should vote full, then 50%', async () => {
     await helper.walletService.send(
       helper.guardianAddress,
-      helper.tangleOrder.payload.targetAddress,
+      helper.tangleOrder.payload.targetAddress!,
       MIN_IOTA_AMOUNT,
       {
         customMetadata: {
           request: {
             requestType: TangleRequestType.PROPOSAL_VOTE,
             uid: proposalUid,
-            values: [1],
+            value: 1,
           },
         },
         nativeTokens: [{ amount: '0xa', id: MINTED_TOKEN_ID }],
@@ -49,7 +49,7 @@ describe('Create proposal via tangle request', () => {
     );
     await MnemonicService.store(helper.guardianAddress.bech32, helper.guardianAddress.mnemonic);
 
-    const orderQuery = soonDb()
+    const orderQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.VOTE)
       .where('member', '==', helper.guardian);

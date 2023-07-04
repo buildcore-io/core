@@ -1,5 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
+  Access,
+  COL,
+  Categories,
+  Collection,
+  CollectionStatus,
+  CollectionType,
+  MIN_IOTA_AMOUNT,
+  MediaStatus,
+  Member,
+  Network,
+  Nft,
+  NftAccess,
+  SUB_COL,
+  Space,
+  Timestamp,
+  Transaction,
+  TransactionPayloadType,
+  TransactionType,
+  UnsoldMintingOptions,
+} from '@build-5/interfaces';
+import {
   ADDRESS_UNLOCK_CONDITION_TYPE,
   Bech32Helper,
   EXPIRATION_UNLOCK_CONDITION_TYPE,
@@ -7,30 +28,9 @@ import {
   STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
   TransactionHelper,
 } from '@iota/iota.js-next';
-import {
-  Access,
-  Categories,
-  COL,
-  Collection,
-  CollectionStatus,
-  CollectionType,
-  MediaStatus,
-  Member,
-  MIN_IOTA_AMOUNT,
-  Network,
-  Nft,
-  NftAccess,
-  Space,
-  SUB_COL,
-  Timestamp,
-  Transaction,
-  TransactionMintCollectionType,
-  TransactionType,
-  UnsoldMintingOptions,
-} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { cloneDeep } from 'lodash';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import {
   approveCollection,
   createCollection,
@@ -43,9 +43,9 @@ import {
   withdrawNft,
 } from '../../src/runtime/firebase/nft/index';
 import { claimSpace } from '../../src/runtime/firebase/space';
-import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
+import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
 import { packEssence, packPayload, submitBlock } from '../../src/utils/block.utils';
@@ -61,7 +61,7 @@ import {
   submitMilestoneFunc,
   wait,
 } from '../../test/controls/common';
-import { getWallet, MEDIA, testEnv } from '../../test/set-up';
+import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 
 export class Helper {
@@ -95,7 +95,7 @@ export class Helper {
     mockWalletReturnValue(this.walletSpy, this.guardian, { uid: this.collection });
     await testEnv.wrap(approveCollection)({});
 
-    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${this.guardian}`);
+    const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${this.guardian}`);
     const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, this.network!);
     this.guardianAddress = await this.walletService?.getAddressDetails(guardianBech32)!;
@@ -107,7 +107,7 @@ export class Helper {
     mockWalletReturnValue(this.walletSpy, this.guardian!, nft);
     nft = await testEnv.wrap(createNft)({});
 
-    await soonDb()
+    await build5Db()
       .doc(`${COL.NFT}/${nft.uid}`)
       .update({ availableFrom: dayjs().subtract(1, 'h').toDate() });
 
@@ -119,7 +119,7 @@ export class Helper {
     const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
     await milestoneProcessed(milestone.milestone, milestone.tranId);
 
-    this.nft = <Nft>await soonDb().doc(`${COL.NFT}/${nft.uid}`).get();
+    this.nft = <Nft>await build5Db().doc(`${COL.NFT}/${nft.uid}`).get();
     return this.nft;
   };
 
@@ -144,7 +144,7 @@ export class Helper {
     );
     await MnemonicService.store(this.guardianAddress!.bech32, this.guardianAddress!.mnemonic);
 
-    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${this.collection}`);
+    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${this.collection}`);
     await wait(async () => {
       const data = <Collection>await collectionDocRef.get();
       return data.status === CollectionStatus.MINTED;
@@ -158,10 +158,10 @@ export class Helper {
     expect(collectionData.mintingData?.nftsToMint).toBe(0);
 
     const ownerChangeTran = (
-      await soonDb()
+      await build5Db()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.MINT_COLLECTION)
-        .where('payload.type', '==', TransactionMintCollectionType.SEND_ALIAS_TO_GUARDIAN)
+        .where('payload.type', '==', TransactionPayloadType.SEND_ALIAS_TO_GUARDIAN)
         .where('member', '==', this.guardian)
         .get()
     ).map((d) => <Transaction>d);
@@ -171,7 +171,7 @@ export class Helper {
   };
 
   public updateGuardianAddress = (address: string) =>
-    soonDb()
+    build5Db()
       .doc(`${COL.MEMBER}/${this.guardian}`)
       .update({ [`validatedAddress.${this.network}`]: address });
 
@@ -183,7 +183,7 @@ export class Helper {
     storageReturnAddress?: string,
   ) => {
     if (!expiresOn) {
-      const order = <Transaction>{
+      const order: Transaction = {
         type: TransactionType.WITHDRAW_NFT,
         uid: getRandomEthAddress(),
         member: this.guardian,
@@ -196,7 +196,7 @@ export class Helper {
           nftId: nftId || '',
         },
       };
-      await soonDb().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+      await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
       return order.uid;
     }
 
@@ -260,7 +260,7 @@ export class Helper {
     mockWalletReturnValue(this.walletSpy, this.guardian!, { nft });
     await testEnv.wrap(withdrawNft)({});
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.WITHDRAW_NFT)
         .where('payload.nft', '==', nft)
@@ -273,7 +273,7 @@ export class Helper {
     mockWalletReturnValue(this.walletSpy, this.guardian!, this.dummyAuctionData(this.nft!.uid));
     await testEnv.wrap(setForSaleNft)({});
     await wait(
-      async () => (await soonDb().doc(`${COL.NFT}/${this.nft!.uid}`).get<Nft>())?.available === 3,
+      async () => (await build5Db().doc(`${COL.NFT}/${this.nft!.uid}`).get<Nft>())?.available === 3,
     );
   };
 
@@ -281,7 +281,7 @@ export class Helper {
     mockWalletReturnValue(this.walletSpy, this.guardian!, this.dummySaleData(this.nft!.uid));
     await testEnv.wrap(setForSaleNft)({});
     await wait(
-      async () => (await soonDb().doc(`${COL.NFT}/${this.nft!.uid}`).get<Nft>())?.available === 1,
+      async () => (await build5Db().doc(`${COL.NFT}/${this.nft!.uid}`).get<Nft>())?.available === 1,
     );
   };
 
@@ -340,7 +340,7 @@ export class Helper {
   });
 
   public claimSpaceFunc = async (spaceId: string) => {
-    mockWalletReturnValue(this.walletSpy, this.guardian!, { space: spaceId });
+    mockWalletReturnValue(this.walletSpy, this.guardian!, { uid: spaceId });
     const order = await testEnv.wrap(claimSpace)({});
     await this.walletService!.send(
       this.guardianAddress!,
@@ -350,7 +350,7 @@ export class Helper {
     );
     await MnemonicService.store(this.guardianAddress!.bech32, this.guardianAddress!.mnemonic);
 
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${spaceId}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${spaceId}`);
     await wait(async () => {
       const space = <Space>await spaceDocRef.get();
       return space.claimed || false;
@@ -369,20 +369,20 @@ export class Helper {
     const spaceGuardian = await spaceGuardianDocRef.get();
     expect(spaceGuardian !== undefined).toBe(true);
 
-    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${this.guardian}`);
+    const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${this.guardian}`);
     const guardianData = <Member>await guardianDocRef.get();
     expect(guardianData.spaces![space.uid].isMember).toBe(true);
   };
 
   public isInvalidPayment = async (paymentId: string) => {
-    const paymentDocRef = soonDb().doc(`${COL.TRANSACTION}/${paymentId}`);
+    const paymentDocRef = build5Db().doc(`${COL.TRANSACTION}/${paymentId}`);
     const payment = (await paymentDocRef.get<Transaction>())!;
     expect(payment.payload.invalidPayment).toBe(true);
   };
 
   public mintWithCustomNftCID = async (func: (ipfsMedia: string) => string) => {
     let nft = await this.createAndOrderNft();
-    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+    const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
 
     mockWalletReturnValue(this.walletSpy, this.guardian!, {
       collection: this.collection!,
@@ -412,7 +412,7 @@ export class Helper {
     });
     unsubscribe();
 
-    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${this.collection}`);
+    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${this.collection}`);
     await wait(async () => {
       const collection = <Collection>await collectionDocRef.get();
       return collection.status === CollectionStatus.MINTED;
@@ -421,7 +421,7 @@ export class Helper {
     mockWalletReturnValue(this.walletSpy, this.guardian!, { nft: nft.uid });
     await testEnv.wrap(withdrawNft)({});
 
-    let query = soonDb()
+    let query = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.WITHDRAW_NFT)
       .where('payload.nft', '==', nft.uid);
@@ -432,6 +432,6 @@ export class Helper {
     nft = <Nft>await nftDocRef.get();
 
     await nftDocRef.delete();
-    await soonDb().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
+    await build5Db().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
   };
 }

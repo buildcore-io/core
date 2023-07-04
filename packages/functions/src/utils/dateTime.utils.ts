@@ -1,4 +1,4 @@
-import { Timestamp as ITimestamp } from '@soonaverse/interfaces';
+import { Timestamp as ITimestamp } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { Timestamp } from 'firebase-admin/firestore';
 

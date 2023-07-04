@@ -1,13 +1,13 @@
-import { COL, DEFAULT_NETWORK, Mnemonic } from '@soonaverse/interfaces';
+import { COL, DEFAULT_NETWORK, Mnemonic } from '@build-5/interfaces';
 import { AES, enc } from 'crypto-js';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 export class MnemonicService {
   public static async store(
     address: string,
     mnemonic: string,
     network = DEFAULT_NETWORK,
   ): Promise<void> {
-    await soonDb()
+    await build5Db()
       .collection(COL.MNEMONIC)
       .doc(address)
       .set({
@@ -17,11 +17,14 @@ export class MnemonicService {
   }
 
   public static async get(address: string): Promise<string> {
-    const mnemonic = <Mnemonic>await soonDb().collection(COL.MNEMONIC).doc(address).get();
+    const mnemonic = <Mnemonic>await build5Db().collection(COL.MNEMONIC).doc(address).get();
     return AES.decrypt(mnemonic.mnemonic!, process.env.ENCRYPTION_SALT || '').toString(enc.Utf8);
   }
 
-  public static async getData(address: string): Promise<Mnemonic> {
-    return (await soonDb().collection(COL.MNEMONIC).doc(address).get()) || {};
+  public static async getData(address: string | undefined): Promise<Mnemonic> {
+    if (!address) {
+      return {};
+    }
+    return (await build5Db().collection(COL.MNEMONIC).doc(address).get()) || {};
   }
 }

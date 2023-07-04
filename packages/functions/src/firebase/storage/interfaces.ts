@@ -1,4 +1,4 @@
-import { Bucket } from '@soonaverse/interfaces';
+import { Bucket } from '@build-5/interfaces';
 
 export interface IStorage {
   bucket: (name: string) => IBucket;

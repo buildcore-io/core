@@ -5,8 +5,8 @@ import {
   Space,
   TangleRequestType,
   Transaction,
-} from '@soonaverse/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { wait } from '../../test/controls/common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
@@ -23,13 +23,13 @@ describe('Join space', () => {
   });
 
   it('Should join space via tangle request', async () => {
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${helper.space.uid}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${helper.space.uid}`);
     await spaceDocRef.update({ open: false });
 
     await requestFundsFromFaucet(Network.RMS, helper.memberAddress.bech32, MIN_IOTA_AMOUNT);
     await helper.walletService.send(
       helper.memberAddress,
-      helper.tangleOrder.payload.targetAddress,
+      helper.tangleOrder.payload.targetAddress!,
       MIN_IOTA_AMOUNT,
       {
         customMetadata: {
@@ -47,7 +47,7 @@ describe('Join space', () => {
     });
     let snap = await helper.memberCreditQuery.get();
     let credit = snap[0] as Transaction;
-    expect(credit.payload.response.status).toBe('success');
+    expect(credit.payload.response!.status).toBe('success');
 
     helper.space = <Space>await spaceDocRef.get();
     expect(helper.space.totalMembers).toBe(1);
@@ -56,7 +56,7 @@ describe('Join space', () => {
     await requestFundsFromFaucet(Network.RMS, helper.guardianAddress.bech32, MIN_IOTA_AMOUNT);
     await helper.walletService.send(
       helper.guardianAddress,
-      helper.tangleOrder.payload.targetAddress,
+      helper.tangleOrder.payload.targetAddress!,
       MIN_IOTA_AMOUNT,
       {
         customMetadata: {
@@ -75,7 +75,7 @@ describe('Join space', () => {
     });
     snap = await helper.guardianCreditQuery.get();
     credit = snap[0] as Transaction;
-    expect(credit.payload.response.status).toBe('success');
+    expect(credit.payload.response!.status).toBe('success');
 
     helper.space = <Space>await spaceDocRef.get();
     expect(helper.space.totalMembers).toBe(2);

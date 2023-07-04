@@ -5,9 +5,9 @@ import {
   Transaction,
   TransactionType,
   UnsoldMintingOptions,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import { isEqual } from 'lodash';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { mintCollection } from '../../src/runtime/firebase/collection/index';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -68,20 +68,20 @@ describe('Collection minting', () => {
     );
     await Promise.all(promises);
 
-    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${helper.collection}`);
+    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${helper.collection}`);
     await wait(async () => {
       const data = <Collection>await collectionDocRef.get();
       return data.status === CollectionStatus.MINTED;
     });
 
-    const creditQuery = soonDb()
+    const creditQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('payload.collection', '==', helper.collection);
     await wait(async () => {
       const snap = await creditQuery.get<Transaction>();
       const allConfirmed = snap.reduce(
-        (acc, act) => acc && act.payload?.walletReference?.confirmed,
+        (acc, act) => acc && (act.payload?.walletReference?.confirmed || false),
         true,
       );
       return snap.length > 0 && allConfirmed;

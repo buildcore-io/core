@@ -1,4 +1,3 @@
-import { HexHelper } from '@iota/util.js-next';
 import {
   COL,
   Member,
@@ -12,10 +11,12 @@ import {
   TokenStatus,
   Transaction,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
+import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { set } from 'lodash';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import {
   approveProposal,
   createProposal,
@@ -58,13 +59,13 @@ export class Helper {
 
     this.proposal = dummyProposal(this.space.uid);
 
-    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${this.guardian}`);
+    const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${this.guardian}`);
     const guardianData = await guardianDocRef.get<Member>();
     const guardianAddressBech = getAddress(guardianData, this.network);
     this.guardianAddress = await this.walletService!.getAddressDetails(guardianAddressBech);
 
     this.tokenId = wallet.getRandomEthAddress();
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TOKEN}/${this.tokenId}`)
       .create({
         uid: this.tokenId,
@@ -74,9 +75,12 @@ export class Helper {
         approved: true,
       });
 
-    mockWalletReturnValue(this.walletSpy, this.guardian, this.proposal);
+    const { uid, ...requestData } = this.proposal;
+    set(requestData, 'settings.startDate', this.proposal.settings.startDate.toDate());
+    set(requestData, 'settings.endDate', this.proposal.settings.endDate.toDate());
+    mockWalletReturnValue(this.walletSpy, this.guardian, requestData);
     this.proposal = await testEnv.wrap(createProposal)({});
-    mockWalletReturnValue(this.walletSpy, this.guardian, { uid: this.proposal!.uid });
+    mockWalletReturnValue(this.walletSpy, this.guardian, { uid: this.proposal?.uid });
     await testEnv.wrap(approveProposal)({});
   };
 
@@ -106,7 +110,7 @@ export class Helper {
   public awaitVoteTransactionCreditIsConfirmed = async (
     voteTransactionOrderTargetAddress: string,
   ) => {
-    const query = soonDb()
+    const query = build5Db()
       .collection(COL.TRANSACTION)
       .where('payload.sourceAddress', '==', voteTransactionOrderTargetAddress)
       .where('type', '==', TransactionType.CREDIT);
@@ -119,7 +123,7 @@ export class Helper {
   };
 
   public getVoteTransactionForCredit = async (creditId: string) => {
-    const query = soonDb()
+    const query = build5Db()
       .collection(COL.TRANSACTION)
       .where('payload.creditId', '==', creditId)
       .where('type', '==', TransactionType.VOTE);
@@ -128,7 +132,7 @@ export class Helper {
   };
 
   public updatePropoasalDates = (startDate: dayjs.Dayjs, endDate: dayjs.Dayjs) =>
-    soonDb()
+    build5Db()
       .doc(`${COL.PROPOSAL}/${this.proposal!.uid}`)
       .set(
         {
@@ -141,7 +145,7 @@ export class Helper {
       );
 
   public updateVoteTranCreatedOn = (voteTransactionId: string, createdOn: dayjs.Dayjs) =>
-    soonDb()
+    build5Db()
       .doc(`${COL.TRANSACTION}/${voteTransactionId}`)
       .update({ createdOn: dateToTimestamp(createdOn) });
 
@@ -150,7 +154,7 @@ export class Helper {
     voted: number,
     proposalId = this.proposal!.uid,
   ) => {
-    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposalId}`);
+    const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposalId}`);
     const proposal = <Proposal>await proposalDocRef.get();
     expect(+proposal.results?.total.toFixed(0)).toBe(total);
     expect(+proposal.results?.voted.toFixed(0)).toBe(voted);
@@ -162,7 +166,7 @@ export class Helper {
     answer: number,
     proposalId = this.proposal!.uid,
   ) => {
-    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposalId}`);
+    const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposalId}`);
     const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(member);
     const proposalMember = <ProposalMember>await proposalMemberDocRef.get();
     expect(+proposalMember.weightPerAnswer![answer].toFixed(0)).toBe(weight);
@@ -176,7 +180,7 @@ export class Helper {
   ) => {
     mockWalletReturnValue(this.walletSpy, member, {
       uid: proposalId,
-      values: [value],
+      value,
       voteWithStakedTokes,
     });
     return await testEnv.wrap(voteOnProposal)({});
@@ -191,38 +195,43 @@ export class Helper {
       uid: wallet.getRandomEthAddress(),
       token: this.tokenId,
     };
-    const docRef = soonDb().doc(`${COL.STAKE}/${stake.uid}`);
+    const docRef = build5Db().doc(`${COL.STAKE}/${stake.uid}`);
     await docRef.create(stake);
   };
 
   public getTransaction = async (uid: string) => {
-    const docRef = soonDb().doc(`${COL.TRANSACTION}/${uid}`);
+    const docRef = build5Db().doc(`${COL.TRANSACTION}/${uid}`);
     return <Transaction>await docRef.get();
   };
 }
 
-export const dummyProposal = (space: string) =>
-  <Proposal>{
-    name: 'All 4 HORNET',
-    space,
-    additionalInfo: 'The biggest governance decision in the history of IOTA',
-    settings: {
-      startDate: dayjs().add(1, 'd').toDate(),
-      endDate: dayjs().add(5, 'd').toDate(),
-      onlyGuardians: false,
+export const dummyProposal = (space: string): Proposal => ({
+  uid: '',
+  description: '',
+  name: 'All 4 HORNET',
+  space,
+  additionalInfo: 'The biggest governance decision in the history of IOTA',
+  settings: {
+    startDate: dateToTimestamp(dayjs().add(1, 'd')),
+    endDate: dateToTimestamp(dayjs().add(5, 'd')),
+    onlyGuardians: false,
+  },
+  type: ProposalType.NATIVE,
+  questions: [
+    {
+      text: 'Give all the funds to the HORNET developers?',
+      answers: [
+        { value: 1, text: 'YES', additionalInfo: 'Go team!' },
+        {
+          value: 2,
+          text: 'Doh! Of course!',
+          additionalInfo: 'There is no other option',
+        },
+      ],
+      additionalInfo: 'This would fund the development of HORNET indefinitely',
     },
-    type: ProposalType.NATIVE,
-    questions: [
-      {
-        text: 'Give all the funds to the HORNET developers?',
-        answers: [
-          { value: 1, text: 'YES', additionalInfo: 'Go team!' },
-          { value: 2, text: 'Doh! Of course!', additionalInfo: 'There is no other option' },
-        ],
-        additionalInfo: 'This would fund the development of HORNET indefinitely',
-      },
-    ],
-  };
+  ],
+});
 
 export const VAULT_MNEMONIC =
   'offer kingdom rate never hurt follow wrestle cloud alien admit bird usage avoid cloth soldier evidence crawl harsh electric wheat ten mushroom glare reject';

@@ -1,21 +1,25 @@
+import { Timestamp } from '@build-5/interfaces';
 import {
   ADDRESS_UNLOCK_CONDITION_TYPE,
   BASIC_OUTPUT_TYPE,
   Bech32Helper,
   EXPIRATION_UNLOCK_CONDITION_TYPE,
+  FeatureTypes,
   IBasicOutput,
+  ICommonOutput,
   IMetadataFeature,
   INativeToken,
   INodeInfo,
+  ITagFeature,
   ITimelockUnlockCondition,
   METADATA_FEATURE_TYPE,
   STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
+  TAG_FEATURE_TYPE,
   TIMELOCK_UNLOCK_CONDITION_TYPE,
   TransactionHelper,
   UnlockConditionTypes,
 } from '@iota/iota.js-next';
 import { Converter, HexHelper } from '@iota/util.js-next';
-import { Timestamp } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { cloneDeep, isEmpty } from 'lodash';
@@ -83,6 +87,7 @@ export const packBasicOutput = (
   vestingAt?: Timestamp,
   expiration?: Expiration,
   metadata?: Record<string, unknown>,
+  tag?: string,
 ) => {
   const targetAddress = Bech32Helper.addressFromBech32(toBech32, info.protocol.bech32Hrp);
   const unlockConditions: UnlockConditionTypes[] = [
@@ -126,10 +131,18 @@ export const packBasicOutput = (
   };
 
   if (!isEmpty(metadata)) {
-    output.features = [
-      { type: METADATA_FEATURE_TYPE, data: Converter.utf8ToHex(JSON.stringify(metadata), true) },
-    ];
+    const data = Converter.utf8ToHex(JSON.stringify(metadata), true);
+    const metadataFeture = { type: METADATA_FEATURE_TYPE, data } as IMetadataFeature;
+    output.features = (output.features || []) as FeatureTypes[];
+    output.features.push(metadataFeture);
   }
+
+  if (tag) {
+    const tagFeature = { type: TAG_FEATURE_TYPE, tag } as ITagFeature;
+    output.features = (output.features || []) as FeatureTypes[];
+    output.features.push(tagFeature);
+  }
+
   const storageDeposit = TransactionHelper.getStorageDeposit(output, info.protocol.rentStructure!);
   output.amount = bigInt.max(bigInt(amount), storageDeposit).toString();
 
@@ -169,7 +182,7 @@ export const subtractNativeTokens = (
   return result;
 };
 
-export const getOutputMetadata = (output: IBasicOutput | undefined) => {
+export const getOutputMetadata = (output: ICommonOutput | undefined) => {
   try {
     const metadataFeature = <IMetadataFeature | undefined>(
       output?.features?.find((f) => f.type === METADATA_FEATURE_TYPE)

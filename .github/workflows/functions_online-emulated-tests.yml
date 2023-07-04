@@ -12,11 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Collect Workflow Telemetry
-        uses: runforesight/foresight-workflow-kit-action@v1
-        if: ${{ always() }}
-        with:
-          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -31,22 +26,17 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: npx lerna bootstrap --scope=@soonaverse/functions
+        run: npm run build:functions
 
   chunk_0:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Collect Workflow Telemetry
-        uses: runforesight/foresight-workflow-kit-action@v1
-        if: ${{ always() }}
-        with:
-          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '16.x'
+          node-version: 16.x
       - uses: actions/cache@v3
         with:
           path: |
@@ -79,31 +69,15 @@ jobs:
            name: firestore-data-test-online-chunk_0
            path: ./packages/functions/firestore-data/
            retention-days: 1
-      - name: Analyze Test and Coverage Results
-        uses: runforesight/foresight-test-kit-action@v1
-        if: ${{ always() }}
-        with:
-          api_key: ${{ secrets.FORESIGHT_KEY }}
-          test_format: JUNIT
-          test_framework: JEST
-          test_path: packages/functions/reports/test
-          coverage_format: COBERTURA/XML
-          coverage_path: packages/functions/reports/coverage
-
   chunk_1:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Collect Workflow Telemetry
-        uses: runforesight/foresight-workflow-kit-action@v1
-        if: ${{ always() }}
-        with:
-          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '16.x'
+          node-version: 16.x
       - uses: actions/cache@v3
         with:
           path: |
@@ -136,31 +110,15 @@ jobs:
            name: firestore-data-test-online-chunk_1
            path: ./packages/functions/firestore-data/
            retention-days: 1
-      - name: Analyze Test and Coverage Results
-        uses: runforesight/foresight-test-kit-action@v1
-        if: ${{ always() }}
-        with:
-          api_key: ${{ secrets.FORESIGHT_KEY }}
-          test_format: JUNIT
-          test_framework: JEST
-          test_path: packages/functions/reports/test
-          coverage_format: COBERTURA/XML
-          coverage_path: packages/functions/reports/coverage
-
   chunk_2:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Collect Workflow Telemetry
-        uses: runforesight/foresight-workflow-kit-action@v1
-        if: ${{ always() }}
-        with:
-          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '16.x'
+          node-version: 16.x
       - uses: actions/cache@v3
         with:
           path: |
@@ -193,31 +151,15 @@ jobs:
            name: firestore-data-test-online-chunk_2
            path: ./packages/functions/firestore-data/
            retention-days: 1
-      - name: Analyze Test and Coverage Results
-        uses: runforesight/foresight-test-kit-action@v1
-        if: ${{ always() }}
-        with:
-          api_key: ${{ secrets.FORESIGHT_KEY }}
-          test_format: JUNIT
-          test_framework: JEST
-          test_path: packages/functions/reports/test
-          coverage_format: COBERTURA/XML
-          coverage_path: packages/functions/reports/coverage
-
   chunk_3:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Collect Workflow Telemetry
-        uses: runforesight/foresight-workflow-kit-action@v1
-        if: ${{ always() }}
-        with:
-          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '16.x'
+          node-version: 16.x
       - uses: actions/cache@v3
         with:
           path: |
@@ -250,31 +192,15 @@ jobs:
            name: firestore-data-test-online-chunk_3
            path: ./packages/functions/firestore-data/
            retention-days: 1
-      - name: Analyze Test and Coverage Results
-        uses: runforesight/foresight-test-kit-action@v1
-        if: ${{ always() }}
-        with:
-          api_key: ${{ secrets.FORESIGHT_KEY }}
-          test_format: JUNIT
-          test_framework: JEST
-          test_path: packages/functions/reports/test
-          coverage_format: COBERTURA/XML
-          coverage_path: packages/functions/reports/coverage
-
   chunk_4:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Collect Workflow Telemetry
-        uses: runforesight/foresight-workflow-kit-action@v1
-        if: ${{ always() }}
-        with:
-          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '16.x'
+          node-version: 16.x
       - uses: actions/cache@v3
         with:
           path: |
@@ -307,31 +233,15 @@ jobs:
            name: firestore-data-test-online-chunk_4
            path: ./packages/functions/firestore-data/
            retention-days: 1
-      - name: Analyze Test and Coverage Results
-        uses: runforesight/foresight-test-kit-action@v1
-        if: ${{ always() }}
-        with:
-          api_key: ${{ secrets.FORESIGHT_KEY }}
-          test_format: JUNIT
-          test_framework: JEST
-          test_path: packages/functions/reports/test
-          coverage_format: COBERTURA/XML
-          coverage_path: packages/functions/reports/coverage
-
   chunk_5:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Collect Workflow Telemetry
-        uses: runforesight/foresight-workflow-kit-action@v1
-        if: ${{ always() }}
-        with:
-          api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '16.x'
+          node-version: 16.x
       - uses: actions/cache@v3
         with:
           path: |
@@ -351,6 +261,7 @@ jobs:
           firebase emulators:exec "
                 npm run test-online:ci -- --findRelatedTests test/api/getUpdatedAfter.spec.ts &&
                 npm run test-online:ci -- --findRelatedTests test/api/getTokenPrice.spec.ts &&
+                npm run test-online:ci -- --findRelatedTests test/api/getManyAdvanced.spec.ts &&
                 npm run test-online:ci -- --findRelatedTests test/api/getMany.spec.ts &&
                 npm run test-online:ci -- --findRelatedTests test/api/getById.spec.ts &&
                 npm run test-online:ci -- --findRelatedTests test/api/getAddresses.spec.ts &&
@@ -363,14 +274,3 @@ jobs:
            name: firestore-data-test-online-chunk_5
            path: ./packages/functions/firestore-data/
            retention-days: 1
-      - name: Analyze Test and Coverage Results
-        uses: runforesight/foresight-test-kit-action@v1
-        if: ${{ always() }}
-        with:
-          api_key: ${{ secrets.FORESIGHT_KEY }}
-          test_format: JUNIT
-          test_framework: JEST
-          test_path: packages/functions/reports/test
-          coverage_format: COBERTURA/XML
-          coverage_path: packages/functions/reports/coverage
-

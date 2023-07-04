@@ -2,17 +2,19 @@ import {
   Award,
   AwardBadge,
   AwardBadgeType,
+  AwardCreateRequest,
+  AwardCreateTangleResponse,
   COL,
   Network,
   SUB_COL,
   Token,
   TokenStatus,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import Joi from 'joi';
 import { isEmpty, set } from 'lodash';
-import { soonDb } from '../../../../firebase/firestore/soondb';
-import { soonStorage } from '../../../../firebase/storage/soonStorage';
+import { build5Db } from '../../../../firebase/firestore/build5Db';
+import { build5Storage } from '../../../../firebase/storage/build5Storage';
 import { awardBageSchema, createAwardSchema } from '../../../../runtime/firebase/award';
 import { downloadMediaAndPackCar } from '../../../../utils/car.utils';
 import { getBucket } from '../../../../utils/config.utils';
@@ -23,7 +25,7 @@ import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsSpaceMember } from '../../../../utils/space.utils';
 import { getTokenBySymbol } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { isStorageUrl } from '../../../joi/common';
+import { isStorageUrl, toJoiObject } from '../../../joi/common';
 import { SmrWallet } from '../../../wallet/SmrWalletService';
 import { WalletService } from '../../../wallet/wallet';
 import { getAwardgStorageDeposits } from '../../award/award-service';
@@ -33,15 +35,23 @@ import { createAwardFundOrder } from './award.fund.service';
 export class AwardCreateService {
   constructor(readonly transactionService: TransactionService) {}
 
-  public handleCreateRequest = async (owner: string, request: Record<string, unknown>) => {
+  public handleCreateRequest = async (
+    owner: string,
+    request: Record<string, unknown>,
+  ): Promise<AwardCreateTangleResponse> => {
     delete request.requestType;
     const badgeSchema = awardBageSchema;
     set(awardBageSchema, 'image', Joi.string().uri());
-    await assertValidationAsync(createAwardSchema(badgeSchema), request);
+    const awardSchema = createAwardSchema;
+    set(awardSchema, 'badge', badgeSchema);
 
-    const { award, owner: awardOwner } = await createAward(owner, request);
+    const params = await assertValidationAsync(
+      toJoiObject<AwardCreateRequest>(awardSchema),
+      request,
+    );
+    const { award, owner: awardOwner } = await createAward(owner, params);
 
-    const awardDocRef = soonDb().doc(`${COL.AWARD}/${award.uid}`);
+    const awardDocRef = build5Db().doc(`${COL.AWARD}/${award.uid}`);
     this.transactionService.push({
       ref: awardDocRef,
       data: award,
@@ -55,27 +65,27 @@ export class AwardCreateService {
     });
 
     const order = await createAwardFundOrder(owner, award);
-    const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
     this.transactionService.push({ ref: orderDocRef, data: order, action: 'set' });
 
     const response = {
       award: award.uid,
-      amount: order.payload.amount,
-      address: order.payload.targetAddress,
+      amount: order.payload.amount!,
+      address: order.payload.targetAddress!,
     };
     if (!isEmpty(order.payload.nativeTokens)) {
-      set(response, 'nativeTokens', order.payload.nativeTokens);
+      set(response, 'nativeTokens', order.payload.nativeTokens!);
     }
 
     return response;
   };
 }
 
-export const createAward = async (owner: string, params: Record<string, unknown>) => {
+export const createAward = async (owner: string, params: AwardCreateRequest) => {
   await assertIsSpaceMember(params.space as string, owner);
 
   const awardId = getRandomEthAddress();
-  const { tokenSymbol, ...badge } = params.badge as Record<string, unknown>;
+  const { tokenSymbol, ...badge } = params.badge;
 
   const token = await getTokenBySymbol(tokenSymbol as string);
   if (!token) {
@@ -88,9 +98,9 @@ export const createAward = async (owner: string, params: Record<string, unknown>
   const badgeType = getBadgeType(token);
 
   if (badge?.image) {
-    let imageUrl = badge.image as string;
+    let imageUrl = badge.image;
     if (!isStorageUrl(imageUrl)) {
-      const bucket = soonStorage().bucket(getBucket());
+      const bucket = build5Storage().bucket(getBucket());
       imageUrl = await migrateUriToSotrage(COL.AWARD, owner, awardUid, uriToUrl(imageUrl), bucket);
       set(badge, 'image', imageUrl);
     }

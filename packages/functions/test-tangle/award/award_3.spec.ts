@@ -6,10 +6,10 @@ import {
   Network,
   Space,
   Token,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { createAward, fundAward } from '../../src/runtime/firebase/award';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -51,7 +51,7 @@ describe('Create award, base', () => {
     const order = await testEnv.wrap(fundAward)({});
     await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount);
 
-    const awardDocRef = soonDb().doc(`${COL.AWARD}/${award.uid}`);
+    const awardDocRef = build5Db().doc(`${COL.AWARD}/${award.uid}`);
     await wait(async () => {
       const award = <Award>await awardDocRef.get();
       return award.approved && award.funded;

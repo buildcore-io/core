@@ -1,14 +1,14 @@
 import {
   COL,
+  IgnoreWalletReason,
   MIN_IOTA_AMOUNT,
   Network,
   Nft,
   StakeType,
   Transaction,
-  TransactionIgnoreWalletReason,
   TransactionType,
-} from '@soonaverse/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { creditUnrefundable } from '../../src/runtime/firebase/credit';
 import { stakeNft } from '../../src/runtime/firebase/nft';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -29,7 +29,7 @@ describe('Stake nft', () => {
 
   it('Should stake with storage dep', async () => {
     let nft = await helper.createAndOrderNft();
-    let nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+    let nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
     await helper.mintCollection();
     nft = <Nft>await nftDocRef.get();
     await helper.withdrawNftAndAwait(nft.uid);
@@ -40,7 +40,7 @@ describe('Stake nft', () => {
       type: StakeType.DYNAMIC,
     });
     const stakeNftOrder = await testEnv.wrap(stakeNft)({});
-    const blockId = await helper.sendNftToAddress(
+    await helper.sendNftToAddress(
       helper.guardianAddress!,
       stakeNftOrder.payload.targetAddress,
       undefined,
@@ -49,16 +49,15 @@ describe('Stake nft', () => {
       undefined,
       true,
     );
-    console.log(blockId);
 
-    const creditQuery = soonDb()
+    const creditQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_NFT)
       .where('member', '==', helper.guardian)
       .where(
         'ignoreWalletReason',
         '==',
-        TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION,
+        IgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION,
       );
     await wait(async () => {
       const snap = await creditQuery.get<Transaction>();

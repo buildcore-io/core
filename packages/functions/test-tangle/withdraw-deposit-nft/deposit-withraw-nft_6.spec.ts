@@ -10,8 +10,8 @@ import {
   Space,
   Transaction,
   TransactionType,
-} from '@soonaverse/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { depositNft, withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { getAddress } from '../../src/utils/address.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -32,11 +32,11 @@ describe('Nft depositing', () => {
     nft = await helper.createAndOrderNft();
     await helper.mintCollection();
 
-    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+    const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, { nft: nft.uid });
     await testEnv.wrap(withdrawNft)({});
 
-    const query = soonDb()
+    const query = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.WITHDRAW_NFT)
       .where('payload.nft', '==', nft.uid);
@@ -46,21 +46,21 @@ describe('Nft depositing', () => {
     });
     nft = <Nft>await nftDocRef.get();
 
-    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nft.collection}`);
+    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nft.collection}`);
     collection = <Collection>await collectionDocRef.get();
   });
 
-  it('Should deposit nft minted outside soonaverse and withdraw it', async () => {
-    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+  it('Should deposit nft minted outside build-5 and withdraw it', async () => {
+    const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
 
     await nftDocRef.delete();
-    await soonDb().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
+    await build5Db().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
 
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, { network: helper.network });
     let depositOrder = await testEnv.wrap(depositNft)({});
     await helper.sendNftToAddress(helper.guardianAddress!, depositOrder.payload.targetAddress);
 
-    const nftQuery = soonDb().collection(COL.NFT).where('owner', '==', helper.guardian);
+    const nftQuery = build5Db().collection(COL.NFT).where('owner', '==', helper.guardian);
     await wait(async () => {
       const snap = await nftQuery.get();
       return snap.length > 0;
@@ -85,7 +85,7 @@ describe('Nft depositing', () => {
     expect(migratedNft.properties.custom.value).toBe(1);
     expect(migratedNft.properties.customStat.value).toBe('customStat');
 
-    const migratedCollectionDocRef = soonDb().doc(`${COL.COLLECTION}/${migratedNft.collection}`);
+    const migratedCollectionDocRef = build5Db().doc(`${COL.COLLECTION}/${migratedNft.collection}`);
     const migratedCollection = <Collection>await migratedCollectionDocRef.get();
     expect(migratedCollection.space).toBe(migratedNft.space);
     expect(migratedCollection.uid).toBe(collection.mintingData?.nftId!);
@@ -100,7 +100,7 @@ describe('Nft depositing', () => {
     expect(migratedCollection.royaltiesFee).toBe(0.45);
     expect(migratedCollection.royaltiesSpace).toBe(getAddress(helper.royaltySpace!, Network.RMS));
 
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${migratedNft.space}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${migratedNft.space}`);
     const space = <Space>await spaceDocRef.get();
     expect(space.uid).toBeDefined();
     expect(space.name).toBe(migratedCollection.name);
@@ -111,7 +111,7 @@ describe('Nft depositing', () => {
     const nftId = nft.mintingData?.nftId;
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, { nft: nftId });
     await testEnv.wrap(withdrawNft)({});
-    const query = soonDb()
+    const query = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.WITHDRAW_NFT)
       .where('payload.nft', '==', nftId);
@@ -120,7 +120,7 @@ describe('Nft depositing', () => {
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
 
-    const depositOrderDocRef = soonDb().doc(`${COL.TRANSACTION}/${depositOrder.uid}`);
+    const depositOrderDocRef = build5Db().doc(`${COL.TRANSACTION}/${depositOrder.uid}`);
     depositOrder = <Transaction>await depositOrderDocRef.get();
     expect(depositOrder.payload.nft).toBe(nftId);
   });

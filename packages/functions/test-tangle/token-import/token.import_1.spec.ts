@@ -6,10 +6,10 @@ import {
   Token,
   TokenStatus,
   Transaction,
-  TransactionCreditType,
+  TransactionPayloadType,
   TransactionType,
-} from '@soonaverse/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { importMintedToken } from '../../src/runtime/firebase/token/minting';
 import { getAddress } from '../../src/utils/address.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -42,7 +42,7 @@ describe('Token import', () => {
       {},
     );
 
-    const migratedTokenDocRef = soonDb().doc(`${COL.TOKEN}/${helper.token.mintingData?.tokenId}`);
+    const migratedTokenDocRef = build5Db().doc(`${COL.TOKEN}/${helper.token.mintingData?.tokenId}`);
     await wait(async () => (await migratedTokenDocRef.get()) !== undefined);
 
     const migratedToken = <Token>await migratedTokenDocRef.get();
@@ -79,11 +79,11 @@ describe('Token import', () => {
     expect(migratedToken.mediaStatus).toBe(MediaStatus.PENDING_UPLOAD);
     expect(migratedToken.tradingDisabled).toBe(true);
 
-    const creditQuery = soonDb()
+    const creditQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.guardian.uid)
       .where('type', '==', TransactionType.CREDIT)
-      .where('payload.type', '==', TransactionCreditType.IMPORT_TOKEN);
+      .where('payload.type', '==', TransactionPayloadType.IMPORT_TOKEN);
     await wait(async () => {
       const snap = await creditQuery.get<Transaction>();
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
@@ -91,8 +91,8 @@ describe('Token import', () => {
     const snap = await creditQuery.get<Transaction>();
     expect(snap[0]?.payload.amount).toBe(2 * MIN_IOTA_AMOUNT);
 
-    const payment = await soonDb()
-      .doc(`${COL.TRANSACTION}/${snap[0].payload.sourceTransaction[0]}`)
+    const payment = await build5Db()
+      .doc(`${COL.TRANSACTION}/${snap[0].payload.sourceTransaction![0]}`)
       .get<Transaction>();
     expect(payment?.payload.invalidPayment).toBe(false);
   });

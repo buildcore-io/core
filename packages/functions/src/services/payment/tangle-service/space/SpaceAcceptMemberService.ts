@@ -1,24 +1,32 @@
-import { COL, SpaceMember, SUB_COL, WenError } from '@soonaverse/interfaces';
-import { soonDb } from '../../../../firebase/firestore/soondb';
+import {
+  COL,
+  SpaceMember,
+  SpaceMemberUpsertTangleRequest,
+  SUB_COL,
+  WenError,
+} from '@build-5/interfaces';
+import { BaseTangleResponse } from '@build-5/interfaces/lib/api/tangle/common';
+import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { editSpaceMemberSchema } from '../../../../runtime/firebase/space';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
+import { toJoiObject } from '../../../joi/common';
 import { TransactionService } from '../../transaction-service';
 
+const schema = toJoiObject<SpaceMemberUpsertTangleRequest>(editSpaceMemberSchema);
 export class SpaceAcceptMemberService {
   constructor(readonly transactionService: TransactionService) {}
 
-  public handleAcceptMemberRequest = async (owner: string, request: Record<string, unknown>) => {
-    await assertValidationAsync(editSpaceMemberSchema, request, { allowUnknown: true });
+  public handleAcceptMemberRequest = async (
+    owner: string,
+    request: Record<string, unknown>,
+  ): Promise<BaseTangleResponse> => {
+    const params = await assertValidationAsync(schema, request);
 
-    const { spaceMember, space } = await acceptSpaceMember(
-      owner,
-      request.uid as string,
-      request.member as string,
-    );
+    const { spaceMember, space } = await acceptSpaceMember(owner, params.uid, params.member);
 
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${request.uid}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
     const spaceMemberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(spaceMember.uid);
     const knockingMemberDocRef = spaceDocRef
       .collection(SUB_COL.KNOCKING_MEMBERS)
@@ -43,7 +51,7 @@ export class SpaceAcceptMemberService {
 export const acceptSpaceMember = async (owner: string, space: string, member: string) => {
   await assertIsGuardian(space, owner);
 
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${space}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space}`);
   const knockingMember = await spaceDocRef
     .collection(SUB_COL.KNOCKING_MEMBERS)
     .doc(member)
@@ -59,8 +67,8 @@ export const acceptSpaceMember = async (owner: string, space: string, member: st
   };
 
   const spaceUpdateData = {
-    totalMembers: soonDb().inc(1),
-    totalPendingMembers: soonDb().inc(-1),
+    totalMembers: build5Db().inc(1),
+    totalPendingMembers: build5Db().inc(-1),
   };
 
   return { spaceMember, space: spaceUpdateData };

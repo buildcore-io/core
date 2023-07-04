@@ -15,27 +15,22 @@ import {
   SUB_COL,
   TokenDistribution,
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
-  WEN_FUNC_TRIGGER,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { get, set } from 'lodash';
-import { soonDb } from '../firebase/firestore/soondb';
-import { scale } from '../scale.settings';
+import { build5Db } from '../firebase/firestore/build5Db';
 import { getStakeForType } from '../services/stake.service';
 import { downloadMediaAndPackCar } from '../utils/car.utils';
 import { dateToTimestamp } from '../utils/dateTime.utils';
 import { spaceToIpfsMetadata } from '../utils/space.utils';
 import { getTokenForSpace } from '../utils/token.utils';
 
-export const onProposalUpdated = functions
-  .runWith({
-    minInstances: scale(WEN_FUNC_TRIGGER.onProposalUpdated),
-  })
-  .firestore.document(COL.PROPOSAL + '/{proposalId}')
-  .onWrite(async (change) => {
-    const prev = <Proposal | undefined>change.before.data();
-    const curr = <Proposal | undefined>change.after.data();
+export const onProposalUpdated = functions.firestore.onDocumentWritten(
+  { document: COL.PROPOSAL + '/{proposalId}' },
+  async (event) => {
+    const prev = <Proposal | undefined>event.data?.before?.data();
+    const curr = <Proposal | undefined>event.data?.after?.data();
     if (!curr) {
       return;
     }
@@ -60,7 +55,8 @@ export const onProposalUpdated = functions
     ) {
       return await onRemoveStakeRewardApporved(curr);
     }
-  });
+  },
+);
 
 const isAddRemoveGuardianVote = (curr: Proposal) =>
   [ProposalType.ADD_GUARDIAN, ProposalType.REMOVE_GUARDIAN].includes(curr.type);
@@ -75,13 +71,13 @@ const voteThresholdReached = (prev: Proposal | undefined, curr: Proposal, thresh
 };
 
 const onAddRemoveGuardianProposalApproved = async (proposal: Proposal) => {
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${proposal.space}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${proposal.space}`);
   const guardianDocRef = spaceDocRef
     .collection(SUB_COL.GUARDIANS)
-    .doc(proposal.settings.addRemoveGuardian);
+    .doc(proposal.settings.addRemoveGuardian!);
   const isAddGuardian = proposal.type === ProposalType.ADD_GUARDIAN;
 
-  const batch = soonDb().batch();
+  const batch = build5Db().batch();
   if (isAddGuardian) {
     batch.set(guardianDocRef, {
       uid: proposal.settings.addRemoveGuardian,
@@ -91,8 +87,8 @@ const onAddRemoveGuardianProposalApproved = async (proposal: Proposal) => {
   } else {
     batch.delete(guardianDocRef);
   }
-  batch.update(spaceDocRef, { totalGuardians: soonDb().inc(isAddGuardian ? 1 : -1) });
-  const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  batch.update(spaceDocRef, { totalGuardians: build5Db().inc(isAddGuardian ? 1 : -1) });
+  const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
   batch.update(proposalDocRef, {
     'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's')),
     completed: true,
@@ -101,13 +97,17 @@ const onAddRemoveGuardianProposalApproved = async (proposal: Proposal) => {
 };
 
 const onEditSpaceProposalApproved = async (proposal: Proposal) => {
-  const spaceUpdateData: Space = proposal.settings.spaceUpdateData;
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${spaceUpdateData.uid}`);
+  const spaceUpdateData = proposal.settings.spaceUpdateData!;
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${spaceUpdateData.uid}`);
 
   if (spaceUpdateData.bannerUrl) {
     const space = (await spaceDocRef.get<Space>())!;
     const metadata = spaceToIpfsMetadata({ ...space, ...spaceUpdateData });
-    const ipfs = await downloadMediaAndPackCar(space.uid, spaceUpdateData.bannerUrl, metadata);
+    const ipfs = await downloadMediaAndPackCar(
+      space.uid,
+      spaceUpdateData.bannerUrl as string,
+      metadata,
+    );
     set(spaceUpdateData, 'ipfsMedia', ipfs.ipfsMedia);
     set(spaceUpdateData, 'ipfsMetadata', ipfs.ipfsMetadata);
     set(spaceUpdateData, 'ipfsRoot', ipfs.ipfsRoot);
@@ -131,17 +131,17 @@ const onEditSpaceProposalApproved = async (proposal: Proposal) => {
     : spaceUpdateData;
   const prevValidatedAddresses = get(updateData, 'prevValidatedAddresses');
   if (prevValidatedAddresses) {
-    set(updateData, 'prevValidatedAddresses', soonDb().arrayUnion(prevValidatedAddresses));
+    set(updateData, 'prevValidatedAddresses', build5Db().arrayUnion(prevValidatedAddresses));
   }
   await spaceDocRef.set(
     {
       ...updateData,
-      totalMembers: soonDb().inc(-removedMembers),
-      totalGuardians: soonDb().inc(-removedGuardians),
+      totalMembers: build5Db().inc(-removedMembers),
+      totalGuardians: build5Db().inc(-removedGuardians),
     },
     true,
   );
-  await soonDb()
+  await build5Db()
     .doc(`${COL.PROPOSAL}/${proposal.uid}`)
     .update({
       'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's')),
@@ -149,11 +149,13 @@ const onEditSpaceProposalApproved = async (proposal: Proposal) => {
     });
 };
 
-const removeMembersAndGuardiansThatDontHaveEnoughStakes = async (updateData: Space) => {
+const removeMembersAndGuardiansThatDontHaveEnoughStakes = async (
+  updateData: Record<string, unknown>,
+) => {
   if (!updateData.tokenBased) {
     return { removedMembers: 0, removedGuardians: 0 };
   }
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${updateData.uid}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${updateData.uid}`);
   const space = (await spaceDocRef.get<Space>())!;
   const token = await getTokenForSpace(space.uid);
 
@@ -169,7 +171,7 @@ const removeMembersAndGuardiansThatDontHaveEnoughStakes = async (updateData: Spa
     const hasEnoughStaked = await memberHasEnoughStakedValues(
       token?.uid!,
       member.uid,
-      updateData.minStakedValue || 0,
+      (updateData.minStakedValue as number) || 0,
     );
     if (!hasEnoughStaked) {
       removedMembers++;
@@ -187,7 +189,7 @@ const removeMembersAndGuardiansThatDontHaveEnoughStakes = async (updateData: Spa
 };
 
 const memberHasEnoughStakedValues = async (token: string, member: string, minStaked: number) => {
-  const distributionDocRef = soonDb().doc(
+  const distributionDocRef = build5Db().doc(
     `${COL.TOKEN}/${token}/${SUB_COL.DISTRIBUTION}/${member}`,
   );
   const distribution = await distributionDocRef.get<TokenDistribution>();
@@ -196,15 +198,15 @@ const memberHasEnoughStakedValues = async (token: string, member: string, minSta
 };
 
 const onRemoveStakeRewardApporved = async (proposal: Proposal) => {
-  const batch = soonDb().batch();
+  const batch = build5Db().batch();
 
-  const stakeRewardIds = proposal.settings.stakeRewardIds as string[];
+  const stakeRewardIds = proposal.settings.stakeRewardIds || [];
   stakeRewardIds.forEach((rewardId) => {
-    const docRef = soonDb().doc(`${COL.STAKE_REWARD}/${rewardId}`);
+    const docRef = build5Db().doc(`${COL.STAKE_REWARD}/${rewardId}`);
     batch.update(docRef, { status: StakeRewardStatus.DELETED });
   });
 
-  const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
   batch.update(proposalDocRef, {
     'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's')),
     completed: true,

@@ -6,15 +6,16 @@ import {
   PublicCollections,
   PublicSubCollections,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
 import { get, isEmpty } from 'lodash';
-import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
+import { map } from 'rxjs';
+import { build5Db, getSnapshot } from '../firebase/firestore/build5Db';
 import { CommonJoi } from '../services/joi/common';
 import { invalidArgument } from '../utils/error.utils';
-import { getQueryLimit, getQueryParams } from './common';
+import { getQueryLimit, getQueryParams, queryToObservable } from './common';
 import { sendLiveUpdates } from './keepAlive';
 
 const fieldNameSchema = Joi.string().max(MAX_FIELD_NAME_LENGTH);
@@ -43,7 +44,7 @@ const getManySchema = Joi.object({
     })
     .optional(),
   startAfter: CommonJoi.uid(false),
-  live: Joi.boolean().optional(),
+  sessionId: CommonJoi.sessionId(),
 });
 
 export const getMany = async (req: functions.https.Request, res: express.Response) => {
@@ -56,7 +57,7 @@ export const getMany = async (req: functions.https.Request, res: express.Respons
     body.subCollection && body.uid
       ? `${body.collection}/${body.uid}/${body.subCollection}`
       : body.collection;
-  let query = soonDb()
+  let query = build5Db()
     .collection(baseCollectionPath as COL)
     .limit(getQueryLimit(body.collection));
 
@@ -92,10 +93,11 @@ export const getMany = async (req: functions.https.Request, res: express.Respons
     query = query.startAfter(await startAfter);
   }
 
-  if (body.live) {
-    await sendLiveUpdates(res, query.onSnapshot, (snap: Record<string, unknown>[]) =>
-      snap.filter((d) => !isEmpty(d)).map((d) => ({ id: d.uid, ...d })),
+  if (body.sessionId) {
+    const observable = queryToObservable<Record<string, unknown>>(query).pipe(
+      map((snap) => snap.filter((d) => !isEmpty(d)).map((d) => ({ id: d.uid, ...d }))),
     );
+    await sendLiveUpdates(body.sessionId, res, observable);
     return;
   }
 

@@ -1,9 +1,24 @@
-import { ProposalMember, PublicCollections, PublicSubCollections } from '@soonaverse/interfaces';
-import { SoonEnv } from '../../Config';
+import { Opr, ProposalMember, PublicCollections, PublicSubCollections } from '@build-5/interfaces';
+import { Build5Env } from '../../Config';
 import { SubCrudRepository } from '../SubCrudRepository';
 
 export class ProposalMemberRepository extends SubCrudRepository<ProposalMember> {
-  constructor(env?: SoonEnv) {
-    super(env || SoonEnv.PROD, PublicCollections.PROPOSAL, PublicSubCollections.MEMBERS);
+  constructor(env?: Build5Env) {
+    super(env || Build5Env.PROD, PublicCollections.PROPOSAL, PublicSubCollections.MEMBERS);
   }
+
+  public getVotingMembersLive = (proposal: string, voted: boolean, startAfter?: string) => {
+    const params = {
+      collection: this.col,
+      uid: proposal,
+      subCollection: this.subCol,
+      fieldName: ['voted'],
+      fieldValue: [voted],
+      operator: [Opr.EQUAL],
+      startAfter,
+      orderBy: ['createdOn'],
+      orderByDir: ['desc'],
+    };
+    return this.getManyAdvancedLive(params);
+  };
 }

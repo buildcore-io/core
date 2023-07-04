@@ -1,10 +1,13 @@
-import { COL, Collection, WenError } from '@soonaverse/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { ApproveCollectionRequest, COL, Collection, WenError } from '@build-5/interfaces';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 
-export const approveCollectionControl = async (owner: string, params: Record<string, unknown>) => {
-  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${params.uid}`);
+export const approveCollectionControl = async (
+  owner: string,
+  params: ApproveCollectionRequest,
+): Promise<Collection> => {
+  const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${params.uid}`);
   const collection = await collectionDocRef.get<Collection>();
   if (!collection) {
     throw invalidArgument(WenError.collection_does_not_exists);

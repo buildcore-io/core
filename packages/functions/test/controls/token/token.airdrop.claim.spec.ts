@@ -1,8 +1,7 @@
 import {
-  BillPaymentType,
   COL,
-  Space,
   SUB_COL,
+  Space,
   Token,
   TokenAllocation,
   TokenDistribution,
@@ -10,12 +9,12 @@ import {
   TokenDropStatus,
   TokenStatus,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../../src/firebase/firestore/soondb';
+import { build5Db } from '../../../src/firebase/firestore/build5Db';
 import {
   airdropToken,
   claimAirdroppedToken,
@@ -76,7 +75,7 @@ describe('Claim airdropped token test', () => {
     ];
     mockWalletReturnValue(walletSpy, guardian, dummyTokenData);
     token = await testEnv.wrap(createToken)({});
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true });
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true });
   });
 
   const airdrop = async () => {
@@ -98,20 +97,20 @@ describe('Claim airdropped token test', () => {
     );
     await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
-    const orderTran = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${order.uid}`).get();
+    const orderTran = <Transaction>await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).get();
     expect(orderTran.member).toBe(guardian);
-    expect(orderTran.payload.type).toBe(TransactionOrderType.TOKEN_AIRDROP);
+    expect(orderTran.payload.type).toBe(TransactionPayloadType.TOKEN_AIRDROP);
 
     await waitAllClaimed(token.uid);
 
-    const paymentsSnap = await soonDb()
+    const paymentsSnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('payload.sourceTransaction', 'array-contains', orderTran.uid)
       .get<Transaction>();
     const types = paymentsSnap.map((d) => d.type).sort();
     expect(types).toEqual([TransactionType.BILL_PAYMENT, TransactionType.PAYMENT]);
 
-    const distirbutionDocRef = soonDb().doc(
+    const distirbutionDocRef = build5Db().doc(
       `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian}`,
     );
     const distribution = await distirbutionDocRef.get<TokenDistribution>();
@@ -135,13 +134,13 @@ describe('Claim airdropped token test', () => {
     );
     await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
-    const orderTran = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${order.uid}`).get();
+    const orderTran = <Transaction>await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).get();
     expect(orderTran.member).toBe(guardian);
-    expect(orderTran.payload.type).toBe(TransactionOrderType.TOKEN_AIRDROP);
+    expect(orderTran.payload.type).toBe(TransactionPayloadType.TOKEN_AIRDROP);
 
     await waitAllClaimed(token.uid);
 
-    const paymentsSnap = await soonDb()
+    const paymentsSnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('payload.sourceTransaction', 'array-contains', orderTran.uid)
       .get<Transaction>();
@@ -152,7 +151,7 @@ describe('Claim airdropped token test', () => {
       TransactionType.PAYMENT,
     ]);
 
-    const distirbutionDocRef = soonDb().doc(
+    const distirbutionDocRef = build5Db().doc(
       `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian}`,
     );
     const distribution = await distirbutionDocRef.get<TokenDistribution>();
@@ -182,19 +181,19 @@ describe('Claim airdropped token test', () => {
     );
     await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
-    const orderTran = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${order.uid}`).get();
+    const orderTran = <Transaction>await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).get();
     expect(orderTran.member).toBe(guardian);
-    expect(orderTran.payload.type).toBe(TransactionOrderType.TOKEN_AIRDROP);
+    expect(orderTran.payload.type).toBe(TransactionPayloadType.TOKEN_AIRDROP);
     await waitAllClaimed(token.uid, 1);
 
-    const paymentsSnap = await soonDb()
+    const paymentsSnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('payload.sourceTransaction', 'array-contains', orderTran.uid)
       .get<Transaction>();
     const types = paymentsSnap.map((d) => d.type).sort();
     expect(types).toEqual([TransactionType.BILL_PAYMENT, TransactionType.PAYMENT]);
 
-    const distirbutionDocRef = soonDb().doc(
+    const distirbutionDocRef = build5Db().doc(
       `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian}`,
     );
     const distribution = await distirbutionDocRef.get<TokenDistribution>();
@@ -219,14 +218,14 @@ describe('Claim airdropped token test', () => {
     await Promise.all(promises);
     await waitAllClaimed(token.uid);
 
-    const distirbutionDocRef = soonDb().doc(
+    const distirbutionDocRef = build5Db().doc(
       `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian}`,
     );
     const distribution = await distirbutionDocRef.get<TokenDistribution>();
     expect(distribution?.tokenClaimed).toBe(450);
     expect(distribution?.tokenOwned).toBe(450);
 
-    const creditSnap = await soonDb()
+    const creditSnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', guardian)
       .where('type', '==', TransactionType.CREDIT)
@@ -234,7 +233,7 @@ describe('Claim airdropped token test', () => {
       .get();
     expect(creditSnap.length).toBe(2);
 
-    const billPaymentSnap = await soonDb()
+    const billPaymentSnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', guardian)
       .where('type', '==', TransactionType.BILL_PAYMENT)
@@ -244,12 +243,12 @@ describe('Claim airdropped token test', () => {
     const billPayment = billPaymentSnap[0]!;
     expect(billPayment.payload.token).toBe(token.uid);
     expect(billPayment.payload.tokenSymbol).toBe(token.symbol);
-    expect(billPayment.payload.type).toBe(BillPaymentType.PRE_MINTED_AIRDROP_CLAIM);
+    expect(billPayment.payload.type).toBe(TransactionPayloadType.PRE_MINTED_AIRDROP_CLAIM);
   });
 
   it('Should throw, token is minted', async () => {
     mockWalletReturnValue(walletSpy, guardian, { token: token.uid });
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.MINTED });
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.MINTED });
     await expectThrow(testEnv.wrap(claimAirdroppedToken)({}), WenError.token_in_invalid_status.key);
   });
 
@@ -275,14 +274,14 @@ describe('Claim airdropped token test', () => {
     );
     await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
-    const orderTran = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${order.uid}`).get();
+    const orderTran = <Transaction>await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).get();
     expect(orderTran.member).toBe(guardian);
-    expect(orderTran.payload.type).toBe(TransactionOrderType.TOKEN_AIRDROP);
+    expect(orderTran.payload.type).toBe(TransactionPayloadType.TOKEN_AIRDROP);
     await waitAllClaimed(token.uid, 700);
   });
 });
 
 const getAirdropsForToken = async (token: string) => {
-  const snap = await soonDb().collection(COL.AIRDROP).where('token', '==', token).get();
+  const snap = await build5Db().collection(COL.AIRDROP).where('token', '==', token).get();
   return snap.map((d) => d as TokenDrop);
 };

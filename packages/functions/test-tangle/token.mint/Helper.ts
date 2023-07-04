@@ -1,3 +1,4 @@
+import { COL, Member, Network, SUB_COL, Space, Token, TokenStatus } from '@build-5/interfaces';
 import {
   ALIAS_UNLOCK_TYPE,
   Bech32Helper,
@@ -14,10 +15,9 @@ import {
   UnlockTypes,
 } from '@iota/iota.js-next';
 import { Converter, HexHelper } from '@iota/util.js-next';
-import { COL, Member, Network, Space, SUB_COL, Token, TokenStatus } from '@soonaverse/interfaces';
 import bigInt from 'big-integer';
 import { cloneDeep } from 'lodash';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
@@ -28,7 +28,7 @@ import { createUnlock } from '../../src/utils/smr.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { createMember, createSpace, getRandomSymbol } from '../../test/controls/common';
-import { getWallet, MEDIA } from '../../test/set-up';
+import { MEDIA, getWallet } from '../../test/set-up';
 
 export class Helper {
   public guardian: Member = {} as any;
@@ -48,7 +48,7 @@ export class Helper {
   public setup = async (approved = true, isPublicToken?: boolean) => {
     const guardianId = await createMember(this.walletSpy);
     this.member = await createMember(this.walletSpy);
-    this.guardian = <Member>await soonDb().doc(`${COL.MEMBER}/${guardianId}`).get();
+    this.guardian = <Member>await build5Db().doc(`${COL.MEMBER}/${guardianId}`).get();
     this.space = await createSpace(this.walletSpy, this.guardian.uid);
     this.token = await this.saveToken(
       this.space.uid,
@@ -87,8 +87,8 @@ export class Helper {
       approved,
       decimals: 5,
     };
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
-    await soonDb()
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+    await build5Db()
       .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`)
       .set({ tokenOwned: 1000 });
     return <Token>token;

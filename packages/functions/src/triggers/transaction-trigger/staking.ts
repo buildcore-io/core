@@ -1,22 +1,22 @@
-import { COL, Stake, SUB_COL, Transaction } from '@soonaverse/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { COL, Stake, SUB_COL, Transaction } from '@build-5/interfaces';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { onStakeCreated } from '../../services/stake.service';
 
 export const onStakingConfirmed = async (billPayment: Transaction) => {
-  const stakeDocRef = soonDb().doc(`${COL.STAKE}/${billPayment.payload.stake}`);
+  const stakeDocRef = build5Db().doc(`${COL.STAKE}/${billPayment.payload.stake}`);
   const stake = (await stakeDocRef.get<Stake>())!;
 
-  await soonDb().runTransaction((transaction) => onStakeCreated(transaction, stake));
+  await build5Db().runTransaction((transaction) => onStakeCreated(transaction, stake));
 
-  const batch = soonDb().batch();
+  const batch = build5Db().batch();
 
   const updateData = {
     stakes: {
       [stake.type]: {
-        amount: soonDb().inc(stake.amount),
-        totalAmount: soonDb().inc(stake.amount),
-        value: soonDb().inc(stake.value),
-        totalValue: soonDb().inc(stake.value),
+        amount: build5Db().inc(stake.amount),
+        totalAmount: build5Db().inc(stake.amount),
+        value: build5Db().inc(stake.value),
+        totalValue: build5Db().inc(stake.value),
       },
     },
     stakeExpiry: {
@@ -27,10 +27,10 @@ export const onStakingConfirmed = async (billPayment: Transaction) => {
   };
 
   const tokenUid = billPayment.payload.token;
-  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${tokenUid}/${SUB_COL.STATS}/${tokenUid}`);
+  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${tokenUid}/${SUB_COL.STATS}/${tokenUid}`);
   batch.set(tokenDocRef, { stakes: updateData.stakes }, true);
 
-  const distirbutionDocRef = soonDb().doc(
+  const distirbutionDocRef = build5Db().doc(
     `${COL.TOKEN}/${tokenUid}/${SUB_COL.DISTRIBUTION}/${billPayment.member}`,
   );
   batch.set(

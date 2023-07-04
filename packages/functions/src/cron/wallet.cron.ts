@@ -3,16 +3,16 @@ import {
   MAX_WALLET_RETRY,
   RETRY_UNCOFIRMED_PAYMENT_DELAY,
   Transaction,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
+import { build5Db } from '../firebase/firestore/build5Db';
 import { ITransaction } from '../firebase/firestore/interfaces';
-import { soonDb } from '../firebase/firestore/soondb';
 
 export const retryWallet = async () => {
   const snap = await getFailedTransactionsSnap();
   const promises = snap.map((doc) =>
-    soonDb().runTransaction(async (transaction) => {
-      const docRef = soonDb().doc(`${COL.TRANSACTION}/${doc.uid}`);
+    build5Db().runTransaction(async (transaction) => {
+      const docRef = build5Db().doc(`${COL.TRANSACTION}/${doc.uid}`);
       const tran = (await transaction.get<Transaction>(docRef))!;
       return await rerunTransaction(transaction, tran);
     }),
@@ -21,8 +21,8 @@ export const retryWallet = async () => {
 };
 
 const rerunTransaction = async (transaction: ITransaction, data: Transaction) => {
-  const docRef = soonDb().doc(`${COL.TRANSACTION}/${data.uid}`);
-  const walletReference = data.payload.walletReference;
+  const docRef = build5Db().doc(`${COL.TRANSACTION}/${data.uid}`);
+  const walletReference = data.payload.walletReference!;
   const processedOn = dayjs(walletReference.processedOn.toDate());
   if (
     walletReference.confirmed ||
@@ -31,7 +31,7 @@ const rerunTransaction = async (transaction: ITransaction, data: Transaction) =>
     return;
   }
   if (walletReference.count === MAX_WALLET_RETRY) {
-    const sourceMnemonicDocRef = soonDb().doc(`${COL.MNEMONIC}/${data.payload.sourceAddress}`);
+    const sourceMnemonicDocRef = build5Db().doc(`${COL.MNEMONIC}/${data.payload.sourceAddress}`);
     transaction.update(sourceMnemonicDocRef, {
       lockedBy: '',
       consumedOutputIds: [],
@@ -39,7 +39,7 @@ const rerunTransaction = async (transaction: ITransaction, data: Transaction) =>
       consumedAliasOutputIds: [],
     });
     if (data.payload.storageDepositSourceAddress) {
-      const storageSourceDocRef = soonDb().doc(
+      const storageSourceDocRef = build5Db().doc(
         `${COL.MNEMONIC}/${data.payload.storageDepositSourceAddress}`,
       );
       transaction.update(storageSourceDocRef, {
@@ -52,7 +52,7 @@ const rerunTransaction = async (transaction: ITransaction, data: Transaction) =>
     transaction.update(docRef, {
       'payload.walletReference.chainReference': null,
       'payload.walletReference.inProgress': false,
-      'payload.walletReference.count': soonDb().inc(1),
+      'payload.walletReference.count': build5Db().inc(1),
       shouldRetry: false,
     });
   }
@@ -63,10 +63,12 @@ const rerunTransaction = async (transaction: ITransaction, data: Transaction) =>
   return data.uid;
 };
 
+const COUNT_IN = Array.from(Array(MAX_WALLET_RETRY + 1)).map((_, i) => i);
+
 const getFailedTransactionsSnap = () =>
-  soonDb()
+  build5Db()
     .collection(COL.TRANSACTION)
     .where('payload.walletReference.confirmed', '==', false)
     .where('payload.walletReference.inProgress', '==', true)
-    .where('payload.walletReference.count', '<=', MAX_WALLET_RETRY)
+    .where('payload.walletReference.count', 'in', COUNT_IN)
     .get<Transaction>();

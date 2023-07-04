@@ -7,8 +7,8 @@ import {
   SUB_COL,
   TangleRequestType,
   Transaction,
-} from '@soonaverse/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { wait } from '../../test/controls/common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
@@ -28,7 +28,7 @@ describe('Join space', () => {
     await requestFundsFromFaucet(Network.RMS, helper.memberAddress.bech32, MIN_IOTA_AMOUNT);
     await helper.walletService.send(
       helper.memberAddress,
-      helper.tangleOrder.payload.targetAddress,
+      helper.tangleOrder.payload.targetAddress!,
       MIN_IOTA_AMOUNT,
       {
         customMetadata: {
@@ -46,9 +46,9 @@ describe('Join space', () => {
     });
     const snap = await helper.memberCreditQuery.get();
     const credit = snap[0] as Transaction;
-    expect(credit.payload.response.status).toBe('success');
+    expect(credit.payload.response!.status).toBe('success');
 
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${helper.space.uid}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${helper.space.uid}`);
     helper.space = <Space>await spaceDocRef.get();
     expect(helper.space.totalMembers).toBe(2);
 

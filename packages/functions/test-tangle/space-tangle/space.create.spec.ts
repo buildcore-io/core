@@ -5,8 +5,8 @@ import {
   Space,
   TangleRequestType,
   Transaction,
-} from '@soonaverse/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { wait } from '../../test/controls/common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
@@ -26,7 +26,7 @@ describe('Create space', () => {
     await requestFundsFromFaucet(Network.RMS, helper.memberAddress.bech32, MIN_IOTA_AMOUNT);
     await helper.walletService.send(
       helper.memberAddress,
-      helper.tangleOrder.payload.targetAddress,
+      helper.tangleOrder.payload.targetAddress!,
       MIN_IOTA_AMOUNT,
       {
         customMetadata: {
@@ -46,7 +46,7 @@ describe('Create space', () => {
     });
     const snap = await helper.memberCreditQuery.get();
     const credit = snap[0] as Transaction;
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${credit.payload.response.space}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${credit.payload.response!.space}`);
     const space = <Space>await spaceDocRef.get();
     expect(space.name).toBe('Space A');
   });

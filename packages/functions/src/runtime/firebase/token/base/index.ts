@@ -1,17 +1,24 @@
 import {
   Access,
+  CanelPublicSaleRequest,
+  ClaimPreMintedAirdroppedTokensRequest,
+  CreditTokenRequest,
+  EnableTokenTradingRequest,
   MAX_AIRDROP,
   MAX_IOTA_AMOUNT,
   MAX_TOTAL_TOKEN_SUPPLY,
   MIN_IOTA_AMOUNT,
   MIN_TOKEN_START_DATE_DAY,
   MIN_TOTAL_TOKEN_SUPPLY,
+  OrderTokenRequest,
+  SetTokenForSaleRequest,
   StakeType,
   TokenAllocation,
+  TokenCreateRequest,
   TRANSACTION_AUTO_EXPIRY_MS,
   TRANSACTION_MAX_EXPIRY_MS,
   WEN_FUNC,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import Joi from 'joi';
 import { airdropTokenControl } from '../../../../controls/token/token.airdrop';
@@ -24,11 +31,12 @@ import { orderTokenControl } from '../../../../controls/token/token.order';
 import { setTokenAvailableForSaleControl } from '../../../../controls/token/token.set.for.sale';
 import { updateTokenControl } from '../../../../controls/token/token.update';
 import { onRequest } from '../../../../firebase/functions/onRequest';
-import { CommonJoi } from '../../../../services/joi/common';
+import { CommonJoi, toJoiObject } from '../../../../services/joi/common';
 import { isProdEnv } from '../../../../utils/config.utils';
-import { uidSchema } from '../../common';
+import { uidSchema, uidSchemaObj } from '../../common';
+import { AirdropRequest, CreateAirdropsRequest } from '../trading';
 
-const createTokenSchema = Joi.object({
+const createTokenSchema = toJoiObject<TokenCreateRequest>({
   name: Joi.string().required(),
   symbol: CommonJoi.tokenSymbol(),
   title: Joi.string().optional(),
@@ -85,12 +93,12 @@ const createTokenSchema = Joi.object({
   access: Joi.number()
     .equal(...Object.values(Access))
     .required(),
-  accessAwards: Joi.when('access', {
+  accessAwards: Joi.array().when('access', {
     is: Joi.exist().valid(Access.MEMBERS_WITH_BADGE),
     then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
     otherwise: Joi.forbidden(),
   }),
-  accessCollections: Joi.when('access', {
+  accessCollections: Joi.array().when('access', {
     is: Joi.exist().valid(Access.MEMBERS_WITH_NFT_FROM_COLLECTION),
     then: Joi.array().items(CommonJoi.uid(false)).min(1).required(),
     otherwise: Joi.forbidden(),
@@ -116,9 +124,9 @@ export const updateTokenSchema = {
   ...uptdateMintedTokenSchema,
 };
 
-export const updateToken = onRequest(WEN_FUNC.updateToken)(uidSchema, updateTokenControl, true);
+export const updateToken = onRequest(WEN_FUNC.updateToken)(uidSchemaObj, updateTokenControl, true);
 
-const setAvailableForSaleSchema = Joi.object({
+const setAvailableForSaleSchema = toJoiObject<SetTokenForSaleRequest>({
   token: CommonJoi.uid(),
   saleStartDate: Joi.date()
     .greater(
@@ -141,31 +149,32 @@ export const setTokenAvailableForSale = onRequest(WEN_FUNC.setTokenAvailableForS
   setTokenAvailableForSaleControl,
 );
 
-const tokenUidSchema = Joi.object({ token: CommonJoi.uid() });
+const tokenSchema = toJoiObject<CanelPublicSaleRequest>({ token: CommonJoi.uid() });
 export const cancelPublicSale = onRequest(WEN_FUNC.cancelPublicSale)(
-  tokenUidSchema,
+  tokenSchema,
   cancelPublicSaleControl,
 );
 
-const creditTokenSchema = Joi.object({
+const creditTokenSchema = toJoiObject<CreditTokenRequest>({
   token: CommonJoi.uid(),
   amount: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
 });
 export const creditToken = onRequest(WEN_FUNC.creditToken)(creditTokenSchema, creditTokenControl);
 
-export const orderToken = onRequest(WEN_FUNC.orderToken)(tokenUidSchema, orderTokenControl);
+const orderTokenSchema = toJoiObject<OrderTokenRequest>({ token: CommonJoi.uid() });
+export const orderToken = onRequest(WEN_FUNC.orderToken)(orderTokenSchema, orderTokenControl);
 
 export const enableTokenTrading = onRequest(WEN_FUNC.enableTokenTrading)(
-  uidSchema,
+  toJoiObject<EnableTokenTradingRequest>(uidSchema),
   enableTokenTradingControl,
 );
 
-export const airdropTokenSchema = Joi.object({
+export const airdropTokenSchema = toJoiObject<CreateAirdropsRequest>({
   token: CommonJoi.uid(),
   drops: Joi.array()
     .required()
     .items(
-      Joi.object().keys({
+      toJoiObject<AirdropRequest>({
         vestingAt: Joi.date().required(),
         count: Joi.number().min(1).max(MAX_TOTAL_TOKEN_SUPPLY).integer().required(),
         recipient: CommonJoi.uid(),
@@ -181,7 +190,9 @@ export const airdropToken = onRequest(WEN_FUNC.airdropToken)(
   airdropTokenControl,
 );
 
-const claimAirdroppedTokenSchema = Joi.object({ token: Joi.string().required() });
+const claimAirdroppedTokenSchema = toJoiObject<ClaimPreMintedAirdroppedTokensRequest>({
+  token: Joi.string().required(),
+});
 export const claimAirdroppedToken = onRequest(WEN_FUNC.claimAirdroppedToken)(
   claimAirdroppedTokenSchema,
   claimAirdroppedTokenControl,

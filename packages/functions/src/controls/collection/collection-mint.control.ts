@@ -1,24 +1,24 @@
-import { AddressTypes, ED25519_ADDRESS_TYPE, INodeInfo } from '@iota/iota.js-next';
 import {
   COL,
   Collection,
+  CollectionMintRequest,
   CollectionStatus,
   CollectionType,
   Member,
-  Network,
   Nft,
   Space,
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
   UnsoldMintingOptions,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
+import { AddressTypes, ED25519_ADDRESS_TYPE, INodeInfo } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
-import { getSnapshot, soonDb } from '../../firebase/firestore/soondb';
+import { build5Db, getSnapshot } from '../../firebase/firestore/build5Db';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress, assertSpaceHasValidAddress } from '../../utils/address.utils';
@@ -35,17 +35,14 @@ import { createAliasOutput } from '../../utils/token-minting-utils/alias.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
-export const mintCollectionOrderControl = async (
-  owner: string,
-  params: Record<string, unknown>,
-) => {
-  const network = params.network as Network;
+export const mintCollectionOrderControl = async (owner: string, params: CollectionMintRequest) => {
+  const network = params.network;
 
-  const member = await soonDb().doc(`${COL.MEMBER}/${owner}`).get<Member>();
+  const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();
   assertMemberHasValidAddress(member, network);
 
-  return await soonDb().runTransaction(async (transaction) => {
-    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${params.collection}`);
+  return await build5Db().runTransaction(async (transaction) => {
+    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${params.collection}`);
     const collection = await transaction.get<Collection>(collectionDocRef);
 
     if (!collection) {
@@ -76,10 +73,10 @@ export const mintCollectionOrderControl = async (
 
     assertIsGuardian(collection.space, owner);
 
-    const space = await soonDb().doc(`${COL.SPACE}/${collection.space}`).get<Space>();
+    const space = await build5Db().doc(`${COL.SPACE}/${collection.space}`).get<Space>();
     assertSpaceHasValidAddress(space, network);
 
-    const royaltySpace = await soonDb()
+    const royaltySpace = await build5Db()
       .doc(`${COL.SPACE}/${collection.royaltiesSpace}`)
       .get<Space>();
     assertSpaceHasValidAddress(royaltySpace, network);
@@ -89,7 +86,7 @@ export const mintCollectionOrderControl = async (
 
     const { storageDeposit: nftsStorageDeposit, nftsToMint } = await getNftsTotalStorageDeposit(
       collection,
-      params.unsoldMintingOptions as UnsoldMintingOptions,
+      params.unsoldMintingOptions,
       targetAddress,
       wallet.info,
     );
@@ -103,14 +100,14 @@ export const mintCollectionOrderControl = async (
     );
     const aliasStorageDeposit = Number(createAliasOutput(targetAddress, wallet.info).amount);
 
-    const order = <Transaction>{
+    const order: Transaction = {
       type: TransactionType.ORDER,
       uid: getRandomEthAddress(),
       member: owner,
       space: collection.space,
       network,
       payload: {
-        type: TransactionOrderType.MINT_COLLECTION,
+        type: TransactionPayloadType.MINT_COLLECTION,
         amount: collectionStorageDeposit + nftsStorageDeposit + aliasStorageDeposit,
         targetAddress: targetAddress.bech32,
         validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
@@ -126,7 +123,7 @@ export const mintCollectionOrderControl = async (
         nftsToMint,
       },
     };
-    const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
     transaction.create(orderDocRef, order);
     return order;
   });
@@ -143,7 +140,7 @@ const getNftsTotalStorageDeposit = async (
   let lastUid = '';
   do {
     const lastDoc = await getSnapshot(COL.NFT, lastUid);
-    const nfts = await soonDb()
+    const nfts = await build5Db()
       .collection(COL.NFT)
       .where('collection', '==', collection.uid)
       .where('placeholderNft', '==', false)

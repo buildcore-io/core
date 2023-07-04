@@ -6,11 +6,11 @@ import {
   TokenDropStatus,
   TokenStatus,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { last } from 'lodash';
-import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
+import { build5Db, getSnapshot } from '../firebase/firestore/build5Db';
 import { invalidArgument } from './error.utils';
 
 export const BIG_DECIMAL_PRECISION = 1000;
@@ -19,18 +19,18 @@ export const tokenOrderTransactionDocId = (member: string, token: Token) =>
   member + '_' + token.uid;
 
 export const allPaymentsQuery = (member: string, token: string) =>
-  soonDb()
+  build5Db()
     .collection(COL.TRANSACTION)
     .where('member', '==', member)
     .where('payload.token', '==', token);
 
 export const orderDocRef = (member: string, token: Token) =>
-  soonDb().doc(`${COL.TRANSACTION}/${tokenOrderTransactionDocId(member, token)}`);
+  build5Db().doc(`${COL.TRANSACTION}/${tokenOrderTransactionDocId(member, token)}`);
 
-export const memberDocRef = (member: string) => soonDb().doc(`${COL.MEMBER}/${member}`);
+export const memberDocRef = (member: string) => build5Db().doc(`${COL.MEMBER}/${member}`);
 
 export const assertIsGuardian = async (space: string, member: string) => {
-  const guardianDoc = await soonDb()
+  const guardianDoc = await build5Db()
     .doc(`${COL.SPACE}/${space}/${SUB_COL.GUARDIANS}/${member}`)
     .get();
   if (!guardianDoc) {
@@ -86,12 +86,12 @@ export const tokenIsInCoolDownPeriod = (token: Token) =>
   dayjs().isBefore(dayjs(token.coolDownEnd.toDate()));
 
 export const getSoonToken = async () => {
-  const snap = await soonDb().collection(COL.TOKEN).where('symbol', '==', 'SOON').limit(1).get();
+  const snap = await build5Db().collection(COL.TOKEN).where('symbol', '==', 'SOON').limit(1).get();
   return <Token>snap[0];
 };
 
 export const getTokenForSpace = async (space: string) => {
-  let snap = await soonDb()
+  let snap = await build5Db()
     .collection(COL.TOKEN)
     .where('space', '==', space)
     .where('approved', '==', true)
@@ -100,7 +100,7 @@ export const getTokenForSpace = async (space: string) => {
   if (snap.length) {
     return <Token>snap[0];
   }
-  snap = await soonDb()
+  snap = await build5Db()
     .collection(COL.TOKEN)
     .where('space', '==', space)
     .where('public', '==', true)
@@ -110,7 +110,7 @@ export const getTokenForSpace = async (space: string) => {
 };
 
 export const getUnclaimedDrops = async (token: string, member: string) =>
-  soonDb()
+  build5Db()
     .collection(COL.AIRDROP)
     .where('token', '==', token)
     .where('member', '==', member)
@@ -122,7 +122,7 @@ export const getUnclaimedAirdropTotalValue = async (token: string) => {
   let lastDocId = '';
   do {
     const lastDoc = await getSnapshot(COL.AIRDROP, lastDocId);
-    const snap = await soonDb()
+    const snap = await build5Db()
       .collection(COL.AIRDROP)
       .where('token', '==', token)
       .where('status', '==', TokenDropStatus.UNCLAIMED)
@@ -136,7 +136,7 @@ export const getUnclaimedAirdropTotalValue = async (token: string) => {
 };
 
 export const getTokenBySymbol = async (symbol: string) => {
-  let snap = await soonDb()
+  let snap = await build5Db()
     .collection(COL.TOKEN)
     .where('symbol', '==', symbol.toUpperCase())
     .where('approved', '==', true)
@@ -145,7 +145,7 @@ export const getTokenBySymbol = async (symbol: string) => {
   if (snap.length) {
     return <Token>snap[0];
   }
-  snap = await soonDb()
+  snap = await build5Db()
     .collection(COL.TOKEN)
     .where('symbol', '==', symbol.toUpperCase())
     .where('public', '==', true)
@@ -155,7 +155,7 @@ export const getTokenBySymbol = async (symbol: string) => {
 };
 
 export const getTokenByMintId = async (tokenId: string) => {
-  const snap = await soonDb()
+  const snap = await build5Db()
     .collection(COL.TOKEN)
     .where('mintingData.tokenId', '==', tokenId)
     .get();

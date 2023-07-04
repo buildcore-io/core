@@ -1,5 +1,4 @@
 import {
-  BillPaymentType,
   COL,
   DEFAULT_NETWORK,
   DEF_WALLET_PAY_IN_PROGRESS,
@@ -8,20 +7,16 @@ import {
   Mnemonic,
   Network,
   Transaction,
-  TransactionAwardType,
-  TransactionMintCollectionType,
-  TransactionMintTokenType,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
-  TransactionUnlockType,
   WEN_FUNC_TRIGGER,
   WalletResult,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
 import { isEmpty } from 'lodash';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { ITransaction } from '../../firebase/firestore/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
 import { scale } from '../../scale.settings';
 import { NativeTokenWallet } from '../../services/wallet/NativeTokenWallet';
 import { NftWallet } from '../../services/wallet/NftWallet';
@@ -36,6 +31,7 @@ import { unclockMnemonic } from '../milestone-transactions-triggers/common';
 import { onAirdropClaim } from './airdrop.claim';
 import { onAwardUpdate } from './award.transaction.update';
 import { onCollectionMintingUpdate } from './collection-minting';
+import { onMetadataNftMintUpdate } from './matadatNft-minting';
 import { onNftStaked } from './nft-staked';
 import { onProposalVoteCreditConfirmed } from './proposal.vote';
 import { onStakingConfirmed } from './staking';
@@ -52,18 +48,19 @@ export const EXECUTABLE_TRANSACTIONS = [
   TransactionType.UNLOCK,
   TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED,
   TransactionType.AWARD,
+  TransactionType.METADATA_NFT,
 ];
 
-export const transactionWrite = functions
-  .runWith({
+export const transactionWrite = functions.firestore.onDocumentWritten(
+  {
+    document: COL.TRANSACTION + '/{tranId}',
     timeoutSeconds: 540,
     minInstances: scale(WEN_FUNC_TRIGGER.transactionWrite),
-    memory: '4GB',
-  })
-  .firestore.document(COL.TRANSACTION + '/{tranId}')
-  .onWrite(async (change) => {
-    const prev = <Transaction | undefined>change.before.data();
-    const curr = <Transaction | undefined>change.after.data();
+    memory: '4GiB',
+  },
+  async (event) => {
+    const prev = <Transaction | undefined>event.data?.before?.data();
+    const curr = <Transaction | undefined>event.data?.after?.data();
 
     if (!curr) {
       return;
@@ -74,7 +71,7 @@ export const transactionWrite = functions
     const shouldRetry = !prev?.shouldRetry && curr?.shouldRetry;
 
     if (isCreate) {
-      const docRef = soonDb().doc(`${COL.TRANSACTION}/${curr.uid}`);
+      const docRef = build5Db().doc(`${COL.TRANSACTION}/${curr.uid}`);
       await docRef.update({ isOrderType: curr.type === TransactionType.ORDER });
     }
 
@@ -83,7 +80,7 @@ export const transactionWrite = functions
     }
 
     if (
-      curr.payload.type === TransactionOrderType.AIRDROP_MINTED_TOKEN &&
+      curr.payload.type === TransactionPayloadType.AIRDROP_MINTED_TOKEN &&
       prev?.payload?.unclaimedAirdrops &&
       curr.payload.unclaimedAirdrops === 0
     ) {
@@ -102,16 +99,16 @@ export const transactionWrite = functions
     }
 
     if (curr.type === TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED && isConfirmed(prev, curr)) {
-      await soonDb()
+      await build5Db()
         .doc(`${COL.TRANSACTION}/${curr.payload.transaction}`)
         .update({
           'payload.walletReference.confirmed': true,
           'payload.walletReference.inProgress': false,
-          'payload.walletReference.count': soonDb().inc(1),
+          'payload.walletReference.count': build5Db().inc(1),
           'payload.walletReference.processedOn': dayjs().toDate(),
           'payload.walletReference.chainReference':
             curr.payload?.walletReference?.chainReference || '',
-          'payload.walletReference.chainReferences': soonDb().arrayUnion(
+          'payload.walletReference.chainReferences': build5Db().arrayUnion(
             curr.payload?.walletReference?.chainReference || '',
           ),
         });
@@ -128,12 +125,12 @@ export const transactionWrite = functions
     }
 
     const airdropOrderTypes = [
-      TransactionOrderType.TOKEN_AIRDROP,
-      TransactionOrderType.CLAIM_MINTED_TOKEN,
-      TransactionOrderType.CLAIM_BASE_TOKEN,
+      TransactionPayloadType.TOKEN_AIRDROP,
+      TransactionPayloadType.CLAIM_MINTED_TOKEN,
+      TransactionPayloadType.CLAIM_BASE_TOKEN,
     ];
     if (
-      airdropOrderTypes.includes(curr.payload.type) &&
+      airdropOrderTypes.includes(curr.payload.type!) &&
       !prev?.payload.reconciled &&
       curr.payload.reconciled
     ) {
@@ -164,15 +161,21 @@ export const transactionWrite = functions
       return;
     }
 
+    if (isConfirmed(prev, curr) && curr.type === TransactionType.METADATA_NFT) {
+      await onMetadataNftMintUpdate(curr);
+      return;
+    }
+
     if (
       isConfirmed(prev, curr) &&
       curr.payload.award &&
-      curr.payload.type === BillPaymentType.MINTED_AIRDROP_CLAIM
+      curr.payload.type === TransactionPayloadType.MINTED_AIRDROP_CLAIM
     ) {
-      const awardDocRef = soonDb().doc(`${COL.AWARD}/${curr.payload.award}`);
-      await awardDocRef.update({ airdropClaimed: soonDb().inc(1) });
+      const awardDocRef = build5Db().doc(`${COL.AWARD}/${curr.payload.award}`);
+      await awardDocRef.update({ airdropClaimed: build5Db().inc(1) });
     }
-  });
+  },
+);
 
 const executeTransaction = async (transactionId: string) => {
   const shouldProcess = await prepareTransaction(transactionId);
@@ -180,14 +183,14 @@ const executeTransaction = async (transactionId: string) => {
     return;
   }
 
-  const docRef = soonDb().collection(COL.TRANSACTION).doc(transactionId);
+  const docRef = build5Db().doc(`${COL.TRANSACTION}/${transactionId}`);
   const transaction = <Transaction>await docRef.get();
   const payload = transaction.payload;
 
   const params = await getWalletParams(transaction, transaction.network || DEFAULT_NETWORK);
   try {
     const walletService = await WalletService.newWallet(transaction.network || DEFAULT_NETWORK);
-    const sourceAddress = await walletService.getAddressDetails(payload.sourceAddress);
+    const sourceAddress = await walletService.getAddressDetails(payload.sourceAddress!);
 
     const submit = () => {
       switch (transaction.type) {
@@ -196,8 +199,8 @@ const executeTransaction = async (transactionId: string) => {
         case TransactionType.CREDIT_TANGLE_REQUEST:
           return walletService.send(
             sourceAddress,
-            payload.targetAddress,
-            payload.amount,
+            payload.targetAddress!,
+            payload.amount!,
             params,
             transaction.payload.outputToConsume,
           );
@@ -212,6 +215,9 @@ const executeTransaction = async (transactionId: string) => {
 
         case TransactionType.AWARD:
           return submitCreateAwardTransaction(transaction, walletService as SmrWallet, params);
+
+        case TransactionType.METADATA_NFT:
+          return submitMintMetadataTransaction(transaction, walletService as SmrWallet, params);
 
         case TransactionType.CREDIT_NFT:
         case TransactionType.WITHDRAW_NFT: {
@@ -234,7 +240,7 @@ const executeTransaction = async (transactionId: string) => {
     await docRef.update({
       'payload.walletReference.processedOn': dayjs().toDate(),
       'payload.walletReference.chainReference': chainReference,
-      'payload.walletReference.chainReferences': soonDb().arrayUnion(chainReference),
+      'payload.walletReference.chainReferences': build5Db().arrayUnion(chainReference),
     });
   } catch (error) {
     functions.logger.error(transaction.uid, error);
@@ -243,7 +249,7 @@ const executeTransaction = async (transactionId: string) => {
       'payload.walletReference.processedOn': dayjs().toDate(),
       'payload.walletReference.error': JSON.stringify(error),
     });
-    await unclockMnemonic(payload.sourceAddress);
+    await unclockMnemonic(payload.sourceAddress!);
   }
 };
 
@@ -253,23 +259,23 @@ const submitCollectionMintTransactions = (
   params: SmrParams,
 ) => {
   switch (transaction.payload.type) {
-    case TransactionMintCollectionType.MINT_ALIAS: {
+    case TransactionPayloadType.MINT_ALIAS: {
       const aliasWallet = new AliasWallet(wallet);
       return aliasWallet.mintAlias(transaction, params);
     }
-    case TransactionMintCollectionType.MINT_COLLECTION: {
+    case TransactionPayloadType.MINT_COLLECTION: {
       const nftWallet = new NftWallet(wallet);
       return nftWallet.mintCollection(transaction, params);
     }
-    case TransactionMintCollectionType.MINT_NFTS: {
+    case TransactionPayloadType.MINT_NFTS: {
       const nftWallet = new NftWallet(wallet);
       return nftWallet.mintNfts(transaction, params);
     }
-    case TransactionMintCollectionType.LOCK_COLLECTION: {
+    case TransactionPayloadType.LOCK_COLLECTION: {
       const nftWallet = new NftWallet(wallet);
       return nftWallet.lockCollection(transaction, params);
     }
-    case TransactionMintCollectionType.SEND_ALIAS_TO_GUARDIAN: {
+    case TransactionPayloadType.SEND_ALIAS_TO_GUARDIAN: {
       const aliasWallet = new AliasWallet(wallet);
       return aliasWallet.changeAliasOwner(transaction, params);
     }
@@ -286,15 +292,15 @@ const submitTokenMintTransactions = (
   params: SmrParams,
 ) => {
   switch (transaction.payload.type) {
-    case TransactionMintTokenType.MINT_ALIAS: {
+    case TransactionPayloadType.MINT_ALIAS: {
       const aliasWallet = new AliasWallet(wallet);
       return aliasWallet.mintAlias(transaction, params);
     }
-    case TransactionMintTokenType.MINT_FOUNDRY: {
+    case TransactionPayloadType.MINT_FOUNDRY: {
       const nativeTokenWallet = new NativeTokenWallet(wallet);
       return nativeTokenWallet.mintFoundry(transaction, params);
     }
-    case TransactionMintTokenType.SEND_ALIAS_TO_GUARDIAN: {
+    case TransactionPayloadType.SEND_ALIAS_TO_GUARDIAN: {
       const aliasWallet = new AliasWallet(wallet);
       return aliasWallet.changeAliasOwner(transaction, params);
     }
@@ -311,21 +317,53 @@ const submitCreateAwardTransaction = (
   params: SmrParams,
 ) => {
   switch (transaction.payload.type) {
-    case TransactionAwardType.MINT_ALIAS: {
+    case TransactionPayloadType.MINT_ALIAS: {
       const aliasWallet = new AliasWallet(wallet);
       return aliasWallet.mintAlias(transaction, params);
     }
-    case TransactionAwardType.MINT_COLLECTION: {
+    case TransactionPayloadType.MINT_COLLECTION: {
       const nftWallet = new NftWallet(wallet);
       return nftWallet.mintAwardCollection(transaction, params);
     }
-    case TransactionAwardType.BADGE: {
+    case TransactionPayloadType.BADGE: {
       const nftWallet = new NftWallet(wallet);
       return nftWallet.mintNtt(transaction, params);
     }
-    case TransactionAwardType.BURN_ALIAS: {
+    case TransactionPayloadType.BURN_ALIAS: {
       const aliasWallet = new AliasWallet(wallet);
       return aliasWallet.burnAlias(transaction, params);
+    }
+    default: {
+      functions.logger.error(
+        'Unsupported executable transaction type in submitCreateAwardTransaction',
+        transaction,
+      );
+      throw Error('Unsupported executable transaction type ' + transaction.payload.type);
+    }
+  }
+};
+
+const submitMintMetadataTransaction = async (
+  transaction: Transaction,
+  wallet: SmrWallet,
+  params: SmrParams,
+) => {
+  switch (transaction.payload.type) {
+    case TransactionPayloadType.MINT_ALIAS: {
+      const aliasWallet = new AliasWallet(wallet);
+      return aliasWallet.mintAlias(transaction, params);
+    }
+    case TransactionPayloadType.MINT_COLLECTION: {
+      const nftWallet = new NftWallet(wallet);
+      return nftWallet.mintCollection(transaction, params);
+    }
+    case TransactionPayloadType.MINT_NFT: {
+      const nftWallet = new NftWallet(wallet);
+      return nftWallet.mintMetadataNft(transaction, params);
+    }
+    case TransactionPayloadType.UPDATE_MINTED_NFT: {
+      const nftWallet = new NftWallet(wallet);
+      return nftWallet.updateMetadataNft(transaction, params);
     }
     default: {
       functions.logger.error(
@@ -343,18 +381,18 @@ const submitUnlockTransaction = async (
   params: SmrParams,
 ) => {
   switch (transaction.payload.type) {
-    case TransactionUnlockType.UNLOCK_FUNDS:
-    case TransactionUnlockType.TANGLE_TRANSFER: {
-      const sourceAddress = await wallet.getAddressDetails(transaction.payload.sourceAddress);
+    case TransactionPayloadType.UNLOCK_FUNDS:
+    case TransactionPayloadType.TANGLE_TRANSFER: {
+      const sourceAddress = await wallet.getAddressDetails(transaction.payload.sourceAddress!);
       return wallet.send(
         sourceAddress,
-        transaction.payload.targetAddress,
-        transaction.payload.amount,
+        transaction.payload.targetAddress!,
+        transaction.payload.amount!,
         params,
         transaction.payload.outputToConsume,
       );
     }
-    case TransactionUnlockType.UNLOCK_NFT: {
+    case TransactionPayloadType.UNLOCK_NFT: {
       const nftWallet = new NftWallet(wallet);
       return nftWallet.changeNftOwner(transaction, params);
     }
@@ -366,8 +404,8 @@ const submitUnlockTransaction = async (
 };
 
 const prepareTransaction = (transactionId: string) =>
-  soonDb().runTransaction(async (transaction) => {
-    const docRef = soonDb().collection(COL.TRANSACTION).doc(transactionId);
+  build5Db().runTransaction(async (transaction) => {
+    const docRef = build5Db().doc(`${COL.TRANSACTION}/${transactionId}`);
     const tranData = await transaction.get<Transaction>(docRef);
     if (
       isEmulatorEnv() &&
@@ -409,6 +447,7 @@ const prepareTransaction = (transactionId: string) =>
     if (!tranData.payload.outputToConsume) {
       lockMnemonic(transaction, transactionId, tranData.payload.sourceAddress);
       lockMnemonic(transaction, transactionId, tranData.payload.storageDepositSourceAddress);
+      lockMnemonic(transaction, transactionId, tranData.payload.aliasGovAddress);
     }
 
     return true;
@@ -422,19 +461,22 @@ const emptyWalletResult = (): WalletResult => ({
   count: 0,
 });
 
-const getMnemonic = async (transaction: ITransaction, address: string): Promise<Mnemonic> => {
+const getMnemonic = async (
+  transaction: ITransaction,
+  address: string | undefined,
+): Promise<Mnemonic> => {
   if (isEmpty(address)) {
     return {};
   }
-  const docRef = soonDb().doc(`${COL.MNEMONIC}/${address}`);
+  const docRef = build5Db().doc(`${COL.MNEMONIC}/${address}`);
   return (await transaction.get(docRef)) || {};
 };
 
-const lockMnemonic = (transaction: ITransaction, lockedBy: string, address: string) => {
+const lockMnemonic = (transaction: ITransaction, lockedBy: string, address: string | undefined) => {
   if (isEmpty(address)) {
     return;
   }
-  const docRef = soonDb().doc(`${COL.MNEMONIC}/${address}`);
+  const docRef = build5Db().doc(`${COL.MNEMONIC}/${address}`);
   transaction.update(docRef, {
     lockedBy,
     consumedOutputIds: [],
@@ -449,9 +491,11 @@ const mnemonicsAreLocked = async (transaction: ITransaction, tran: Transaction) 
     transaction,
     tran.payload.storageDepositSourceAddress,
   );
+  const aliasGovAddress = await getMnemonic(transaction, tran.payload.aliasGovAddress);
   return (
     (sourceAddressMnemonic.lockedBy || tran.uid) !== tran.uid ||
-    (storageDepositSourceAddress.lockedBy || tran.uid) !== tran.uid
+    (storageDepositSourceAddress.lockedBy || tran.uid) !== tran.uid ||
+    (aliasGovAddress.lockedBy || tran.uid) !== tran.uid
   );
 };
 
@@ -459,7 +503,7 @@ const isConfirmed = (prev: Transaction | undefined, curr: Transaction | undefine
   !prev?.payload?.walletReference?.confirmed && curr?.payload?.walletReference?.confirmed;
 
 const onMintedAirdropCleared = async (curr: Transaction) => {
-  const member = <Member>await soonDb().doc(`${COL.MEMBER}/${curr.member}`).get();
+  const member = <Member>await build5Db().doc(`${COL.MEMBER}/${curr.member}`).get();
   const credit = <Transaction>{
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
@@ -476,5 +520,5 @@ const onMintedAirdropCleared = async (curr: Transaction) => {
       token: curr.payload.token,
     },
   };
-  await soonDb().doc(`${COL.TRANSACTION}/${credit.uid}`).create(credit);
+  await build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`).create(credit);
 };

@@ -1,4 +1,3 @@
-import { IndexerPluginClient } from '@iota/iota.js-next';
 import {
   COL,
   CollectionType,
@@ -7,8 +6,9 @@ import {
   TangleRequestType,
   Transaction,
   TransactionType,
-} from '@soonaverse/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { IndexerPluginClient } from '@iota/iota.js-next';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
@@ -35,7 +35,7 @@ describe('Minted nft trading', () => {
     await helper.createAndOrderNft(false);
     await helper.mintCollection();
 
-    await helper.walletService!.send(address, tangleOrder.payload.targetAddress, MIN_IOTA_AMOUNT, {
+    await helper.walletService!.send(address, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
       customMetadata: {
         request: {
           requestType: TangleRequestType.NFT_PURCHASE,
@@ -46,7 +46,7 @@ describe('Minted nft trading', () => {
     await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
 
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.TRANSACTION)
         .where('member', '==', address.bech32)
         .where('type', '==', TransactionType.WITHDRAW_NFT)

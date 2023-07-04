@@ -1,6 +1,6 @@
-import { COL, SystemConfig, SYSTEM_CONFIG_DOC_ID } from '@soonaverse/interfaces';
+import { COL, SYSTEM_CONFIG_DOC_ID, SystemConfig } from '@build-5/interfaces';
 import bigDecimal from 'js-big-decimal';
-import { soonDb } from '../firebase/firestore/soondb';
+import { build5Db } from '../firebase/firestore/build5Db';
 import {
   getRoyaltyPercentage,
   getRoyaltySpaces,
@@ -38,7 +38,7 @@ const getTokenPurchaseFeePercentage = async (
   if (memberFeePercentage !== undefined) {
     return memberFeePercentage;
   }
-  const systemConfig = await soonDb()
+  const systemConfig = await build5Db()
     .doc(`${COL.SYSTEM}/${SYSTEM_CONFIG_DOC_ID}`)
     .get<SystemConfig>();
   const systemPercentage = isTokenPurchase

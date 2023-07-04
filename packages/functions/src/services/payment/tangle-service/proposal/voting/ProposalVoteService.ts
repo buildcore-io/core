@@ -7,26 +7,30 @@ import {
   Proposal,
   ProposalMember,
   ProposalType,
+  ProposalVoteTangleRequest,
+  ProposalVoteTangleResponse,
   SUB_COL,
   Token,
   TokenStatus,
   Transaction,
+  TransactionPayloadType,
   TransactionType,
-  TransactionUnlockType,
-  VoteTransaction,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../../../../firebase/firestore/soondb';
+import { build5Db } from '../../../../../firebase/firestore/build5Db';
 import { voteOnProposalSchema } from '../../../../../runtime/firebase/proposal';
 import { invalidArgument } from '../../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../../utils/schema.utils';
 import { getTokenForSpace } from '../../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../../utils/wallet.utils';
+import { toJoiObject } from '../../../../joi/common';
 import { TransactionService } from '../../../transaction-service';
 import { executeSimpleVoting } from './simple.voting';
 import { voteWithStakedTokens } from './staked.token.voting';
 import { createVoteTransactionOrder } from './token.voting';
+
+const schema = toJoiObject<ProposalVoteTangleRequest>(voteOnProposalSchema);
 
 export class ProposalVoteService {
   constructor(readonly transactionService: TransactionService) {}
@@ -36,13 +40,12 @@ export class ProposalVoteService {
     request: Record<string, unknown>,
     milestoneTran: MilestoneTransaction,
     milestoneTranEntry: MilestoneTransactionEntry,
-  ) => {
+  ): Promise<ProposalVoteTangleResponse | undefined> => {
     delete request.requestType;
-    await assertValidationAsync(voteOnProposalSchema, request);
+    const params = await assertValidationAsync(schema, request);
 
-    const values = request.values as number[];
-    const proposal = await getProposal(request.uid as string);
-    const proposalMember = await getProposalMember(owner, proposal, values[0]);
+    const proposal = await getProposal(params.uid as string);
+    const proposalMember = await getProposalMember(owner, proposal, params.value);
 
     if (proposal.type === ProposalType.NATIVE) {
       const token = await getTokenForSpace(proposal.space);
@@ -55,7 +58,7 @@ export class ProposalVoteService {
           this.transactionService.transaction,
           owner,
           proposal,
-          values,
+          [params.value],
         );
         return { status: 'success', voteTransaction: voteTransaction.uid };
       }
@@ -63,7 +66,7 @@ export class ProposalVoteService {
       await this.handleTokenVoteRequest(
         owner,
         proposal,
-        values,
+        [params.value],
         token,
         milestoneTran,
         milestoneTranEntry,
@@ -71,7 +74,7 @@ export class ProposalVoteService {
       return;
     }
 
-    return await this.handleSimpleVoteRequest(proposal, proposalMember, values);
+    return await this.handleSimpleVoteRequest(proposal, proposalMember, [params.value]);
   };
 
   private handleTokenVoteRequest = async (
@@ -83,7 +86,7 @@ export class ProposalVoteService {
     milestoneTranEntry: MilestoneTransactionEntry,
   ) => {
     const order = await createVoteTransactionOrder(owner, proposal, values, token);
-    const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
 
     this.transactionService.push({
       ref: orderDocRef,
@@ -95,7 +98,7 @@ export class ProposalVoteService {
       order,
       milestoneTran,
       milestoneTranEntry,
-      TransactionUnlockType.TANGLE_TRANSFER,
+      TransactionPayloadType.TANGLE_TRANSFER,
       milestoneTranEntry.outputId,
     );
   };
@@ -105,7 +108,7 @@ export class ProposalVoteService {
     proposalMember: ProposalMember,
     values: number[],
   ) => {
-    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+    const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
     const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(proposalMember.uid);
 
     const voteData = await executeSimpleVoting(proposalMember, proposal, values);
@@ -124,7 +127,7 @@ export class ProposalVoteService {
       merge: true,
     });
 
-    const voteTransactionDocRef = soonDb().doc(
+    const voteTransactionDocRef = build5Db().doc(
       `${COL.TRANSACTION}/${voteData.voteTransaction.uid}`,
     );
     this.transactionService.push({
@@ -138,7 +141,7 @@ export class ProposalVoteService {
 }
 
 export const getProposal = async (proposalUid: string) => {
-  const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposalUid}`);
+  const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposalUid}`);
   const proposal = await proposalDocRef.get<Proposal>();
   if (!proposal) {
     throw invalidArgument(WenError.proposal_does_not_exists);
@@ -169,7 +172,7 @@ export const getProposal = async (proposalUid: string) => {
 };
 
 export const getProposalMember = async (owner: string, proposal: Proposal, value: number) => {
-  const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
   const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(owner);
   const proposalMember = await proposalMemberDocRef.get<ProposalMember>();
   if (!proposalMember) {
@@ -197,19 +200,18 @@ export const createVoteTransaction = (
   weight: number,
   values: number[],
   stakes: string[] = [],
-) =>
-  <Transaction>{
-    type: TransactionType.VOTE,
-    uid: getRandomEthAddress(),
-    member: owner,
-    space: proposal.space,
-    network: DEFAULT_NETWORK,
-    payload: <VoteTransaction>{
-      proposalId: proposal.uid,
-      weight,
-      values,
-      votes: [],
-      stakes,
-    },
-    linkedTransactions: [],
-  };
+): Transaction => ({
+  type: TransactionType.VOTE,
+  uid: getRandomEthAddress(),
+  member: owner,
+  space: proposal.space,
+  network: DEFAULT_NETWORK,
+  payload: {
+    proposalId: proposal.uid,
+    weight,
+    values,
+    votes: [],
+    stakes,
+  },
+  linkedTransactions: [],
+});

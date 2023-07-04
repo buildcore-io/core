@@ -1,7 +1,5 @@
-import { IndexerPluginClient } from '@iota/iota.js-next';
 import {
   Award,
-  BillPaymentType,
   COL,
   MIN_IOTA_AMOUNT,
   Network,
@@ -10,10 +8,12 @@ import {
   TokenDrop,
   TokenDropStatus,
   Transaction,
+  TransactionPayloadType,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
+import { IndexerPluginClient } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { validateAddress } from '../../src/runtime/firebase/address';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
 import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
@@ -55,7 +55,7 @@ describe('Award', () => {
     const order = await testEnv.wrap(fundAward)({});
     await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount);
 
-    const awardDocRef = soonDb().doc(`${COL.AWARD}/${award.uid}`);
+    const awardDocRef = build5Db().doc(`${COL.AWARD}/${award.uid}`);
     await wait(async () => {
       const award = <Award>await awardDocRef.get();
       return award.approved && award.funded;
@@ -89,7 +89,7 @@ describe('Award', () => {
       return response.items.length === 2;
     });
 
-    const airdropQuery = soonDb().collection(COL.AIRDROP).where('member', '==', tmp);
+    const airdropQuery = build5Db().collection(COL.AIRDROP).where('member', '==', tmp);
     let airdropSnap = await airdropQuery.get<TokenDrop>();
     expect(airdropSnap.length).toBe(2);
 
@@ -118,7 +118,7 @@ describe('Award', () => {
       );
     });
 
-    const billPaymentQuery = soonDb()
+    const billPaymentQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', tmp)
       .where('type', '==', TransactionType.BILL_PAYMENT);
@@ -126,7 +126,7 @@ describe('Award', () => {
     billPayments.forEach((billPayment) => {
       expect(billPayment.payload.token).toBe(token.uid);
       expect(billPayment.payload.tokenSymbol).toBe(token.symbol);
-      expect(billPayment.payload.type).toBe(BillPaymentType.BASE_AIRDROP_CLAIM);
+      expect(billPayment.payload.type).toBe(TransactionPayloadType.BASE_AIRDROP_CLAIM);
     });
   });
 });

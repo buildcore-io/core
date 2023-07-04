@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, Collection, Nft, Space, Transaction, TransactionType } from '@soonaverse/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { COL, Collection, Nft, Space, Transaction, TransactionType } from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { depositNft, withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { claimSpace } from '../../src/runtime/firebase/space';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -18,11 +18,11 @@ describe('Nft depositing', () => {
   });
 
   const withdrawNftFunc = async (nftId: string) => {
-    const nftDocRef = soonDb().doc(`${COL.NFT}/${nftId}`);
+    const nftDocRef = build5Db().doc(`${COL.NFT}/${nftId}`);
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, { nft: nftId });
     await testEnv.wrap(withdrawNft)({});
 
-    const query = soonDb()
+    const query = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.WITHDRAW_NFT)
       .where('payload.nft', '==', nftId);
@@ -42,14 +42,14 @@ describe('Nft depositing', () => {
     nft1 = await withdrawNftFunc(nft1.uid);
     nft2 = await withdrawNftFunc(nft2.uid);
 
-    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nft1.collection}`);
+    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nft1.collection}`);
     collection = <Collection>await collectionDocRef.get();
   });
 
-  it('Should deposit 2 nfts minted outside soonaverse', async () => {
-    await soonDb().doc(`${COL.NFT}/${nft1.uid}`).delete();
-    await soonDb().doc(`${COL.NFT}/${nft2.uid}`).delete();
-    await soonDb().doc(`${COL.COLLECTION}/${collection.uid}`).delete();
+  it('Should deposit 2 nfts minted outside build-5', async () => {
+    await build5Db().doc(`${COL.NFT}/${nft1.uid}`).delete();
+    await build5Db().doc(`${COL.NFT}/${nft2.uid}`).delete();
+    await build5Db().doc(`${COL.COLLECTION}/${collection.uid}`).delete();
 
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, { network: helper.network });
     let depositOrder = await testEnv.wrap(depositNft)({});
@@ -60,16 +60,16 @@ describe('Nft depositing', () => {
       nft1.mintingData!.nftId,
     );
 
-    const nftQuery = soonDb().collection(COL.NFT).where('owner', '==', helper.guardian);
+    const nftQuery = build5Db().collection(COL.NFT).where('owner', '==', helper.guardian);
     await wait(async () => {
       const snap = await nftQuery.get();
       return snap.length === 1;
     });
 
-    const nft1DocRef = soonDb().doc(`${COL.NFT}/${nft1.mintingData!.nftId}`);
+    const nft1DocRef = build5Db().doc(`${COL.NFT}/${nft1.mintingData!.nftId}`);
     nft1 = <Nft>await nft1DocRef.get();
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, { space: nft1.space });
+    mockWalletReturnValue(helper.walletSpy, helper.guardian!, { uid: nft1.space });
     const order = await testEnv.wrap(claimSpace)({});
     await helper.walletService!.send(
       helper.guardianAddress!,
@@ -78,7 +78,7 @@ describe('Nft depositing', () => {
       {},
     );
 
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${nft1.space}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${nft1.space}`);
     await wait(async () => {
       const space = <Space>await spaceDocRef.get();
       return space.claimed || false;
@@ -98,7 +98,7 @@ describe('Nft depositing', () => {
       return snap.length === 2;
     });
 
-    const nft2DocRef = soonDb().doc(`${COL.NFT}/${nft2.mintingData!.nftId}`);
+    const nft2DocRef = build5Db().doc(`${COL.NFT}/${nft2.mintingData!.nftId}`);
     nft2 = <Nft>await nft2DocRef.get();
 
     expect(nft1.collection).toBe(nft2.collection);

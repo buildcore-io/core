@@ -1,4 +1,4 @@
-import { Timestamp, TokenAllocation, WenError } from '@soonaverse/interfaces';
+import { Timestamp, TokenAllocation, WenError } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';

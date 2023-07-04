@@ -1,25 +1,28 @@
-import { COL, Space, SUB_COL, WenError } from '@soonaverse/interfaces';
-import { soonDb } from '../../../../firebase/firestore/soondb';
+import { COL, Space, SpaceMemberUpsertTangleRequest, SUB_COL, WenError } from '@build-5/interfaces';
+import { BaseTangleResponse } from '@build-5/interfaces/lib/api/tangle/common';
+import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { editSpaceMemberSchema } from '../../../../runtime/firebase/space';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
+import { toJoiObject } from '../../../joi/common';
 import { TransactionService } from '../../transaction-service';
 
+const schema = toJoiObject<SpaceMemberUpsertTangleRequest>(editSpaceMemberSchema);
 export class SpaceBlockMemberService {
   constructor(readonly transactionService: TransactionService) {}
 
-  public handleBlockMemberRequest = async (owner: string, request: Record<string, unknown>) => {
-    await assertValidationAsync(editSpaceMemberSchema, request, { allowUnknown: true });
+  public handleBlockMemberRequest = async (
+    owner: string,
+    request: Record<string, unknown>,
+  ): Promise<BaseTangleResponse> => {
+    delete request.requestType;
+    const params = await assertValidationAsync(schema, request);
 
-    const member = request.member as string;
-    const { space, blockedMember } = await getBlockMemberUpdateData(
-      owner,
-      request.uid as string,
-      member,
-    );
+    const member = params.member;
+    const { space, blockedMember } = await getBlockMemberUpdateData(owner, params.uid, member);
 
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${request.uid}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
     const blockedMemberDocRef = spaceDocRef.collection(SUB_COL.BLOCKED_MEMBERS).doc(member);
 
     this.transactionService.push({
@@ -57,7 +60,7 @@ export class SpaceBlockMemberService {
 }
 
 export const getBlockMemberUpdateData = async (owner: string, spaceId: string, member: string) => {
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${spaceId}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${spaceId}`);
   await assertIsGuardian(spaceId, owner);
 
   const spaceMember = await spaceDocRef.collection(SUB_COL.MEMBERS).doc(member).get();
@@ -86,9 +89,9 @@ export const getBlockMemberUpdateData = async (owner: string, spaceId: string, m
 
   const blockedMember = { uid: member, parentId: spaceId, parentCol: COL.SPACE };
   const spaceUpdateData = {
-    totalGuardians: soonDb().inc(knockingMember ? 0 : -1),
-    totalMembers: soonDb().inc(knockingMember ? 0 : -1),
-    totalPendingMembers: soonDb().inc(knockingMember ? -1 : 0),
+    totalGuardians: build5Db().inc(knockingMember ? 0 : -1),
+    totalMembers: build5Db().inc(knockingMember ? 0 : -1),
+    totalPendingMembers: build5Db().inc(knockingMember ? -1 : 0),
   };
   return { blockedMember, space: spaceUpdateData };
 };

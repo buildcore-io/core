@@ -11,16 +11,13 @@ import {
   Space,
   SpaceGuardian,
   Transaction,
-  TransactionAwardType,
-  TransactionCreditType,
-  TransactionOrder,
+  TransactionPayloadType,
   TransactionType,
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
-  VoteTransaction,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
-import { getSnapshot, soonDb } from '../../firebase/firestore/soondb';
+import { build5Db, getSnapshot } from '../../firebase/firestore/build5Db';
 import { getAddress } from '../../utils/address.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -30,13 +27,13 @@ export class AddressService {
   constructor(readonly transactionService: TransactionService) {}
 
   public async handleAddressValidationRequest(
-    order: TransactionOrder,
+    order: Transaction,
     match: TransactionMatch,
     type: Entity,
   ) {
     const payment = await this.transactionService.createPayment(order, match);
     const credit = await this.transactionService.createCredit(
-      TransactionCreditType.ADDRESS_VALIDATION,
+      TransactionPayloadType.ADDRESS_VALIDATION,
       payment,
       match,
     );
@@ -45,7 +42,7 @@ export class AddressService {
       if (type === Entity.MEMBER) {
         await claimBadges(
           order.member!,
-          credit.payload.targetAddress,
+          credit.payload.targetAddress!,
           order.network || DEFAULT_NETWORK,
         );
       }
@@ -53,22 +50,19 @@ export class AddressService {
     this.transactionService.markAsReconciled(order, match.msgId);
   }
 
-  public async handleSpaceAddressValidationRequest(
-    order: TransactionOrder,
-    match: TransactionMatch,
-  ) {
+  public async handleSpaceAddressValidationRequest(order: Transaction, match: TransactionMatch) {
     const payment = await this.transactionService.createPayment(order, match);
     await this.transactionService.createCredit(
-      TransactionCreditType.ADDRESS_VALIDATION,
+      TransactionPayloadType.ADDRESS_VALIDATION,
       payment,
       match,
     );
     this.transactionService.markAsReconciled(order, match.msgId);
 
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${order.space}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${order.space}`);
     const space = await this.transactionService.get<Space>(spaceDocRef);
 
-    const ownerDocRef = soonDb().doc(`${COL.MEMBER}/${order.member}`);
+    const ownerDocRef = build5Db().doc(`${COL.MEMBER}/${order.member}`);
     const owner = <Member>await ownerDocRef.get();
 
     const guardians = await spaceDocRef.collection(SUB_COL.GUARDIANS).get<SpaceGuardian>();
@@ -80,13 +74,13 @@ export class AddressService {
       guardians.length,
     );
 
-    const voteTransaction = <Transaction>{
+    const voteTransaction = {
       type: TransactionType.VOTE,
       uid: getRandomEthAddress(),
       member: owner!.uid,
       space: space!.uid,
       network: DEFAULT_NETWORK,
-      payload: <VoteTransaction>{
+      payload: {
         proposalId: proposal.uid,
         weight: 1,
         values: [1],
@@ -95,7 +89,7 @@ export class AddressService {
       linkedTransactions: [],
     };
 
-    const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+    const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
     const memberPromisses = guardians.map((guardian) => {
       proposalDocRef
         .collection(SUB_COL.MEMBERS)
@@ -112,7 +106,7 @@ export class AddressService {
     });
     await Promise.all(memberPromisses);
 
-    const voteTransactionDocRef = soonDb().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`);
+    const voteTransactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`);
     this.transactionService.push({
       ref: voteTransactionDocRef,
       data: voteTransaction,
@@ -129,13 +123,13 @@ export class AddressService {
   private async setValidatedAddress(credit: Transaction, type: Entity): Promise<void> {
     const collection = type === Entity.MEMBER ? COL.MEMBER : COL.SPACE;
     const id = type === Entity.MEMBER ? credit.member : credit.space;
-    const ref = soonDb().doc(`${collection}/${id}`);
+    const ref = build5Db().doc(`${collection}/${id}`);
     const docData = await ref.get<Record<string, unknown>>();
     const network = credit.network || DEFAULT_NETWORK;
     const currentAddress = getAddress(docData, network);
     const data = { [`validatedAddress.${network}`]: credit.payload.targetAddress };
     if (currentAddress) {
-      data.prevValidatedAddresses = soonDb().arrayUnion(currentAddress);
+      data.prevValidatedAddresses = build5Db().arrayUnion(currentAddress);
     }
     this.transactionService.push({ ref, data, action: 'update' });
   }
@@ -145,13 +139,13 @@ const claimBadges = async (member: string, memberAddress: string, network: Netwo
   let lastDocId = '';
   do {
     const lastDoc = await getSnapshot(COL.TRANSACTION, lastDocId);
-    const snap = await soonDb()
+    const snap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('network', '==', network)
       .where('type', '==', TransactionType.AWARD)
       .where('member', '==', member)
       .where('ignoreWallet', '==', true)
-      .where('payload.type', '==', TransactionAwardType.BADGE)
+      .where('payload.type', '==', TransactionPayloadType.BADGE)
       .limit(500)
       .startAfter(lastDoc)
       .get<Transaction>();
@@ -165,8 +159,8 @@ const claimBadges = async (member: string, memberAddress: string, network: Netwo
 };
 
 const updateBadgeTransaction = async (transactionId: string, memberAddress: string) =>
-  soonDb().runTransaction(async (transaction) => {
-    const badgeDocRef = soonDb().doc(`${COL.TRANSACTION}/${transactionId}`);
+  build5Db().runTransaction(async (transaction) => {
+    const badgeDocRef = build5Db().doc(`${COL.TRANSACTION}/${transactionId}`);
     const badge = await transaction.get<Transaction>(badgeDocRef);
     if (badge?.ignoreWallet) {
       const data = {
@@ -179,7 +173,7 @@ const updateBadgeTransaction = async (transactionId: string, memberAddress: stri
   });
 
 const createUpdateSpaceValidatedAddressProposal = (
-  order: TransactionOrder,
+  order: Transaction,
   validatedAddress: string,
   owner: Member,
   space: Space,

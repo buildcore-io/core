@@ -5,8 +5,8 @@ import {
   Nft,
   UnsoldMintingOptions,
   WenError,
-} from '@soonaverse/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { mintCollection } from '../../src/runtime/firebase/collection/index';
 import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -26,10 +26,10 @@ describe('Collection minting', () => {
   it.each([CollectionType.GENERATED, CollectionType.SFT, CollectionType.CLASSIC])(
     'Should set owner to guardian',
     async (type: CollectionType) => {
-      await soonDb().doc(`${COL.COLLECTION}/${helper.collection}`).update({ type });
+      await build5Db().doc(`${COL.COLLECTION}/${helper.collection}`).update({ type });
       let nft = <Nft | undefined>await helper.createAndOrderNft();
       let collectionData = <Collection>(
-        await soonDb().doc(`${COL.COLLECTION}/${helper.collection}`).get()
+        await build5Db().doc(`${COL.COLLECTION}/${helper.collection}`).get()
       );
       expect(collectionData.total).toBe(1);
       expect(collectionData.sold).toBe(0);
@@ -46,10 +46,10 @@ describe('Collection minting', () => {
       await helper.mintCollection(UnsoldMintingOptions.TAKE_OWNERSHIP);
 
       collectionData = <Collection>(
-        await soonDb().doc(`${COL.COLLECTION}/${helper.collection}`).get()
+        await build5Db().doc(`${COL.COLLECTION}/${helper.collection}`).get()
       );
       expect(collectionData.total).toBe(1);
-      nft = <Nft>await soonDb().doc(`${COL.NFT}/${nft?.uid}`).get();
+      nft = <Nft>await build5Db().doc(`${COL.NFT}/${nft?.uid}`).get();
       expect(nft.isOwned).toBe(true);
       expect(nft.owner).toBe(helper.guardian);
       expect(nft.sold).toBe(true);

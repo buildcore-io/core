@@ -1,15 +1,15 @@
-export const wrappedFetch = <T>(url: string, params: Record<string, unknown>) =>
-  new Promise<T>((res, rej) => {
-    return fetch(url + toQueryParams(params))
-      .then((r) => {
-        res(r.json());
-      })
-      .catch((error) => {
-        rej(error);
-      });
-  });
+import { processObject, processObjectArray } from './utils';
 
-const toQueryParams = (params: Record<string, unknown>) => {
+export const wrappedFetch = async <T>(url: string, params: Record<string, unknown>) => {
+  const r = await fetch(url + toQueryParams(params));
+  const json = await r.json();
+  if (Array.isArray(json)) {
+    return processObjectArray(json) as T;
+  }
+  return processObject(json) as T;
+};
+
+export const toQueryParams = (params: Record<string, unknown>) => {
   let query = '';
   for (const entry of Object.entries(params)) {
     if (entry[1] === undefined) {

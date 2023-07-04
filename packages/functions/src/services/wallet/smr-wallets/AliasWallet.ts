@@ -1,3 +1,4 @@
+import { Transaction } from '@build-5/interfaces';
 import {
   Bech32Helper,
   GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE,
@@ -6,14 +7,13 @@ import {
   STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE,
   TransactionHelper,
 } from '@iota/iota.js-next';
-import { Transaction } from '@soonaverse/interfaces';
 import { cloneDeep, isEmpty } from 'lodash';
 import { mergeOutputs, packBasicOutput } from '../../../utils/basic-output.utils';
 import { packEssence, packPayload, submitBlock } from '../../../utils/block.utils';
 import { createUnlock } from '../../../utils/smr.utils';
 import { createAliasOutput } from '../../../utils/token-minting-utils/alias.utils';
-import { MnemonicService } from '../mnemonic';
 import { SmrParams, SmrWallet } from '../SmrWalletService';
+import { MnemonicService } from '../mnemonic';
 import { setConsumedOutputIds } from '../wallet';
 
 export class AliasWallet {
@@ -60,7 +60,7 @@ export class AliasWallet {
     const [aliasOutputId, aliasOutput] = Object.entries(aliasOutputs)[0];
 
     const targetAddress = Bech32Helper.addressFromBech32(
-      transaction.payload.targetAddress,
+      transaction.payload.targetAddress!,
       this.wallet.info.protocol.bech32Hrp,
     );
     const nextAliasOutput = cloneDeep(aliasOutput);
@@ -91,7 +91,7 @@ export class AliasWallet {
     const [aliasOutputId, aliasOutput] = Object.entries(aliasOutputs)[0];
 
     const remainder = packBasicOutput(
-      transaction.payload.targetAddress,
+      transaction.payload.targetAddress!,
       Number(aliasOutput.amount),
       [],
       this.wallet.info,

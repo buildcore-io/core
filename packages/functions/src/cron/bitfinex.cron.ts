@@ -1,6 +1,6 @@
-import { COL, TICKERS } from '@soonaverse/interfaces';
+import { COL, TICKERS } from '@build-5/interfaces';
 import axios from 'axios';
-import { soonDb } from '../firebase/firestore/soondb';
+import { build5Db } from '../firebase/firestore/build5Db';
 
 export const getLatestBitfinexPricesCron = async () => {
   try {
@@ -14,14 +14,14 @@ export const getLatestBitfinexPricesCron = async () => {
     ).data;
 
     if (data[0][1] > 0) {
-      await soonDb().collection(COL.TICKER).doc(TICKERS.SMRUSD).set({
+      await build5Db().collection(COL.TICKER).doc(TICKERS.SMRUSD).set({
         uid: TICKERS.SMRUSD,
         price: data[0][1],
       });
     }
 
     if (data[1][1] > 0) {
-      await soonDb().collection(COL.TICKER).doc(TICKERS.IOTAUSD).set({
+      await build5Db().collection(COL.TICKER).doc(TICKERS.IOTAUSD).set({
         uid: TICKERS.IOTAUSD,
         price: data[1][1],
       });

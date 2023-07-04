@@ -1,7 +1,7 @@
-import { COL, Stake, SUB_COL } from '@soonaverse/interfaces';
+import { COL, Stake, SUB_COL } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
-import { getSnapshot, soonDb } from '../firebase/firestore/soondb';
+import { build5Db, getSnapshot } from '../firebase/firestore/build5Db';
 import { onStakeExpired } from '../services/stake.service';
 import { dateToTimestamp } from '../utils/dateTime.utils';
 
@@ -19,7 +19,7 @@ export const removeExpiredStakesFromSpace = async () => {
 
 const getExpiredStakeQuery = async (lastDocId = '') => {
   const lastDoc = await getSnapshot(COL.STAKE, lastDocId);
-  return soonDb()
+  return build5Db()
     .collection(COL.STAKE)
     .where('expiresAt', '<=', dateToTimestamp(dayjs().toDate()))
     .where('expirationProcessed', '==', false)
@@ -28,8 +28,8 @@ const getExpiredStakeQuery = async (lastDocId = '') => {
 };
 
 const updateTokenStakeStats = async (stakeId: string) =>
-  soonDb().runTransaction(async (transaction) => {
-    const stakeDocRef = soonDb().doc(`${COL.STAKE}/${stakeId}`);
+  build5Db().runTransaction(async (transaction) => {
+    const stakeDocRef = build5Db().doc(`${COL.STAKE}/${stakeId}`);
     const stake = <Stake>await transaction.get(stakeDocRef);
     if (stake.expirationProcessed) {
       return;
@@ -40,20 +40,22 @@ const updateTokenStakeStats = async (stakeId: string) =>
     const updateData = {
       stakes: {
         [stake.type]: {
-          amount: soonDb().inc(-stake.amount),
-          value: soonDb().inc(-stake.value),
+          amount: build5Db().inc(-stake.amount),
+          value: build5Db().inc(-stake.value),
         },
       },
       stakeExpiry: {
         [stake.type]: {
-          [stake.expiresAt.toMillis()]: soonDb().deleteField(),
+          [stake.expiresAt.toMillis()]: build5Db().deleteField(),
         },
       },
     };
-    const spaceDocRef = soonDb().doc(`${COL.TOKEN}/${stake.token}/${SUB_COL.STATS}/${stake.token}`);
+    const spaceDocRef = build5Db().doc(
+      `${COL.TOKEN}/${stake.token}/${SUB_COL.STATS}/${stake.token}`,
+    );
     transaction.set(spaceDocRef, updateData, true);
 
-    const spaceMemberDocRef = soonDb().doc(
+    const spaceMemberDocRef = build5Db().doc(
       `${COL.TOKEN}/${stake.token}/${SUB_COL.DISTRIBUTION}/${stake.member}`,
     );
     transaction.set(spaceMemberDocRef, updateData, true);

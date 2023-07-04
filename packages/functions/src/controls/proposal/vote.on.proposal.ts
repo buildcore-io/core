@@ -1,14 +1,13 @@
 import {
   COL,
-  Proposal,
   ProposalType,
-  RelatedRecordsResponse,
+  ProposalVoteRequest,
   SUB_COL,
   TokenStatus,
   Transaction,
   WenError,
-} from '@soonaverse/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import {
   getProposal,
   getProposalMember,
@@ -19,10 +18,12 @@ import { createVoteTransactionOrder } from '../../services/payment/tangle-servic
 import { invalidArgument } from '../../utils/error.utils';
 import { getTokenForSpace } from '../../utils/token.utils';
 
-export const voteOnProposalControl = async (owner: string, params: Record<string, unknown>) => {
-  const values = params.values as number[];
-  const proposal = await getProposal(params.uid as string);
-  const proposalMember = await getProposalMember(owner, proposal, values[0]);
+export const voteOnProposalControl = async (
+  owner: string,
+  params: ProposalVoteRequest,
+): Promise<Transaction> => {
+  const proposal = await getProposal(params.uid);
+  const proposalMember = await getProposalMember(owner, proposal, params.value);
 
   if (proposal.type === ProposalType.NATIVE) {
     const token = await getTokenForSpace(proposal.space);
@@ -31,40 +32,34 @@ export const voteOnProposalControl = async (owner: string, params: Record<string
     }
 
     if (params.voteWithStakedTokes) {
-      return await soonDb().runTransaction(async (transaction) =>
-        voteWithStakedTokens(transaction, owner, proposal, values),
+      const voteTransaction = await build5Db().runTransaction(async (transaction) =>
+        voteWithStakedTokens(transaction, owner, proposal, [params.value]),
       );
+      return voteTransaction;
     }
 
-    const order = await createVoteTransactionOrder(owner, proposal, values, token);
-    const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+    const order = await createVoteTransactionOrder(owner, proposal, [params.value], token);
+    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
     await orderDocRef.create(order);
 
-    return await orderDocRef.get<Transaction>();
+    return (await orderDocRef.get<Transaction>())!;
   }
 
-  const voteData = await executeSimpleVoting(proposalMember, proposal, values);
-  const batch = soonDb().batch();
+  const voteData = await executeSimpleVoting(proposalMember, proposal, [params.value]);
+  const batch = build5Db().batch();
 
-  const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
   batch.set(proposalDocRef, voteData.proposal, true);
 
   const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(proposalMember.uid);
   batch.set(proposalMemberDocRef, voteData.proposalMember, true);
 
-  const voteTransactionDocRef = soonDb().doc(`${COL.TRANSACTION}/${voteData.voteTransaction.uid}`);
+  const voteTransactionDocRef = build5Db().doc(
+    `${COL.TRANSACTION}/${voteData.voteTransaction.uid}`,
+  );
   batch.create(voteTransactionDocRef, voteData.voteTransaction);
   await batch.commit();
 
   const voteTransaction = await voteTransactionDocRef.get<Transaction>();
-  if (RelatedRecordsResponse.status) {
-    return {
-      ...voteTransaction,
-      ...{
-        _relatedRecs: { proposal: await proposalDocRef.get<Proposal>() },
-      },
-    };
-  } else {
-    return voteTransaction;
-  }
+  return voteTransaction!;
 };

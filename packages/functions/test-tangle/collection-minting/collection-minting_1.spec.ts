@@ -1,5 +1,5 @@
-import { COL, UnsoldMintingOptions, WenError } from '@soonaverse/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { COL, UnsoldMintingOptions, WenError } from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { mintCollection } from '../../src/runtime/firebase/collection/index';
 import * as config from '../../src/utils/config.utils';
 import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';
@@ -37,7 +37,7 @@ describe('Collection minting', () => {
   });
 
   it('Should throw, collection not approved', async () => {
-    await soonDb().doc(`${COL.COLLECTION}/${helper.collection}`).update({ approved: false });
+    await build5Db().doc(`${COL.COLLECTION}/${helper.collection}`).update({ approved: false });
     const isProdSpy = jest.spyOn(config, 'isProdEnv');
     isProdSpy.mockReturnValueOnce(true);
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, {

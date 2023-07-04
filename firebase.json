@@ -1,197 +1,22 @@
 {
   "firestore": {
-    "predeploy": ["cd packages/indexes && npm run build:lerna"],
+    "predeploy": ["npm run build:indexes"],
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
   "functions": {
     "predeploy": [
-      "npm --prefix \"$RESOURCE_DIR\" run build:lerna",
+      "npm run build:functions",
       "cp -r packages/interfaces packages/functions/interfaces",
       "sed -i.bu 's/\"*\"/\"file:.\\/interfaces\"/g' packages/functions/package.json",
-      "sed -i.bu 's/prepare/prepared/g' packages/functions/package.json",
-      "sed -i.bu 's/prepare/prepared/g' packages/functions/interfaces/package.json",
       "rm packages/functions/package.json.bu"
     ],
     "postdeploy": [
       "sed -i.bu 's/\"file:.\\/interfaces\"/\"*\"/g' packages/functions/package.json",
-      "sed -i.bu 's/prepared/prepare/g' packages/functions/package.json",
       "rm packages/functions/package.json.bu"
     ],
     "source": "packages/functions"
   },
-  "hosting": [
-    {
-      "predeploy": ["cd packages/functions && ts-node set.rewrites.ts"],
-      "target": "5d1024cf-d55e-4b10-9d27-eccc37e80161",
-      "public": "packages/ui/dist",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-      "rewrites": [
-        { "source": "/api/postCreateMember", "function": "cmembernotexists" },
-        { "source": "/api/postUpdateMember", "function": "umember" },
-        { "source": "/api/postCreateSpace", "function": "cspace" },
-        { "source": "/api/postUpdateSpace", "function": "uspace" },
-        { "source": "/api/postJoinSpace", "function": "joinspace" },
-        { "source": "/api/postLeaveSpace", "function": "leavespace" },
-        { "source": "/api/postBlockMemberSpace", "function": "blockmemberspace" },
-        { "source": "/api/postUnblockMemberSpace", "function": "unblockmemberspace" },
-        { "source": "/api/postAcceptMemberSpace", "function": "acceptmemberspace" },
-        { "source": "/api/postDeclineMemberSpace", "function": "declinememberspace" },
-        { "source": "/api/postAddGuardianSpace", "function": "addguardianspace" },
-        { "source": "/api/postRemoveGuardianSpace", "function": "removeguardianspace" },
-        { "source": "/api/postClaimSpace", "function": "claimspace" },
-        { "source": "/api/postCreateAward", "function": "caward" },
-        { "source": "/api/postFundAward", "function": "fundaward" },
-        { "source": "/api/postRejectAward", "function": "raward" },
-        { "source": "/api/postAddOwnerAward", "function": "addowneraward" },
-        { "source": "/api/postParticipateAward", "function": "participateaward" },
-        { "source": "/api/postApproveParticipantAward", "function": "aparticipantaward" },
-        { "source": "/api/postCancelAward", "function": "cancelaward" },
-        { "source": "/api/postCreateProposal", "function": "cproposal" },
-        { "source": "/api/postApproveProposal", "function": "aproposal" },
-        { "source": "/api/postRejectProposal", "function": "rproposal" },
-        { "source": "/api/postVoteOnProposal", "function": "voteonproposal" },
-        { "source": "/api/postCreateCollection", "function": "ccollection" },
-        { "source": "/api/postUpdateCollection", "function": "ucollection" },
-        { "source": "/api/postApproveCollection", "function": "approvecollection" },
-        { "source": "/api/postRejectCollection", "function": "rejectcollection" },
-        { "source": "/api/postMintCollection", "function": "mintcollection" },
-        { "source": "/api/postCreateNft", "function": "cnft" },
-        { "source": "/api/postCreateBatchNft", "function": "cbatchnft" },
-        { "source": "/api/postSetForSaleNft", "function": "setforsalenft" },
-        { "source": "/api/postWithdrawNft", "function": "withdrawnft" },
-        { "source": "/api/postDepositNft", "function": "depositnft" },
-        { "source": "/api/postUpdateUnsoldNft", "function": "updateunsoldnft" },
-        { "source": "/api/postStakeNft", "function": "stakenft" },
-        { "source": "/api/postOrderNft", "function": "ordernft" },
-        { "source": "/api/postOpenBid", "function": "openbid" },
-        { "source": "/api/postValidateAddress", "function": "validateaddress" },
-        { "source": "/api/postCreateToken", "function": "ctoken" },
-        { "source": "/api/postUpdateToken", "function": "utoken" },
-        { "source": "/api/postSetTokenAvailableForSale", "function": "settokenavailableforsale" },
-        { "source": "/api/postCancelPublicSale", "function": "cancelpublicsale" },
-        { "source": "/api/postOrderToken", "function": "ordertoken" },
-        { "source": "/api/postCreditToken", "function": "credittoken" },
-        { "source": "/api/postAirdropToken", "function": "airdroptoken" },
-        { "source": "/api/postClaimAirdroppedToken", "function": "claimairdroppedtoken" },
-        { "source": "/api/postTradeToken", "function": "tradetoken" },
-        { "source": "/api/postCancelTradeOrder", "function": "canceltradeorder" },
-        { "source": "/api/postMintTokenOrder", "function": "minttokenorder" },
-        { "source": "/api/postClaimMintedTokenOrder", "function": "claimmintedtokenorder" },
-        { "source": "/api/postAirdropMintedToken", "function": "airdropmintedtoken" },
-        { "source": "/api/postEnableTokenTrading", "function": "enabletokentrading" },
-        { "source": "/api/postImportMintedToken", "function": "importmintedtoken" },
-        { "source": "/api/postCreditUnrefundable", "function": "creditunrefundable" },
-        { "source": "/api/postDepositStake", "function": "depositstake" },
-        { "source": "/api/postVoteController", "function": "votecontroller" },
-        { "source": "/api/postRankController", "function": "rankcontroller" },
-        { "source": "/api/postStakeReward", "function": "stakereward" },
-        { "source": "/api/postRemoveStakeReward", "function": "removestakereward" },
-        {
-          "source": "/api/postGenerateCustomFirebaseToken",
-          "function": "generatecustomfirebasetoken"
-        },
-        { "source": "/api/**", "function": "api" },
-        { "source": "**", "destination": "/index.html" }
-      ],
-      "headers": [
-        {
-          "source": "/api/**",
-          "headers": [
-            {
-              "key": "Access-Control-Allow-Origin",
-              "value": "*"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "predeploy": ["cd packages/functions && ts-node set.rewrites.ts"],
-      "target": "def-host",
-      "public": "packages/ui/dist",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-      "rewrites": [
-        { "source": "/api/postCreateMember", "function": "cmembernotexists" },
-        { "source": "/api/postUpdateMember", "function": "umember" },
-        { "source": "/api/postCreateSpace", "function": "cspace" },
-        { "source": "/api/postUpdateSpace", "function": "uspace" },
-        { "source": "/api/postJoinSpace", "function": "joinspace" },
-        { "source": "/api/postLeaveSpace", "function": "leavespace" },
-        { "source": "/api/postBlockMemberSpace", "function": "blockmemberspace" },
-        { "source": "/api/postUnblockMemberSpace", "function": "unblockmemberspace" },
-        { "source": "/api/postAcceptMemberSpace", "function": "acceptmemberspace" },
-        { "source": "/api/postDeclineMemberSpace", "function": "declinememberspace" },
-        { "source": "/api/postAddGuardianSpace", "function": "addguardianspace" },
-        { "source": "/api/postRemoveGuardianSpace", "function": "removeguardianspace" },
-        { "source": "/api/postClaimSpace", "function": "claimspace" },
-        { "source": "/api/postCreateAward", "function": "caward" },
-        { "source": "/api/postFundAward", "function": "fundaward" },
-        { "source": "/api/postRejectAward", "function": "raward" },
-        { "source": "/api/postAddOwnerAward", "function": "addowneraward" },
-        { "source": "/api/postParticipateAward", "function": "participateaward" },
-        { "source": "/api/postApproveParticipantAward", "function": "aparticipantaward" },
-        { "source": "/api/postCancelAward", "function": "cancelaward" },
-        { "source": "/api/postCreateProposal", "function": "cproposal" },
-        { "source": "/api/postApproveProposal", "function": "aproposal" },
-        { "source": "/api/postRejectProposal", "function": "rproposal" },
-        { "source": "/api/postVoteOnProposal", "function": "voteonproposal" },
-        { "source": "/api/postCreateCollection", "function": "ccollection" },
-        { "source": "/api/postUpdateCollection", "function": "ucollection" },
-        { "source": "/api/postApproveCollection", "function": "approvecollection" },
-        { "source": "/api/postRejectCollection", "function": "rejectcollection" },
-        { "source": "/api/postMintCollection", "function": "mintcollection" },
-        { "source": "/api/postCreateNft", "function": "cnft" },
-        { "source": "/api/postCreateBatchNft", "function": "cbatchnft" },
-        { "source": "/api/postSetForSaleNft", "function": "setforsalenft" },
-        { "source": "/api/postWithdrawNft", "function": "withdrawnft" },
-        { "source": "/api/postDepositNft", "function": "depositnft" },
-        { "source": "/api/postUpdateUnsoldNft", "function": "updateunsoldnft" },
-        { "source": "/api/postStakeNft", "function": "stakenft" },
-        { "source": "/api/postOrderNft", "function": "ordernft" },
-        { "source": "/api/postOpenBid", "function": "openbid" },
-        { "source": "/api/postValidateAddress", "function": "validateaddress" },
-        { "source": "/api/postCreateToken", "function": "ctoken" },
-        { "source": "/api/postUpdateToken", "function": "utoken" },
-        { "source": "/api/postSetTokenAvailableForSale", "function": "settokenavailableforsale" },
-        { "source": "/api/postCancelPublicSale", "function": "cancelpublicsale" },
-        { "source": "/api/postOrderToken", "function": "ordertoken" },
-        { "source": "/api/postCreditToken", "function": "credittoken" },
-        { "source": "/api/postAirdropToken", "function": "airdroptoken" },
-        { "source": "/api/postClaimAirdroppedToken", "function": "claimairdroppedtoken" },
-        { "source": "/api/postTradeToken", "function": "tradetoken" },
-        { "source": "/api/postCancelTradeOrder", "function": "canceltradeorder" },
-        { "source": "/api/postMintTokenOrder", "function": "minttokenorder" },
-        { "source": "/api/postClaimMintedTokenOrder", "function": "claimmintedtokenorder" },
-        { "source": "/api/postAirdropMintedToken", "function": "airdropmintedtoken" },
-        { "source": "/api/postEnableTokenTrading", "function": "enabletokentrading" },
-        { "source": "/api/postImportMintedToken", "function": "importmintedtoken" },
-        { "source": "/api/postCreditUnrefundable", "function": "creditunrefundable" },
-        { "source": "/api/postDepositStake", "function": "depositstake" },
-        { "source": "/api/postVoteController", "function": "votecontroller" },
-        { "source": "/api/postRankController", "function": "rankcontroller" },
-        { "source": "/api/postStakeReward", "function": "stakereward" },
-        { "source": "/api/postRemoveStakeReward", "function": "removestakereward" },
-        {
-          "source": "/api/postGenerateCustomFirebaseToken",
-          "function": "generatecustomfirebasetoken"
-        },
-        { "source": "/api/**", "function": "api" },
-        { "source": "**", "destination": "/index.html" }
-      ],
-      "headers": [
-        {
-          "source": "/api/**",
-          "headers": [
-            {
-              "key": "Access-Control-Allow-Origin",
-              "value": "*"
-            }
-          ]
-        }
-      ]
-    }
-  ],
   "emulators": {
     "auth": { "port": 9099 },
     "functions": { "port": 5001 },

@@ -1,7 +1,7 @@
-import { COL, Stake, StakeReward, StakeRewardStatus, StakeType } from '@soonaverse/interfaces';
+import { COL, Stake, StakeReward, StakeRewardStatus, StakeType } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { getStakedPerMember } from '../../src/cron/stakeReward.cron';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 
@@ -137,7 +137,7 @@ describe('Stake reward cron: getStakedPerMember', () => {
       orderId: '',
       billPaymentId: '',
     };
-    await soonDb().doc(`${COL.STAKE}/${stake.uid}`).create(stake);
+    await build5Db().doc(`${COL.STAKE}/${stake.uid}`).create(stake);
     return stake;
   };
 
@@ -151,7 +151,7 @@ describe('Stake reward cron: getStakedPerMember', () => {
       token,
       status: StakeRewardStatus.UNPROCESSED,
     } as StakeReward;
-    await soonDb().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`).create(stakeReward);
+    await build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`).create(stakeReward);
     return stakeReward;
   };
 

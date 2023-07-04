@@ -1,4 +1,4 @@
-import { MIN_IOTA_AMOUNT, WenError } from '@soonaverse/interfaces';
+import { MIN_IOTA_AMOUNT, WenError } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { voteOnProposal } from '../../src/runtime/firebase/proposal';
 import { expectThrow, mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -49,14 +49,14 @@ describe('Token based voting', () => {
       voteTransactionOrder.payload.targetAddress,
     );
     const voteTransaction2 = await helper.getVoteTransactionForCredit(credit2.uid);
-    expect(+voteTransaction2.payload.weight.toFixed(2)).toBe(5);
+    expect(+voteTransaction2.payload.weight!.toFixed(2)).toBe(5);
     await helper.assertProposalWeights(15, 15);
     await helper.assertProposalMemberWeightsPerAnser(helper.guardian, 5, 2);
 
     await helper.sendTokensToVote(helper.guardianAddress!.bech32);
     await wait(async () => {
       const voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
-      return +voteTransaction.payload.weight.toFixed(2) === 5;
+      return +voteTransaction.payload.weight!.toFixed(2) === 5;
     });
     await helper.assertProposalWeights(10, 10);
     await helper.assertProposalMemberWeightsPerAnser(helper.guardian, 5, 1);
@@ -64,7 +64,7 @@ describe('Token based voting', () => {
     await helper.sendTokensToVote(tmp.bech32, 10, tmp);
     await wait(async () => {
       const voteTransaction = await helper.getVoteTransactionForCredit(credit2.uid);
-      return +voteTransaction.payload.weight.toFixed(2) === 0;
+      return +voteTransaction.payload.weight!.toFixed(2) === 0;
     });
     await helper.assertProposalWeights(5, 5);
     await helper.assertProposalMemberWeightsPerAnser(helper.guardian, 0, 2);
@@ -74,7 +74,7 @@ describe('Token based voting', () => {
     await helper.updatePropoasalDates(dayjs().subtract(2, 'd'), dayjs().subtract(1, 'd'));
     mockWalletReturnValue(helper.walletSpy, helper.guardian, {
       uid: helper.proposal!.uid,
-      values: [1],
+      value: 1,
     });
     await expectThrow(testEnv.wrap(voteOnProposal)({}), WenError.vote_is_no_longer_active.key);
   });

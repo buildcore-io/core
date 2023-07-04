@@ -1,7 +1,7 @@
-import { COL, DEFAULT_NETWORK, Network } from '@soonaverse/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
-import { getIotaClient, IotaWallet } from './IotaWalletService';
-import { getShimmerClient, SmrWallet } from './SmrWalletService';
+import { COL, DEFAULT_NETWORK, Network } from '@build-5/interfaces';
+import { build5Db } from '../../firebase/firestore/build5Db';
+import { IotaWallet, getIotaClient } from './IotaWalletService';
+import { SmrWallet, getShimmerClient } from './SmrWalletService';
 
 export interface IKeyPair {
   publicKey: Uint8Array;
@@ -62,6 +62,6 @@ export const setConsumedOutputIds = (
   consumedNftOutputIds: string[] = [],
   consumedAliasOutputIds: string[] = [],
 ) =>
-  soonDb()
+  build5Db()
     .doc(`${COL.MNEMONIC}/${address}`)
     .update({ consumedOutputIds, consumedNftOutputIds, consumedAliasOutputIds });

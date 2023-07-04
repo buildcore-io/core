@@ -6,8 +6,8 @@ import {
   TokenStatus,
   WEN_FUNC,
   WenError,
-} from '@soonaverse/interfaces';
-import { soonDb } from '../../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../../src/firebase/firestore/build5Db';
 import { createToken, updateToken } from '../../../src/runtime/firebase/token/base';
 import * as wallet from '../../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../../set-up';
@@ -111,19 +111,19 @@ describe('Token controller: ' + WEN_FUNC.updateToken, () => {
     const updateData = { ...data, name: token.name, uid: token.uid, title: 'title2' };
     mockWalletReturnValue(walletSpy, memberAddress, updateData);
 
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.CANCEL_SALE });
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.CANCEL_SALE });
     await expectThrow(testEnv.wrap(updateToken)({}), WenError.token_in_invalid_status.key);
 
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.BASE });
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.BASE });
     await expectThrow(testEnv.wrap(updateToken)({}), WenError.token_in_invalid_status.key);
 
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.AVAILABLE });
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.AVAILABLE });
     const result = await testEnv.wrap(updateToken)({});
     expect(result.name).toBe(token.name);
   });
 
   it('Should throw, token minted', async () => {
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.MINTED });
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.MINTED });
     const updateData = {
       ...data,
       name: 'TokenName2',

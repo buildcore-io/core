@@ -1,17 +1,28 @@
-import { COL, Member, Nft, NftAvailable, NftStatus, WenError } from '@soonaverse/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
+import {
+  COL,
+  Member,
+  MemberUpdateRequest,
+  Nft,
+  NftAvailable,
+  NftStatus,
+  WenError,
+} from '@build-5/interfaces';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { invalidArgument } from '../../utils/error.utils';
 import { cleanupParams } from '../../utils/schema.utils';
 
-export const updateMemberControl = async (owner: string, params: Record<string, unknown>) => {
-  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
+export const updateMemberControl = async (
+  owner: string,
+  params: MemberUpdateRequest,
+): Promise<Member> => {
+  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
   const member = await memberDocRef.get<Member>();
   if (!member) {
     throw invalidArgument(WenError.member_does_not_exists);
   }
 
   if (params.name) {
-    const members = await soonDb()
+    const members = await build5Db()
       .collection(COL.MEMBER)
       .where('name', '==', params.name)
       .where('uid', '!=', owner)
@@ -21,31 +32,31 @@ export const updateMemberControl = async (owner: string, params: Record<string, 
     }
   }
 
-  const batch = soonDb().batch();
+  const batch = build5Db().batch();
 
   if (params.avatarNft) {
-    const nft = await getNft(owner, params.avatarNft as string);
+    const nft = await getNft(owner, params.avatarNft);
     params.avatar = nft.media;
 
-    const nftDocRef = soonDb().doc(`${COL.NFT}/${params.avatarNft}`);
+    const nftDocRef = build5Db().doc(`${COL.NFT}/${params.avatarNft}`);
     batch.update(nftDocRef, { setAsAvatar: true });
   } else if (Object.keys(params).includes('avatarNft')) {
     params.avatar = null;
   }
 
   if (member.avatarNft && member.avatarNft !== params.avatarNft) {
-    const currentAvatarDocRef = soonDb().doc(`${COL.NFT}/${member.avatarNft}`);
+    const currentAvatarDocRef = build5Db().doc(`${COL.NFT}/${member.avatarNft}`);
     batch.update(currentAvatarDocRef, { setAsAvatar: false });
   }
 
-  batch.update(memberDocRef, cleanupParams(params));
+  batch.update(memberDocRef, cleanupParams({ ...params }));
   await batch.commit();
 
-  return await memberDocRef.get<Member>();
+  return (await memberDocRef.get<Member>())!;
 };
 
 const getNft = async (owner: string, nftId: string) => {
-  const nftDocRef = soonDb().doc(`${COL.NFT}/${nftId}`);
+  const nftDocRef = build5Db().doc(`${COL.NFT}/${nftId}`);
   const nft = await nftDocRef.get<Nft>();
   if (!nft) {
     throw invalidArgument(WenError.nft_does_not_exists);

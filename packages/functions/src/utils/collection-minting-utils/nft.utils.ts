@@ -1,6 +1,7 @@
+import { COL, Collection, KEY_NAME_TANGLE, Nft } from '@build-5/interfaces';
 import {
-  AddressTypes,
   ADDRESS_UNLOCK_CONDITION_TYPE,
+  AddressTypes,
   ED25519_ADDRESS_TYPE,
   INftOutput,
   INodeInfo,
@@ -11,10 +12,9 @@ import {
   TransactionHelper,
 } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js-next';
-import { COL, Collection, KEY_NAME_TANGLE, Nft } from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import { head } from 'lodash';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { PLACEHOLDER_CID } from '../car.utils';
 import { getContentType } from '../storage.utils';
 import { propsToAttributes } from './nft.prop.utils';
@@ -32,17 +32,26 @@ export const createNftOutput = (
   metadata: string,
   info: INodeInfo,
   vestingAt?: dayjs.Dayjs,
+  mutableMetadata?: string,
 ): INftOutput => {
   const output: INftOutput = {
     type: NFT_OUTPUT_TYPE,
     amount: '0',
     nftId: EMPTY_NFT_ID,
-    immutableFeatures: [
-      { type: ISSUER_FEATURE_TYPE, address: issuerAddress },
-      { type: METADATA_FEATURE_TYPE, data: Converter.utf8ToHex(metadata, true) },
-    ],
+    immutableFeatures: [{ type: ISSUER_FEATURE_TYPE, address: issuerAddress }],
     unlockConditions: [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: ownerAddress }],
   };
+  if (metadata) {
+    output.immutableFeatures?.push({
+      type: METADATA_FEATURE_TYPE,
+      data: Converter.utf8ToHex(metadata, true),
+    });
+  }
+  if (mutableMetadata) {
+    output.features = [
+      { type: METADATA_FEATURE_TYPE, data: Converter.utf8ToHex(mutableMetadata, true) },
+    ];
+  }
   if (vestingAt && vestingAt.isAfter(dayjs())) {
     output.unlockConditions.push({
       type: TIMELOCK_UNLOCK_CONDITION_TYPE,
@@ -83,7 +92,7 @@ export const nftToMetadata = async (
       [royaltySpaceAddress]: collection.royaltiesFee,
     },
 
-    soonaverseId: nft.uid,
+    build5Id: nft.uid,
   };
 };
 
@@ -99,14 +108,22 @@ export const collectionToMetadata = async (collection: Collection, royaltySpaceA
     royalties: {
       [royaltySpaceAddress]: collection.royaltiesFee,
     },
-    soonaverseId: collection.uid,
+    build5Id: collection.uid,
   };
 };
 
 export const getNftByMintingId = async (nftId: string) => {
-  const snap = await soonDb()
+  const snap = await build5Db()
     .collection(COL.NFT)
     .where('mintingData.nftId', '==', nftId)
     .get<Nft>();
-  return <Nft | undefined>head(snap);
+  return head(snap);
+};
+
+export const getCollectionByMintingId = async (collectionId: string) => {
+  const snap = await build5Db()
+    .collection(COL.COLLECTION)
+    .where('mintingData.nftId', '==', collectionId)
+    .get<Collection>();
+  return head(snap);
 };

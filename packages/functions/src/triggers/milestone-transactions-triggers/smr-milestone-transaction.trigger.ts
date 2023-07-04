@@ -1,7 +1,9 @@
-import { COL, Network, SUB_COL } from '@soonaverse/interfaces';
+import { COL, Network, SUB_COL } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { DocumentSnapshot } from 'firebase-admin/firestore';
+import * as functions from 'firebase-functions/v2';
+import { FirestoreEvent } from 'firebase-functions/v2/firestore';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { ProcessingService } from '../../services/payment/payment-processing';
 import { SmrMilestoneTransactionAdapter } from './SmrMilestoneTransactionAdapter';
 import { confirmTransaction, milestoneTriggerConfig } from './common';
@@ -11,25 +13,27 @@ import { updateTokenSupplyData } from './token.foundry';
 const handleMilestoneTransactionWrite =
   (network: Network) =>
   async (
-    change: functions.Change<functions.firestore.DocumentSnapshot>,
-    context: functions.EventContext,
+    event: FirestoreEvent<
+      functions.Change<DocumentSnapshot> | undefined,
+      functions.ParamsOf<string>
+    >,
   ) => {
-    if (!change.after.data()) {
+    if (!event.data?.after?.data()) {
       return;
     }
     try {
-      return soonDb().runTransaction(async (transaction) => {
-        const docRef = soonDb().doc(change.after.ref.path);
+      return build5Db().runTransaction(async (transaction) => {
+        const docRef = build5Db().doc(event.data!.after.ref.path);
         const data = await transaction.get<Record<string, unknown>>(docRef);
         if (!data || data.processed) {
           return;
         }
-        await confirmTransaction(change.after.ref.path, data, network);
+        await confirmTransaction(event.data!.after.ref.path, data, network);
         await updateTokenSupplyData(data);
         const adapter = new SmrMilestoneTransactionAdapter(network);
         const milestoneTransaction = await adapter.toMilestoneTransaction({
           ...data,
-          uid: context.params.tranId,
+          uid: event.params.tranId,
         });
         const service = new ProcessingService(transaction);
         await service.processMilestoneTransactions(milestoneTransaction);
@@ -43,20 +47,22 @@ const handleMilestoneTransactionWrite =
         return transaction.update(docRef, { processed: true, processedOn: dayjs().toDate() });
       });
     } catch (error) {
-      functions.logger.error(`${network} transaction error`, change.after.ref.path, error);
+      functions.logger.error(`${network} transaction error`, event.data!.after.ref.path, error);
     }
   };
 
-export const smrMilestoneTransactionWrite = functions
-  .runWith(milestoneTriggerConfig)
-  .firestore.document(
-    `${COL.MILESTONE}_${Network.SMR}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`,
-  )
-  .onWrite(handleMilestoneTransactionWrite(Network.SMR));
+export const smrMilestoneTransactionWrite = functions.firestore.onDocumentWritten(
+  {
+    ...milestoneTriggerConfig,
+    document: `${COL.MILESTONE}_${Network.SMR}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`,
+  },
+  handleMilestoneTransactionWrite(Network.SMR),
+);
 
-export const rmsMilestoneTransactionWrite = functions
-  .runWith(milestoneTriggerConfig)
-  .firestore.document(
-    `${COL.MILESTONE}_${Network.RMS}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`,
-  )
-  .onWrite(handleMilestoneTransactionWrite(Network.RMS));
+export const rmsMilestoneTransactionWrite = functions.firestore.onDocumentWritten(
+  {
+    ...milestoneTriggerConfig,
+    document: `${COL.MILESTONE}_${Network.RMS}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`,
+  },
+  handleMilestoneTransactionWrite(Network.RMS),
+);

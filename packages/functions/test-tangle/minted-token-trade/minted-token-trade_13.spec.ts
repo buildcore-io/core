@@ -7,8 +7,8 @@ import {
   TokenTradeOrder,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
-} from '@soonaverse/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -42,7 +42,7 @@ describe('Token minting', () => {
       orders.map((o) => ({ toAddress: o.payload.targetAddress, amount: o.payload.amount })),
     );
 
-    const tradeQuery = soonDb()
+    const tradeQuery = build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {

@@ -10,6 +10,14 @@ export interface SpaceMember extends BaseSubCollection {
   createdOn: Timestamp;
 }
 
+export interface Alias {
+  readonly address: string;
+  readonly aliasId: string;
+  readonly blockId: string;
+  readonly mintedOn: Timestamp;
+  readonly mintedBy: string;
+}
+
 export interface Space extends BaseRecord {
   name?: string;
   about?: string;
@@ -43,4 +51,5 @@ export interface Space extends BaseRecord {
   readonly ipfsMetadata?: string;
   readonly ipfsRoot?: string;
   readonly mediaStatus?: MediaStatus;
+  readonly alias?: Alias;
 }

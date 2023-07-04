@@ -16,7 +16,7 @@ jobs:
           node-version: 18
       - name: Set env vars
         working-directory: packages/functions
-        run: echo "$FUNCTIONS_ENV_VARS" >> .env.preview
+        run: echo "$FUNCTIONS_ENV_VARS" >> .env
         env:
           FUNCTIONS_ENV_VARS: ${{ secrets.FUNCTIONS_ENV_VARS_TEST }}
       - name: Deploy to Firebase
@@ -25,30 +25,12 @@ jobs:
           args: deploy --only functions,firestore:indexes -P soonaverse-test -f
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-  deploy_hosting:
-    runs-on: ubuntu-latest
-    environment: staging
-    defaults:
-      run:
-        working-directory: packages/ui
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install Dependencies
-        run: npx lerna bootstrap --scope=@soonaverse/ui
-      - name: Build
-        run: npm run build
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE_TEST }}'
-          projectId: 'soonaverse-test'
-          channelId: live
-          target: def-host
+
   roll-firestore:
     runs-on: ubuntu-latest
     environment: staging
     timeout-minutes: 360
-    needs: [deploy_functions, deploy_hosting]
+    needs: [deploy_functions]
     defaults:
       run:
         working-directory: packages/functions
@@ -61,8 +43,8 @@ jobs:
           node-version: 18
       - name: Install dependencies
         run: |
-          npx lerna bootstrap --scope=@soonaverse/functions
           npm i -g ts-node
+          cd ../../ && npm run build:functions
       - name: Set env vars
         run: echo "$FUNCTIONS_ENV_VARS" >> .env
         env:

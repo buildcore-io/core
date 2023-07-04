@@ -7,17 +7,17 @@ import {
   ProposalType,
   Space,
   SpaceGuardian,
+  SpaceUpdateRequest,
   SUB_COL,
   TokenStatus,
   Transaction,
   TransactionType,
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
-  VoteTransaction,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get, startCase } from 'lodash';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { cleanupParams } from '../../utils/schema.utils';
@@ -25,8 +25,8 @@ import { hasActiveEditProposal } from '../../utils/space.utils';
 import { assertIsGuardian, getTokenForSpace } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
-export const updateSpaceControl = async (owner: string, params: Record<string, unknown>) => {
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${params.uid}`);
+export const updateSpaceControl = async (owner: string, params: SpaceUpdateRequest) => {
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
   const space = await spaceDocRef.get<Space>();
 
   if (!space) {
@@ -50,7 +50,7 @@ export const updateSpaceControl = async (owner: string, params: Record<string, u
     throw invalidArgument(WenError.ongoing_proposal);
   }
 
-  const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
+  const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
   const guardian = await guardianDocRef.get<Member>();
   const guardians = await spaceDocRef.collection(SUB_COL.GUARDIANS).get<SpaceGuardian>();
 
@@ -59,16 +59,16 @@ export const updateSpaceControl = async (owner: string, params: Record<string, u
     guardian!,
     space.uid,
     guardians.length,
-    cleanupParams(params) as Space,
+    cleanupParams({ ...params }) as Space,
   );
 
-  const voteTransaction = <Transaction>{
+  const voteTransaction: Transaction = {
     type: TransactionType.VOTE,
     uid: getRandomEthAddress(),
     member: owner,
     space: params.uid,
     network: DEFAULT_NETWORK,
-    payload: <VoteTransaction>{
+    payload: {
       proposalId: proposal.uid,
       weight: 1,
       values: [1],
@@ -77,7 +77,7 @@ export const updateSpaceControl = async (owner: string, params: Record<string, u
     linkedTransactions: [],
   };
 
-  const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
   const memberPromisses = guardians.map((guardian) => {
     proposalDocRef
       .collection(SUB_COL.MEMBERS)
@@ -94,11 +94,11 @@ export const updateSpaceControl = async (owner: string, params: Record<string, u
   });
   await Promise.all(memberPromisses);
 
-  await soonDb().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`).create(voteTransaction);
+  await build5Db().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`).create(voteTransaction);
 
   await proposalDocRef.create(proposal);
 
-  return await proposalDocRef.get<Proposal>();
+  return (await proposalDocRef.get<Proposal>())!;
 };
 
 const createUpdateSpaceProposal = (
@@ -126,7 +126,7 @@ const createUpdateSpaceProposal = (
       startDate: dateToTimestamp(dayjs().toDate()),
       endDate: dateToTimestamp(dayjs().add(1, 'w').toDate()),
       guardiansOnly: true,
-      spaceUpdateData,
+      spaceUpdateData: { ...spaceUpdateData },
     },
     questions: [
       {

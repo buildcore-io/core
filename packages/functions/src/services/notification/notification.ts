@@ -1,5 +1,4 @@
-import { Member, Nft, Notification, NotificationType, Transaction } from '@soonaverse/interfaces';
-import { OrderPayBillCreditTransaction } from '../../utils/common.utils';
+import { Member, Nft, Notification, NotificationType, Transaction } from '@build-5/interfaces';
 import { serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -10,7 +9,7 @@ export class NotificationService {
       type: NotificationType.NEW_BID,
       member: nft.owner,
       params: {
-        amount: (<OrderPayBillCreditTransaction>tran.payload).amount,
+        amount: tran.payload.amount,
         member: {
           name: member.name || member.uid,
         },
@@ -29,7 +28,7 @@ export class NotificationService {
       type: NotificationType.WIN_BID,
       member: member.uid,
       params: {
-        amount: (<OrderPayBillCreditTransaction>tran.payload).amount,
+        amount: tran.payload.amount,
         member: {
           name: member.name || member.uid,
         },
@@ -48,7 +47,7 @@ export class NotificationService {
       type: NotificationType.LOST_BID,
       member: member.uid,
       params: {
-        amount: (<OrderPayBillCreditTransaction>tran.payload).amount,
+        amount: tran.payload.amount,
         member: {
           name: member.name || member.uid,
         },

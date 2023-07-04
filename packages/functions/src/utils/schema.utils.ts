@@ -1,4 +1,4 @@
-import { WenError } from '@soonaverse/interfaces';
+import { WenError } from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
 import Joi, { AnySchema, ValidationResult } from 'joi';
 import { head } from 'lodash';
@@ -18,19 +18,21 @@ const assertValidation = (r: ValidationResult) => {
   }
 };
 
-export const assertValidationAsync = async (
-  schema: AnySchema,
+export const assertValidationAsync = async <T>(
+  schema: AnySchema<T>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params: any,
   options?: Joi.ValidationOptions,
 ) => {
-  assertValidation(schema.validate(params, options));
+  const validationResult = schema.validate(params, options);
+  assertValidation(validationResult);
   for (const [key, value] of Object.entries(params)) {
     if (typeof value !== 'string' || !isStorageUrl(value) || (await fileExists(value))) {
       continue;
     }
     throw invalidArgument(WenError.invalid_params, `${key} is an invalid url`);
   }
+  return validationResult.value!;
 };
 
 export const cleanupParams = (obj: Record<string, unknown>) =>

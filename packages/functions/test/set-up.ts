@@ -1,8 +1,8 @@
-import { Network } from '@soonaverse/interfaces';
+import { Network } from '@build-5/interfaces';
 import dotenv from 'dotenv';
 import express from 'express';
-import * as functions from 'firebase-functions';
 import test from 'firebase-functions-test';
+import * as functions from 'firebase-functions/v2';
 import { isEmpty } from 'lodash';
 import { IotaWallet } from '../src/services/wallet/IotaWalletService';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';

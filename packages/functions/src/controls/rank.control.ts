@@ -1,18 +1,18 @@
-import { COL, Collection, Rank, SUB_COL, Token, WenError } from '@soonaverse/interfaces';
+import { COL, Collection, Rank, RankRequest, SUB_COL, Token, WenError } from '@build-5/interfaces';
 import { set } from 'lodash';
-import { soonDb } from '../firebase/firestore/soondb';
+import { build5Db } from '../firebase/firestore/build5Db';
 import { hasStakedSoonTokens } from '../services/stake.service';
 import { getRankingSpace } from '../utils/config.utils';
 import { invalidArgument } from '../utils/error.utils';
 import { assertIsGuardian } from '../utils/token.utils';
 
-export const rankControl = async (owner: string, params: Record<string, unknown>) => {
+export const rankControl = async (owner: string, params: RankRequest) => {
   const hasStakedSoons = await hasStakedSoonTokens(owner);
   if (!hasStakedSoons) {
     throw invalidArgument(WenError.no_staked_soon);
   }
 
-  const parentDocRef = soonDb().doc(`${params.collection}/${params.uid}`);
+  const parentDocRef = build5Db().doc(`${params.collection}/${params.uid}`);
   const parent = await parentDocRef.get();
   if (!parent) {
     const errorMsg =
@@ -22,10 +22,10 @@ export const rankControl = async (owner: string, params: Record<string, unknown>
     throw invalidArgument(errorMsg);
   }
 
-  const rankingSpaceId = getRankingSpace(params.collection as COL);
+  const rankingSpaceId = getRankingSpace(params.collection);
   await assertIsGuardian(rankingSpaceId, owner);
 
-  await soonDb().runTransaction(async (transaction) => {
+  await build5Db().runTransaction(async (transaction) => {
     const parent = (await transaction.get<Collection | Token>(parentDocRef))!;
     const rankDocRef = parentDocRef.collection(SUB_COL.RANKS).doc(owner);
     const prevRank = await transaction.get<Rank | undefined>(rankDocRef);
@@ -43,7 +43,7 @@ export const rankControl = async (owner: string, params: Record<string, unknown>
 
     const ranks = {
       count: (parent.rankCount || 0) + (prevRank ? 0 : 1),
-      sum: (parent.rankSum || 0) + (-(prevRank?.rank || 0) + (params.rank as number)),
+      sum: (parent.rankSum || 0) + (-(prevRank?.rank || 0) + params.rank),
       avg: 0,
     };
     set(ranks, 'avg', Number((ranks.sum / ranks.count).toFixed(3)));
@@ -54,9 +54,10 @@ export const rankControl = async (owner: string, params: Record<string, unknown>
       rankAvg: ranks.avg,
     });
 
-    const statsDocRef = parentDocRef.collection(SUB_COL.STATS).doc(params.uid as string);
+    const statsDocRef = parentDocRef.collection(SUB_COL.STATS).doc(params.uid);
     transaction.set(statsDocRef, { ranks }, true);
   });
 
-  return await parentDocRef.collection(SUB_COL.RANKS).doc(owner).get<Rank>();
+  const rankDocRef = parentDocRef.collection(SUB_COL.RANKS).doc(owner);
+  return (await rankDocRef.get<Rank>())!;
 };

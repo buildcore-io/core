@@ -1,14 +1,7 @@
 import {
-  ADDRESS_UNLOCK_CONDITION_TYPE,
-  EXPIRATION_UNLOCK_CONDITION_TYPE,
-  IExpirationUnlockCondition,
-  STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
-  TIMELOCK_UNLOCK_CONDITION_TYPE,
-  UnlockConditionTypes,
-} from '@iota/iota.js-next';
-import {
   COL,
   DEFAULT_NETWORK,
+  IgnoreWalletReason,
   MIN_AMOUNT_TO_TRANSFER,
   MilestoneTransaction,
   MilestoneTransactionEntry,
@@ -18,19 +11,23 @@ import {
   Timestamp,
   Token,
   Transaction,
-  TransactionCreditType,
-  TransactionIgnoreWalletReason,
-  TransactionOrder,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
-  TransactionUnlockType,
   TransactionValidationType,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
+import {
+  ADDRESS_UNLOCK_CONDITION_TYPE,
+  EXPIRATION_UNLOCK_CONDITION_TYPE,
+  IExpirationUnlockCondition,
+  STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
+  TIMELOCK_UNLOCK_CONDITION_TYPE,
+  UnlockConditionTypes,
+} from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions/v2';
 import { get, isEmpty, set } from 'lodash';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { IDocument, ITransaction } from '../../firebase/firestore/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
 import { SmrMilestoneTransactionAdapter } from '../../triggers/milestone-transactions-triggers/SmrMilestoneTransactionAdapter';
 import { getOutputMetadata } from '../../utils/basic-output.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
@@ -81,7 +78,7 @@ export class TransactionService {
     if (order.type !== TransactionType.ORDER) {
       throw new Error('Order was not provided as transaction.');
     }
-    const data: Transaction = <Transaction>{
+    const data: Transaction = {
       type: TransactionType.PAYMENT,
       uid: getRandomEthAddress(),
       member: order.member || '',
@@ -92,14 +89,14 @@ export class TransactionService {
         amount: tran.to.amount,
         nativeTokens: (tran.to.nativeTokens || []).map((nt) => ({
           ...nt,
-          amount: Number(nt.amount),
+          amount: Number(nt.amount).toString(),
         })),
         sourceAddress: tran.from.address,
         targetAddress: order.payload.targetAddress,
         reconciled: true,
         void: false,
         sourceTransaction: [order.uid],
-        chainReference: tran.msgId,
+        chainReference: tran.msgId || null,
         nft: order.payload.nft || null,
         collection: order.payload.collection || null,
         invalidPayment,
@@ -107,7 +104,7 @@ export class TransactionService {
     };
 
     if (order.payload.token) {
-      const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${order.payload.token}`);
+      const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${order.payload.token}`);
       const token = await tokenDocRef.get<Token>();
       if (token) {
         set(data, 'payload.token', token.uid);
@@ -115,11 +112,11 @@ export class TransactionService {
       }
     }
     this.updates.push({
-      ref: soonDb().doc(`${COL.TRANSACTION}/${data.uid}`),
+      ref: build5Db().doc(`${COL.TRANSACTION}/${data.uid}`),
       data,
       action: 'set',
     });
-    if (order.payload.type !== TransactionOrderType.TANGLE_REQUEST) {
+    if (order.payload.type !== TransactionPayloadType.TANGLE_REQUEST) {
       this.linkedTransactions.push(data.uid);
     }
     return data;
@@ -131,9 +128,9 @@ export class TransactionService {
     }
     const transOut: Transaction[] = [];
     let royaltyAmt = order.payload.royaltiesSpaceAddress
-      ? Math.ceil(order.payload.amount * (order.payload.royaltiesFee || 0))
+      ? Math.ceil(order.payload.amount! * (order.payload.royaltiesFee || 0))
       : 0;
-    let finalAmt = payment.payload.amount - royaltyAmt;
+    let finalAmt = payment.payload.amount! - royaltyAmt;
 
     if (royaltyAmt < MIN_AMOUNT_TO_TRANSFER) {
       finalAmt = finalAmt + royaltyAmt;
@@ -166,7 +163,7 @@ export class TransactionService {
         },
       };
       this.updates.push({
-        ref: soonDb().doc(`${COL.TRANSACTION}/${data.uid}`),
+        ref: build5Db().doc(`${COL.TRANSACTION}/${data.uid}`),
         data,
         action: 'set',
       });
@@ -198,7 +195,7 @@ export class TransactionService {
         },
       };
       this.updates.push({
-        ref: soonDb().doc(`${COL.TRANSACTION}/${data.uid}`),
+        ref: build5Db().doc(`${COL.TRANSACTION}/${data.uid}`),
         data,
         action: 'set',
       });
@@ -210,18 +207,18 @@ export class TransactionService {
   }
 
   public async createCredit(
-    type: TransactionCreditType,
+    type: TransactionPayloadType,
     payment: Transaction,
     tran: TransactionMatch,
     createdOn = serverTime(),
     setLink = true,
-    ignoreWalletReason = TransactionIgnoreWalletReason.NONE,
+    ignoreWalletReason = IgnoreWalletReason.NONE,
     storageReturn?: StorageReturn,
     customPayload?: { [key: string]: unknown },
     response: { [key: string]: unknown } = {},
   ): Promise<Transaction | undefined> {
-    if (payment.payload.amount > 0) {
-      const data = <Transaction>{
+    if (payment.payload.amount! > 0) {
+      const data: Transaction = {
         type: TransactionType.CREDIT,
         uid: getRandomEthAddress(),
         space: payment.space,
@@ -233,7 +230,7 @@ export class TransactionService {
           amount: payment.payload.amount,
           nativeTokens: (tran.to.nativeTokens || []).map((nt) => ({
             ...nt,
-            amount: Number(nt.amount),
+            amount: Number(nt.amount).toString(),
           })),
           sourceAddress: tran.to.address,
           targetAddress: tran.from.address,
@@ -254,7 +251,7 @@ export class TransactionService {
       }
 
       if (payment.payload.token) {
-        const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${payment.payload.token}`);
+        const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${payment.payload.token}`);
         const token = await tokenDocRef.get<Token>();
         if (token) {
           set(data, 'payload.token', token.uid);
@@ -262,7 +259,7 @@ export class TransactionService {
         }
       }
       this.updates.push({
-        ref: soonDb().doc(`${COL.TRANSACTION}/${data.uid}`),
+        ref: build5Db().doc(`${COL.TRANSACTION}/${data.uid}`),
         data: data,
         action: 'set',
       });
@@ -278,7 +275,7 @@ export class TransactionService {
     response: Record<string, unknown>,
     outputToConsume: string,
   ) {
-    if (payment.payload.amount > 0) {
+    if (payment.payload.amount! > 0) {
       const data: Transaction = {
         type: TransactionType.CREDIT_TANGLE_REQUEST,
         uid: getRandomEthAddress(),
@@ -289,7 +286,7 @@ export class TransactionService {
           amount: payment.payload.amount,
           nativeTokens: (tran.to.nativeTokens || []).map((nt) => ({
             ...nt,
-            amount: Number(nt.amount),
+            amount: Number(nt.amount).toString(),
           })),
           sourceAddress: tran.to.address,
           targetAddress: tran.from.address,
@@ -302,7 +299,7 @@ export class TransactionService {
         linkedTransactions: [],
       };
       this.updates.push({
-        ref: soonDb().doc(`${COL.TRANSACTION}/${data.uid}`),
+        ref: build5Db().doc(`${COL.TRANSACTION}/${data.uid}`),
         data: data,
         action: 'set',
       });
@@ -316,7 +313,7 @@ export class TransactionService {
     tran: TransactionMatch,
     error?: Record<string, unknown>,
     customErrorParams: Record<string, unknown> = {},
-    ignoreWalletReason = TransactionIgnoreWalletReason.NONE,
+    ignoreWalletReason = IgnoreWalletReason.NONE,
   ) {
     const response = error
       ? { status: 'error', code: error.code || '', message: error.key || '', ...customErrorParams }
@@ -345,7 +342,7 @@ export class TransactionService {
       ignoreWalletReason,
     };
     this.updates.push({
-      ref: soonDb().doc(`${COL.TRANSACTION}/${transaction.uid}`),
+      ref: build5Db().doc(`${COL.TRANSACTION}/${transaction.uid}`),
       data: transaction,
       action: 'set',
     });
@@ -355,7 +352,7 @@ export class TransactionService {
 
   public markAsReconciled = (transaction: Transaction, chainRef: string) =>
     this.updates.push({
-      ref: soonDb().doc(`${COL.TRANSACTION}/${transaction.uid}`),
+      ref: build5Db().doc(`${COL.TRANSACTION}/${transaction.uid}`),
       data: {
         'payload.reconciled': true,
         'payload.chainReference': chainRef,
@@ -365,12 +362,12 @@ export class TransactionService {
 
   private getFromAddress = async (
     tran: MilestoneTransaction,
-    order: TransactionOrder,
-    soonTransaction?: Transaction,
+    order: Transaction,
+    build5Transaction?: Transaction,
   ) => {
-    if (soonTransaction?.type === TransactionType.UNLOCK) {
-      const doc = (await soonDb()
-        .doc(soonTransaction.payload.milestoneTransactionPath)
+    if (build5Transaction?.type === TransactionType.UNLOCK) {
+      const doc = (await build5Db()
+        .doc(build5Transaction.payload?.milestoneTransactionPath!)
         .get<Record<string, unknown>>())!;
       const adapter = new SmrMilestoneTransactionAdapter(order.network!);
       const milestoneTransaction = await adapter.toMilestoneTransaction(doc);
@@ -382,8 +379,8 @@ export class TransactionService {
   public async isMatch(
     tran: MilestoneTransaction,
     tranOutput: MilestoneTransactionEntry,
-    order: TransactionOrder,
-    soonTransaction?: Transaction,
+    order: Transaction,
+    build5Transaction?: Transaction,
   ): Promise<TransactionMatch | undefined> {
     const unsupportedUnlockCondition = this.getUnsupportedUnlockCondition(
       tranOutput.unlockConditions,
@@ -395,13 +392,13 @@ export class TransactionService {
     const fromAddress: MilestoneTransactionEntry = await this.getFromAddress(
       tran,
       order,
-      soonTransaction,
+      build5Transaction,
     );
     if (fromAddress && tran.outputs) {
       for (const o of tran.outputs) {
         // Ignore output that contains input address. Remaining balance.
         if (
-          soonTransaction?.type !== TransactionType.UNLOCK &&
+          build5Transaction?.type !== TransactionType.UNLOCK &&
           tran.inputs.find((i) => {
             return o.address === i.address;
           })
@@ -427,14 +424,14 @@ export class TransactionService {
 
   public async processAsInvalid(
     tran: MilestoneTransaction,
-    order: TransactionOrder,
+    order: Transaction,
     tranOutput: MilestoneTransactionEntry,
-    soonTransaction?: Transaction,
+    build5Transaction?: Transaction,
   ): Promise<void> {
     const fromAddress: MilestoneTransactionEntry = await this.getFromAddress(
       tran,
       order,
-      soonTransaction,
+      build5Transaction,
     );
     if (fromAddress) {
       const match: TransactionMatch = {
@@ -449,7 +446,7 @@ export class TransactionService {
         return;
       }
       await this.createCredit(
-        TransactionCreditType.INVALID_PAYMENT,
+        TransactionPayloadType.INVALID_PAYMENT,
         payment,
         match,
         serverTime(),
@@ -461,31 +458,31 @@ export class TransactionService {
 
   private getIngnoreWalletReason = (
     unlockConditions: UnlockConditionTypes[],
-  ): TransactionIgnoreWalletReason => {
+  ): IgnoreWalletReason => {
     const hasTimelock =
       unlockConditions.find((u) => u.type === TIMELOCK_UNLOCK_CONDITION_TYPE) !== undefined;
     if (hasTimelock) {
-      return TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_TIMELOCK_CONDITION;
+      return IgnoreWalletReason.UNREFUNDABLE_DUE_TIMELOCK_CONDITION;
     }
     const hasStorageDepositLock =
       unlockConditions.find((u) => u.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE) !==
       undefined;
     if (hasStorageDepositLock) {
-      return TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION;
+      return IgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION;
     }
-    return TransactionIgnoreWalletReason.NONE;
+    return IgnoreWalletReason.NONE;
   };
 
   public createUnlockTransaction = async (
-    order: TransactionOrder,
+    order: Transaction,
     tran: MilestoneTransaction,
     tranOutput: MilestoneTransactionEntry,
-    type: TransactionUnlockType,
+    type: TransactionPayloadType,
     outputToConsume = '',
     expiresOn?: Timestamp,
   ) => {
     const network = order.network || DEFAULT_NETWORK;
-    const data = <Transaction>{
+    const data: Transaction = {
       type: TransactionType.UNLOCK,
       uid: getRandomEthAddress(),
       space: order.space || '',
@@ -496,22 +493,25 @@ export class TransactionService {
         amount: tranOutput.amount,
         nativeTokens: (tranOutput.nativeTokens || []).map((nt) => ({
           ...nt,
-          amount: Number(nt.amount),
+          amount: Number(nt.amount).toString(),
         })),
         sourceAddress: tranOutput.address,
-        targetAddress:
-          type === TransactionUnlockType.TANGLE_TRANSFER
-            ? order.payload.targetAddress
-            : tranOutput.address,
+        targetAddress: [
+          TransactionPayloadType.TANGLE_TRANSFER,
+          TransactionPayloadType.UNLOCK_NFT,
+        ].includes(type)
+          ? order.payload.targetAddress
+          : tranOutput.address,
         sourceTransaction: [order.uid],
         expiresOn: expiresOn || dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
         milestoneTransactionPath: `${COL.MILESTONE}_${network}/${tran.milestone}/${SUB_COL.TRANSACTIONS}/${tran.uid}`,
         outputToConsume,
         customMetadata: getOutputMetadata(tranOutput.output),
+        nftId: tranOutput.nftOutput?.nftId || '',
       },
     };
     this.updates.push({
-      ref: soonDb().doc(`${COL.TRANSACTION}/${data.uid}`),
+      ref: build5Db().doc(`${COL.TRANSACTION}/${data.uid}`),
       data,
       action: 'set',
     });

@@ -9,24 +9,21 @@ jobs:
   soon_lib:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    defaults:
-      run:
-        working-directory: packages/lib
     steps:
-      - name: Collect Workflow Telemetry
-        uses: runforesight/foresight-workflow-kit-action@v1
-        if: ${{ always() }}
-        with:
-          api_key: ${{ secrets.FORESIGHT_KEY }}
+      # - name: Collect Workflow Telemetry
+      #   uses: runforesight/foresight-workflow-kit-action@v1
+      #   if: ${{ always() }}
+      #   with:
+      #     api_key: ${{ secrets.FORESIGHT_KEY }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 18
       - name: Install Dependencies
-        run: npx lerna bootstrap --scope=@soonaverse/lib
+        run: npm run build:lib
       - name: Prettier
-        run: npx prettier --check .
+        run: npm run prettier:lib
       - name: Lint
-        run: npm run lint
+        run: cd packages/lib && npm run lint
       - name: Test
-        run: npm run test
+        run: cd packages/lib && npm run test

@@ -1,7 +1,7 @@
-import { COL, MIN_IOTA_AMOUNT, TangleRequestType, Transaction } from '@soonaverse/interfaces';
+import { COL, MIN_IOTA_AMOUNT, TangleRequestType, Transaction } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { approveProposal } from '../../src/runtime/firebase/proposal';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -30,14 +30,14 @@ describe('Create proposal via tangle request', () => {
 
     await helper.walletService.send(
       helper.guardianAddress,
-      helper.tangleOrder.payload.targetAddress,
+      helper.tangleOrder.payload.targetAddress!,
       MIN_IOTA_AMOUNT,
       {
         customMetadata: {
           request: {
             requestType: TangleRequestType.PROPOSAL_VOTE,
             uid: proposalUid,
-            values: [1],
+            value: 1,
             voteWithStakedTokes: true,
           },
         },
@@ -53,11 +53,11 @@ describe('Create proposal via tangle request', () => {
     const credit = snap.find((c) => !isEmpty(c?.payload?.response?.voteTransaction))!;
     expect(credit.payload.amount).toBe(MIN_IOTA_AMOUNT);
 
-    const voteTransactionDocRef = soonDb().doc(
-      `${COL.TRANSACTION}/${credit.payload.response.voteTransaction}`,
+    const voteTransactionDocRef = build5Db().doc(
+      `${COL.TRANSACTION}/${credit.payload.response!.voteTransaction}`,
     );
     const voteTransaction = <Transaction>await voteTransactionDocRef.get();
-    expect(+voteTransaction.payload.weight.toFixed(0)).toBe(150);
+    expect(+voteTransaction.payload.weight!.toFixed(0)).toBe(150);
 
     await helper.assertProposalWeights(150, 150);
     await helper.assertProposalMemberWeightsPerAnser(helper.guardian, 150, 1);

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { COL, Member, Token, TokenStatus, TransactionType, WenError } from '@build-5/interfaces';
 import { addressBalance } from '@iota/iota.js-next';
-import { COL, Member, Token, TokenStatus, TransactionType, WenError } from '@soonaverse/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { getAddress } from '../../src/utils/address.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -28,13 +28,13 @@ describe('Token minting', () => {
     const order = await testEnv.wrap(mintTokenOrder)({});
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, order.payload.amount);
 
-    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${helper.token.uid}`);
+    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${helper.token.uid}`);
     await wait(async () => {
       helper.token = <Token>await tokenDocRef.get();
       return helper.token.status === TokenStatus.MINTED;
     });
 
-    const guardianData = <Member>await soonDb().doc(`${COL.MEMBER}/${helper.guardian.uid}`).get();
+    const guardianData = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.guardian.uid}`).get();
     const guardianAddress = getAddress(guardianData, helper.network);
     await wait(async () => {
       const balance = await addressBalance(helper.walletService.client, guardianAddress);
@@ -54,7 +54,7 @@ describe('Token minting', () => {
 
   it('Should create order, not approved but public', async () => {
     await helper.setup();
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TOKEN}/${helper.token.uid}`)
       .update({ approved: false, public: true });
     mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, {
@@ -67,7 +67,7 @@ describe('Token minting', () => {
 
   it('Should throw, member has no valid address', async () => {
     await helper.setup();
-    await soonDb().doc(`${COL.MEMBER}/${helper.guardian.uid}`).update({ validatedAddress: {} });
+    await build5Db().doc(`${COL.MEMBER}/${helper.guardian.uid}`).update({ validatedAddress: {} });
     mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, {
       token: helper.token.uid,
       network: helper.network,
@@ -89,7 +89,7 @@ describe('Token minting', () => {
 
   it('Should throw, already minted', async () => {
     await helper.setup();
-    await soonDb().doc(`${COL.TOKEN}/${helper.token.uid}`).update({ status: TokenStatus.MINTED });
+    await build5Db().doc(`${COL.TOKEN}/${helper.token.uid}`).update({ status: TokenStatus.MINTED });
     mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, {
       token: helper.token.uid,
       network: helper.network,
@@ -113,13 +113,13 @@ describe('Token minting', () => {
       order2.payload.amount,
     );
 
-    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${helper.token.uid}`);
+    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${helper.token.uid}`);
     await wait(async () => {
       const snap = await tokenDocRef.get<Token>();
       return snap?.status === TokenStatus.MINTED;
     });
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
         .where('member', '==', helper.guardian.uid)

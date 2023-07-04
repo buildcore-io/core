@@ -11,23 +11,26 @@ import {
   SUB_COL,
   Timestamp,
   Token,
+  TokenStakeRewardsRemoveRequest,
   Transaction,
   TransactionType,
-  VoteTransaction,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { uniq } from 'lodash';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
-export const removeStakeRewardControl = async (owner: string, params: Record<string, unknown>) => {
+export const removeStakeRewardControl = async (
+  owner: string,
+  params: TokenStakeRewardsRemoveRequest,
+) => {
   const stakeRewardIds = params.stakeRewardIds as string[];
   const stakeRewardPromises = stakeRewardIds.map(async (stakeId) => {
-    const docRef = soonDb().doc(`${COL.STAKE_REWARD}/${stakeId}`);
+    const docRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeId}`);
     return await docRef.get<StakeReward>();
   });
   const stakeRewards = await Promise.all(stakeRewardPromises);
@@ -47,12 +50,12 @@ export const removeStakeRewardControl = async (owner: string, params: Record<str
     throw invalidArgument(WenError.invalid_params);
   }
 
-  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${tokenIds[0]}`);
+  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${tokenIds[0]}`);
   const token = (await tokenDocRef.get<Token>())!;
 
   await assertIsGuardian(token.space, owner);
 
-  const ongoingProposalSnap = await soonDb()
+  const ongoingProposalSnap = await build5Db()
     .collection(COL.PROPOSAL)
     .where('space', '==', token.space)
     .where('settings.endDate', '>=', serverTime())
@@ -61,9 +64,9 @@ export const removeStakeRewardControl = async (owner: string, params: Record<str
     throw invalidArgument(WenError.ongoing_proposal);
   }
 
-  const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${owner}`);
+  const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
   const guardian = (await guardianDocRef.get<Member>())!;
-  const guardians = await soonDb()
+  const guardians = await build5Db()
     .collection(COL.SPACE)
     .doc(token.space)
     .collection(SUB_COL.GUARDIANS)
@@ -76,13 +79,13 @@ export const removeStakeRewardControl = async (owner: string, params: Record<str
     proposalEndDate,
   );
 
-  const voteTransaction = <Transaction>{
+  const voteTransaction: Transaction = {
     type: TransactionType.VOTE,
     uid: getRandomEthAddress(),
     member: owner,
     space: token.space,
     network: DEFAULT_NETWORK,
-    payload: <VoteTransaction>{
+    payload: {
       proposalId: proposal.uid,
       weight: 1,
       values: [1],
@@ -91,7 +94,7 @@ export const removeStakeRewardControl = async (owner: string, params: Record<str
     linkedTransactions: [],
   };
 
-  const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
   const memberPromisses = guardians.map((guardian) => {
     proposalDocRef
       .collection(SUB_COL.MEMBERS)
@@ -108,11 +111,11 @@ export const removeStakeRewardControl = async (owner: string, params: Record<str
   });
   await Promise.all(memberPromisses);
 
-  await soonDb().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`).create(voteTransaction);
+  await build5Db().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`).create(voteTransaction);
 
   await proposalDocRef.create(proposal);
 
-  return await proposalDocRef.get<Proposal>();
+  return (await proposalDocRef.get<Proposal>())!;
 };
 
 const createUpdateSpaceProposal = (
@@ -128,6 +131,7 @@ const createUpdateSpaceProposal = (
     `${REMOVE_STAKE_REWARDS_THRESHOLD_PERCENTAGE} % must agree for this action to proceed <br /><br />`;
   return <Proposal>{
     createdBy: owner.uid,
+    description: '',
     uid: getRandomEthAddress(),
     name: 'Remove stake rewards',
     additionalInfo: additionalInfo + getDescription(stakeRewards),
@@ -152,6 +156,7 @@ const createUpdateSpaceProposal = (
             additionalInfo: '',
           },
           {
+            uid: getRandomEthAddress(),
             text: 'Yes',
             value: BaseProposalAnswerValue.YES,
             additionalInfo: '',

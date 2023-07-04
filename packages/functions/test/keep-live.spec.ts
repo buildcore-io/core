@@ -1,7 +1,7 @@
-import { COL } from '@soonaverse/interfaces';
+import { COL } from '@build-5/interfaces';
 import EventSource from 'eventsource';
 import { isEmpty } from 'lodash';
-import { soonDb } from '../src/firebase/firestore/soondb';
+import { build5Db } from '../src/firebase/firestore/build5Db';
 import { getRandomEthAddress } from '../src/utils/wallet.utils';
 import { wait } from './controls/common';
 
@@ -10,12 +10,13 @@ describe('Keep alive test', () => {
   it('Should send back data', async () => {
     const col = COL.MEMBER;
     const uid = getRandomEthAddress();
-    const eventSourceUrl = `${baseUrl}/getById?collection=${col}&uid=${uid}&live=true`;
+    const sessionId = getRandomEthAddress();
+    const eventSourceUrl = `${baseUrl}/getById?collection=${col}&uid=${uid}&sessionId=${sessionId}`;
 
     const source = new EventSource(eventSourceUrl);
 
     let data: any = {};
-    const docRef = soonDb().doc(`${col}/${uid}`);
+    const docRef = build5Db().doc(`${col}/${uid}`);
     await docRef.create({ uid, asd: false });
     source.addEventListener('update', (event) => {
       data = JSON.parse(event.data);
@@ -38,29 +39,13 @@ describe('Keep alive test', () => {
     source.close();
   });
 
-  it('Should receive ping request', async () => {
-    const col = COL.MEMBER;
-    const eventSourceUrl = `${baseUrl}/getMany?collection=${col}&live=true`;
-    const source = new EventSource(eventSourceUrl);
-    let instanceId = '';
-
-    source.addEventListener('ping', async (event) => {
-      instanceId = event.data;
-    });
-
-    await wait(async () => {
-      return instanceId !== '';
-    });
-
-    source.close();
-  });
-
   it('Should get many live', async () => {
+    const sessionId = getRandomEthAddress();
     const col = COL.NFT;
     const uids = [getRandomEthAddress(), getRandomEthAddress()];
     const field = getRandomEthAddress();
 
-    const eventSourceUrl = `${baseUrl}/getMany?collection=${col}&live=true&fieldName=field&fieldValue=${field}`;
+    const eventSourceUrl = `${baseUrl}/getMany?collection=${col}&sessionId=${sessionId}&fieldName=field&fieldValue=${field}`;
     const source = new EventSource(eventSourceUrl);
 
     let data: any[] = [];
@@ -72,10 +57,10 @@ describe('Keep alive test', () => {
     let nfts: any = uids.map((uid, index) => ({ hidden: false, uid, index, field }));
 
     for (const nft of nfts) {
-      await soonDb().doc(`${col}/${nft.uid}`).create(nft);
+      await build5Db().doc(`${col}/${nft.uid}`).create(nft);
     }
 
-    nfts = await soonDb().collection(col).where('field', '==', field).get<any>();
+    nfts = await build5Db().collection(col).where('field', '==', field).get<any>();
 
     await wait(async () => {
       return data.length === 2;
@@ -86,7 +71,7 @@ describe('Keep alive test', () => {
 
     data = [];
     for (const nft of nfts) {
-      await soonDb().doc(`${col}/${nft.uid}`).update({ index: -1 });
+      await build5Db().doc(`${col}/${nft.uid}`).update({ index: -1 });
     }
 
     source.close();

@@ -1,12 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  COL,
-  MIN_IOTA_AMOUNT,
-  Network,
-  Transaction,
-  TransactionType,
-} from '@soonaverse/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -51,18 +45,18 @@ describe('Transaction trigger spec', () => {
             void: false,
           },
         };
-        const docRef = soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+        const docRef = build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
         return docRef.create(billPayment);
       });
       await Promise.all(promises);
 
-      const query = soonDb()
+      const query = build5Db()
         .collection(COL.TRANSACTION)
         .where('payload.sourceAddress', '==', sourceAddress.bech32);
       await wait(async () => {
         const snap = await query.get<Transaction>();
         const allConfirmed = snap.reduce(
-          (acc, act) => acc && act?.payload?.walletReference?.confirmed,
+          (acc, act) => acc && (act?.payload?.walletReference?.confirmed || false),
           true,
         );
         return snap.length === count && allConfirmed;

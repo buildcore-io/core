@@ -1,11 +1,11 @@
+import { COL, Member, Network, WEN_FUNC, WenError } from '@build-5/interfaces';
 import { Ed25519, Ed25519 as Ed25519Next } from '@iota/crypto.js-next';
 import { Converter, Converter as ConverterNext } from '@iota/util.js-next';
 import { recoverPersonalSignature } from '@metamask/eth-sig-util';
-import { COL, Member, Network, WEN_FUNC, WenError } from '@soonaverse/interfaces';
 import jwt from 'jsonwebtoken';
 import { get } from 'lodash';
-import { soonDb } from '../src/firebase/firestore/soondb';
-import { generateCustomFirebaseToken } from '../src/runtime/firebase/auth';
+import { build5Db } from '../src/firebase/firestore/build5Db';
+import { generateCustomToken } from '../src/runtime/firebase/auth';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
 import { WalletService } from '../src/services/wallet/wallet';
 import * as config from '../src/utils/config.utils';
@@ -29,10 +29,10 @@ describe('Auth control test', () => {
 
   it('Should create and reuse custom token', async () => {
     mockWalletReturnValue(walletSpy, member, {});
-    const token = await testEnv.wrap(generateCustomFirebaseToken)({});
+    const token = await testEnv.wrap(generateCustomToken)({});
     walletSpy.mockRestore();
 
-    const tokenGeneratedWithToken = await testEnv.wrap(generateCustomFirebaseToken)({
+    const tokenGeneratedWithToken = await testEnv.wrap(generateCustomToken)({
       address: member,
       customToken: token,
       body: {},
@@ -46,7 +46,7 @@ describe('Auth control test', () => {
 
   it('Should throw, custom token for func expired', async () => {
     mockWalletReturnValue(walletSpy, member, {});
-    const token = await testEnv.wrap(generateCustomFirebaseToken)({});
+    const token = await testEnv.wrap(generateCustomToken)({});
     walletSpy.mockRestore();
 
     configSpy = jest.spyOn(config, 'getCustomTokenLifetime');
@@ -54,7 +54,7 @@ describe('Auth control test', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 2000));
     await expectThrow(
-      testEnv.wrap(generateCustomFirebaseToken)({
+      testEnv.wrap(generateCustomToken)({
         address: member,
         customToken: token,
         body: {},
@@ -72,7 +72,7 @@ describe('Pub key test', () => {
     const address = await wallet.getNewIotaAddressDetails();
 
     const nonce = getRandomNonce();
-    const userDocRef = soonDb().doc(`${COL.MEMBER}/${address.bech32}`);
+    const userDocRef = build5Db().doc(`${COL.MEMBER}/${address.bech32}`);
     await userDocRef.create({ uid: address.bech32, nonce });
 
     const signature = Ed25519Next.sign(
@@ -104,7 +104,7 @@ describe('Pub key test', () => {
       const address = await wallet.getNewIotaAddressDetails();
 
       const nonce = getRandomNonce();
-      const userDocRef = soonDb().doc(`${COL.MEMBER}/${address.bech32}`);
+      const userDocRef = build5Db().doc(`${COL.MEMBER}/${address.bech32}`);
       await userDocRef.create({ uid: address.bech32, nonce });
 
       const signature = Ed25519.sign(
@@ -136,7 +136,7 @@ describe('Pub key test', () => {
     const address = await wallet.getNewIotaAddressDetails();
 
     const nonce = getRandomNonce();
-    const userDocRef = soonDb().doc(`${COL.MEMBER}/${address.bech32}`);
+    const userDocRef = build5Db().doc(`${COL.MEMBER}/${address.bech32}`);
     await userDocRef.create({ uid: address.bech32, nonce });
 
     const signature = Ed25519Next.sign(
@@ -170,7 +170,7 @@ describe('Pub key test', () => {
     const address = await wallet.getNewIotaAddressDetails();
 
     const nonce = getRandomNonce();
-    const userDocRef = soonDb().doc(`${COL.MEMBER}/${address.bech32}`);
+    const userDocRef = build5Db().doc(`${COL.MEMBER}/${address.bech32}`);
     await userDocRef.create({ uid: address.bech32, nonce });
 
     const signature = Ed25519Next.sign(
@@ -200,7 +200,7 @@ describe('Pub key test', () => {
     const address = wallet.getRandomEthAddress();
 
     const nonce = getRandomNonce();
-    const userDocRef = soonDb().doc(`${COL.MEMBER}/${address}`);
+    const userDocRef = build5Db().doc(`${COL.MEMBER}/${address}`);
     await userDocRef.create({ uid: address, nonce });
 
     const recoverPersonalSignatureMock = recoverPersonalSignature as jest.Mock;
@@ -225,7 +225,7 @@ describe('Pub key test', () => {
     const address = wallet.getRandomEthAddress();
 
     const nonce = getRandomNonce();
-    const userDocRef = soonDb().doc(`${COL.MEMBER}/${address}`);
+    const userDocRef = build5Db().doc(`${COL.MEMBER}/${address}`);
     await userDocRef.create({ uid: address, nonce });
 
     const request = {

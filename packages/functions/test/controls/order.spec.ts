@@ -1,7 +1,7 @@
 import {
   Access,
-  Categories,
   COL,
+  Categories,
   Collection,
   CollectionType,
   MIN_IOTA_AMOUNT,
@@ -9,11 +9,10 @@ import {
   NftAccess,
   Space,
   Transaction,
-  TransactionAwardType,
-  TransactionOrder,
+  TransactionPayloadType,
   TransactionType,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import {
   createNft,
@@ -24,7 +23,7 @@ import {
   approveCollection,
   createCollection,
 } from '../../../functions/src/runtime/firebase/collection/index';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import {
@@ -39,7 +38,7 @@ import {
   wait,
 } from './common';
 
-const db = soonDb();
+const db = build5Db();
 
 let walletSpy: any;
 
@@ -150,7 +149,7 @@ describe('Ordering flows', () => {
         dummyCollection(space, CollectionType.CLASSIC, 0.5, price),
       );
       if (noRoyaltySpace) {
-        await soonDb()
+        await build5Db()
           .doc(`${COL.COLLECTION}/${collection.uid}`)
           .update({ royaltiesSpace: '', royaltiesFee: 0 });
       }
@@ -183,7 +182,7 @@ describe('Ordering flows', () => {
       expect(collection.lastTradedOn).toBeDefined();
       expect(collection.totalTrades).toBe(1);
 
-      const billPayments = await soonDb()
+      const billPayments = await build5Db()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
         .where('payload.nft', '==', nft.uid)
@@ -285,7 +284,7 @@ describe('Ordering flows', () => {
       WenError.no_more_nft_available_for_sale.key,
     );
 
-    const placeholderNftDocRef = soonDb().doc(`${COL.NFT}/${collection.placeholderNft}`);
+    const placeholderNftDocRef = build5Db().doc(`${COL.NFT}/${collection.placeholderNft}`);
     await wait(async () => {
       const placeholderNft = <Nft>await placeholderNftDocRef.get();
       return placeholderNft.hidden || false;
@@ -340,7 +339,7 @@ describe('Ordering flows', () => {
         await createNftFunc(member, dummyNft(collection, price));
       }
 
-      const orders: TransactionOrder[] = [];
+      const orders: Transaction[] = [];
       for (let i = 0; i < batchSize; i++) {
         orders.push(await submitOrderFunc(members[i], { collection: collection.uid }));
       }
@@ -497,9 +496,9 @@ describe('Ordering flows', () => {
       member,
       type: TransactionType.AWARD,
       uid: wallet.getRandomEthAddress(),
-      payload: { type: TransactionAwardType.BADGE, award: awards[0] },
+      payload: { type: TransactionPayloadType.BADGE, award: awards[0] },
     };
-    await soonDb().doc(`${COL.TRANSACTION}/${badge.uid}`).create(badge);
+    await build5Db().doc(`${COL.TRANSACTION}/${badge.uid}`).create(badge);
     await expectThrow(
       submitOrderFunc(member, { collection: collection.uid, nft: nft.uid }),
       WenError.you_dont_have_required_badge.key,
@@ -509,9 +508,9 @@ describe('Ordering flows', () => {
       member,
       type: TransactionType.AWARD,
       uid: wallet.getRandomEthAddress(),
-      payload: { type: TransactionAwardType.BADGE, award: awards[1] },
+      payload: { type: TransactionPayloadType.BADGE, award: awards[1] },
     };
-    await soonDb().doc(`${COL.TRANSACTION}/${badge.uid}`).create(badge);
+    await build5Db().doc(`${COL.TRANSACTION}/${badge.uid}`).create(badge);
     const order = await submitOrderFunc(member, { collection: collection.uid, nft: nft.uid });
     expect(order).toBeDefined();
     expect(order.payload.restrictions.collection).toEqual({

@@ -1,4 +1,4 @@
-import { COL, WEN_FUNC, WEN_FUNC_TRIGGER } from '@soonaverse/interfaces';
+import { COL, WEN_FUNC, WEN_FUNC_TRIGGER } from '@build-5/interfaces';
 import { isProdEnv } from './utils/config.utils';
 export const lowCold = 0;
 export const lowWarm = isProdEnv() ? 1 : lowCold;
@@ -41,7 +41,7 @@ export function scale(func: WEN_FUNC | WEN_FUNC_TRIGGER): number {
   scaleSettings[WEN_FUNC.updateCollection] = lowWarm;
   scaleSettings[WEN_FUNC.approveCollection] = lowCold;
   scaleSettings[WEN_FUNC.rejectCollection] = lowCold;
-  scaleSettings[WEN_FUNC_TRIGGER.collectionWrite] = medium;
+  scaleSettings[WEN_FUNC_TRIGGER.collectionWrite] = lowWarm;
 
   scaleSettings[WEN_FUNC.createNft] = lowCold;
   scaleSettings[WEN_FUNC.setForSaleNft] = lowWarm;
@@ -52,14 +52,14 @@ export function scale(func: WEN_FUNC | WEN_FUNC_TRIGGER): number {
   scaleSettings[WEN_FUNC.validateAddress] = medium;
 
   scaleSettings[WEN_FUNC.createToken] = lowCold;
-  scaleSettings[WEN_FUNC_TRIGGER.onTokenStatusUpdate] = important;
-  scaleSettings[WEN_FUNC_TRIGGER.onTokenTradeOrderWrite] = important;
-  scaleSettings[WEN_FUNC_TRIGGER.onTokenPurchaseCreated] = important;
+  scaleSettings[WEN_FUNC_TRIGGER.onTokenStatusUpdate] = medium;
+  scaleSettings[WEN_FUNC_TRIGGER.onTokenTradeOrderWrite] = medium;
+  scaleSettings[WEN_FUNC_TRIGGER.onTokenPurchaseCreated] = medium;
 
-  scaleSettings[WEN_FUNC_TRIGGER.milestoneTransactionWrite] = superPump; // 20
-  scaleSettings[WEN_FUNC_TRIGGER.nftWrite] = pump;
+  scaleSettings[WEN_FUNC_TRIGGER.milestoneTransactionWrite] = important;
+  scaleSettings[WEN_FUNC_TRIGGER.nftWrite] = important;
   scaleSettings[WEN_FUNC_TRIGGER.transactionWrite] = superPump;
-  scaleSettings[WEN_FUNC_TRIGGER.mnemonicWrite] = superPump;
+  scaleSettings[WEN_FUNC_TRIGGER.mnemonicWrite] = pump;
   scaleSettings[WEN_FUNC.mintCollection] = lowCold;
 
   scaleSettings[WEN_FUNC_TRIGGER.algolia] = important;
@@ -70,13 +70,13 @@ export function scale(func: WEN_FUNC | WEN_FUNC_TRIGGER): number {
 
 export function scaleAlgolia(col: COL): number {
   const scaleSettings = {} as { [key: string]: number };
-  scaleSettings[COL.SPACE] = medium;
-  scaleSettings[COL.TOKEN] = medium;
-  scaleSettings[COL.AWARD] = medium;
-  scaleSettings[COL.NFT] = important;
-  scaleSettings[COL.COLLECTION] = pump;
-  scaleSettings[COL.MEMBER] = important;
-  scaleSettings[COL.PROPOSAL] = medium;
+  scaleSettings[COL.SPACE] = lowWarm;
+  scaleSettings[COL.TOKEN] = lowWarm;
+  scaleSettings[COL.AWARD] = lowWarm;
+  scaleSettings[COL.NFT] = medium;
+  scaleSettings[COL.COLLECTION] = medium;
+  scaleSettings[COL.MEMBER] = medium;
+  scaleSettings[COL.PROPOSAL] = lowWarm;
 
   return isProdEnv() ? scaleSettings[col] || lowWarm : 0;
 }

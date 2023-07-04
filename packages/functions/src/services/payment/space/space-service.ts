@@ -1,23 +1,23 @@
 import {
+  COL,
+  Collection,
+  Network,
+  SUB_COL,
+  Space,
+  SpaceMember,
+  Transaction,
+  TransactionPayloadType,
+} from '@build-5/interfaces';
+import {
   GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE,
   IAliasOutput,
   IGovernorAddressUnlockCondition,
   IIssuerFeature,
-  IndexerPluginClient,
   INftOutput,
   ISSUER_FEATURE_TYPE,
+  IndexerPluginClient,
 } from '@iota/iota.js-next';
-import {
-  COL,
-  Collection,
-  Network,
-  Space,
-  SpaceMember,
-  SUB_COL,
-  TransactionCreditType,
-  TransactionOrder,
-} from '@soonaverse/interfaces';
-import { soonDb } from '../../../firebase/firestore/soondb';
+import { build5Db } from '../../../firebase/firestore/build5Db';
 import { Bech32AddressHelper } from '../../../utils/bech32-address.helper';
 import { serverTime } from '../../../utils/dateTime.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';
@@ -27,17 +27,21 @@ import { TransactionMatch, TransactionService } from '../transaction-service';
 export class SpaceService {
   constructor(readonly transactionService: TransactionService) {}
 
-  public handleSpaceClaim = async (order: TransactionOrder, match: TransactionMatch) => {
+  public handleSpaceClaim = async (order: Transaction, match: TransactionMatch) => {
     const payment = await this.transactionService.createPayment(order, match);
-    await this.transactionService.createCredit(TransactionCreditType.SPACE_CALIMED, payment, match);
+    await this.transactionService.createCredit(
+      TransactionPayloadType.SPACE_CALIMED,
+      payment,
+      match,
+    );
 
-    const spaceDocRef = soonDb().doc(`${COL.SPACE}/${order.space}`);
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${order.space}`);
     const space = <Space>await this.transactionService.get(spaceDocRef);
     if (!space.collectionId || space.claimed) {
       return;
     }
 
-    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${space.collectionId}`);
+    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${space.collectionId}`);
     const collection = <Collection>await collectionDocRef.get();
 
     const senderIsIssuer = await senderIsCollectionIssuer(
@@ -72,11 +76,11 @@ export class SpaceService {
 
     this.transactionService.push({
       ref: spaceDocRef,
-      data: { totalMembers: soonDb().inc(1), totalGuardians: soonDb().inc(1), claimed: true },
+      data: { totalMembers: build5Db().inc(1), totalGuardians: build5Db().inc(1), claimed: true },
       action: 'update',
     });
 
-    const memberDocRef = soonDb().doc(`${COL.MEMBER}/${order.member}`);
+    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${order.member}`);
     this.transactionService.push({
       ref: memberDocRef,
       data: { spaces: { [space.uid]: { uid: space.uid, isMember: true } } },

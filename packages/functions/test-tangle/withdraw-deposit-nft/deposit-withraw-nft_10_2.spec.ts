@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, Transaction, TransactionType } from '@soonaverse/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { COL, Transaction, TransactionType } from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { depositNft } from '../../src/runtime/firebase/nft';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -26,7 +26,7 @@ describe('Collection minting', () => {
     const depositOrder = await testEnv.wrap(depositNft)({});
     await helper.sendNftToAddress(helper.guardianAddress!, depositOrder.payload.targetAddress);
 
-    const query = soonDb()
+    const query = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.guardian)
       .where('type', '==', TransactionType.CREDIT_NFT);
@@ -36,8 +36,8 @@ describe('Collection minting', () => {
     });
     const snap = await query.get();
     const credit = <Transaction>snap[0];
-    expect(credit.payload.response.code).toBe(2118);
-    expect(credit.payload.response.message).toBe('Maximum media size is 100 MB');
-    await helper.isInvalidPayment(credit.payload.sourceTransaction[0]);
+    expect(credit.payload.response!.code).toBe(2118);
+    expect(credit.payload.response!.message).toBe('Maximum media size is 100 MB');
+    await helper.isInvalidPayment(credit.payload.sourceTransaction![0]);
   });
 });

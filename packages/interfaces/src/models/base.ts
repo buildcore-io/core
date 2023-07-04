@@ -2,16 +2,28 @@ import { UnsoldMintingOptions } from './collection';
 import { NftAccess } from './nft';
 import { Network } from './transaction';
 
-export interface Timestamp {
-  now(): Timestamp;
-  fromDate(date: Date): Timestamp;
-  fromMillis(milliseconds: number): Timestamp;
-  readonly seconds: number;
-  readonly nanoseconds: number;
-  toDate(): Date;
-  toMillis(): number;
-  isEqual(other: Timestamp): boolean;
-  valueOf(): string;
+export class Timestamp {
+  constructor(public readonly seconds: number, public readonly nanoseconds: number) {}
+
+  public static now = () => this.fromMillis(Date.now());
+
+  public static fromDate = (date: Date) => this.fromMillis(date.getTime());
+
+  public static fromMillis = (milliseconds: number) => {
+    const seconds = Math.floor(milliseconds / 1000);
+    const nanoseconds = Math.floor((milliseconds / 1000 - seconds) * 1e9);
+    return new Timestamp(seconds, nanoseconds);
+  };
+
+  public toDate = () => {
+    const milliseconds = this.toMillis();
+    return new Date(milliseconds);
+  };
+
+  public toMillis = () => {
+    const seconds = this.seconds + this.nanoseconds / 1e9;
+    return Math.floor(seconds * 1000);
+  };
 }
 
 export interface WenRequest {

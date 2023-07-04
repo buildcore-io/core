@@ -3,7 +3,7 @@ import { Network } from './transaction';
 
 export interface AwardParticipant extends BaseSubCollection {
   uid: string;
-  comment?: string;
+  comment?: string | null;
   completed: boolean;
   createdOn: Timestamp;
   count: number;

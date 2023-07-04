@@ -10,23 +10,23 @@ import {
   TokenTradeOrderStatus,
   TokenTradeOrderType,
   Transaction,
-  TransactionCreditType,
+  TransactionPayloadType,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import bigDecimal from 'js-big-decimal';
+import { build5Db } from '../firebase/firestore/build5Db';
 import { ITransaction } from '../firebase/firestore/interfaces';
-import { soonDb } from '../firebase/firestore/soondb';
 import { getAddress } from './address.utils';
 import { getRandomEthAddress } from './wallet.utils';
 
 export const creditBuyer = async (transaction: ITransaction, buy: TokenTradeOrder) => {
-  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${buy.owner}`);
+  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${buy.owner}`);
   const member = (await memberDocRef.get<Member>())!;
 
-  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${buy.token}`);
+  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${buy.token}`);
   const token = (await tokenDocRef.get<Token>())!;
 
-  const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`);
+  const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`);
   const order = (await orderDocRef.get<Transaction>())!;
 
   const network = order.network || DEFAULT_NETWORK;
@@ -38,7 +38,7 @@ export const creditBuyer = async (transaction: ITransaction, buy: TokenTradeOrde
     network,
     payload: {
       reason: CreditPaymentReason.TRADE_CANCELLED,
-      type: TransactionCreditType.TOKEN_BUY,
+      type: TransactionPayloadType.TOKEN_BUY,
       amount: buy.balance,
       sourceAddress: order.payload.targetAddress,
       targetAddress: getAddress(member, network),
@@ -49,10 +49,10 @@ export const creditBuyer = async (transaction: ITransaction, buy: TokenTradeOrde
       tokenSymbol: token.symbol,
     },
   };
-  const creditDocRef = soonDb().doc(`${COL.TRANSACTION}/${credit.uid}`);
+  const creditDocRef = build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`);
   transaction.create(creditDocRef, credit);
 
-  const tradeOrderDocRef = soonDb().doc(`${COL.TOKEN_MARKET}/${buy.uid}`);
+  const tradeOrderDocRef = build5Db().doc(`${COL.TOKEN_MARKET}/${buy.uid}`);
   transaction.update(tradeOrderDocRef, { creditTransactionId: credit.uid });
 };
 
@@ -61,10 +61,10 @@ const creditBaseTokenSale = async (
   token: Token,
   sale: TokenTradeOrder,
 ) => {
-  const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${sale.orderTransactionId}`);
+  const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${sale.orderTransactionId}`);
   const order = (await orderDocRef.get<Transaction>())!;
 
-  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${sale.owner}`);
+  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${sale.owner}`);
   const member = await memberDocRef.get<Member>();
   const network = order.network || DEFAULT_NETWORK;
   const data = <Transaction>{
@@ -75,7 +75,7 @@ const creditBaseTokenSale = async (
     network,
     payload: {
       reason: CreditPaymentReason.TRADE_CANCELLED,
-      type: TransactionCreditType.TOKEN_BUY,
+      type: TransactionPayloadType.TOKEN_BUY,
       amount: sale.balance,
       sourceAddress: order.payload.targetAddress,
       targetAddress: getAddress(member, network),
@@ -86,10 +86,10 @@ const creditBaseTokenSale = async (
       tokenSymbol: token.symbol,
     },
   };
-  const creditDocRef = soonDb().doc(`${COL.TRANSACTION}/${data.uid}`);
+  const creditDocRef = build5Db().doc(`${COL.TRANSACTION}/${data.uid}`);
   transaction.create(creditDocRef, data);
 
-  const tradeDocRef = soonDb().doc(`${COL.TOKEN_MARKET}/${sale.uid}`);
+  const tradeDocRef = build5Db().doc(`${COL.TOKEN_MARKET}/${sale.uid}`);
   transaction.update(tradeDocRef, {
     creditTransactionId: data.uid,
     balance: 0,
@@ -101,13 +101,13 @@ export const cancelTradeOrderUtil = async (
   tradeOrder: TokenTradeOrder,
   forcedStatus?: TokenTradeOrderStatus,
 ) => {
-  const saleDocRef = soonDb().doc(`${COL.TOKEN_MARKET}/${tradeOrder.uid}`);
+  const saleDocRef = build5Db().doc(`${COL.TOKEN_MARKET}/${tradeOrder.uid}`);
   const status =
     forcedStatus ||
     (tradeOrder.fulfilled === 0
       ? TokenTradeOrderStatus.CANCELLED
       : TokenTradeOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED);
-  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${tradeOrder.token}`);
+  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${tradeOrder.token}`);
   const token = (await tokenDocRef.get<Token>())!;
 
   if (token.status === TokenStatus.BASE) {
@@ -118,7 +118,9 @@ export const cancelTradeOrderUtil = async (
     } else {
       const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(tradeOrder.owner);
       const leftForSale = bigDecimal.subtract(tradeOrder.count, tradeOrder.fulfilled);
-      transaction.update(distributionDocRef, { lockedForSale: soonDb().inc(-Number(leftForSale)) });
+      transaction.update(distributionDocRef, {
+        lockedForSale: build5Db().inc(-Number(leftForSale)),
+      });
     }
   } else {
     await creditBuyer(transaction, tradeOrder);
@@ -128,15 +130,15 @@ export const cancelTradeOrderUtil = async (
 };
 
 const cancelMintedSell = async (transaction: ITransaction, sell: TokenTradeOrder, token: Token) => {
-  const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`);
+  const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`);
   const order = (await orderDocRef.get<Transaction>())!;
 
-  const sellerDocRef = soonDb().doc(`${COL.MEMBER}/${sell.owner}`);
+  const sellerDocRef = build5Db().doc(`${COL.MEMBER}/${sell.owner}`);
   const seller = await sellerDocRef.get<Member>();
 
   const tokensLeft = sell.count - sell.fulfilled;
   const network = order.network || DEFAULT_NETWORK;
-  const data = <Transaction>{
+  const data: Transaction = {
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: token.space,
@@ -144,21 +146,21 @@ const cancelMintedSell = async (transaction: ITransaction, sell: TokenTradeOrder
     network,
     payload: {
       reason: CreditPaymentReason.TRADE_CANCELLED,
-      type: TransactionCreditType.TOKEN_BUY,
+      type: TransactionPayloadType.TOKEN_BUY,
       amount: order.payload.amount,
-      nativeTokens: [{ amount: tokensLeft, id: token.mintingData?.tokenId! }],
+      nativeTokens: [{ amount: tokensLeft.toString(), id: token.mintingData?.tokenId! }],
       sourceAddress: order.payload.targetAddress,
       targetAddress: getAddress(seller, network),
-      sourceTransaction: [sell.paymentTransactionId],
+      sourceTransaction: [sell.paymentTransactionId!],
       reconciled: true,
       void: false,
       token: token.uid,
       tokenSymbol: token.symbol,
     },
   };
-  const creditDocRef = soonDb().doc(`${COL.TRANSACTION}/${data.uid}`);
+  const creditDocRef = build5Db().doc(`${COL.TRANSACTION}/${data.uid}`);
   transaction.create(creditDocRef, data);
 
-  const tradeOrderDocRef = soonDb().doc(`${COL.TOKEN_MARKET}/${sell.uid}`);
+  const tradeOrderDocRef = build5Db().doc(`${COL.TOKEN_MARKET}/${sell.uid}`);
   transaction.update(tradeOrderDocRef, { creditTransactionId: data.uid });
 };

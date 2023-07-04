@@ -1,5 +1,5 @@
-import { COL, MIN_IOTA_AMOUNT, TokenPurchase, TokenTradeOrderType } from '@soonaverse/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { COL, MIN_IOTA_AMOUNT, TokenPurchase, TokenTradeOrderType } from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -42,7 +42,7 @@ describe('Base token trading', () => {
     );
 
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.TOKEN_MARKET)
         .where('owner', '==', helper.buyer!.uid)
         .get();
@@ -62,7 +62,7 @@ describe('Base token trading', () => {
       sellOrder.payload.amount,
     );
 
-    const purchaseQuery = soonDb()
+    const purchaseQuery = build5Db()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, WenError } from '@soonaverse/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { COL, WenError } from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -25,7 +25,7 @@ describe('Collection minting', () => {
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, { nft: helper.nft!.uid });
     await expectThrow(testEnv.wrap(withdrawNft)({}), WenError.nft_on_sale.key);
 
-    await soonDb().doc(`${COL.NFT}/${helper.nft!.uid}`).update({
+    await build5Db().doc(`${COL.NFT}/${helper.nft!.uid}`).update({
       auctionFrom: null,
       auctionTo: null,
       auctionFloorPrice: null,

@@ -1,9 +1,9 @@
-import { Badge, PublicCollections } from '@soonaverse/interfaces';
-import { SoonEnv } from '../Config';
+import { Badge, PublicCollections } from '@build-5/interfaces';
+import { Build5Env } from '../Config';
 import { CrudRepository } from './CrudRepository';
 
 export class BadgesRepository extends CrudRepository<Badge> {
-  constructor(env?: SoonEnv) {
-    super(env || SoonEnv.PROD, PublicCollections.BADGES);
+  constructor(env?: Build5Env) {
+    super(env || Build5Env.PROD, PublicCollections.BADGES);
   }
 }

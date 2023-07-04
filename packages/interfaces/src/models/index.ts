@@ -13,7 +13,6 @@ export * from './proposal';
 export * from './space';
 export * from './stake';
 export * from './system.config';
-export * from './tangleRequest';
 export * from './ticker';
 export * from './token';
 export * from './transaction';

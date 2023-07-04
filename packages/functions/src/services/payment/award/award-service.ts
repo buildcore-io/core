@@ -1,12 +1,4 @@
 import {
-  AddressTypes,
-  ALIAS_ADDRESS_TYPE,
-  ED25519_ADDRESS_TYPE,
-  INftAddress,
-  NFT_ADDRESS_TYPE,
-} from '@iota/iota.js-next';
-import { HexHelper } from '@iota/util.js-next';
-import {
   Award,
   AwardBadgeType,
   COL,
@@ -15,14 +7,21 @@ import {
   Space,
   Token,
   Transaction,
-  TransactionAwardType,
-  TransactionCreditType,
+  TransactionPayloadType,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
+import {
+  ALIAS_ADDRESS_TYPE,
+  AddressTypes,
+  ED25519_ADDRESS_TYPE,
+  INftAddress,
+  NFT_ADDRESS_TYPE,
+} from '@iota/iota.js-next';
+import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
-import { soonDb } from '../../../firebase/firestore/soondb';
+import { build5Db } from '../../../firebase/firestore/build5Db';
 import { packBasicOutput } from '../../../utils/basic-output.utils';
 import { PLACEHOLDER_CID } from '../../../utils/car.utils';
 import { createNftOutput } from '../../../utils/collection-minting-utils/nft.utils';
@@ -38,12 +37,12 @@ export class AwardService {
   public handleAwardFundingOrder = async (order: Transaction, match: TransactionMatch) => {
     const payment = await this.transactionService.createPayment(order, match);
 
-    const awardDocRef = soonDb().doc(`${COL.AWARD}/${order.payload.award}`);
+    const awardDocRef = build5Db().doc(`${COL.AWARD}/${order.payload.award}`);
     const award = <Award>await this.transactionService.get(awardDocRef);
 
     if (award.funded) {
       await this.transactionService.createCredit(
-        TransactionCreditType.DATA_NO_LONGER_VALID,
+        TransactionPayloadType.DATA_NO_LONGER_VALID,
         payment,
         match,
       );
@@ -57,7 +56,7 @@ export class AwardService {
       const nativeTokensExpected = award.badge.total * award.badge.tokenReward;
       if (nativeTokens.length !== 1 || nativeTokensReceived !== nativeTokensExpected) {
         await this.transactionService.createCredit(
-          TransactionCreditType.INVALID_AMOUNT,
+          TransactionPayloadType.INVALID_AMOUNT,
           payment,
           match,
         );
@@ -85,14 +84,14 @@ export class AwardService {
       space: order.space,
       network: order.network,
       payload: {
-        type: TransactionAwardType.MINT_ALIAS,
+        type: TransactionPayloadType.MINT_ALIAS,
         amount: award.aliasStorageDeposit,
         sourceAddress: order.payload.targetAddress,
         targetAddress: order.payload.targetAddress,
         award: award.uid,
       },
     };
-    const mintAliasTranDocRef = soonDb().doc(`${COL.TRANSACTION}/${mintAliasOrder.uid}`);
+    const mintAliasTranDocRef = build5Db().doc(`${COL.TRANSACTION}/${mintAliasOrder.uid}`);
     this.transactionService.push({
       ref: mintAliasTranDocRef,
       data: mintAliasOrder,
@@ -100,12 +99,12 @@ export class AwardService {
     });
 
     if (order.payload.legacyAwardFundRequestId) {
-      const legacyAwardFundRequesDocRef = soonDb().doc(
+      const legacyAwardFundRequesDocRef = build5Db().doc(
         `${COL.TRANSACTION}/${order.payload.legacyAwardFundRequestId}`,
       );
       this.transactionService.push({
         ref: legacyAwardFundRequesDocRef,
-        data: { 'payload.legacyAwardsBeeingFunded': soonDb().inc(-1) },
+        data: { 'payload.legacyAwardsBeeingFunded': build5Db().inc(-1) },
         action: 'update',
       });
     }
@@ -120,7 +119,7 @@ export const awardToCollectionMetadata = async (award: Award, space: Space) => (
   name: award.name,
   description: award.description || '',
   issuerName: KEY_NAME_TANGLE,
-  soonaverseId: award.uid,
+  build5Id: award.uid,
 });
 
 export const awardBadgeToNttMetadata = async (
@@ -143,7 +142,7 @@ export const awardBadgeToNttMetadata = async (
     collectionId,
     collectionName: award.name || '',
 
-    soonaverseId: badgeTransactionId,
+    build5Id: badgeTransactionId,
 
     attributes: [
       { trait_type: 'award', value: award.uid },
@@ -188,7 +187,7 @@ export const getAwardgStorageDeposits = async (award: Award, token: Token, walle
     aliasId: aliasOutput.aliasId,
   };
 
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${award.space}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${award.space}`);
   const space = <Space>await spaceDocRef.get();
 
   const collectionMetadata = await awardToCollectionMetadata(award, space);

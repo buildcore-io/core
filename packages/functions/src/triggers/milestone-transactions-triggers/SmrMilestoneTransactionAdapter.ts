@@ -1,8 +1,9 @@
+import { MilestoneTransaction, MilestoneTransactionEntry, Network } from '@build-5/interfaces';
 import {
   BASIC_OUTPUT_TYPE,
   Bech32Helper,
-  Ed25519Address,
   ED25519_ADDRESS_TYPE,
+  Ed25519Address,
   IBasicOutput,
   INftOutput,
   ISignatureUnlock,
@@ -14,7 +15,6 @@ import {
   UnlockTypes,
 } from '@iota/iota.js-next';
 import { Converter, HexHelper } from '@iota/util.js-next';
-import { MilestoneTransaction, MilestoneTransactionEntry, Network } from '@soonaverse/interfaces';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { indexToString } from '../../utils/block.utils';
@@ -93,7 +93,7 @@ export class SmrMilestoneTransactionAdapter {
       });
     }
 
-    const soonaverseTransactionId = await getMilestoneTransactionIdForSmr(data);
+    const build5TransactionId = await getMilestoneTransactionIdForSmr(data);
 
     return {
       uid: data.uid,
@@ -103,7 +103,7 @@ export class SmrMilestoneTransactionAdapter {
       inputs,
       outputs,
       processed: data.processed,
-      soonaverseTransactionId: soonaverseTransactionId || undefined,
+      build5TransactionId: build5TransactionId || undefined,
     };
   };
 }

@@ -6,16 +6,15 @@ import {
   Space,
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
-  TransactionOrder,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
-  TransactionUnlockType,
   TransactionValidationType,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
+import { BaseTangleResponse } from '@build-5/interfaces/lib/api/tangle/common';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
-import { soonDb } from '../../../firebase/firestore/soondb';
+import { build5Db } from '../../../firebase/firestore/build5Db';
 import { validateAddressSchema } from '../../../runtime/firebase/address';
 import { generateRandomAmount } from '../../../utils/common.utils';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
@@ -30,40 +29,37 @@ export class TangleAddressValidationService {
   constructor(readonly transactionService: TransactionService) {}
 
   public handeAddressValidation = async (
-    tangleOrder: TransactionOrder,
+    tangleOrder: Transaction,
     tran: MilestoneTransaction,
     tranEntry: MilestoneTransactionEntry,
     owner: string,
     request: Record<string, unknown>,
-  ) => {
-    const params = {
-      network: request.network || tangleOrder.network,
-      space: request.space,
-    };
-    await assertValidationAsync(validateAddressSchema, params);
+  ): Promise<BaseTangleResponse | undefined> => {
+    delete request.requestType;
+    const params = await assertValidationAsync(validateAddressSchema, request);
 
     const order = await createAddressValidationOrder(
       owner,
-      params.network as Network,
-      params.space as string,
+      params.network || tangleOrder.network,
+      params.space,
     );
     set(order, 'payload.amount', tranEntry.amount);
 
     this.transactionService.push({
-      ref: soonDb().doc(`${COL.TRANSACTION}/${order.uid}`),
+      ref: build5Db().doc(`${COL.TRANSACTION}/${order.uid}`),
       data: order,
       action: 'set',
     });
 
     if ([Network.IOTA, Network.ATOI].includes(params.network as Network)) {
-      return { amount: order.payload.amount, address: order.payload.targetAddress };
+      return { amount: order.payload.amount!, address: order.payload.targetAddress! };
     }
 
     this.transactionService.createUnlockTransaction(
       order,
       tran,
       tranEntry,
-      TransactionUnlockType.TANGLE_TRANSFER,
+      TransactionPayloadType.TANGLE_TRANSFER,
       tranEntry.outputId,
     );
     return;
@@ -75,7 +71,7 @@ export const createAddressValidationOrder = async (
   network: Network,
   spaceId?: string,
 ) => {
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${spaceId}`);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${spaceId}`);
   const space = spaceId ? <Space | undefined>await spaceDocRef.get() : undefined;
   if (spaceId && !space) {
     throw invalidArgument(WenError.space_does_not_exists);
@@ -90,20 +86,18 @@ export const createAddressValidationOrder = async (
   const wallet = await WalletService.newWallet(network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
 
-  const order = <Transaction>{
+  const order: Transaction = {
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,
-    space: space?.uid || null,
+    space: space?.uid || '',
     network,
     payload: {
       type: space
-        ? TransactionOrderType.SPACE_ADDRESS_VALIDATION
-        : TransactionOrderType.MEMBER_ADDRESS_VALIDATION,
+        ? TransactionPayloadType.SPACE_ADDRESS_VALIDATION
+        : TransactionPayloadType.MEMBER_ADDRESS_VALIDATION,
       amount: generateRandomAmount(),
       targetAddress: targetAddress.bech32,
-      beneficiary: space ? 'space' : 'member',
-      beneficiaryUid: space?.uid || owner,
       expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
       validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
       reconciled: false,

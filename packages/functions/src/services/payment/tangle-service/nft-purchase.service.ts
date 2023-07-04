@@ -4,6 +4,7 @@ import {
   CollectionStatus,
   CollectionType,
   DEFAULT_NETWORK,
+  Entity,
   MIN_AMOUNT_TO_TRANSFER,
   Member,
   MilestoneTransaction,
@@ -16,16 +17,16 @@ import {
   StakeType,
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
-  TransactionUnlockType,
   TransactionValidationType,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
+import { BaseTangleResponse } from '@build-5/interfaces/lib/api/tangle/common';
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
 import { AVAILABLE_NETWORKS } from '../../../controls/common';
-import { soonDb } from '../../../firebase/firestore/soondb';
+import { build5Db } from '../../../firebase/firestore/build5Db';
 import { nftPurchaseSchema } from '../../../runtime/firebase/nft';
 import { assertHasAccess } from '../../../services/validators/access';
 import { WalletService } from '../../../services/wallet/wallet';
@@ -49,18 +50,15 @@ export class TangleNftPurchaseService {
     tranEntry: MilestoneTransactionEntry,
     owner: string,
     request: Record<string, unknown>,
-  ) => {
-    await assertValidationAsync(nftPurchaseSchema, request, { allowUnknown: true });
+  ): Promise<BaseTangleResponse | undefined> => {
+    delete request.requestType;
+    const params = await assertValidationAsync(nftPurchaseSchema, request);
 
-    const order = await createNftPuchaseOrder(
-      request.collection as string,
-      request.nft as string,
-      owner,
-    );
+    const order = await createNftPuchaseOrder(params.collection, params.nft, owner);
     set(order, 'payload.tanglePuchase', true);
 
     this.transactionService.push({
-      ref: soonDb().doc(`${COL.TRANSACTION}/${order.uid}`),
+      ref: build5Db().doc(`${COL.TRANSACTION}/${order.uid}`),
       data: order,
       action: 'set',
     });
@@ -69,19 +67,19 @@ export class TangleNftPurchaseService {
 
     if (isMintedNft && tranEntry.amount !== order.payload.amount) {
       return {
-        requiredAmount: order.payload.amount,
         status: 'error',
+        amount: order.payload.amount!,
+        address: order.payload.targetAddress!,
         code: WenError.invalid_base_token_amount.code,
         message: WenError.invalid_base_token_amount.key,
-        address: order.payload.targetAddress,
       };
     }
 
     if (!isMintedNft) {
       return {
         status: 'success',
-        amount: order.payload.amount,
-        address: order.payload.targetAddress,
+        amount: order.payload.amount!,
+        address: order.payload.targetAddress!,
       };
     }
 
@@ -89,7 +87,7 @@ export class TangleNftPurchaseService {
       order,
       tran,
       tranEntry,
-      TransactionUnlockType.TANGLE_TRANSFER,
+      TransactionPayloadType.TANGLE_TRANSFER,
       tranEntry.outputId,
     );
     return;
@@ -98,10 +96,10 @@ export class TangleNftPurchaseService {
 
 export const createNftPuchaseOrder = async (
   collectionId: string,
-  nftId: string,
+  nftId: string | undefined,
   owner: string,
   ip = '',
-) => {
+): Promise<Transaction> => {
   const collection = await getCollection(collectionId);
   const space = (await getSpace(collection.space))!;
 
@@ -130,17 +128,17 @@ export const createNftPuchaseOrder = async (
   const discount = getDiscount(collection, member);
   const finalPrice = getNftFinalPrice(nft, discount);
 
-  return <Transaction>{
+  return {
     type: TransactionType.ORDER,
     uid: nftPurchaseOrderId,
     member: owner,
     space: space.uid,
     network,
     payload: {
-      type: TransactionOrderType.NFT_PURCHASE,
+      type: TransactionPayloadType.NFT_PURCHASE,
       amount: finalPrice,
       targetAddress: targetAddress.bech32,
-      beneficiary: nft.owner ? 'member' : 'space',
+      beneficiary: nft.owner ? Entity.MEMBER : Entity.SPACE,
       beneficiaryUid: nft.owner || collection.space,
       beneficiaryAddress: getAddress(currentOwner, network),
       royaltiesFee: collection.royaltiesFee,
@@ -160,7 +158,7 @@ export const createNftPuchaseOrder = async (
 };
 
 const getCollection = async (id: string) => {
-  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${id}`);
+  const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${id}`);
   const collection = await collectionDocRef.get<Collection>();
   if (!collection) {
     throw invalidArgument(WenError.collection_does_not_exists);
@@ -177,13 +175,13 @@ const getCollection = async (id: string) => {
 };
 
 const getMember = async (id: string) => {
-  const memberDocRef = soonDb().doc(`${COL.MEMBER}/${id}`);
+  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${id}`);
   return <Member>await memberDocRef.get();
 };
 
 const getNft = async (collection: Collection, nftId: string | undefined) => {
   if (nftId) {
-    const docRef = soonDb().doc(`${COL.NFT}/${nftId}`);
+    const docRef = build5Db().doc(`${COL.NFT}/${nftId}`);
     const nft = (await getNftByMintingId(nftId)) || (await docRef.get<Nft>());
     if (nft) {
       return nft;
@@ -211,7 +209,7 @@ const getNft = async (collection: Collection, nftId: string | undefined) => {
 };
 
 const getNftAbove = (collection: Collection, position: number) =>
-  soonDb()
+  build5Db()
     .collection(COL.NFT)
     .where('sold', '==', false)
     .where('locked', '==', false)
@@ -223,7 +221,7 @@ const getNftAbove = (collection: Collection, position: number) =>
     .get<Nft>();
 
 const getNftBelow = (collection: Collection, position: number) =>
-  soonDb()
+  build5Db()
     .collection(COL.NFT)
     .where('sold', '==', false)
     .where('locked', '==', false)
@@ -238,7 +236,7 @@ const assertNftCanBePurchased = async (
   space: Space,
   collection: Collection,
   nft: Nft,
-  nftIdParam: string,
+  nftIdParam: string | undefined,
   owner: string,
 ) => {
   if (collection.type !== CollectionType.CLASSIC && nftIdParam && !nft.owner) {
@@ -290,7 +288,7 @@ const assertUserHasAccess = (space: Space, collection: Collection, owner: string
   );
 
 const assertUserHasOnlyOneNft = async (collection: Collection, owner: string) => {
-  const snap = await soonDb()
+  const snap = await build5Db()
     .collection(COL.TRANSACTION)
     .where('member', '==', owner)
     .where('type', '==', TransactionType.BILL_PAYMENT)
@@ -303,10 +301,10 @@ const assertUserHasOnlyOneNft = async (collection: Collection, owner: string) =>
 };
 
 const assertNoOrderInProgress = async (owner: string) => {
-  const orderInProgress = await soonDb()
+  const orderInProgress = await build5Db()
     .collection(COL.TRANSACTION)
     .where('payload.reconciled', '==', false)
-    .where('payload.type', '==', TransactionOrderType.NFT_PURCHASE)
+    .where('payload.type', '==', TransactionPayloadType.NFT_PURCHASE)
     .where('member', '==', owner)
     .where('type', '==', TransactionType.ORDER)
     .where('payload.void', '==', false)
@@ -332,7 +330,7 @@ const getDiscount = (collection: Collection, member: Member) => {
   const spaceRewards = (member.spaces || {})[collection.space] || {};
   const descDiscounts = [...(collection.discounts || [])].sort((a, b) => b.amount - a.amount);
   for (const discount of descDiscounts) {
-    const awardStat = (spaceRewards.awardStat || {})[discount.tokenUid];
+    const awardStat = (spaceRewards.awardStat || {})[discount.tokenUid!];
     const memberTotalReward = awardStat?.totalReward || 0;
     if (memberTotalReward >= discount.tokenReward) {
       return 1 - discount.amount;
@@ -342,8 +340,8 @@ const getDiscount = (collection: Collection, member: Member) => {
 };
 
 const lockNft = async (nftId: string, orderId: string) =>
-  soonDb().runTransaction(async (transaction) => {
-    const docRef = soonDb().doc(`${COL.NFT}/${nftId}`);
+  build5Db().runTransaction(async (transaction) => {
+    const docRef = build5Db().doc(`${COL.NFT}/${nftId}`);
     const nft = <Nft>await transaction.get(docRef);
     if (nft.locked) {
       throw invalidArgument(WenError.nft_locked_for_sale);
@@ -389,7 +387,7 @@ export const createNftWithdrawOrder = (
     uid: nft.uid,
     status: stakeType ? NftStatus.STAKED : NftStatus.WITHDRAWN,
     hidden: true,
-    depositData: soonDb().deleteField(),
+    depositData: build5Db().deleteField(),
     owner: null,
     isOwned: false,
   };

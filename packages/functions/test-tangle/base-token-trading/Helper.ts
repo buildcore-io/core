@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, Member, Network, Token, TokenStatus } from '@soonaverse/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { COL, Member, Network, Token, TokenStatus } from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { createMember } from '../../src/runtime/firebase/member';
 import { IotaWallet } from '../../src/services/wallet/IotaWalletService';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
@@ -15,7 +15,7 @@ import {
   mockWalletReturnValue,
   saveSoon,
 } from '../../test/controls/common';
-import { getWallet, MEDIA, testEnv } from '../../test/set-up';
+import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 import { addValidatedAddress } from '../common';
 
 export class Helper {
@@ -43,14 +43,14 @@ export class Helper {
     await testEnv.wrap(createMember)(sellerId);
     this.sellerValidateAddress[Network.ATOI] = await addValidatedAddress(Network.ATOI, sellerId);
     this.sellerValidateAddress[Network.RMS] = await addValidatedAddress(Network.RMS, sellerId);
-    this.seller = <Member>await soonDb().doc(`${COL.MEMBER}/${sellerId}`).get();
+    this.seller = <Member>await build5Db().doc(`${COL.MEMBER}/${sellerId}`).get();
 
     const buyerId = wallet.getRandomEthAddress();
     mockWalletReturnValue(this.walletSpy, buyerId, {});
     await testEnv.wrap(createMember)(buyerId);
     this.buyerValidateAddress[Network.ATOI] = await addValidatedAddress(Network.ATOI, buyerId);
     this.buyerValidateAddress[Network.RMS] = await addValidatedAddress(Network.RMS, buyerId);
-    this.buyer = <Member>await soonDb().doc(`${COL.MEMBER}/${buyerId}`).get();
+    this.buyer = <Member>await build5Db().doc(`${COL.MEMBER}/${buyerId}`).get();
     this.token = await this.saveToken(space.uid, guardian);
 
     this.atoiWallet = (await getWallet(Network.ATOI)) as IotaWallet;
@@ -74,7 +74,7 @@ export class Helper {
         network: Network.ATOI,
       },
     };
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
     return token as Token;
   };
 }

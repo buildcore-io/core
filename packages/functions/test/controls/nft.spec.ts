@@ -12,9 +12,9 @@ import {
   Space,
   WEN_FUNC,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { createCollection } from '../../src/runtime/firebase/collection/index';
 import * as wallet from '../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../set-up';
@@ -64,7 +64,7 @@ describe('Nft controll: ' + WEN_FUNC.createCollection, () => {
     expect(cBatchNft?.length).toBe(3);
 
     for (let i = 0; i < nfts.length; ++i) {
-      const docRef = soonDb().doc(`${COL.NFT}/${cBatchNft[i]}`);
+      const docRef = build5Db().doc(`${COL.NFT}/${cBatchNft[i]}`);
       const nft = <Nft>await docRef.get();
       expect(nft.saleAccessMembers).toEqual(i === nfts.length - 1 ? [] : [member]);
     }
@@ -145,18 +145,18 @@ describe('Nft controll: ' + WEN_FUNC.updateUnsoldNft, () => {
 
     mockWalletReturnValue(walletSpy, member, { uid: nft.uid, price: 50 * MIN_IOTA_AMOUNT });
 
-    await soonDb().doc(`${COL.NFT}/${nft.uid}`).update({ sold: true });
+    await build5Db().doc(`${COL.NFT}/${nft.uid}`).update({ sold: true });
     await expectThrow(testEnv.wrap(updateUnsoldNft)({}), WenError.nft_already_sold.key);
 
-    await soonDb().doc(`${COL.NFT}/${nft.uid}`).update({ hidden: true, sold: false });
+    await build5Db().doc(`${COL.NFT}/${nft.uid}`).update({ hidden: true, sold: false });
     await expectThrow(testEnv.wrap(updateUnsoldNft)({}), WenError.hidden_nft.key);
 
-    await soonDb().doc(`${COL.NFT}/${nft.uid}`).update({ placeholderNft: true, hidden: false });
+    await build5Db().doc(`${COL.NFT}/${nft.uid}`).update({ placeholderNft: true, hidden: false });
     await expectThrow(
       testEnv.wrap(updateUnsoldNft)({}),
       WenError.nft_placeholder_cant_be_updated.key,
     );
-    await soonDb().doc(`${COL.NFT}/${nft.uid}`).update({ placeholderNft: false });
+    await build5Db().doc(`${COL.NFT}/${nft.uid}`).update({ placeholderNft: false });
 
     const tmpMember = await createMember(walletSpy);
     mockWalletReturnValue(walletSpy, tmpMember, { uid: nft.uid, price: 50 * MIN_IOTA_AMOUNT });

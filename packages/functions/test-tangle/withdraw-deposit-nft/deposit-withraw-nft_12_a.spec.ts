@@ -1,5 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
+  COL,
+  MIN_IOTA_AMOUNT,
+  Network,
+  Transaction,
+  TransactionType,
+  WenError,
+} from '@build-5/interfaces';
+import {
   AddressTypes,
   ED25519_ADDRESS_TYPE,
   INftAddress,
@@ -8,23 +16,15 @@ import {
   TransactionHelper,
   UnlockTypes,
 } from '@iota/iota.js-next';
-import {
-  COL,
-  MIN_IOTA_AMOUNT,
-  Network,
-  Transaction,
-  TransactionType,
-  WenError,
-} from '@soonaverse/interfaces';
 import { cloneDeep } from 'lodash';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { depositNft } from '../../src/runtime/firebase/nft';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
 import { packBasicOutput } from '../../src/utils/basic-output.utils';
 import { indexToString, packEssence, packPayload, submitBlock } from '../../src/utils/block.utils';
-import { createNftOutput, EMPTY_NFT_ID } from '../../src/utils/collection-minting-utils/nft.utils';
+import { EMPTY_NFT_ID, createNftOutput } from '../../src/utils/collection-minting-utils/nft.utils';
 import { createUnlock, getTransactionPayloadHex } from '../../src/utils/smr.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -44,7 +44,7 @@ describe('Collection minting', () => {
 
   it('Should throw, nft not irc27', async () => {
     await mintAndDeposit({ collectionName: 'test-collection' }, { name: 'test' });
-    const query = soonDb()
+    const query = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.guardian)
       .where('type', '==', TransactionType.CREDIT_NFT);
@@ -54,9 +54,9 @@ describe('Collection minting', () => {
     });
     const snap = await query.get();
     const credit = <Transaction>snap[0];
-    expect(credit.payload.response.code).toBe(WenError.nft_not_irc27_compilant.code);
-    expect(credit.payload.response.message).toBe(WenError.nft_not_irc27_compilant.key);
-    await helper.isInvalidPayment(credit.payload.sourceTransaction[0]);
+    expect(credit.payload.response!.code).toBe(WenError.nft_not_irc27_compilant.code);
+    expect(credit.payload.response!.message).toBe(WenError.nft_not_irc27_compilant.key);
+    await helper.isInvalidPayment(credit.payload.sourceTransaction![0]);
   });
 
   const mintAndDeposit = async (nftMetadata: any, collectionMetadata: any) => {

@@ -1,4 +1,4 @@
-import { TangleRequestType } from './models/tangleRequest';
+import { TangleRequestType } from './api/tangle';
 
 export const WenError = {
   unknown: { code: 1000, key: 'Unknown error' },
@@ -273,5 +273,13 @@ export const WenError = {
   max_10_fields: {
     code: 2131,
     key: 'A field name can appear maximum 10 times',
+  },
+  alias_not_deposited: {
+    code: 2132,
+    key: 'Alias must be sent to soonaverse',
+  },
+  nft_not_deposited: {
+    code: 2133,
+    key: 'NFT must be sent to soonaverse',
   },
 };

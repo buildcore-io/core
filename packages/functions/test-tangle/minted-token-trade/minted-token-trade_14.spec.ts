@@ -6,9 +6,9 @@ import {
   TokenPurchase,
   Transaction,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import { head } from 'lodash';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { wait } from '../../test/controls/common';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { requestMintedTokenFromFaucet } from '../faucet';
@@ -29,7 +29,7 @@ describe('Token minting', () => {
     await helper.createSellTradeOrder(20, MIN_IOTA_AMOUNT);
     await helper.createBuyOrder(20, MIN_IOTA_AMOUNT + 0.1);
 
-    const purchaseQuery = soonDb()
+    const purchaseQuery = build5Db()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {
@@ -42,7 +42,7 @@ describe('Token minting', () => {
     expect(purchase.price).toBe(MIN_IOTA_AMOUNT);
 
     const billPayments = (
-      await soonDb()
+      await build5Db()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
         .where('payload.token', '==', helper.token!.uid)
@@ -60,7 +60,7 @@ describe('Token minting', () => {
     expect(billPaymentToSpaceTwo).toBeDefined();
 
     const billPaymentToBuyer = billPayments.find(
-      (bp) => (head(bp.payload.nativeTokens) as any)?.amount === 20,
+      (bp) => Number(head(bp.payload.nativeTokens)?.amount) === 20,
     );
     expect(billPaymentToBuyer).toBeDefined();
 
@@ -70,7 +70,7 @@ describe('Token minting', () => {
         MIN_IOTA_AMOUNT * 20 * 0.975 -
           billPaymentToSpaceOne?.payload?.storageReturn?.amount! -
           billPaymentToSpaceTwo?.payload?.storageReturn?.amount! -
-          billPaymentToBuyer?.payload?.amount,
+          billPaymentToBuyer?.payload?.amount!,
     );
     expect(billPaymentToSeller).toBeDefined();
 
@@ -91,7 +91,7 @@ describe('Token minting', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    const purchase = await soonDb()
+    const purchase = await build5Db()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', helper.token!.uid)
       .get();

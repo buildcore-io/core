@@ -1,9 +1,9 @@
-import { HexHelper } from '@iota/util.js-next';
 import {
   Award,
   COL,
   Member,
   MIN_IOTA_AMOUNT,
+  NativeToken,
   Network,
   Space,
   TangleRequestType,
@@ -11,10 +11,11 @@ import {
   TokenStatus,
   Transaction,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
+import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
@@ -49,7 +50,7 @@ describe('Award tangle request', () => {
 
     token = await saveToken(space.uid, guardian);
 
-    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${guardian}`);
+    const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${guardian}`);
     const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, network);
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
@@ -58,7 +59,7 @@ describe('Award tangle request', () => {
   it('Should create and fund with tangle request', async () => {
     const newAward = awardRequest(space.uid, token.symbol);
     await requestFundsFromFaucet(Network.RMS, guardianAddress.bech32, 5 * MIN_IOTA_AMOUNT);
-    await walletService.send(guardianAddress, tangleOrder.payload.targetAddress, MIN_IOTA_AMOUNT, {
+    await walletService.send(guardianAddress, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
       customMetadata: {
         request: {
           requestType: TangleRequestType.AWARD_CREATE,
@@ -68,7 +69,7 @@ describe('Award tangle request', () => {
     });
     await MnemonicService.store(guardianAddress.bech32, guardianAddress.mnemonic);
 
-    const creditQuery = soonDb()
+    const creditQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST)
       .where('member', '==', guardian);
@@ -79,21 +80,21 @@ describe('Award tangle request', () => {
     let snap = await creditQuery.get();
     let credit = snap[0] as Transaction;
     expect(credit.payload.amount).toBe(MIN_IOTA_AMOUNT);
-    const awardDocRef = soonDb().doc(`${COL.AWARD}/${credit.payload.response.award}`);
+    const awardDocRef = build5Db().doc(`${COL.AWARD}/${credit.payload.response!.award}`);
 
     await requestMintedTokenFromFaucet(
       walletService,
       guardianAddress,
       MINTED_TOKEN_ID,
       VAULT_MNEMONIC,
-      credit.payload.response.nativeTokens[0].amount,
+      (credit.payload.response!.nativeTokens! as any)[0].amount,
     );
     await walletService.send(
       guardianAddress,
-      credit.payload.response.address,
-      credit.payload.response.amount,
+      credit.payload.response!.address as string,
+      credit.payload.response!.amount as number,
       {
-        nativeTokens: credit.payload.response.nativeTokens.map((nt: any) => ({
+        nativeTokens: (credit.payload.response!.nativeTokens as NativeToken[]).map((nt: any) => ({
           ...nt,
           amount: HexHelper.fromBigInt256(bigInt(nt.amount)),
         })),
@@ -142,7 +143,7 @@ const saveToken = async (space: string, guardian: string) => {
       tokenId: MINTED_TOKEN_ID,
     },
   };
-  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token as Token;
 };
 

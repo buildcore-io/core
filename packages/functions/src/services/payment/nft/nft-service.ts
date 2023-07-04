@@ -7,19 +7,14 @@ import {
   Nft,
   NftAccess,
   Notification,
-  PaymentTransaction,
   Transaction,
-  TransactionCreditType,
-  TransactionOrder,
-  TransactionOrderType,
-  TransactionPayment,
-} from '@soonaverse/interfaces';
+  TransactionPayloadType,
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get, last } from 'lodash';
 import { AVAILABLE_NETWORKS } from '../../../controls/common';
-import { soonDb } from '../../../firebase/firestore/soondb';
+import { build5Db } from '../../../firebase/firestore/build5Db';
 import { getAddress } from '../../../utils/address.utils';
-import { OrderPayBillCreditTransaction } from '../../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
 import { NotificationService } from '../../notification/notification';
 import { createNftWithdrawOrder } from '../tangle-service/nft-purchase.service';
@@ -31,15 +26,15 @@ export class NftService {
   public async handleNftPurchaseRequest(
     tran: MilestoneTransaction,
     tranOutput: MilestoneTransactionEntry,
-    order: TransactionOrder,
+    order: Transaction,
     match: TransactionMatch,
-    soonTransaction: Transaction | undefined,
+    build5Transaction: Transaction | undefined,
   ) {
-    const nftDocRef = soonDb().doc(`${COL.NFT}/${order.payload.nft}`);
+    const nftDocRef = build5Db().doc(`${COL.NFT}/${order.payload.nft}`);
     const nft = <Nft>await this.transactionService.get(nftDocRef);
 
     if (nft.availableFrom === null) {
-      await this.transactionService.processAsInvalid(tran, order, tranOutput, soonTransaction);
+      await this.transactionService.processAsInvalid(tran, order, tranOutput, build5Transaction);
       return;
     }
 
@@ -52,7 +47,7 @@ export class NftService {
 
     const tanglePuchase = get(order, 'payload.tanglePuchase', false);
     if (tanglePuchase && AVAILABLE_NETWORKS.includes(order.network!)) {
-      const membderDocRef = soonDb().doc(`${COL.MEMBER}/${order.member}`);
+      const membderDocRef = build5Db().doc(`${COL.MEMBER}/${order.member}`);
       const member = <Member>await membderDocRef.get();
       const { order: withdrawOrder, nftUpdateData } = createNftWithdrawOrder(
         nft,
@@ -60,12 +55,12 @@ export class NftService {
         getAddress(member, order.network!),
       );
       this.transactionService.push({
-        ref: soonDb().doc(`${COL.TRANSACTION}/${withdrawOrder.uid}`),
+        ref: build5Db().doc(`${COL.TRANSACTION}/${withdrawOrder.uid}`),
         data: withdrawOrder,
         action: 'set',
       });
       this.transactionService.push({
-        ref: soonDb().doc(`${COL.NFT}/${nft.uid}`),
+        ref: build5Db().doc(`${COL.NFT}/${nft.uid}`),
         data: nftUpdateData,
         action: 'update',
       });
@@ -75,17 +70,17 @@ export class NftService {
   public async handleNftBidRequest(
     tran: MilestoneTransaction,
     tranOutput: MilestoneTransactionEntry,
-    order: TransactionOrder,
+    order: Transaction,
     match: TransactionMatch,
-    soonTransaction: Transaction | undefined,
+    build5Transaction: Transaction | undefined,
   ) {
-    const nftDocRef = soonDb().collection(COL.NFT).doc(order.payload.nft!);
+    const nftDocRef = build5Db().collection(COL.NFT).doc(order.payload.nft!);
     const nft = await this.transactionService.get<Nft>(nftDocRef);
     if (nft?.auctionFrom) {
       const payment = await this.transactionService.createPayment(order, match);
       await this.addNewBid(order, payment);
     } else {
-      await this.transactionService.processAsInvalid(tran, order, tranOutput, soonTransaction);
+      await this.transactionService.processAsInvalid(tran, order, tranOutput, build5Transaction);
     }
   }
 
@@ -94,30 +89,32 @@ export class NftService {
       throw new Error('NFT auctionFrom is no longer defined');
     }
 
-    const nftDocRef = soonDb().doc(`${COL.NFT}/${uid}`);
+    const nftDocRef = build5Db().doc(`${COL.NFT}/${uid}`);
     const nft = <Nft>await this.transactionService.get(nftDocRef);
     if (nft.auctionHighestTransaction) {
-      const highestPayDocRef = soonDb().doc(`${COL.TRANSACTION}/${nft.auctionHighestTransaction}`);
-      const highestPay = <TransactionPayment>await highestPayDocRef.get();
+      const highestPayDocRef = build5Db().doc(
+        `${COL.TRANSACTION}/${nft.auctionHighestTransaction}`,
+      );
+      const highestPay = (await highestPayDocRef.get<Transaction>())!;
 
       const orderId = Array.isArray(highestPay.payload.sourceTransaction)
         ? last(highestPay.payload.sourceTransaction)!
         : highestPay.payload.sourceTransaction!;
-      const orderDocRef = soonDb().collection(COL.TRANSACTION).doc(orderId);
+      const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${orderId}`);
       const order = <Transaction | undefined>await orderDocRef.get();
       if (!order) {
         throw new Error('Unable to find ORDER linked to PAYMENT');
       }
 
-      this.transactionService.markAsReconciled(order, highestPay.payload.chainReference);
+      this.transactionService.markAsReconciled(order, highestPay.payload.chainReference!);
       this.transactionService.createBillPayment(order, highestPay);
       await this.setNftOwner(order, highestPay);
 
-      const memberDocRef = soonDb().collection(COL.MEMBER).doc(order.member!);
+      const memberDocRef = build5Db().collection(COL.MEMBER).doc(order.member!);
       const member = <Member>await memberDocRef.get();
 
       const notification = NotificationService.prepareWinBid(member, nft, highestPay);
-      const notificationDocRef = soonDb().doc(`${COL.NOTIFICATION}/${notification.uid}`);
+      const notificationDocRef = build5Db().doc(`${COL.NOTIFICATION}/${notification.uid}`);
       this.transactionService.push({
         ref: notificationDocRef,
         data: notification,
@@ -126,7 +123,7 @@ export class NftService {
       this.transactionService.push({
         ref: orderDocRef,
         data: {
-          linkedTransactions: soonDb().arrayUnion(...this.transactionService.linkedTransactions),
+          linkedTransactions: build5Db().arrayUnion(...this.transactionService.linkedTransactions),
         },
         action: 'update',
       });
@@ -149,71 +146,70 @@ export class NftService {
     }
   }
 
-  public async markAsVoid(transaction: TransactionOrder): Promise<void> {
-    const refSource = soonDb().collection(COL.TRANSACTION).doc(transaction.uid);
+  public async markAsVoid(transaction: Transaction): Promise<void> {
+    const refSource = build5Db().doc(`${COL.TRANSACTION}/${transaction.uid}`);
     const data = (await this.transactionService.get<Transaction>(refSource))!;
     if (transaction.payload.nft) {
-      if (transaction.payload.type === TransactionOrderType.NFT_PURCHASE) {
-        const payload = <OrderPayBillCreditTransaction>data.payload;
+      if (transaction.payload.type === TransactionPayloadType.NFT_PURCHASE) {
+        const payload = data.payload;
         payload.void = true;
         this.transactionService.push({ ref: refSource, data: data, action: 'update' });
 
         // Unlock NFT.
-        const refNft = soonDb().collection(COL.NFT).doc(transaction.payload.nft);
+        const refNft = build5Db().collection(COL.NFT).doc(transaction.payload.nft);
         this.transactionService.push({
           ref: refNft,
           data: { locked: false, lockedBy: null },
           action: 'update',
         });
-      } else if (transaction.payload.type === TransactionOrderType.NFT_BID) {
-        const payments = await soonDb()
+      } else if (transaction.payload.type === TransactionPayloadType.NFT_BID) {
+        const payments = await build5Db()
           .collection(COL.TRANSACTION)
           .where('payload.invalidPayment', '==', false)
           .where('payload.sourceTransaction', 'array-contains', transaction.uid)
           .orderBy('payload.amount', 'desc')
           .get();
         if (payments.length === 0) {
-          // No orders, we just void.
-          const payload = <OrderPayBillCreditTransaction>data.payload;
+          const payload = data.payload;
           payload.void = true;
           this.transactionService.push({ ref: refSource, data: data, action: 'update' });
         }
       }
     } else {
-      const payload = <OrderPayBillCreditTransaction>data.payload;
+      const payload = data.payload;
       payload.void = true;
       this.transactionService.push({ ref: refSource, data, action: 'update' });
     }
   }
 
   private async addNewBid(transaction: Transaction, payment: Transaction): Promise<void> {
-    const nftDocRef = soonDb().collection(COL.NFT).doc(transaction.payload.nft);
-    const paymentDocRef = soonDb().collection(COL.TRANSACTION).doc(payment.uid);
+    const nftDocRef = build5Db().collection(COL.NFT).doc(transaction.payload.nft!);
+    const paymentDocRef = build5Db().doc(`${COL.TRANSACTION}/${payment.uid}`);
     const nft = await this.transactionService.get<Nft>(nftDocRef);
     let newValidPayment = false;
-    let previousHighestPay: TransactionPayment | undefined;
-    const paymentPayload = <PaymentTransaction>payment.payload;
+    let previousHighestPay: Transaction | undefined;
+    const paymentPayload = payment.payload;
     if (nft?.auctionHighestTransaction) {
-      const previousHighestPayRef = soonDb()
-        .collection(COL.TRANSACTION)
-        .doc(nft?.auctionHighestTransaction);
+      const previousHighestPayRef = build5Db().doc(
+        `${COL.TRANSACTION}/${nft?.auctionHighestTransaction}`,
+      );
       previousHighestPay = (await this.transactionService.get<Transaction>(previousHighestPayRef))!;
 
       if (
-        previousHighestPay.payload.amount < paymentPayload.amount &&
-        paymentPayload.amount >= (nft?.auctionFloorPrice || 0)
+        previousHighestPay.payload.amount! < paymentPayload.amount! &&
+        paymentPayload.amount! >= (nft?.auctionFloorPrice || 0)
       ) {
         newValidPayment = true;
       }
     } else {
-      if (paymentPayload.amount >= (nft?.auctionFloorPrice || 0)) {
+      if (paymentPayload.amount! >= (nft?.auctionFloorPrice || 0)) {
         newValidPayment = true;
       }
     }
 
     // We need to credit the old payment.
     if (newValidPayment && previousHighestPay) {
-      const refPrevPayment = soonDb().collection(COL.TRANSACTION).doc(previousHighestPay.uid);
+      const refPrevPayment = build5Db().doc(`${COL.TRANSACTION}/${previousHighestPay.uid}`);
       previousHighestPay.payload.invalidPayment = true;
       this.transactionService.push({
         ref: refPrevPayment,
@@ -224,17 +220,17 @@ export class NftService {
       // Mark as invalid and create credit.
       const sameOwner = previousHighestPay.member === transaction.member;
       const credit = await this.transactionService.createCredit(
-        TransactionCreditType.DATA_NO_LONGER_VALID,
+        TransactionPayloadType.DATA_NO_LONGER_VALID,
         previousHighestPay,
         {
-          msgId: previousHighestPay.payload.chainReference,
+          msgId: previousHighestPay.payload.chainReference!,
           to: {
-            address: previousHighestPay.payload.targetAddress,
-            amount: previousHighestPay.payload.amount,
+            address: previousHighestPay.payload.targetAddress!,
+            amount: previousHighestPay.payload.amount!,
           },
           from: {
-            address: previousHighestPay.payload.sourceAddress,
-            amount: previousHighestPay.payload.amount,
+            address: previousHighestPay.payload.sourceAddress!,
+            amount: previousHighestPay.payload.amount!,
           },
         },
         dateToTimestamp(dayjs(payment.createdOn?.toDate()).subtract(1, 's')),
@@ -246,7 +242,7 @@ export class NftService {
         const sourcTran: string = Array.isArray(previousHighestPay.payload.sourceTransaction)
           ? last(previousHighestPay.payload.sourceTransaction)!
           : previousHighestPay.payload.sourceTransaction!;
-        const refHighTranOrderDocRef = soonDb().collection(COL.TRANSACTION).doc(sourcTran);
+        const refHighTranOrderDocRef = build5Db().doc(`${COL.TRANSACTION}/${sourcTran}`);
         const refHighTranOrder = await this.transactionService.get<Transaction>(
           refHighTranOrderDocRef,
         );
@@ -263,14 +259,14 @@ export class NftService {
           });
 
           // Notify them.
-          const refMember = soonDb().collection(COL.MEMBER).doc(refHighTranOrder?.member!);
+          const refMember = build5Db().collection(COL.MEMBER).doc(refHighTranOrder?.member!);
           const sfDocMember = await this.transactionService.get<Member>(refMember);
           const bidNotification: Notification = NotificationService.prepareLostBid(
             sfDocMember!,
             nft!,
             previousHighestPay,
           );
-          const refNotification = soonDb().collection(COL.NOTIFICATION).doc(bidNotification.uid);
+          const refNotification = build5Db().collection(COL.NOTIFICATION).doc(bidNotification.uid);
           this.transactionService.push({
             ref: refNotification,
             data: bidNotification,
@@ -285,17 +281,17 @@ export class NftService {
       this.transactionService.push({
         ref: nftDocRef,
         data: {
-          auctionHighestBid: (<OrderPayBillCreditTransaction>payment.payload).amount,
+          auctionHighestBid: payment.payload.amount,
           auctionHighestBidder: payment.member,
           auctionHighestTransaction: payment.uid,
         },
         action: 'update',
       });
 
-      const refMember = soonDb().collection(COL.MEMBER).doc(transaction.member!);
+      const refMember = build5Db().collection(COL.MEMBER).doc(transaction.member!);
       const sfDocMember = await this.transactionService.get<Member>(refMember);
       const bidNotification = NotificationService.prepareBid(sfDocMember!, nft!, payment);
-      const refNotification = soonDb().collection(COL.NOTIFICATION).doc(bidNotification.uid);
+      const refNotification = build5Db().collection(COL.NOTIFICATION).doc(bidNotification.uid);
       this.transactionService.push({
         ref: refNotification,
         data: bidNotification,
@@ -307,22 +303,22 @@ export class NftService {
       this.transactionService.push({ ref: paymentDocRef, data: payment, action: 'update' });
 
       // No valid payment so we credit anyways.
-      await this.transactionService.createCredit(TransactionCreditType.INVALID_PAYMENT, payment, {
-        msgId: paymentPayload.chainReference,
+      await this.transactionService.createCredit(TransactionPayloadType.INVALID_PAYMENT, payment, {
+        msgId: paymentPayload.chainReference!,
         to: {
-          address: paymentPayload.targetAddress,
-          amount: paymentPayload.amount,
+          address: paymentPayload.targetAddress!,
+          amount: paymentPayload.amount!,
         },
         from: {
-          address: paymentPayload.sourceAddress,
-          amount: paymentPayload.amount,
+          address: paymentPayload.sourceAddress!,
+          amount: paymentPayload.amount!,
         },
       });
     }
   }
 
   private async setNftOwner(order: Transaction, payment: Transaction): Promise<void> {
-    const nftDocRef = soonDb().collection(COL.NFT).doc(payment.payload.nft);
+    const nftDocRef = build5Db().collection(COL.NFT).doc(payment.payload.nft!);
     const nft = <Nft>await this.transactionService.get(nftDocRef);
 
     const nftUpdateData = {
@@ -352,9 +348,14 @@ export class NftService {
       action: 'update',
     });
 
-    if (nft.auctionHighestTransaction && order.payload.type === TransactionOrderType.NFT_PURCHASE) {
-      const highestTranDocRef = soonDb().doc(`${COL.TRANSACTION}/${nft.auctionHighestTransaction}`);
-      const highestPay = <TransactionPayment>await highestTranDocRef.get();
+    if (
+      nft.auctionHighestTransaction &&
+      order.payload.type === TransactionPayloadType.NFT_PURCHASE
+    ) {
+      const highestTranDocRef = build5Db().doc(
+        `${COL.TRANSACTION}/${nft.auctionHighestTransaction}`,
+      );
+      const highestPay = (await highestTranDocRef.get<Transaction>())!;
       this.transactionService.push({
         ref: highestTranDocRef,
         data: { invalidPayment: true },
@@ -363,17 +364,17 @@ export class NftService {
 
       const sameOwner = highestPay.member === order.member;
       const credit = await this.transactionService.createCredit(
-        TransactionCreditType.NONE,
+        TransactionPayloadType.NONE,
         highestPay,
         {
-          msgId: highestPay.payload.chainReference,
+          msgId: highestPay.payload.chainReference || '',
           to: {
-            address: highestPay.payload.targetAddress,
-            amount: highestPay.payload.amount,
+            address: highestPay.payload.targetAddress!,
+            amount: highestPay.payload.amount!,
           },
           from: {
-            address: highestPay.payload.sourceAddress,
-            amount: highestPay.payload.amount,
+            address: highestPay.payload.sourceAddress!,
+            amount: highestPay.payload.amount!,
           },
         },
         serverTime(),
@@ -384,26 +385,26 @@ export class NftService {
         const orderId = Array.isArray(highestPay.payload.sourceTransaction)
           ? last(highestPay.payload.sourceTransaction)!
           : highestPay.payload.sourceTransaction!;
-        const orderDocRef = soonDb().collection(COL.TRANSACTION).doc(orderId);
+        const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${orderId}`);
         this.transactionService.push({
           ref: orderDocRef,
-          data: { linkedTransactions: soonDb().arrayUnion(credit?.uid) },
+          data: { linkedTransactions: build5Db().arrayUnion(credit?.uid) },
           action: 'update',
         });
       }
     }
 
     if (order.payload.beneficiary === 'space') {
-      const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${payment.payload.collection}`);
+      const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${payment.payload.collection}`);
       this.transactionService.push({
         ref: collectionDocRef,
-        data: { sold: soonDb().inc(1) },
+        data: { sold: build5Db().inc(1) },
         action: 'update',
       });
 
       const collection = (await this.transactionService.get<Collection>(collectionDocRef))!;
       if (collection.placeholderNft && collection.total === collection.sold + 1) {
-        const placeholderNftDocRef = soonDb().doc(`${COL.NFT}/${collection.placeholderNft}`);
+        const placeholderNftDocRef = build5Db().doc(`${COL.NFT}/${collection.placeholderNft}`);
         this.transactionService.push({
           ref: placeholderNftDocRef,
           data: {
@@ -421,11 +422,11 @@ export class NftService {
   }
 
   private setTradingStats = (nft: Nft) => {
-    const data = { lastTradedOn: serverTime(), totalTrades: soonDb().inc(1) };
-    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nft.collection}`);
+    const data = { lastTradedOn: serverTime(), totalTrades: build5Db().inc(1) };
+    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nft.collection}`);
     this.transactionService.push({ ref: collectionDocRef, data, action: 'update' });
 
-    const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+    const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
     this.transactionService.push({ ref: nftDocRef, data, action: 'update' });
   };
 }

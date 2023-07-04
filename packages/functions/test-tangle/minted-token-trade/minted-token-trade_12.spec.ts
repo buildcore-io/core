@@ -8,10 +8,10 @@ import {
   TokenTradeOrder,
   TokenTradeOrderStatus,
   Transaction,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { cancelExpiredSale } from '../../src/cron/token.cron';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { wait } from '../../test/controls/common';
@@ -33,29 +33,29 @@ describe('Token minting', () => {
     await helper.createSellTradeOrder(5, MIN_IOTA_AMOUNT);
     await helper.createBuyOrder();
 
-    const query = soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer);
+    const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer);
     await wait(async () => {
       const orders = (await query.get()).map((d) => <TokenTradeOrder>d);
       return orders.length === 1 && orders[0].fulfilled === 5;
     });
     let buy = <TokenTradeOrder>(await query.get())[0];
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TOKEN_MARKET}/${buy.uid}`)
       .update({ expiresAt: dateToTimestamp(dayjs().subtract(1, 'd').toDate()) });
 
     await cancelExpiredSale();
 
-    const buyQuery = soonDb().doc(`${COL.TOKEN_MARKET}/${buy.uid}`);
+    const buyQuery = build5Db().doc(`${COL.TOKEN_MARKET}/${buy.uid}`);
     await wait(async () => {
       buy = <TokenTradeOrder>await buyQuery.get();
       return buy.status === TokenTradeOrderStatus.EXPIRED;
     });
 
     const credit = <Transaction>(
-      await soonDb().doc(`${COL.TRANSACTION}/${buy.creditTransactionId}`).get()
+      await build5Db().doc(`${COL.TRANSACTION}/${buy.creditTransactionId}`).get()
     );
     expect(credit.member).toBe(helper.buyer);
-    const buyer = <Member>await soonDb().doc(`${COL.MEMBER}/${helper.buyer!}`).get();
+    const buyer = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.buyer!}`).get();
     expect(credit.payload.targetAddress).toBe(getAddress(buyer, Network.RMS));
     expect(credit.payload.amount).toBe(5 * MIN_IOTA_AMOUNT);
 
@@ -66,32 +66,32 @@ describe('Token minting', () => {
     await helper.createBuyOrder(5, MIN_IOTA_AMOUNT);
     await helper.createSellTradeOrder();
 
-    const query = soonDb().collection(COL.TOKEN_MARKET).where('owner', '==', helper.seller);
+    const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', helper.seller);
     await wait(async () => {
       const orders = (await query.get()).map((d) => <TokenTradeOrder>d);
       return orders.length === 1 && orders[0].fulfilled === 5;
     });
     let sell = <TokenTradeOrder>(await query.get())[0];
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TOKEN_MARKET}/${sell.uid}`)
       .update({ expiresAt: dateToTimestamp(dayjs().subtract(1, 'd').toDate()) });
 
     await cancelExpiredSale();
 
-    const sellQuery = soonDb().doc(`${COL.TOKEN_MARKET}/${sell.uid}`);
+    const sellQuery = build5Db().doc(`${COL.TOKEN_MARKET}/${sell.uid}`);
     await wait(async () => {
       sell = <TokenTradeOrder>await sellQuery.get();
       return sell.status === TokenTradeOrderStatus.EXPIRED;
     });
 
     const credit = <Transaction>(
-      await soonDb().doc(`${COL.TRANSACTION}/${sell.creditTransactionId}`).get()
+      await build5Db().doc(`${COL.TRANSACTION}/${sell.creditTransactionId}`).get()
     );
     expect(credit.member).toBe(helper.seller);
-    const seller = <Member>await soonDb().doc(`${COL.MEMBER}/${helper.seller!}`).get();
+    const seller = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.seller!}`).get();
     expect(credit.payload.targetAddress).toBe(getAddress(seller, Network.RMS));
     expect(credit.payload.amount).toBe(49600);
-    expect(credit.payload.nativeTokens[0].amount).toBe(5);
+    expect(credit.payload.nativeTokens![0].amount).toBe('5');
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
   });

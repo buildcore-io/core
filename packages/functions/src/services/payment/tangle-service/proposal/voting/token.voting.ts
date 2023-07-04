@@ -1,14 +1,14 @@
-import { HexHelper } from '@iota/util.js-next';
 import {
   Network,
   Proposal,
+  TRANSACTION_AUTO_EXPIRY_MS,
   Token,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
-  TRANSACTION_AUTO_EXPIRY_MS,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
+import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { packBasicOutput } from '../../../../../utils/basic-output.utils';
@@ -23,7 +23,7 @@ export const createVoteTransactionOrder = async (
   proposal: Proposal,
   voteValues: number[],
   token: Token,
-) => {
+): Promise<Transaction> => {
   const network = isProdEnv() ? Network.SMR : Network.RMS;
   const wallet = (await WalletService.newWallet(network)) as SmrWallet;
   const targetAddress = await wallet.getNewIotaAddressDetails();
@@ -40,14 +40,14 @@ export const createVoteTransactionOrder = async (
     targetAddress.bech32,
   );
 
-  return <Transaction>{
+  return {
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,
     space: proposal.space,
     network,
     payload: {
-      type: TransactionOrderType.PROPOSAL_VOTE,
+      type: TransactionPayloadType.PROPOSAL_VOTE,
       amount: Number(output.amount),
       targetAddress: targetAddress.bech32,
       expiresOn: dateToTimestamp(getExpiresOn(proposal)),

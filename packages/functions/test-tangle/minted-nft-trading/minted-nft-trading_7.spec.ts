@@ -1,5 +1,5 @@
-import { IndexerPluginClient } from '@iota/iota.js-next';
 import {
+  BaseTangleResponse,
   COL,
   Collection,
   MIN_IOTA_AMOUNT,
@@ -8,10 +8,11 @@ import {
   NftStatus,
   TangleRequestType,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
-} from '@soonaverse/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { IndexerPluginClient } from '@iota/iota.js-next';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
@@ -42,7 +43,7 @@ describe('Minted nft trading', () => {
 
     await helper.walletService!.send(
       address,
-      tangleOrder.payload.targetAddress,
+      tangleOrder.payload.targetAddress!,
       0.5 * MIN_IOTA_AMOUNT,
       {
         customMetadata: {
@@ -56,7 +57,7 @@ describe('Minted nft trading', () => {
     );
     await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
 
-    const creditQuery = soonDb()
+    const creditQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', address.bech32)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
@@ -67,23 +68,19 @@ describe('Minted nft trading', () => {
 
     const snap = await creditQuery.get<Transaction>();
     const credit = snap[0];
+    const response = credit.payload.response as BaseTangleResponse;
 
-    await helper.walletService!.send(
-      address,
-      credit.payload.response.address,
-      credit.payload.response.requiredAmount,
-      {},
-    );
+    await helper.walletService!.send(address, response.address!, response.amount!, {});
     await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
 
-    const nftDocRef = soonDb().doc(`${COL.NFT}/${helper.nft?.uid}`);
+    const nftDocRef = build5Db().doc(`${COL.NFT}/${helper.nft?.uid}`);
     await wait(async () => {
       const nft = <Nft>await nftDocRef.get();
       return nft.status === NftStatus.WITHDRAWN;
     });
 
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.TRANSACTION)
         .where('member', '==', address.bech32)
         .where('type', '==', TransactionType.WITHDRAW_NFT)
@@ -95,18 +92,18 @@ describe('Minted nft trading', () => {
     const nftOutputIds = await indexer.nfts({ addressBech32: address.bech32 });
     expect(nftOutputIds.items.length).toBe(1);
 
-    const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${helper.nft?.collection}`);
+    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${helper.nft?.collection}`);
     const collection = <Collection>await collectionDocRef.get();
     expect(collection.nftsOnSale).toBe(0);
     expect(collection.nftsOnAuction).toBe(0);
 
-    const orders = await soonDb()
+    const orders = await build5Db()
       .collection(COL.TRANSACTION)
-      .where('payload.type', '==', TransactionOrderType.NFT_PURCHASE)
+      .where('payload.type', '==', TransactionPayloadType.NFT_PURCHASE)
       .where('payload.nft', '==', helper.nft!.uid)
       .get<Transaction>();
 
-    const billPayments = await soonDb()
+    const billPayments = await build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)
       .where('payload.nft', '==', helper.nft!.uid)

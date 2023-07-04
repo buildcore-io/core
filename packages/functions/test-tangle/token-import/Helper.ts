@@ -1,5 +1,5 @@
-import { COL, Member, Network, Space, SUB_COL, Token, TokenStatus } from '@soonaverse/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { COL, Member, Network, Space, SUB_COL, Token, TokenStatus } from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails } from '../../src/services/wallet/wallet';
@@ -34,7 +34,7 @@ export class Helper {
 
     const guardianId = await createMember(this.walletSpy);
     this.member = await createMember(this.walletSpy);
-    this.guardian = <Member>await soonDb().doc(`${COL.MEMBER}/${guardianId}`).get();
+    this.guardian = <Member>await build5Db().doc(`${COL.MEMBER}/${guardianId}`).get();
     this.space = await createSpace(this.walletSpy, this.guardian.uid);
     this.importSpace = await createSpace(this.walletSpy, this.guardian.uid);
     this.token = await this.saveToken(this.space.uid, this.guardian.uid, this.member);
@@ -50,7 +50,7 @@ export class Helper {
     const order = await testEnv.wrap(mintTokenOrder)({});
     await requestFundsFromFaucet(this.network, order.payload.targetAddress, order.payload.amount);
 
-    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${this.token.uid}`);
+    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${this.token.uid}`);
     await wait(async () => {
       this.token = <Token>await tokenDocRef.get();
       return this.token.status === TokenStatus.MINTED;
@@ -77,8 +77,8 @@ export class Helper {
       icon: MEDIA,
       decimals: 4,
     };
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
-    await soonDb()
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+    await build5Db()
       .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`)
       .set({ tokenOwned: 1000 });
     return <Token>token;

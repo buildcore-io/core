@@ -10,9 +10,9 @@ import {
   TokenTradeOrderStatus,
   TokenTradeOrderType,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { enableTokenTrading } from '../../src/runtime/firebase/token/base';
 import { cancelTradeOrder, tradeToken } from '../../src/runtime/firebase/token/trading';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -48,9 +48,9 @@ describe('Trade controller, sell token', () => {
       approved: true,
       space: space.uid,
     };
-    await soonDb().doc(`${COL.TOKEN}/${tokenId}`).set(token);
+    await build5Db().doc(`${COL.TOKEN}/${tokenId}`).set(token);
     const distribution = <TokenDistribution>{ tokenOwned: 10 };
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}/${memberAddress}`)
       .set(distribution);
   });
@@ -68,13 +68,13 @@ describe('Trade controller, sell token', () => {
     expect(sell.price).toBe(MIN_IOTA_AMOUNT);
     expect(sell.tokenStatus).toBe(TokenStatus.AVAILABLE);
 
-    const distribution = await soonDb()
+    const distribution = await build5Db()
       .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`)
       .get<TokenDistribution>();
     expect(distribution?.lockedForSale).toBe(5);
 
     await wait(async () => {
-      const doc = <TokenTradeOrder>await soonDb().doc(`${COL.TOKEN_MARKET}/${sell.uid}`).get();
+      const doc = <TokenTradeOrder>await build5Db().doc(`${COL.TOKEN_MARKET}/${sell.uid}`).get();
       return (
         doc.updatedOn !== undefined &&
         dayjs(doc.updatedOn.toDate()).isAfter(doc.createdOn!.toDate())
@@ -86,7 +86,7 @@ describe('Trade controller, sell token', () => {
     const cancelled = await testEnv.wrap(cancelTradeOrder)({});
     expect(cancelled.status).toBe(TokenTradeOrderStatus.CANCELLED);
 
-    const cancelledDistribution = await soonDb()
+    const cancelledDistribution = await build5Db()
       .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`)
       .get<TokenDistribution>();
     expect(cancelledDistribution?.lockedForSale).toBe(0);
@@ -160,7 +160,7 @@ describe('Trade controller, sell token', () => {
     mockWalletReturnValue(walletSpy, memberAddress, cancelRequest);
     await testEnv.wrap(cancelTradeOrder)({});
 
-    const distribution = await soonDb()
+    const distribution = await build5Db()
       .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`)
       .get<TokenDistribution>();
     expect(distribution?.lockedForSale).toBe(5);
@@ -175,7 +175,7 @@ describe('Trade controller, sell token', () => {
   });
 
   it('Should update sale lock properly', async () => {
-    const distDocRef = soonDb().doc(
+    const distDocRef = build5Db().doc(
       `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`,
     );
     const count = 3;
@@ -204,7 +204,7 @@ describe('Trade controller, sell token', () => {
   });
 
   it('Should throw, token not approved', async () => {
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false });
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false });
     mockWalletReturnValue(walletSpy, memberAddress, {
       symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,
@@ -260,7 +260,9 @@ describe('Trade controller, sell token', () => {
   });
 
   it('Should fail first, tading disabled, then succeeed', async () => {
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ tradingDisabled: true, public: true });
+    await build5Db()
+      .doc(`${COL.TOKEN}/${token.uid}`)
+      .update({ tradingDisabled: true, public: true });
     const request = {
       symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,

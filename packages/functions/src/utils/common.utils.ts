@@ -1,20 +1,4 @@
-import {
-  Access,
-  BillPaymentTransaction,
-  Collection,
-  CreditPaymentTransaction,
-  MIN_AMOUNT_TO_TRANSFER,
-  Nft,
-  OrderTransaction,
-  PaymentTransaction,
-  Restrictions,
-} from '@soonaverse/interfaces';
-
-export type OrderPayBillCreditTransaction =
-  | OrderTransaction
-  | PaymentTransaction
-  | BillPaymentTransaction
-  | CreditPaymentTransaction;
+import { Access, Collection, MIN_AMOUNT_TO_TRANSFER, Nft, Restrictions } from '@build-5/interfaces';
 
 const MAX_RERUNS = 10;
 

@@ -1,4 +1,4 @@
-import { Transaction } from '@soonaverse/interfaces';
+import { Transaction } from '@build-5/interfaces';
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import serviceAccount from './serviceAccountKeyProd.json';

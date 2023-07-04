@@ -1,41 +1,48 @@
 import {
   Award,
   AwardBadgeType,
+  AwardFundTangleRequest,
   COL,
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
+import { BaseTangleResponse } from '@build-5/interfaces/lib/api/tangle/common';
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
-import { soonDb } from '../../../../firebase/firestore/soondb';
+import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { uidSchema } from '../../../../runtime/firebase/common';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
+import { toJoiObject } from '../../../joi/common';
 import { WalletService } from '../../../wallet/wallet';
 import { TransactionService } from '../../transaction-service';
 
+const schema = toJoiObject<AwardFundTangleRequest>(uidSchema);
 export class AwardFundService {
   constructor(readonly transactionService: TransactionService) {}
 
-  public handleFundRequest = async (owner: string, request: Record<string, unknown>) => {
+  public handleFundRequest = async (
+    owner: string,
+    request: Record<string, unknown>,
+  ): Promise<BaseTangleResponse> => {
     delete request.requestType;
-    await assertValidationAsync(uidSchema, request);
+    await assertValidationAsync(schema, request);
 
     const award = await getAwardForFunding(owner, request.uid as string);
     const order = await createAwardFundOrder(owner, award);
-    const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
     this.transactionService.push({ ref: orderDocRef, data: order, action: 'set' });
 
     const response = {
-      amount: order.payload.amount,
-      address: order.payload.targetAddress,
+      amount: order.payload.amount!,
+      address: order.payload.targetAddress!,
     };
     if (!isEmpty(order.payload.nativeTokens)) {
       set(response, 'nativeTokens', order.payload.nativeTokens);
@@ -45,7 +52,7 @@ export class AwardFundService {
   };
 }
 
-export const createAwardFundOrder = async (owner: string, award: Award) => {
+export const createAwardFundOrder = async (owner: string, award: Award): Promise<Transaction> => {
   const isNativeBadge = award.badge.type === AwardBadgeType.NATIVE;
   const amount =
     award.aliasStorageDeposit +
@@ -57,15 +64,15 @@ export const createAwardFundOrder = async (owner: string, award: Award) => {
   const wallet = await WalletService.newWallet(award.network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
 
-  const nativeTokens = [{ id: award.badge.tokenId, amount: totalReward }];
-  return <Transaction>{
+  const nativeTokens = [{ id: award.badge.tokenId!, amount: totalReward.toString() }];
+  return {
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,
     space: award.space,
     network: award.network,
     payload: {
-      type: TransactionOrderType.FUND_AWARD,
+      type: TransactionPayloadType.FUND_AWARD,
       amount: isNativeBadge ? amount : amount + totalReward,
       nativeTokens: isNativeBadge && totalReward ? nativeTokens : [],
       targetAddress: targetAddress.bech32,
@@ -79,7 +86,7 @@ export const createAwardFundOrder = async (owner: string, award: Award) => {
 };
 
 export const getAwardForFunding = async (owner: string, awardId: string) => {
-  const awardDocRef = soonDb().doc(`${COL.AWARD}/${awardId}`);
+  const awardDocRef = build5Db().doc(`${COL.AWARD}/${awardId}`);
   const award = await awardDocRef.get<Award>();
 
   if (!award) {

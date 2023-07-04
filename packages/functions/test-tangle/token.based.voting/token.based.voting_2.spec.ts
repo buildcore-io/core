@@ -1,4 +1,4 @@
-import { MIN_IOTA_AMOUNT } from '@soonaverse/interfaces';
+import { MIN_IOTA_AMOUNT } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { wait } from '../../test/controls/common';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
@@ -34,7 +34,7 @@ describe('Token based voting', () => {
     await helper.sendTokensToVote(helper.guardianAddress!.bech32);
     await wait(async () => {
       const voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
-      return +voteTransaction.payload.weight.toFixed(2) === 5;
+      return +voteTransaction.payload.weight!.toFixed(2) === 5;
     });
     await helper.assertProposalWeights(5, 5);
     await helper.assertProposalMemberWeightsPerAnser(helper.guardian, 5, 1);
@@ -45,7 +45,7 @@ describe('Token based voting', () => {
       voteTransactionOrder.payload.targetAddress,
     );
     voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
-    expect(+voteTransaction.payload.weight.toFixed(2)).toBe(5);
+    expect(+voteTransaction.payload.weight!.toFixed(2)).toBe(5);
     await helper.assertProposalWeights(10, 10);
     await helper.assertProposalMemberWeightsPerAnser(helper.guardian, 10, 1);
   });
@@ -81,7 +81,7 @@ describe('Token based voting', () => {
       voteTransactionOrder.payload.targetAddress,
     );
     voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
-    expect(+voteTransaction.payload.weight.toFixed(2)).toBe(5);
+    expect(+voteTransaction.payload.weight!.toFixed(2)).toBe(5);
     await helper.assertProposalWeights(15, 15);
     await helper.assertProposalMemberWeightsPerAnser(helper.guardian, 15, 1);
   });

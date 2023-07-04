@@ -1,14 +1,12 @@
-import { COL, SUB_COL } from '@soonaverse/interfaces';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { COL, SUB_COL, SpaceMemberUpsertRequest } from '@build-5/interfaces';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { assertIsGuardian } from '../../utils/token.utils';
 
-export const unblockMemberControl = async (owner: string, params: Record<string, unknown>) => {
-  await assertIsGuardian(params.uid as string, owner);
+export const unblockMemberControl = async (owner: string, params: SpaceMemberUpsertRequest) => {
+  await assertIsGuardian(params.uid, owner);
 
-  const spaceDocRef = soonDb().doc(`${COL.SPACE}/${params.uid}`);
-  const blockedMemberDocRef = spaceDocRef
-    .collection(SUB_COL.BLOCKED_MEMBERS)
-    .doc(params.member as string);
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
+  const blockedMemberDocRef = spaceDocRef.collection(SUB_COL.BLOCKED_MEMBERS).doc(params.member);
   await blockedMemberDocRef.delete();
 
   return { status: 'success' };

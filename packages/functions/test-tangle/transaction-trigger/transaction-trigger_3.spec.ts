@@ -1,15 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build-5/interfaces';
 import { addressBalance } from '@iota/iota.js-next';
-import {
-  COL,
-  MIN_IOTA_AMOUNT,
-  Network,
-  Transaction,
-  TransactionType,
-} from '@soonaverse/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
-import { MnemonicService } from '../../src/services/wallet/mnemonic';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
+import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { packBasicOutput } from '../../src/utils/basic-output.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
@@ -49,21 +43,21 @@ describe('Transaction trigger spec', () => {
     );
     await requestFundsFromFaucet(network, sourceAddress.bech32, Number(output.amount));
 
-    let billPayment = <Transaction>{
+    let billPayment: Transaction = {
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       createdOn: serverTime(),
       network,
       payload: {
         amount: Number(output.amount),
-        nativeTokens: [{ amount: 1, id: MINTED_TOKEN_ID }],
+        nativeTokens: [{ amount: '1', id: MINTED_TOKEN_ID }],
         storageDepositSourceAddress: sourceAddress.bech32,
         sourceAddress: vaultAddress.bech32,
         targetAddress: targetAddress.bech32,
         void: false,
       },
     };
-    await soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
+    await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
 
     await wait(async () => {
       const balance = await addressBalance(wallet.client, targetAddress.bech32);
@@ -75,7 +69,9 @@ describe('Transaction trigger spec', () => {
     });
 
     await wait(async () => {
-      billPayment = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get();
+      billPayment = <Transaction>(
+        await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()
+      );
       return billPayment.payload?.walletReference?.confirmed;
     });
   });

@@ -1,17 +1,13 @@
-import {
-  COL,
-  GetAddressesRequest,
-  MAX_MILLISECONDS,
-  Mnemonic,
-  Network,
-} from '@soonaverse/interfaces';
+import { COL, GetAddressesRequest, MAX_MILLISECONDS, Mnemonic, Network } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
 import { get } from 'lodash';
-import { soonDb } from '../firebase/firestore/soondb';
-import { getQueryParams } from './common';
+import { map } from 'rxjs';
+import { build5Db } from '../firebase/firestore/build5Db';
+import { CommonJoi } from '../services/joi/common';
+import { getQueryParams, queryToObservable } from './common';
 import { sendLiveUpdates } from './keepAlive';
 
 const getAddressesSchema = Joi.object({
@@ -19,7 +15,7 @@ const getAddressesSchema = Joi.object({
     .equal(...Object.values(Network))
     .required(),
   createdAfter: Joi.number().min(0).max(MAX_MILLISECONDS).integer().required(),
-  live: Joi.boolean().optional(),
+  sessionId: CommonJoi.sessionId(),
 });
 
 export const getAddresses = async (req: functions.https.Request, res: express.Response) => {
@@ -28,15 +24,18 @@ export const getAddresses = async (req: functions.https.Request, res: express.Re
     return;
   }
 
-  const query = soonDb()
+  const query = build5Db()
     .collection(COL.MNEMONIC)
     .where('network', '==', body.network)
     .orderBy('createdOn')
     .startAfter(dayjs(body.createdAfter).toDate())
     .limit(1000);
 
-  if (body.live) {
-    await sendLiveUpdates(res, query.onSnapshot, (snap: Mnemonic[]) => snap.map(sanitizeMnemonic));
+  if (body.sessionId) {
+    const observable = queryToObservable<Mnemonic>(query).pipe(
+      map((mnemonics) => mnemonics.map(sanitizeMnemonic)),
+    );
+    await sendLiveUpdates(body.sessionId, res, observable);
     return;
   }
 

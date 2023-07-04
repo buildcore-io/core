@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { HexHelper } from '@iota/util.js-next';
 import {
   COL,
+  IgnoreWalletReason,
   MIN_IOTA_AMOUNT,
   TokenTradeOrderType,
   Transaction,
-  TransactionIgnoreWalletReason,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
+import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { creditUnrefundable } from '../../src/runtime/firebase/credit/index';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -37,13 +37,13 @@ describe('Token minting', () => {
       type: TokenTradeOrderType.SELL,
     });
     const sellOrder: Transaction = await testEnv.wrap(tradeToken)({});
-    await helper.walletService!.send(helper.sellerAddress!, sellOrder.payload.targetAddress, 0, {
+    await helper.walletService!.send(helper.sellerAddress!, sellOrder.payload.targetAddress!, 0, {
       nativeTokens: [
         { amount: HexHelper.fromBigInt256(bigInt(10)), id: helper.token!.mintingData?.tokenId! },
       ],
       storageDepositReturnAddress: helper.sellerAddress?.bech32,
     });
-    const query = soonDb()
+    const query = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.seller);
@@ -52,7 +52,7 @@ describe('Token minting', () => {
       return (
         snap.length === 1 &&
         snap[0]!.ignoreWalletReason ===
-          TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION &&
+          IgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION &&
         snap[0]!.payload.targetAddress === helper.sellerAddress!.bech32
       );
     });
@@ -69,7 +69,7 @@ describe('Token minting', () => {
     });
     const creditStorageTran = <Transaction>(
       (
-        await soonDb()
+        await build5Db()
           .collection(COL.TRANSACTION)
           .where('type', '==', TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED)
           .where('member', '==', helper.seller)
@@ -108,13 +108,13 @@ describe('Token minting', () => {
       type: TokenTradeOrderType.SELL,
     });
     const sellOrder: Transaction = await testEnv.wrap(tradeToken)({});
-    await helper.walletService!.send(helper.sellerAddress!, sellOrder.payload.targetAddress, 0, {
+    await helper.walletService!.send(helper.sellerAddress!, sellOrder.payload.targetAddress!, 0, {
       nativeTokens: [
         { amount: HexHelper.fromBigInt256(bigInt(10)), id: helper.token!.mintingData?.tokenId! },
       ],
       storageDepositReturnAddress: helper.sellerAddress?.bech32,
     });
-    const query = soonDb()
+    const query = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.seller);
@@ -123,7 +123,7 @@ describe('Token minting', () => {
       return (
         snap.length === 1 &&
         snap[0]!.ignoreWalletReason ===
-          TransactionIgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION &&
+          IgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION &&
         snap[0]!.payload.targetAddress === helper.sellerAddress!.bech32
       );
     });
@@ -142,7 +142,7 @@ describe('Token minting', () => {
     );
 
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
         .where('member', '==', helper.seller)
@@ -150,7 +150,9 @@ describe('Token minting', () => {
       return snap.length == 2;
     });
 
-    const transaction = <Transaction>await soonDb().doc(`${COL.TRANSACTION}/${snap[0].uid}`).get();
+    const transaction = <Transaction>(
+      await build5Db().doc(`${COL.TRANSACTION}/${snap[0].uid}`).get()
+    );
     expect(transaction.payload.unlockedBy).toBeDefined();
   });
 });

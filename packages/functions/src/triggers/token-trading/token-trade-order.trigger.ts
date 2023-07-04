@@ -8,10 +8,11 @@ import {
   TokenTradeOrderStatus,
   TokenTradeOrderType,
   WEN_FUNC_TRIGGER,
-} from '@soonaverse/interfaces';
-import * as functions from 'firebase-functions';
+} from '@build-5/interfaces';
+import * as functions from 'firebase-functions/v2';
+import { DocumentOptions } from 'firebase-functions/v2/firestore';
 import bigDecimal from 'js-big-decimal';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { scale } from '../../scale.settings';
 import { getStakeForType, getTier } from '../../services/stake.service';
 import { cancelTradeOrderUtil } from '../../utils/token-trade.utils';
@@ -19,17 +20,16 @@ import { BIG_DECIMAL_PRECISION, getSoonToken } from '../../utils/token.utils';
 import { matchTradeOrder } from './match-token';
 
 const runParams = {
+  document: `${COL.TOKEN_MARKET}/{tradeId}`,
   timeoutSeconds: 540,
-  memory: '512MB',
   minInstances: scale(WEN_FUNC_TRIGGER.onTokenTradeOrderWrite),
-} as functions.RuntimeOptions;
+} as DocumentOptions<string>;
 
-export const onTokenTradeOrderWrite = functions
-  .runWith(runParams)
-  .firestore.document(`${COL.TOKEN_MARKET}/{tradeId}`)
-  .onWrite(async (change) => {
-    const prev = <TokenTradeOrder | undefined>change.before.data();
-    const next = <TokenTradeOrder | undefined>change.after.data();
+export const onTokenTradeOrderWrite = functions.firestore.onDocumentWritten(
+  runParams,
+  async (event) => {
+    const prev = <TokenTradeOrder | undefined>event.data?.before?.data();
+    const next = <TokenTradeOrder | undefined>event.data?.after?.data();
     if (!next) {
       return;
     }
@@ -38,8 +38,8 @@ export const onTokenTradeOrderWrite = functions
       return await matchTradeOrder(next);
     }
 
-    return await soonDb().runTransaction(async (transaction) => {
-      const tradeOrderDocRef = soonDb().doc(`${COL.TOKEN_MARKET}/${next.uid}`);
+    return await build5Db().runTransaction(async (transaction) => {
+      const tradeOrderDocRef = build5Db().doc(`${COL.TOKEN_MARKET}/${next.uid}`);
       const tradeOrder = await transaction.get<TokenTradeOrder>(tradeOrderDocRef);
       if (tradeOrder && isActiveBuy(tradeOrder) && needsHigherBuyAmount(tradeOrder!)) {
         await cancelTradeOrderUtil(
@@ -49,7 +49,8 @@ export const onTokenTradeOrderWrite = functions
         );
       }
     });
-  });
+  },
+);
 
 const isActiveBuy = (sale?: TokenTradeOrder) =>
   sale?.type === TokenTradeOrderType.BUY && sale?.status === TokenTradeOrderStatus.ACTIVE;
@@ -64,7 +65,7 @@ const needsHigherBuyAmount = (buy: TokenTradeOrder) => {
 
 export const getMemberTier = async (member: Member) => {
   const soon = await getSoonToken();
-  const distributionDocRef = soonDb()
+  const distributionDocRef = build5Db()
     .collection(COL.TOKEN)
     .doc(soon.uid)
     .collection(SUB_COL.DISTRIBUTION)

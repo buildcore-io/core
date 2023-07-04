@@ -6,12 +6,11 @@ import {
   Network,
   TangleRequestType,
   Transaction,
-  TransactionOrder,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
 import { get } from 'lodash';
-import { soonDb } from '../../../firebase/firestore/soondb';
+import { build5Db } from '../../../firebase/firestore/build5Db';
 import { getOutputMetadata } from '../../../utils/basic-output.utils';
 import { invalidArgument } from '../../../utils/error.utils';
 import { getRandomNonce } from '../../../utils/wallet.utils';
@@ -20,7 +19,9 @@ import { TangleAddressValidationService } from './address-validation.service';
 import { AwardApproveParticipantService } from './award/award.approve.participant.service';
 import { AwardCreateService } from './award/award.create.service';
 import { AwardFundService } from './award/award.fund.service';
+import { MintMetadataNftService } from './metadataNft/mint-metadata-nft.service';
 import { TangleNftPurchaseService } from './nft-purchase.service';
+import { NftDepositService } from './nft/nft-deposit.service';
 import { ProposalApprovalService } from './proposal/ProposalApporvalService';
 import { ProposalCreateService } from './proposal/ProposalCreateService';
 import { ProposalVoteService } from './proposal/voting/ProposalVoteService';
@@ -38,11 +39,11 @@ export class TangleRequestService {
   constructor(readonly transactionService: TransactionService) {}
 
   public onTangleRequest = async (
-    order: TransactionOrder,
+    order: Transaction,
     tran: MilestoneTransaction,
     tranEntry: MilestoneTransactionEntry,
     match: TransactionMatch,
-    soonTransaction?: Transaction,
+    build5Transaction?: Transaction,
   ) => {
     let owner = match.from.address;
     let payment: Transaction | undefined;
@@ -59,10 +60,15 @@ export class TangleRequestService {
         tranEntry,
         owner,
         request,
-        soonTransaction,
+        build5Transaction,
       );
       if (response) {
-        this.transactionService.createTangleCredit(payment, match, response, tranEntry.outputId!);
+        this.transactionService.createTangleCredit(
+          payment,
+          match,
+          { ...response },
+          tranEntry.outputId!,
+        );
       }
     } catch (error) {
       functions.logger.warn(owner, error);
@@ -83,15 +89,19 @@ export class TangleRequestService {
   };
 
   public handleTangleRequest = async (
-    order: TransactionOrder,
+    order: Transaction,
     match: TransactionMatch,
     payment: Transaction,
     tran: MilestoneTransaction,
     tranEntry: MilestoneTransactionEntry,
     owner: string,
     request: Record<string, unknown>,
-    soonTransaction?: Transaction,
+    build5Transaction?: Transaction,
   ) => {
+    if (tranEntry.nftOutput) {
+      const service = new NftDepositService(this.transactionService);
+      return await service.handleNftDeposit(order.network!, owner, tran, tranEntry);
+    }
     switch (request.requestType) {
       case TangleRequestType.ADDRESS_VALIDATION: {
         const service = new TangleAddressValidationService(this.transactionService);
@@ -107,7 +117,7 @@ export class TangleRequestService {
           tranEntry,
           owner,
           request,
-          soonTransaction,
+          build5Transaction,
         );
       }
       case TangleRequestType.STAKE: {
@@ -176,13 +186,25 @@ export class TangleRequestService {
         const service = new SpaceCreateService(this.transactionService);
         return await service.handleSpaceCreateRequest(owner, request);
       }
+      case TangleRequestType.MINT_METADATA_NFT: {
+        const service = new MintMetadataNftService(this.transactionService);
+        return await service.handleMetadataNftMintRequest(
+          order.network!,
+          owner,
+          request,
+          match,
+          tran,
+          tranEntry,
+        );
+      }
+
       default:
         throw invalidArgument(WenError.invalid_tangle_request_type);
     }
   };
 
   private getOwner = async (senderAddress: string, network: Network) => {
-    const snap = await soonDb()
+    const snap = await build5Db()
       .collection(COL.MEMBER)
       .where(`validatedAddress.${network}`, '==', senderAddress)
       .get<Member>();
@@ -195,7 +217,7 @@ export class TangleRequestService {
       return snap[0].uid;
     }
 
-    const docRef = soonDb().doc(`${COL.MEMBER}/${senderAddress}`);
+    const docRef = build5Db().doc(`${COL.MEMBER}/${senderAddress}`);
     const member = <Member | undefined>await docRef.get();
     if (!member) {
       const memberData = {

@@ -1,7 +1,7 @@
-import { WEN_FUNC, WEN_FUNC_TRIGGER } from '@soonaverse/interfaces';
+import { WEN_FUNC, WEN_FUNC_TRIGGER } from '@build-5/interfaces';
 import { algoliaTrigger } from './algolia/algolia.trigger';
 import { validateAddress } from './runtime/firebase/address';
-import { generateCustomFirebaseToken } from './runtime/firebase/auth';
+import { generateCustomToken } from './runtime/firebase/auth';
 import {
   addOwnerAward,
   approveAwardParticipant,
@@ -52,6 +52,7 @@ import {
   updateSpace,
 } from './runtime/firebase/space';
 import { depositStake, removeStakeReward, stakeReward } from './runtime/firebase/stake';
+import { uploadFile } from './runtime/firebase/storage/file.upload';
 import {
   airdropToken,
   cancelPublicSale,
@@ -137,8 +138,7 @@ exports[WEN_FUNC.validateAddress] = validateAddress;
 
 export * from './api/index';
 export * from './cron';
-export { milestoneTriggers as trigger };
-export { algoliaTrigger };
+export { algoliaTrigger, milestoneTriggers as trigger };
 
 exports[WEN_FUNC.creditUnrefundable] = creditUnrefundable;
 exports[WEN_FUNC.mintCollection] = mintCollection;
@@ -198,8 +198,10 @@ exports['storage_trigger_resizeImage'] = resizeImageTrigger;
 exports[WEN_FUNC.stakeReward] = stakeReward;
 exports[WEN_FUNC.removeStakeReward] = removeStakeReward;
 
-exports[WEN_FUNC.generateCustomFirebaseToken] = generateCustomFirebaseToken;
+exports[WEN_FUNC.generateCustomToken] = generateCustomToken;
 
 exports[WEN_FUNC.claimSpace] = claimSpace;
 
 exports[WEN_FUNC.importMintedToken] = importMintedToken;
+
+exports[WEN_FUNC.uploadFile] = uploadFile;

@@ -1,12 +1,12 @@
-import { Award, COL, WenError } from '@soonaverse/interfaces';
+import { Award, AwardCancelRequest, COL, WenError } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 
-export const cancelAwardControl = (owner: string, params: Record<string, unknown>) =>
-  soonDb().runTransaction(async (transaction) => {
-    const awardDocRef = soonDb().doc(`${COL.AWARD}/${params.uid}`);
+export const cancelAwardControl = (owner: string, params: AwardCancelRequest): Promise<Award> =>
+  build5Db().runTransaction(async (transaction) => {
+    const awardDocRef = build5Db().doc(`${COL.AWARD}/${params.uid}`);
     const award = await transaction.get<Award>(awardDocRef);
 
     if (!award) {
@@ -23,4 +23,6 @@ export const cancelAwardControl = (owner: string, params: Record<string, unknown
 
     const data = { uid: award.uid, completed: true };
     transaction.update(awardDocRef, data);
+
+    return { ...award, ...data };
   });

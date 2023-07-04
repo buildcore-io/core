@@ -7,8 +7,8 @@ import {
   TokenAllocation,
   TokenStats,
   WenError,
-} from '@soonaverse/interfaces';
-import { soonDb } from '../../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../../src/firebase/firestore/build5Db';
 import { rankController } from '../../../src/runtime/firebase/rank';
 import { createToken } from '../../../src/runtime/firebase/token/base';
 import * as config from '../../../src/utils/config.utils';
@@ -60,7 +60,7 @@ describe('Token rank test', () => {
     token = await testEnv.wrap(createToken)({});
     await saveSoon();
 
-    await soonDb()
+    await build5Db()
       .doc(`${COL.SPACE}/${RANKING_TEST.tokenSpace}/${SUB_COL.GUARDIANS}/${member}`)
       .set({
         uid: member,
@@ -99,7 +99,7 @@ describe('Token rank test', () => {
   });
 
   it('Should throw, not space member', async () => {
-    await soonDb()
+    await build5Db()
       .doc(`${COL.SPACE}/${RANKING_TEST.tokenSpace}/${SUB_COL.GUARDIANS}/${member}`)
       .delete();
 
@@ -113,7 +113,7 @@ describe('Token rank test', () => {
 
   const validateStats = async (count: number, sum: number) => {
     await wait(async () => {
-      const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
+      const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
       const statsDocRef = tokenDocRef.collection(SUB_COL.STATS).doc(token.uid);
       const stats = <TokenStats | undefined>await statsDocRef.get();
       const statsAreCorrect =

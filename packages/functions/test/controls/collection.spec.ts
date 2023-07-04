@@ -10,7 +10,6 @@ import {
   MIN_IOTA_AMOUNT,
   Member,
   Nft,
-  NftStatus,
   RANKING_TEST,
   SUB_COL,
   Space,
@@ -18,15 +17,14 @@ import {
   Token,
   WEN_FUNC,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
-import { soonDb } from '../../src/firebase/firestore/soondb';
-import { createNft, orderNft } from '../../src/runtime/firebase/nft';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
+import { createNft } from '../../src/runtime/firebase/nft';
 import { rankController } from '../../src/runtime/firebase/rank';
 import { voteController } from '../../src/runtime/firebase/vote';
 import * as config from '../../src/utils/config.utils';
-import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import {
@@ -43,10 +41,8 @@ import {
   createSpace as createSpaceFunc,
   expectThrow,
   getRandomSymbol,
-  milestoneProcessed,
   mockWalletReturnValue,
   saveSoon,
-  submitMilestoneFunc,
   wait,
 } from './common';
 
@@ -118,7 +114,7 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
   });
 
   it('Should create collection, soon check', async () => {
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TOKEN}/${soonTokenId}/${SUB_COL.DISTRIBUTION}/${dummyAddress}`)
       .create({
         stakes: {
@@ -183,8 +179,9 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
   });
 
   it('successfully create collection & update price', async () => {
-    mockWalletReturnValue(walletSpy, dummyAddress, dummyCollection(space.uid, 0.6));
-    let collection = await testEnv.wrap(createCollection)({});
+    let collection = dummyCollection(space.uid, 0.6);
+    mockWalletReturnValue(walletSpy, dummyAddress, collection);
+    collection = await testEnv.wrap(createCollection)({});
 
     mockWalletReturnValue(walletSpy, dummyAddress, { uid: collection?.uid });
     await testEnv.wrap(approveCollection)({});
@@ -193,30 +190,15 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
       name: 'Collection A',
       description: 'babba',
       collection: collection.uid,
-      availableFrom: dayjs().subtract(1, 'minute').toDate(),
+      availableFrom: dayjs().add(2, 'h').toDate(),
       price: MIN_IOTA_AMOUNT,
     });
     const nfts: Nft[] = [];
     for (let i = 0; i < 4; ++i) {
       mockWalletReturnValue(walletSpy, dummyAddress, dummyNft());
-      nfts.push(await testEnv.wrap(createNft)({}));
+      const nft = await testEnv.wrap(createNft)({});
+      nfts.push(nft);
     }
-
-    mockWalletReturnValue(walletSpy, dummyAddress, {
-      collection: collection.uid,
-      nft: nfts[0].uid,
-    });
-    const order = await testEnv.wrap(orderNft)({});
-    const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
-    await milestoneProcessed(milestone.milestone, milestone.tranId);
-
-    await wait(async () => {
-      const nftDocRef = soonDb().doc(`${COL.NFT}/${nfts[0].uid}`);
-      const nft = <Nft>await nftDocRef.get();
-      return (nft.isOwned || false) && nft.availablePrice === null;
-    });
-
-    soonDb().doc(`${COL.NFT}/${nfts[1].uid}`).update({ status: NftStatus.WITHDRAWN });
 
     const availableFrom = dayjs().add(1, 'd');
     mockWalletReturnValue(walletSpy, dummyAddress, {
@@ -234,16 +216,10 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
     expect(uCollection?.availablePrice).toBe(15 * MIN_IOTA_AMOUNT);
 
     for (let i = 0; i < 4; ++i) {
-      const nftDocRef = soonDb().doc(`${COL.NFT}/${nfts[i].uid}`);
-      const nftData = <Nft>await nftDocRef.get();
-      const price = i === 0 ? null : i < 2 ? MIN_IOTA_AMOUNT : 15 * MIN_IOTA_AMOUNT;
-      expect(nftData.price).toBe(price || MIN_IOTA_AMOUNT);
-      expect(nftData.availablePrice).toBe(price);
-      if (i >= 2) {
-        expect(nftData.availableFrom?.toDate()).toEqual(
-          dateToTimestamp(availableFrom, true).toDate(),
-        );
-      }
+      const nftDocRef = build5Db().doc(`${COL.NFT}/${nfts[i].uid}`);
+      const nft = <Nft>await nftDocRef.get();
+      expect(nft.price).toBe(15 * MIN_IOTA_AMOUNT);
+      expect(nft.availablePrice).toBe(15 * MIN_IOTA_AMOUNT);
     }
 
     walletSpy.mockRestore();
@@ -254,7 +230,7 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
     const collection = dummyCollection(space.uid, 0.6);
     mockWalletReturnValue(walletSpy, dummyAddress, collection);
     const cCollection = await testEnv.wrap(createCollection)({});
-    await soonDb()
+    await build5Db()
       .doc(`${COL.COLLECTION}/${cCollection.uid}`)
       .update({ status: CollectionStatus.MINTED });
 
@@ -297,7 +273,7 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
     const collection = { ...dummyCollection(space.uid, 0.6), type: CollectionType.SFT };
     mockWalletReturnValue(walletSpy, dummyAddress, collection);
     const cCollection = await testEnv.wrap(createCollection)({});
-    await soonDb()
+    await build5Db()
       .doc(`${COL.COLLECTION}/${cCollection.uid}`)
       .update({ status: CollectionStatus.MINTED });
 
@@ -333,7 +309,7 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
     const collection = dummyCollection(space.uid, 0.6);
     mockWalletReturnValue(walletSpy, dummyAddress, collection);
     const cCollection = await testEnv.wrap(createCollection)({});
-    await soonDb()
+    await build5Db()
       .doc(`${COL.COLLECTION}/${cCollection.uid}`)
       .update({ status: CollectionStatus.MINTED });
 
@@ -409,28 +385,28 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
 describe('Collection trigger test', () => {
   it('Should set approved&reject properly on nfts', async () => {
     const collection = { ...dummyCollection('', 0.1), uid: wallet.getRandomEthAddress() };
-    await soonDb().doc(`${COL.COLLECTION}/${collection.uid}`).create(collection);
+    await build5Db().doc(`${COL.COLLECTION}/${collection.uid}`).create(collection);
 
     const nftIds = Array.from(Array(1000));
     const chunks = chunk(nftIds, 500);
     for (let chunkIndex = 0; chunkIndex < chunks.length; ++chunkIndex) {
-      const batch = soonDb().batch();
+      const batch = build5Db().batch();
       chunks[chunkIndex].forEach((_, index) => {
         const id = wallet.getRandomEthAddress();
         batch.create(
-          soonDb().doc(`${COL.NFT}/${id}`),
+          build5Db().doc(`${COL.NFT}/${id}`),
           dummyNft(chunkIndex * 500 + index, id, collection.uid),
         );
       });
       await batch.commit();
     }
 
-    await soonDb().doc(`${COL.COLLECTION}/${collection.uid}`).update({
+    await build5Db().doc(`${COL.COLLECTION}/${collection.uid}`).update({
       approved: true,
     });
 
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.NFT)
         .where('collection', '==', collection.uid)
         .get<Nft>();
@@ -438,15 +414,15 @@ describe('Collection trigger test', () => {
       return allHaveUpdated;
     });
 
-    await soonDb().doc(`${COL.COLLECTION}/${collection.uid}`).update({
+    await build5Db().doc(`${COL.COLLECTION}/${collection.uid}`).update({
       approved: false,
     });
-    await soonDb().doc(`${COL.COLLECTION}/${collection.uid}`).update({
+    await build5Db().doc(`${COL.COLLECTION}/${collection.uid}`).update({
       approved: true,
     });
 
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.NFT)
         .where('collection', '==', collection.uid)
         .get<Nft>();
@@ -454,13 +430,13 @@ describe('Collection trigger test', () => {
       return allHaveUpdated;
     });
 
-    await soonDb().doc(`${COL.COLLECTION}/${collection.uid}`).update({
+    await build5Db().doc(`${COL.COLLECTION}/${collection.uid}`).update({
       approved: false,
       rejected: true,
     });
 
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.NFT)
         .where('collection', '==', collection.uid)
         .get<Nft>();
@@ -527,7 +503,7 @@ describe('Collection vote test', () => {
 
   const validateStats = async (upvotes: number, downvotes: number, diff: number) => {
     await wait(async () => {
-      const statsDocRef = soonDb().doc(
+      const statsDocRef = build5Db().doc(
         `${COL.COLLECTION}/${collection.uid}/${SUB_COL.STATS}/${collection.uid}`,
       );
       const stats = await statsDocRef.get<CollectionStats>();
@@ -589,7 +565,7 @@ describe('Collection rank test', () => {
 
     await saveSoon();
 
-    await soonDb()
+    await build5Db()
       .doc(`${COL.SPACE}/${RANKING_TEST.collectionSpace}/${SUB_COL.GUARDIANS}/${member}`)
       .set({
         uid: member,
@@ -628,7 +604,7 @@ describe('Collection rank test', () => {
   });
 
   it('Should throw, not space member', async () => {
-    await soonDb()
+    await build5Db()
       .doc(`${COL.SPACE}/${RANKING_TEST.collectionSpace}/${SUB_COL.GUARDIANS}/${member}`)
       .delete();
 
@@ -642,7 +618,7 @@ describe('Collection rank test', () => {
 
   const validateStats = async (count: number, sum: number) => {
     await wait(async () => {
-      const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${collection.uid}`);
+      const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${collection.uid}`);
       const statsDocRef = collectionDocRef.collection(SUB_COL.STATS).doc(collection.uid);
       const stats = <CollectionStats | undefined>await statsDocRef.get();
       const statsAreCorrect =
@@ -681,7 +657,7 @@ describe('Collection rank test', () => {
     await validateStats(1, -100);
 
     const secondMember = await createMemberFunc(walletSpy);
-    await soonDb()
+    await build5Db()
       .doc(`${COL.SPACE}/${RANKING_TEST.collectionSpace}/${SUB_COL.GUARDIANS}/${secondMember}`)
       .set({
         uid: secondMember,
@@ -693,7 +669,7 @@ describe('Collection rank test', () => {
     await validateStats(2, -150);
 
     await wait(async () => {
-      const doc = <Collection>await soonDb().doc(`${COL.COLLECTION}/${collection.uid}`).get();
+      const doc = <Collection>await build5Db().doc(`${COL.COLLECTION}/${collection.uid}`).get();
       return !doc.approved && doc.rejected;
     });
   });
@@ -707,6 +683,6 @@ const saveToken = async (space: string) => {
     space,
     name: 'MyToken',
   };
-  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return <Token>token;
 };

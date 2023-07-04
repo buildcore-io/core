@@ -1,22 +1,22 @@
 import {
-  BillPaymentType,
   COL,
-  Member,
   MIN_IOTA_AMOUNT,
+  Member,
   Network,
-  Space,
   SUB_COL,
   SYSTEM_CONFIG_DOC_ID,
+  Space,
+  TOKEN_SALE_TEST,
   TokenDistribution,
   TokenStatus,
-  TOKEN_SALE_TEST,
   Transaction,
+  TransactionPayloadType,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { orderToken } from '../../src/runtime/firebase/token/base';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
@@ -347,9 +347,9 @@ describe('Token trigger test', () => {
   });
 
   beforeEach(async () => {
-    await soonDb()
+    await build5Db()
       .doc(`${COL.SYSTEM}/${SYSTEM_CONFIG_DOC_ID}`)
-      .set({ tokenPurchaseFeePercentage: soonDb().deleteField() }, true);
+      .set({ tokenPurchaseFeePercentage: build5Db().deleteField() }, true);
   });
 
   it.each(scenarios)('Should buy tokens', async (input: Inputs) => {
@@ -360,7 +360,7 @@ describe('Token trigger test', () => {
       input.publicPercentage,
       guardian,
     );
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).create(token);
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).create(token);
 
     const orderPromises = Array.from(Array(input.totalDeposit.length)).map(async (_, i) => {
       const order = await submitTokenOrderFunc(walletSpy, members[i], { token: token.uid });
@@ -373,13 +373,13 @@ describe('Token trigger test', () => {
     });
 
     const orders = await Promise.all(orderPromises);
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.PROCESSING });
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.PROCESSING });
     await tokenProcessed(token.uid, input.totalDeposit.length, true);
 
     for (let i = 0; i < input.totalDeposit.length; ++i) {
       const member = members[i];
       const distribution = <TokenDistribution>(
-        await soonDb().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`).get()
+        await build5Db().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`).get()
       );
       const refundedAmount = Number(bigDecimal.multiply(input.refundedAmount[i], MIN_IOTA_AMOUNT));
       expect(distribution.totalDeposit).toBe(
@@ -396,7 +396,7 @@ describe('Token trigger test', () => {
       }
 
       if (distribution.billPaymentId) {
-        const paymentDoc = await soonDb()
+        const paymentDoc = await build5Db()
           .doc(`${COL.TRANSACTION}/${distribution.billPaymentId}`)
           .get<Transaction>();
         expect(paymentDoc !== undefined).toBe(true);
@@ -410,7 +410,7 @@ describe('Token trigger test', () => {
         expect(paymentDoc?.payload?.targetAddress).toBe(getAddress(space, Network.IOTA));
         expect(paymentDoc?.payload?.token).toBe(token.uid);
         expect(paymentDoc?.payload?.tokenSymbol).toBe(token.symbol);
-        expect(paymentDoc?.payload?.type).toBe(BillPaymentType.TOKEN_PURCHASE);
+        expect(paymentDoc?.payload?.type).toBe(TransactionPayloadType.TOKEN_PURCHASE);
       }
 
       const totalPaid =
@@ -421,10 +421,10 @@ describe('Token trigger test', () => {
         expect(distribution.royaltyBillPaymentId).toBe('');
       } else {
         const royaltySpace = <Space>(
-          await soonDb().doc(`${COL.SPACE}/${TOKEN_SALE_TEST.spaceone}`).get()
+          await build5Db().doc(`${COL.SPACE}/${TOKEN_SALE_TEST.spaceone}`).get()
         );
         const royaltyPayment = <Transaction>(
-          await soonDb().doc(`${COL.TRANSACTION}/${distribution.royaltyBillPaymentId}`).get()
+          await build5Db().doc(`${COL.TRANSACTION}/${distribution.royaltyBillPaymentId}`).get()
         );
         expect(royaltyPayment.payload.amount).toBe(Math.floor(supposedRoyaltyAmount));
         expect(royaltyPayment.payload.targetAddress).toBe(
@@ -433,7 +433,7 @@ describe('Token trigger test', () => {
       }
 
       if (distribution.creditPaymentId) {
-        const creditPaymentDoc = await soonDb()
+        const creditPaymentDoc = await build5Db()
           .doc(`${COL.TRANSACTION}/${distribution.creditPaymentId}`)
           .get<Transaction>();
         expect(creditPaymentDoc !== undefined).toBe(true);
@@ -443,7 +443,7 @@ describe('Token trigger test', () => {
         expect(creditPaymentDoc?.payload?.amount).toBe(
           Number(bigDecimal.multiply(creditAmount, MIN_IOTA_AMOUNT)),
         );
-        const memberData = <Member>await soonDb().doc(`${COL.MEMBER}/${member}`).get();
+        const memberData = <Member>await build5Db().doc(`${COL.MEMBER}/${member}`).get();
         expect(creditPaymentDoc?.payload?.sourceAddress).toBe(orders[i].payload?.targetAddress);
         expect(creditPaymentDoc?.payload?.targetAddress).toBe(getAddress(memberData, Network.IOTA));
       }
@@ -452,7 +452,7 @@ describe('Token trigger test', () => {
 
   it('Should refund everyone if public sale is set to zero', async () => {
     token = dummyToken(100, space, MIN_IOTA_AMOUNT, 10, guardian);
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).create(token);
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).create(token);
 
     const totalDeposits = [2, 3];
 
@@ -467,7 +467,7 @@ describe('Token trigger test', () => {
     });
 
     await Promise.all(orderPromises);
-    await soonDb()
+    await build5Db()
       .doc(`${COL.TOKEN}/${token.uid}`)
       .update({
         status: TokenStatus.PROCESSING,
@@ -478,7 +478,7 @@ describe('Token trigger test', () => {
     for (let i = 0; i < totalDeposits.length; ++i) {
       const member = members[i];
       const distribution = <TokenDistribution>(
-        await soonDb().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`).get()
+        await build5Db().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`).get()
       );
       const refundedAmount = Number(bigDecimal.multiply(totalDeposits[i], MIN_IOTA_AMOUNT));
       expect(distribution.totalDeposit).toBe(
@@ -498,25 +498,27 @@ describe('Token trigger test', () => {
     { isMember: false, fee: 5 },
   ])('Custom fees', async ({ isMember, fee }: { isMember: boolean; fee: number }) => {
     if (isMember) {
-      await soonDb().doc(`${COL.MEMBER}/${members[0]}`).update({ tokenPurchaseFeePercentage: fee });
+      await build5Db()
+        .doc(`${COL.MEMBER}/${members[0]}`)
+        .update({ tokenPurchaseFeePercentage: fee });
     } else {
-      await soonDb()
+      await build5Db()
         .doc(`${COL.SYSTEM}/${SYSTEM_CONFIG_DOC_ID}`)
         .set({ tokenPurchaseFeePercentage: fee });
     }
 
     const totalPaid = 100 * MIN_IOTA_AMOUNT;
     token = dummyToken(100, space, MIN_IOTA_AMOUNT, 100, guardian);
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).create(token);
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).create(token);
 
     const order = await submitTokenOrderFunc(walletSpy, members[0], { token: token.uid });
     const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, totalPaid);
     await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
-    await soonDb().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.PROCESSING });
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.PROCESSING });
     await tokenProcessed(token.uid, 1, true);
 
-    const billPayments = await soonDb()
+    const billPayments = await build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)
       .where('member', '==', members[0])
@@ -537,8 +539,8 @@ describe('Token trigger test', () => {
       expect(billPayments.filter((bp) => bp.payload.royalty).length).toBe(0);
     }
 
-    await soonDb()
+    await build5Db()
       .doc(`${COL.MEMBER}/${members[0]}`)
-      .set({ tokenPurchaseFeePercentage: soonDb().deleteField() }, true);
+      .set({ tokenPurchaseFeePercentage: build5Db().deleteField() }, true);
   });
 });

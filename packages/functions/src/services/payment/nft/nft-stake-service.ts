@@ -1,26 +1,25 @@
 import {
+  COL,
+  MilestoneTransactionEntry,
+  Network,
+  StakeType,
+  TRANSACTION_AUTO_EXPIRY_MS,
+  Transaction,
+  TransactionPayloadType,
+  TransactionType,
+  TransactionValidationType,
+  WenError,
+} from '@build-5/interfaces';
+import {
   INftOutput,
   TAG_FEATURE_TYPE,
   TIMELOCK_UNLOCK_CONDITION_TYPE,
   TransactionHelper,
 } from '@iota/iota.js-next';
-import {
-  COL,
-  MilestoneTransactionEntry,
-  Network,
-  StakeType,
-  Transaction,
-  TransactionOrder,
-  TransactionOrderType,
-  TransactionType,
-  TransactionValidationType,
-  TRANSACTION_AUTO_EXPIRY_MS,
-  WenError,
-} from '@soonaverse/interfaces';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions/v2';
 import { cloneDeep, get } from 'lodash';
-import { soonDb } from '../../../firebase/firestore/soondb';
+import { build5Db } from '../../../firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';
@@ -32,7 +31,7 @@ export class NftStakeService {
   constructor(readonly transactionService: TransactionService) {}
 
   public handleNftStake = async (
-    order: TransactionOrder,
+    order: Transaction,
     match: TransactionMatch,
     tranEntry: MilestoneTransactionEntry,
   ) => {
@@ -57,14 +56,14 @@ export class NftStakeService {
         get(order, 'payload.weeks', 0),
         get(order, 'payload.stakeType', StakeType.DYNAMIC),
       );
-      const withdrawOrderDocRef = soonDb().doc(`${COL.TRANSACTION}/${withdrawOrder.uid}`);
+      const withdrawOrderDocRef = build5Db().doc(`${COL.TRANSACTION}/${withdrawOrder.uid}`);
       this.transactionService.push({
         ref: withdrawOrderDocRef,
         data: withdrawOrder,
         action: 'set',
       });
 
-      const nftDocRef = soonDb().doc(`${COL.NFT}/${nftUpdateData.uid}`);
+      const nftDocRef = build5Db().doc(`${COL.NFT}/${nftUpdateData.uid}`);
       this.transactionService.push({
         ref: nftDocRef,
         data: nftUpdateData,
@@ -74,7 +73,7 @@ export class NftStakeService {
       await this.transactionService.createPayment(order, match);
       this.transactionService.markAsReconciled(order, match.msgId);
 
-      const orderDocRef = soonDb().doc(`${COL.TRANSACTION}/${order.uid}`);
+      const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
       this.transactionService.push({
         ref: orderDocRef,
         data: { 'payload.nft': nft.uid, 'payload.collection': nft.collection },
@@ -88,10 +87,7 @@ export class NftStakeService {
     }
   };
 
-  private getNftOutputAmount = async (
-    order: TransactionOrder,
-    tranEntry: MilestoneTransactionEntry,
-  ) => {
+  private getNftOutputAmount = async (order: Transaction, tranEntry: MilestoneTransactionEntry) => {
     const wallet = (await WalletService.newWallet(order.network)) as SmrWallet;
     const weeks = get(order, 'payload.weeks', 0);
     const output = cloneDeep(tranEntry.nftOutput as INftOutput);
@@ -112,17 +108,18 @@ export const createNftStakeOrder = async (
   network: Network,
   weeks: number,
   stakeType: StakeType,
-) => {
+): Promise<Transaction> => {
   const wallet = await WalletService.newWallet(network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
-  return <Transaction>{
+  return {
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member,
     space: '',
     network,
     payload: {
-      type: TransactionOrderType.STAKE_NFT,
+      amount: 0,
+      type: TransactionPayloadType.STAKE_NFT,
       targetAddress: targetAddress.bech32,
       validationType: TransactionValidationType.ADDRESS,
       expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),

@@ -1,4 +1,3 @@
-import { HexHelper } from '@iota/util.js-next';
 import {
   COL,
   IOTATangleTransaction,
@@ -7,9 +6,10 @@ import {
   Nft,
   Transaction,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
+import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { isProdEnv } from '../../utils/config.utils';
 
 export const getWalletParams = (transaction: Transaction, network: Network) => {
@@ -32,6 +32,7 @@ const getShimmerParams = async (transaction: Transaction) => ({
   vestingAt: transaction.payload.vestingAt,
   storageDepositReturnAddress: transaction.payload.storageReturn?.address,
   customMetadata: transaction.payload.customMetadata,
+  tag: transaction.payload.tag,
 });
 
 const getParams = async (transaction: Transaction) => {
@@ -42,10 +43,10 @@ const getParams = async (transaction: Transaction) => {
   if (transaction.type === TransactionType.BILL_PAYMENT) {
     details.payment = true;
 
-    details.previousOwner = payload.previousOwner || '';
-    details.previousOwnerEntity = payload.previousOwnerEntity || '';
-    details.owner = payload.owner || '';
-    details.ownerEntity = payload.ownerEntity || '';
+    details.previousOwner = payload.previousOwner || null;
+    details.previousOwnerEntity = payload.previousOwnerEntity || null;
+    details.owner = payload.owner || null;
+    details.ownerEntity = payload.ownerEntity || null;
 
     if (payload.royalty) {
       details.royalty = payload.royalty;
@@ -55,7 +56,7 @@ const getParams = async (transaction: Transaction) => {
     }
     if (payload.nft) {
       details.nft = payload.nft;
-      const nft = await soonDb().doc(`${COL.NFT}/${payload.nft}`).get<Nft>();
+      const nft = await build5Db().doc(`${COL.NFT}/${payload.nft}`).get<Nft>();
       if (nft && nft.ipfsMedia) {
         details.ipfsMedia = 'ipfs://' + nft.ipfsMedia;
       }
@@ -65,7 +66,7 @@ const getParams = async (transaction: Transaction) => {
     }
     if (payload.token) {
       details.token = payload.token;
-      details.tokenSymbol = payload.token.tokenSymbol || '';
+      details.tokenSymbol = payload.tokenSymbol || '';
       details.quantity = payload.quantity || 0;
     }
   }

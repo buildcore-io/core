@@ -1,26 +1,26 @@
+import { KEY_NAME_TANGLE, Network } from '@build-5/interfaces';
 import { Bip32Path } from '@iota/crypto.js';
 import {
   Bech32Helper,
+  ED25519_ADDRESS_TYPE,
   Ed25519Address,
   Ed25519Seed,
-  ED25519_ADDRESS_TYPE,
   IKeyPair,
   INodeInfo,
   IOutputResponse,
   IUTXOInput,
-  sendAdvanced,
   SIG_LOCKED_SINGLE_OUTPUT_TYPE,
   SingleNodeClient,
   UTXO_INPUT_TYPE,
+  sendAdvanced,
 } from '@iota/iota.js';
 import { Converter } from '@iota/util.js';
-import { KEY_NAME_TANGLE, Network } from '@soonaverse/interfaces';
 import { generateMnemonic } from 'bip39';
 import * as functions from 'firebase-functions/v2';
 import { isEmpty } from 'lodash';
 import { getRandomElement } from '../../utils/common.utils';
 import { MnemonicService } from './mnemonic';
-import { AddressDetails, setConsumedOutputIds, Wallet, WalletParams } from './wallet';
+import { AddressDetails, Wallet, WalletParams, setConsumedOutputIds } from './wallet';
 const IOTA_API_ENDPOINTS = [
   'https://us3.svrs.io/',
   'https://us4.svrs.io/',
@@ -67,8 +67,12 @@ export class IotaWallet implements Wallet<WalletParams> {
     private readonly network: Network,
   ) {}
 
-  public getBalance = async (addressBech32: string) =>
-    (await this.client.address(addressBech32))?.balance || 0;
+  public getBalance = async (addressBech32: string | undefined) => {
+    if (!addressBech32) {
+      return 0;
+    }
+    return (await this.client.address(addressBech32))?.balance || 0;
+  };
 
   public getNewIotaAddressDetails = async () => {
     const address = await this.getIotaAddressDetails(generateMnemonic() + ' ' + generateMnemonic());

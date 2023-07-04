@@ -1,4 +1,3 @@
-import { HexHelper } from '@iota/util.js-next';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -15,21 +14,22 @@ import {
   TokenTradeOrder,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
+  TradeTokenTangleRequest,
   Transaction,
-  TransactionOrderType,
+  TransactionPayloadType,
   TransactionType,
-  TransactionUnlockType,
   TransactionValidationType,
   WenError,
   getNetworkPair,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
+import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import Joi from 'joi';
 import bigDecimal from 'js-big-decimal';
 import { get, set } from 'lodash';
+import { build5Db } from '../../../firebase/firestore/build5Db';
 import { ITransaction } from '../../../firebase/firestore/interfaces';
-import { soonDb } from '../../../firebase/firestore/soondb';
 import { tradeTokenSchema } from '../../../runtime/firebase/token/trading';
 import { SmrWallet } from '../../../services/wallet/SmrWalletService';
 import { WalletService } from '../../../services/wallet/wallet';
@@ -46,10 +46,10 @@ import {
   getTokenBySymbol,
 } from '../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
-import { CommonJoi } from '../../joi/common';
+import { CommonJoi, toJoiObject } from '../../joi/common';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 
-const sellMintedTokenSchema = Joi.object({
+const sellMintedTokenSchema = toJoiObject<TradeTokenTangleRequest>({
   symbol: CommonJoi.tokenSymbol(),
   price: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).required(),
   type: Joi.string().equal(TokenTradeOrderType.SELL, TokenTradeOrderType.BUY).required(),
@@ -65,10 +65,10 @@ export class TangleTokenTradeService {
     tranEntry: MilestoneTransactionEntry,
     owner: string,
     request: Record<string, unknown>,
-    soonTransaction?: Transaction,
+    build5Transaction?: Transaction,
   ) => {
     const type =
-      request.requestType === TransactionOrderType.BUY_TOKEN
+      request.requestType === TransactionPayloadType.BUY_TOKEN
         ? TokenTradeOrderType.BUY
         : TokenTradeOrderType.SELL;
     const params = {
@@ -79,7 +79,7 @@ export class TangleTokenTradeService {
     await assertValidationAsync(sellMintedTokenSchema, params);
 
     let token = await getTokenBySymbol(params.symbol as string);
-    const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token?.uid}`);
+    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token?.uid}`);
     token = await this.transactionService.get<Token>(tokenDocRef);
     if (!token) {
       throw invalidArgument(WenError.token_does_not_exist);
@@ -112,7 +112,7 @@ export class TangleTokenTradeService {
       set(tradeOrderTransaction, 'payload.amount', tranEntry.amount);
     }
     this.transactionService.push({
-      ref: soonDb().doc(`${COL.TRANSACTION}/${tradeOrderTransaction.uid}`),
+      ref: build5Db().doc(`${COL.TRANSACTION}/${tradeOrderTransaction.uid}`),
       data: tradeOrderTransaction,
       action: 'set',
     });
@@ -134,9 +134,9 @@ export class TangleTokenTradeService {
       tradeOrderTransaction,
       tran,
       tranEntry,
-      TransactionUnlockType.TANGLE_TRANSFER,
+      TransactionPayloadType.TANGLE_TRANSFER,
       tranEntry.outputId,
-      soonTransaction?.payload?.expiresOn ||
+      build5Transaction?.payload?.expiresOn ||
         dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms')),
     );
     return;
@@ -167,7 +167,7 @@ export const createTokenTradeOrder = async (
   assertTokenStatus(token, acceptedTokenStatuses);
 
   const [sourceNetwork, targetNetwork] = getSourceAndTargetNetwork(token, isSell);
-  const member = await soonDb().doc(`${COL.MEMBER}/${owner}`).get<Member>();
+  const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();
   assertMemberHasValidAddress(member, sourceNetwork);
   assertMemberHasValidAddress(member, targetNetwork);
 
@@ -184,7 +184,7 @@ export const createTokenTradeOrder = async (
     return { tradeOrderTransaction, tradeOrder: undefined, distribution: undefined };
   }
 
-  const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
+  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
   const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(owner);
   const distribution = await transaction.get<TokenDistribution>(distributionDocRef);
   if (!distribution) {
@@ -215,7 +215,7 @@ export const createTokenTradeOrder = async (
     tradeOrderTransaction: undefined,
     tradeOrder,
     distribution: {
-      lockedForSale: soonDb().inc(Number(count)),
+      lockedForSale: build5Db().inc(Number(count)),
     },
   };
 };
@@ -241,20 +241,21 @@ const createTradeOrderTransaction = async (
   isSell: boolean,
   count: number,
   price: number,
-) => {
+): Promise<Transaction> => {
   const wallet = await WalletService.newWallet(network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
   const isMinted = token.status === TokenStatus.MINTED;
-  return <Transaction>{
+  return {
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member,
     space: token.space || '',
     network,
     payload: {
-      type: isSell ? TransactionOrderType.SELL_TOKEN : TransactionOrderType.BUY_TOKEN,
+      type: isSell ? TransactionPayloadType.SELL_TOKEN : TransactionPayloadType.BUY_TOKEN,
       amount: await getAmount(token, count, price, isSell),
-      nativeTokens: isMinted && isSell ? [{ id: token.mintingData?.tokenId!, amount: count }] : [],
+      nativeTokens:
+        isMinted && isSell ? [{ id: token.mintingData?.tokenId!, amount: count.toString() }] : [],
       targetAddress: targetAddress.bech32,
       expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS)),
       validationType: getValidationType(token, isSell),

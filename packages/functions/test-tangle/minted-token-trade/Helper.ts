@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { HexHelper } from '@iota/util.js-next';
 import {
   COL,
   Member,
@@ -11,9 +10,10 @@ import {
   TokenStatus,
   TokenTradeOrderType,
   Transaction,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
+import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
@@ -61,7 +61,7 @@ export class Helper {
     this.token = (await saveToken(this.space.uid, this.guardian, this.walletService!)) as Token;
 
     this.seller = await createMember(this.walletSpy);
-    const sellerDoc = <Member>await soonDb().doc(`${COL.MEMBER}/${this.seller}`).get();
+    const sellerDoc = <Member>await build5Db().doc(`${COL.MEMBER}/${this.seller}`).get();
     this.sellerAddress = await this.walletService!.getAddressDetails(
       getAddress(sellerDoc, this.network!),
     );
@@ -74,7 +74,7 @@ export class Helper {
     );
 
     this.buyer = await createMember(this.walletSpy);
-    const buyerDoc = <Member>await soonDb().doc(`${COL.MEMBER}/${this.buyer}`).get();
+    const buyerDoc = <Member>await build5Db().doc(`${COL.MEMBER}/${this.buyer}`).get();
     this.buyerAddress = await this.walletService!.getAddressDetails(
       getAddress(buyerDoc, this.network),
     );
@@ -92,7 +92,7 @@ export class Helper {
       type: TokenTradeOrderType.SELL,
     });
     const sellOrder: Transaction = await testEnv.wrap(tradeToken)({});
-    await this.walletService!.send(this.sellerAddress!, sellOrder.payload.targetAddress, 0, {
+    await this.walletService!.send(this.sellerAddress!, sellOrder.payload.targetAddress!, 0, {
       nativeTokens: [
         { amount: HexHelper.fromBigInt256(bigInt(count)), id: this.token!.mintingData?.tokenId! },
       ],
@@ -104,7 +104,7 @@ export class Helper {
         : undefined,
     });
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.TOKEN_MARKET)
         .where('orderTransactionId', '==', sellOrder.uid)
         .get();
@@ -128,12 +128,12 @@ export class Helper {
     const buyOrder: Transaction = await testEnv.wrap(tradeToken)({});
     await requestFundsFromFaucet(
       this.network,
-      buyOrder.payload.targetAddress,
-      buyOrder.payload.amount,
+      buyOrder.payload.targetAddress!,
+      buyOrder.payload.amount!,
       expiresAt,
     );
     await wait(async () => {
-      const snap = await soonDb()
+      const snap = await build5Db()
         .collection(COL.TOKEN_MARKET)
         .where('orderTransactionId', '==', buyOrder.uid)
         .get();
@@ -169,7 +169,7 @@ export const saveToken = async (
     access: 0,
     icon: MEDIA,
   };
-  await soonDb().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   return token;
 };
 

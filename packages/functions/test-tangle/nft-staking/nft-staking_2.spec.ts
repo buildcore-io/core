@@ -6,8 +6,8 @@ import {
   Transaction,
   TransactionType,
   WenError,
-} from '@soonaverse/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { stakeNft } from '../../src/runtime/firebase/nft';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -28,14 +28,14 @@ describe('Stake nft', () => {
     'Should credit nft, not enough base tokens',
     async (migration: boolean) => {
       let nft = await helper.createAndOrderNft();
-      let nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+      let nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
       await helper.mintCollection();
       nft = <Nft>await nftDocRef.get();
       await helper.withdrawNftAndAwait(nft.uid);
 
       if (migration) {
         await nftDocRef.delete();
-        await soonDb().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
+        await build5Db().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
       }
 
       mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
@@ -51,7 +51,7 @@ describe('Stake nft', () => {
         nft.mintingData?.nftId,
       );
 
-      const creditQuery = soonDb()
+      const creditQuery = build5Db()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT_NFT)
         .where('member', '==', helper.guardian);
@@ -62,12 +62,12 @@ describe('Stake nft', () => {
 
       const snap = await creditQuery.get();
       const credit = snap[0] as Transaction;
-      expect(credit.payload.response.code).toBe(WenError.not_enough_base_token.code);
-      expect(credit.payload.response.message).toBe(WenError.not_enough_base_token.key);
-      expect(credit.payload.response.requiredAmount).toBeDefined();
+      expect(credit.payload.response!.code).toBe(WenError.not_enough_base_token.code);
+      expect(credit.payload.response!.message).toBe(WenError.not_enough_base_token.key);
+      expect(credit.payload.response!.requiredAmount).toBeDefined();
 
       if (migration) {
-        nftDocRef = soonDb().doc(`${COL.NFT}/${nft.mintingData?.nftId}`);
+        nftDocRef = build5Db().doc(`${COL.NFT}/${nft.mintingData?.nftId}`);
         nft = <Nft>await nftDocRef.get();
         expect(nft).toBeUndefined();
       } else {

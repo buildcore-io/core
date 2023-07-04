@@ -1,4 +1,4 @@
-import { COL } from '@soonaverse/interfaces';
+import { COL } from '@build-5/interfaces';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 import admin from 'firebase-admin';

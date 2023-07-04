@@ -1,19 +1,18 @@
 import {
   Award,
   COL,
-  Member,
   MIN_IOTA_AMOUNT,
+  Member,
   Network,
   Space,
   Token,
   Transaction,
-  TransactionAwardType,
-  TransactionCreditType,
+  TransactionPayloadType,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { processExpiredAwards } from '../../src/cron/award.cron';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import {
   approveAwardParticipant,
   awardParticipate,
@@ -63,7 +62,7 @@ describe('Create award, base', () => {
     mockWalletReturnValue(walletSpy, guardian, awardRequest(space.uid, token.symbol));
     award = await testEnv.wrap(createAward)({});
 
-    const guardianDocRef = soonDb().doc(`${COL.MEMBER}/${guardian}`);
+    const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${guardian}`);
     const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, network);
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
@@ -76,7 +75,7 @@ describe('Create award, base', () => {
       const order = await testEnv.wrap(fundAward)({});
       await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount);
 
-      const awardDocRef = soonDb().doc(`${COL.AWARD}/${award.uid}`);
+      const awardDocRef = build5Db().doc(`${COL.AWARD}/${award.uid}`);
       await wait(async () => {
         const award = <Award>await awardDocRef.get();
         return award.approved && award.funded;
@@ -110,7 +109,7 @@ describe('Create award, base', () => {
         claimOrder.payload.amount,
       );
 
-      const billPaymentQuery = soonDb()
+      const billPaymentQuery = build5Db()
         .collection(COL.TRANSACTION)
         .where('member', '==', member)
         .where('type', '==', TransactionType.BILL_PAYMENT);
@@ -119,16 +118,16 @@ describe('Create award, base', () => {
         return snap.length === 1;
       });
 
-      const nttQuery = soonDb()
+      const nttQuery = build5Db()
         .collection(COL.TRANSACTION)
         .where('member', '==', member)
-        .where('payload.type', '==', TransactionAwardType.BADGE);
+        .where('payload.type', '==', TransactionPayloadType.BADGE);
       await wait(async () => {
         const snap = await nttQuery.get();
         return snap.length === 1;
       });
 
-      const creditQuery = soonDb()
+      const creditQuery = build5Db()
         .collection(COL.TRANSACTION)
         .where('member', '==', guardian)
         .where('type', '==', TransactionType.CREDIT);
@@ -140,13 +139,13 @@ describe('Create award, base', () => {
       const credit = <Transaction>(await creditQuery.get())[0];
       expect(credit.payload.token).toBe(token.uid);
       expect(credit.payload.tokenSymbol).toBe(token.symbol);
-      expect(credit.payload.type).toBe(TransactionCreditType.AWARD_COMPLETED);
+      expect(credit.payload.type).toBe(TransactionPayloadType.AWARD_COMPLETED);
 
       await awaitAllTransactionsForAward(award.uid);
 
-      const burnAliasQuery = soonDb()
+      const burnAliasQuery = build5Db()
         .collection(COL.TRANSACTION)
-        .where('payload.type', '==', TransactionAwardType.BURN_ALIAS)
+        .where('payload.type', '==', TransactionPayloadType.BURN_ALIAS)
         .where('member', '==', guardian);
       await wait(async () => {
         const snap = await burnAliasQuery.get<Transaction>();

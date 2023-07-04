@@ -3,10 +3,10 @@ import {
   PublicSubCollections,
   QUERY_MAX_LENGTH,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import { isEmpty, last } from 'lodash';
 import { getMany } from '../../src/api/getMany';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 
 describe('Get all', () => {
@@ -19,10 +19,10 @@ describe('Get all', () => {
   it('Get all', async () => {
     const uid1 = getRandomEthAddress();
     const uid2 = getRandomEthAddress();
-    await soonDb()
+    await build5Db()
       .doc(`${PublicCollections.MEMBER}/${uid1}`)
       .create({ name: 'asd', uid: uid1, space });
-    await soonDb()
+    await build5Db()
       .doc(`${PublicCollections.MEMBER}/${uid2}`)
       .create({ name: 'ccc', uid: uid2, space });
     const req = {
@@ -41,9 +41,9 @@ describe('Get all', () => {
 
   it('Get all, but not more then max query', async () => {
     const uids = Array.from(Array(QUERY_MAX_LENGTH + 1)).map(() => getRandomEthAddress());
-    const batch = soonDb().batch();
+    const batch = build5Db().batch();
     uids.forEach((uid, i) =>
-      batch.create(soonDb().doc(`${PublicCollections.MEMBER}/${uid}`), {
+      batch.create(build5Db().doc(`${PublicCollections.MEMBER}/${uid}`), {
         name: 'asd' + i,
         uid,
         space,
@@ -65,9 +65,9 @@ describe('Get all', () => {
 
   it('Get all paginated', async () => {
     const uids = Array.from(Array(QUERY_MAX_LENGTH + 1)).map(() => getRandomEthAddress());
-    const batch = soonDb().batch();
+    const batch = build5Db().batch();
     uids.forEach((uid, i) =>
-      batch.create(soonDb().doc(`${PublicCollections.MEMBER}/${uid}`), {
+      batch.create(build5Db().doc(`${PublicCollections.MEMBER}/${uid}`), {
         name: 'asd' + i,
         uid,
         space,
@@ -106,7 +106,7 @@ describe('Get all', () => {
     const uids = Array.from(Array(4)).map(() => getRandomEthAddress());
 
     for (let i = 0; i < uids.length; ++i) {
-      await soonDb()
+      await build5Db()
         .doc(`${PublicCollections.MEMBER}/${uids[i]}`)
         .create({ uid: uids[i], space, small: i < 3, age: i < 3 ? 3 : 4 });
     }
@@ -192,7 +192,7 @@ describe('Get all', () => {
 
   it('Should ge by boolean field', async () => {
     const randomFieldName = Math.random().toString().replace('0.', 'a');
-    await soonDb()
+    await build5Db()
       .doc(`${PublicCollections.MEMBER}/${getRandomEthAddress()}`)
       .create({ [randomFieldName]: false });
 
@@ -215,12 +215,12 @@ describe('Get all', () => {
 describe('Get all sub', () => {
   it('Get all sub', async () => {
     const parentId = getRandomEthAddress();
-    await soonDb().doc(`${PublicCollections.SPACE}/${parentId}`).create({ name: 'space' });
+    await build5Db().doc(`${PublicCollections.SPACE}/${parentId}`).create({ name: 'space' });
     const childrenCount = QUERY_MAX_LENGTH + 1;
     const childrenUids = Array.from(Array(childrenCount)).map(() => getRandomEthAddress());
-    const batch = soonDb().batch();
+    const batch = build5Db().batch();
     childrenUids.forEach((uid, i) => {
-      const docRef = soonDb().doc(
+      const docRef = build5Db().doc(
         `${PublicCollections.SPACE}/${parentId}/${PublicSubCollections.MEMBERS}/${uid}`,
       );
       batch.create(docRef, { name: 'asd' + i, uid });
@@ -263,9 +263,9 @@ describe('Get all sub', () => {
 describe('Get by field name', () => {
   it.each([getRandomEthAddress(), Math.random()])('Should get by field', async (field: any) => {
     const uids = Array.from(Array(QUERY_MAX_LENGTH + 1)).map(() => getRandomEthAddress());
-    const batch = soonDb().batch();
+    const batch = build5Db().batch();
     uids.forEach((uid, i) =>
-      batch.create(soonDb().doc(`${PublicCollections.MEMBER}/${uid}`), {
+      batch.create(build5Db().doc(`${PublicCollections.MEMBER}/${uid}`), {
         field,
         name: 'asd' + i,
         uid,
@@ -306,9 +306,9 @@ describe('Get subs by field name', () => {
   it.each([getRandomEthAddress()])('Should get subs by field', async (field: any) => {
     const space = getRandomEthAddress();
     const children = Array.from(Array(2 * QUERY_MAX_LENGTH)).map(() => getRandomEthAddress());
-    const batch = soonDb().batch();
+    const batch = build5Db().batch();
     children.forEach((child, i) => {
-      const docRef = soonDb().doc(
+      const docRef = build5Db().doc(
         `${PublicCollections.SPACE}/${space}/${PublicSubCollections.MEMBERS}/${child}`,
       );
       const data = i <= QUERY_MAX_LENGTH ? { field } : { field: 'asd' };
@@ -367,7 +367,7 @@ describe('Get all with IN', () => {
       space,
     }));
     for (const member of members) {
-      const docRef = soonDb().doc(`${PublicCollections.MEMBER}/${member.uid}`);
+      const docRef = build5Db().doc(`${PublicCollections.MEMBER}/${member.uid}`);
       await docRef.create(member);
     }
 

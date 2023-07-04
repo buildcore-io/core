@@ -1,5 +1,5 @@
-import { COL, MIN_IOTA_AMOUNT, Proposal, TangleRequestType } from '@soonaverse/interfaces';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { COL, MIN_IOTA_AMOUNT, Proposal, TangleRequestType } from '@build-5/interfaces';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { wait } from '../../test/controls/common';
 import { Helper } from './Helper';
 
@@ -23,7 +23,7 @@ describe('Proposal approval via tangle request', () => {
 
       await helper.walletService.send(
         helper.guardianAddress,
-        helper.tangleOrder.payload.targetAddress,
+        helper.tangleOrder.payload.targetAddress!,
         MIN_IOTA_AMOUNT,
         {
           customMetadata: {
@@ -41,7 +41,7 @@ describe('Proposal approval via tangle request', () => {
         return snap.length === 2;
       });
 
-      const proposalDocRef = soonDb().doc(`${COL.PROPOSAL}/${proposalUid}`);
+      const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposalUid}`);
       const proposal = <Proposal>await proposalDocRef.get();
 
       expect(approve ? proposal.approved : proposal.rejected).toBe(true);

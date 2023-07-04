@@ -1,7 +1,10 @@
-import { PublicCollections, QUERY_MAX_LENGTH } from '@soonaverse/interfaces';
+import { PublicCollections, QUERY_MAX_LENGTH, TokenPurchase } from '@build-5/interfaces';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
+import { head } from 'lodash';
+import { Observable, map } from 'rxjs';
+import { IDocument, IQuery } from '../firebase/firestore/interfaces';
 
 export const getQueryLimit = (collection: PublicCollections) => {
   switch (collection) {
@@ -29,3 +32,26 @@ export const getQueryParams = <T>(
   }
   return <T>joiResult.value;
 };
+
+export const queryToObservable = <T>(query: IQuery) =>
+  new Observable<T[]>((observer) => {
+    const unsubscribe = query.onSnapshot<T>((data) => {
+      observer.next(data);
+    });
+    return () => {
+      unsubscribe();
+    };
+  });
+
+export const documentToObservable = <T>(doc: IDocument) =>
+  new Observable<T>((observer) => {
+    const unsubscribe = doc.onSnapshot<T>((data) => {
+      observer.next(data);
+    });
+    return () => {
+      unsubscribe();
+    };
+  });
+
+export const getHeadCountObs = (query: IQuery) =>
+  queryToObservable<TokenPurchase>(query).pipe(map((r) => head(r)?.count || 0));

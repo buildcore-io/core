@@ -1,20 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { HexHelper } from '@iota/util.js-next';
 import {
   COL,
   MIN_IOTA_AMOUNT,
   TokenTradeOrderType,
   Transaction,
   TransactionType,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
+import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
-import { soonDb } from '../../src/firebase/firestore/soondb';
+import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
-import { dummyTokenId, Helper, MINTED_TOKEN_ID, saveToken } from './Helper';
+import { Helper, MINTED_TOKEN_ID, dummyTokenId, saveToken } from './Helper';
 
 describe('Token minting', () => {
   const helper = new Helper();
@@ -47,7 +47,7 @@ describe('Token minting', () => {
       ],
     });
 
-    const query = soonDb()
+    const query = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.seller);
@@ -58,9 +58,9 @@ describe('Token minting', () => {
     const snap = await query.get();
     const credit = <Transaction>snap[0];
     expect(credit.payload.amount).toBe(sellOrder.payload.amount);
-    expect(credit.payload.nativeTokens[0].id).toBe(MINTED_TOKEN_ID);
-    expect(credit.payload.nativeTokens[0].amount).toBe(10);
-    const sellSnap = await soonDb()
+    expect(credit.payload.nativeTokens![0].id).toBe(MINTED_TOKEN_ID);
+    expect(credit.payload.nativeTokens![0].amount).toBe('10');
+    const sellSnap = await build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.seller)
       .get();

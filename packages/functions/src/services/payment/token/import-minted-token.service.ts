@@ -1,33 +1,31 @@
 import {
-  ALIAS_OUTPUT_TYPE,
-  GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE,
-  IAliasAddress,
-  IAliasOutput,
-  IFoundryOutput,
-  IImmutableAliasUnlockCondition,
-  IMetadataFeature,
-  IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE,
-  IndexerPluginClient,
-  METADATA_FEATURE_TYPE,
-} from '@iota/iota.js-next';
-import { Converter } from '@iota/util.js-next';
-import {
   Access,
   COL,
   MediaStatus,
   Token,
   TokenStatus,
   Transaction,
-  TransactionCreditType,
+  TransactionPayloadType,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
+import {
+  IAliasAddress,
+  IAliasOutput,
+  IFoundryOutput,
+  IImmutableAliasUnlockCondition,
+  IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE,
+  IMetadataFeature,
+  IndexerPluginClient,
+  METADATA_FEATURE_TYPE,
+} from '@iota/iota.js-next';
+import { Converter } from '@iota/util.js-next';
 import Joi from 'joi';
 import { get, isEmpty } from 'lodash';
-import { soonDb } from '../../../firebase/firestore/soondb';
-import { soonStorage } from '../../../firebase/storage/soonStorage';
-import { Bech32AddressHelper } from '../../../utils/bech32-address.helper';
+import { build5Db } from '../../../firebase/firestore/build5Db';
+import { build5Storage } from '../../../firebase/storage/build5Storage';
 import { getBucket } from '../../../utils/config.utils';
 import { migrateUriToSotrage, uriToUrl } from '../../../utils/media.utils';
+import { isAliasGovernor } from '../../../utils/token-minting-utils/alias.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';
 import { WalletService } from '../../wallet/wallet';
 import { TransactionMatch, TransactionService } from '../transaction-service';
@@ -38,8 +36,8 @@ export class ImportMintedTokenService {
   public handleMintedTokenImport = async (order: Transaction, match: TransactionMatch) => {
     let error: { [key: string]: unknown } = {};
     try {
-      const tokenId = order.payload.tokenId;
-      const existingTokenDocRef = soonDb().doc(`${COL.TOKEN}/${tokenId}`);
+      const tokenId = order.payload.tokenId!;
+      const existingTokenDocRef = build5Db().doc(`${COL.TOKEN}/${tokenId}`);
       const existingToken = await this.transactionService.get<Token>(existingTokenDocRef);
 
       if (existingToken) {
@@ -56,14 +54,14 @@ export class ImportMintedTokenService {
             order.member!,
             tokenId,
             uriToUrl(metadata.logoUrl),
-            soonStorage().bucket(getBucket()),
+            build5Storage().bucket(getBucket()),
           )
         : '';
 
       const vaultAddress = await wallet.getNewIotaAddressDetails();
       const totalSupply = Number(foundry.tokenScheme.maximumSupply);
       const token: Token = {
-        createdBy: order.member,
+        createdBy: order.member || '',
         uid: tokenId,
         name: metadata.name,
         title: metadata.name,
@@ -100,7 +98,7 @@ export class ImportMintedTokenService {
         pricePerToken: 0,
         decimals: metadata.decimals,
       };
-      const tokenDocRef = soonDb().doc(`${COL.TOKEN}/${token.uid}`);
+      const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
       this.transactionService.push({ ref: tokenDocRef, data: token, action: 'set' });
     } catch (err) {
       error = {
@@ -111,7 +109,7 @@ export class ImportMintedTokenService {
     } finally {
       const payment = await this.transactionService.createPayment(order, match, !isEmpty(error));
       await this.transactionService.createCredit(
-        TransactionCreditType.IMPORT_TOKEN,
+        TransactionPayloadType.IMPORT_TOKEN,
         payment,
         match,
         undefined,
@@ -131,7 +129,7 @@ export class ImportMintedTokenService {
     match: TransactionMatch,
   ) => {
     const indexer = new IndexerPluginClient(wallet.client);
-    const foundry = await indexer.foundry(order.payload.tokenId);
+    const foundry = await indexer.foundry(order.payload.tokenId!);
     const foundryOutput = <IFoundryOutput>(await wallet.client.output(foundry.items[0])).output;
 
     const unlockCondition = <IImmutableAliasUnlockCondition>(
@@ -162,24 +160,6 @@ export class ImportMintedTokenService {
     return metadata;
   };
 }
-
-const isAliasGovernor = (alias: IAliasOutput, address: string, hrp: string) => {
-  const governors =
-    alias.unlockConditions?.filter((uc) => uc.type === GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE) ||
-    [];
-
-  for (const governor of governors) {
-    const governorBech32 = Bech32AddressHelper.addressFromAddressUnlockCondition(
-      [governor],
-      hrp,
-      ALIAS_OUTPUT_TYPE,
-    );
-    if (governorBech32 === address) {
-      return true;
-    }
-  }
-  return false;
-};
 
 const tokenIrc30Schema = Joi.object({
   name: Joi.string().required(),

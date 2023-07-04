@@ -1,25 +1,33 @@
-import { Transaction } from '@soonaverse/interfaces';
+import {
+  ApiError,
+  AwardApproveParticipantRequest,
+  AwardApproveParticipantResponse,
+  Transaction,
+} from '@build-5/interfaces';
 import { get } from 'lodash';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { approveAwardParticipant } from '../../services/payment/tangle-service/award/award.approve.participant.service';
 
 export const approveAwardParticipantControl = async (
   owner: string,
-  params: Record<string, unknown>,
-) => {
-  const members = (params.members as string[]).map((m) => m.toLowerCase());
-  const awardId = params.award as string;
+  params: AwardApproveParticipantRequest,
+): Promise<AwardApproveParticipantResponse> => {
+  const members = params.members.map((m) => m.toLowerCase());
+  const awardId = params.award;
   const badges: { [key: string]: Transaction } = {};
-  const errors: { [key: string]: unknown } = {};
+  const errors: { [key: string]: ApiError } = {};
 
   for (const member of members) {
     try {
-      const badge = await soonDb().runTransaction(approveAwardParticipant(owner, awardId, member));
+      const badge = await build5Db().runTransaction(
+        approveAwardParticipant(owner, awardId, member),
+      );
       badges[badge.uid] = badge;
-    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       errors[member] = {
-        code: get(error, 'details.code', ''),
-        message: get(error, 'details.key', ''),
+        code: get<number>(error, 'details.code', 0),
+        message: get<string>(error, 'details.key', ''),
       };
     }
   }

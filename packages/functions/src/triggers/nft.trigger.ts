@@ -5,9 +5,9 @@ import {
   Nft,
   NftAvailable,
   WEN_FUNC_TRIGGER,
-} from '@soonaverse/interfaces';
-import * as functions from 'firebase-functions';
-import { soonDb } from '../firebase/firestore/soondb';
+} from '@build-5/interfaces';
+import * as functions from 'firebase-functions/v2';
+import { build5Db } from '../firebase/firestore/build5Db';
 import { scale } from '../scale.settings';
 import { downloadMediaAndPackCar, nftToIpfsMetadata } from '../utils/car.utils';
 
@@ -27,16 +27,16 @@ const getNftAvailability = (nft: Nft | undefined) => {
   return NftAvailable.UNAVAILABLE;
 };
 
-export const nftWrite = functions
-  .runWith({
+export const nftWrite = functions.firestore.onDocumentWritten(
+  {
     minInstances: scale(WEN_FUNC_TRIGGER.nftWrite),
     timeoutSeconds: 540,
-    memory: '512MB',
-  })
-  .firestore.document(COL.NFT + '/{nftId}')
-  .onWrite(async (change) => {
-    const prev = <Nft | undefined>change.before.data();
-    const curr = <Nft | undefined>change.after.data();
+    memory: '512MiB',
+    document: COL.NFT + '/{nftId}',
+  },
+  async (event) => {
+    const prev = <Nft | undefined>event.data?.before?.data();
+    const curr = <Nft | undefined>event.data?.after?.data();
     if (!curr) {
       return;
     }
@@ -51,25 +51,26 @@ export const nftWrite = functions
       );
       const availableNfts = getAvailableNftsChange(prevAvailability, currAvailability, prev?.owner);
 
-      const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${curr.collection}`);
+      const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${curr.collection}`);
       await collectionDocRef.update({
-        nftsOnSale: soonDb().inc(nftsOnSale),
-        nftsOnAuction: soonDb().inc(nftsOnAuction),
-        availableNfts: soonDb().inc(availableNfts),
+        nftsOnSale: build5Db().inc(nftsOnSale),
+        nftsOnAuction: build5Db().inc(nftsOnAuction),
+        availableNfts: build5Db().inc(availableNfts),
       });
 
-      await change.after.ref.update({ available: currAvailability });
+      await event.data!.after.ref.update({ available: currAvailability });
     }
 
     if (prev?.mediaStatus !== curr.mediaStatus && curr.mediaStatus === MediaStatus.PREPARE_IPFS) {
       await prepareNftMedia(curr);
     }
-  });
+  },
+);
 
 const prepareNftMedia = async (nft: Nft) => {
-  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${nft.collection}`);
-  const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
-  const batch = soonDb().batch();
+  const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nft.collection}`);
+  const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
+  const batch = build5Db().batch();
 
   if (nft.ipfsRoot) {
     batch.update(nftDocRef, { mediaStatus: MediaStatus.PENDING_UPLOAD });
@@ -85,7 +86,7 @@ const prepareNftMedia = async (nft: Nft) => {
     });
   }
 
-  batch.update(collectionDocRef, { 'mintingData.nftMediaToPrepare': soonDb().inc(-1) });
+  batch.update(collectionDocRef, { 'mintingData.nftMediaToPrepare': build5Db().inc(-1) });
   await batch.commit();
 };
 

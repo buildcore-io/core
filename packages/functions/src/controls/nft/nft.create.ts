@@ -6,23 +6,27 @@ import {
   MIN_IOTA_AMOUNT,
   Nft,
   NftAccess,
-  Timestamp,
+  NftBatchCreateRequest,
+  NftCreateRequest,
   WenError,
-} from '@soonaverse/interfaces';
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { soonDb } from '../../firebase/firestore/soondb';
+import { build5Db } from '../../firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
-export const createNftControl = async (owner: string, params: Record<string, unknown>) => {
+export const createNftControl = async (owner: string, params: NftCreateRequest): Promise<Nft> => {
   const collection = await getCollection(owner, params.collection as string);
   return await processOneCreateNft(params, collection, collection.total + 1);
 };
 
-export const createBatchNftControl = async (owner: string, params: Record<string, unknown>[]) => {
-  const collection = await getCollection(owner, params[0].collection as string);
+export const createBatchNftControl = async (
+  owner: string,
+  params: NftBatchCreateRequest,
+): Promise<string[]> => {
+  const collection = await getCollection(owner, params[0].collection);
   const promises = params.map((param, i) =>
     processOneCreateNft(param, collection, collection.total + i + 1),
   );
@@ -30,7 +34,7 @@ export const createBatchNftControl = async (owner: string, params: Record<string
 };
 
 const getCollection = async (owner: string, collectionId: string) => {
-  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${collectionId}`);
+  const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${collectionId}`);
   const collection = await collectionDocRef.get<Collection>();
   if (!collection) {
     throw invalidArgument(WenError.collection_does_not_exists);
@@ -56,17 +60,17 @@ const getCollection = async (owner: string, collectionId: string) => {
 };
 
 const processOneCreateNft = async (
-  params: Record<string, unknown>,
+  params: NftCreateRequest,
   collection: Collection,
   position: number,
 ) => {
   if (params.availableFrom) {
-    params.availableFrom = dateToTimestamp(params.availableFrom as Date, true);
+    params.availableFrom = dateToTimestamp(params.availableFrom, true).toDate();
   }
 
   if (
     !collection.availableFrom ||
-    dayjs(collection.availableFrom.toDate()).isAfter(dayjs(params.availableFrom as Date), 'minutes')
+    dayjs(collection.availableFrom.toDate()).isAfter(dayjs(params.availableFrom), 'minutes')
   ) {
     throw invalidArgument(
       WenError.nft_date_must_be_after_or_same_with_collection_available_from_date,
@@ -74,7 +78,7 @@ const processOneCreateNft = async (
   }
 
   if (collection.type === CollectionType.CLASSIC) {
-    const availableFrom = dayjs((params.availableFrom as Timestamp).toDate());
+    const availableFrom = dayjs(params.availableFrom);
     const expectedAvailableFrom = dayjs().subtract(24 * 60 * 60 * 1000);
     if (availableFrom.isBefore(expectedAvailableFrom)) {
       throw invalidArgument(WenError.available_from_must_be_in_the_future);
@@ -87,7 +91,7 @@ const processOneCreateNft = async (
 
   if (collection.type === CollectionType.GENERATED || collection.type === CollectionType.SFT) {
     params.price = collection.price || 0;
-    params.availableFrom = collection.availableFrom || collection.createdOn;
+    params.availableFrom = (collection.availableFrom || collection.createdOn).toDate();
   }
 
   const price = Math.max(Number(params.price) || 0, MIN_IOTA_AMOUNT);
@@ -116,15 +120,15 @@ const processOneCreateNft = async (
     placeholderNft: false,
     status: CollectionStatus.PRE_MINTED,
   };
-  const batch = soonDb().batch();
-  const nftDocRef = soonDb().doc(`${COL.NFT}/${nft.uid}`);
+  const batch = build5Db().batch();
+  const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
   batch.create(nftDocRef, nft);
 
-  const collectionDocRef = soonDb().doc(`${COL.COLLECTION}/${collection.uid}`);
-  batch.update(collectionDocRef, { total: soonDb().inc(1) });
+  const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${collection.uid}`);
+  batch.update(collectionDocRef, { total: build5Db().inc(1) });
 
   if (collection.placeholderNft) {
-    const placeholderNftDocRef = soonDb().doc(`${COL.NFT}/${collection.placeholderNft}`);
+    const placeholderNftDocRef = build5Db().doc(`${COL.NFT}/${collection.placeholderNft}`);
     batch.update(placeholderNftDocRef, {
       sold: false,
       availableFrom: params.availableFrom,
