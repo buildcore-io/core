@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BaseRecord, COL, KeepAliveRequest, PING_INTERVAL } from '@build-5/interfaces';
+import {
+  BaseRecord,
+  COL,
+  KeepAliveRequest,
+  PING_INTERVAL,
+  QUERY_MAX_LENGTH,
+} from '@build-5/interfaces';
 import { randomUUID } from 'crypto';
 import dayjs from 'dayjs';
 import * as express from 'express';
@@ -12,8 +18,8 @@ import { getQueryParams } from './common';
 import { Observable } from 'rxjs';
 
 const keepAliveSchema = Joi.object({
-  sessionId: CommonJoi.sessionId(),
-  close: Joi.boolean().optional(),
+  sessionIds: Joi.array().items(CommonJoi.sessionId()).min(1).max(QUERY_MAX_LENGTH).required(),
+  close: Joi.array().items(Joi.boolean().optional()).max(QUERY_MAX_LENGTH).required(),
 });
 
 export const keepAlive = async (req: functions.https.Request, res: express.Response) => {
@@ -21,16 +27,18 @@ export const keepAlive = async (req: functions.https.Request, res: express.Respo
   if (!body) {
     return;
   }
-  const docRef = build5Db().doc(`${COL.KEEP_ALIVE}/${body.sessionId}`);
 
-  if (body.close) {
-    await docRef.delete();
-    res.status(200).send({ update: true });
-    return;
-  }
+  const batch = build5Db().batch();
 
-  await docRef.set({}, true);
+  body.sessionIds.forEach((sessionId, i) => {
+    const docRef = build5Db().doc(`${COL.KEEP_ALIVE}/${sessionId}`);
+    body.close?.[i] ? batch.delete(docRef) : batch.set(docRef, {});
+  });
+
+  await batch.commit();
+
   res.status(200).send({ update: true });
+  return;
 };
 
 export const sendLiveUpdates = async <T>(

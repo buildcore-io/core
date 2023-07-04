@@ -1,13 +1,19 @@
 import { PublicCollections, PublicSubCollections } from '@build-5/interfaces';
-import { Build5Env } from '../../Config';
+import { set } from 'lodash';
+import { Build5Env, getManyByIdUrl } from '../../Config';
 
 export const BATCH_MAX_SIZE = 100;
 export const BATCH_TIMEOUT = 200;
 
+interface Request {
+  parent: string;
+  uid: string;
+}
+
 export abstract class AbstractGetByIdGrouped {
-  protected requests: { [key: string]: string[] } = {};
-  protected requestCounter: { [key: string]: number } = {};
-  protected timer: { [key: string]: Promise<void> | null } = {};
+  protected requests: Request[] = [];
+  protected requestCounter = 0;
+  protected timer: Promise<void> | null = null;
 
   constructor(
     protected readonly env: Build5Env,
@@ -16,33 +22,48 @@ export abstract class AbstractGetByIdGrouped {
   ) {}
 
   protected init = (uid: string, parent: string) => {
-    if (!this.requests[parent]) {
-      this.requests[parent] = [];
-    }
-    if (!this.requestCounter[parent]) {
-      this.requestCounter[parent] = 0;
-    }
-
-    if (!this.requests[parent].includes(uid)) {
-      this.requests[parent].push(uid);
-      this.requestCounter[parent]++;
+    const request = this.requests.find((r) => r.parent === parent && r.uid === uid);
+    if (!request) {
+      this.requests.push({ parent, uid });
+      this.requestCounter++;
     }
   };
 
-  protected executeTimed = async (parent: string) => {
-    if (!this.timer[parent]) {
-      this.timer[parent] = new Promise<void>((resolve) =>
+  protected executeTimed = async () => {
+    if (!this.timer) {
+      this.timer = new Promise<void>((resolve) =>
         setTimeout(async () => {
-          await this.executeRequests(parent);
+          await this.executeRequests();
           resolve();
         }, BATCH_TIMEOUT),
       );
     }
-    await this.timer[parent];
-    this.timer[parent] = null;
+    await this.timer;
+    this.timer = null;
   };
 
-  protected executeRequests = async (_parent: string): Promise<void> => {
+  protected createUrl = (sessionId?: string) => {
+    const requests = this.requests.splice(0, BATCH_MAX_SIZE);
+    this.requestCounter = Math.max(this.requestCounter - BATCH_MAX_SIZE, 0);
+
+    const params = {
+      collection: this.col,
+      uids: requests.map((r) => r.uid),
+    };
+    if (sessionId) {
+      set(params, 'sessionId', sessionId);
+    }
+    if (this.subCol) {
+      const parents = requests.map((r) => r.parent);
+      set(params, 'parentUids', parents);
+      set(params, 'subCollection', this.subCol);
+    }
+
+    const url = getManyByIdUrl(this.env);
+    return { requests, url, params };
+  };
+
+  protected executeRequests = async (): Promise<void> => {
     throw new Error('Method not implemented.');
   };
 }

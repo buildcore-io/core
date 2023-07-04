@@ -1,6 +1,4 @@
-import { ApiRoutes, PING_INTERVAL } from '@build-5/interfaces';
-import { wrappedFetch } from './fetch.utils';
-import { randomString } from './utils';
+import { ApiRoutes } from '@build-5/interfaces';
 
 export enum Build5Env {
   PROD = 'https://api.build5.com/api',
@@ -26,12 +24,3 @@ export const getAvgPriceUrl = (baseUrl: Build5Env) => baseUrl + ApiRoutes.GET_AV
 export const getPriceChangeUrl = (baseUrl: Build5Env) => baseUrl + ApiRoutes.GET_PRICE_CHANGE;
 
 export const getKeepAliveUrl = (baseUrl: Build5Env) => baseUrl + ApiRoutes.KEEP_ALIVE;
-
-export const SESSION_ID = randomString();
-
-export const initBuild5Env = (env: Build5Env) => {
-  setInterval(async () => {
-    const url = getKeepAliveUrl(env);
-    await wrappedFetch(url, { sessionId: SESSION_ID });
-  }, PING_INTERVAL * 0.8);
-};

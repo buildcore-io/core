@@ -1,6 +1,6 @@
 import { Observable as RxjsObservable, Subscriber, map, shareReplay } from 'rxjs';
-import { Build5Env, getKeepAliveUrl } from './Config';
-import { wrappedFetch } from './fetch.utils';
+import { Build5Env } from './Config';
+import { getSession } from './Session';
 import { processObject, processObjectArray } from './utils';
 
 const HEADERS = {
@@ -22,8 +22,7 @@ class Observable<T> extends RxjsObservable<T> {
       return async () => {
         this.isRunning = false;
         if (this.instaceId) {
-          const url = getKeepAliveUrl(env);
-          await wrappedFetch(url, { sessionId: this.instaceId, close: true });
+          await getSession(env).pingSession(this.instaceId, true);
         }
       };
     });

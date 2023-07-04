@@ -15,7 +15,7 @@ export interface GetByIdRequest extends BaseRequest {
 export interface GetManyByIdRequest extends BaseRequest {
   readonly collection: PublicCollections;
   readonly uids: string[];
-  readonly parentUid?: string;
+  readonly parentUids?: string[];
   readonly subCollection?: PublicSubCollections;
 }
 
@@ -53,8 +53,8 @@ export interface GetAddressesRequest extends BaseRequest {
 }
 
 export interface KeepAliveRequest {
-  readonly sessionId: string;
-  readonly close?: boolean;
+  readonly sessionIds: string[];
+  readonly close?: boolean[];
 }
 
 export enum Opr {
