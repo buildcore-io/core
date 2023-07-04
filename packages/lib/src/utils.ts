@@ -17,10 +17,10 @@ export const processObject = <R>(obj: any) => {
 };
 
 const processValue = (value: any): any => {
-  if (value instanceof Array) {
+  if (value && Array.isArray(value)) {
     return value.map(processValue);
   }
-  if (value instanceof Object) {
+  if (value && typeof value === 'object') {
     const keys = Object.keys(value);
     if (isEqual(keys, ['_seconds', '_nanoseconds'])) {
       return new Timestamp(value._seconds, value._nanoseconds);
