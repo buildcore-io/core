@@ -22,6 +22,9 @@ export class GetByIdGroupedLive<T> extends AbstractGetByIdGrouped {
 
   protected executeRequests = async () => {
     const { url, requests, params } = this.createUrl(getSessionId(this.env));
+    if (!requests.length) {
+      return;
+    }
     const source = fetchLive<T[]>(this.env, url + toQueryParams(params));
     for (const r of requests) {
       this.observers[r.parent + r.uid] = source.pipe(

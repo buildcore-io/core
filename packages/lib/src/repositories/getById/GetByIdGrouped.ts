@@ -19,6 +19,9 @@ export class GetByIdGrouped<T> extends AbstractGetByIdGrouped {
 
   protected executeRequests = async () => {
     const { url, requests, params } = this.createUrl();
+    if (!requests.length) {
+      return;
+    }
     const source = await wrappedFetch<T[]>(url, params);
     for (const r of requests) {
       this.result[r.parent + r.uid] = source.find((d) => get(d, 'uid', '') === r.uid);

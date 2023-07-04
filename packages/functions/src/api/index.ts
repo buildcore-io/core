@@ -18,6 +18,7 @@ export const api = functions.https.onRequest(
   onRequestConfig(WEN_FUNC.api, {
     timeoutSeconds: 1800,
     minInstances: 5,
+    memory: '1GiB',
   }),
   (req, res) =>
     cors({ origin: true })(req, res, async () => {
