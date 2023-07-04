@@ -4,6 +4,6 @@ import { SubCrudRepository } from '../SubCrudRepository';
 
 export class SpaceGuardianRepository extends SubCrudRepository<SpaceMember> {
   constructor(env?: Build5Env) {
-    super(env || Build5Env.PROD, PublicCollections.SPACE, PublicSubCollections.MEMBERS);
+    super(env || Build5Env.PROD, PublicCollections.SPACE, PublicSubCollections.GUARDIANS);
   }
 }
