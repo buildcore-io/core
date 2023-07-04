@@ -42,7 +42,7 @@ const purchaseQuery = (token: string, lowest?: boolean) => {
   return build5Db()
     .collection(PublicCollections.TOKEN_PURCHASE)
     .where('token', '==', token)
-    .where('in7d', '==', true)
+    .where('age.in7d', '==', true)
     .orderBy('price', lowest ? 'asc' : 'desc')
     .limit(1);
 };
