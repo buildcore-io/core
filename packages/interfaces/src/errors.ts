@@ -282,4 +282,8 @@ export const WenError = {
     code: 2133,
     key: 'NFT must be sent to soonaverse',
   },
+  api_error: {
+    code: 2134,
+    key: 'You are query combination is not supported. Please request support through Github',
+  },
 };

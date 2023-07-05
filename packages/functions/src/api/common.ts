@@ -35,9 +35,14 @@ export const getQueryParams = <T>(
 
 export const queryToObservable = <T>(query: IQuery) =>
   new Observable<T[]>((observer) => {
-    const unsubscribe = query.onSnapshot<T>((data) => {
-      observer.next(data);
-    });
+    const unsubscribe = query.onSnapshot<T>(
+      (data) => {
+        observer.next(data);
+      },
+      (error) => {
+        observer.error(error);
+      },
+    );
     return () => {
       unsubscribe();
     };
@@ -45,9 +50,14 @@ export const queryToObservable = <T>(query: IQuery) =>
 
 export const documentToObservable = <T>(doc: IDocument) =>
   new Observable<T>((observer) => {
-    const unsubscribe = doc.onSnapshot<T>((data) => {
-      observer.next(data);
-    });
+    const unsubscribe = doc.onSnapshot<T>(
+      (data) => {
+        observer.next(data);
+      },
+      (error) => {
+        observer.error(error);
+      },
+    );
     return () => {
       unsubscribe();
     };

@@ -188,10 +188,18 @@ export class FirestoreDocument implements IDocument {
     await this.document.delete();
   };
 
-  public onSnapshot = <T>(callback: (data: T | undefined) => void) =>
-    this.document.onSnapshot((snap) => {
-      callback(snap.exists ? ({ ...snap.data(), uid: snap.id } as T) : undefined);
-    });
+  public onSnapshot = <T>(
+    callback: (data: T | undefined) => void,
+    onError?: (error: Error) => void,
+  ) =>
+    this.document.onSnapshot(
+      (snap) => {
+        callback(snap.exists ? ({ ...snap.data(), uid: snap.id } as T) : undefined);
+      },
+      (error) => {
+        onError && onError(error);
+      },
+    );
 
   public collection = (subCol: SUB_COL | PublicSubCollections): ICollection =>
     new FirestoreCollection(this.db, this.document.collection(subCol));
@@ -245,10 +253,15 @@ export class FirestoreQuery implements IQuery {
     return this;
   };
 
-  public onSnapshot = <T>(callback: (data: T[]) => void) =>
-    this.query.onSnapshot((snap) => {
-      callback(snap.docs.map((d) => ({ ...d.data(), uid: d.id } as T)));
-    });
+  public onSnapshot = <T>(callback: (data: T[]) => void, onError?: (error: Error) => void) =>
+    this.query.onSnapshot(
+      (snap) => {
+        callback(snap.docs.map((d) => ({ ...d.data(), uid: d.id } as T)));
+      },
+      (error) => {
+        onError && onError(error);
+      },
+    );
 
   public getInstance = () => this.query;
 }
