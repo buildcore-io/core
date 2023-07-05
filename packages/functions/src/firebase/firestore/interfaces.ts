@@ -32,7 +32,10 @@ export interface IDocument {
   set: (data: any, merge?: boolean) => Promise<void>;
   delete: () => Promise<void>;
 
-  onSnapshot: <T>(callback: (data: T | undefined) => void) => () => void;
+  onSnapshot: <T>(
+    callback: (data: T | undefined) => void,
+    error?: (error: Error) => void,
+  ) => () => void;
 
   collection: (subCol: SUB_COL | PublicSubCollections) => ICollection;
   get: <D>() => Promise<D | undefined>;
@@ -51,7 +54,7 @@ export interface IQuery {
 
   limit: (value: number) => IQuery;
   startAfter: (value?: IDocumentSnapshot | string | number | Date) => IQuery;
-  onSnapshot: <T>(callback: (data: T[]) => void) => () => void;
+  onSnapshot: <T>(callback: (data: T[]) => void, error?: (error: Error) => void) => () => void;
 
   getInstance: () => any;
 

@@ -1,4 +1,4 @@
-import { ApiRoutes, WEN_FUNC } from '@build-5/interfaces';
+import { ApiRoutes, WEN_FUNC, WenError } from '@build-5/interfaces';
 import cors from 'cors';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
@@ -22,7 +22,12 @@ export const api = functions.https.onRequest(
   }),
   (req, res) =>
     cors({ origin: true })(req, res, async () => {
-      getHandler(req.url)(req, res);
+      try {
+        await getHandler(req.url)(req, res);
+      } catch (error) {
+        functions.logger.error(error);
+        res.status(400).send({ message: WenError.api_error.key });
+      }
     }),
 );
 

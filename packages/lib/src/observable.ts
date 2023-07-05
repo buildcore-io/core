@@ -1,4 +1,4 @@
-import { Observable as RxjsObservable, Subscriber, map, shareReplay } from 'rxjs';
+import { Observable as RxjsObservable, Subscriber, shareReplay } from 'rxjs';
 import { Build5Env } from './Config';
 import { getSession } from './Session';
 import { processObject, processObjectArray } from './utils';
@@ -73,6 +73,8 @@ class Observable<T> extends RxjsObservable<T> {
       return;
     } else if (type === 'instance') {
       this.instaceId = data;
+    } else if (type === 'error') {
+      this.observer!.error(data);
     }
   };
 
@@ -82,12 +84,4 @@ class Observable<T> extends RxjsObservable<T> {
 }
 
 export const fetchLive = <T>(env: Build5Env, url: string): RxjsObservable<T> =>
-  new Observable<T>(env, url).pipe(
-    map((r) => {
-      if (Array.isArray(r)) {
-        return processObjectArray(r) as T;
-      }
-      return processObject(r) as T;
-    }),
-    shareReplay({ refCount: true }),
-  );
+  new Observable<T>(env, url).pipe(shareReplay({ refCount: true }));
