@@ -36,6 +36,7 @@ export class TransactionRepository extends CrudRepository<Transaction> {
     orderBy: string[] = ['createdOn'],
     startAfter?: string,
     member?: string,
+    previousOwner?: string,
   ) => {
     const includedTypes = [
       TransactionType.PAYMENT,
@@ -55,6 +56,11 @@ export class TransactionRepository extends CrudRepository<Transaction> {
     if (member) {
       fieldName.push('member');
       fieldValue.push(member);
+      operator.push(Opr.EQUAL);
+    }
+    if (previousOwner) {
+      fieldName.push('payload.previousOwner');
+      fieldValue.push(previousOwner);
       operator.push(Opr.EQUAL);
     }
     const params = {
