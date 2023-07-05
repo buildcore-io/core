@@ -37,18 +37,27 @@ import { onProposalVoteCreditConfirmed } from './proposal.vote';
 import { onStakingConfirmed } from './staking';
 import { onTokenMintingUpdate } from './token-minting';
 import { getWalletParams } from './wallet-params';
-export const EXECUTABLE_TRANSACTIONS = [
-  TransactionType.CREDIT,
-  TransactionType.CREDIT_TANGLE_REQUEST,
+
+export const DEFAULT_EXECUTABLE_TRANSACTIONS = [
   TransactionType.BILL_PAYMENT,
   TransactionType.MINT_COLLECTION,
   TransactionType.MINT_TOKEN,
   TransactionType.CREDIT_NFT,
   TransactionType.WITHDRAW_NFT,
   TransactionType.UNLOCK,
-  TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED,
   TransactionType.AWARD,
   TransactionType.METADATA_NFT,
+];
+
+export const CREDIT_EXECUTABLE_TRANSACTIONS = [
+  TransactionType.CREDIT,
+  TransactionType.CREDIT_TANGLE_REQUEST,
+  TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED,
+];
+
+export const EXECUTABLE_TRANSACTIONS = [
+  ...DEFAULT_EXECUTABLE_TRANSACTIONS,
+  ...CREDIT_EXECUTABLE_TRANSACTIONS,
 ];
 
 export const transactionWrite = functions.firestore.onDocumentWritten(
