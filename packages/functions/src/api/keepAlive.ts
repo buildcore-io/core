@@ -5,6 +5,7 @@ import {
   KeepAliveRequest,
   PING_INTERVAL,
   QUERY_MAX_LENGTH,
+  WenError,
 } from '@build-5/interfaces';
 import { randomUUID } from 'crypto';
 import dayjs from 'dayjs';
@@ -76,8 +77,16 @@ export const sendLiveUpdates = async <T>(
     }
   });
 
-  const subscription = observable.subscribe((data) => {
-    res.write(`event: update\ndata: ${JSON.stringify(data)}\n\n`);
+  const subscription = observable.subscribe({
+    next: (data) => {
+      res.write(`event: update\ndata: ${JSON.stringify(data)}\n\n`);
+    },
+    error: (error) => {
+      functions.logger.error(error);
+      const data = { message: WenError.api_error.key };
+      res.write(`event: error\ndata: ${JSON.stringify(data)}\n\n`);
+      closeConnection();
+    },
   });
 
   const closeConnection = async () => {
