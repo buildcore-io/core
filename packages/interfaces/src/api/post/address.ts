@@ -1,7 +1,8 @@
 import { Network } from '../../models';
 
 /**
- * Http request to create an address validation order
+ * Http request to create an address validation order.
+ * Endpoint to call: api/validateaddress
  */
 export interface AddressValidationRequest {
   /**
