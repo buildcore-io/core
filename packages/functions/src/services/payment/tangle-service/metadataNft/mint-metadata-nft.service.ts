@@ -24,7 +24,6 @@ import {
   NFT_ADDRESS_TYPE,
 } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
-import Joi from 'joi';
 import { isEmpty } from 'lodash';
 import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { packBasicOutput } from '../../../../utils/basic-output.utils';
@@ -43,17 +42,10 @@ import {
   createAliasOutput,
 } from '../../../../utils/token-minting-utils/alias.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { CommonJoi, toJoiObject } from '../../../joi/common';
 import { SmrWallet } from '../../../wallet/SmrWalletService';
 import { WalletService } from '../../../wallet/wallet';
 import { TransactionMatch, TransactionService } from '../../transaction-service';
-
-const schema = toJoiObject<MintMetadataNftTangleRequest>({
-  nftId: CommonJoi.uid(false),
-  collectionId: CommonJoi.uid(false),
-  aliasId: CommonJoi.uid(false),
-  metadata: Joi.object().required(),
-});
+import { metadataNftSchema } from './MetadataNftTangleRequestSchema';
 
 export class MintMetadataNftService {
   constructor(readonly transactionService: TransactionService) {}
@@ -67,7 +59,7 @@ export class MintMetadataNftService {
     tranEntry: MilestoneTransactionEntry,
   ) => {
     delete request.requestType;
-    const params = await assertValidationAsync(schema, request);
+    const params = await assertValidationAsync(metadataNftSchema, request);
 
     const wallet = (await WalletService.newWallet(network)) as SmrWallet;
     const targetAddress = await wallet.getNewIotaAddressDetails();
@@ -190,7 +182,7 @@ const getCollectionOutputAmount = async (
 const createMetadataNftOutput = async (
   wallet: SmrWallet,
   collectionId: string,
-  metadata: Record<string, unknown>,
+  metadata: object,
 ) => {
   const targetAddress = await wallet.getNewIotaAddressDetails();
   const issuerAddress: AddressTypes = { type: NFT_ADDRESS_TYPE, nftId: collectionId };
@@ -230,7 +222,7 @@ const getSpace = async (owner: string, aliasId: string) => {
 const getNftOutputAmount = async (
   collectionId: string,
   nftId: string,
-  metadata: Record<string, unknown>,
+  metadata: object,
   wallet: SmrWallet,
 ) => {
   if (nftId === EMPTY_NFT_ID) {

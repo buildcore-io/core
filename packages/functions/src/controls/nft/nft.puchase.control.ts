@@ -1,6 +1,6 @@
 import { COL, NftPurchaseRequest, Transaction } from '@build-5/interfaces';
 import { build5Db } from '../../firebase/firestore/build5Db';
-import { createNftPuchaseOrder } from '../../services/payment/tangle-service/nft-purchase.service';
+import { createNftPuchaseOrder } from '../../services/payment/tangle-service/nft/nft-purchase.service';
 
 export const orderNftControl = async (
   owner: string,

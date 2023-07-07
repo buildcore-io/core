@@ -1,7 +1,7 @@
 import {
   Award,
   AwardBadgeType,
-  AwardFundTangleRequest,
+  BaseTangleResponse,
   COL,
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
@@ -10,21 +10,18 @@ import {
   TransactionValidationType,
   WenError,
 } from '@build-5/interfaces';
-import { BaseTangleResponse } from '@build-5/interfaces/lib/api/tangle/common';
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
 import { build5Db } from '../../../../firebase/firestore/build5Db';
-import { uidSchema } from '../../../../runtime/firebase/common';
+import { awardFundSchema } from '../../../../runtime/firebase/award/AwardFundRequestSchema';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { toJoiObject } from '../../../joi/common';
 import { WalletService } from '../../../wallet/wallet';
 import { TransactionService } from '../../transaction-service';
 
-const schema = toJoiObject<AwardFundTangleRequest>(uidSchema);
 export class AwardFundService {
   constructor(readonly transactionService: TransactionService) {}
 
@@ -32,10 +29,9 @@ export class AwardFundService {
     owner: string,
     request: Record<string, unknown>,
   ): Promise<BaseTangleResponse> => {
-    delete request.requestType;
-    await assertValidationAsync(schema, request);
+    const params = await assertValidationAsync(awardFundSchema, request);
 
-    const award = await getAwardForFunding(owner, request.uid as string);
+    const award = await getAwardForFunding(owner, params.uid);
     const order = await createAwardFundOrder(owner, award);
     const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
     this.transactionService.push({ ref: orderDocRef, data: order, action: 'set' });

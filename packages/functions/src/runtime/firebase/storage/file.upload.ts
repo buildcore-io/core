@@ -4,25 +4,16 @@ import cors from 'cors';
 import express from 'express';
 import * as functions from 'firebase-functions/v2';
 import fs from 'fs';
-import Joi from 'joi';
 import mime from 'mime-types';
 import os from 'os';
 import path from 'path';
 import { onRequestConfig } from '../../../firebase/functions/onRequest';
 import { build5Storage } from '../../../firebase/storage/build5Storage';
-import { CommonJoi } from '../../../services/joi/common';
 import { getBucket } from '../../../utils/config.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
+import { fileUploadSchema } from './FileUploadRequestSchema';
 
 const MAX_FILE_SIZE_BYTES = 104857600; // 100 MB
-
-const schema = Joi.object({
-  member: CommonJoi.uid(),
-  uid: Joi.string().alphanum().max(100).required(),
-  mimeType: Joi.string()
-    .regex(/^(image|video)/)
-    .required(),
-});
 
 export const uploadFile = functions.https.onRequest(
   onRequestConfig(WEN_FUNC.uploadFile, { memory: '256MiB' }),
@@ -99,7 +90,7 @@ const sendBadRequest = (res: express.Response) => {
 };
 
 const assertParams = (params: Record<string, unknown>, res: express.Response) => {
-  const joiResult = schema.validate(params);
+  const joiResult = fileUploadSchema.validate(params);
   if (joiResult.error) {
     res.status(400);
     res.send(joiResult.error.details.map((d) => d.message));

@@ -1,6 +1,13 @@
-import { COL, SUB_COL, Token, TradeTokenRequest, WenError } from '@build-5/interfaces';
+import {
+  COL,
+  SUB_COL,
+  Token,
+  TokenTradeOrderType,
+  TradeTokenRequest,
+  WenError,
+} from '@build-5/interfaces';
 import { build5Db } from '../../firebase/firestore/build5Db';
-import { createTokenTradeOrder } from '../../services/payment/tangle-service/token-trade.service';
+import { createTokenTradeOrder } from '../../services/payment/tangle-service/token/token-trade.service';
 import { invalidArgument } from '../../utils/error.utils';
 import { getTokenBySymbol } from '../../utils/token.utils';
 
@@ -25,7 +32,7 @@ export const tradeTokenControl = async (
       transaction,
       owner,
       token,
-      params.type,
+      params.type as TokenTradeOrderType,
       params.count,
       params.price,
       customParams?.ip as string | undefined,

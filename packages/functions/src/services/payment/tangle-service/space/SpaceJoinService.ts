@@ -1,25 +1,21 @@
 import {
+  BaseTangleResponse,
   COL,
   Space,
-  SpaceJoinTangleRequest,
   SpaceMember,
   StakeType,
   SUB_COL,
   TokenDistribution,
   WenError,
 } from '@build-5/interfaces';
-import { BaseTangleResponse } from '@build-5/interfaces/lib/api/tangle/common';
 import { build5Db } from '../../../../firebase/firestore/build5Db';
-import { uidSchema } from '../../../../runtime/firebase/common';
 import { serverTime } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getTokenForSpace } from '../../../../utils/token.utils';
-import { toJoiObject } from '../../../joi/common';
 import { getStakeForType } from '../../../stake.service';
 import { TransactionService } from '../../transaction-service';
-
-const schema = toJoiObject<SpaceJoinTangleRequest>(uidSchema);
+import { joinSpaceSchema } from './SpaceJoinTangleRequestSchema';
 
 export class SpaceJoinService {
   constructor(readonly transactionService: TransactionService) {}
@@ -28,8 +24,7 @@ export class SpaceJoinService {
     owner: string,
     request: Record<string, unknown>,
   ): Promise<BaseTangleResponse> => {
-    delete request.requestType;
-    const params = await assertValidationAsync(schema, request);
+    const params = await assertValidationAsync(joinSpaceSchema, request);
 
     const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
     const space = <Space | undefined>await spaceDocRef.get();

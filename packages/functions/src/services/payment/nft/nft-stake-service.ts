@@ -24,7 +24,7 @@ import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';
 import { WalletService } from '../../wallet/wallet';
-import { createNftWithdrawOrder } from '../tangle-service/nft-purchase.service';
+import { createNftWithdrawOrder } from '../tangle-service/nft/nft-purchase.service';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 import { NftDepositService } from './nft-deposit-service';
 export class NftStakeService {

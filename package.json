@@ -23,5 +23,8 @@
     "prettier:lib": "npx prettier --write ./packages/lib",
     "prettier:indexes": "npx prettier --write ./packages/indexes",
     "prettier": "npm run prettier:functions; npm run prettier:interfaces; npm run prettier:indexes; npm run prettier:lib"
+  },
+  "devDependencies": {
+    "joi-to-typescript": "^4.4.1"
   }
 }

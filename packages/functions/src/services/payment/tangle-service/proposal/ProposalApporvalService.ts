@@ -1,20 +1,16 @@
 import {
-  ApproveProposalTangleRequest,
+  BaseTangleResponse,
   COL,
   Proposal,
   TangleRequestType,
   WenError,
 } from '@build-5/interfaces';
-import { BaseTangleResponse } from '@build-5/interfaces/lib/api/tangle/common';
 import { build5Db } from '../../../../firebase/firestore/build5Db';
-import { uidSchema } from '../../../../runtime/firebase/common';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
-import { toJoiObject } from '../../../joi/common';
 import { TransactionService } from '../../transaction-service';
-
-const schema = toJoiObject<ApproveProposalTangleRequest>(uidSchema);
+import { proposalApproveSchema } from './ProposalApproveTangleRequestSchema';
 
 export class ProposalApprovalService {
   constructor(readonly transactionService: TransactionService) {}
@@ -23,12 +19,11 @@ export class ProposalApprovalService {
     owner: string,
     request: Record<string, unknown>,
   ): Promise<BaseTangleResponse> => {
-    const { requestType, ...rest } = request;
-    const params = await assertValidationAsync(schema, rest);
+    const params = await assertValidationAsync(proposalApproveSchema, request);
     const data = await getProposalApprovalData(
       owner,
       params.uid,
-      requestType === TangleRequestType.PROPOSAL_APPROVE,
+      params.requestType === TangleRequestType.PROPOSAL_APPROVE,
     );
     const docRef = build5Db().doc(`${COL.PROPOSAL}/${params.uid}`);
     this.transactionService.push({ ref: docRef, data, action: 'update' });
