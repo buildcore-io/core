@@ -10,13 +10,13 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import { build5Db } from '../../../../firebase/firestore/build5Db';
-import { proposalCreateSchemaObject } from '../../../../runtime/firebase/proposal/ProposalCreateRequestSchema';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getTokenForSpace } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { TransactionService } from '../../transaction-service';
+import { proposalCreateSchemaObject } from './ProposalCreateTangleRequestSchema';
 
 export class ProposalCreateService {
   constructor(readonly transactionService: TransactionService) {}

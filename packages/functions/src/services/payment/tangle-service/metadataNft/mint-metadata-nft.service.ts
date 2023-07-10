@@ -58,7 +58,6 @@ export class MintMetadataNftService {
     tran: MilestoneTransaction,
     tranEntry: MilestoneTransactionEntry,
   ) => {
-    delete request.requestType;
     const params = await assertValidationAsync(metadataNftSchema, request);
 
     const wallet = (await WalletService.newWallet(network)) as SmrWallet;

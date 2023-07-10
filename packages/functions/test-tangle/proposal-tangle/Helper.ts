@@ -187,10 +187,7 @@ const proposalRequest = (space: string, type: ProposalType) => ({
   space,
   additionalInfo: 'The biggest governance decision in the history of IOTA',
   settings: {
-    startDate:
-      type === ProposalType.MEMBERS
-        ? dayjs().subtract(1, 'd').toDate()
-        : dayjs().add(1, 'd').toDate(),
+    startDate: type === ProposalType.MEMBERS ? dayjs().toDate() : dayjs().add(1, 'd').toDate(),
     endDate: dayjs().add(5, 'd').toDate(),
     onlyGuardians: false,
   },

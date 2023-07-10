@@ -13,7 +13,6 @@ import {
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
 import { build5Db } from '../../../../firebase/firestore/build5Db';
-import { awardFundSchema } from '../../../../runtime/firebase/award/AwardFundRequestSchema';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
@@ -21,6 +20,7 @@ import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet';
 import { TransactionService } from '../../transaction-service';
+import { awardFundSchema } from './AwardFundTangleRequestSchema';
 
 export class AwardFundService {
   constructor(readonly transactionService: TransactionService) {}

@@ -36,7 +36,7 @@ export class TangleTokenClaimService {
     owner: string,
     request: Record<string, unknown>,
   ): Promise<BaseTangleResponse> => {
-    const params = await assertValidationAsync(tokenClaimSchema, { symbol: request.symbol });
+    const params = await assertValidationAsync(tokenClaimSchema, request);
     const order = await createMintedTokenAirdropCalimOrder(owner, params.symbol);
     this.transactionService.push({
       ref: build5Db().doc(`${COL.TRANSACTION}/${order.uid}`),

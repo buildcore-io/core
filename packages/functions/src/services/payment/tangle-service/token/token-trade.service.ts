@@ -24,10 +24,9 @@ import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
-import { get, set } from 'lodash';
+import { set } from 'lodash';
 import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { ITransaction } from '../../../../firebase/firestore/interfaces';
-import { tradeTokenSchema } from '../../../../runtime/firebase/token/trading/TokenTradeRequestSchema';
 import { assertMemberHasValidAddress } from '../../../../utils/address.utils';
 import { packBasicOutput } from '../../../../utils/basic-output.utils';
 import { isProdEnv } from '../../../../utils/config.utils';
@@ -58,12 +57,11 @@ export class TangleTokenTradeService {
     request: Record<string, unknown>,
     build5Transaction?: Transaction,
   ) => {
-    const params = await assertValidationAsync(tradeMintedTokenSchema, request);
-
     const type =
       request.requestType === TransactionPayloadType.BUY_TOKEN
         ? TokenTradeOrderType.BUY
         : TokenTradeOrderType.SELL;
+    const params = await assertValidationAsync(tradeMintedTokenSchema, { ...request, type });
 
     let token = await getTokenBySymbol(params.symbol);
     const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token?.uid}`);
@@ -75,18 +73,13 @@ export class TangleTokenTradeService {
       throw invalidArgument(WenError.token_trading_disabled);
     }
 
-    if (type !== TokenTradeOrderType.SELL || token.status !== TokenStatus.MINTED) {
-      set(params, 'count', request.count);
-      await assertValidationAsync(tradeTokenSchema, params);
-    }
-
     const { tradeOrderTransaction } = await createTokenTradeOrder(
       this.transactionService.transaction,
       owner,
       token,
       params.type as TokenTradeOrderType,
-      get(params, 'count', 0),
-      params.price as number,
+      params.count || 0,
+      params.price,
       '',
       [TokenStatus.BASE, TokenStatus.MINTED],
     );
