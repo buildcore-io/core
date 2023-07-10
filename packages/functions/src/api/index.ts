@@ -25,7 +25,7 @@ export const api = functions.https.onRequest(
       try {
         await getHandler(req.url)(req, res);
       } catch (error) {
-        functions.logger.error(error);
+        functions.logger.error('API error', error);
         res.status(400).send({ message: WenError.api_error.key });
       }
     }),
