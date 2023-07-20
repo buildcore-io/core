@@ -15,8 +15,8 @@ import {
 import { getSessionId } from '../Session';
 import { toQueryParams, wrappedFetch } from '../fetch.utils';
 import { fetchLive } from '../observable';
-import { GetByIdGrouped } from './getById/GetByIdGrouped';
-import { GetByIdGroupedLive } from './getById/GetByIdGroupedLive';
+import { GetByIdGrouped } from './groupGet/GetByIdGrouped';
+import { GetByIdGroupedLive } from './groupGet/GetByIdGroupedLive';
 
 export abstract class SubCrudRepository<T> {
   private readonly getByIdGroupedLive: GetByIdGroupedLive<T>;

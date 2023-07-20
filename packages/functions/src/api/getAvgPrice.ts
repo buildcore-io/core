@@ -1,4 +1,9 @@
-import { GetAvgPriceRequest, PublicCollections } from '@build-5/interfaces';
+import {
+  GetAvgPriceRequest,
+  PublicCollections,
+  QUERY_MAX_LENGTH,
+  QUERY_MIN_LENGTH,
+} from '@build-5/interfaces';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
@@ -9,7 +14,12 @@ import { getHeadCountObs, getQueryParams } from './common';
 import { sendLiveUpdates } from './keepAlive';
 
 const getAvgPriceSchema = Joi.object({
-  token: CommonJoi.uid(),
+  token: Joi.alternatives()
+    .try(
+      CommonJoi.uid(),
+      Joi.array().min(QUERY_MIN_LENGTH).max(QUERY_MAX_LENGTH).items(CommonJoi.uid()),
+    )
+    .required(),
   sessionId: CommonJoi.sessionId(true),
 });
 
@@ -18,7 +28,9 @@ export const getAvgPrice = async (req: functions.https.Request, res: express.Res
   if (!body) {
     return;
   }
-  const result = getAvgLive(body.token).pipe(map((avg) => ({ id: body.token, avg })));
+  const tokens = Array.isArray(body.token) ? body.token : [body.token];
+  const changes = tokens.map(getAvgLive);
+  const result = combineLatest(changes).pipe(map((r) => (r.length === 1 ? r[0] : r)));
   await sendLiveUpdates(body.sessionId!, res, result);
 };
 
@@ -28,6 +40,7 @@ const getAvgLive = (token: string) => {
   const lastPurchaseObs = getHeadCountObs(purchaseQuery(token));
   return combineLatest([lowestPurchaseObs, highestPurchaseObs, lastPurchaseObs]).pipe(
     map(([lowest, highest, last]) => (highest + lowest + last) / 3),
+    map((avg) => ({ id: token, avg })),
   );
 };
 
