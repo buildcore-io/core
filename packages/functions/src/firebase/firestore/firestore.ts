@@ -149,6 +149,9 @@ class FirestoreCollectionGroup implements ICollectionGroup {
     }
     return new FirestoreQuery(this.collection.startAfter(value));
   };
+
+  public orderBy = (field: string, dir: 'asc' | 'desc' = 'asc') =>
+    new FirestoreQuery(this.collection.orderBy(field, dir));
 }
 
 export class FirestoreCollection extends FirestoreCollectionGroup implements ICollection {

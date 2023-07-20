@@ -5,12 +5,12 @@ import {
   TokenTradeOrderStatus,
   TokenTradeOrderType,
 } from '@build-5/interfaces';
-import { Observable } from 'rxjs';
+import { from, map, switchMap } from 'rxjs';
 import { Build5Env, getTokenPriceUrl } from '../../Config';
-import { getSessionId } from '../../Session';
-import { toQueryParams, wrappedFetch } from '../../fetch.utils';
-import { fetchLive } from '../../observable';
+import { wrappedFetch } from '../../fetch.utils';
 import { CrudRepository } from '../CrudRepository';
+import { GetTokenPriceGrouped } from '../groupGet/GetTokenPriceGrouped';
+import { GetTokenPriceGroupedLive } from '../groupGet/GetTokenPriceGroupedLive';
 
 export interface TokenPriceResponse {
   id: string;
@@ -19,8 +19,13 @@ export interface TokenPriceResponse {
 }
 
 export class TokenMarketRepository extends CrudRepository<TokenTradeOrder> {
+  private readonly getTokenPriceGroupedLive: GetTokenPriceGroupedLive;
+  private readonly getTokenPriceGrouped: GetTokenPriceGrouped;
+
   constructor(env?: Build5Env) {
     super(env || Build5Env.PROD, PublicCollections.TOKEN_MARKET);
+    this.getTokenPriceGroupedLive = new GetTokenPriceGroupedLive(this.env, this.col);
+    this.getTokenPriceGrouped = new GetTokenPriceGrouped(this.env, this.col);
   }
 
   /**
@@ -28,16 +33,18 @@ export class TokenMarketRepository extends CrudRepository<TokenTradeOrder> {
    * @param token - Token id
    * @returns
    */
-  public getTokenPrice = async (token: string) => {
-    const response = await wrappedFetch(getTokenPriceUrl(this.env), { token });
-    return (response as Record<string, unknown>).price;
-  };
+  public getTokenPrice = (token: string) => this.getTokenPriceGrouped.get(token);
 
-  public getTokenPriceLive = (token: string): Observable<TokenPriceResponse> => {
-    const params = { token, sessionId: getSessionId(this.env) };
-    const url = getTokenPriceUrl(this.env) + toQueryParams(params);
-    return fetchLive<TokenPriceResponse>(this.env, url);
-  };
+  /**
+   * Returns the current market price for a token live
+   * @param token - Token id
+   * @returns
+   */
+  public getTokenPriceLive = (token: string) =>
+    from(this.getTokenPriceGroupedLive.get(token)).pipe(
+      switchMap((inner) => inner),
+      map((r) => r || { id: token, price: 0, usdPrice: 0 }),
+    );
 
   /**
    * Returns the current market price for a token in USD

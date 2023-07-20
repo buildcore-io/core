@@ -22,9 +22,12 @@ export class GetByIdGrouped<T> extends AbstractGetByIdGrouped {
     if (!requests.length) {
       return;
     }
-    const source = await wrappedFetch<T[]>(url, params);
+    const response = await wrappedFetch<T[]>(url, params);
+    const source = Array.isArray(response) ? response : [response];
     for (const r of requests) {
-      this.result[r.parent + r.uid] = source.find((d) => get(d, 'uid', '') === r.uid);
+      this.result[r.parent + r.uid] = source.find((d) =>
+        [get(d, 'uid', ''), get(d, 'id', '')].includes(r.uid),
+      );
     }
   };
 }

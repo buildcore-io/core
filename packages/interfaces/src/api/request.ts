@@ -1,4 +1,4 @@
-import { Network, TokenTradeOrderType } from '../models';
+import { Milestone, Network, TokenTradeOrderType } from '../models';
 import { PublicCollections, PublicSubCollections } from './base';
 
 export interface BaseRequest {
@@ -44,7 +44,13 @@ export interface GetUpdatedAfterRequest extends BaseRequest {
 }
 
 export interface GetTokenPrice extends BaseRequest {
-  readonly token: string;
+  readonly token: string | string[];
+}
+
+export interface GetTokenPriceResponse extends BaseRequest {
+  readonly id: string;
+  readonly price: number;
+  readonly usdPrice: number;
 }
 
 export interface GetAddressesRequest extends BaseRequest {
@@ -100,10 +106,16 @@ export interface GetAvgPriceResponse {
 }
 
 export interface GetPriceChangeRequest extends BaseRequest {
-  readonly token: string;
+  readonly token: string | string[];
 }
 
 export interface GetPriceChangeResponse {
-  readonly token: string;
+  readonly id: string;
   readonly change: number;
 }
+
+export interface GetTopMilestonesRequest {
+  readonly sessionId: string;
+}
+
+export type GetTopMilestonesResponse = { [key: string]: Milestone };

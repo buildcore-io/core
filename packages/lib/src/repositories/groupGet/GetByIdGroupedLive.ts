@@ -25,10 +25,12 @@ export class GetByIdGroupedLive<T> extends AbstractGetByIdGrouped {
     if (!requests.length) {
       return;
     }
-    const source = fetchLive<T[]>(this.env, url + toQueryParams(params));
+    const source = fetchLive<T[]>(this.env, url + toQueryParams(params)).pipe(
+      map((r) => (Array.isArray(r) ? r : [r])),
+    );
     for (const r of requests) {
       this.observers[r.parent + r.uid] = source.pipe(
-        map((s) => s.find((d) => get(d, 'uid', '') === r.uid)),
+        map((s) => s.find((d) => [get(d, 'uid', ''), get(d, 'id', '')].includes(r.uid))),
       );
     }
   };

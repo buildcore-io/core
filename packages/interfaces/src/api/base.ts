@@ -50,6 +50,7 @@ export enum ApiRoutes {
   GET_AVG_PRICE = '/getAvgPrice',
   GET_PRICE_CHANGE = '/getPriceChange',
   GET_ADDRESSES = '/addresses',
+  GET_TOP_MILESTONES = '/getTopMilestones',
   KEEP_ALIVE = '/keepAlive',
 }
 

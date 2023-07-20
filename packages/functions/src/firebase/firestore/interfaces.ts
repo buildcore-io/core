@@ -20,6 +20,7 @@ export interface ICollectionGroup {
   where: (fieldPath: string, operator: WhereFilterOp, value: any) => IQuery;
   limit: (value: number) => IQuery;
   startAfter: (value?: IDocumentSnapshot | string | number | Date) => IQuery;
+  orderBy: (field: string, dir?: 'asc' | 'desc') => IQuery;
 }
 
 export interface ICollection extends ICollectionGroup {
