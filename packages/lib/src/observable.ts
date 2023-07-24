@@ -19,17 +19,26 @@ class Observable<T> extends RxjsObservable<T> {
       this.observer = observer;
       this.init();
 
-      return async () => {
+      return () => {
         this.isRunning = false;
-        if (this.instaceId) {
-          await getSession(env).pingSession(this.instaceId, true);
-        }
+        return new Promise<void>((res) => {
+          if (this.instaceId) {
+            getSession(env)
+              .pingSession(this.instaceId, true)
+              .then(() => {
+                res();
+              });
+          } else {
+            res();
+          }
+        });
       };
     });
   }
 
   private init = async () => {
     try {
+      this.isRunning = true;
       const response = await fetch(this.url, { headers: HEADERS });
 
       if (!response.ok) {
