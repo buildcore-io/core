@@ -3,6 +3,8 @@ import {
   GetTokenPrice,
   MIN_IOTA_AMOUNT,
   PublicCollections,
+  QUERY_MAX_LENGTH,
+  QUERY_MIN_LENGTH,
   Ticker,
   TICKERS,
   TokenTradeOrder,
@@ -13,14 +15,19 @@ import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
 import { head } from 'lodash';
-import { combineLatest, map } from 'rxjs';
+import { combineLatest, map, Observable } from 'rxjs';
 import { build5Db } from '../firebase/firestore/build5Db';
 import { CommonJoi } from '../services/joi/common';
 import { documentToObservable, getQueryParams, queryToObservable } from './common';
 import { sendLiveUpdates } from './keepAlive';
 
 const getTokenPriceSchema = Joi.object({
-  token: CommonJoi.uid(),
+  token: Joi.alternatives()
+    .try(
+      CommonJoi.uid(),
+      Joi.array().min(QUERY_MIN_LENGTH).max(QUERY_MAX_LENGTH).items(CommonJoi.uid()),
+    )
+    .required(),
   sessionId: CommonJoi.sessionId(),
 });
 
@@ -32,42 +39,64 @@ export const getTokenPrice = async (req: functions.https.Request, res: express.R
     return;
   }
 
-  const lowestSellQuery = build5Db()
-    .collection(PublicCollections.TOKEN_MARKET)
-    .where('status', '==', TokenTradeOrderStatus.ACTIVE)
-    .where('token', '==', body.token)
-    .where('type', '==', TokenTradeOrderType.SELL)
-    .orderBy('price')
-    .limit(1);
-
-  const highestBuyQuery = build5Db()
-    .collection(PublicCollections.TOKEN_MARKET)
-    .where('status', '==', TokenTradeOrderStatus.ACTIVE)
-    .where('token', '==', body.token)
-    .where('type', '==', TokenTradeOrderType.BUY)
-    .orderBy('price', 'desc')
-    .limit(1);
-
   if (body.sessionId) {
-    const lowestSell = queryToObservable<TokenTradeOrder>(lowestSellQuery);
-    const highestBuy = queryToObservable<TokenTradeOrder>(highestBuyQuery);
     const ticker = documentToObservable<Ticker>(tickerDocRef);
-    const combined = combineLatest([lowestSell, highestBuy, ticker]).pipe(
-      map(([lowestSell, highestBuy, ticker]) => {
-        const price = calculatePrice(lowestSell, highestBuy);
-        return { id: body.token, price, usdPrice: toUsdPrice(price, ticker) };
-      }),
+    const tokens = Array.isArray(body.token) ? body.token : [body.token];
+    const observables = tokens.map((token) => getPriceForTokenLive(token, ticker));
+    const combined = combineLatest(observables).pipe(
+      map((result) => (result.length === 1 ? result[0] : result)),
     );
     await sendLiveUpdates(body.sessionId, res, combined);
     return;
   }
 
   const ticker = <Ticker>await tickerDocRef.get();
-  const lowestSellSnap = await lowestSellQuery.get<TokenTradeOrder>();
-  const highestBuySnap = await highestBuyQuery.get<TokenTradeOrder>();
-  const price = calculatePrice(lowestSellSnap, highestBuySnap);
-  res.send({ id: body.token, price, usdPrice: toUsdPrice(price, ticker) });
+  const tokens = Array.isArray(body.token) ? body.token : [body.token];
+  const promises = tokens.map((token) => getPriceForToken(token, ticker));
+  const prices = await Promise.all(promises);
+  if (prices.length === 1) {
+    res.send(prices[0]);
+    return;
+  }
+  res.send(prices);
 };
+
+const getPriceForTokenLive = (token: string, ticker: Observable<Ticker>) => {
+  const lowestSell = queryToObservable<TokenTradeOrder>(lowestSellQuery(token));
+  const highestBuy = queryToObservable<TokenTradeOrder>(highestBuyQuery(token));
+  const combined = combineLatest([lowestSell, highestBuy, ticker]).pipe(
+    map(([lowestSell, highestBuy, ticker]) => {
+      const price = calculatePrice(lowestSell, highestBuy);
+      return { id: token, price, usdPrice: toUsdPrice(price, ticker) };
+    }),
+  );
+  return combined;
+};
+
+const getPriceForToken = async (token: string, ticker: Ticker) => {
+  const lowestSellSnap = await lowestSellQuery(token).get<TokenTradeOrder>();
+  const highestBuySnap = await highestBuyQuery(token).get<TokenTradeOrder>();
+  const price = calculatePrice(lowestSellSnap, highestBuySnap);
+  return { id: token, price, usdPrice: toUsdPrice(price, ticker) };
+};
+
+const lowestSellQuery = (token: string) =>
+  build5Db()
+    .collection(PublicCollections.TOKEN_MARKET)
+    .where('status', '==', TokenTradeOrderStatus.ACTIVE)
+    .where('token', '==', token)
+    .where('type', '==', TokenTradeOrderType.SELL)
+    .orderBy('price')
+    .limit(1);
+
+const highestBuyQuery = (token: string) =>
+  build5Db()
+    .collection(PublicCollections.TOKEN_MARKET)
+    .where('status', '==', TokenTradeOrderStatus.ACTIVE)
+    .where('token', '==', token)
+    .where('type', '==', TokenTradeOrderType.BUY)
+    .orderBy('price', 'desc')
+    .limit(1);
 
 const calculatePrice = (
   lowestSellOrders: TokenTradeOrder[],

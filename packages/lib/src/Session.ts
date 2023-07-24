@@ -1,7 +1,7 @@
 import { PING_INTERVAL } from '@build-5/interfaces';
 import { Build5Env, getKeepAliveUrl } from './Config';
 import { wrappedFetch } from './fetch.utils';
-import { BATCH_MAX_SIZE, BATCH_TIMEOUT } from './repositories/getById/common';
+import { BATCH_MAX_SIZE, BATCH_TIMEOUT } from './repositories/groupGet/common';
 import { randomString } from './utils';
 
 interface Request {

@@ -11,6 +11,7 @@ import { getManyAdvanced } from './getManyAdvanced';
 import { getManyById } from './getManyById';
 import { getPriceChange } from './getPriceChange';
 import { getTokenPrice } from './getTokenPrice';
+import { getTopMilestones } from './getTopMilestones';
 import { getUpdatedAfter } from './getUpdatedAfter';
 import { keepAlive } from './keepAlive';
 
@@ -25,7 +26,7 @@ export const api = functions.https.onRequest(
       try {
         await getHandler(req.url)(req, res);
       } catch (error) {
-        functions.logger.error(error);
+        functions.logger.error('API error', error);
         res.status(400).send({ message: WenError.api_error.key });
       }
     }),
@@ -52,6 +53,8 @@ const getHandler = (url: string) => {
       return getPriceChange;
     case ApiRoutes.GET_ADDRESSES:
       return getAddresses;
+    case ApiRoutes.GET_TOP_MILESTONES:
+      return getTopMilestones;
     case ApiRoutes.KEEP_ALIVE:
       return keepAlive;
     default:

@@ -34,7 +34,7 @@ export const SOON_TEST_ADDRESS = 'https://wen2.soonaverse.com/';
 export const BUILD5_PROD_ADDRESS_API = 'https://api.build5.com/';
 export const BUILD5_TEST_ADDRESS_API = 'https://api-wen.build5.com/';
 export const GITHUB_REGEXP = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i;
-export const DISCORD_REGEXP = /^.{3,32}#[0-9]{4}$/i;
+export const DISCORD_REGEXP = /^.{3,32}$/i;
 export const TWITTER_REGEXP = /^@?(\w){1,15}$/i;
 /* eslint-disable */
 export const URL_REGEXP =

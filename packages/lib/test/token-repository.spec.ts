@@ -54,7 +54,7 @@ describe('MemberRepository test', () => {
   it('Should get token price', async () => {
     const token = '0x8247dfcef17354c295e1d3611210dbd45ef5e09a';
     const repo = new TokenMarketRepository(Build5Env.TEST);
-    const price = await repo.getTokenPrice(token);
-    expect(price).toBe(2500000);
+    const response = await repo.getTokenPrice(token);
+    expect(response?.price).toBe(2500000);
   });
 });

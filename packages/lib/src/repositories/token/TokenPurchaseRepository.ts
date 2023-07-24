@@ -1,22 +1,18 @@
-import {
-  GetAvgPriceRequest,
-  GetAvgPriceResponse,
-  GetPriceChangeRequest,
-  GetPriceChangeResponse,
-  Opr,
-  PublicCollections,
-  TokenPurchase,
-} from '@build-5/interfaces';
-import { Observable, map } from 'rxjs';
-import { Build5Env, getAvgPriceUrl, getPriceChangeUrl } from '../../Config';
-import { getSessionId } from '../../Session';
-import { toQueryParams } from '../../fetch.utils';
-import { fetchLive } from '../../observable';
+import { Opr, PublicCollections, TokenPurchase } from '@build-5/interfaces';
+import { from, map, switchMap } from 'rxjs';
+import { Build5Env } from '../../Config';
 import { CrudRepository } from '../CrudRepository';
+import { GetTokenAvgPriceGroupedLive } from '../groupGet/GetTokenAvgPriceGroupedLive';
+import { GetTokenPriceChangeGroupedLive } from '../groupGet/GetTokenPriceChangeGroupedLive';
 
 export class TokenPurchaseRepository extends CrudRepository<TokenPurchase> {
+  private readonly getTokenPriceChangeGroupedLive: GetTokenPriceChangeGroupedLive;
+  private readonly getTokenAvgPriceGroupedLive: GetTokenAvgPriceGroupedLive;
+
   constructor(env?: Build5Env) {
     super(env || Build5Env.PROD, PublicCollections.TOKEN_PURCHASE);
+    this.getTokenPriceChangeGroupedLive = new GetTokenPriceChangeGroupedLive(this.env, this.col);
+    this.getTokenAvgPriceGroupedLive = new GetTokenAvgPriceGroupedLive(this.env, this.col);
   }
 
   public getPuchasesLive = (token: string, startAfter?: string) => {
@@ -32,15 +28,15 @@ export class TokenPurchaseRepository extends CrudRepository<TokenPurchase> {
     return this.getManyAdvancedLive(params);
   };
 
-  public getAvgPriceLive = (token: string): Observable<number> => {
-    const params = { token, sessionId: getSessionId(this.env) } as GetAvgPriceRequest;
-    const url = getAvgPriceUrl(this.env) + toQueryParams({ ...params });
-    return fetchLive<GetAvgPriceResponse>(this.env, url).pipe(map((result) => result.avg));
-  };
+  public getAvgPriceLive = (token: string) =>
+    from(this.getTokenAvgPriceGroupedLive.get(token)).pipe(
+      switchMap((inner) => inner),
+      map((result) => result?.avg || 0),
+    );
 
-  public getPriceChangeLive = (token: string): Observable<number> => {
-    const params = { token, sessionId: getSessionId(this.env) } as GetPriceChangeRequest;
-    const url = getPriceChangeUrl(this.env) + toQueryParams({ ...params });
-    return fetchLive<GetPriceChangeResponse>(this.env, url).pipe(map((result) => result.change));
-  };
+  public getPriceChangeLive = (token: string) =>
+    from(this.getTokenPriceChangeGroupedLive.get(token)).pipe(
+      switchMap((inner) => inner),
+      map((result) => result?.change || 0),
+    );
 }

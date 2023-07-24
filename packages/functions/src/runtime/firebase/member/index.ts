@@ -22,8 +22,8 @@ export const updateMemberSchema = toJoiObject<MemberUpdateRequest>({
   discord: Joi.string().allow(null, '').regex(DISCORD_REGEXP).optional(),
   github: Joi.string().allow(null, '').regex(GITHUB_REGEXP).optional(),
   twitter: Joi.string().allow(null, '').regex(TWITTER_REGEXP).optional(),
-  avatarNft: CommonJoi.uid(false),
-  avatar: CommonJoi.uid(false),
+  avatarNft: CommonJoi.uid(false).allow(null),
+  avatar: CommonJoi.uid(false).allow(null),
 });
 
 const createMemberSchema = toJoiObject<CreateMemberRequest>({ address: CommonJoi.uid() });

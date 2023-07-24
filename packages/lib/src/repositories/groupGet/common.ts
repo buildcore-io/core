@@ -10,7 +10,13 @@ interface Request {
   uid: string;
 }
 
-export abstract class AbstractGetByIdGrouped {
+export interface CreateUrlResponse {
+  requests: Request[];
+  url: string;
+  params: Record<string, unknown>;
+}
+
+export abstract class AbstractGroupedGet {
   protected requests: Request[] = [];
   protected requestCounter = 0;
   protected timer: Promise<void> | null = null;
@@ -21,7 +27,7 @@ export abstract class AbstractGetByIdGrouped {
     protected readonly subCol?: PublicSubCollections,
   ) {}
 
-  protected init = (uid: string, parent: string) => {
+  protected init = (uid: string, parent = '') => {
     const request = this.requests.find((r) => r.parent === parent && r.uid === uid);
     if (!request) {
       this.requests.push({ parent, uid });
@@ -42,6 +48,16 @@ export abstract class AbstractGetByIdGrouped {
     this.timer = null;
   };
 
+  protected createUrl = (): CreateUrlResponse => {
+    throw new Error('Method not implemented.');
+  };
+
+  protected executeRequests = async (): Promise<void> => {
+    throw new Error('Method not implemented.');
+  };
+}
+
+export abstract class AbstractGetByIdGrouped extends AbstractGroupedGet {
   protected createUrl = (sessionId?: string) => {
     const requests = this.requests.splice(0, BATCH_MAX_SIZE);
     this.requestCounter = Math.max(this.requestCounter - BATCH_MAX_SIZE, 0);
@@ -60,10 +76,6 @@ export abstract class AbstractGetByIdGrouped {
     }
 
     const url = getManyByIdUrl(this.env);
-    return { requests, url, params };
-  };
-
-  protected executeRequests = async (): Promise<void> => {
-    throw new Error('Method not implemented.');
+    return { requests, url, params } as CreateUrlResponse;
   };
 }

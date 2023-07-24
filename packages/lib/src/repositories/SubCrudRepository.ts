@@ -15,8 +15,8 @@ import {
 import { getSessionId } from '../Session';
 import { toQueryParams, wrappedFetch } from '../fetch.utils';
 import { fetchLive } from '../observable';
-import { GetByIdGrouped } from './getById/GetByIdGrouped';
-import { GetByIdGroupedLive } from './getById/GetByIdGroupedLive';
+import { GetByIdGrouped } from './groupGet/GetByIdGrouped';
+import { GetByIdGroupedLive } from './groupGet/GetByIdGroupedLive';
 
 export abstract class SubCrudRepository<T> {
   private readonly getByIdGroupedLive: GetByIdGroupedLive<T>;
@@ -40,7 +40,12 @@ export abstract class SubCrudRepository<T> {
   public getById = (parent: string, uid: string) => this.getByIdGrouped.get(uid, parent);
 
   public getManyById = async (uids: string[], parent?: string) => {
-    const params = { collection: this.col, parentUid: parent, subCollection: this.subCol, uids };
+    const params = {
+      collection: this.col,
+      parentUids: uids.map(() => parent),
+      subCollection: this.subCol,
+      uids,
+    };
     return await wrappedFetch<T[]>(getManyByIdUrl(this.env), params);
   };
 
@@ -56,7 +61,7 @@ export abstract class SubCrudRepository<T> {
   public getManyByIdLive = (uids: string[], parent?: string): Observable<T[]> => {
     const params = {
       collection: this.col,
-      parentUid: parent,
+      parentUids: uids.map(() => parent),
       subCollection: this.subCol,
       uids,
       sessionId: getSessionId(this.env),
@@ -85,6 +90,8 @@ export abstract class SubCrudRepository<T> {
       fieldName: [],
       fieldValue: [],
       operator: [],
+      orderBy: ['createdOn'],
+      orderByDir: ['desc'],
     };
     return this.getManyAdvancedLive(params);
   };

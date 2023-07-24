@@ -23,4 +23,6 @@ export const getAvgPriceUrl = (baseUrl: Build5Env) => baseUrl + ApiRoutes.GET_AV
 
 export const getPriceChangeUrl = (baseUrl: Build5Env) => baseUrl + ApiRoutes.GET_PRICE_CHANGE;
 
+export const getTopMilestonesUrl = (baseUrl: Build5Env) => baseUrl + ApiRoutes.GET_TOP_MILESTONES;
+
 export const getKeepAliveUrl = (baseUrl: Build5Env) => baseUrl + ApiRoutes.KEEP_ALIVE;
