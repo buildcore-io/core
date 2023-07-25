@@ -13,7 +13,6 @@ export const blockMemberControl = async (owner: string, params: SpaceMemberUpser
   batch.set(blockedMemberDocRef, blockedMember);
   batch.delete(spaceDocRef.collection(SUB_COL.MEMBERS).doc(member));
   batch.delete(spaceDocRef.collection(SUB_COL.KNOCKING_MEMBERS).doc(member));
-  batch.delete(spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member));
   batch.update(spaceDocRef, space);
   await batch.commit();
 

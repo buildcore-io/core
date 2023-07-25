@@ -2,6 +2,7 @@ import {
   COL,
   MIN_IOTA_AMOUNT,
   Network,
+  SUB_COL,
   Space,
   TangleRequestType,
   Transaction,
@@ -52,5 +53,12 @@ describe('Block space member', () => {
     const spaceDocRef = build5Db().doc(`${COL.SPACE}/${helper.space.uid}`);
     helper.space = <Space>await spaceDocRef.get();
     expect(helper.space.totalMembers).toBe(1);
+    expect(helper.space.totalGuardians).toBe(1);
+
+    const guardianCount = await spaceDocRef.collection(SUB_COL.GUARDIANS).count();
+    expect(guardianCount).toBe(1);
+
+    const memberCount = await spaceDocRef.collection(SUB_COL.MEMBERS).count();
+    expect(memberCount).toBe(1);
   });
 });

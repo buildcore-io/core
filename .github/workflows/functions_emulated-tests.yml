@@ -58,7 +58,7 @@ jobs:
                 npm run test:ci -- --findRelatedTests test/storage/resize.img.spec.ts &&
                 npm run test:ci -- --findRelatedTests test/stake/stake.reward.cron.spec.ts &&
                 npm run test:ci -- --findRelatedTests test/stake/delete.stake.reward.spec.ts &&
-                npm run test:ci -- --findRelatedTests test/dbRoll/token-purchase.roll.spec.ts 
+                npm run test:ci -- --findRelatedTests test/dbRoll/total.guardians.roll.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3

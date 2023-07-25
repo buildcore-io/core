@@ -152,6 +152,8 @@ class FirestoreCollectionGroup implements ICollectionGroup {
 
   public orderBy = (field: string, dir: 'asc' | 'desc' = 'asc') =>
     new FirestoreQuery(this.collection.orderBy(field, dir));
+
+  public count = async () => (await this.collection.count().get()).data().count;
 }
 
 export class FirestoreCollection extends FirestoreCollectionGroup implements ICollection {

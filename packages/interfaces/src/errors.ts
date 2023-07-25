@@ -286,4 +286,8 @@ export const WenError = {
     code: 2134,
     key: 'You are query combination is not supported. Please request support through Github',
   },
+  can_not_block_guardian: {
+    code: 2135,
+    key: 'Guardians can not be blocked. Create a Remove guardian request.',
+  },
 };
