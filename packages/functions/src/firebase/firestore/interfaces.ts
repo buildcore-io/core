@@ -21,6 +21,7 @@ export interface ICollectionGroup {
   limit: (value: number) => IQuery;
   startAfter: (value?: IDocumentSnapshot | string | number | Date) => IQuery;
   orderBy: (field: string, dir?: 'asc' | 'desc') => IQuery;
+  count: () => Promise<number>;
 }
 
 export interface ICollection extends ICollectionGroup {
