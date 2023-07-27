@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
+  API_TIMEOUT_SECONDS,
   BaseRecord,
   COL,
   KeepAliveRequest,
@@ -32,7 +33,7 @@ export const keepAlive = async (req: functions.https.Request, res: express.Respo
 
   body.sessionIds.forEach((sessionId, i) => {
     const docRef = build5Db().doc(`${COL.KEEP_ALIVE}/${sessionId}`);
-    body.close?.[i] ? batch.delete(docRef) : batch.set(docRef, {});
+    body.close?.[i] ? batch.delete(docRef) : batch.set(docRef, {}, true);
   });
 
   await batch.commit();
@@ -51,30 +52,28 @@ export const sendLiveUpdates = async <T>(
   res.setHeader('Connection', 'keep-alive');
 
   const instanceIdDocRef = build5Db().collection(COL.KEEP_ALIVE).doc();
-  const instanceId = instanceIdDocRef.getId();
   await instanceIdDocRef.create({});
-  res.write(`event: instance\ndata: ${instanceId}\n\n`);
+  res.write(`event: instance\ndata: ${instanceIdDocRef.getId()}\n\n`);
 
-  const keepAliveDocRef = build5Db().doc(`${COL.KEEP_ALIVE}/${sessionId}`);
-  await keepAliveDocRef.set({}, true);
+  const sessionDocRef = build5Db().doc(`${COL.KEEP_ALIVE}/${sessionId}`);
+  await sessionDocRef.set({}, true);
 
-  const ping = async () => {
-    const instance = await keepAliveDocRef.get<BaseRecord>();
+  const checkSession = async () => {
+    const instance = await sessionDocRef.get<BaseRecord>();
     const diff = dayjs().diff(dayjs(instance?.updatedOn?.toDate()));
     if (!instance || diff > PING_INTERVAL) {
       closeConnection();
     }
   };
-
-  const pingInterval = setInterval(async () => {
-    await ping();
-  }, PING_INTERVAL);
+  const checkSessionInterval = setInterval(checkSession, PING_INTERVAL);
 
   const instanceIdSub = instanceIdDocRef.onSnapshot((data) => {
-    if (data === undefined) {
-      closeConnection();
-    }
+    !data && closeConnection();
   });
+
+  const timeout = setTimeout(() => {
+    closeConnection();
+  }, API_TIMEOUT_SECONDS * 1000 * 0.92);
 
   const subscription = observable.subscribe({
     next: (data) => {
@@ -89,10 +88,11 @@ export const sendLiveUpdates = async <T>(
   });
 
   const closeConnection = async () => {
-    clearInterval(pingInterval);
+    res.write(`event: close\ndata: ${instanceIdDocRef.getId()}\n\n`);
+    clearInterval(checkSessionInterval);
+    clearTimeout(timeout);
     instanceIdSub();
     subscription.unsubscribe();
-    await keepAliveDocRef.delete();
     await instanceIdDocRef.delete();
     res.end();
   };

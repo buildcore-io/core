@@ -40,7 +40,6 @@ class Observable<T> extends RxjsObservable<T> {
     try {
       this.isRunning = true;
       const response = await fetch(this.url, { headers: HEADERS });
-
       if (!response.ok) {
         throw new Error(`Server responded with ${response.status} ${response.statusText}`);
       }
@@ -53,8 +52,7 @@ class Observable<T> extends RxjsObservable<T> {
       while (this.isRunning) {
         const result = await reader.read();
 
-        if (result.done) {
-          this.observer!.complete();
+        if (result.done || !this.isRunning) {
           break;
         }
 
@@ -84,6 +82,9 @@ class Observable<T> extends RxjsObservable<T> {
       this.instaceId = data;
     } else if (type === 'error') {
       this.observer!.error(data);
+    } else if (type === 'close') {
+      this.isRunning = false;
+      this.init();
     }
   };
 
