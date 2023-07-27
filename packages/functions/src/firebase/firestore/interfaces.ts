@@ -25,7 +25,7 @@ export interface ICollectionGroup {
 }
 
 export interface ICollection extends ICollectionGroup {
-  doc: (documentPath: string) => IDocument;
+  doc: (documentPath?: string) => IDocument;
 }
 
 export interface IDocument {
@@ -44,6 +44,8 @@ export interface IDocument {
 
   getPath: () => string;
   getSnapshot: () => Promise<IDocumentSnapshot>;
+
+  getId: () => string;
 }
 
 export interface IDocumentSnapshot {

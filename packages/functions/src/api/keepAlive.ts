@@ -7,7 +7,6 @@ import {
   QUERY_MAX_LENGTH,
   WenError,
 } from '@build-5/interfaces';
-import { randomUUID } from 'crypto';
 import dayjs from 'dayjs';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
@@ -51,8 +50,8 @@ export const sendLiveUpdates = async <T>(
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
 
-  const instanceId = randomUUID().replace(/-/g, '');
-  const instanceIdDocRef = build5Db().doc(`${COL.KEEP_ALIVE}/${instanceId}`);
+  const instanceIdDocRef = build5Db().collection(COL.KEEP_ALIVE).doc();
+  const instanceId = instanceIdDocRef.getId();
   await instanceIdDocRef.create({});
   res.write(`event: instance\ndata: ${instanceId}\n\n`);
 
