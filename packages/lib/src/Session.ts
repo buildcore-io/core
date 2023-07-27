@@ -22,12 +22,12 @@ class Session {
     }, PING_INTERVAL * 0.8);
   }
 
-  public pingSession = async (sessionId: string, close?: boolean) => {
+  public pingSession = async (sessionId: string, close = false) => {
     const request = this.requests.find((r) => r.sessionId === sessionId);
     if (request) {
       return;
     }
-    this.requests.push({ sessionId, close: close || false });
+    this.requests.push({ sessionId, close });
     this.requestCounter++;
 
     await this.executeTimed();

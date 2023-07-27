@@ -1,4 +1,4 @@
-import { ApiRoutes, WEN_FUNC, WenError } from '@build-5/interfaces';
+import { API_TIMEOUT_SECONDS, ApiRoutes, WEN_FUNC, WenError } from '@build-5/interfaces';
 import cors from 'cors';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
@@ -17,7 +17,7 @@ import { keepAlive } from './keepAlive';
 
 export const api = functions.https.onRequest(
   onRequestConfig(WEN_FUNC.api, {
-    timeoutSeconds: 1800,
+    timeoutSeconds: API_TIMEOUT_SECONDS,
     minInstances: 5,
     memory: '1GiB',
   }),
