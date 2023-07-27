@@ -164,11 +164,11 @@ export class FirestoreCollection extends FirestoreCollectionGroup implements ICo
     super(collection);
   }
 
-  public doc = (documentPath: string) =>
-    new FirestoreDocument(
-      this.db,
-      (this.collection as admin.firestore.CollectionReference).doc(documentPath),
-    );
+  public doc = (documentPath = '') => {
+    const colRef = this.collection as admin.firestore.CollectionReference;
+    const docRef = documentPath ? colRef.doc(documentPath) : colRef.doc();
+    return new FirestoreDocument(this.db, docRef);
+  };
 }
 
 export class FirestoreDocument implements IDocument {
@@ -217,6 +217,8 @@ export class FirestoreDocument implements IDocument {
   public getPath = () => this.document.path;
 
   public getSnapshot = () => this.document.get();
+
+  public getId = () => this.document.id;
 }
 
 export class FirestoreQuery implements IQuery {
