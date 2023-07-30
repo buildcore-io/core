@@ -99,7 +99,7 @@ const removePurchasesFromVolumeStatsCron = functions.scheduler.onSchedule(
 );
 
 const removedExpiresSessions = functions.scheduler.onSchedule(
-  { timeoutSeconds: 540, schedule: 'every 24 hour' },
+  { timeoutSeconds: 540, schedule: 'every day 00:00' },
   sessionCleanup,
 );
 
