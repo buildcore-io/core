@@ -18,6 +18,7 @@ module.exports = {
     project: ['tsconfig.json'],
     createDefaultProgram: true,
     sourceType: 'module',
+    tsconfigRootDir: __dirname,
   },
   ignorePatterns: [
     '/lib/**/*', // Ignore built files.

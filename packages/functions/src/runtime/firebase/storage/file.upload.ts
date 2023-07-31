@@ -16,7 +16,7 @@ import { fileUploadSchema } from './FileUploadRequestSchema';
 const MAX_FILE_SIZE_BYTES = 104857600; // 100 MB
 
 export const uploadFile = functions.https.onRequest(
-  onRequestConfig(WEN_FUNC.uploadFile, { memory: '256MiB' }),
+  onRequestConfig(WEN_FUNC.uploadFile, { memory: '512MiB' }),
   (req, res) =>
     cors({ origin: true })(req, res, async () => {
       if (req.method !== 'POST') {

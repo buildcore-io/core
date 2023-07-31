@@ -1,4 +1,10 @@
-import { GetPriceChangeRequest, PublicCollections, TokenPurchaseAge } from '@build-5/interfaces';
+import {
+  GetPriceChangeRequest,
+  PublicCollections,
+  QUERY_MAX_LENGTH,
+  QUERY_MIN_LENGTH,
+  TokenPurchaseAge,
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
@@ -11,7 +17,12 @@ import { getHeadCountObs, getQueryParams } from './common';
 import { sendLiveUpdates } from './keepAlive';
 
 const getAvgPriceSchema = Joi.object({
-  token: CommonJoi.uid(),
+  token: Joi.alternatives()
+    .try(
+      CommonJoi.uid(),
+      Joi.array().min(QUERY_MIN_LENGTH).max(QUERY_MAX_LENGTH).items(CommonJoi.uid()),
+    )
+    .required(),
   sessionId: CommonJoi.sessionId(true),
 });
 
@@ -20,9 +31,11 @@ export const getPriceChange = async (req: functions.https.Request, res: express.
   if (!body) {
     return;
   }
-  const result = getPriceChangeLive(body.token).pipe(map((change) => ({ id: body.token, change })));
+
+  const tokens = Array.isArray(body.token) ? body.token : [body.token];
+  const changes = tokens.map(getPriceChangeLive);
+  const result = combineLatest(changes).pipe(map((r) => (r.length === 1 ? r[0] : r)));
   await sendLiveUpdates(body.sessionId!, res, result);
-  return;
 };
 
 const getPriceChangeLive = (token: string) => {
@@ -31,9 +44,9 @@ const getPriceChangeLive = (token: string) => {
   return combineLatest([today, yesterday]).pipe(
     map(([last, secondToLast]) => {
       if (!secondToLast) {
-        return 0;
+        return { id: token, change: 0 };
       }
-      return (last - secondToLast) / last;
+      return { id: token, change: (last - secondToLast) / last };
     }),
   );
 };
