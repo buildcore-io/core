@@ -290,4 +290,8 @@ export const WenError = {
     code: 2135,
     key: 'Guardians can not be blocked. Create a Remove guardian request.',
   },
+  nft_does_not_belong_to_collection: {
+    code: 2136,
+    key: 'NFT does not belong to selected collection.',
+  },
 };

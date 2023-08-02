@@ -275,6 +275,10 @@ const assertNftCanBePurchased = async (
     await assertUserHasOnlyOneNft(collection, owner);
   }
 
+  if (nft.collection !== collection.uid) {
+    throw invalidArgument(WenError.nft_does_not_belong_to_collection);
+  }
+
   await assertNoOrderInProgress(owner);
 };
 
