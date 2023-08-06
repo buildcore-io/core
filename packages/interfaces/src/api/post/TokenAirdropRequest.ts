@@ -10,7 +10,7 @@ export interface CreateAirdropsRequest {
   /**
    * Array of airdrops
    */
-  drops: {
+  drops: ({
     /**
      * Amount of tokens to be airdroped. Minimum 1, maximum 1e+26
      */
@@ -27,7 +27,7 @@ export interface CreateAirdropsRequest {
      * Date when the airdrop will be vested.
      */
     vestingAt: Date;
-  }[];
+  })[];
   /**
    * Build5 id of the token
    */

@@ -5,6 +5,9 @@ export interface BaseRequest {
   readonly sessionId?: string;
 }
 
+/**
+ * Get a record by it's ID.
+ */
 export interface GetByIdRequest extends BaseRequest {
   readonly collection: PublicCollections;
   readonly uid: string;
@@ -12,6 +15,9 @@ export interface GetByIdRequest extends BaseRequest {
   readonly subCollection?: PublicSubCollections;
 }
 
+/**
+ * Get many records by it's IDs
+ */
 export interface GetManyByIdRequest extends BaseRequest {
   readonly collection: PublicCollections;
   readonly uids: string[];
@@ -19,6 +25,11 @@ export interface GetManyByIdRequest extends BaseRequest {
   readonly subCollection?: PublicSubCollections;
 }
 
+/**
+ * Get many records by passing various conditions through fieldName/fieldValue
+ *
+ * startAfter allows pagging through the result.
+ */
 export interface GetManyRequest extends BaseRequest {
   readonly collection: PublicCollections;
 
@@ -31,6 +42,9 @@ export interface GetManyRequest extends BaseRequest {
   readonly startAfter?: string;
 }
 
+/**
+ * Get all records updated after unix timestamp. Use startAfter to paginate.
+ */
 export interface GetUpdatedAfterRequest extends BaseRequest {
   readonly collection: PublicCollections;
 

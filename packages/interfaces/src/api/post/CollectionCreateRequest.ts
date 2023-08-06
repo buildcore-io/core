@@ -30,19 +30,7 @@ export interface CreateCollectionRequest {
   /**
    * Category of the collection.
    */
-  category:
-    | 'COLLECTIBLE'
-    | 'PFP'
-    | 'PHOTOGRAPHY'
-    | 'ANIMATION'
-    | 'THREE_D'
-    | 'GENERATIVE'
-    | 'SINGLE'
-    | 'INTERACTIVE'
-    | 'ABSTRACT'
-    | 'PIXELART'
-    | 'GAME'
-    | 'ART';
+  category: 'COLLECTIBLE' | 'PFP' | 'PHOTOGRAPHY' | 'ANIMATION' | 'THREE_D' | 'GENERATIVE' | 'SINGLE' | 'INTERACTIVE' | 'ABSTRACT' | 'PIXELART' | 'GAME' | 'ART';
   /**
    * Description of the collection.
    */

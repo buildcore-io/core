@@ -1,5 +1,5 @@
-import React from 'react';
 import clsx from 'clsx';
+import React from 'react';
 import styles from './styles.module.css';
 
 type FeatureItem = {
@@ -14,13 +14,12 @@ const FeatureList: FeatureItem[] = [
     Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Build5 was developed to simplify dev.
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
+    title: 'OTR makes your life easier',
     Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
@@ -30,7 +29,7 @@ const FeatureList: FeatureItem[] = [
     ),
   },
   {
-    title: 'Powered by React',
+    title: 'Powered by Build5',
     Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>

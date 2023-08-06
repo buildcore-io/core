@@ -39,6 +39,9 @@ export interface AwardBadge {
   readonly lockTime: number;
 }
 
+/**
+ * Award record.
+ */
 export interface Award extends BaseRecord {
   readonly name: string;
   readonly description: string;

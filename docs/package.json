@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
-    "start": "docusaurus start",
+    "start": "TYPEDOC_WATCH=true docusaurus start",
     "build": "docusaurus build",
     "build:prod": "docusaurus build --out-dir dist",
     "swizzle": "docusaurus swizzle",

@@ -6,39 +6,74 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Build5 docs',
-  tagline: 'Build5 documentation',
+  title: 'Build5',
+  tagline: 'Build5 Documentation',
   favicon: 'img/favicon.ico',
-
   // Set the production url of your site here
-  url: 'https://your-docusaurus-test-site.com',
+  url: 'https://developer.build5.com',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
-
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
-
   plugins: [
     [
       'docusaurus-plugin-typedoc',
-
-      // Plugin / TypeDoc options
       {
-        entryPoints: ['../packages/interfaces/src/index.ts'],
+        id: 'api-post',
+        sidebar: {
+          categoryLabel: 'POST Requests',
+        },
+        entryPoints: ['../packages/interfaces/src/api/post/index.ts'],
         tsconfig: '../packages/interfaces/tsconfig.json',
+        out: 'api-post',
+      },
+    ],
+    [
+      'docusaurus-plugin-typedoc',
+      {
+        id: 'api-get',
+        sidebar: {
+          categoryLabel: 'GET Requests',
+        },
+        entryPoints: ['../packages/interfaces/src/api/request.ts'],
+        tsconfig: '../packages/interfaces/tsconfig.json',
+        out: 'api-get',
+      },
+    ],
+    [
+      'docusaurus-plugin-typedoc',
+      {
+        id: 'api-otr',
+        sidebar: {
+          categoryLabel: 'OTR Requests',
+        },
+        entryPoints: ['../packages/interfaces/src/api/tangle/index.ts'],
+        tsconfig: '../packages/interfaces/tsconfig.json',
+        out: 'api-otr',
+      },
+    ],
+    [
+      'docusaurus-plugin-typedoc',
+      {
+        id: 'api-models',
+        sidebar: {
+          categoryLabel: 'Records / Models',
+        },
+        entryPoints: [
+          '../packages/interfaces/src/models/index.ts',
+          '../packages/interfaces/src/config.ts',
+          '../packages/interfaces/src/errors.ts',
+        ],
+        tsconfig: '../packages/interfaces/tsconfig.json',
+        out: 'api-models',
       },
     ],
   ],
-
-  // Even if you don't use internalization, you can use this field to set useful
-  // metadata like html lang. For example, if your site is Chinese, you may want
-  // to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
   },
-
   presets: [
     [
       'classic',
@@ -46,6 +81,19 @@ const config = {
       ({
         docs: { routeBasePath: '/', sidebarPath: require.resolve('./sidebars.js') },
         blog: false,
+        // TODO Enable pages.
+        // pages: {
+        //   path: 'src/pages',
+        //   routeBasePath: '/',
+        //   include: ['**/*.{md,mdx}'],
+        //   exclude: [
+        //     '**/_*.{js,jsx,ts,tsx,md,mdx}',
+        //     '**/_*/**',
+        //     '**/*.test.{js,jsx,ts,tsx}',
+        //     '**/__tests__/**',
+        //   ],
+        //   mdxPageComponent: '@theme/MDXPage',
+        // },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
