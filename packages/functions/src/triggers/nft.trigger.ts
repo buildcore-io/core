@@ -31,8 +31,10 @@ export const nftWrite = functions.firestore.onDocumentWritten(
   {
     minInstances: scale(WEN_FUNC_TRIGGER.nftWrite),
     timeoutSeconds: 540,
-    memory: '512MiB',
     document: COL.NFT + '/{nftId}',
+
+    memory: '2GiB',
+    concurrency: 40,
   },
   async (event) => {
     const prev = <Nft | undefined>event.data?.before?.data();

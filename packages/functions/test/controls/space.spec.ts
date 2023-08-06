@@ -278,6 +278,17 @@ describe('SpaceController: member management', () => {
     mockWalletReturnValue(walletSpy, guardian, { uid: space.uid, member });
     const blockMemberResult = await testEnv.wrap(blockMember)({});
     assertCreatedOnAndId(blockMemberResult, member);
+
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
+    space = <Space>await spaceDocRef.get();
+    expect(space.totalGuardians).toBe(1);
+    expect(space.totalMembers).toBe(1);
+
+    const guardianCount = await spaceDocRef.collection(SUB_COL.GUARDIANS).count();
+    expect(guardianCount).toBe(1);
+
+    const memberCount = await spaceDocRef.collection(SUB_COL.MEMBERS).count();
+    expect(memberCount).toBe(1);
   });
 
   it('block member and unblock', async () => {
@@ -287,9 +298,27 @@ describe('SpaceController: member management', () => {
     const bMember = await testEnv.wrap(blockMember)({});
     assertCreatedOnAndId(bMember, member);
 
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
+    const blockedDocRef = spaceDocRef.collection(SUB_COL.BLOCKED_MEMBERS).doc(member);
+    let blocked = await blockedDocRef.get();
+    expect(blocked).toBeDefined();
+
     const ubMember = await testEnv.wrap(unblockMember)({});
     expect(ubMember).toBeDefined();
     expect(ubMember.status).toEqual('success');
+
+    space = <Space>await spaceDocRef.get();
+    expect(space.totalGuardians).toBe(1);
+    expect(space.totalMembers).toBe(1);
+
+    const guardianCount = await spaceDocRef.collection(SUB_COL.GUARDIANS).count();
+    expect(guardianCount).toBe(1);
+
+    const memberCount = await spaceDocRef.collection(SUB_COL.MEMBERS).count();
+    expect(memberCount).toBe(1);
+
+    blocked = await blockedDocRef.get();
+    expect(blocked).toBeUndefined();
   });
 
   it('fail to block member - if its the only one', async () => {
@@ -303,10 +332,7 @@ describe('SpaceController: member management', () => {
   it('fail to block myself if Im only guardian', async () => {
     await joinSpaceFunc(member, space.uid);
     mockWalletReturnValue(walletSpy, guardian, { uid: space.uid, member: guardian });
-    await expectThrow(
-      testEnv.wrap(blockMember)({}),
-      WenError.at_least_one_guardian_must_be_in_the_space.key,
-    );
+    await expectThrow(testEnv.wrap(blockMember)({}), WenError.can_not_block_guardian.key);
   });
 
   it('successfully block member and unable to join space', async () => {
