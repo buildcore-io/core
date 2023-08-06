@@ -21,10 +21,11 @@ export interface ICollectionGroup {
   limit: (value: number) => IQuery;
   startAfter: (value?: IDocumentSnapshot | string | number | Date) => IQuery;
   orderBy: (field: string, dir?: 'asc' | 'desc') => IQuery;
+  count: () => Promise<number>;
 }
 
 export interface ICollection extends ICollectionGroup {
-  doc: (documentPath: string) => IDocument;
+  doc: (documentPath?: string) => IDocument;
 }
 
 export interface IDocument {
@@ -43,6 +44,8 @@ export interface IDocument {
 
   getPath: () => string;
   getSnapshot: () => Promise<IDocumentSnapshot>;
+
+  getId: () => string;
 }
 
 export interface IDocumentSnapshot {

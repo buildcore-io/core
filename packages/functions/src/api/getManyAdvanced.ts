@@ -90,6 +90,15 @@ export const getManyAdvanced = async (req: functions.https.Request, res: express
     query = query.where('isOrderType', '==', false);
   }
 
+  const orderByDir = (body.orderByDir || []) as ('asc' | 'desc')[];
+  for (let i = 0; i < (body.orderBy?.length || 0); ++i) {
+    query = query.orderBy(body.orderBy![i], orderByDir[i]);
+  }
+
+  if (body.limit) {
+    query = query.limit(body.limit);
+  }
+
   if (body.startAfter) {
     const startAfter = await getSnapshot(
       body.collection,
@@ -98,15 +107,6 @@ export const getManyAdvanced = async (req: functions.https.Request, res: express
       body.startAfter,
     );
     query = query.startAfter(startAfter);
-  }
-
-  if (body.limit) {
-    query = query.limit(body.limit);
-  }
-
-  const orderByDir = (body.orderByDir || []) as ('asc' | 'desc')[];
-  for (let i = 0; i < (body.orderBy?.length || 0); ++i) {
-    query = query.orderBy(body.orderBy![i], orderByDir[i]);
   }
 
   if (body.sessionId) {

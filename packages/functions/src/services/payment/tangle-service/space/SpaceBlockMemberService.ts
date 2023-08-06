@@ -40,12 +40,6 @@ export class SpaceBlockMemberService {
     });
 
     this.transactionService.push({
-      ref: spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member),
-      data: {},
-      action: 'delete',
-    });
-
-    this.transactionService.push({
       ref: spaceDocRef,
       data: space,
       action: 'update',
@@ -76,17 +70,14 @@ export const getBlockMemberUpdateData = async (owner: string, spaceId: string, m
     throw invalidArgument(WenError.at_least_one_member_must_be_in_the_space);
   }
 
-  if (space.totalGuardians === 1) {
-    const guardian = await spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member).get();
-    if (guardian) {
-      throw invalidArgument(WenError.at_least_one_guardian_must_be_in_the_space);
-    }
+  const guardian = await spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member).get();
+  if (guardian) {
+    throw invalidArgument(WenError.can_not_block_guardian);
   }
 
   const blockedMember = { uid: member, parentId: spaceId, parentCol: COL.SPACE };
   const spaceUpdateData = {
-    totalGuardians: build5Db().inc(knockingMember ? 0 : -1),
-    totalMembers: build5Db().inc(knockingMember ? 0 : -1),
+    totalMembers: build5Db().inc(spaceMember ? -1 : 0),
     totalPendingMembers: build5Db().inc(knockingMember ? -1 : 0),
   };
   return { blockedMember, space: spaceUpdateData };
