@@ -14,7 +14,7 @@ const config = {
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
   plugins: [
     [
@@ -23,10 +23,13 @@ const config = {
         id: 'api-post',
         sidebar: {
           categoryLabel: 'POST Requests',
+          autoConfiguration: true,
+          position: 2,
         },
         entryPoints: ['../packages/interfaces/src/api/post/index.ts'],
         tsconfig: '../packages/interfaces/tsconfig.json',
         out: 'api-post',
+        cleanOutputDir: true,
       },
     ],
     [
@@ -35,10 +38,13 @@ const config = {
         id: 'api-get',
         sidebar: {
           categoryLabel: 'GET Requests',
+          autoConfiguration: true,
+          position: 0,
         },
         entryPoints: ['../packages/interfaces/src/api/request.ts'],
         tsconfig: '../packages/interfaces/tsconfig.json',
         out: 'api-get',
+        cleanOutputDir: true,
       },
     ],
     [
@@ -47,10 +53,13 @@ const config = {
         id: 'api-otr',
         sidebar: {
           categoryLabel: 'OTR Requests',
+          autoConfiguration: true,
+          position: 3,
         },
         entryPoints: ['../packages/interfaces/src/api/tangle/index.ts'],
         tsconfig: '../packages/interfaces/tsconfig.json',
         out: 'api-otr',
+        cleanOutputDir: true,
       },
     ],
     [
@@ -59,6 +68,8 @@ const config = {
         id: 'api-models',
         sidebar: {
           categoryLabel: 'Records / Models',
+          autoConfiguration: true,
+          position: 0,
         },
         entryPoints: [
           '../packages/interfaces/src/models/index.ts',
@@ -67,6 +78,7 @@ const config = {
         ],
         tsconfig: '../packages/interfaces/tsconfig.json',
         out: 'api-models',
+        cleanOutputDir: true,
       },
     ],
   ],
@@ -79,21 +91,14 @@ const config = {
       'classic',
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
-        docs: { routeBasePath: '/', sidebarPath: require.resolve('./sidebars.js') },
+        docs: { sidebarPath: require.resolve('./sidebars.js') },
         blog: false,
-        // TODO Enable pages.
-        // pages: {
-        //   path: 'src/pages',
-        //   routeBasePath: '/',
-        //   include: ['**/*.{md,mdx}'],
-        //   exclude: [
-        //     '**/_*.{js,jsx,ts,tsx,md,mdx}',
-        //     '**/_*/**',
-        //     '**/*.test.{js,jsx,ts,tsx}',
-        //     '**/__tests__/**',
-        //   ],
-        //   mdxPageComponent: '@theme/MDXPage',
-        // },
+        pages: {
+          path: 'src/pages',
+          include: ['**/*.{md,mdx,tsx}'],
+          // exclude: ['**/_*.{js,jsx,ts,md,mdx}', '**/_*/**'],
+          mdxPageComponent: '@theme/MDXPage',
+        },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
@@ -109,17 +114,64 @@ const config = {
       navbar: {
         title: 'Build5',
         logo: {
-          alt: 'My Site Logo',
+          alt: 'Build5 Logo',
           src: 'img/logo.svg',
         },
         items: [
           {
-            type: 'docSidebar',
-            sidebarId: 'tutorialSidebar',
+            href: '/',
             position: 'left',
             label: 'Docs',
           },
+          {
+            type: 'docSidebar',
+            sidebarId: 'tutorialSidebar',
+            position: 'left',
+            label: 'APIs',
+          },
+          {
+            href: 'https://build5.com/blog',
+            label: 'Blog',
+            position: 'left',
+          },
+          {
+            href: 'https://github.com/build-5',
+            label: 'GitHub',
+            position: 'right',
+          },
         ],
+      },
+      footer: {
+        style: 'dark',
+        links: [
+          {
+            title: 'Community',
+            items: [
+              {
+                label: 'Discord',
+                href: 'https://discord.gg/x7sBB2SZCg',
+              },
+              {
+                label: 'Twitter',
+                href: 'https://twitter.com/build5tech',
+              },
+            ],
+          },
+          {
+            title: 'More',
+            items: [
+              {
+                label: 'Blog',
+                to: 'https://build5.com/blog',
+              },
+              {
+                label: 'GitHub',
+                href: 'https://github.com/build-5',
+              },
+            ],
+          },
+        ],
+        copyright: `Copyright © ${new Date().getFullYear()} BUILD.5. All Rights Reserved.`,
       },
       prism: {
         theme: lightCodeTheme,
