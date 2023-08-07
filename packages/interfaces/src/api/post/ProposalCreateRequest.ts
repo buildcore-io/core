@@ -19,15 +19,15 @@ export interface ProposalCreateRequest {
    * Name of the proposal
    */
   name: string;
-  questions: ({
+  questions: {
     additionalInfo?: string | null | '';
-    answers: ({
+    answers: {
       additionalInfo?: string | null | '';
       text: string;
       value: number;
-    })[];
+    }[];
     text: string;
-  })[];
+  }[];
   /**
    * Settings object of the proposal
    */
