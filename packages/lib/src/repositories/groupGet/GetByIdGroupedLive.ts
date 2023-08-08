@@ -11,7 +11,7 @@ export class GetByIdGroupedLive<T> extends AbstractGetByIdGrouped {
   public get = async (uid: string, parent = '') => {
     this.init(uid, parent);
 
-    if (this.requestCounter === BATCH_MAX_SIZE) {
+    if (this.requests.length >= BATCH_MAX_SIZE) {
       await this.executeRequests();
       return this.observers[parent + uid]!;
     }
@@ -25,13 +25,17 @@ export class GetByIdGroupedLive<T> extends AbstractGetByIdGrouped {
     if (!requests.length) {
       return;
     }
-    const source = fetchLive<T[]>(this.env, url + toQueryParams(params)).pipe(
-      map((r) => (Array.isArray(r) ? r : [r])),
-    );
-    for (const r of requests) {
-      this.observers[r.parent + r.uid] = source.pipe(
-        map((s) => s.find((d) => [get(d, 'uid', ''), get(d, 'id', '')].includes(r.uid))),
+    try {
+      const source = fetchLive<T[]>(this.env, url + toQueryParams(params)).pipe(
+        map((r) => (Array.isArray(r) ? r : [r])),
       );
+      for (const r of requests) {
+        this.observers[r.parent + r.uid] = source.pipe(
+          map((s) => s.find((d) => [get(d, 'uid', ''), get(d, 'id', '')].includes(r.uid))),
+        );
+      }
+    } catch {
+      this.requests.push(...requests);
     }
   };
 }
