@@ -8,7 +8,7 @@ export class GetByIdGrouped<T> extends AbstractGetByIdGrouped {
   public get = async (uid: string, parent = ''): Promise<T | undefined> => {
     this.init(uid, parent);
 
-    if (this.requestCounter === BATCH_MAX_SIZE) {
+    if (this.requests.length >= BATCH_MAX_SIZE) {
       await this.executeRequests();
       return this.result[parent + uid]!;
     }
@@ -22,12 +22,16 @@ export class GetByIdGrouped<T> extends AbstractGetByIdGrouped {
     if (!requests.length) {
       return;
     }
-    const response = await wrappedFetch<T[]>(url, params);
-    const source = Array.isArray(response) ? response : [response];
-    for (const r of requests) {
-      this.result[r.parent + r.uid] = source.find((d) =>
-        [get(d, 'uid', ''), get(d, 'id', '')].includes(r.uid),
-      );
+    try {
+      const response = await wrappedFetch<T[]>(url, params);
+      const source = Array.isArray(response) ? response : [response];
+      for (const r of requests) {
+        this.result[r.parent + r.uid] = source.find((d) =>
+          [get(d, 'uid', ''), get(d, 'id', '')].includes(r.uid),
+        );
+      }
+    } catch {
+      this.requests.push(...requests);
     }
   };
 }

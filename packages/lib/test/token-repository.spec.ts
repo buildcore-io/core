@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { Build5Env } from '../src/Config';
+import { isOnlineCheckInterval } from '../src/fetch.utils';
 import { TokenDistributionRepository } from '../src/repositories/token/TokenDistributionRepository';
 import { TokenMarketRepository } from '../src/repositories/token/TokenMarketRepository';
 import { TokenRepository } from '../src/repositories/token/TokenRepository';
@@ -56,5 +57,9 @@ describe('MemberRepository test', () => {
     const repo = new TokenMarketRepository(Build5Env.TEST);
     const response = await repo.getTokenPrice(token);
     expect(response?.price).toBe(2500000);
+  });
+
+  afterAll(() => {
+    clearInterval(isOnlineCheckInterval);
   });
 });

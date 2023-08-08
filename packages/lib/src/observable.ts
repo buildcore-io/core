@@ -1,6 +1,7 @@
 import { Observable as RxjsObservable, Subscriber, shareReplay } from 'rxjs';
 import { Build5Env } from './Config';
 import { getSession } from './Session';
+import { wrappedFetchRaw } from './fetch.utils';
 import { processObject, processObjectArray } from './utils';
 
 const HEADERS = {
@@ -39,7 +40,7 @@ class Observable<T> extends RxjsObservable<T> {
   private init = async () => {
     try {
       this.isRunning = true;
-      const response = await fetch(this.url, { headers: HEADERS });
+      const response = await wrappedFetchRaw(this.url, { headers: HEADERS });
       if (!response.ok) {
         throw new Error(`Server responded with ${response.status} ${response.statusText}`);
       }
@@ -64,8 +65,10 @@ class Observable<T> extends RxjsObservable<T> {
         const promises = events.map(this.onEvent);
         await Promise.all(promises);
       }
-    } catch (error) {
-      this.observer!.error(error);
+    } catch {
+      this.isRunning = false;
+      await getSession(this.env).pingSession(this.instaceId, true);
+      this.init();
     }
   };
 
