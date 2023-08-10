@@ -1,4 +1,5 @@
 import { Build5Env } from '../src/Config';
+import { isOnlineCheckInterval } from '../src/fetch.utils';
 import { MemberRepository } from '../src/repositories/MemberRepository';
 
 describe('MemberRepository test', () => {
@@ -19,5 +20,9 @@ describe('MemberRepository test', () => {
     const repo = new MemberRepository(Build5Env.TEST);
     const members = await repo.getByField('isMinor', true);
     expect(members.length).toBe(1);
+  });
+
+  afterAll(() => {
+    clearInterval(isOnlineCheckInterval);
   });
 });

@@ -11,7 +11,6 @@ interface Request {
 
 class Session {
   protected requests: Request[] = [];
-  protected requestCounter = 0;
   protected timer: Promise<void> | null = null;
 
   public readonly sessionId = randomString();
@@ -28,19 +27,24 @@ class Session {
       return;
     }
     this.requests.push({ sessionId, close });
-    this.requestCounter++;
 
     await this.executeTimed();
   };
 
   private executeRequests = async () => {
     const requests = this.requests.splice(0, BATCH_MAX_SIZE);
-    this.requestCounter = Math.max(this.requestCounter - BATCH_MAX_SIZE, 0);
+    if (!requests.length) {
+      return;
+    }
     const params = {
       sessionIds: requests.map((r) => r.sessionId),
       close: requests.map((r) => r.close),
     };
-    await wrappedFetch(getKeepAliveUrl(this.env), params);
+    try {
+      await wrappedFetch(getKeepAliveUrl(this.env), params);
+    } catch {
+      this.requests.push(...requests);
+    }
   };
 
   private executeTimed = async () => {
