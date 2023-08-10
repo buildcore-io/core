@@ -71,3 +71,4 @@ Build.5 Provides key functions we should focus on describing:
 
 POC's tutorials:
 - https://github.com/build-5/build5-otr-examples/edit/master/src/examples/metadata_nft/TUTORIAL.md
+- https://github.com/build-5/build5-otr-examples/blob/master/src/examples/crew3toAward/TUTORIAL.md
