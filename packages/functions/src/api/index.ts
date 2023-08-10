@@ -21,7 +21,7 @@ export const api = functions.https.onRequest(
     minInstances: 5,
     maxInstances: 100,
     memory: '1GiB',
-    concurrency: 100,
+    concurrency: 50,
   }),
   (req, res) =>
     cors({ origin: true })(req, res, async () => {
