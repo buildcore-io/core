@@ -13,6 +13,24 @@
 
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
 const sidebars = {
+  tutorialSidebar: [
+    'overview',
+    'token_governance',
+    'architecture',
+    {
+      Tutorials: ['tutorials/overview'],
+    },
+    {
+      Modules: [
+        {
+          Token: ['modules/token/overview'],
+        },
+        {
+          NFT: ['modules/nft/overview'],
+        },
+      ],
+    },
+  ],
   apiSidebar: [
     {
       type: 'category',

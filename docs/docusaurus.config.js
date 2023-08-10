@@ -17,15 +17,6 @@ const config = {
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
   plugins: [
-    // [
-    //   'content-docs',
-    //   {
-    //     id: 'docs',
-    //     path: 'src/pages',
-    //     routeBasePath: 'docs',
-    //     sidebarPath: require.resolve('./sidebars-content.js'),
-    //   },
-    // ],
     [
       'docusaurus-plugin-typedoc',
       {
@@ -119,12 +110,12 @@ const config = {
           src: 'img/logo.svg',
         },
         items: [
-          // {
-          //   type: 'docSidebar',
-          //   sidebarId: 'tutorialSidebar',
-          //   position: 'left',
-          //   label: 'Docs',
-          // },
+          {
+            type: 'docSidebar',
+            sidebarId: 'tutorialSidebar',
+            position: 'left',
+            label: 'Docs',
+          },
           {
             type: 'docSidebar',
             sidebarId: 'apiSidebar',

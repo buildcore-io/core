@@ -26,10 +26,6 @@ export default function Home(): JSX.Element {
     >
       <HomepageHeader />
       <main>
-        <br/>
-        <center><a href='overview'> <h1>Go to Overview Page - DRAFT </h1></a></center>
-        <br/>
-        <br/>
         <HomepageFeatures />
       </main>
     </Layout>
