@@ -67,3 +67,7 @@ Build.5 Provides key functions we should focus on describing:
     - Update Metadata
     - Mint child NFT and record metadata
     - Update child NFT and record metadata
+
+
+POC's tutorials:
+- https://github.com/build-5/build5-otr-examples/edit/master/src/examples/metadata_nft/TUTORIAL.md
