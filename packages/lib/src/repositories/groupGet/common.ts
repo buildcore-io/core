@@ -18,7 +18,6 @@ export interface CreateUrlResponse {
 
 export abstract class AbstractGroupedGet {
   protected requests: Request[] = [];
-  protected requestCounter = 0;
   protected timer: Promise<void> | null = null;
 
   constructor(
@@ -31,7 +30,6 @@ export abstract class AbstractGroupedGet {
     const request = this.requests.find((r) => r.parent === parent && r.uid === uid);
     if (!request) {
       this.requests.push({ parent, uid });
-      this.requestCounter++;
     }
   };
 
@@ -60,7 +58,6 @@ export abstract class AbstractGroupedGet {
 export abstract class AbstractGetByIdGrouped extends AbstractGroupedGet {
   protected createUrl = (sessionId?: string) => {
     const requests = this.requests.splice(0, BATCH_MAX_SIZE);
-    this.requestCounter = Math.max(this.requestCounter - BATCH_MAX_SIZE, 0);
 
     const params = {
       collection: this.col,
