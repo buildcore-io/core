@@ -2,6 +2,9 @@ import { UnsoldMintingOptions } from './collection';
 import { NftAccess } from './nft';
 import { Network } from './transaction';
 
+/**
+ * Timestamp object.
+ */
 export class Timestamp {
   constructor(public readonly seconds: number, public readonly nanoseconds: number) {}
 

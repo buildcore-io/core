@@ -1,6 +1,9 @@
 import { BaseRecord, BaseSubCollection, MediaStatus, Timestamp } from './base';
 import { Network } from './transaction';
 
+/**
+ * Award Participant sub record.
+ */
 export interface AwardParticipant extends BaseSubCollection {
   uid: string;
   comment?: string | null;
@@ -10,16 +13,25 @@ export interface AwardParticipant extends BaseSubCollection {
   tokenReward: number;
 }
 
+/**
+ * Award Owner.
+ */
 export interface AwardOwner extends BaseSubCollection {
   uid: string;
   createdOn: Timestamp;
 }
 
+/**
+ * Award Badge Type.
+ */
 export enum AwardBadgeType {
   NATIVE = 'native',
   BASE = 'base',
 }
 
+/**
+ * Award Badge record.
+ */
 export interface AwardBadge {
   readonly name: string;
   readonly description: string;

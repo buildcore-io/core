@@ -1,15 +1,24 @@
 import { BaseRecord, BaseSubCollection, MediaStatus, Timestamp, ValidatedAddress } from './base';
 
+/**
+ * Space Guardian subcollection.
+ */
 export interface SpaceGuardian extends BaseSubCollection {
   uid: string;
   createdOn: Timestamp;
 }
 
+/**
+ * Space Member subcollection.
+ */
 export interface SpaceMember extends BaseSubCollection {
   uid: string;
   createdOn: Timestamp;
 }
 
+/**
+ * Space Alias.
+ */
 export interface Alias {
   readonly address: string;
   readonly aliasId: string;
@@ -18,6 +27,9 @@ export interface Alias {
   readonly mintedBy: string;
 }
 
+/**
+ * Space record.
+ */
 export interface Space extends BaseRecord {
   name?: string;
   about?: string;

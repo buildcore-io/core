@@ -1,10 +1,19 @@
 import { BaseRecord, EthAddress, MediaStatus, NftMintingData, Timestamp } from './base';
 import { CollectionType } from './collection';
 
+/**
+ * Max NFT properties.
+ */
 export const MAX_PROPERTIES_COUNT = 25;
+/**
+ * Max NFT stats.
+ */
 export const MAX_STATS_COUNT = 25;
 export const PRICE_UNITS: ('Mi' | 'Gi')[] = ['Mi', 'Gi'];
 
+/**
+ * NFT Prop/stats.
+ */
 export interface PropStats {
   [propName: string]: {
     label: string;
@@ -12,11 +21,17 @@ export interface PropStats {
   };
 }
 
+/**
+ * NFT Access options.
+ */
 export enum NftAccess {
   OPEN = 0,
   MEMBERS = 1,
 }
 
+/**
+ * NFT Available options.
+ */
 export enum NftAvailable {
   UNAVAILABLE = 0,
   SALE = 1,
@@ -24,6 +39,9 @@ export enum NftAvailable {
   AUCTION_AND_SALE = 3,
 }
 
+/**
+ * NFT status.
+ */
 export enum NftStatus {
   PRE_MINTED = 'pre_minted',
   MINTED = 'minted',
@@ -31,6 +49,9 @@ export enum NftStatus {
   STAKED = 'staked',
 }
 
+/**
+ * NFT record.
+ */
 export interface Nft extends BaseRecord {
   name: string;
   description: string;

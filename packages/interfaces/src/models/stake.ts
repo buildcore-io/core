@@ -1,10 +1,16 @@
 import { BaseRecord, Timestamp } from './base';
 
+/**
+ * Stake Type.
+ */
 export enum StakeType {
   STATIC = 'static',
   DYNAMIC = 'dynamic',
 }
 
+/**
+ * Stake Record.
+ */
 export interface Stake extends BaseRecord {
   readonly member: string;
   readonly space: string;
@@ -36,6 +42,9 @@ export enum StakeRewardStatus {
   DELETED = 'deleted',
 }
 
+/**
+ * Stake reward record.
+ */
 export interface StakeReward extends BaseRecord {
   readonly startDate: Timestamp;
   readonly endDate: Timestamp;

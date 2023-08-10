@@ -11,12 +11,18 @@ import {
 import { StakeStat, StakeType } from './stake';
 import { Network } from './transaction';
 
+/**
+ * Token Allocation.
+ */
 export interface TokenAllocation {
   readonly title: string;
   readonly percentage: number;
   readonly isPublicSale?: boolean;
 }
 
+/**
+ * Token Status.
+ */
 export enum TokenStatus {
   AVAILABLE = 'available',
   CANCEL_SALE = 'cancel_sale',
@@ -29,10 +35,16 @@ export enum TokenStatus {
   BASE = 'base',
 }
 
+/**
+ * Token distributuion Type.
+ */
 export enum TokenDistributionType {
   FIXED = 'fixed',
 }
 
+/**
+ * Token Minting Data.
+ */
 interface MintingData {
   readonly mintedBy?: string;
   readonly mintedOn?: Timestamp;
@@ -60,6 +72,9 @@ interface MintingData {
   readonly circulatingSupply?: number;
 }
 
+/**
+ * Token Record.
+ */
 export interface Token extends BaseRecord {
   readonly name: string;
   readonly symbol: string;
@@ -108,12 +123,18 @@ export interface Token extends BaseRecord {
   readonly decimals: number;
 }
 
+/**
+ * Token Drop status.
+ */
 export enum TokenDropStatus {
   DEPOSIT_NEEDED = 'deposit_needed',
   UNCLAIMED = 'unclaimed',
   CLAIMED = 'claimed',
 }
 
+/**
+ * Token Drop record.
+ */
 export interface TokenDrop extends BaseRecord {
   readonly member: string;
   readonly token: string;
@@ -131,6 +152,9 @@ export interface TokenDrop extends BaseRecord {
   readonly isBaseToken?: boolean;
 }
 
+/**
+ * Token distribution sub record.
+ */
 export interface TokenDistribution extends BaseSubCollection {
   readonly uid?: EthAddress;
 
@@ -170,12 +194,18 @@ export interface TokenDistribution extends BaseSubCollection {
   readonly stakeVoteTransactionId?: string;
 }
 
+/**
+ * Token purchase age.
+ */
 export enum TokenPurchaseAge {
   IN_24_H = 'in24h',
   IN_48_H = 'in48h',
   IN_7_D = 'in7d',
 }
 
+/**
+ * Token purchase record.
+ */
 export interface TokenPurchase extends BaseRecord {
   readonly token: string;
   readonly tokenStatus?: TokenStatus;
@@ -197,11 +227,17 @@ export interface TokenPurchase extends BaseRecord {
   readonly age: { [key: string]: boolean };
 }
 
+/**
+ * Token order type.
+ */
 export enum TokenTradeOrderType {
   BUY = 'buy',
   SELL = 'sell',
 }
 
+/**
+ * Token Order status
+ */
 export enum TokenTradeOrderStatus {
   ACTIVE = 'active',
   SETTLED = 'settled',
@@ -212,6 +248,9 @@ export enum TokenTradeOrderStatus {
   CANCELLED_MINTING_TOKEN = 'cancelled_minting_token',
 }
 
+/**
+ * Token Trade order record.
+ */
 export interface TokenTradeOrder extends BaseRecord {
   readonly owner: string;
   readonly token: string;
@@ -233,6 +272,9 @@ export interface TokenTradeOrder extends BaseRecord {
   readonly targetNetwork?: Network;
 }
 
+/**
+ * Token Stats sub collection.
+ */
 export interface TokenStats extends BaseSubCollection {
   readonly volumeTotal: number;
   readonly volume: { [key: string]: number };

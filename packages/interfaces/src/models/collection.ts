@@ -10,6 +10,9 @@ import {
   VoteStats,
 } from './base';
 
+/**
+ * Collection types.
+ */
 export enum CollectionType {
   CLASSIC = 0,
   GENERATED = 1,
@@ -17,6 +20,9 @@ export enum CollectionType {
   METADATA = 3,
 }
 
+/**
+ * Collection Discount Line.
+ */
 export interface DiscountLine {
   tokenUid?: string;
   tokenSymbol: string;
@@ -24,6 +30,9 @@ export interface DiscountLine {
   amount: number;
 }
 
+/**
+ * Collection Categories.
+ */
 export enum Categories {
   COLLECTIBLE = 'COLLECTIBLE',
   PFP = 'PFP',
@@ -39,12 +48,18 @@ export enum Categories {
   ART = 'ART',
 }
 
+/**
+ * Collection Status.
+ */
 export enum CollectionStatus {
   PRE_MINTED = 'pre_minted',
   MINTING = 'minting',
   MINTED = 'minted',
 }
 
+/**
+ * Collection Base record.
+ */
 export interface CollectionBase extends BaseRecord {
   name: string;
   description: string;
@@ -67,6 +82,9 @@ export interface CollectionBase extends BaseRecord {
   ipfsRoot?: string;
 }
 
+/**
+ * Collection Record.
+ */
 export interface Collection extends CollectionBase {
   category: Categories;
   type: CollectionType;
@@ -98,6 +116,9 @@ export interface Collection extends CollectionBase {
   votes?: VoteStats;
 }
 
+/**
+ * Generic Collection Record.
+ */
 export interface SchemaCollection extends CollectionBase {
   category?: Categories;
   type?: CollectionType;
@@ -111,6 +132,9 @@ export interface SchemaCollection extends CollectionBase {
   placeholderNft?: EthAddress;
 }
 
+/**
+ * Unsold Minting Options.
+ */
 export enum UnsoldMintingOptions {
   BURN_UNSOLD = 'burn_unsold',
   SET_NEW_PRICE = 'set_new_price',
@@ -118,6 +142,9 @@ export enum UnsoldMintingOptions {
   TAKE_OWNERSHIP = 'take_ownership',
 }
 
+/**
+ * Collection Stats.
+ */
 export interface CollectionStats extends BaseSubCollection {
   readonly votes?: VoteStats;
   readonly ranks?: RankStats;

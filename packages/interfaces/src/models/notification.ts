@@ -38,6 +38,9 @@ export interface NotificationLostBidParams {
   };
 }
 
+/**
+ * Notification record.
+ */
 export interface Notification extends BaseRecord {
   uid: EthAddress;
   space?: EthAddress;

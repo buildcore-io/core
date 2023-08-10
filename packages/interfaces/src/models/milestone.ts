@@ -25,6 +25,9 @@ export interface MilestoneTransaction extends Base {
   build5TransactionId?: string;
 }
 
+/**
+ * Milestone record.
+ */
 export interface Milestone {
   transactions: {
     [propName: string]: MilestoneTransaction;
