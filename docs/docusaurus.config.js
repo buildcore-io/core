@@ -6,8 +6,8 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Build5',
-  tagline: 'Build5 Documentation',
+  title: 'BUILD.5',
+  tagline: 'BUILD.5 Documentation',
   favicon: 'img/favicon.ico',
   // Set the production url of your site here
   url: 'https://developer.build5.com',
@@ -17,14 +17,21 @@ const config = {
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
   plugins: [
+    // [
+    //   'content-docs',
+    //   {
+    //     id: 'docs',
+    //     path: 'src/pages',
+    //     routeBasePath: 'docs',
+    //     sidebarPath: require.resolve('./sidebars-content.js'),
+    //   },
+    // ],
     [
       'docusaurus-plugin-typedoc',
       {
         id: 'api-post',
         sidebar: {
           categoryLabel: 'POST Requests',
-          autoConfiguration: true,
-          position: 2,
         },
         entryPoints: ['../packages/interfaces/src/api/post/index.ts'],
         tsconfig: '../packages/interfaces/tsconfig.json',
@@ -38,10 +45,11 @@ const config = {
         id: 'api-get',
         sidebar: {
           categoryLabel: 'GET Requests',
-          autoConfiguration: true,
-          position: 0,
         },
-        entryPoints: ['../packages/interfaces/src/api/request.ts'],
+        entryPoints: [
+          '../packages/interfaces/src/api/base.ts',
+          '../packages/interfaces/src/api/request.ts',
+        ],
         tsconfig: '../packages/interfaces/tsconfig.json',
         out: 'api-get',
         cleanOutputDir: true,
@@ -53,8 +61,6 @@ const config = {
         id: 'api-otr',
         sidebar: {
           categoryLabel: 'OTR Requests',
-          autoConfiguration: true,
-          position: 3,
         },
         entryPoints: ['../packages/interfaces/src/api/tangle/index.ts'],
         tsconfig: '../packages/interfaces/tsconfig.json',
@@ -68,8 +74,6 @@ const config = {
         id: 'api-models',
         sidebar: {
           categoryLabel: 'Records / Models',
-          autoConfiguration: true,
-          position: 0,
         },
         entryPoints: [
           '../packages/interfaces/src/models/index.ts',
@@ -95,9 +99,6 @@ const config = {
         blog: false,
         pages: {
           path: 'src/pages',
-          include: ['**/*.{md,mdx,tsx}'],
-          // exclude: ['**/_*.{js,jsx,ts,md,mdx}', '**/_*/**'],
-          mdxPageComponent: '@theme/MDXPage',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -118,14 +119,15 @@ const config = {
           src: 'img/logo.svg',
         },
         items: [
-          {
-            href: '/',
-            position: 'left',
-            label: 'Docs',
-          },
+          // {
+          //   type: 'docSidebar',
+          //   sidebarId: 'tutorialSidebar',
+          //   position: 'left',
+          //   label: 'Docs',
+          // },
           {
             type: 'docSidebar',
-            sidebarId: 'tutorialSidebar',
+            sidebarId: 'apiSidebar',
             position: 'left',
             label: 'APIs',
           },

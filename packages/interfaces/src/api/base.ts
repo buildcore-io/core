@@ -1,3 +1,6 @@
+/**
+ * Public collections to access via API.
+ */
 export enum PublicCollections {
   MEMBER = 'member',
   AWARD = 'award',
@@ -23,6 +26,9 @@ export enum PublicCollections {
   AIRDROP = 'airdrop',
 }
 
+/**
+ * Public sub-collections to access via API.
+ */
 export enum PublicSubCollections {
   OWNERS = 'owners',
   PARTICIPANTS = 'participants',
@@ -37,9 +43,18 @@ export enum PublicSubCollections {
   RANKS = 'ranks',
 }
 
+/**
+ * QUERY min length
+ */
 export const QUERY_MIN_LENGTH = 1;
+/**
+ * QUERY max length
+ */
 export const QUERY_MAX_LENGTH = 100;
 
+/**
+ * Public API routes.
+ */
 export enum ApiRoutes {
   GET_BY_ID = '/getById',
   GET_MANY_BY_ID = '/getManyById',

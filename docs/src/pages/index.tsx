@@ -11,7 +11,7 @@ function HomepageHeader() {
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
-        <h1 className="hero__title">{siteConfig.title} Developer Portal</h1>
+        <h1 className="hero__title">{siteConfig.title} Developer Portal (in progress)</h1>
       </div>
     </header>
   );
@@ -26,6 +26,10 @@ export default function Home(): JSX.Element {
     >
       <HomepageHeader />
       <main>
+        <br/>
+        <center><a href='overview'> <h1>Go to Overview Page - DRAFT </h1></a></center>
+        <br/>
+        <br/>
         <HomepageFeatures />
       </main>
     </Layout>
