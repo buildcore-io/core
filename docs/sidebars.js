@@ -21,7 +21,7 @@ const sidebars = {
       Tutorials: ['tutorials/overview'],
     },
     {
-      Modules: [
+      Components: [
         {
           Token: ['modules/token/overview'],
         },
