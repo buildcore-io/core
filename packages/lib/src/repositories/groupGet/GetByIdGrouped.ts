@@ -1,3 +1,4 @@
+import { API_RETRY_TIMEOUT } from '@build-5/interfaces';
 import { get } from 'lodash';
 import { wrappedFetch } from '../../fetch.utils';
 import { AbstractGetByIdGrouped, BATCH_MAX_SIZE } from './common';
@@ -31,6 +32,7 @@ export class GetByIdGrouped<T> extends AbstractGetByIdGrouped {
         );
       }
     } catch {
+      await new Promise((resolve) => setTimeout(resolve, API_RETRY_TIMEOUT));
       this.requests.push(...requests);
     }
   };
