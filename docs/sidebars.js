@@ -15,21 +15,77 @@
 const sidebars = {
   tutorialSidebar: [
     'overview',
-    'token_governance',
-    'architecture',
+    'getting_started',
     {
-      Tutorials: ['tutorials/overview'],
-    },
-    {
-      Components: [
+      type: 'category',
+      label: 'Products',
+      collapsible: true,
+      collapsed: false,
+      items: [
         {
-          Token: ['modules/token/overview'],
+          'DAO Management API': ['products/dao_management/overview'],
         },
         {
-          NFT: ['modules/nft/overview'],
+          'NFT API': ['products/nft/overview'],
+        },
+        {
+          'NFT Trading API': ['products/nft_trading/overview'],
+        },
+        {
+          'NFT Staking API': ['products/nft_staking/overview'],
+        },
+        {
+          'Project API': ['products/project/overview'],
+        },
+        {
+          'Reputation API': ['products/reputation/overview'],
+        },
+        {
+          'Stake Reward API': ['products/stake_reward/overview'],
+        },
+        {
+          'Token API': ['products/token/overview'],
+        },
+        {
+          'Token Launchpad API': ['products/token_launchpad/overview'],
+        },
+        {
+          'Token Trading API': ['products/token_trading/overview'],
+        },
+        {
+          'Token Staking API': ['products/token_staking/overview'],
+        },
+        {
+          'Token Distribution API': ['products/token_distribution/overview'],
+        },
+        {
+          'Voting API': ['products/voting/overview'],
         },
       ],
     },
+    {
+      type: 'category',
+      label: 'Tutorials',
+      collapsible: true,
+      collapsed: false,
+      items: [
+        'tutorials/overview',
+        {
+          type: 'link',
+          label: 'Digital Twin NFT',
+          href: 'https://github.com/build-5/build5-otr-examples/edit/master/src/examples/metadata_nft/TUTORIAL.md',
+        },
+        {
+          type: 'link',
+          label: 'Crew3 to Reputation',
+          href: 'https://github.com/build-5/build5-otr-examples/blob/master/src/examples/crew3toAward/TUTORIAL.md',
+        },
+      ],
+    },
+    'architecture',
+    'token_governance',
+    'faqs',
+    'limitations',
   ],
   apiSidebar: [
     {
