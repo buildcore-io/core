@@ -1,3 +1,3 @@
 # GET Interfaces
 
-We need to expand the documentation here.
+See list of interfaces to understand how to interact with each GET APIs.
