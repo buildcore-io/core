@@ -1,4 +1,4 @@
-import { PING_INTERVAL } from '@build-5/interfaces';
+import { API_RETRY_TIMEOUT, PING_INTERVAL } from '@build-5/interfaces';
 import { Build5Env, getKeepAliveUrl } from './Config';
 import { wrappedFetch } from './fetch.utils';
 import { BATCH_MAX_SIZE, BATCH_TIMEOUT } from './repositories/groupGet/common';
@@ -43,6 +43,7 @@ class Session {
     try {
       await wrappedFetch(getKeepAliveUrl(this.env), params);
     } catch {
+      await new Promise((resolve) => setTimeout(resolve, API_RETRY_TIMEOUT));
       this.requests.push(...requests);
     }
   };

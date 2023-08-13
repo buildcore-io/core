@@ -1,3 +1,4 @@
+import { API_RETRY_TIMEOUT } from '@build-5/interfaces';
 import { Observable as RxjsObservable, Subscriber, shareReplay } from 'rxjs';
 import { Build5Env } from './Config';
 import { getSession } from './Session';
@@ -66,6 +67,7 @@ class Observable<T> extends RxjsObservable<T> {
         await Promise.all(promises);
       }
     } catch {
+      await new Promise((resolve) => setTimeout(resolve, API_RETRY_TIMEOUT));
       this.isRunning = false;
       await getSession(this.env).pingSession(this.instaceId, true);
       this.init();

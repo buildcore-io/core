@@ -1,3 +1,4 @@
+import { API_RETRY_TIMEOUT } from '@build-5/interfaces';
 import { get } from 'lodash';
 import { Observable, map } from 'rxjs';
 import { getSessionId } from '../../Session';
@@ -35,6 +36,7 @@ export class GetByIdGroupedLive<T> extends AbstractGetByIdGrouped {
         );
       }
     } catch {
+      await new Promise((resolve) => setTimeout(resolve, API_RETRY_TIMEOUT));
       this.requests.push(...requests);
     }
   };
