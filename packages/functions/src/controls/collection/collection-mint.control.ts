@@ -5,6 +5,7 @@ import {
   CollectionStatus,
   CollectionType,
   Member,
+  Network,
   Nft,
   Space,
   TRANSACTION_AUTO_EXPIRY_MS,
@@ -36,7 +37,7 @@ import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const mintCollectionOrderControl = async (owner: string, params: CollectionMintRequest) => {
-  const network = params.network;
+  const network = params.network as Network;
 
   const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();
   assertMemberHasValidAddress(member, network);
@@ -86,7 +87,7 @@ export const mintCollectionOrderControl = async (owner: string, params: Collecti
 
     const { storageDeposit: nftsStorageDeposit, nftsToMint } = await getNftsTotalStorageDeposit(
       collection,
-      params.unsoldMintingOptions,
+      params.unsoldMintingOptions as UnsoldMintingOptions,
       targetAddress,
       wallet.info,
     );
@@ -115,7 +116,7 @@ export const mintCollectionOrderControl = async (owner: string, params: Collecti
         reconciled: false,
         void: false,
         collection: collection.uid,
-        unsoldMintingOptions: params.unsoldMintingOptions,
+        unsoldMintingOptions: params.unsoldMintingOptions as UnsoldMintingOptions,
         newPrice: Number(params.price || 0),
         collectionStorageDeposit,
         nftsStorageDeposit,

@@ -1,6 +1,9 @@
 import { BaseRecord, Timestamp } from './base';
 import { StakeType } from './stake';
 
+/**
+ * NFT Stake record.
+ */
 export interface NftStake extends BaseRecord {
   readonly member: string;
   readonly space: string;

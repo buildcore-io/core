@@ -1,14 +1,6 @@
-import { COL, RankRequest, WEN_FUNC } from '@build-5/interfaces';
-import Joi from 'joi';
+import { WEN_FUNC } from '@build-5/interfaces';
 import { rankControl } from '../../../controls/rank.control';
 import { onRequest } from '../../../firebase/functions/onRequest';
-import { CommonJoi, toJoiObject } from '../../../services/joi/common';
-import { RANK_CONFIG } from '../../../utils/config.utils';
-
-const rankSchema = toJoiObject<RankRequest>({
-  collection: Joi.string().equal(COL.COLLECTION, COL.TOKEN).required(),
-  uid: CommonJoi.uid(),
-  rank: Joi.number().integer().min(RANK_CONFIG.MIN_RANK).max(RANK_CONFIG.MAX_RANK).required(),
-});
+import { rankSchema } from './RankRequestSchema';
 
 export const rankController = onRequest(WEN_FUNC.rankController)(rankSchema, rankControl);

@@ -1,6 +1,7 @@
 import {
   COL,
   ImportMintedTokenRequest,
+  Network,
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
   TransactionPayloadType,
@@ -30,7 +31,7 @@ export const importMintedTokenControl = async (owner: string, params: ImportMint
       throw invalidArgument(WenError.token_already_exists_for_space);
     }
 
-    const wallet = (await WalletService.newWallet(params.network)) as SmrWallet;
+    const wallet = (await WalletService.newWallet(params.network as Network)) as SmrWallet;
     const indexer = new IndexerPluginClient(wallet.client);
     const foundryResponse = await indexer.foundry(params.tokenId);
 
@@ -44,7 +45,7 @@ export const importMintedTokenControl = async (owner: string, params: ImportMint
       uid: getRandomEthAddress(),
       member: owner,
       space: params.space,
-      network: params.network,
+      network: params.network as Network,
       payload: {
         type: TransactionPayloadType.IMPORT_TOKEN,
         amount: generateRandomAmount(),

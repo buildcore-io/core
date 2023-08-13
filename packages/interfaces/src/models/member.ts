@@ -1,5 +1,8 @@
 import { BaseRecord, EthAddress, Timestamp, ValidatedAddress } from './base';
 
+/**
+ * Member Award Stats.
+ */
 interface MemberAwardStat {
   readonly tokenSymbol: string;
   readonly badges: string[];
@@ -7,6 +10,9 @@ interface MemberAwardStat {
   readonly totalReward?: number;
 }
 
+/**
+ * Member Space Stats.
+ */
 interface MemberSpaceStat {
   readonly uid: string;
   readonly createdOn?: Timestamp;
@@ -18,6 +24,9 @@ interface MemberSpaceStat {
   readonly totalReward?: number;
 }
 
+/**
+ * Member record.
+ */
 export interface Member extends BaseRecord {
   uid: EthAddress;
   nonce?: string;

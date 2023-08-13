@@ -1,13 +1,9 @@
-import { COL, Space, SpaceLeaveTangleRequest, SUB_COL, WenError } from '@build-5/interfaces';
-import { BaseTangleResponse } from '@build-5/interfaces/lib/api/tangle/common';
+import { BaseTangleResponse, COL, Space, SUB_COL, WenError } from '@build-5/interfaces';
 import { build5Db } from '../../../../firebase/firestore/build5Db';
-import { uidSchema } from '../../../../runtime/firebase/common';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
-import { toJoiObject } from '../../../joi/common';
 import { TransactionService } from '../../transaction-service';
-
-const schema = toJoiObject<SpaceLeaveTangleRequest>(uidSchema);
+import { leaveSpaceSchema } from './SpaceLeaveTangleRequestSchema';
 
 export class SpaceLeaveService {
   constructor(readonly transactionService: TransactionService) {}
@@ -16,8 +12,7 @@ export class SpaceLeaveService {
     owner: string,
     request: Record<string, unknown>,
   ): Promise<BaseTangleResponse> => {
-    delete request.requestType;
-    const params = await assertValidationAsync(schema, request);
+    const params = await assertValidationAsync(leaveSpaceSchema, request);
 
     const { space, member } = await getLeaveSpaceData(owner, params.uid);
 

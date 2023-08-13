@@ -1,6 +1,7 @@
 import {
   COL,
   Member,
+  Network,
   TRANSACTION_AUTO_EXPIRY_MS,
   Token,
   TokenMintRequest,
@@ -49,9 +50,9 @@ export const mintTokenControl = (owner: string, params: TokenMintRequest) =>
 
     await assertIsGuardian(token.space, owner);
     const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();
-    assertMemberHasValidAddress(member, params.network);
+    assertMemberHasValidAddress(member, params.network as Network);
 
-    const wallet = (await WalletService.newWallet(params.network)) as SmrWallet;
+    const wallet = (await WalletService.newWallet(params.network as Network)) as SmrWallet;
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
     const totalDistributed =
@@ -68,7 +69,7 @@ export const mintTokenControl = (owner: string, params: TokenMintRequest) =>
       uid: getRandomEthAddress(),
       member: owner,
       space: token!.space,
-      network: params.network,
+      network: params.network as Network,
       payload: {
         type: TransactionPayloadType.MINT_TOKEN,
         amount: Object.values(storageDeposits).reduce((acc, act) => acc + act, 0),

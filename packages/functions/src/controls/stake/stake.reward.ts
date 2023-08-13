@@ -21,7 +21,7 @@ export const stakeRewardControl = async (owner: string, params: TokenStakeReward
   }
   await assertIsGuardian(token.space, owner);
 
-  const stakeRewards = params.items.map<StakeReward>((item) => ({
+  const stakeRewards = (params.items || []).map<StakeReward>((item) => ({
     uid: getRandomEthAddress(),
     startDate: dateToTimestamp(dayjs(item.startDate)),
     endDate: dateToTimestamp(dayjs(item.endDate)),

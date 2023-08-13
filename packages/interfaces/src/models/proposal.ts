@@ -5,6 +5,9 @@ export enum BaseProposalAnswerValue {
   NO = 0,
 }
 
+/**
+ * Proposal Types.
+ */
 export enum ProposalType {
   NATIVE = 0,
   MEMBERS = 1,
@@ -14,6 +17,9 @@ export enum ProposalType {
   REMOVE_STAKE_REWARD = 5,
 }
 
+/**
+ * Proposal Member sub collection.
+ */
 export interface ProposalMember extends BaseSubCollection {
   uid: string;
   voted?: boolean;
@@ -23,6 +29,9 @@ export interface ProposalMember extends BaseSubCollection {
   weightPerAnswer?: { [key: number]: number };
 }
 
+/**
+ * Proposal Settings.
+ */
 export interface ProposalSettings {
   startDate: Timestamp;
   endDate: Timestamp;
@@ -36,18 +45,27 @@ export interface ProposalSettings {
   awards?: string[];
 }
 
+/**
+ * Proposal Answer.
+ */
 export interface ProposalAnswer {
   text: string;
   value: number;
   additionalInfo: string;
 }
 
+/**
+ * Proposal Question.
+ */
 export interface ProposalQuestion {
   text: string;
   additionalInfo: string;
   answers: ProposalAnswer[];
 }
 
+/**
+ * Proposal record.
+ */
 export interface Proposal extends BaseRecord {
   uid: string;
   name: string;

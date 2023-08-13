@@ -6,7 +6,6 @@ import {
   MIN_IOTA_AMOUNT,
   Nft,
   NftAccess,
-  NftBatchCreateRequest,
   NftCreateRequest,
   WenError,
 } from '@build-5/interfaces';
@@ -24,7 +23,7 @@ export const createNftControl = async (owner: string, params: NftCreateRequest):
 
 export const createBatchNftControl = async (
   owner: string,
-  params: NftBatchCreateRequest,
+  params: NftCreateRequest[],
 ): Promise<string[]> => {
   const collection = await getCollection(owner, params[0].collection);
   const promises = params.map((param, i) =>

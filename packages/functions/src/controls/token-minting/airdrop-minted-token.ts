@@ -18,7 +18,7 @@ import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
 import { build5Db } from '../../firebase/firestore/build5Db';
-import { CreateAirdropsRequest } from '../../runtime/firebase/token/trading';
+import { CreateAirdropsRequest } from '../../runtime/firebase/token/base/TokenAirdropRequestSchema';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { packBasicOutput } from '../../utils/basic-output.utils';

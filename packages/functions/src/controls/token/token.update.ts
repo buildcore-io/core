@@ -1,15 +1,10 @@
-import {
-  COL,
-  MintedTokenUpdateRequest,
-  Token,
-  TokenStatus,
-  TokenUpdateRequest,
-  WenError,
-} from '@build-5/interfaces';
+import { COL, Token, TokenStatus, WenError } from '@build-5/interfaces';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { UidSchemaObject } from '../../runtime/firebase/common';
-import { updateTokenSchema, uptdateMintedTokenSchema } from '../../runtime/firebase/token/base';
-import { toJoiObject } from '../../services/joi/common';
+import {
+  updateTokenSchemaObject,
+  uptdateMintedTokenSchemaObject,
+} from '../../runtime/firebase/token/base/TokenUpdateRequestSchema';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertValidationAsync } from '../../utils/schema.utils';
 import { assertIsGuardian, assertTokenStatus } from '../../utils/token.utils';
@@ -24,8 +19,8 @@ export const updateTokenControl = async (owner: string, params: UidSchemaObject)
 
     const schema =
       token.status === TokenStatus.MINTED
-        ? toJoiObject<MintedTokenUpdateRequest>(uptdateMintedTokenSchema)
-        : toJoiObject<TokenUpdateRequest>(updateTokenSchema);
+        ? uptdateMintedTokenSchemaObject
+        : updateTokenSchemaObject;
     await assertValidationAsync(schema, params);
 
     assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED, TokenStatus.MINTED]);

@@ -1,13 +1,10 @@
-import { COL, SUB_COL, SpaceMemberUpsertTangleRequest } from '@build-5/interfaces';
-import { BaseTangleResponse } from '@build-5/interfaces/lib/api/tangle/common';
+import { BaseTangleResponse, COL, SUB_COL } from '@build-5/interfaces';
 import { build5Db } from '../../../../firebase/firestore/build5Db';
-import { editSpaceMemberSchema } from '../../../../runtime/firebase/space';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
-import { toJoiObject } from '../../../joi/common';
 import { TransactionService } from '../../transaction-service';
+import { editSpaceMemberSchemaObject } from './SpaceEditMemberTangleRequestSchema';
 
-const schema = toJoiObject<SpaceMemberUpsertTangleRequest>(editSpaceMemberSchema);
 export class SpaceDeclineMemberService {
   constructor(readonly transactionService: TransactionService) {}
 
@@ -15,8 +12,7 @@ export class SpaceDeclineMemberService {
     owner: string,
     request: Record<string, unknown>,
   ): Promise<BaseTangleResponse> => {
-    delete request.requestType;
-    const params = await assertValidationAsync(schema, request);
+    const params = await assertValidationAsync(editSpaceMemberSchemaObject, request);
 
     await assertIsGuardian(params.uid, owner);
 
