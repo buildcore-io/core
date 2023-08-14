@@ -2,6 +2,8 @@
 title: Architecture
 ---
 
-Overall of current Architecture.
+## Current Architecture
+![image](assets/architecture_before.png)
 
-Also explain future state with Mana Station and L1 SC.
+## Future Architecture
+![image](assets/architecture_after.png)

@@ -68,6 +68,7 @@ const config = {
         },
         entryPoints: [
           '../packages/interfaces/src/models/index.ts',
+          '../packages/interfaces/src/models/transactions/index.ts',
           '../packages/interfaces/src/config.ts',
           '../packages/interfaces/src/errors.ts',
         ],

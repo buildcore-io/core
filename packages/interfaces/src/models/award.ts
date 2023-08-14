@@ -115,35 +115,105 @@ export interface AwardBadge {
  * Award record.
  */
 export interface Award extends BaseRecord {
+  /**
+   * Award Name.
+   */
   readonly name: string;
+  /**
+   * Award Description.
+   */
   readonly description: string;
+  /**
+   * Award's space.
+   */
   readonly space: string;
+  /**
+   * Award End date.
+   */
   readonly endDate: Timestamp;
+  /**
+   * Award Badge details {@link AwardBadge}
+   */
   readonly badge: AwardBadge;
+  /**
+   *  Total number of issued badges.
+   */
   readonly issued: number;
+  /**
+   * Total number of minted badges.
+   */
   readonly badgesMinted: number;
+  /**
+   * Is this award approved.
+   */
   readonly approved: boolean;
+  /**
+   * Is this award rejected.
+   */
   readonly rejected: boolean;
+  /**
+   * Is this award completed.
+   */
   readonly completed: boolean;
-
+  /**
+   * Minted network {@link Network}
+   */
   readonly network: Network;
-
+  /**
+   * Alias storage deposit requirement.
+   */
   readonly aliasStorageDeposit: number;
+  /**
+   * Collection storage deposit requirement.
+   */
   readonly collectionStorageDeposit: number;
+  /**
+   * NTT (Timelocked NFT) storage deposit requirement.
+   */
   readonly nttStorageDeposit: number;
+  /**
+   * Native token storage deposit requirement.
+   */
   readonly nativeTokenStorageDeposit: number;
-
+  /**
+   * Was this award funded?
+   */
   readonly funded: boolean;
+  /**
+   * Funded by {@link Member} uid
+   */
   readonly fundedBy?: string;
+  /**
+   * TODODOC
+   */
   readonly address?: string;
+  /**
+   * TODODOC
+   */
   readonly airdropClaimed?: number;
-
+  /**
+   * Alias block ID.
+   */
   readonly aliasBlockId?: string;
+  /**
+   * Alias ID on the network.
+   */
   readonly aliasId?: string;
+  /**
+   * Collection block ID.
+   */
   readonly collectionBlockId?: string;
+  /**
+   * Collection ID on the network.
+   */
   readonly collectionId?: string;
-
+  /**
+   * Media status {@link MediaStatus}
+   */
   readonly mediaStatus?: MediaStatus;
-
+  /**
+   * Is this legacy award?
+   * @deprecated
+   */
   readonly isLegacy?: boolean;
 }
