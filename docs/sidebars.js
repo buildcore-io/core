@@ -26,6 +26,9 @@ const sidebars = {
           'DAO Management API': ['products/dao_management/overview'],
         },
         {
+          'Digital Twin NFT': ['products/digital_twin_nft/overview'],
+        },
+        {
           'NFT API': ['products/nft/overview'],
         },
         {
@@ -35,7 +38,13 @@ const sidebars = {
           'NFT Staking API': ['products/nft_staking/overview'],
         },
         {
+          'Member API': ['products/member/overview'],
+        },
+        {
           'Project API': ['products/project/overview'],
+        },
+        {
+          'Proposal API': ['products/proposal/overview'],
         },
         {
           'Reputation API': ['products/reputation/overview'],
@@ -58,9 +67,6 @@ const sidebars = {
         {
           'Token Distribution API': ['products/token_distribution/overview'],
         },
-        {
-          'Voting API': ['products/voting/overview'],
-        },
       ],
     },
     {
@@ -69,7 +75,6 @@ const sidebars = {
       collapsible: true,
       collapsed: false,
       items: [
-        'tutorials/overview',
         {
           type: 'link',
           label: 'Digital Twin NFT',

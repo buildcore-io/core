@@ -38,10 +38,15 @@ export enum TransactionType {
   METADATA_NFT = 'METADATA_NFT',
 }
 
+/**
+ * Available DLT networks within BUILD.5
+ */
 export enum Network {
   IOTA = 'iota',
+  /** Only available on wen environment. */
   ATOI = 'atoi',
   SMR = 'smr',
+  /** Only available on wen environment. */
   RMS = 'rms',
 }
 

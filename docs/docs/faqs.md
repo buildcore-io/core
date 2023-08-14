@@ -2,4 +2,6 @@
 title: FAQs
 ---
 
-per second etc.
+Is Build.5 open sourced?
+
+__yes__

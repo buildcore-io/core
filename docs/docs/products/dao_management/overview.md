@@ -11,3 +11,4 @@ title: Overview
 - Reject Member
 - Ban Member
 - Leave Space
+- Validate Address

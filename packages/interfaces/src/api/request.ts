@@ -109,7 +109,13 @@ export interface GetTokenPriceResponse extends BaseRequest {
  * Get all Build.5 addresses per Network.
  */
 export interface GetAddressesRequest extends BaseRequest {
+  /**
+   * Select Network. {@link Network}
+   */
   readonly network: Network;
+  /**
+   * Address created after unix timestamp
+   */
   readonly createdAfter?: number;
 }
 
@@ -117,7 +123,13 @@ export interface GetAddressesRequest extends BaseRequest {
  * Keep alive request to keep the session active.
  */
 export interface KeepAliveRequest {
+  /**
+   * Session ID.
+   */
   readonly sessionIds: string[];
+  /**
+   * Close?
+   */
   readonly close?: boolean[];
 }
 
