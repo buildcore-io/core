@@ -148,25 +148,49 @@ export enum Opr {
 
 /**
  * Make advanced requests to read data within Build.5
+ *
+ * Note: We only enable certain filtering options. Refer to @build.5/lib for enabled indexations.
  */
 export interface GetManyAdvancedRequest extends BaseRequest {
   /**
    * Provide Collection, see available public collections {@link PublicCollections}
    */
   readonly collection: PublicCollections;
-
+  /**
+   * Parent ID.
+   */
   readonly uid?: string;
+  /**
+   * Provide Sub-Collection, see available public collections {@link PublicCollections}
+   */
   readonly subCollection?: PublicSubCollections;
-
+  /**
+   * Array of fields to filter by (note, fieldName, fieldValue and operator must have same order)
+   */
   readonly fieldName?: string[];
+  /**
+   * Array of field values to filter by (note, fieldName, fieldValue and operator must have same order)
+   */
   readonly fieldValue?: (string | number | boolean)[];
+  /**
+   * Array of operators to filter by (note, fieldName, fieldValue and operator must have same order)
+   */
   readonly operator?: Opr[];
-
+  /**
+   * Specify order by field.
+   */
   readonly orderBy?: string[];
+  /**
+   * Specify order by direction.
+   */
   readonly orderByDir?: string[];
-
+  /**
+   * Start after "doc" UID
+   */
   readonly startAfter?: string;
-
+  /**
+   * Limit per query.
+   */
   readonly limit?: number;
 }
 
@@ -174,7 +198,13 @@ export interface GetManyAdvancedRequest extends BaseRequest {
  * Get average trade per token.
  */
 export interface GetAvgTradeRequest extends BaseRequest {
+  /**
+   * Token UID
+   */
   readonly token: string;
+  /**
+   * Token trade type {@link TokenTradeOrderType}
+   */
   readonly type: TokenTradeOrderType;
 }
 
@@ -182,6 +212,9 @@ export interface GetAvgTradeRequest extends BaseRequest {
  * Get average price per token.
  */
 export interface GetAvgPriceRequest extends BaseRequest {
+  /**
+   * Token UID
+   */
   readonly token: string;
 }
 
@@ -194,6 +227,9 @@ export interface GetAvgPriceResponse {
  * Get average price change in past 24 hours per token.
  */
 export interface GetPriceChangeRequest extends BaseRequest {
+  /**
+   * Token UID or array of tokens
+   */
   readonly token: string | string[];
 }
 
@@ -206,6 +242,9 @@ export interface GetPriceChangeResponse {
  * Get top milestone within all networks.
  */
 export interface GetTopMilestonesRequest {
+  /**
+   * Session ID.
+   */
   readonly sessionId: string;
 }
 
