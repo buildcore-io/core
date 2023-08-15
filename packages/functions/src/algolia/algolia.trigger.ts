@@ -25,7 +25,7 @@ const upsertObject = async (rawData: Record<string, unknown>, col: COL, objectID
 
 export const algoliaTrigger = ALGOLIA_COLLECTIONS.map((col) => ({
   [col]: functions.firestore.onDocumentWritten(
-    { document: col + '/{documentId}', minInstances: scaleAlgolia(col), memory: '512MiB' },
+    { document: col + '/{documentId}', ...scaleAlgolia(col) },
     async (event) => {
       if (isEmulatorEnv()) {
         return;
