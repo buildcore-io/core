@@ -2,7 +2,12 @@
 title: Overview
 ---
 
-This feature is still in development.
+
+| :exclamation:  Documentation has not started yet. |
+|-------------------------------------------------- |
+
+
+__Features__: 
 
 - Approve Proposal
 - Reject Proposal

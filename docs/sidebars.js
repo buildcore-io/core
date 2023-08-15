@@ -16,6 +16,7 @@ const sidebars = {
   tutorialSidebar: [
     'overview',
     'getting_started',
+    'session_management',
     {
       type: 'category',
       label: 'Products',
