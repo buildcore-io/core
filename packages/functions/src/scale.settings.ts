@@ -1,4 +1,5 @@
 import { COL, WEN_FUNC, WEN_FUNC_TRIGGER } from '@build-5/interfaces';
+import { GlobalOptions } from 'firebase-functions/v2';
 import { isProdEnv } from './utils/config.utils';
 export const lowCold = 0;
 export const lowWarm = isProdEnv() ? 1 : lowCold;
@@ -68,15 +69,42 @@ export function scale(func: WEN_FUNC | WEN_FUNC_TRIGGER): number {
   return isProdEnv() ? scaleSettings[func] || lowCold : 0;
 }
 
-export function scaleAlgolia(col: COL): number {
-  const scaleSettings = {} as { [key: string]: number };
-  scaleSettings[COL.SPACE] = lowWarm;
-  scaleSettings[COL.TOKEN] = lowWarm;
-  scaleSettings[COL.AWARD] = lowWarm;
-  scaleSettings[COL.NFT] = medium;
-  scaleSettings[COL.COLLECTION] = medium;
-  scaleSettings[COL.MEMBER] = medium;
-  scaleSettings[COL.PROPOSAL] = lowWarm;
+export function scaleAlgolia(col: COL): GlobalOptions {
+  const scaleSettings = {} as { [key: string]: GlobalOptions };
+  scaleSettings[COL.SPACE] = {
+    minInstances: lowWarm,
+    memory: '512MiB',
+  };
+  scaleSettings[COL.TOKEN] = {
+    minInstances: lowWarm,
+    memory: '512MiB',
+  };
+  scaleSettings[COL.AWARD] = {
+    minInstances: lowWarm,
+    memory: '512MiB',
+  };
+  // To support concurency.
+  scaleSettings[COL.NFT] = {
+    minInstances: medium,
+    memory: '1GiB',
+  };
+  // To support concurency.
+  scaleSettings[COL.COLLECTION] = {
+    minInstances: medium,
+    memory: '1GiB',
+  };
+  scaleSettings[COL.MEMBER] = {
+    minInstances: lowWarm,
+    memory: '512MiB',
+  };
+  scaleSettings[COL.PROPOSAL] = {
+    minInstances: lowWarm,
+    memory: '512MiB',
+  };
 
-  return isProdEnv() ? scaleSettings[col] || lowWarm : 0;
+  return isProdEnv()
+    ? scaleSettings[col] || {
+        minInstances: lowWarm,
+      }
+    : { minInstances: 0 };
 }
