@@ -41,7 +41,7 @@ const sidebars = {
           'Member API': ['products/member/overview'],
         },
         {
-          'Project API': ['products/project/overview'],
+          'Project API*': ['products/project/overview'],
         },
         {
           'Proposal API': ['products/proposal/overview'],

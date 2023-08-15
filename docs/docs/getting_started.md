@@ -9,7 +9,7 @@ Publicly available end points:
 https://api.build5.com
 
 // Sandbox available end point
-https://api-wen.build5.com
+https://api-test.build5.com
 
 ```
 

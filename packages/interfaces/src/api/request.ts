@@ -107,6 +107,7 @@ export interface GetTokenPriceResponse extends BaseRequest {
 
 /**
  * Get all Build.5 addresses per Network.
+ *
  */
 export interface GetAddressesRequest extends BaseRequest {
   /**
@@ -210,6 +211,8 @@ export interface GetAvgTradeRequest extends BaseRequest {
 
 /**
  * Get average price per token.
+ *
+ * returns {@link GetAvgPriceResponse}
  */
 export interface GetAvgPriceRequest extends BaseRequest {
   /**
@@ -218,6 +221,9 @@ export interface GetAvgPriceRequest extends BaseRequest {
   readonly token: string;
 }
 
+/**
+ * Get average price response.
+ */
 export interface GetAvgPriceResponse {
   readonly token: string;
   readonly avg: number;

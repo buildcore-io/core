@@ -24,9 +24,21 @@ export enum CollectionType {
  * Collection Discount Line.
  */
 export interface DiscountLine {
+  /**
+   * Token UID {@link Token}
+   */
   tokenUid?: string;
+  /**
+   * Token Symbol
+   */
   tokenSymbol: string;
+  /**
+   * Token reward amount
+   */
   tokenReward: number;
+  /**
+   * Discount amount 0 - 1 (0 - 100%)
+   */
   amount: number;
 }
 
@@ -61,24 +73,81 @@ export enum CollectionStatus {
  * Collection Base record.
  */
 export interface CollectionBase extends BaseRecord {
+  /**
+   * Collection name.
+   */
   name: string;
+  /**
+   * Collecton description.
+   */
   description: string;
+  /**
+   * Collection banner URL. This must be link to Build.5 storage.
+   */
   bannerUrl: string;
+  /**
+   * Roaylty fee per space.
+   */
   royaltiesFee: number;
+  /**
+   * Roaylty space {@link Space}
+   */
   royaltiesSpace: EthAddress;
+  /**
+   * Discount lines
+   */
   discounts: DiscountLine[];
+  /**
+   * Total number of NFTs currently deposited within the system.
+   */
   total: number;
+  /**
+   * Stats: Total trades within this collection
+   */
   totalTrades: number;
+  /**
+   * Last traded collection on date
+   */
   lastTradedOn: Timestamp | null;
+  /**
+   * Total sold NFTs from initial sale.
+   */
   sold: number;
+  /**
+   * Link to discord related to this collection.
+   */
   discord: string;
+  /**
+   * URL Link
+   */
   url: string;
+  /**
+   * Twitter Link
+   */
   twitter: string;
+  /**
+   * Approved collection
+   */
   approved: boolean;
+  /**
+   * Rejected collection
+   */
   rejected: boolean;
+  /**
+   * Is this collection limited? If so, no new NFT can be added once approved.
+   */
   limitedEdition?: boolean;
+  /**
+   * IPFS media link CID
+   */
   ipfsMedia?: string;
+  /**
+   * IPFS Metadata link CID
+   */
   ipfsMetadata?: string;
+  /**
+   * IPFS link to root directory that contains both {@link ipfsMedia} & {@link ipfsMetadata}
+   */
   ipfsRoot?: string;
 }
 
@@ -86,50 +155,102 @@ export interface CollectionBase extends BaseRecord {
  * Collection Record.
  */
 export interface Collection extends CollectionBase {
+  /**
+   * Collection Category.
+   */
   category: Categories;
+  /**
+   * Collection Type.
+   */
   type: CollectionType;
+  /**
+   * Access to collection.
+   */
   access: Access;
+  /**
+   * Field used with {@link access} to specify awards uid ({@link Award})
+   */
   accessAwards: string[];
+  /**
+   * Field used with {@link access} to specify collections uid ({@link Collection})
+   */
   accessCollections: string[];
+  /**
+   * Space UID
+   */
   space: string;
+  /**
+   * Date this collection will be available for sale from.
+   */
   availableFrom: Timestamp;
+  /**
+   * TODODOC
+   */
   price: number;
+  /**
+   * Initial price for this collection to be sold at.
+   */
   availablePrice: number;
+  /**
+   * Only one NFT can be purchase within this collection by member.
+   */
   onePerMemberOnly: boolean;
+  /**
+   * Link to placeholder NFT {@link Nft}
+   */
   placeholderNft: EthAddress;
+  /**
+   * Place holder URL to the image. This is used to reduce queries on NFT collection.
+   */
   placeholderUrl: string;
+  /**
+   * Collection Status.
+   */
   status?: CollectionStatus;
+  /**
+   * Collection minting status and details.
+   */
   mintingData?: NftMintingData;
-
+  /**
+   * Total number of ranks.
+   */
   rankCount?: number;
+  /**
+   * Sum of all ranks
+   */
   rankSum?: number;
+  /**
+   * Rank average.
+   */
   rankAvg?: number;
-
+  /**
+   * Status of media upload to IFPS.
+   */
   mediaStatus?: MediaStatus;
-
+  /**
+   * Total number of staked NFTs
+   */
   stakedNft?: number;
+  /**
+   * NFTs available for sale.
+   */
   nftsOnSale?: number;
+  /**
+   * NFTs available for auction.
+   */
   nftsOnAuction?: number;
+  /**
+   * Available NFTs for sale.
+   */
   availableNfts?: number;
+  /**
+   * Cheapest price for NFT available within this collection.
+   */
   floorPrice?: number;
-
+  /**
+   * Vote stats.
+   */
   votes?: VoteStats;
-}
-
-/**
- * Generic Collection Record.
- */
-export interface SchemaCollection extends CollectionBase {
-  category?: Categories;
-  type?: CollectionType;
-  access?: Access;
-  accessAwards?: string[];
-  accessCollections?: string[];
-  space?: string;
-  availableFrom?: Timestamp;
-  price?: number;
-  onePerMemberOnly?: boolean;
-  placeholderNft?: EthAddress;
 }
 
 /**
