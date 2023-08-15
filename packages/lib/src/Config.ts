@@ -2,7 +2,7 @@ import { ApiRoutes } from '@build-5/interfaces';
 
 export enum Build5Env {
   PROD = 'https://api.build5.com/api',
-  TEST = 'https://api-wen.build5.com/api',
+  TEST = 'https://api-test.build5.com/api',
   DEV = 'https://soonaverse-dev.web.app/api',
   LOCAL = 'http://127.0.0.1:5001/soonaverse-dev/us-central1/api',
 }

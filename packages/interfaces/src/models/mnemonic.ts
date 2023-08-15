@@ -1,6 +1,11 @@
 import { Timestamp } from './base';
 import { Network } from './transaction';
 
+/**
+ * Mnemonic
+ *
+ * @hidden
+ */
 export interface Mnemonic {
   readonly mnemonic?: string;
   readonly network?: Network;

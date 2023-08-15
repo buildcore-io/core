@@ -3,7 +3,6 @@ export * from './badge';
 export * from './base';
 export * from './collection';
 export * from './member';
-export * from './member.deprecated';
 export * from './milestone';
 export * from './mnemonic';
 export * from './nft';

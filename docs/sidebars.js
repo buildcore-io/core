@@ -16,6 +16,7 @@ const sidebars = {
   tutorialSidebar: [
     'overview',
     'getting_started',
+    'session_management',
     {
       type: 'category',
       label: 'Products',
@@ -41,7 +42,7 @@ const sidebars = {
           'Member API': ['products/member/overview'],
         },
         {
-          'Project API': ['products/project/overview'],
+          'Project API*': ['products/project/overview'],
         },
         {
           'Proposal API': ['products/proposal/overview'],

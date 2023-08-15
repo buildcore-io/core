@@ -2,9 +2,12 @@
 title: Overview
 ---
 
+| :exclamation:  Documentation is in progress.      |
+|-------------------------------------------------- |
+
 # Overview page
 
-Welcome to the BUILD.5 documentation. This documentation is currently **IN PROGRESS** so please be patient until it's finalised. 
+Welcome to the BUILD.5 documentation.
 
 We recommend you to start with [Getting Started](getting_started) page.
 

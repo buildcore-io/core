@@ -1,8 +1,8 @@
 ---
-title: Token Governance
+title: Session Management
 ---
 
 | :exclamation:  Documentation in progress. |
 |-------------------------------------------------- |
 
-BUILD token is used to govern changes into the protocol.
+How to keep session alive for real time updates?

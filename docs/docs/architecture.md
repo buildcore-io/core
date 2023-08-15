@@ -2,6 +2,9 @@
 title: Architecture
 ---
 
+| :exclamation:  Documentation in progress. |
+|-------------------------------------------------- |
+
 ## Current Architecture
 ![image](assets/architecture_before.png)
 
