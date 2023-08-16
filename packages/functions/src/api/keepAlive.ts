@@ -17,6 +17,7 @@ import { CommonJoi } from '../services/joi/common';
 import { getQueryParams } from './common';
 
 import { Observable } from 'rxjs';
+import { IDocument } from '../firebase/firestore/interfaces';
 
 const keepAliveSchema = Joi.object({
   sessionIds: Joi.array().items(CommonJoi.sessionId()).min(1).max(QUERY_MAX_LENGTH).required(),
@@ -58,14 +59,14 @@ export const sendLiveUpdates = async <T>(
   const sessionDocRef = build5Db().doc(`${COL.KEEP_ALIVE}/${sessionId}`);
   await sessionDocRef.set({}, true);
 
-  const checkSession = async () => {
-    const instance = await sessionDocRef.get<BaseRecord>();
-    const diff = dayjs().diff(dayjs(instance?.updatedOn?.toDate()));
-    if (!instance || diff > PING_INTERVAL) {
-      closeConnection();
+  const checkIsAlive = async () => {
+    const promises = [isAlive(sessionDocRef), isAlive(instanceIdDocRef)];
+    const alive = (await Promise.all(promises)).reduce((acc, act) => acc && act, true);
+    if (!alive) {
+      await closeConnection();
     }
   };
-  const checkSessionInterval = setInterval(checkSession, PING_INTERVAL);
+  const checkIsAliveInterval = setInterval(checkIsAlive, PING_INTERVAL);
 
   const instanceIdSub = instanceIdDocRef.onSnapshot((data) => {
     !data && closeConnection();
@@ -89,11 +90,17 @@ export const sendLiveUpdates = async <T>(
 
   const closeConnection = async () => {
     res.write(`event: close\ndata: ${instanceIdDocRef.getId()}\n\n`);
-    clearInterval(checkSessionInterval);
+    clearInterval(checkIsAliveInterval);
     clearTimeout(timeout);
     instanceIdSub();
     subscription.unsubscribe();
     await instanceIdDocRef.delete();
     res.end();
   };
+};
+
+const isAlive = async (docRef: IDocument) => {
+  const doc = await docRef.get<BaseRecord>();
+  const diff = dayjs().diff(dayjs(doc?.updatedOn?.toDate()));
+  return doc !== undefined && diff < PING_INTERVAL;
 };
