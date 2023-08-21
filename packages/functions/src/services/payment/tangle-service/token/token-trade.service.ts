@@ -1,11 +1,6 @@
 import {
   COL,
   DEFAULT_NETWORK,
-<<<<<<< HEAD:packages/functions/src/services/payment/tangle-service/token/token-trade.service.ts
-=======
-  MAX_IOTA_AMOUNT,
-  MIN_PRICE_PER_TOKEN,
->>>>>>> master:packages/functions/src/services/payment/tangle-service/token-trade.service.ts
   Member,
   MilestoneTransaction,
   MilestoneTransactionEntry,
@@ -43,25 +38,12 @@ import {
   assertTokenApproved,
   assertTokenStatus,
   getTokenBySymbol,
-<<<<<<< HEAD:packages/functions/src/services/payment/tangle-service/token/token-trade.service.ts
 } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { SmrWallet } from '../../../wallet/SmrWalletService';
 import { WalletService } from '../../../wallet/wallet';
 import { TransactionMatch, TransactionService } from '../../transaction-service';
 import { tradeMintedTokenSchema } from './TokenTradeTangleRequestSchema';
-=======
-} from '../../../utils/token.utils';
-import { getRandomEthAddress } from '../../../utils/wallet.utils';
-import { CommonJoi, toJoiObject } from '../../joi/common';
-import { TransactionMatch, TransactionService } from '../transaction-service';
-
-const sellMintedTokenSchema = toJoiObject<TradeTokenTangleRequest>({
-  symbol: CommonJoi.tokenSymbol(),
-  price: Joi.number().min(MIN_PRICE_PER_TOKEN).max(MAX_IOTA_AMOUNT).precision(3).required(),
-  type: Joi.string().equal(TokenTradeOrderType.SELL, TokenTradeOrderType.BUY).required(),
-});
->>>>>>> master:packages/functions/src/services/payment/tangle-service/token-trade.service.ts
 
 export class TangleTokenTradeService {
   constructor(readonly transactionService: TransactionService) {}

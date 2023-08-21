@@ -1,8 +1,12 @@
-import { MAX_IOTA_AMOUNT, MintedTokenUpdateRequest, TokenUpdateRequest } from '@build-5/interfaces';
+import {
+  MAX_IOTA_AMOUNT,
+  MIN_PRICE_PER_TOKEN,
+  MintedTokenUpdateRequest,
+  TokenUpdateRequest,
+} from '@build-5/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../../../services/joi/common';
 
-const MIN_PRICE = 0.001;
 const MAX_PRICE = MAX_IOTA_AMOUNT;
 
 export const uptdateMintedTokenSchema = {
@@ -19,11 +23,11 @@ export const uptdateMintedTokenSchema = {
   links: Joi.array().min(0).items(Joi.string().uri()).description('Links for the token'),
   uid: CommonJoi.uid().description('Build5 id of the token.'),
   pricePerToken: Joi.number()
-    .min(0.001)
+    .min(MIN_PRICE_PER_TOKEN)
     .max(MAX_IOTA_AMOUNT)
-    .precision(3)
+    .precision(6)
     .optional()
-    .description(`Price per token. Minimum ${MIN_PRICE}, maximum ${MAX_PRICE}.`),
+    .description(`Price per token. Minimum ${MIN_PRICE_PER_TOKEN}, maximum ${MAX_PRICE}.`),
 };
 
 export const updateTokenSchema = {

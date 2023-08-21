@@ -1,4 +1,5 @@
 import {
+  MIN_PRICE_PER_TOKEN,
   MIN_TOKEN_START_DATE_DAY,
   SetTokenForSaleRequest,
   TRANSACTION_AUTO_EXPIRY_MS,
@@ -8,7 +9,7 @@ import dayjs from 'dayjs';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../../../services/joi/common';
 import { isProdEnv } from '../../../../utils/config.utils';
-import { MAX_PRICE, MIN_PRICE } from './common';
+import { MAX_PRICE } from './common';
 
 const MIN_COOL_DOWN = 0;
 
@@ -42,11 +43,11 @@ export const setAvailableForSaleSchema = toJoiObject<SetTokenForSaleRequest>({
     .optional()
     .description('If true, purchases will be fullfilled once reuqest reach 100%.'),
   pricePerToken: Joi.number()
-    .min(MIN_PRICE)
+    .min(MIN_PRICE_PER_TOKEN)
     .max(MAX_PRICE)
-    .precision(3)
+    .precision(6)
     .required()
-    .description(`Price per token. Minimum ${MIN_PRICE}, maximum ${MAX_PRICE}.`),
+    .description(`Price per token. Minimum ${MIN_PRICE_PER_TOKEN}, maximum ${MAX_PRICE}.`),
 })
   .description('Request object to update a token.')
   .meta({

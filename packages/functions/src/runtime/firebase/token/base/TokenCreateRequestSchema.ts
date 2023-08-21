@@ -1,6 +1,7 @@
 import {
   Access,
   MAX_TOTAL_TOKEN_SUPPLY,
+  MIN_PRICE_PER_TOKEN,
   MIN_TOKEN_START_DATE_DAY,
   MIN_TOTAL_TOKEN_SUPPLY,
   TRANSACTION_AUTO_EXPIRY_MS,
@@ -12,7 +13,7 @@ import dayjs from 'dayjs';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../../../services/joi/common';
 import { isProdEnv } from '../../../../utils/config.utils';
-import { MAX_PRICE, MIN_PRICE } from './common';
+import { MAX_PRICE } from './common';
 
 const MIN_PERCENTAGE = 0.01;
 const MAX_PERCENTAGE = 100;
@@ -33,11 +34,11 @@ export const createTokenSchema = toJoiObject<TokenCreateRequest>({
   shortDescription: Joi.string().optional().description('Short description of the token.'),
   space: CommonJoi.uid().description('Build5 id of the space.'),
   pricePerToken: Joi.number()
-    .min(MIN_PRICE)
+    .min(MIN_PRICE_PER_TOKEN)
     .max(MAX_PRICE)
-    .precision(3)
+    .precision(6)
     .optional()
-    .description(`Price per token. Minimum ${MIN_PRICE}, maximum ${MAX_PRICE}.`),
+    .description(`Price per token. Minimum ${MIN_PRICE_PER_TOKEN}, maximum ${MAX_PRICE}.`),
   totalSupply: Joi.number()
     .required()
     .min(MIN_TOTAL_TOKEN_SUPPLY)

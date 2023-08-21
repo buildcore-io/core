@@ -1,7 +1,7 @@
-import { TokenTradeOrderType, TradeTokenRequest } from '@build-5/interfaces';
+import { MIN_PRICE_PER_TOKEN, TokenTradeOrderType, TradeTokenRequest } from '@build-5/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../../../services/joi/common';
-import { MAX_COUNT, MAX_PRICE, MIN_COUNT, MIN_PRICE } from '../base/common';
+import { MAX_COUNT, MAX_PRICE, MIN_COUNT } from '../base/common';
 
 export const tradeTokenSchema = toJoiObject<TradeTokenRequest>({
   symbol: CommonJoi.tokenSymbol().description('Symbol of the token to trade.'),
@@ -12,11 +12,11 @@ export const tradeTokenSchema = toJoiObject<TradeTokenRequest>({
     .required()
     .description(`Amount of tokens to be traded. Minimum ${MIN_COUNT}, maximum ${MAX_COUNT}`),
   price: Joi.number()
-    .min(MIN_PRICE)
+    .min(MIN_PRICE_PER_TOKEN)
     .max(MAX_PRICE)
-    .precision(3)
+    .precision(6)
     .required()
-    .description(`Price per token. Minimum ${MIN_PRICE}, maximum ${MAX_PRICE}.`),
+    .description(`Price per token. Minimum ${MIN_PRICE_PER_TOKEN}, maximum ${MAX_PRICE}.`),
   type: Joi.string()
     .equal(TokenTradeOrderType.SELL, TokenTradeOrderType.BUY)
     .required()

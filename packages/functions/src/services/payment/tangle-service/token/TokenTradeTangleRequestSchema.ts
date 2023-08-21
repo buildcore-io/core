@@ -1,6 +1,7 @@
 import {
   MAX_IOTA_AMOUNT,
   MAX_TOTAL_TOKEN_SUPPLY,
+  MIN_PRICE_PER_TOKEN,
   TokenTradeOrderType,
   TradeTokenTangleRequest,
 } from '@build-5/interfaces';
@@ -8,7 +9,6 @@ import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../../joi/common';
 import { baseTangleSchema } from '../common';
 
-const MIN_PRICE = 0.001;
 const MAX_PRICE = MAX_IOTA_AMOUNT;
 
 const MIN_COUNT = 1;
@@ -18,11 +18,13 @@ export const tradeMintedTokenSchema = toJoiObject<TradeTokenTangleRequest>({
   ...baseTangleSchema,
   symbol: CommonJoi.tokenSymbol().description('Symbol of the token to trade.'),
   price: Joi.number()
-    .min(MIN_PRICE)
+    .min(MIN_PRICE_PER_TOKEN)
     .max(MAX_PRICE)
-    .precision(3)
+    .precision(6)
     .required()
-    .description(`Pirce of the token to trade. Minimum ${MIN_PRICE}, maximum: ${MAX_PRICE}.`),
+    .description(
+      `Pirce of the token to trade. Minimum ${MIN_PRICE_PER_TOKEN}, maximum: ${MAX_PRICE}.`,
+    ),
   count: Joi.number()
     .min(MIN_COUNT)
     .max(MAX_COUNT)

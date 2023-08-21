@@ -16,7 +16,7 @@ export interface MintedTokenUpdateRequest {
    */
   links?: string[];
   /**
-   * Price per token. Minimum 0.001, maximum 1000000000000.
+   * Price per token. Minimum 0.000001, maximum 1000000000000.
    */
   pricePerToken?: number;
   /**
@@ -54,7 +54,7 @@ export interface TokenUpdateRequest {
    */
   name: string | null | '';
   /**
-   * Price per token. Minimum 0.001, maximum 1000000000000.
+   * Price per token. Minimum 0.000001, maximum 1000000000000.
    */
   pricePerToken?: number;
   /**
