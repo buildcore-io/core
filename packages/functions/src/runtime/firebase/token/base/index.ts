@@ -8,15 +8,16 @@ import {
   MAX_IOTA_AMOUNT,
   MAX_TOTAL_TOKEN_SUPPLY,
   MIN_IOTA_AMOUNT,
+  MIN_PRICE_PER_TOKEN,
   MIN_TOKEN_START_DATE_DAY,
   MIN_TOTAL_TOKEN_SUPPLY,
   OrderTokenRequest,
   SetTokenForSaleRequest,
   StakeType,
-  TokenAllocation,
-  TokenCreateRequest,
   TRANSACTION_AUTO_EXPIRY_MS,
   TRANSACTION_MAX_EXPIRY_MS,
+  TokenAllocation,
+  TokenCreateRequest,
   WEN_FUNC,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
@@ -44,7 +45,7 @@ const createTokenSchema = toJoiObject<TokenCreateRequest>({
   shortDescriptionTitle: Joi.string().optional(),
   shortDescription: Joi.string().optional(),
   space: CommonJoi.uid(),
-  pricePerToken: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).optional(),
+  pricePerToken: Joi.number().min(MIN_PRICE_PER_TOKEN).max(MAX_IOTA_AMOUNT).precision(3).optional(),
   totalSupply: Joi.number()
     .required()
     .min(MIN_TOTAL_TOKEN_SUPPLY)
@@ -116,7 +117,7 @@ export const uptdateMintedTokenSchema = {
   shortDescription: Joi.string().required().allow(null, ''),
   links: Joi.array().min(0).items(Joi.string().uri()),
   uid: CommonJoi.uid(),
-  pricePerToken: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).optional(),
+  pricePerToken: Joi.number().min(MIN_PRICE_PER_TOKEN).max(MAX_IOTA_AMOUNT).precision(3).optional(),
 };
 
 export const updateTokenSchema = {
@@ -141,7 +142,7 @@ const setAvailableForSaleSchema = toJoiObject<SetTokenForSaleRequest>({
     .required(),
   coolDownLength: Joi.number().min(0).max(TRANSACTION_MAX_EXPIRY_MS).required(),
   autoProcessAt100Percent: Joi.boolean().optional(),
-  pricePerToken: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).required(),
+  pricePerToken: Joi.number().min(MIN_PRICE_PER_TOKEN).max(MAX_IOTA_AMOUNT).precision(3).required(),
 });
 
 export const setTokenAvailableForSale = onRequest(WEN_FUNC.setTokenAvailableForSale)(
