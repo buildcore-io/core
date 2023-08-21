@@ -36,7 +36,7 @@ export const cancelTradeOrder = onRequest(WEN_FUNC.cancelTradeOrder)(
 export const tradeTokenSchema = toJoiObject<TradeTokenRequest>({
   symbol: CommonJoi.tokenSymbol(),
   count: Joi.number().min(1).max(MAX_TOTAL_TOKEN_SUPPLY).integer().required(),
-  price: Joi.number().min(MIN_PRICE_PER_TOKEN).max(MAX_IOTA_AMOUNT).precision(3).required(),
+  price: Joi.number().min(MIN_PRICE_PER_TOKEN).max(MAX_IOTA_AMOUNT).precision(6).required(),
   type: Joi.string().equal(TokenTradeOrderType.SELL, TokenTradeOrderType.BUY).required(),
 });
 

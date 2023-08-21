@@ -227,7 +227,7 @@ describe('Trade controller, sell token', () => {
 
     const request2 = {
       symbol: token.symbol,
-      price: MIN_IOTA_AMOUNT + 0.1234,
+      price: MIN_IOTA_AMOUNT + 0.1234567,
       count: 5,
       type: TokenTradeOrderType.SELL,
     };
