@@ -18,10 +18,13 @@ class Session {
   constructor(private readonly env: Build5Env) {
     setInterval(async () => {
       this.pingSession(this.sessionId);
-    }, PING_INTERVAL * 0.8);
+    }, PING_INTERVAL * 0.9);
   }
 
   public pingSession = async (sessionId: string, close = false) => {
+    if (!sessionId) {
+      return;
+    }
     const request = this.requests.find((r) => r.sessionId === sessionId);
     if (request) {
       return;

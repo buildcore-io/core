@@ -18,10 +18,11 @@ import { keepAlive } from './keepAlive';
 export const api = functions.https.onRequest(
   onRequestConfig(WEN_FUNC.api, {
     timeoutSeconds: API_TIMEOUT_SECONDS,
-    minInstances: 5,
+    minInstances: 3,
     maxInstances: 100,
     memory: '1GiB',
-    concurrency: 500,
+    // This is to balance memory usage.
+    concurrency: 250,
   }),
   (req, res) =>
     cors({ origin: true })(req, res, async () => {

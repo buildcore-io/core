@@ -1,4 +1,4 @@
-import { API_RETRY_TIMEOUT } from '@build-5/interfaces';
+import { API_RETRY_TIMEOUT, PING_INTERVAL } from '@build-5/interfaces';
 import { Observable as RxjsObservable, Subscriber, shareReplay } from 'rxjs';
 import { Build5Env } from './Config';
 import { getSession } from './Session';
@@ -15,28 +15,21 @@ class Observable<T> extends RxjsObservable<T> {
   private observer: Subscriber<T> | undefined;
   private instaceId = '';
   private isRunning = true;
+  private pingInstanceInterval: NodeJS.Timeout | null = null;
 
   constructor(protected readonly env: Build5Env, private readonly url: string) {
     super((observer) => {
       this.observer = observer;
       this.init();
-
-      return () => {
-        this.isRunning = false;
-        return new Promise<void>((res) => {
-          if (this.instaceId) {
-            getSession(env)
-              .pingSession(this.instaceId, true)
-              .then(() => {
-                res();
-              });
-          } else {
-            res();
-          }
-        });
-      };
+      return this.closeConnection;
     });
   }
+
+  private closeConnection = async () => {
+    this.pingInstanceInterval && clearInterval(this.pingInstanceInterval);
+    this.isRunning = false;
+    await getSession(this.env).pingSession(this.instaceId, true);
+  };
 
   private init = async () => {
     try {
@@ -50,7 +43,6 @@ class Observable<T> extends RxjsObservable<T> {
       const decoder = new TextDecoder('utf-8');
       let buffer = '';
 
-      // eslint-disable-next-line no-constant-condition
       while (this.isRunning) {
         const result = await reader.read();
 
@@ -67,9 +59,8 @@ class Observable<T> extends RxjsObservable<T> {
         await Promise.all(promises);
       }
     } catch {
+      this.closeConnection();
       await new Promise((resolve) => setTimeout(resolve, API_RETRY_TIMEOUT));
-      this.isRunning = false;
-      await getSession(this.env).pingSession(this.instaceId, true);
       this.init();
     }
   };
@@ -78,19 +69,34 @@ class Observable<T> extends RxjsObservable<T> {
     const type = this.getEventType(event);
     const data = this.getData(event);
 
-    if (type === 'update') {
-      const parsed = JSON.parse(data);
-      const processed = Array.isArray(parsed) ? processObjectArray(parsed) : processObject(parsed);
-      this.observer!.next(processed as T);
-      return;
-    } else if (type === 'instance') {
-      this.instaceId = data;
-    } else if (type === 'error') {
-      this.observer!.error(data);
-    } else if (type === 'close') {
-      this.isRunning = false;
-      this.init();
+    switch (type) {
+      case 'update':
+        this.onUpdate(data);
+        break;
+      case 'instance':
+        this.onInstanceId(data);
+        break;
+      case 'error':
+        this.observer!.error(data);
+        break;
+      case 'close':
+        this.isRunning = false;
+        this.init();
+        break;
     }
+  };
+
+  private onUpdate = (data: string) => {
+    const parsed = JSON.parse(data);
+    const processed = Array.isArray(parsed) ? processObjectArray(parsed) : processObject(parsed);
+    this.observer!.next(processed as T);
+  };
+
+  private onInstanceId = (data: string) => {
+    this.instaceId = data;
+    this.pingInstanceInterval = setInterval(async () => {
+      getSession(this.env).pingSession(this.instaceId);
+    }, PING_INTERVAL * 0.9);
   };
 
   private getEventType = (event: string) => event.split('\n')[0].split(': ')[1];
