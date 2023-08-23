@@ -31,7 +31,7 @@ export const getAvgPrice = async (req: functions.https.Request, res: express.Res
   const tokens = Array.isArray(body.token) ? body.token : [body.token];
   const changes = tokens.map(getAvgLive);
   const result = combineLatest(changes).pipe(map((r) => (r.length === 1 ? r[0] : r)));
-  await sendLiveUpdates(body.sessionId!, res, result);
+  await sendLiveUpdates(res, result);
 };
 
 const getAvgLive = (token: string) => {

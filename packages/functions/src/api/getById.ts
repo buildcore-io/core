@@ -42,7 +42,7 @@ export const getById = async (req: functions.https.Request, res: express.Respons
         return data;
       }),
     );
-    await sendLiveUpdates(body.sessionId, res, observable);
+    await sendLiveUpdates(res, observable);
     return;
   }
 

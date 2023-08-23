@@ -24,7 +24,7 @@ export const getTopMilestones = async (req: functions.https.Request, res: expres
   const combined = combineLatest(observables).pipe(
     map((r) => r.reduce((acc, act) => ({ ...acc, ...act }))),
   );
-  await sendLiveUpdates(body.sessionId, res, combined);
+  await sendLiveUpdates(res, combined);
 };
 
 const networkToQuery = (network: Network) =>
