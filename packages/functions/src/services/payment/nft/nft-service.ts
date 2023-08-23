@@ -329,7 +329,7 @@ export class NftService {
       locked: false,
       lockedBy: null,
       hidden: false,
-      soldOn: nft.soldOn || serverTime(),
+      soldOn: serverTime(),
       availableFrom: null,
       availablePrice: null,
       auctionFrom: null,
