@@ -67,7 +67,7 @@ export const getUpdatedAfter = async (req: functions.https.Request, res: express
     const observable = queryToObservable<Record<string, unknown>>(query).pipe(
       map((snap) => snap.filter((d) => !isEmpty(d)).map((d) => ({ id: d.uid, ...d }))),
     );
-    await sendLiveUpdates(body.sessionId, res, observable);
+    await sendLiveUpdates(res, observable);
     return;
   }
 

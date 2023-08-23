@@ -1,67 +1,58 @@
 import { API_RETRY_TIMEOUT, PING_INTERVAL } from '@build-5/interfaces';
 import { Build5Env, getKeepAliveUrl } from './Config';
 import { wrappedFetch } from './fetch.utils';
-import { BATCH_MAX_SIZE, BATCH_TIMEOUT } from './repositories/groupGet/common';
 import { randomString } from './utils';
 
-interface Request {
-  sessionId: string;
-  close?: boolean;
-}
-
 class Session {
-  protected requests: Request[] = [];
-  protected timer: Promise<void> | null = null;
-
   public readonly sessionId = randomString();
 
+  protected subscribtions: { [key: string]: boolean } = {};
+  protected unsubscriptions: string[] = [];
+  private isUnsubscribing = false;
+
   constructor(private readonly env: Build5Env) {
-    setInterval(async () => {
-      this.pingSession(this.sessionId);
-    }, PING_INTERVAL * 0.9);
+    setInterval(this.pingSubscriptions, PING_INTERVAL * 0.9);
+    setInterval(this.closeConnections, 200);
   }
 
-  public pingSession = async (sessionId: string, close = false) => {
-    if (!sessionId) {
-      return;
-    }
-    const request = this.requests.find((r) => r.sessionId === sessionId);
-    if (request) {
-      return;
-    }
-    this.requests.push({ sessionId, close });
-
-    await this.executeTimed();
-  };
-
-  private executeRequests = async () => {
-    const requests = this.requests.splice(0, BATCH_MAX_SIZE);
-    if (!requests.length) {
-      return;
-    }
-    const params = {
-      sessionIds: requests.map((r) => r.sessionId),
-      close: requests.map((r) => r.close),
-    };
-    try {
-      await wrappedFetch(getKeepAliveUrl(this.env), params);
-    } catch {
-      await new Promise((resolve) => setTimeout(resolve, API_RETRY_TIMEOUT));
-      this.requests.push(...requests);
+  public subscribe = (sessionId: string) => {
+    if (!this.subscribtions[sessionId]) {
+      this.subscribtions[sessionId] = true;
     }
   };
 
-  private executeTimed = async () => {
-    if (!this.timer) {
-      this.timer = new Promise<void>((resolve) =>
-        setTimeout(async () => {
-          await this.executeRequests();
-          resolve();
-        }, BATCH_TIMEOUT),
-      );
+  public unsubscribe = (sessionId: string) => {
+    if (!this.unsubscriptions.includes(sessionId)) {
+      this.unsubscriptions.push(sessionId);
     }
-    await this.timer;
-    this.timer = null;
+    delete this.subscribtions[sessionId];
+  };
+
+  private pingSubscriptions = async () => {
+    const allInstanceIds = Object.keys(this.subscribtions);
+    await this.pingInstances(allInstanceIds, false);
+  };
+
+  private closeConnections = async () => {
+    if (this.isUnsubscribing) {
+      return;
+    }
+    this.isUnsubscribing = true;
+    await this.pingInstances(this.unsubscriptions, true);
+    this.isUnsubscribing = false;
+  };
+
+  private pingInstances = async (instanceIds: string[], close: boolean) => {
+    while (instanceIds.length) {
+      const sessionIds = instanceIds.splice(0, 100);
+      const params = { sessionIds, close: sessionIds.map(() => close) };
+      try {
+        await wrappedFetch(getKeepAliveUrl(this.env), params);
+      } catch {
+        await new Promise((resolve) => setTimeout(resolve, API_RETRY_TIMEOUT));
+        instanceIds.push(...sessionIds);
+      }
+    }
   };
 }
 

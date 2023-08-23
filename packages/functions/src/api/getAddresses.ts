@@ -35,7 +35,7 @@ export const getAddresses = async (req: functions.https.Request, res: express.Re
     const observable = queryToObservable<Mnemonic>(query).pipe(
       map((mnemonics) => mnemonics.map(sanitizeMnemonic)),
     );
-    await sendLiveUpdates(body.sessionId, res, observable);
+    await sendLiveUpdates(res, observable);
     return;
   }
 

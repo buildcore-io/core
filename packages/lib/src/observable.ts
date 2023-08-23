@@ -1,4 +1,4 @@
-import { API_RETRY_TIMEOUT, PING_INTERVAL } from '@build-5/interfaces';
+import { API_RETRY_TIMEOUT } from '@build-5/interfaces';
 import { Observable as RxjsObservable, Subscriber, shareReplay } from 'rxjs';
 import { Build5Env } from './Config';
 import { getSession } from './Session';
@@ -15,7 +15,6 @@ class Observable<T> extends RxjsObservable<T> {
   private observer: Subscriber<T> | undefined;
   private instaceId = '';
   private isRunning = true;
-  private pingInstanceInterval: NodeJS.Timeout | null = null;
 
   constructor(protected readonly env: Build5Env, private readonly url: string) {
     super((observer) => {
@@ -26,9 +25,8 @@ class Observable<T> extends RxjsObservable<T> {
   }
 
   private closeConnection = async () => {
-    this.pingInstanceInterval && clearInterval(this.pingInstanceInterval);
     this.isRunning = false;
-    await getSession(this.env).pingSession(this.instaceId, true);
+    getSession(this.env).unsubscribe(this.instaceId);
   };
 
   private init = async () => {
@@ -94,9 +92,7 @@ class Observable<T> extends RxjsObservable<T> {
 
   private onInstanceId = (data: string) => {
     this.instaceId = data;
-    this.pingInstanceInterval = setInterval(async () => {
-      getSession(this.env).pingSession(this.instaceId);
-    }, PING_INTERVAL * 0.9);
+    getSession(this.env).subscribe(this.instaceId);
   };
 
   private getEventType = (event: string) => event.split('\n')[0].split(': ')[1];

@@ -32,8 +32,8 @@ export const keepAlive = async (req: functions.https.Request, res: express.Respo
 
   const batch = build5Db().batch();
 
-  body.sessionIds.forEach((sessionId, i) => {
-    const docRef = build5Db().doc(`${COL.KEEP_ALIVE}/${sessionId}`);
+  body.sessionIds.forEach((id, i) => {
+    const docRef = build5Db().doc(`${COL.KEEP_ALIVE}/${id}`);
     body.close?.[i] ? batch.delete(docRef) : batch.set(docRef, {}, true);
   });
 
@@ -43,11 +43,7 @@ export const keepAlive = async (req: functions.https.Request, res: express.Respo
   return;
 };
 
-export const sendLiveUpdates = async <T>(
-  sessionId: string,
-  res: express.Response,
-  observable: Observable<T>,
-) => {
+export const sendLiveUpdates = async <T>(res: express.Response, observable: Observable<T>) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
@@ -56,13 +52,8 @@ export const sendLiveUpdates = async <T>(
   await instanceIdDocRef.create({});
   res.write(`event: instance\ndata: ${instanceIdDocRef.getId()}\n\n`);
 
-  const sessionDocRef = build5Db().doc(`${COL.KEEP_ALIVE}/${sessionId}`);
-  await sessionDocRef.set({}, true);
-
   const checkIsAlive = async () => {
-    const promises = [isAlive(sessionDocRef), isAlive(instanceIdDocRef)];
-    const alive = (await Promise.all(promises)).reduce((acc, act) => acc && act, true);
-    if (!alive) {
+    if (!(await isAlive(instanceIdDocRef))) {
       await closeConnection();
     }
   };
