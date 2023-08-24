@@ -7,10 +7,10 @@ import {
 import * as express from 'express';
 import * as functions from 'firebase-functions/v2';
 import Joi from 'joi';
-import { combineLatest, map } from 'rxjs';
+import { combineLatest, first, map } from 'rxjs';
 import { build5Db } from '../firebase/firestore/build5Db';
 import { CommonJoi } from '../services/joi/common';
-import { getHeadCountObs, getQueryParams } from './common';
+import { getHeadPriceObs, getQueryParams } from './common';
 import { sendLiveUpdates } from './keepAlive';
 
 const getAvgPriceSchema = Joi.object({
@@ -20,7 +20,7 @@ const getAvgPriceSchema = Joi.object({
       Joi.array().min(QUERY_MIN_LENGTH).max(QUERY_MAX_LENGTH).items(CommonJoi.uid()),
     )
     .required(),
-  sessionId: CommonJoi.sessionId(true),
+  sessionId: CommonJoi.sessionId(),
 });
 
 export const getAvgPrice = async (req: functions.https.Request, res: express.Response) => {
@@ -31,13 +31,21 @@ export const getAvgPrice = async (req: functions.https.Request, res: express.Res
   const tokens = Array.isArray(body.token) ? body.token : [body.token];
   const changes = tokens.map(getAvgLive);
   const result = combineLatest(changes).pipe(map((r) => (r.length === 1 ? r[0] : r)));
+
+  if (!body.sessionId) {
+    result.pipe(first()).subscribe((r) => {
+      res.send(r);
+    });
+    return;
+  }
+
   await sendLiveUpdates(res, result);
 };
 
 const getAvgLive = (token: string) => {
-  const lowestPurchaseObs = getHeadCountObs(purchaseQuery(token, true));
-  const highestPurchaseObs = getHeadCountObs(purchaseQuery(token, false));
-  const lastPurchaseObs = getHeadCountObs(purchaseQuery(token));
+  const lowestPurchaseObs = getHeadPriceObs(purchaseQuery(token, true));
+  const highestPurchaseObs = getHeadPriceObs(purchaseQuery(token, false));
+  const lastPurchaseObs = getHeadPriceObs(purchaseQuery(token));
   return combineLatest([lowestPurchaseObs, highestPurchaseObs, lastPurchaseObs]).pipe(
     map(([lowest, highest, last]) => (highest + lowest + last) / 3),
     map((avg) => ({ id: token, avg })),
@@ -46,7 +54,7 @@ const getAvgLive = (token: string) => {
 
 const purchaseQuery = (token: string, lowest?: boolean) => {
   if (lowest === undefined) {
-    build5Db()
+    return build5Db()
       .collection(PublicCollections.TOKEN_PURCHASE)
       .where('token', '==', token)
       .orderBy('createdOn', 'desc')

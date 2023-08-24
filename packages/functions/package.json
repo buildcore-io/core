@@ -23,7 +23,7 @@
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "export-online-test-credentials": "export GOOGLE_APPLICATION_CREDENTIALS=\"./test-service-account-key.json\"",
-    "test": "export LOCAL_TEST=true && jest packages/functions/test/controls/space.spec.ts --runInBand",
+    "test": "export LOCAL_TEST=true && jest --runInBand",
     "test-online": "npm run export-online-test-credentials && jest test/ --runInBand",
     "test-tangle": "export LOCAL_TEST=true && jest test-tangle/ --runInBand ",
     "test-tangle-online": "npm run export-online-test-credentials && jest test-tangle/ --runInBand",

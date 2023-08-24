@@ -262,8 +262,8 @@ jobs:
                 npm run test:ci -- --findRelatedTests test/controls/token/token.airdrop.claim.spec.ts &&
                 npm run test:ci -- --findRelatedTests test/api/getUpdatedAfter.spec.ts &&
                 npm run test:ci -- --findRelatedTests test/api/getTokenPrice.spec.ts &&
-                npm run test:ci -- --findRelatedTests test/api/getManyAdvanced.spec.ts &&
-                npm run test:ci -- --findRelatedTests test/api/getMany.spec.ts 
+                npm run test:ci -- --findRelatedTests test/api/getPriceChange.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/api/getManyAdvanced.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -298,7 +298,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test:ci -- --findRelatedTests test/api/getMany.spec.ts &&
                 npm run test:ci -- --findRelatedTests test/api/getById.spec.ts &&
+                npm run test:ci -- --findRelatedTests test/api/getAvgPrice.spec.ts &&
                 npm run test:ci -- --findRelatedTests test/api/getAddresses.spec.ts &&
                 npm run test:ci -- --findRelatedTests test/api/custom.get.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
