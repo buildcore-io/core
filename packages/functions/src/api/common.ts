@@ -63,5 +63,5 @@ export const documentToObservable = <T>(doc: IDocument) =>
     };
   });
 
-export const getHeadCountObs = (query: IQuery) =>
-  queryToObservable<TokenPurchase>(query).pipe(map((r) => head(r)?.count || 0));
+export const getHeadPriceObs = (query: IQuery) =>
+  queryToObservable<TokenPurchase>(query).pipe(map((r) => head(r)?.price || 0));
