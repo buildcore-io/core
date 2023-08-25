@@ -78,7 +78,7 @@ class Observable<T> extends RxjsObservable<T> {
         this.observer!.error(data);
         break;
       case 'close':
-        this.isRunning = false;
+        this.closeConnection();
         this.init();
         break;
     }

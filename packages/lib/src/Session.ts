@@ -11,7 +11,7 @@ class Session {
   private isUnsubscribing = false;
 
   constructor(private readonly env: Build5Env) {
-    setInterval(this.pingSubscriptions, PING_INTERVAL * 0.9);
+    setInterval(this.pingSubscriptions, PING_INTERVAL * 0.8);
     setInterval(this.closeConnections, 200);
   }
 
