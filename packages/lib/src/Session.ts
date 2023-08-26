@@ -1,4 +1,4 @@
-import { API_RETRY_TIMEOUT, PING_INTERVAL } from '@build-5/interfaces';
+import { PING_INTERVAL, QUERY_MAX_LENGTH } from '@build-5/interfaces';
 import { Build5Env, getKeepAliveUrl } from './Config';
 import { wrappedFetch } from './fetch.utils';
 import { randomString } from './utils';
@@ -11,8 +11,8 @@ class Session {
   private isUnsubscribing = false;
 
   constructor(private readonly env: Build5Env) {
-    setInterval(this.pingSubscriptions, PING_INTERVAL * 0.8);
-    setInterval(this.closeConnections, 200);
+    setInterval(this.pingSubscriptions, PING_INTERVAL * 0.6);
+    setInterval(this.closeConnections, 1000);
   }
 
   public subscribe = (sessionId: string) => {
@@ -44,13 +44,12 @@ class Session {
 
   private pingInstances = async (instanceIds: string[], close: boolean) => {
     while (instanceIds.length) {
-      const sessionIds = instanceIds.splice(0, 100);
+      const sessionIds = instanceIds.splice(0, QUERY_MAX_LENGTH);
       const params = { sessionIds, close: sessionIds.map(() => close) };
       try {
         await wrappedFetch(getKeepAliveUrl(this.env), params);
       } catch {
-        await new Promise((resolve) => setTimeout(resolve, API_RETRY_TIMEOUT));
-        instanceIds.push(...sessionIds);
+        // eslint-disable-next-line no-empty
       }
     }
   };
