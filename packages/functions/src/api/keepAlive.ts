@@ -22,6 +22,8 @@ import { IDocument } from '../firebase/firestore/interfaces';
 const keepAliveSchema = Joi.object({
   sessionIds: Joi.array().items(CommonJoi.sessionId()).min(1).max(QUERY_MAX_LENGTH).required(),
   close: Joi.array().items(Joi.boolean().optional()).max(QUERY_MAX_LENGTH).required(),
+  // Temporary to be able to create unique signature.
+  version: Joi.number().optional(),
 });
 
 export const keepAlive = async (req: functions.https.Request, res: express.Response) => {
