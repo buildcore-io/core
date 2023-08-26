@@ -44,11 +44,7 @@ class Session {
 
   private pingInstances = async (instanceIds: string[], close: boolean) => {
     while (instanceIds.length) {
-      const sessionIds = instanceIds
-        .filter((c) => {
-          return !!c;
-        })
-        .splice(0, QUERY_MAX_LENGTH);
+      const sessionIds = instanceIds.splice(0, QUERY_MAX_LENGTH);
       const params = { sessionIds, close: sessionIds.map(() => close), version: 2 };
       try {
         await wrappedFetch(getKeepAliveUrl(this.env), params);
