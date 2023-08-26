@@ -46,7 +46,7 @@ class Session {
     while (instanceIds.length) {
       const sessionIds = instanceIds
         .filter((c) => {
-          return c;
+          return !!c;
         })
         .splice(0, QUERY_MAX_LENGTH);
       const params = { sessionIds, close: sessionIds.map(() => close), version: 2 };
