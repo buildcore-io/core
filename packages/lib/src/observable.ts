@@ -24,9 +24,9 @@ class Observable<T> extends RxjsObservable<T> {
     });
   }
 
-  private closeConnection = async () => {
+  private closeConnection = async (connectionClosed = false) => {
     this.isRunning = false;
-    getSession(this.env).unsubscribe(this.instaceId);
+    getSession(this.env).unsubscribe(this.instaceId, connectionClosed);
   };
 
   private init = async () => {
@@ -57,7 +57,7 @@ class Observable<T> extends RxjsObservable<T> {
         await Promise.all(promises);
       }
     } catch {
-      this.closeConnection();
+      await this.closeConnection(true);
       await new Promise((resolve) => setTimeout(resolve, API_RETRY_TIMEOUT));
       this.init();
     }
@@ -78,7 +78,7 @@ class Observable<T> extends RxjsObservable<T> {
         this.observer!.error(data);
         break;
       case 'close':
-        this.closeConnection();
+        await this.closeConnection(true);
         this.init();
         break;
     }
