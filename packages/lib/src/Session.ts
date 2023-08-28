@@ -16,16 +16,16 @@ class Session {
   }
 
   public subscribe = (sessionId: string) => {
-    if (!this.subscribtions[sessionId]) {
+    if (sessionId && !this.subscribtions[sessionId]) {
       this.subscribtions[sessionId] = true;
     }
   };
 
-  public unsubscribe = (sessionId: string) => {
-    if (!this.unsubscriptions.includes(sessionId)) {
+  public unsubscribe = (sessionId: string, connectionClosed = false) => {
+    delete this.subscribtions[sessionId];
+    if (sessionId && !connectionClosed && !this.unsubscriptions.includes(sessionId)) {
       this.unsubscriptions.push(sessionId);
     }
-    delete this.subscribtions[sessionId];
   };
 
   private pingSubscriptions = async () => {
