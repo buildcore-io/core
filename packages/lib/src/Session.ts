@@ -7,45 +7,30 @@ class Session {
   public readonly sessionId = randomString();
 
   protected subscribtions: { [key: string]: boolean } = {};
-  protected unsubscriptions: string[] = [];
-  private isUnsubscribing = false;
 
   constructor(private readonly env: Build5Env) {
-    setInterval(this.pingSubscriptions, PING_INTERVAL * 0.6);
-    setInterval(this.closeConnections, 1000);
+    setInterval(this.pingSubscriptions, PING_INTERVAL * 0.7);
   }
 
-  public subscribe = (sessionId: string) => {
-    if (sessionId && !this.subscribtions[sessionId]) {
-      this.subscribtions[sessionId] = true;
+  public subscribe = (instanceId: string) => {
+    if (instanceId && !this.subscribtions[instanceId]) {
+      this.subscribtions[instanceId] = true;
     }
   };
 
-  public unsubscribe = (sessionId: string, connectionClosed = false) => {
-    delete this.subscribtions[sessionId];
-    if (sessionId && !connectionClosed && !this.unsubscriptions.includes(sessionId)) {
-      this.unsubscriptions.push(sessionId);
-    }
+  public unsubscribe = (instanceId: string) => {
+    delete this.subscribtions[instanceId];
   };
 
   private pingSubscriptions = async () => {
     const allInstanceIds = Object.keys(this.subscribtions);
-    await this.pingInstances(allInstanceIds, false);
+    await this.pingInstances(allInstanceIds);
   };
 
-  private closeConnections = async () => {
-    if (this.isUnsubscribing) {
-      return;
-    }
-    this.isUnsubscribing = true;
-    await this.pingInstances(this.unsubscriptions, true);
-    this.isUnsubscribing = false;
-  };
-
-  private pingInstances = async (instanceIds: string[], close: boolean) => {
-    while (instanceIds.length) {
-      const sessionIds = instanceIds.splice(0, QUERY_MAX_LENGTH);
-      const params = { sessionIds, close: sessionIds.map(() => close), version: 2 };
+  private pingInstances = async (allInstanceIds: string[]) => {
+    while (allInstanceIds.length) {
+      const instanceIds = allInstanceIds.splice(0, QUERY_MAX_LENGTH);
+      const params = { sessionId: getSessionId(this.env), instanceIds, version: 3 };
       try {
         await wrappedFetch(getKeepAliveUrl(this.env), params);
       } catch {
