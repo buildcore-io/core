@@ -3,7 +3,7 @@ import { set } from 'lodash';
 import { Build5Env, getManyByIdUrl } from '../../Config';
 
 export const BATCH_MAX_SIZE = 100;
-export const BATCH_TIMEOUT = 200;
+export const BATCH_TIMEOUT = 500;
 
 interface Request {
   parent: string;
