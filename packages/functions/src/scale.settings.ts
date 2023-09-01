@@ -81,12 +81,12 @@ export function scaleAlgolia(col: COL): GlobalOptions {
   // To support concurency.
   scaleSettings[COL.NFT] = {
     minInstances: highUse,
-    memory: '1GiB',
+    memory: '2GiB',
   };
   // To support concurency.
   scaleSettings[COL.COLLECTION] = {
     minInstances: highUse,
-    memory: '1GiB',
+    memory: '2GiB',
   };
   scaleSettings[COL.MEMBER] = {
     minInstances: lowWarm,
