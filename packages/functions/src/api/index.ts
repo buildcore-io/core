@@ -20,9 +20,9 @@ export const api = functions.https.onRequest(
     timeoutSeconds: API_TIMEOUT_SECONDS,
     minInstances: 3,
     maxInstances: 100,
-    memory: '1GiB',
+    memory: '2GiB',
     // This is to balance memory usage.
-    concurrency: 250,
+    concurrency: 500,
   }),
   (req, res) =>
     cors({ origin: true })(req, res, async () => {
