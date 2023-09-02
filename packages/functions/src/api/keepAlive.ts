@@ -51,13 +51,16 @@ export const keepAlive = async (req: functions.https.Request, res: express.Respo
   const instancesToRemove = (session?.instances || []).filter((si) =>
     instanceIds.includes(si.instanceId),
   );
-  batch.set(sessionDocRef, { instances: build5Db().arrayRemove(...instancesToRemove) }, true);
+  if (instancesToRemove.length) {
+    batch.set(sessionDocRef, { instances: build5Db().arrayRemove(...instancesToRemove) }, true);
+  }
 
   const data = instanceIds.map((instanceId) => ({ instanceId, updateOn: now }));
-  batch.set(sessionDocRef, { instances: build5Db().arrayUnion(...data) }, true);
+  if (data.length) {
+    batch.set(sessionDocRef, { instances: build5Db().arrayUnion(...data) }, true);
+  }
 
   await batch.commit();
-
   res.status(200).send({ update: true });
   return;
 };
