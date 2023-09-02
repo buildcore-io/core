@@ -17,6 +17,7 @@ import { CommonJoi } from '../services/joi/common';
 import { getQueryParams } from './common';
 
 import { Observable } from 'rxjs';
+import { dateToTimestamp } from '../utils/dateTime.utils';
 
 interface SessionInstance {
   readonly instanceId: string;
@@ -40,7 +41,7 @@ export const keepAlive = async (req: functions.https.Request, res: express.Respo
     return;
   }
 
-  const now = dayjs().toDate();
+  const now = dateToTimestamp(dayjs());
   const instanceIds = body.instanceIds;
 
   const sessionDocRef = build5Db().doc(`${COL.KEEP_ALIVE}/${body.sessionId}`);
@@ -55,7 +56,7 @@ export const keepAlive = async (req: functions.https.Request, res: express.Respo
     batch.set(sessionDocRef, { instances: build5Db().arrayRemove(...instancesToRemove) }, true);
   }
 
-  const data = instanceIds.map((instanceId) => ({ instanceId, updateOn: now }));
+  const data: SessionInstance[] = instanceIds.map((instanceId) => ({ instanceId, updatedOn: now }));
   if (data.length) {
     batch.set(sessionDocRef, { instances: build5Db().arrayUnion(...data) }, true);
   }
@@ -76,16 +77,10 @@ export const sendLiveUpdates = async <T>(
 
   const instanceId = build5Db().collection(COL.KEEP_ALIVE).doc().getId();
   const sessionDocRef = build5Db().doc(`${COL.KEEP_ALIVE}/${sessionId}`);
-  await sessionDocRef.set(
-    {
-      uid: sessionId,
-      instances: build5Db().arrayUnion({
-        instanceId,
-        updateOn: dayjs().toDate(),
-      }),
-    },
-    true,
-  );
+
+  const sessionInstance: SessionInstance = { instanceId, updatedOn: dateToTimestamp(dayjs()) };
+  const session: Session = { uid: sessionId, instances: build5Db().arrayUnion(sessionInstance) };
+  await sessionDocRef.set(session, true);
 
   res.write(`event: instance\ndata: ${instanceId}\n\n`);
 
@@ -125,5 +120,5 @@ const isAlive = async (sessionId: string, instanceId: string) => {
   const session = await build5Db().doc(`${COL.KEEP_ALIVE}/${sessionId}`).get<Session>();
   const instance = (session?.instances || []).find((si) => si.instanceId === instanceId);
   const diff = dayjs().diff(dayjs(instance?.updatedOn?.toDate()));
-  return instance && diff < PING_INTERVAL;
+  return instance?.updatedOn !== undefined && diff < PING_INTERVAL;
 };
