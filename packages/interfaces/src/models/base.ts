@@ -64,7 +64,7 @@ export enum COL {
   MNEMONIC = '_mnemonic',
   SYSTEM = '_system',
   DB_ROLL_FILES = '_db_roll_files',
-  KEEP_ALIVE = 'keep_alive',
+  KEEP_ALIVE = '_sessions',
 }
 
 export const enum SUB_COL {
