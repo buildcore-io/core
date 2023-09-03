@@ -23,7 +23,7 @@ export const api = functions.https.onRequest(
     memory: '1GiB',
     cpu: 1,
     // This is to balance memory usage.
-    concurrency: 500,
+    concurrency: 250,
   }),
   (req, res) =>
     cors({ origin: true })(req, res, async () => {
