@@ -20,7 +20,8 @@ export const api = functions.https.onRequest(
     timeoutSeconds: API_TIMEOUT_SECONDS,
     minInstances: 3,
     maxInstances: 100,
-    memory: '2GiB',
+    memory: '1GiB',
+    cpu: 1,
     // This is to balance memory usage.
     concurrency: 500,
   }),

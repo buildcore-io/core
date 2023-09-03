@@ -12,8 +12,8 @@ export function scale(func: WEN_FUNC | WEN_FUNC_TRIGGER): number {
 
   // Space functions.
   scaleSettings[WEN_FUNC.createSpace] = lowCold;
-  scaleSettings[WEN_FUNC.updateSpace] = lowWarm;
-  scaleSettings[WEN_FUNC.joinSpace] = highUse;
+  scaleSettings[WEN_FUNC.updateSpace] = lowCold;
+  scaleSettings[WEN_FUNC.joinSpace] = lowWarm;
   scaleSettings[WEN_FUNC.leaveSpace] = lowCold;
   scaleSettings[WEN_FUNC.addGuardianSpace] = lowCold;
   scaleSettings[WEN_FUNC.removeGuardianSpace] = lowCold;
@@ -26,7 +26,7 @@ export function scale(func: WEN_FUNC | WEN_FUNC_TRIGGER): number {
   scaleSettings[WEN_FUNC.createAward] = lowCold;
   scaleSettings[WEN_FUNC.addOwnerAward] = lowCold;
   scaleSettings[WEN_FUNC.participateAward] = lowWarm;
-  scaleSettings[WEN_FUNC.approveParticipantAward] = lowWarm;
+  scaleSettings[WEN_FUNC.approveParticipantAward] = lowCold;
 
   // Proposal Functions
   scaleSettings[WEN_FUNC.createProposal] = lowCold;
@@ -68,33 +68,37 @@ export function scaleAlgolia(col: COL): GlobalOptions {
   const scaleSettings = {} as { [key: string]: GlobalOptions };
   scaleSettings[COL.SPACE] = {
     minInstances: lowWarm,
-    memory: '512MiB',
+    memory: '256MiB',
   };
   scaleSettings[COL.TOKEN] = {
     minInstances: lowWarm,
-    memory: '512MiB',
+    memory: '256MiB',
   };
   scaleSettings[COL.AWARD] = {
     minInstances: lowWarm,
-    memory: '512MiB',
+    memory: '256MiB',
   };
   // To support concurency.
   scaleSettings[COL.NFT] = {
     minInstances: highUse,
-    memory: '2GiB',
+    memory: '512MiB',
+    cpu: 1,
+    concurrency: 100,
   };
   // To support concurency.
   scaleSettings[COL.COLLECTION] = {
     minInstances: highUse,
-    memory: '2GiB',
+    memory: '512MiB',
+    cpu: 1,
+    concurrency: 100,
   };
   scaleSettings[COL.MEMBER] = {
     minInstances: lowWarm,
-    memory: '512MiB',
+    memory: '256MiB',
   };
   scaleSettings[COL.PROPOSAL] = {
     minInstances: lowWarm,
-    memory: '512MiB',
+    memory: '256MiB',
   };
 
   return isProdEnv()
