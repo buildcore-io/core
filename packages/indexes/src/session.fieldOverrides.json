@@ -1,0 +1,9 @@
+{
+  "fieldOverrides": [
+    {
+      "collectionGroup": "_sessions",
+      "fieldPath": "instances",
+      "indexes": []
+    }
+  ]
+}
