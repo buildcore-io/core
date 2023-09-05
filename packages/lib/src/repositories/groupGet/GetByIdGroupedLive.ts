@@ -1,7 +1,6 @@
 import { API_RETRY_TIMEOUT } from '@build-5/interfaces';
 import { get } from 'lodash';
 import { Observable, map } from 'rxjs';
-import { getSessionId } from '../../Session';
 import { toQueryParams } from '../../fetch.utils';
 import { fetchLive } from '../../observable';
 import { AbstractGetByIdGrouped, BATCH_MAX_SIZE } from './common';
@@ -22,7 +21,7 @@ export class GetByIdGroupedLive<T> extends AbstractGetByIdGrouped {
   };
 
   protected executeRequests = async () => {
-    const { url, requests, params } = this.createUrl(getSessionId(this.env));
+    const { url, requests, params } = this.createUrl();
     if (!requests.length) {
       return;
     }

@@ -12,7 +12,6 @@ import {
   getManyUrl,
   getUpdatedAfterUrl,
 } from '../Config';
-import { getSessionId } from '../Session';
 import { toQueryParams, wrappedFetch } from '../fetch.utils';
 import { fetchLive } from '../observable';
 import { GetByIdGrouped } from './groupGet/GetByIdGrouped';
@@ -46,11 +45,7 @@ export class CrudRepository<T> {
     from(this.getByIdGroupedLive.get(uid)).pipe(switchMap((inner) => inner));
 
   public getManyByIdLive = (uids: string[]): Observable<T[]> => {
-    const params: GetManyByIdRequest = {
-      collection: this.col,
-      uids,
-      sessionId: getSessionId(this.env),
-    };
+    const params: GetManyByIdRequest = { collection: this.col, uids };
     const url = getManyByIdUrl(this.env) + toQueryParams({ ...params });
     return fetchLive<T[]>(this.env, url);
   };
@@ -83,13 +78,7 @@ export class CrudRepository<T> {
     fieldValue: string | number | boolean | (string | number | boolean)[],
     startAfter?: string,
   ): Observable<T[]> => {
-    const params = {
-      collection: this.col,
-      fieldName,
-      fieldValue,
-      startAfter,
-      sessionId: getSessionId(this.env),
-    };
+    const params = { collection: this.col, fieldName, fieldValue, startAfter };
     const url = getManyUrl(this.env) + toQueryParams(params);
     return fetchLive<T[]>(this.env, url);
   };
@@ -141,12 +130,7 @@ export class CrudRepository<T> {
    * @returns
    */
   public getAllUpdatedAfterLive = (updatedAfter: number, startAfter?: string): Observable<T[]> => {
-    const params = {
-      collection: this.col,
-      updatedAfter,
-      startAfter,
-      sessionId: getSessionId(this.env),
-    };
+    const params = { collection: this.col, updatedAfter, startAfter };
     const url = getUpdatedAfterUrl(this.env) + toQueryParams(params);
     return fetchLive<T[]>(this.env, url);
   };
@@ -166,9 +150,7 @@ export class CrudRepository<T> {
   };
 
   protected getManyAdvancedLive = (params: GetManyAdvancedRequest): Observable<T[]> => {
-    const url =
-      getManyAdvancedUrl(this.env) +
-      toQueryParams({ ...params, sessionId: getSessionId(this.env) });
+    const url = getManyAdvancedUrl(this.env) + toQueryParams({ ...params });
     return fetchLive<T[]>(this.env, url);
   };
 }

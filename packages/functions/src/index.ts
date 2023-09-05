@@ -136,7 +136,6 @@ exports[WEN_FUNC.rejectCollection] = rejectCollection;
 exports[WEN_FUNC.openBid] = openBid;
 exports[WEN_FUNC.validateAddress] = validateAddress;
 
-export * from './api/index';
 export * from './cron';
 export { algoliaTrigger, milestoneTriggers as trigger };
 

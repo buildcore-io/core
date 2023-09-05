@@ -1,0 +1,26 @@
+{
+  "name": "@build-5/database",
+  "version": "0.0.0",
+  "description": "Lib to connect to the database",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "files": [
+    "lib"
+  ],
+  "private": true,
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@build-5/interfaces": "*",
+    "dayjs": "^1.11.9",
+    "firebase-admin": "^11.10.1",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.197"
+  }
+}

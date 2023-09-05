@@ -12,7 +12,6 @@ import {
   getManyUrl,
   getUpdatedAfterUrl,
 } from '../Config';
-import { getSessionId } from '../Session';
 import { toQueryParams, wrappedFetch } from '../fetch.utils';
 import { fetchLive } from '../observable';
 import { GetByIdGrouped } from './groupGet/GetByIdGrouped';
@@ -64,7 +63,6 @@ export abstract class SubCrudRepository<T> {
       parentUids: uids.map(() => parent),
       subCollection: this.subCol,
       uids,
-      sessionId: getSessionId(this.env),
     };
     const url = getManyByIdUrl(this.env) + toQueryParams(params);
     return fetchLive<T[]>(this.env, url);
@@ -153,9 +151,7 @@ export abstract class SubCrudRepository<T> {
   };
 
   protected getManyAdvancedLive = (params: GetManyAdvancedRequest): Observable<T[]> => {
-    const url =
-      getManyAdvancedUrl(this.env) +
-      toQueryParams({ ...params, sessionId: getSessionId(this.env) });
+    const url = getManyAdvancedUrl(this.env) + toQueryParams({ ...params });
     return fetchLive<T[]>(this.env, url);
   };
 }

@@ -129,6 +129,14 @@ export interface BaseRecord extends Base {
   _subColObj?: any;
 }
 
+export interface FileMetedata {
+  metadata: IpfsCid;
+  original: IpfsCid;
+  avatar: IpfsCid;
+  fileName: string;
+  available?: boolean;
+}
+
 export enum FILE_SIZES {
   small = '200X200',
   medium = '680X680',

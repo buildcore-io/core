@@ -56,16 +56,13 @@ export abstract class AbstractGroupedGet {
 }
 
 export abstract class AbstractGetByIdGrouped extends AbstractGroupedGet {
-  protected createUrl = (sessionId?: string) => {
+  protected createUrl = () => {
     const requests = this.requests.splice(0, BATCH_MAX_SIZE);
 
     const params = {
       collection: this.col,
       uids: requests.map((r) => r.uid),
     };
-    if (sessionId) {
-      set(params, 'sessionId', sessionId);
-    }
     if (this.subCol) {
       const parents = requests.map((r) => r.parent);
       set(params, 'parentUids', parents);
