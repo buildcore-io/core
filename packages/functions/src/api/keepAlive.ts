@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   API_TIMEOUT_SECONDS,
-  BaseRecord,
   COL,
   KeepAliveRequest,
   PING_INTERVAL,
   QUERY_MAX_LENGTH,
+  Timestamp,
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
@@ -17,12 +17,21 @@ import { CommonJoi } from '../services/joi/common';
 import { getQueryParams } from './common';
 
 import { Observable } from 'rxjs';
-import { IDocument } from '../firebase/firestore/interfaces';
+import { dateToTimestamp } from '../utils/dateTime.utils';
+
+interface SessionInstance {
+  readonly instanceId: string;
+  readonly updatedOn: Timestamp;
+}
+
+interface Session {
+  readonly uid: string;
+  readonly instances: SessionInstance[];
+}
 
 const keepAliveSchema = Joi.object({
-  sessionIds: Joi.array().items(CommonJoi.sessionId()).min(1).max(QUERY_MAX_LENGTH).required(),
-  close: Joi.array().items(Joi.boolean().optional()).max(QUERY_MAX_LENGTH).required(),
-  // Temporary to be able to create unique signature.
+  sessionId: CommonJoi.sessionId(),
+  instanceIds: Joi.array().items(CommonJoi.sessionId()).min(1).max(QUERY_MAX_LENGTH).required(),
   version: Joi.number().optional(),
 });
 
@@ -32,38 +41,55 @@ export const keepAlive = async (req: functions.https.Request, res: express.Respo
     return;
   }
 
+  const now = dateToTimestamp(dayjs());
+  const instanceIds = body.instanceIds;
+
+  const sessionDocRef = build5Db().doc(`${COL.KEEP_ALIVE}/${body.sessionId}`);
+  const session = await sessionDocRef.get<Session>();
+
   const batch = build5Db().batch();
 
-  body.sessionIds.forEach((id, i) => {
-    const docRef = build5Db().doc(`${COL.KEEP_ALIVE}/${id}`);
-    body.close?.[i] ? batch.delete(docRef) : batch.set(docRef, {}, true);
-  });
+  const instancesToRemove = (session?.instances || []).filter((si) =>
+    instanceIds.includes(si.instanceId),
+  );
+  if (instancesToRemove.length) {
+    batch.set(sessionDocRef, { instances: build5Db().arrayRemove(...instancesToRemove) }, true);
+  }
+
+  const data: SessionInstance[] = instanceIds.map((instanceId) => ({ instanceId, updatedOn: now }));
+  if (data.length) {
+    batch.set(sessionDocRef, { instances: build5Db().arrayUnion(...data) }, true);
+  }
 
   await batch.commit();
-
   res.status(200).send({ update: true });
   return;
 };
 
-export const sendLiveUpdates = async <T>(res: express.Response, observable: Observable<T>) => {
+export const sendLiveUpdates = async <T>(
+  sessionId: string,
+  res: express.Response,
+  observable: Observable<T>,
+) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
 
-  const instanceIdDocRef = build5Db().collection(COL.KEEP_ALIVE).doc();
-  await instanceIdDocRef.create({});
-  res.write(`event: instance\ndata: ${instanceIdDocRef.getId()}\n\n`);
+  const instanceId = build5Db().collection(COL.KEEP_ALIVE).doc().getId();
+  const sessionDocRef = build5Db().doc(`${COL.KEEP_ALIVE}/${sessionId}`);
+
+  const sessionInstance: SessionInstance = { instanceId, updatedOn: dateToTimestamp(dayjs()) };
+  const session: Session = { uid: sessionId, instances: build5Db().arrayUnion(sessionInstance) };
+  await sessionDocRef.set(session, true);
+
+  res.write(`event: instance\ndata: ${instanceId}\n\n`);
 
   const checkIsAlive = async () => {
-    if (!(await isAlive(instanceIdDocRef))) {
+    if (!(await isAlive(sessionId, instanceId))) {
       await closeConnection();
     }
   };
   const checkIsAliveInterval = setInterval(checkIsAlive, PING_INTERVAL);
-
-  const instanceIdSub = instanceIdDocRef.onSnapshot((data) => {
-    !data && closeConnection();
-  });
 
   const timeout = setTimeout(() => {
     closeConnection();
@@ -82,18 +108,17 @@ export const sendLiveUpdates = async <T>(res: express.Response, observable: Obse
   });
 
   const closeConnection = async () => {
-    res.write(`event: close\ndata: ${instanceIdDocRef.getId()}\n\n`);
+    res.write(`event: close\ndata: ${instanceId}\n\n`);
     clearInterval(checkIsAliveInterval);
     clearTimeout(timeout);
-    instanceIdSub();
     subscription.unsubscribe();
-    await instanceIdDocRef.delete();
     res.end();
   };
 };
 
-const isAlive = async (docRef: IDocument) => {
-  const doc = await docRef.get<BaseRecord>();
-  const diff = dayjs().diff(dayjs(doc?.updatedOn?.toDate()));
-  return doc !== undefined && diff < PING_INTERVAL;
+const isAlive = async (sessionId: string, instanceId: string) => {
+  const session = await build5Db().doc(`${COL.KEEP_ALIVE}/${sessionId}`).get<Session>();
+  const instance = (session?.instances || []).find((si) => si.instanceId === instanceId);
+  const diff = dayjs().diff(dayjs(instance?.updatedOn?.toDate()));
+  return instance?.updatedOn !== undefined && diff < PING_INTERVAL;
 };

@@ -124,14 +124,8 @@ export interface GetAddressesRequest extends BaseRequest {
  * Keep alive request to keep the session active.
  */
 export interface KeepAliveRequest {
-  /**
-   * Session ID.
-   */
-  readonly sessionIds: string[];
-  /**
-   * Close?
-   */
-  readonly close?: boolean[];
+  readonly sessionId: string;
+  readonly instanceIds: string[];
 }
 
 /**
