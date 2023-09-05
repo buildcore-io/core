@@ -39,7 +39,7 @@ export const getAvgPrice = async (req: functions.https.Request, res: express.Res
     return;
   }
 
-  await sendLiveUpdates(res, result);
+  await sendLiveUpdates(body.sessionId, res, result);
 };
 
 const getAvgLive = (token: string) => {

@@ -39,7 +39,7 @@ export const getManyById = async (req: functions.https.Request, res: express.Res
     const observable = combineLatest(observables).pipe(
       map((all) => all.flat().filter((record) => record && !isHiddenNft(body.collection, record))),
     );
-    await sendLiveUpdates(res, observable);
+    await sendLiveUpdates(body.sessionId, res, observable);
     return;
   }
 

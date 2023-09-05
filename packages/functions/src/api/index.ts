@@ -21,6 +21,7 @@ export const api = functions.https.onRequest(
     minInstances: 3,
     maxInstances: 100,
     memory: '1GiB',
+    cpu: 1,
     // This is to balance memory usage.
     concurrency: 250,
   }),

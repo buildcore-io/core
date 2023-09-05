@@ -3,20 +3,17 @@ import { GlobalOptions } from 'firebase-functions/v2';
 import { isProdEnv } from './utils/config.utils';
 export const lowCold = 0;
 export const lowWarm = isProdEnv() ? 1 : lowCold;
-export const medium = isProdEnv() ? 3 : 1;
-export const important = isProdEnv() ? 6 : 1;
-export const pump = isProdEnv() ? 9 : 1;
-export const superPump = isProdEnv() ? 20 : 1;
+export const highUse = isProdEnv() ? 3 : lowWarm;
 
 export function scale(func: WEN_FUNC | WEN_FUNC_TRIGGER): number {
   const scaleSettings = {} as { [key: string]: number };
-  scaleSettings[WEN_FUNC.createMember] = important;
+  scaleSettings[WEN_FUNC.createMember] = highUse;
   scaleSettings[WEN_FUNC.updateMember] = lowWarm;
 
   // Space functions.
   scaleSettings[WEN_FUNC.createSpace] = lowCold;
-  scaleSettings[WEN_FUNC.updateSpace] = lowWarm;
-  scaleSettings[WEN_FUNC.joinSpace] = medium;
+  scaleSettings[WEN_FUNC.updateSpace] = lowCold;
+  scaleSettings[WEN_FUNC.joinSpace] = lowWarm;
   scaleSettings[WEN_FUNC.leaveSpace] = lowCold;
   scaleSettings[WEN_FUNC.addGuardianSpace] = lowCold;
   scaleSettings[WEN_FUNC.removeGuardianSpace] = lowCold;
@@ -29,7 +26,7 @@ export function scale(func: WEN_FUNC | WEN_FUNC_TRIGGER): number {
   scaleSettings[WEN_FUNC.createAward] = lowCold;
   scaleSettings[WEN_FUNC.addOwnerAward] = lowCold;
   scaleSettings[WEN_FUNC.participateAward] = lowWarm;
-  scaleSettings[WEN_FUNC.approveParticipantAward] = lowWarm;
+  scaleSettings[WEN_FUNC.approveParticipantAward] = lowCold;
 
   // Proposal Functions
   scaleSettings[WEN_FUNC.createProposal] = lowCold;
@@ -49,22 +46,20 @@ export function scale(func: WEN_FUNC | WEN_FUNC_TRIGGER): number {
   scaleSettings[WEN_FUNC.createBatchNft] = lowCold;
   scaleSettings[WEN_FUNC.updateUnsoldNft] = lowCold;
 
-  scaleSettings[WEN_FUNC.orderNft] = important;
-  scaleSettings[WEN_FUNC.validateAddress] = medium;
+  scaleSettings[WEN_FUNC.orderNft] = highUse;
+  scaleSettings[WEN_FUNC.validateAddress] = highUse;
 
   scaleSettings[WEN_FUNC.createToken] = lowCold;
-  scaleSettings[WEN_FUNC_TRIGGER.onTokenStatusUpdate] = medium;
-  scaleSettings[WEN_FUNC_TRIGGER.onTokenTradeOrderWrite] = medium;
-  scaleSettings[WEN_FUNC_TRIGGER.onTokenPurchaseCreated] = medium;
+  scaleSettings[WEN_FUNC_TRIGGER.onTokenStatusUpdate] = highUse;
+  scaleSettings[WEN_FUNC_TRIGGER.onTokenTradeOrderWrite] = highUse;
+  scaleSettings[WEN_FUNC_TRIGGER.onTokenPurchaseCreated] = highUse;
 
-  scaleSettings[WEN_FUNC_TRIGGER.milestoneTransactionWrite] = important;
-  scaleSettings[WEN_FUNC_TRIGGER.nftWrite] = important;
-  scaleSettings[WEN_FUNC_TRIGGER.transactionWrite] = superPump;
-  scaleSettings[WEN_FUNC_TRIGGER.mnemonicWrite] = pump;
+  scaleSettings[WEN_FUNC_TRIGGER.milestoneTransactionWrite] = highUse;
+  scaleSettings[WEN_FUNC_TRIGGER.nftWrite] = lowWarm;
+  scaleSettings[WEN_FUNC_TRIGGER.transactionWrite] = highUse;
+  scaleSettings[WEN_FUNC_TRIGGER.mnemonicWrite] = highUse;
   scaleSettings[WEN_FUNC.mintCollection] = lowCold;
-
-  scaleSettings[WEN_FUNC_TRIGGER.algolia] = important;
-  scaleSettings[WEN_FUNC_TRIGGER.resizeImg] = pump;
+  scaleSettings[WEN_FUNC_TRIGGER.resizeImg] = highUse;
 
   return isProdEnv() ? scaleSettings[func] || lowCold : 0;
 }
@@ -73,33 +68,37 @@ export function scaleAlgolia(col: COL): GlobalOptions {
   const scaleSettings = {} as { [key: string]: GlobalOptions };
   scaleSettings[COL.SPACE] = {
     minInstances: lowWarm,
-    memory: '512MiB',
+    memory: '256MiB',
   };
   scaleSettings[COL.TOKEN] = {
     minInstances: lowWarm,
-    memory: '512MiB',
+    memory: '256MiB',
   };
   scaleSettings[COL.AWARD] = {
     minInstances: lowWarm,
-    memory: '512MiB',
+    memory: '256MiB',
   };
   // To support concurency.
   scaleSettings[COL.NFT] = {
-    minInstances: medium,
-    memory: '1GiB',
+    minInstances: highUse,
+    memory: '512MiB',
+    cpu: 1,
+    concurrency: 100,
   };
   // To support concurency.
   scaleSettings[COL.COLLECTION] = {
-    minInstances: medium,
-    memory: '1GiB',
+    minInstances: highUse,
+    memory: '512MiB',
+    cpu: 1,
+    concurrency: 100,
   };
   scaleSettings[COL.MEMBER] = {
     minInstances: lowWarm,
-    memory: '512MiB',
+    memory: '256MiB',
   };
   scaleSettings[COL.PROPOSAL] = {
     minInstances: lowWarm,
-    memory: '512MiB',
+    memory: '256MiB',
   };
 
   return isProdEnv()

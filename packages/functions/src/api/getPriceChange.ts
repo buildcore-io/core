@@ -43,7 +43,7 @@ export const getPriceChange = async (req: functions.https.Request, res: express.
     return;
   }
 
-  await sendLiveUpdates(res, result);
+  await sendLiveUpdates(body.sessionId, res, result);
 };
 
 const getPriceChangeLive = (token: string) => {

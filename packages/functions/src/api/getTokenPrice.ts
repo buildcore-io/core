@@ -46,7 +46,7 @@ export const getTokenPrice = async (req: functions.https.Request, res: express.R
     const combined = combineLatest(observables).pipe(
       map((result) => (result.length === 1 ? result[0] : result)),
     );
-    await sendLiveUpdates(res, combined);
+    await sendLiveUpdates(body.sessionId, res, combined);
     return;
   }
 
