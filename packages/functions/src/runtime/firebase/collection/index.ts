@@ -4,9 +4,8 @@ import { approveCollectionControl } from '../../../controls/collection/collectio
 import { createCollectionControl } from '../../../controls/collection/collection.create.control';
 import { rejectCollectionControl } from '../../../controls/collection/collection.reject.control';
 import { updateCollectionControl } from '../../../controls/collection/collection.update.control';
-import { onRequest } from '../../../firebase/functions/onRequest';
 import { CommonJoi, toJoiObject } from '../../../services/joi/common';
-import { UidSchemaObject } from '../common';
+import { UidSchemaObject, onRequest } from '../common';
 import { approveCollectionSchema } from './CollectionApproveRequestSchema';
 import { createCollectionSchema } from './CollectionCreateRequestSchema';
 import { mintCollectionSchema } from './CollectionMintRequestSchema';

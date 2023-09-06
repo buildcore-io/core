@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { COL, StakeType, TokenStakeRequest } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { createStakeOrder } from '../../services/payment/tangle-service/token/stake.service';
 
 export const depositStakeControl = async (owner: string, params: TokenStakeRequest) => {

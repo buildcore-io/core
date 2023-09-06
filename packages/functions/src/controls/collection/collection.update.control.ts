@@ -1,3 +1,4 @@
+import { build5Db, getSnapshot } from '@build-5/database';
 import {
   COL,
   Collection,
@@ -11,7 +12,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty, last, set } from 'lodash';
-import { build5Db, getSnapshot } from '../../firebase/firestore/build5Db';
 import { updateMintedCollectionSchemaObject } from '../../runtime/firebase/collection/CollectionUpdateMintedRequestSchema';
 import { updateCollectionSchemaObject } from '../../runtime/firebase/collection/CollectionUpdateRequestSchema';
 import { UidSchemaObject } from '../../runtime/firebase/common';

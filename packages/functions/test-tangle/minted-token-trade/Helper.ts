@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Member,
@@ -13,7 +14,6 @@ import {
 } from '@build-5/interfaces';
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';

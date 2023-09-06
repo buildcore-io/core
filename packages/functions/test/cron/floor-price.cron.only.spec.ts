@@ -1,6 +1,6 @@
+import { build5Db } from '@build-5/database';
 import { COL, Collection, MIN_IOTA_AMOUNT, NftAccess, NftAvailable } from '@build-5/interfaces';
 import { updateFloorPriceOnCollections } from '../../src/cron/collection.floor.price.cron';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 
 describe('Collection floor price', () => {

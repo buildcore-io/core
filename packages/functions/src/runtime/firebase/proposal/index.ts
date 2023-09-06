@@ -2,11 +2,11 @@ import { WEN_FUNC } from '@build-5/interfaces';
 import { proposalApprovalControl } from '../../../controls/proposal/approve.reject.proposal';
 import { createProposalControl } from '../../../controls/proposal/create.proposal';
 import { voteOnProposalControl } from '../../../controls/proposal/vote.on.proposal';
-import { onRequest } from '../../../firebase/functions/onRequest';
 import { approveProposaSchema } from './ProposalApproveRequestSchema';
 import { proposalCreateSchemaObject } from './ProposalCreateRequestSchema';
 import { rejectProposaSchema } from './ProposalRejectRequestSchema';
 import { voteOnProposalSchemaObject } from './ProposalVoteRequestSchema';
+import { onRequest } from '../common';
 
 export const createProposal = onRequest(WEN_FUNC.createProposal, {
   timeoutSeconds: 300,

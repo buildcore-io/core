@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -14,7 +15,6 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { assertHasAccess } from '../../services/validators/access';
 import { WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress, getAddress } from '../../utils/address.utils';

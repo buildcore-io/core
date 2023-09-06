@@ -1,7 +1,7 @@
+import { build5Db } from '@build-5/database';
 import { COL, SUB_COL } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { approveProposal, createProposal } from '../../src/runtime/firebase/proposal';
 import { mockWalletReturnValue } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';

@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -10,7 +11,6 @@ import {
 } from '@build-5/interfaces';
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';

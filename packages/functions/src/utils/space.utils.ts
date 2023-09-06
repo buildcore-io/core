@@ -1,6 +1,6 @@
+import { build5Db } from '@build-5/database';
 import { COL, Space, SUB_COL, WenError } from '@build-5/interfaces';
 import { head } from 'lodash';
-import { build5Db } from '../firebase/firestore/build5Db';
 import { serverTime } from './dateTime.utils';
 import { invalidArgument } from './error.utils';
 

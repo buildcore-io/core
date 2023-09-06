@@ -6,7 +6,6 @@ import { fundAwardControl } from '../../../controls/award/award.fund';
 import { addOwnerControl } from '../../../controls/award/award.owner';
 import { awardParticipateControl } from '../../../controls/award/award.participate';
 import { rejectAwardControl } from '../../../controls/award/award.reject';
-import { onRequest } from '../../../firebase/functions/onRequest';
 import { addOwnerSchema } from './AwardAddOwnerRequestSchema';
 import { approveAwardParticipantSchemaObject } from './AwardApproveParticipantRequestSchema';
 import { awardCancelSchema } from './AwardCancelRequestSchema';
@@ -14,6 +13,7 @@ import { awardCreateSchemaObject } from './AwardCreateRequestSchema';
 import { awardFundSchema } from './AwardFundRequestSchema';
 import { awardParticipateSchema } from './AwardParticipateRequestSchema';
 import { awardRejectSchema } from './AwardRejectRequestSchema';
+import { onRequest } from '../common';
 
 export const createAward = onRequest(WEN_FUNC.createAward)(
   awardCreateSchemaObject,

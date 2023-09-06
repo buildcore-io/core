@@ -52,7 +52,6 @@ import {
   updateSpace,
 } from './runtime/firebase/space';
 import { depositStake, removeStakeReward, stakeReward } from './runtime/firebase/stake';
-import { uploadFile } from './runtime/firebase/storage/file.upload';
 import {
   airdropToken,
   cancelPublicSale,
@@ -92,6 +91,7 @@ import { onTokenTradeOrderWrite } from './triggers/token-trading/token-trade-ord
 import { onTokenStatusUpdate } from './triggers/token.trigger';
 import { transactionWrite } from './triggers/transaction-trigger/transaction.trigger';
 import { isProdEnv } from './utils/config.utils';
+import { uploadFile } from './runtime/firebase/storage/file.upload';
 
 // Members functions.
 exports[WEN_FUNC.createMember] = createMember;

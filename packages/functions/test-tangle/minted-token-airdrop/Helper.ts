@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Network,
@@ -8,7 +9,6 @@ import {
   TokenDropStatus,
   TokenStatus,
 } from '@build-5/interfaces';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { serverTime } from '../../src/utils/dateTime.utils';

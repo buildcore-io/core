@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { COL, Stake, SUB_COL, Transaction } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { onStakeCreated } from '../../services/stake.service';
 
 export const onStakingConfirmed = async (billPayment: Transaction) => {

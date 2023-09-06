@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { Access, COL, Nft, SUB_COL, TransactionPayloadType, WenError } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { invalidArgument } from '../../utils/error.utils';
 
 export const assertHasAccess = async (

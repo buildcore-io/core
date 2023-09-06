@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   SUB_COL,
@@ -6,7 +7,6 @@ import {
   WEN_FUNC_TRIGGER,
 } from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { scale } from '../../scale.settings';
 
 export const onTokenPurchaseCreated = functions.firestore.onDocumentCreated(

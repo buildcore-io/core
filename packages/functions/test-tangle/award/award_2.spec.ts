@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   Award,
   COL,
@@ -21,7 +22,6 @@ import {
   TIMELOCK_UNLOCK_CONDITION_TYPE,
 } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import {
   approveAwardParticipant,
   awardParticipate,

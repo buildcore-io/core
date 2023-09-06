@@ -1,6 +1,6 @@
+import { build5Db } from '@build-5/database';
 import { COL, CollectionStats, SUB_COL } from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
-import { build5Db } from '../firebase/firestore/build5Db';
 import { getRankingThreshold } from '../utils/config.utils';
 
 export const collectionStatsUpdate = functions.firestore.onDocumentWritten(

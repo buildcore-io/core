@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Collection,
@@ -12,7 +13,6 @@ import {
   SUB_COL,
   WenError,
 } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { hasStakedSoonTokens } from '../../services/stake.service';
 import { assertSpaceHasValidAddress } from '../../utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';

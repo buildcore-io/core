@@ -4,8 +4,8 @@ import { COL, MilestoneTransaction, Network, SUB_COL } from '@build-5/interfaces
 
 import * as adminPackage from 'firebase-admin';
 
+import { build5Db } from '@build-5/database';
 import { last } from 'lodash';
-import { build5Db } from '../src/firebase/firestore/build5Db';
 
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
 

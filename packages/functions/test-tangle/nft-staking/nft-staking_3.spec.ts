@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Collection,
@@ -9,7 +10,6 @@ import {
 } from '@build-5/interfaces';
 import { TIMELOCK_UNLOCK_CONDITION_TYPE } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { stakeNft } from '../../src/runtime/firebase/nft';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';

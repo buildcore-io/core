@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { COL, Member } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { getRandomNonce } from '../../utils/wallet.utils';
 
 export const createMemberControl = async (owner: string) => {

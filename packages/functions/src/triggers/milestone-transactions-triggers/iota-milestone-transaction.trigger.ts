@@ -1,9 +1,9 @@
+import { build5Db } from '@build-5/database';
 import { COL, Network, SUB_COL } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { DocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions/v2';
 import { FirestoreEvent } from 'firebase-functions/v2/firestore';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { ProcessingService } from '../../services/payment/payment-processing';
 import { confirmTransaction, milestoneTriggerConfig } from './common';
 

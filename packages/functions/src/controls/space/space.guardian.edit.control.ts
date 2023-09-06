@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Proposal,
@@ -5,7 +6,6 @@ import {
   SUB_COL,
   SpaceMemberUpsertRequest,
 } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { addRemoveGuardian } from '../../services/payment/tangle-service/space/SpaceGuardianService';
 
 export const editGuardianControl =

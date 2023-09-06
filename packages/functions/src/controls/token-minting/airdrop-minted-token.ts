@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { build5Db } from '@build-5/database';
 import {
   COL,
   StakeType,
@@ -17,7 +18,6 @@ import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { CreateAirdropsRequest } from '../../runtime/firebase/token/base/TokenAirdropRequestSchema';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';

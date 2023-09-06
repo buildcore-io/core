@@ -1,6 +1,6 @@
+import { build5Db } from '@build-5/database';
 import { COL, Transaction, TransactionType } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../firebase/firestore/build5Db';
 import { ProcessingService } from '../services/payment/payment-processing';
 
 export const voidExpiredOrdersCron = async () => {

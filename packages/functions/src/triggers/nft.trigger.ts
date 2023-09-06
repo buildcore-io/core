@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Collection,
@@ -7,7 +8,6 @@ import {
   WEN_FUNC_TRIGGER,
 } from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
-import { build5Db } from '../firebase/firestore/build5Db';
 import { scale } from '../scale.settings';
 import { downloadMediaAndPackCar, nftToIpfsMetadata } from '../utils/car.utils';
 

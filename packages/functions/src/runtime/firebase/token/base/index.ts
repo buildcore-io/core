@@ -8,9 +8,8 @@ import { enableTokenTradingControl } from '../../../../controls/token/token.enab
 import { orderTokenControl } from '../../../../controls/token/token.order';
 import { setTokenAvailableForSaleControl } from '../../../../controls/token/token.set.for.sale';
 import { updateTokenControl } from '../../../../controls/token/token.update';
-import { onRequest } from '../../../../firebase/functions/onRequest';
 import { toJoiObject } from '../../../../services/joi/common';
-import { UidSchemaObject, uidSchema } from '../../common';
+import { UidSchemaObject, onRequest, uidSchema } from '../../common';
 import { airdropTokenSchema } from './TokenAirdropRequestSchema';
 import { cancelPubSaleSchema } from './TokenCancelPubSaleRequestSchema';
 import { claimAirdroppedTokenSchema } from './TokenClaimAirdroppedRequestSchema';

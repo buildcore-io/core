@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   MAX_WALLET_RETRY,
@@ -11,7 +12,6 @@ import { ITransactionPayload } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js-next';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { build5Db } from '../src/firebase/firestore/build5Db';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
 import { generateRandomAmount } from '../src/utils/common.utils';
 import { dateToTimestamp, serverTime } from '../src/utils/dateTime.utils';

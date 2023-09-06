@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { BaseTangleResponse, COL, SUB_COL } from '@build-5/interfaces';
-import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { TransactionService } from '../../transaction-service';

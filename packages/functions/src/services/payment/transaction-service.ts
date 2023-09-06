@@ -1,3 +1,4 @@
+import { IDocument, ITransaction, build5Db } from '@build-5/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -26,8 +27,6 @@ import {
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions/v2';
 import { get, isEmpty, set } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
-import { IDocument, ITransaction } from '../../firebase/firestore/interfaces';
 import { SmrMilestoneTransactionAdapter } from '../../triggers/milestone-transactions-triggers/SmrMilestoneTransactionAdapter';
 import { getOutputMetadata } from '../../utils/basic-output.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';

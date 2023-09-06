@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { COL, MIN_IOTA_AMOUNT, Member, Network, Space, Token } from '@build-5/interfaces';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';

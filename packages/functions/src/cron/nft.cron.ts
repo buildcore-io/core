@@ -1,6 +1,6 @@
+import { build5Db } from '@build-5/database';
 import { COL, Nft } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../firebase/firestore/build5Db';
 import { ProcessingService } from '../services/payment/payment-processing';
 
 const finalizeNftAuction = (nftId: string) =>

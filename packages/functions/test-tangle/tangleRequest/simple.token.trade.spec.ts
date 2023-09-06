@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Member,
@@ -11,7 +12,6 @@ import {
   TransactionType,
   WenError,
 } from '@build-5/interfaces';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { getAddress } from '../../src/utils/address.utils';
 import * as wallet from '../../src/utils/wallet.utils';

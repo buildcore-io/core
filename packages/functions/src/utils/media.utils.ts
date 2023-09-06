@@ -1,3 +1,4 @@
+import { IBucket } from '@build-5/database';
 import {
   Bucket,
   COL,
@@ -13,7 +14,6 @@ import fs from 'fs';
 import mime from 'mime-types';
 import os from 'os';
 import path from 'path';
-import { IBucket } from '../firebase/storage/interfaces';
 
 export const migrateUriToSotrage = async (
   col: COL,

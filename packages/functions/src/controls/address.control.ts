@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   AddressValidationRequest,
   COL,
@@ -6,7 +7,6 @@ import {
   Network,
   WenError,
 } from '@build-5/interfaces';
-import { build5Db } from '../firebase/firestore/build5Db';
 import { createAddressValidationOrder } from '../services/payment/tangle-service/address/address-validation.service';
 import { invalidArgument } from '../utils/error.utils';
 

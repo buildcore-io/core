@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import { COL, Member, Token, Transaction } from '@build-5/interfaces';
 import {
   IAliasOutput,
@@ -7,7 +8,6 @@ import {
   UnlockTypes,
 } from '@iota/iota.js-next';
 import { cloneDeep } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { getAddress } from '../../utils/address.utils';
 import { mergeOutputs } from '../../utils/basic-output.utils';
 import { packEssence, packPayload, submitBlock } from '../../utils/block.utils';

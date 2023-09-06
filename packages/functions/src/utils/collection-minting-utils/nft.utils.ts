@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import { COL, Collection, KEY_NAME_TANGLE, Nft } from '@build-5/interfaces';
 import {
   ADDRESS_UNLOCK_CONDITION_TYPE,
@@ -14,7 +15,6 @@ import {
 import { Converter } from '@iota/util.js-next';
 import dayjs from 'dayjs';
 import { head } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { PLACEHOLDER_CID } from '../car.utils';
 import { getContentType } from '../storage.utils';
 import { propsToAttributes } from './nft.prop.utils';

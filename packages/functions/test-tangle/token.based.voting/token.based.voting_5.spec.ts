@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { COL, TokenStatus } from '@build-5/interfaces';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { Helper } from './Helper';
 

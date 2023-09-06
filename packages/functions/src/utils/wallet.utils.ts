@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   DecodedToken,
@@ -23,7 +24,6 @@ import dayjs from 'dayjs';
 import { Wallet } from 'ethers';
 import jwt from 'jsonwebtoken';
 import { get } from 'lodash';
-import { build5Db } from '../firebase/firestore/build5Db';
 import { getCustomTokenLifetime, getJwtSecretKey } from './config.utils';
 import { unAuthenticated } from './error.utils';
 

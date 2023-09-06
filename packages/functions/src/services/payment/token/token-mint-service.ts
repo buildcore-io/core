@@ -1,7 +1,7 @@
+import { build5Db } from '@build-5/database';
 import { COL, Token, TokenStatus, Transaction, TransactionPayloadType } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get } from 'lodash';
-import { build5Db } from '../../../firebase/firestore/build5Db';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 
 export class TokenMintService {

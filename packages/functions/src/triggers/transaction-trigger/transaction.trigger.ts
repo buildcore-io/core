@@ -1,3 +1,4 @@
+import { ITransaction, build5Db } from '@build-5/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -15,8 +16,6 @@ import {
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions/v2';
 import { isEmpty } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
-import { ITransaction } from '../../firebase/firestore/interfaces';
 import { scale } from '../../scale.settings';
 import { NativeTokenWallet } from '../../services/wallet/NativeTokenWallet';
 import { NftWallet } from '../../services/wallet/NftWallet';

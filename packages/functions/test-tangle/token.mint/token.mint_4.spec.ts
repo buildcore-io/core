@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { build5Db } from '@build-5/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -9,7 +10,6 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { cancelPublicSale, setTokenAvailableForSale } from '../../src/runtime/firebase/token/base';
 import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';

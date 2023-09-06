@@ -9,13 +9,13 @@ import { createSpaceControl } from '../../../controls/space/space.create.control
 import { editGuardianControl } from '../../../controls/space/space.guardian.edit.control';
 import { joinSpaceControl } from '../../../controls/space/space.join.control';
 import { updateSpaceControl } from '../../../controls/space/space.update.control';
-import { onRequest } from '../../../firebase/functions/onRequest';
 import { spaceClaimSchema } from './SpaceClaimRequestSchema';
 import { createSpaceSchemaObject } from './SpaceCreateRequestSchema';
 import { editSpaceMemberSchemaObject } from './SpaceEditMemberRequestSchema';
 import { spaceJoinSchema } from './SpaceJoinRequestSchema';
 import { spaceLeaveSchema } from './SpaceLeaveRequestSchema';
 import { updateSpaceSchema } from './SpaceUpdateRequestSchema';
+import { onRequest } from '../common';
 
 export const createSpace = onRequest(WEN_FUNC.createSpace)(
   createSpaceSchemaObject,

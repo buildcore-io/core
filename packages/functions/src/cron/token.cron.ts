@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Token,
@@ -7,7 +8,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { build5Db } from '../firebase/firestore/build5Db';
 import { guardedRerun } from '../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../utils/dateTime.utils';
 import { cancelTradeOrderUtil } from '../utils/token-trade.utils';

@@ -8,7 +8,6 @@ import { setForSaleNftControl } from '../../../controls/nft/nft.set.for.sale';
 import { nftStakeControl } from '../../../controls/nft/nft.stake';
 import { updateUnsoldNftControl } from '../../../controls/nft/nft.update.unsold';
 import { withdrawNftControl } from '../../../controls/nft/nft.withdraw';
-import { onRequest } from '../../../firebase/functions/onRequest';
 import { nftBidSchema } from './NftBidRequestSchema';
 import { createSchema, nftCreateSchema } from './NftCreateRequestSchema';
 import { depositNftSchema } from './NftDepositRequestSchema';
@@ -17,6 +16,7 @@ import { setNftForSaleSchema } from './NftSetForSaleRequestSchema';
 import { stakeNftSchema } from './NftStakeRequestSchema';
 import { updateUnsoldNftSchema } from './NftUpdateUnsoldRequestSchema';
 import { nftWithdrawSchema } from './NftWithdrawRequestSchema';
+import { onRequest } from '../common';
 
 export const createNft = onRequest(WEN_FUNC.createNft)(nftCreateSchema, createNftControl);
 

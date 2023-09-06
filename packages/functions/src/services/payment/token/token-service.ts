@@ -1,3 +1,4 @@
+import { build5Db, getSnapshot } from '@build-5/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -20,7 +21,6 @@ import {
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { get, head, last } from 'lodash';
-import { build5Db, getSnapshot } from '../../../firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { getBoughtByMemberDiff, getTotalPublicSupply } from '../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';

@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   BaseTangleResponse,
   COL,
@@ -14,7 +15,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
-import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { generateRandomAmount } from '../../../../utils/common.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';

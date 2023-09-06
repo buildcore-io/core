@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   Award,
   COL,
@@ -13,7 +14,6 @@ import {
 } from '@build-5/interfaces';
 import { IndexerPluginClient } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { validateAddress } from '../../src/runtime/firebase/address';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
 import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';

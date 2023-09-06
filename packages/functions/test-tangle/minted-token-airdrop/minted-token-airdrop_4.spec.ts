@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Member,
@@ -14,7 +15,6 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { airdropMintedToken } from '../../src/runtime/firebase/token/minting';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { getAddress } from '../../src/utils/address.utils';

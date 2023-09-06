@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Member,
@@ -14,7 +15,6 @@ import {
 } from '@build-5/interfaces';
 import { TransactionHelper } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';

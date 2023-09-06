@@ -1,6 +1,6 @@
+import { build5Db } from '@build-5/database';
 import { COL, Member, WenError } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { voteOnProposal } from '../../src/runtime/firebase/proposal';
 import { getAddress } from '../../src/utils/address.utils';
 import { expectThrow, mockWalletReturnValue, wait } from '../../test/controls/common';

@@ -1,3 +1,4 @@
+import { IQuery, ITransaction, build5Db, getSnapshot } from '@build-5/database';
 import {
   COL,
   Token,
@@ -10,8 +11,6 @@ import {
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { cloneDeep, last } from 'lodash';
-import { build5Db, getSnapshot } from '../../firebase/firestore/build5Db';
-import { IQuery, ITransaction } from '../../firebase/firestore/interfaces';
 import { matchBaseToken } from './match-base-token';
 import { matchMintedToken } from './match-minted-token';
 import { matchSimpleToken, updateSellLockAndDistribution } from './match-simple-token';

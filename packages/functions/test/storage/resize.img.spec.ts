@@ -1,8 +1,8 @@
 import { Bucket } from '@build-5/interfaces';
-import { build5Storage } from '../../src/firebase/storage/build5Storage';
 import { ImageWidth } from '../../src/triggers/storage/resize.img.trigger';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { wait } from '../controls/common';
+import { build5Storage } from '@build-5/database';
 
 describe('Resize img test', () => {
   it('Should resize img', async () => {

@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   BaseTangleResponse,
   COL,
@@ -8,7 +9,6 @@ import {
   TokenDistribution,
   WenError,
 } from '@build-5/interfaces';
-import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { serverTime } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';

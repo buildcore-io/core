@@ -1,3 +1,4 @@
+import { build5Db, build5Storage, ITransaction } from '@build-5/database';
 import {
   Access,
   Award,
@@ -21,9 +22,6 @@ import {
 import { INftOutput } from '@iota/iota.js-next';
 import * as functions from 'firebase-functions/v2';
 import { head, isEmpty, set } from 'lodash';
-import { build5Db } from '../../../firebase/firestore/build5Db';
-import { ITransaction } from '../../../firebase/firestore/interfaces';
-import { build5Storage } from '../../../firebase/storage/build5Storage';
 import { getNftByMintingId } from '../../../utils/collection-minting-utils/nft.utils';
 import { getBucket } from '../../../utils/config.utils';
 import { serverTime } from '../../../utils/dateTime.utils';

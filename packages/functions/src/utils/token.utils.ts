@@ -1,3 +1,4 @@
+import { build5Db, getSnapshot } from '@build-5/database';
 import {
   COL,
   SUB_COL,
@@ -10,7 +11,6 @@ import {
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { last } from 'lodash';
-import { build5Db, getSnapshot } from '../firebase/firestore/build5Db';
 import { invalidArgument } from './error.utils';
 
 export const BIG_DECIMAL_PRECISION = 1000;

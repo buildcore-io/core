@@ -1,7 +1,7 @@
+import { build5Db } from '@build-5/database';
 import { COL, Collection, NftStake, StakeType } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { processExpiredNftStakes } from '../../src/cron/nftStake.cron';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 

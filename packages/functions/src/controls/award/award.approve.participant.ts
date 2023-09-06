@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   ApiError,
   AwardApproveParticipantRequest,
@@ -5,7 +6,6 @@ import {
   Transaction,
 } from '@build-5/interfaces';
 import { get } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { approveAwardParticipant } from '../../services/payment/tangle-service/award/award.approve.participant.service';
 
 export const approveAwardParticipantControl = async (

@@ -1,3 +1,4 @@
+import { IQuery, build5Db } from '@build-5/database';
 import {
   COL,
   Network,
@@ -6,8 +7,6 @@ import {
   TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
-import { IQuery } from '../../src/firebase/firestore/interfaces';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { getRandomSymbol, wait } from '../../test/controls/common';

@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Network,
@@ -12,7 +13,6 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 import chance from 'chance';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { validateAddress } from '../../src/runtime/firebase/address';
 import { createMember as createMemberFunc } from '../../src/runtime/firebase/member';
 import { createSpace as createSpaceFunc } from '../../src/runtime/firebase/space/index';

@@ -3,8 +3,8 @@ import cors from 'cors';
 import * as functions from 'firebase-functions/v2';
 import { createMemberControl } from '../../../controls/member/member.create';
 import { updateMemberControl } from '../../../controls/member/member.update';
-import { onRequest, onRequestConfig } from '../../../firebase/functions/onRequest';
 import { assertValidationAsync } from '../../../utils/schema.utils';
+import { onRequest, onRequestConfig } from '../common';
 import { createMemberSchema } from './CreateMemberRequestSchema';
 import { updateMemberSchema } from './UpdateMemberRequestSchema';
 
