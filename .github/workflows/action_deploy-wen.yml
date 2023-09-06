@@ -29,7 +29,6 @@ jobs:
       - name: Deploy Instance
         run: |
           cd packages/api
-          gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://us-west3-docker.pkg.dev
           npm run deploy:prod
   deploy_functions:
     runs-on: ubuntu-latest
