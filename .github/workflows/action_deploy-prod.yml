@@ -5,6 +5,30 @@ on:
     types: [published]
 
 jobs:
+  deploy_api:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE }}'
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+      - name: 'Use gcloud CLI'
+        run: 'gcloud info'
+      - name: Install dependencies
+        run:  npm install
+      - name: Build Instance
+        run:  npm run build:api
+      - name: Deploy Instance
+        run: |
+          cd packages/api
+          npm run deploy:prod
   deploy_functions:
     runs-on: ubuntu-latest
     environment: production
