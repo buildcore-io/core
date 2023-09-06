@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   MilestoneTransaction,
@@ -25,7 +26,6 @@ import {
 } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { packBasicOutput } from '../../../../utils/basic-output.utils';
 import {
   EMPTY_NFT_ID,

@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Collection,
@@ -13,7 +14,6 @@ import {
 import dayjs from 'dayjs';
 import { get, last } from 'lodash';
 import { AVAILABLE_NETWORKS } from '../../../controls/common';
-import { build5Db } from '../../../firebase/firestore/build5Db';
 import { getAddress } from '../../../utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
 import { NotificationService } from '../../notification/notification';

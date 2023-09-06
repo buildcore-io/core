@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Collection,
@@ -8,7 +9,6 @@ import {
   NftWithdrawRequest,
   WenError,
 } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { createNftWithdrawOrder } from '../../services/payment/tangle-service/nft/nft-purchase.service';
 import { assertMemberHasValidAddress, getAddress } from '../../utils/address.utils';
 import { invalidArgument } from '../../utils/error.utils';

@@ -1,3 +1,4 @@
+import { IBucket, build5Storage } from '@build-5/database';
 import { IMAGE_CACHE_AGE, WEN_FUNC_TRIGGER } from '@build-5/interfaces';
 import { path as ffmpegPath } from '@ffmpeg-installer/ffmpeg';
 import { spawn } from 'child-process-promise';
@@ -6,8 +7,6 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import sharp from 'sharp';
-import { build5Storage } from '../../firebase/storage/build5Storage';
-import { IBucket } from '../../firebase/storage/interfaces';
 import { scale } from '../../scale.settings';
 import { getBucket } from '../../utils/config.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';

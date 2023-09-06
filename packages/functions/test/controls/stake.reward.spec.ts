@@ -1,6 +1,6 @@
+import { build5Db } from '@build-5/database';
 import { COL, Space, StakeReward, WenError } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { stakeReward } from '../../src/runtime/firebase/stake';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';

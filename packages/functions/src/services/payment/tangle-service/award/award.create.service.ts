@@ -1,3 +1,4 @@
+import { build5Db, build5Storage } from '@build-5/database';
 import {
   Award,
   AwardBadge,
@@ -13,8 +14,6 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import { isEmpty, set } from 'lodash';
-import { build5Db } from '../../../../firebase/firestore/build5Db';
-import { build5Storage } from '../../../../firebase/storage/build5Storage';
 import { downloadMediaAndPackCar } from '../../../../utils/car.utils';
 import { getBucket } from '../../../../utils/config.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';

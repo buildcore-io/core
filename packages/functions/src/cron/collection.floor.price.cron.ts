@@ -1,6 +1,6 @@
+import { build5Db, getSnapshot } from '@build-5/database';
 import { COL, Collection, Nft, NftAccess, NftAvailable } from '@build-5/interfaces';
 import { head, last } from 'lodash';
-import { build5Db, getSnapshot } from '../firebase/firestore/build5Db';
 
 export const updateFloorPriceOnCollections = async () => {
   let lastUid = '';

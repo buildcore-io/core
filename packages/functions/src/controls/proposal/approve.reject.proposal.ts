@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { ApproveProposalRequest, COL, Proposal, RejectProposalRequest } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { getProposalApprovalData } from '../../services/payment/tangle-service/proposal/ProposalApporvalService';
 
 export const proposalApprovalControl =

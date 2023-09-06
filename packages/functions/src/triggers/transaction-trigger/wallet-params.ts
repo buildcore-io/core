@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   IOTATangleTransaction,
@@ -9,7 +10,6 @@ import {
 } from '@build-5/interfaces';
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { isProdEnv } from '../../utils/config.utils';
 
 export const getWalletParams = (transaction: Transaction, network: Network) => {

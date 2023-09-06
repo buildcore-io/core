@@ -1,6 +1,6 @@
+import { build5Db } from '@build-5/database';
 import { COL, Collection, Rank, RankRequest, SUB_COL, Token, WenError } from '@build-5/interfaces';
 import { set } from 'lodash';
-import { build5Db } from '../firebase/firestore/build5Db';
 import { hasStakedSoonTokens } from '../services/stake.service';
 import { getRankingSpace } from '../utils/config.utils';
 import { invalidArgument } from '../utils/error.utils';

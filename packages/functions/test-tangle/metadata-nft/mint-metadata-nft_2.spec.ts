@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Collection,
@@ -8,7 +9,6 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 import { IBasicOutput, ITransactionPayload } from '@iota/iota.js-next';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { getOutputMetadata } from '../../src/utils/basic-output.utils';

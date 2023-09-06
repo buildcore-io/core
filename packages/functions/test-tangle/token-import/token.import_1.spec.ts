@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   Access,
   COL,
@@ -9,7 +10,6 @@ import {
   TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { importMintedToken } from '../../src/runtime/firebase/token/minting';
 import { getAddress } from '../../src/utils/address.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';

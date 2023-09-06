@@ -1,7 +1,6 @@
+import { build5Db, build5Storage } from '@build-5/database';
 import { COL, MediaStatus, Network, SUB_COL } from '@build-5/interfaces';
 import { get, set } from 'lodash';
-import { build5Db } from '../../../../firebase/firestore/build5Db';
-import { build5Storage } from '../../../../firebase/storage/build5Storage';
 import { downloadMediaAndPackCar } from '../../../../utils/car.utils';
 import { getBucket, isProdEnv } from '../../../../utils/config.utils';
 import { migrateUriToSotrage, uriToUrl } from '../../../../utils/media.utils';

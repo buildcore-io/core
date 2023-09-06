@@ -1,10 +1,10 @@
+import { build5Db } from '@build-5/database';
 import { COL, Member, Network, WEN_FUNC, WenError } from '@build-5/interfaces';
 import { Ed25519, Ed25519 as Ed25519Next } from '@iota/crypto.js-next';
 import { Converter, Converter as ConverterNext } from '@iota/util.js-next';
 import { recoverPersonalSignature } from '@metamask/eth-sig-util';
 import jwt from 'jsonwebtoken';
 import { get } from 'lodash';
-import { build5Db } from '../src/firebase/firestore/build5Db';
 import { generateCustomToken } from '../src/runtime/firebase/auth';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
 import { WalletService } from '../src/services/wallet/wallet';

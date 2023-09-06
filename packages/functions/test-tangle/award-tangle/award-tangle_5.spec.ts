@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   Award,
   COL,
@@ -12,7 +13,6 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';

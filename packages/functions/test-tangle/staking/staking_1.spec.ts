@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   calcStakedMultiplier,
   COL,
@@ -14,7 +15,6 @@ import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { depositStake } from '../../src/runtime/firebase/stake';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';

@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Proposal,
@@ -8,7 +9,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get, head } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { getTokenForSpace } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from './transaction-service';

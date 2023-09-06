@@ -1,3 +1,4 @@
+import { ITransaction, build5Db } from '@build-5/database';
 import {
   COL,
   CreditPaymentReason,
@@ -14,8 +15,6 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 import bigDecimal from 'js-big-decimal';
-import { build5Db } from '../firebase/firestore/build5Db';
-import { ITransaction } from '../firebase/firestore/interfaces';
 import { getAddress } from './address.utils';
 import { getRandomEthAddress } from './wallet.utils';
 

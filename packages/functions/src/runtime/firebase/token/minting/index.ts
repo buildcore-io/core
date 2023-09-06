@@ -3,11 +3,11 @@ import { airdropMintedTokenControl } from '../../../../controls/token-minting/ai
 import { claimMintedTokenControl } from '../../../../controls/token-minting/claim-minted-token.control';
 import { importMintedTokenControl } from '../../../../controls/token-minting/import-minted-token';
 import { mintTokenControl } from '../../../../controls/token-minting/token-mint.control';
-import { onRequest } from '../../../../firebase/functions/onRequest';
 import { airdropTokenSchema } from '../base/TokenAirdropRequestSchema';
 import { symbolSchema } from './TokenClaimMintedRequestSchema';
 import { importMintedTokenSchema } from './TokenImportRequestSchema';
 import { mintTokenSchema } from './TokenMintRequestSchema';
+import { onRequest } from '../../common';
 
 export const airdropMintedToken = onRequest(WEN_FUNC.airdropMintedToken)(
   airdropTokenSchema,

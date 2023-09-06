@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Network,
@@ -9,7 +10,6 @@ import {
   TransactionValidationType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { WalletService } from '../../services/wallet/wallet';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';

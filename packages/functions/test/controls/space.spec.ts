@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE,
   COL,
@@ -17,7 +18,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { tail } from 'lodash';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { voteOnProposal } from '../../src/runtime/firebase/proposal';
 import {
   acceptMemberSpace,

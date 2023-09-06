@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { COL, UnsoldMintingOptions, WenError } from '@build-5/interfaces';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { mintCollection } from '../../src/runtime/firebase/collection/index';
 import * as config from '../../src/utils/config.utils';
 import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';

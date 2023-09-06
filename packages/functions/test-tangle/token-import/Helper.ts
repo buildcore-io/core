@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { COL, Member, Network, Space, SUB_COL, Token, TokenStatus } from '@build-5/interfaces';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails } from '../../src/services/wallet/wallet';

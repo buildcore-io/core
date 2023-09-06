@@ -1,8 +1,8 @@
+import { build5Db } from '@build-5/database';
 import { Award, COL, Member, Network, Space, Token, TokenStatus } from '@build-5/interfaces';
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';

@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   Access,
   Bucket,
@@ -12,7 +13,6 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../../../src/firebase/firestore/build5Db';
 import { createToken } from '../../../src/runtime/firebase/token/base';
 import * as config from '../../../src/utils/config.utils';
 import { dateToTimestamp } from '../../../src/utils/dateTime.utils';

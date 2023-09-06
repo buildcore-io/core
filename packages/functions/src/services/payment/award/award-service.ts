@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   Award,
   AwardBadgeType,
@@ -21,7 +22,6 @@ import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
-import { build5Db } from '../../../firebase/firestore/build5Db';
 import { packBasicOutput } from '../../../utils/basic-output.utils';
 import { PLACEHOLDER_CID } from '../../../utils/car.utils';
 import { createNftOutput } from '../../../utils/collection-minting-utils/nft.utils';

@@ -1,6 +1,6 @@
+import { build5Db } from '@build-5/database';
 import { Proposal, ProposalMember } from '@build-5/interfaces';
 import { head } from 'lodash';
-import { build5Db } from '../../../../../firebase/firestore/build5Db';
 import { createVoteTransaction } from './ProposalVoteService';
 
 export const executeSimpleVoting = async (

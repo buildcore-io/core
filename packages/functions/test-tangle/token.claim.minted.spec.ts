@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Member,
@@ -19,7 +20,6 @@ import { addressBalance } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { retryWallet } from '../src/cron/wallet.cron';
-import { build5Db } from '../src/firebase/firestore/build5Db';
 import { claimMintedTokenOrder, mintTokenOrder } from '../src/runtime/firebase/token/minting';
 import { MnemonicService } from '../src/services/wallet/mnemonic';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';

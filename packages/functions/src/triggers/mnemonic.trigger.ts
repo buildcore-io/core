@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   MAX_WALLET_RETRY,
@@ -7,7 +8,6 @@ import {
 } from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
 import { chunk, isEmpty } from 'lodash';
-import { build5Db } from '../firebase/firestore/build5Db';
 import { scale } from '../scale.settings';
 import {
   CREDIT_EXECUTABLE_TRANSACTIONS,

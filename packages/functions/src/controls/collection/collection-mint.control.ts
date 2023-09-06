@@ -1,3 +1,4 @@
+import { build5Db, getSnapshot } from '@build-5/database';
 import {
   COL,
   Collection,
@@ -19,7 +20,6 @@ import {
 import { AddressTypes, ED25519_ADDRESS_TYPE, INodeInfo } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
-import { build5Db, getSnapshot } from '../../firebase/firestore/build5Db';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress, assertSpaceHasValidAddress } from '../../utils/address.utils';

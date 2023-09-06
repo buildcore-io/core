@@ -1,6 +1,6 @@
+import { build5Db } from '@build-5/database';
 import { COL, Collection, MediaStatus, Space } from '@build-5/interfaces';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { collectionToIpfsMetadata, nftToIpfsMetadata } from '../../src/utils/car.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, wait } from '../../test/controls/common';

@@ -1,6 +1,6 @@
+import { build5Db } from '@build-5/database';
 import { COL, SYSTEM_CONFIG_DOC_ID, SystemConfig } from '@build-5/interfaces';
 import bigDecimal from 'js-big-decimal';
-import { build5Db } from '../firebase/firestore/build5Db';
 import {
   getRoyaltyPercentage,
   getRoyaltySpaces,

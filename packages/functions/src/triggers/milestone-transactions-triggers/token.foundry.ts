@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import { COL } from '@build-5/interfaces';
 import {
   FOUNDRY_OUTPUT_TYPE,
@@ -9,7 +10,6 @@ import {
   OutputTypes,
   TransactionHelper,
 } from '@iota/iota.js-next';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { getTokenByMintId } from '../../utils/token.utils';
 
 export const updateTokenSupplyData = async (data: Record<string, unknown>) => {

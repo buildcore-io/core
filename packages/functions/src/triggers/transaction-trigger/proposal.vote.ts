@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { COL, Transaction, TransactionType } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { SmrMilestoneTransactionAdapter } from '../milestone-transactions-triggers/SmrMilestoneTransactionAdapter';
 
 export const onProposalVoteCreditConfirmed = async (transaction: Transaction) => {

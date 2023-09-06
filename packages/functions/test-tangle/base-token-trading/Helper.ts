@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { build5Db } from '@build-5/database';
 import { COL, Member, Network, Token, TokenStatus } from '@build-5/interfaces';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { createMember } from '../../src/runtime/firebase/member';
 import { IotaWallet } from '../../src/services/wallet/IotaWalletService';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { build5Db } from '@build-5/database';
 import { COL, MIN_IOTA_AMOUNT, Network, Nft } from '@build-5/interfaces';
 import {
   AddressTypes,
@@ -10,7 +11,6 @@ import {
   UnlockTypes,
 } from '@iota/iota.js-next';
 import { cloneDeep } from 'lodash';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { depositNft } from '../../src/runtime/firebase/nft';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';

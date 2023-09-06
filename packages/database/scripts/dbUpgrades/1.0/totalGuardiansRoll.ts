@@ -2,9 +2,9 @@
 
 import { COL, PublicCollections, PublicSubCollections, SUB_COL, Space } from '@build-5/interfaces';
 import { last } from 'lodash';
-import { FirebaseApp } from '../../../src/firebase/app/app';
-import { Firestore } from '../../../src/firebase/firestore/firestore';
-import { IDocument } from '../../../src/firebase/firestore/interfaces';
+import { FirebaseApp } from '../../../src/app/app';
+import { Firestore } from '../../../src/firestore/firestore';
+import { IDocument } from '../../../src/firestore/interfaces';
 
 export const totalGuardiansRoll = async (app: FirebaseApp) => {
   const db = new Firestore(app);

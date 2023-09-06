@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { AwardFundRequest, COL, Transaction } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import {
   createAwardFundOrder,
   getAwardForFunding,

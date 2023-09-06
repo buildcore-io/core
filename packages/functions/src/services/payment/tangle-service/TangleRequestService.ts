@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Member,
@@ -10,7 +11,6 @@ import {
 } from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
 import { get } from 'lodash';
-import { build5Db } from '../../../firebase/firestore/build5Db';
 import { getOutputMetadata } from '../../../utils/basic-output.utils';
 import { invalidArgument } from '../../../utils/error.utils';
 import { getRandomNonce } from '../../../utils/wallet.utils';

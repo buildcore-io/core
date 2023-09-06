@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Member,
@@ -16,7 +17,6 @@ import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import {
   approveProposal,
   createProposal,

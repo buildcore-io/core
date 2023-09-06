@@ -1,6 +1,6 @@
+import { build5Db } from '@build-5/database';
 import { COL, Transaction, TransactionPayloadType, TransactionType } from '@build-5/interfaces';
 import { ITransactionPayload, TransactionHelper } from '@iota/iota.js-next';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { indexToString } from '../../utils/block.utils';
 import { getTransactionPayloadHex } from '../../utils/smr.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';

@@ -1,3 +1,4 @@
+import { IBatch, build5Db } from '@build-5/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -20,8 +21,6 @@ import {
 import * as functions from 'firebase-functions/v2';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
-import { build5Db } from '../firebase/firestore/build5Db';
-import { IBatch } from '../firebase/firestore/interfaces';
 import { scale } from '../scale.settings';
 import { WalletService } from '../services/wallet/wallet';
 import { getAddress } from '../utils/address.utils';

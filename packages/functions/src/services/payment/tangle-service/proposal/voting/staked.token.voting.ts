@@ -1,3 +1,4 @@
+import { build5Db, ITransaction } from '@build-5/database';
 import {
   COL,
   Proposal,
@@ -8,8 +9,6 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../../../../../firebase/firestore/build5Db';
-import { ITransaction } from '../../../../../firebase/firestore/interfaces';
 import { invalidArgument } from '../../../../../utils/error.utils';
 import { getTokenVoteMultiplier } from '../../../voting-service';
 import { createVoteTransaction } from './ProposalVoteService';

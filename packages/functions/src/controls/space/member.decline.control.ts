@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { COL, SUB_COL, SpaceMemberUpsertRequest } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { assertIsGuardian } from '../../utils/token.utils';
 
 export const declineMemberControl = async (owner: string, params: SpaceMemberUpsertRequest) => {

@@ -1,3 +1,4 @@
+import { build5Db, build5Storage } from '@build-5/database';
 import {
   Access,
   COL,
@@ -21,8 +22,6 @@ import {
 import { Converter } from '@iota/util.js-next';
 import Joi from 'joi';
 import { get, isEmpty } from 'lodash';
-import { build5Db } from '../../../firebase/firestore/build5Db';
-import { build5Storage } from '../../../firebase/storage/build5Storage';
 import { getBucket } from '../../../utils/config.utils';
 import { migrateUriToSotrage, uriToUrl } from '../../../utils/media.utils';
 import { isAliasGovernor } from '../../../utils/token-minting-utils/alias.utils';

@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Entity,
@@ -11,7 +12,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from './transaction-service';

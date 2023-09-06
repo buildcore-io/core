@@ -1,7 +1,7 @@
+import { build5Db } from '@build-5/database';
 import { COL } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { markExpiredProposalCompleted } from '../../src/cron/proposal.cron';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 

@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Member,
@@ -7,7 +8,6 @@ import {
   NftStatus,
   WenError,
 } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { invalidArgument } from '../../utils/error.utils';
 import { cleanupParams } from '../../utils/schema.utils';
 

@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   Award,
   COL,
@@ -36,7 +37,6 @@ import { Converter } from '@iota/util.js-next';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions/v2';
 import { cloneDeep, get, head, isEmpty } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { getAddress } from '../../utils/address.utils';
 import { mergeOutputs } from '../../utils/basic-output.utils';
 import { isValidBlockSize, packEssence, packPayload, submitBlock } from '../../utils/block.utils';

@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { COL, DEFAULT_NETWORK, Network } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { IotaWallet, getIotaClient } from './IotaWalletService';
 import { SmrWallet, getShimmerClient } from './SmrWalletService';
 

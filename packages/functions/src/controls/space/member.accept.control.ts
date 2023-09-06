@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { COL, SpaceMember, SpaceMemberUpsertRequest, SUB_COL } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { acceptSpaceMember } from '../../services/payment/tangle-service/space/SpaceAcceptMemberService';
 
 export const acceptSpaceMemberControl = async (owner: string, params: SpaceMemberUpsertRequest) => {

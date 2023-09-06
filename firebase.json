@@ -7,13 +7,16 @@
   "functions": {
     "predeploy": [
       "npm run build:functions",
+      "rm -rf packages/functions/interfaces",
+      "rm -rf packages/functions/database",
       "cp -r packages/interfaces packages/functions/interfaces",
-      "sed -i.bu 's/\"*\"/\"file:.\\/interfaces\"/g' packages/functions/package.json",
-      "rm packages/functions/package.json.bu"
+      "cp -r packages/database packages/functions/database",
+      "node pre.functions.deploy.js"
     ],
     "postdeploy": [
-      "sed -i.bu 's/\"file:.\\/interfaces\"/\"*\"/g' packages/functions/package.json",
-      "rm packages/functions/package.json.bu"
+      "node post.functions.deploy.js",
+      "rm -rf packages/functions/interfaces",
+      "rm -rf packages/functions/database"
     ],
     "source": "packages/functions"
   },

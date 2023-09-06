@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   Award,
   COL,
@@ -9,7 +10,6 @@ import {
   Token,
 } from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
-import { build5Db } from '../firebase/firestore/build5Db';
 import { awardToIpfsMetadata } from '../services/payment/award/award-service';
 import {
   collectionToIpfsMetadata,

@@ -1,3 +1,4 @@
+import { ITransaction, build5Db } from '@build-5/database';
 import {
   COL,
   Entity,
@@ -15,8 +16,6 @@ import { INodeInfo } from '@iota/iota.js-next';
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import bigDecimal from 'js-big-decimal';
-import { build5Db } from '../../firebase/firestore/build5Db';
-import { ITransaction } from '../../firebase/firestore/interfaces';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { getAddress } from '../../utils/address.utils';

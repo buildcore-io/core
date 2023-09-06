@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { build5Db } from '@build-5/database';
 import {
   COL,
   KEY_NAME_TANGLE,
@@ -13,7 +14,6 @@ import {
 import { IFoundryOutput, IndexerPluginClient, addressBalance } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { isEqual } from 'lodash';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';

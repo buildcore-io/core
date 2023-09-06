@@ -1,3 +1,4 @@
+import { build5Db, getSnapshot } from '@build-5/database';
 import {
   COL,
   Collection,
@@ -14,7 +15,6 @@ import {
 } from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
 import { last } from 'lodash';
-import { build5Db, getSnapshot } from '../firebase/firestore/build5Db';
 import { scale } from '../scale.settings';
 import { getAddress } from '../utils/address.utils';
 import { collectionToIpfsMetadata, downloadMediaAndPackCar } from '../utils/car.utils';

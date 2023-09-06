@@ -1,3 +1,4 @@
+import { build5Storage } from '@build-5/database';
 import { Bucket, WEN_FUNC, WenError, generateRandomFileName } from '@build-5/interfaces';
 import busboy from 'busboy';
 import cors from 'cors';
@@ -7,11 +8,10 @@ import fs from 'fs';
 import mime from 'mime-types';
 import os from 'os';
 import path from 'path';
-import { onRequestConfig } from '../../../firebase/functions/onRequest';
-import { build5Storage } from '../../../firebase/storage/build5Storage';
 import { getBucket } from '../../../utils/config.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { fileUploadSchema } from './FileUploadRequestSchema';
+import { onRequestConfig } from '../common';
 
 const MAX_FILE_SIZE_BYTES = 104857600; // 100 MB
 

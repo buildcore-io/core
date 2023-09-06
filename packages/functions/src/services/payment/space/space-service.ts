@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Collection,
@@ -17,7 +18,6 @@ import {
   ISSUER_FEATURE_TYPE,
   IndexerPluginClient,
 } from '@iota/iota.js-next';
-import { build5Db } from '../../../firebase/firestore/build5Db';
 import { Bech32AddressHelper } from '../../../utils/bech32-address.helper';
 import { serverTime } from '../../../utils/dateTime.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { build5Db } from '@build-5/database';
 import { COL, Member, Nft, NftStatus, Transaction, TransactionType } from '@build-5/interfaces';
 import { isEqual } from 'lodash';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { depositNft, withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';

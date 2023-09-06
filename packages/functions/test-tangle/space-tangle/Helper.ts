@@ -1,6 +1,5 @@
+import { IQuery, build5Db } from '@build-5/database';
 import { COL, Member, Network, Space, Transaction, TransactionType } from '@build-5/interfaces';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
-import { IQuery } from '../../src/firebase/firestore/interfaces';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';

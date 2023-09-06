@@ -1,3 +1,4 @@
+import { ITransaction, build5Db } from '@build-5/database';
 import {
   ApiError,
   Award,
@@ -18,8 +19,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get, head, isEmpty } from 'lodash';
-import { build5Db } from '../../../../firebase/firestore/build5Db';
-import { ITransaction } from '../../../../firebase/firestore/interfaces';
 import { getAddress } from '../../../../utils/address.utils';
 import { serverTime } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';

@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import { COL, Member, Network, SUB_COL, Space, Token, TokenStatus } from '@build-5/interfaces';
 import {
   ALIAS_UNLOCK_TYPE,
@@ -17,7 +18,6 @@ import {
 import { Converter, HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import { cloneDeep } from 'lodash';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';

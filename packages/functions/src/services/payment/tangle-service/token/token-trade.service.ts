@@ -1,3 +1,4 @@
+import { ITransaction, build5Db } from '@build-5/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -25,8 +26,6 @@ import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { set } from 'lodash';
-import { build5Db } from '../../../../firebase/firestore/build5Db';
-import { ITransaction } from '../../../../firebase/firestore/interfaces';
 import { assertMemberHasValidAddress } from '../../../../utils/address.utils';
 import { packBasicOutput } from '../../../../utils/basic-output.utils';
 import { isProdEnv } from '../../../../utils/config.utils';

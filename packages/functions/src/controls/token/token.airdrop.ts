@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   StakeType,
@@ -9,7 +10,6 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import { chunk } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { CreateAirdropsRequest } from '../../runtime/firebase/token/base/TokenAirdropRequestSchema';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';

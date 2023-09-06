@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import { COL, Network, Transaction, WEN_FUNC_TRIGGER } from '@build-5/interfaces';
 import { ITransactionPayload } from '@iota/iota.js';
 import { ITransactionPayload as ITransactionPayloadNext } from '@iota/iota.js-next';
@@ -6,7 +7,6 @@ import { Converter as ConverterNext } from '@iota/util.js-next';
 import dayjs from 'dayjs';
 import { DocumentOptions } from 'firebase-functions/v2/firestore';
 import { isEmpty } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { scale } from '../../scale.settings';
 import { IotaWallet } from '../../services/wallet/IotaWalletService';
 import { WalletService } from '../../services/wallet/wallet';

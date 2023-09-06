@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Member,
@@ -12,7 +13,6 @@ import {
 import * as functions from 'firebase-functions/v2';
 import { DocumentOptions } from 'firebase-functions/v2/firestore';
 import bigDecimal from 'js-big-decimal';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { scale } from '../../scale.settings';
 import { getStakeForType, getTier } from '../../services/stake.service';
 import { cancelTradeOrderUtil } from '../../utils/token-trade.utils';

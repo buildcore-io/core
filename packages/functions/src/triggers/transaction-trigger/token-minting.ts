@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Member,
@@ -18,7 +19,6 @@ import {
 } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions/v2';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { getAddress } from '../../utils/address.utils';
 import { indexToString } from '../../utils/block.utils';
 import { getTransactionPayloadHex } from '../../utils/smr.utils';

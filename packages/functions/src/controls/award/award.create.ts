@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { Award, AwardCreateRequest, COL, SUB_COL } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { createAward } from '../../services/payment/tangle-service/award/award.create.service';
 
 export const createAwardControl = async (owner: string, params: AwardCreateRequest) => {

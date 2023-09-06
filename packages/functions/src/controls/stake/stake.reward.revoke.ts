@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   BaseProposalAnswerValue,
   COL,
@@ -18,7 +19,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { uniq } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';

@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { COL, Network, NftStakeRequest, StakeType, Transaction } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { createNftStakeOrder } from '../../services/payment/nft/nft-stake-service';
 
 export const nftStakeControl = async (
