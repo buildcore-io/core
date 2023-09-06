@@ -10,7 +10,7 @@ import {
   TransactionPayloadType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { get, last, set } from 'lodash';
+import { last, set } from 'lodash';
 import { AVAILABLE_NETWORKS } from '../../../controls/common';
 import { build5Db } from '../../../firebase/firestore/build5Db';
 import { getAddress } from '../../../utils/address.utils';
@@ -44,8 +44,9 @@ export class NftService {
 
     this.setTradingStats(nft);
 
-    const tanglePuchase = get(order, 'payload.tanglePuchase', false);
-    if (tanglePuchase && AVAILABLE_NETWORKS.includes(order.network!)) {
+    const tanglePuchase = order.payload.tanglePuchase;
+    const disableWithdraw = order.payload.disableWithdraw;
+    if (!disableWithdraw && tanglePuchase && AVAILABLE_NETWORKS.includes(order.network!)) {
       const membderDocRef = build5Db().doc(`${COL.MEMBER}/${order.member}`);
       const member = <Member>await membderDocRef.get();
       const { order: withdrawOrder, nftUpdateData } = createNftWithdrawOrder(

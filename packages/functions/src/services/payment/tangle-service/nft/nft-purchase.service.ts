@@ -24,7 +24,7 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { isEmpty, set } from 'lodash';
+import { isEmpty } from 'lodash';
 import { AVAILABLE_NETWORKS } from '../../../../controls/common';
 import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { getAddress } from '../../../../utils/address.utils';
@@ -54,7 +54,8 @@ export class TangleNftPurchaseService {
     const params = await assertValidationAsync(nftPurchaseSchema, request);
 
     const order = await createNftPuchaseOrder(params.collection, params.nft, owner);
-    set(order, 'payload.tanglePuchase', true);
+    order.payload.tanglePuchase = true;
+    order.payload.disableWithdraw = params.disableWithdraw || false;
 
     this.transactionService.push({
       ref: build5Db().doc(`${COL.TRANSACTION}/${order.uid}`),

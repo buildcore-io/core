@@ -142,4 +142,7 @@ export interface TransactionPayload {
   outputConsumedOn?: Timestamp;
   stakes?: EthAddress[];
   stakeReward?: EthAddress;
+
+  tanglePuchase?: boolean;
+  disableWithdraw?: boolean;
 }

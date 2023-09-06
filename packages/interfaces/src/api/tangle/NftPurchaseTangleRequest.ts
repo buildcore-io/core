@@ -12,6 +12,10 @@ export interface NftPurchaseTangleRequest {
    */
   collection: string;
   /**
+   * If set to true, NFT will not be sent to the buyer's validated address upon purchase.
+   */
+  disableWithdraw?: boolean;
+  /**
    * Build5 if of the nft to be purchased.
    */
   nft?: string;
