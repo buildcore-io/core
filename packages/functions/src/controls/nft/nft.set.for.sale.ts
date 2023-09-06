@@ -87,11 +87,19 @@ const getNftUpdateData = (params: NftSetForSaleRequest) => {
     update.auctionHighestBid = 0;
     update.auctionHighestBidder = null;
     update.auctionHighestTransaction = null;
+    if (params.extendedAuctionLength) {
+      update.extendedAuctionTo = dayjs(params.auctionFrom)
+        .add(params.extendedAuctionLength, 'ms')
+        .toDate();
+      update.extendedAuctionLength = params.extendedAuctionLength;
+    }
   } else {
     update.auctionFrom = null;
     update.auctionTo = null;
+    update.extendedAuctionTo = null;
     update.auctionFloorPrice = null;
     update.auctionLength = null;
+    update.extendedAuctionLength = null;
     update.auctionHighestBid = null;
     update.auctionHighestBidder = null;
     update.auctionHighestTransaction = null;

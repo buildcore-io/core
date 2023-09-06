@@ -32,6 +32,10 @@ export interface NftSetForSaleRequest {
    */
   availableFrom?: Date;
   /**
+   * If set, auction will automatically extend by this length if a bid comes in within 5 minutes before the end of the auction.
+   */
+  extendedAuctionLength?: number;
+  /**
    * Build5 id of the nft.
    */
   nft: string;

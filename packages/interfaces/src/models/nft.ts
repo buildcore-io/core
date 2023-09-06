@@ -114,6 +114,10 @@ export interface Nft extends BaseRecord {
    */
   auctionTo?: Timestamp | null;
   /**
+   * NFT Auction extended to date/time
+   */
+  extendedAuctionTo?: Timestamp | null;
+  /**
    * NFT Auction current highest bid
    */
   auctionHighestBid?: number | null;
@@ -149,6 +153,10 @@ export interface Nft extends BaseRecord {
    * Auction length.
    */
   auctionLength?: number | null;
+  /**
+   * Extended auction length.
+   */
+  extendedAuctionLength?: number | null;
   /**
    * Collection Type. Inherited from the {@link Collection}. It's hear for filtering purposes.
    */

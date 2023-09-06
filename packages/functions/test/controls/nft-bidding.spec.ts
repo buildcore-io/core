@@ -19,6 +19,7 @@ import {
 import dayjs from 'dayjs';
 import { finalizeAllNftAuctions } from '../../src/cron/nft.cron';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
+import { IDocument } from '../../src/firebase/firestore/interfaces';
 import { approveCollection, createCollection } from '../../src/runtime/firebase/collection/index';
 import { openBid } from '../../src/runtime/firebase/nft';
 import { createNft, orderNft, setForSaleNft } from '../../src/runtime/firebase/nft/index';
@@ -50,13 +51,13 @@ const submitOrderFunc = async <T>(address: string, params: T) => {
   return await testEnv.wrap(orderNft)({});
 };
 
-const dummyAuctionData = (uid: string) => ({
+const dummyAuctionData = (uid: string, auctionLength = 60000 * 4, from: dayjs.Dayjs = dayjs()) => ({
   nft: uid,
   price: MIN_IOTA_AMOUNT,
-  availableFrom: dayjs().toDate(),
-  auctionFrom: dayjs().toDate(),
+  availableFrom: from.toDate(),
+  auctionFrom: from.toDate(),
   auctionFloorPrice: MIN_IOTA_AMOUNT,
-  auctionLength: 60000 * 4,
+  auctionLength,
   access: NftAccess.OPEN,
 });
 
@@ -312,6 +313,92 @@ describe('Nft bidding', () => {
       .where('payload.nft', '==', nft.uid)
       .get();
     expect(transactionSnap.length).toBe(2);
+  });
+});
+
+describe('Nft bidding with extended auction', () => {
+  let now: dayjs.Dayjs;
+  let nftDocRef: IDocument;
+
+  const setForSale = async (auctionCustomLength?: number) => {
+    now = dayjs();
+    const auctionData = {
+      ...dummyAuctionData(nft.uid, auctionCustomLength, now),
+      extendedAuctionLength: 60000 * 10,
+    };
+    mockWalletReturnValue(walletSpy, memberAddress, auctionData);
+    await testEnv.wrap(setForSaleNft)({});
+
+    nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
+    await wait(async () => (await nftDocRef.get<Nft>())?.available === 3);
+  };
+
+  it('Should bid and auction date to extended date', async () => {
+    await setForSale();
+
+    let nftData = await nftDocRef.get<Nft>();
+
+    expect(nftData?.auctionLength).toBe(60000 * 4);
+    let auctionToDate = dayjs(nftData?.auctionTo?.toDate());
+    const expectedAuctionToDate = dayjs(dateToTimestamp(now, true).toDate()).add(
+      nftData?.auctionLength!,
+    );
+    expect(auctionToDate.isSame(expectedAuctionToDate)).toBe(true);
+
+    let auctionExtendedDate = dayjs(nftData?.extendedAuctionTo?.toDate());
+    const expectedAuctionExtendedToDate = dayjs(dateToTimestamp(now, true).toDate()).add(
+      nftData?.extendedAuctionLength!,
+    );
+    expect(auctionExtendedDate.isSame(expectedAuctionExtendedToDate)).toBe(true);
+    expect(nftData?.extendedAuctionLength).toBe(60000 * 10);
+
+    await bidNft(members[0], MIN_IOTA_AMOUNT);
+    nftData = <Nft>await build5Db().doc(`${COL.NFT}/${nft.uid}`).get();
+    expect(nftData.auctionHighestBidder).toBe(members[0]);
+
+    nftData = await nftDocRef.get<Nft>();
+    auctionToDate = dayjs(nftData?.auctionTo?.toDate());
+    auctionExtendedDate = dayjs(nftData?.extendedAuctionTo?.toDate());
+    expect(auctionToDate.isSame(expectedAuctionExtendedToDate)).toBe(true);
+    expect(nftData?.auctionLength).toBe(nftData?.extendedAuctionLength);
+  });
+
+  it('Should bid but not set auction date to extended date', async () => {
+    await setForSale(60000 * 6);
+    let nftData = await nftDocRef.get<Nft>();
+
+    expect(nftData?.auctionLength).toBe(60000 * 6);
+    let auctionToDate = dayjs(nftData?.auctionTo?.toDate());
+    const expectedAuctionToDate = dayjs(dateToTimestamp(now, true).toDate()).add(
+      nftData?.auctionLength!,
+    );
+    expect(auctionToDate.isSame(expectedAuctionToDate)).toBe(true);
+
+    let auctionExtendedDate = dayjs(nftData?.extendedAuctionTo?.toDate());
+    const expectedAuctionExtendedToDate = dayjs(dateToTimestamp(now, true).toDate()).add(
+      nftData?.extendedAuctionLength!,
+    );
+    expect(auctionExtendedDate.isSame(expectedAuctionExtendedToDate)).toBe(true);
+    expect(nftData?.extendedAuctionLength).toBe(60000 * 10);
+
+    await bidNft(members[0], MIN_IOTA_AMOUNT);
+    nftData = <Nft>await build5Db().doc(`${COL.NFT}/${nft.uid}`).get();
+    expect(nftData.auctionHighestBidder).toBe(members[0]);
+
+    nftData = await nftDocRef.get<Nft>();
+    auctionToDate = dayjs(nftData?.auctionTo?.toDate());
+    auctionExtendedDate = dayjs(nftData?.extendedAuctionTo?.toDate());
+    expect(auctionToDate.isSame(expectedAuctionToDate)).toBe(true);
+    expect(nftData?.auctionLength).toBe(60000 * 6);
+  });
+
+  it('Should throw, extended auction lenght must be greater then auction lenght', async () => {
+    const auctionData = {
+      ...dummyAuctionData(nft.uid),
+      extendedAuctionLength: 60000 * 3,
+    };
+    mockWalletReturnValue(walletSpy, memberAddress, auctionData);
+    await expectThrow(testEnv.wrap(setForSaleNft)({}), WenError.invalid_params.key);
   });
 });
 

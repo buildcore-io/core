@@ -6,12 +6,11 @@ import {
   MilestoneTransactionEntry,
   Nft,
   NftAccess,
-  Notification,
   Transaction,
   TransactionPayloadType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { get, last } from 'lodash';
+import { get, last, set } from 'lodash';
 import { AVAILABLE_NETWORKS } from '../../../controls/common';
 import { build5Db } from '../../../firebase/firestore/build5Db';
 import { getAddress } from '../../../utils/address.utils';
@@ -135,8 +134,10 @@ export class NftService {
         data: {
           auctionFrom: null,
           auctionTo: null,
+          extendedAuctionTo: null,
           auctionFloorPrice: null,
           auctionLength: null,
+          extendedAuctionLength: null,
           auctionHighestBid: null,
           auctionHighestBidder: null,
           auctionHighestTransaction: null,
@@ -261,7 +262,7 @@ export class NftService {
           // Notify them.
           const refMember = build5Db().collection(COL.MEMBER).doc(refHighTranOrder?.member!);
           const sfDocMember = await this.transactionService.get<Member>(refMember);
-          const bidNotification: Notification = NotificationService.prepareLostBid(
+          const bidNotification = NotificationService.prepareLostBid(
             sfDocMember!,
             nft!,
             previousHighestPay,
@@ -278,13 +279,19 @@ export class NftService {
 
     // Update NFT with highest bid.
     if (newValidPayment) {
+      const nftUpdateData = {
+        auctionHighestBid: payment.payload.amount,
+        auctionHighestBidder: payment.member,
+        auctionHighestTransaction: payment.uid,
+      };
+      const auctionTTL = dayjs(nft?.auctionTo!.toDate()).diff(dayjs(), 's');
+      if ((nft?.auctionLength || 0) < (nft?.extendedAuctionLength || 0) && auctionTTL < 300) {
+        set(nftUpdateData, 'auctionTo', nft?.extendedAuctionTo || null);
+        set(nftUpdateData, 'auctionLength', nft?.extendedAuctionLength || null);
+      }
       this.transactionService.push({
         ref: nftDocRef,
-        data: {
-          auctionHighestBid: payment.payload.amount,
-          auctionHighestBidder: payment.member,
-          auctionHighestTransaction: payment.uid,
-        },
+        data: nftUpdateData,
         action: 'update',
       });
 
@@ -334,8 +341,10 @@ export class NftService {
       availablePrice: null,
       auctionFrom: null,
       auctionTo: null,
+      extendedAuctionTo: null,
       auctionFloorPrice: null,
       auctionLength: null,
+      extendedAuctionLength: null,
       auctionHighestBid: null,
       auctionHighestBidder: null,
       auctionHighestTransaction: null,

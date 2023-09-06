@@ -279,8 +279,10 @@ const setNftForMinting = async (nftId: string, collection: Collection): Promise<
     const nftUpdateData = <Nft>{
       auctionFrom: null,
       auctionTo: null,
+      extendedAuctionTo: null,
       auctionFloorPrice: null,
       auctionLength: null,
+      extendedAuctionLength: null,
       auctionHighestBid: null,
       auctionHighestBidder: null,
       auctionHighestTransaction: null,
