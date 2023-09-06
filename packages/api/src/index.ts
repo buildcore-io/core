@@ -1,4 +1,5 @@
 import { ApiRoutes } from '@build-5/interfaces';
+import cors from 'cors';
 import express from 'express';
 import { Observable, first } from 'rxjs';
 import ws from 'ws';
@@ -13,7 +14,6 @@ import { getTokenPrice } from './getTokenPrice';
 import { getTopMilestones } from './getTopMilestones';
 import { getUpdatedAfter } from './getUpdatedAfter';
 import { sendLiveUpdates } from './sendLiveUpdates';
-import cors from 'cors';
 
 const port = process.env.PORT || 3000;
 const app = express();
@@ -21,7 +21,7 @@ const app = express();
 app.use(cors());
 
 Object.values(ApiRoutes).forEach((route) => {
-  app.get(route, (req, res) => onConnection(req.url, res));
+  app.get('/api' + route, (req, res) => onConnection(req.url, res));
 });
 
 const wsServer = new ws.Server({ noServer: true });
