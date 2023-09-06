@@ -7,6 +7,12 @@ title: Overview
 
 
 __Features__: 
+- Space Management
+- Guardian Management
+- Member Management
+- Vault and Address Management
+
+<!-- 
 - Create Space
 - Claim Space
 - Update Space
@@ -16,4 +22,4 @@ __Features__:
 - Reject Member
 - Ban Member
 - Leave Space
-- Validate Address
+- Validate Address -->

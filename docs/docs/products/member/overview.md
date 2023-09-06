@@ -7,6 +7,9 @@ title: Overview
 
 
 __Features__: 
+- Member management
+- Member's address management
+<!-- 
 - Create Member
 - Update Member
-- Validate Address
+- Validate Address -->

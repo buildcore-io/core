@@ -6,10 +6,15 @@ title: Overview
 | :exclamation:  Documentation has not started yet. |
 |-------------------------------------------------- |
 
-Award is timelocked NFT.
+Award is time-locked NFT (NTT)
 
 __Features__: 
-
+- Award Management
+- Award Minting / NTT creation
+- Award funding and tokenization
+- Award participation management
+- Award distribution
+<!-- 
 - Create Award
 - Update Award
 - Mint Award
@@ -19,4 +24,4 @@ __Features__:
 - Approve & Distribute badge to participant
 - Reject Award
 - Add owner to Award
-- Cancel Award
+- Cancel Award -->

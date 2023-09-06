@@ -7,9 +7,12 @@ title: Overview
 
 
 __Features__: 
-- Stake NFT
+- NFT Stake management
+- NFT Stake metadata 
+
+<!-- 
   - Dynamic Staking
-  - Static Staking
+  - Static Staking -->
 
 ## Related
 - [NFT](../nft/overview)
