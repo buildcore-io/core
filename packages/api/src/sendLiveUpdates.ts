@@ -1,18 +1,9 @@
 import { Observable } from 'rxjs';
-import { WebSocket } from 'ws';
+import { Socket } from './index';
 
-export const sendLiveUpdates = <T>(socket: WebSocket, observable: Observable<T>) => {
-  let isAlive = true;
-  const pingInterval = setInterval(() => {
-    if (!isAlive) {
-      closeConnection();
-    }
-    isAlive = false;
-    socket.ping();
-  }, 5000);
-
+export const sendLiveUpdates = <T>(socket: Socket, observable: Observable<T>) => {
   socket.on('pong', () => {
-    isAlive = true;
+    socket.isAlive = true;
   });
 
   socket.on('close', () => {
@@ -36,6 +27,5 @@ export const sendLiveUpdates = <T>(socket: WebSocket, observable: Observable<T>)
   const closeConnection = (closeCode?: number) => {
     subscription.unsubscribe();
     socket.close(closeCode);
-    clearInterval(pingInterval);
   };
 };
