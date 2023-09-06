@@ -16,8 +16,10 @@ jobs:
           node-version: 18
       - id: 'auth'
         uses: 'google-github-actions/auth@v1'
+        env:
+          SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE_TEST }}
         with:
-          credentials_json: '${{ secrets.FUNCTIONS_ENV_VARS_TEST }}'
+          credentials_json: '${{ secrets.SERVICE_ACCOUNT }}'
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
       - name: 'Use gcloud CLI'
