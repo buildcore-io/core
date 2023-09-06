@@ -94,7 +94,7 @@ export interface Nft extends BaseRecord {
    */
   saleAccess?: NftAccess;
   /**
-   * Sales access Members {@requires saleAccess}
+   * Sales access Members {@link saleAccess}
    */
   saleAccessMembers?: string[];
   /**

@@ -10,11 +10,7 @@ Digital Twin through Metadata NFT. Note, this follows different logic to standar
 __Features__: 
 - Digital Twin management
 - Digital Twin parent-child relationship management
-<!-- 
-- Mint parent NFT and record metadata
-- Update Metadata
-- Mint child NFT and record metadata
-- Update child NFT and record metadata -->
+
 
 __Tutorials__: 
 - [Digital Twin NFT](https://github.com/build-5/build5-otr-examples/edit/master/src/examples/metadata_nft/TUTORIAL.md)

@@ -11,9 +11,3 @@ __Features__:
 - Proposal Management
 - On-Chain voting
 - DAO Management through voting
-
-<!-- 
-- Approve Proposal
-- Reject Proposal
-- Create Proposal
-- Vote on Proposal -->
