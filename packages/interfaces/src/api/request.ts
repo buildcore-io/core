@@ -2,16 +2,9 @@ import { Milestone, Network, TokenTradeOrderType } from '../models';
 import { PublicCollections, PublicSubCollections } from './base';
 
 /**
- * Base Request interface.
- */
-export interface BaseRequest {
-  readonly sessionId?: string;
-}
-
-/**
  * Get a record by it's ID.
  */
-export interface GetByIdRequest extends BaseRequest {
+export interface GetByIdRequest {
   /**
    * Provide Collection, see available public collections {@link PublicCollections}
    */
@@ -33,7 +26,7 @@ export interface GetByIdRequest extends BaseRequest {
 /**
  * Get many records by it's IDs
  */
-export interface GetManyByIdRequest extends BaseRequest {
+export interface GetManyByIdRequest {
   /**
    * Provide Collection, see available public collections {@link PublicCollections}
    */
@@ -57,7 +50,7 @@ export interface GetManyByIdRequest extends BaseRequest {
  *
  * startAfter allows pagging through the result.
  */
-export interface GetManyRequest extends BaseRequest {
+export interface GetManyRequest {
   /**
    * Provide Collection, see available public collections {@link PublicCollections}
    */
@@ -75,7 +68,7 @@ export interface GetManyRequest extends BaseRequest {
 /**
  * Get all records updated after unix timestamp. Use startAfter to paginate.
  */
-export interface GetUpdatedAfterRequest extends BaseRequest {
+export interface GetUpdatedAfterRequest {
   /**
    * Provide Collection, see available public collections {@link PublicCollections}
    */
@@ -95,11 +88,11 @@ export interface GetUpdatedAfterRequest extends BaseRequest {
 /**
  * Get token price
  */
-export interface GetTokenPrice extends BaseRequest {
+export interface GetTokenPrice {
   readonly token: string | string[];
 }
 
-export interface GetTokenPriceResponse extends BaseRequest {
+export interface GetTokenPriceResponse {
   readonly id: string;
   readonly price: number;
   readonly usdPrice: number;
@@ -109,7 +102,7 @@ export interface GetTokenPriceResponse extends BaseRequest {
  * Get all Build.5 addresses per Network.
  *
  */
-export interface GetAddressesRequest extends BaseRequest {
+export interface GetAddressesRequest {
   /**
    * Select Network. {@link Network}
    */
@@ -118,14 +111,6 @@ export interface GetAddressesRequest extends BaseRequest {
    * Address created after unix timestamp
    */
   readonly createdAfter?: number;
-}
-
-/**
- * Keep alive request to keep the session active.
- */
-export interface KeepAliveRequest {
-  readonly sessionId: string;
-  readonly instanceIds: string[];
 }
 
 /**
@@ -146,7 +131,7 @@ export enum Opr {
  *
  * Note: We only enable certain filtering options. Refer to @build.5/lib for enabled indexations.
  */
-export interface GetManyAdvancedRequest extends BaseRequest {
+export interface GetManyAdvancedRequest {
   /**
    * Provide Collection, see available public collections {@link PublicCollections}
    */
@@ -192,7 +177,7 @@ export interface GetManyAdvancedRequest extends BaseRequest {
 /**
  * Get average trade per token.
  */
-export interface GetAvgTradeRequest extends BaseRequest {
+export interface GetAvgTradeRequest {
   /**
    * Token UID
    */
@@ -208,7 +193,7 @@ export interface GetAvgTradeRequest extends BaseRequest {
  *
  * returns {@link GetAvgPriceResponse}
  */
-export interface GetAvgPriceRequest extends BaseRequest {
+export interface GetAvgPriceRequest {
   /**
    * Token UID
    */
@@ -226,7 +211,7 @@ export interface GetAvgPriceResponse {
 /**
  * Get average price change in past 24 hours per token.
  */
-export interface GetPriceChangeRequest extends BaseRequest {
+export interface GetPriceChangeRequest {
   /**
    * Token UID or array of tokens
    */
@@ -241,11 +226,6 @@ export interface GetPriceChangeResponse {
 /**
  * Get top milestone within all networks.
  */
-export interface GetTopMilestonesRequest {
-  /**
-   * Session ID.
-   */
-  readonly sessionId: string;
-}
+export interface GetTopMilestonesRequest {}
 
 export type GetTopMilestonesResponse = { [key: string]: Milestone };
