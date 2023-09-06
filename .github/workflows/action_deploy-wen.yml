@@ -3,7 +3,7 @@ name: Action | Deploy to WEN
 on:
   push:
     branches:
-      - develop
+      - develop_test
 
 jobs:
   deploy_api:
