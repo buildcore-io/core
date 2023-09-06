@@ -11,7 +11,6 @@ import { finalizeAllNftAuctions, hidePlaceholderAfterSoldOutCron } from './cron/
 import { processExpiredNftStakes } from './cron/nftStake.cron';
 import { voidExpiredOrdersCron } from './cron/orders.cron';
 import { markExpiredProposalCompleted } from './cron/proposal.cron';
-import { sessionCleanup } from './cron/session.cron';
 import { removeExpiredStakesFromSpace } from './cron/stake.cron';
 import { stakeRewardCronTask } from './cron/stakeReward.cron';
 import { cancelExpiredSale, tokenCoolDownOver } from './cron/token.cron';
@@ -98,11 +97,6 @@ const removePurchasesFromVolumeStatsCron = functions.scheduler.onSchedule(
   removePurchasesFromVolumeStats,
 );
 
-const removedExpiresSessions = functions.scheduler.onSchedule(
-  { timeoutSeconds: 540, schedule: 'every day 00:00' },
-  sessionCleanup,
-);
-
 export const cron = isProdOrTestEnv()
   ? {
       retrywalletcron: retryWalletCron,
@@ -120,6 +114,5 @@ export const cron = isProdOrTestEnv()
       updatefloorpriceoncollectionscron: updateFloorPriceOnCollectionsCron,
       markexpiredproposalcompletedcron: markExpiredProposalCompletedCron,
       removepurchasesfromvolumestatscron: removePurchasesFromVolumeStatsCron,
-      removedexpiressessions: removedExpiresSessions,
     }
   : {};

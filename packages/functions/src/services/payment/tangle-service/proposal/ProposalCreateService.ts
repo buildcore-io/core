@@ -1,7 +1,6 @@
 import {
   COL,
   Proposal,
-  ProposalCreateTangleRequest,
   ProposalCreateTangleResponse,
   ProposalMember,
   ProposalType,
@@ -11,16 +10,13 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import { build5Db } from '../../../../firebase/firestore/build5Db';
-import { createProposalSchema } from '../../../../runtime/firebase/proposal';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getTokenForSpace } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { toJoiObject } from '../../../joi/common';
 import { TransactionService } from '../../transaction-service';
-
-const schema = toJoiObject<ProposalCreateTangleRequest>(createProposalSchema);
+import { proposalCreateSchemaObject } from './ProposalCreateTangleRequestSchema';
 
 export class ProposalCreateService {
   constructor(readonly transactionService: TransactionService) {}
@@ -29,10 +25,9 @@ export class ProposalCreateService {
     owner: string,
     request: Record<string, unknown>,
   ): Promise<ProposalCreateTangleResponse> => {
-    delete request.requestType;
-    await assertValidationAsync(schema, request);
+    const params = await assertValidationAsync(proposalCreateSchemaObject, request);
 
-    const { proposal, proposalOwner } = await createProposal(owner, request);
+    const { proposal, proposalOwner } = await createProposal(owner, { ...params });
 
     const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
     this.transactionService.push({ ref: proposalDocRef, data: proposal, action: 'set' });

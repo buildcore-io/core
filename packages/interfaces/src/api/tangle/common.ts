@@ -1,5 +1,3 @@
-import { EthAddress, NativeToken } from '../../models';
-
 export enum TangleRequestType {
   ADDRESS_VALIDATION = 'ADDRESS_VALIDATION',
   SELL_TOKEN = 'SELL_TOKEN',
@@ -27,17 +25,4 @@ export enum TangleRequestType {
   SPACE_LEAVE = 'SPACE_LEAVE',
 
   MINT_METADATA_NFT = 'MINT_METADATA_NFT',
-}
-
-export interface BaseTangleRequest {
-  readonly requestType: TangleRequestType;
-}
-
-export interface BaseTangleResponse {
-  readonly status?: string;
-  readonly amount?: number;
-  readonly address?: EthAddress;
-  readonly code?: number;
-  readonly message?: string;
-  readonly nativeTokens?: NativeToken[];
 }

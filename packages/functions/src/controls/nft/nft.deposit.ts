@@ -1,5 +1,6 @@
 import {
   COL,
+  Network,
   NftDepositRequest,
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
@@ -17,7 +18,7 @@ export const depositNftControl = async (
   owner: string,
   params: NftDepositRequest,
 ): Promise<Transaction> => {
-  const network = params.network;
+  const network = params.network as Network;
   const wallet = await WalletService.newWallet(network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
 

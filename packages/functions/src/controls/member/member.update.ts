@@ -41,7 +41,7 @@ export const updateMemberControl = async (
     const nftDocRef = build5Db().doc(`${COL.NFT}/${params.avatarNft}`);
     batch.update(nftDocRef, { setAsAvatar: true });
   } else if (Object.keys(params).includes('avatarNft')) {
-    params.avatar = null;
+    (params as Record<string, unknown>).avatar = null;
   }
 
   if (member.avatarNft && member.avatarNft !== params.avatarNft) {

@@ -79,7 +79,9 @@ const getNftUpdateData = (params: NftSetForSaleRequest) => {
 
   if (params.auctionFrom) {
     update.auctionFrom = params.auctionFrom;
-    update.auctionTo = dayjs(params.auctionFrom).add(params.auctionLength, 'ms').toDate();
+    update.auctionTo = dayjs(params.auctionFrom)
+      .add(params.auctionLength || 0, 'ms')
+      .toDate();
     update.auctionFloorPrice = params.auctionFloorPrice;
     update.auctionLength = params.auctionLength;
     update.auctionHighestBid = 0;

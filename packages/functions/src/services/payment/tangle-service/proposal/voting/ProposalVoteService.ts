@@ -7,7 +7,6 @@ import {
   Proposal,
   ProposalMember,
   ProposalType,
-  ProposalVoteTangleRequest,
   ProposalVoteTangleResponse,
   SUB_COL,
   Token,
@@ -19,18 +18,15 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { build5Db } from '../../../../../firebase/firestore/build5Db';
-import { voteOnProposalSchema } from '../../../../../runtime/firebase/proposal';
 import { invalidArgument } from '../../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../../utils/schema.utils';
 import { getTokenForSpace } from '../../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../../utils/wallet.utils';
-import { toJoiObject } from '../../../../joi/common';
 import { TransactionService } from '../../../transaction-service';
+import { voteOnProposalSchemaObject } from './ProposalVoteTangleRequestSchema';
 import { executeSimpleVoting } from './simple.voting';
 import { voteWithStakedTokens } from './staked.token.voting';
 import { createVoteTransactionOrder } from './token.voting';
-
-const schema = toJoiObject<ProposalVoteTangleRequest>(voteOnProposalSchema);
 
 export class ProposalVoteService {
   constructor(readonly transactionService: TransactionService) {}
@@ -41,8 +37,7 @@ export class ProposalVoteService {
     milestoneTran: MilestoneTransaction,
     milestoneTranEntry: MilestoneTransactionEntry,
   ): Promise<ProposalVoteTangleResponse | undefined> => {
-    delete request.requestType;
-    const params = await assertValidationAsync(schema, request);
+    const params = await assertValidationAsync(voteOnProposalSchemaObject, request);
 
     const proposal = await getProposal(params.uid as string);
     const proposalMember = await getProposalMember(owner, proposal, params.value);

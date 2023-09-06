@@ -20,7 +20,6 @@ import dayjs from 'dayjs';
 import { get, head, isEmpty } from 'lodash';
 import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { ITransaction } from '../../../../firebase/firestore/interfaces';
-import { approveAwardParticipantSchema } from '../../../../runtime/firebase/award';
 import { getAddress } from '../../../../utils/address.utils';
 import { serverTime } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
@@ -28,6 +27,7 @@ import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { TransactionService } from '../../transaction-service';
+import { approveAwardParticipantSchemaObject } from './AwardAppParticipantTangleRequestSchema';
 
 export class AwardApproveParticipantService {
   constructor(readonly transactionService: TransactionService) {}
@@ -36,11 +36,7 @@ export class AwardApproveParticipantService {
     owner: string,
     request: Record<string, unknown>,
   ): Promise<AwardApproveParticipantTangleResponse> => {
-    const params = {
-      award: request.award as string,
-      members: request.members as string[],
-    };
-    await assertValidationAsync(approveAwardParticipantSchema, params);
+    const params = await assertValidationAsync(approveAwardParticipantSchemaObject, request);
 
     const badges: { [key: string]: string } = {};
     const errors: { [key: string]: ApiError } = {};

@@ -16,7 +16,6 @@ Library for third parties is located under /packages/lib and /packages/interface
 - Firestore (Database)
 - Typescript
 
-
 # 🤝 Contributing
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/soonaverse/soonaverse/pulls)

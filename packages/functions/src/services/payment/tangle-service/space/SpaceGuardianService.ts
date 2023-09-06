@@ -9,7 +9,6 @@ import {
   Space,
   SpaceGuardianUpsertTangleResponse,
   SpaceMember,
-  SpaceMemberUpsertTangleRequest,
   SUB_COL,
   TangleRequestType,
   Transaction,
@@ -18,16 +17,13 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { build5Db } from '../../../../firebase/firestore/build5Db';
-import { editSpaceMemberSchema } from '../../../../runtime/firebase/space';
 import { dateToTimestamp, serverTime } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { toJoiObject } from '../../../joi/common';
 import { TransactionService } from '../../transaction-service';
-
-const schema = toJoiObject<SpaceMemberUpsertTangleRequest>(editSpaceMemberSchema);
+import { editSpaceMemberSchemaObject } from './SpaceEditMemberTangleRequestSchema';
 
 export class SpaceGuardianService {
   constructor(readonly transactionService: TransactionService) {}
@@ -41,8 +37,7 @@ export class SpaceGuardianService {
         ? ProposalType.ADD_GUARDIAN
         : ProposalType.REMOVE_GUARDIAN;
 
-    delete request.requestType;
-    const params = await assertValidationAsync(schema, request);
+    const params = await assertValidationAsync(editSpaceMemberSchemaObject, request);
 
     const { proposal, voteTransaction, members } = await addRemoveGuardian(
       owner,

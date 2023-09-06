@@ -7,18 +7,14 @@ import {
   Nft,
   NftStatus,
   UpdateCollectionRequest,
-  UpdateMintedCollectionRequest,
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty, last, set } from 'lodash';
 import { build5Db, getSnapshot } from '../../firebase/firestore/build5Db';
-import {
-  updateCollectionSchema,
-  updateMintedCollectionSchema,
-} from '../../runtime/firebase/collection';
+import { updateMintedCollectionSchemaObject } from '../../runtime/firebase/collection/CollectionUpdateMintedRequestSchema';
+import { updateCollectionSchemaObject } from '../../runtime/firebase/collection/CollectionUpdateRequestSchema';
 import { UidSchemaObject } from '../../runtime/firebase/common';
-import { toJoiObject } from '../../services/joi/common';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertValidationAsync } from '../../utils/schema.utils';
@@ -33,9 +29,7 @@ export const updateCollectionControl = async (owner: string, rawParams: UidSchem
   }
 
   const isMinted = collection.status === CollectionStatus.MINTED;
-  const schema = isMinted
-    ? toJoiObject<UpdateMintedCollectionRequest>(updateMintedCollectionSchema)
-    : toJoiObject<UpdateCollectionRequest>(updateCollectionSchema);
+  const schema = isMinted ? updateMintedCollectionSchemaObject : updateCollectionSchemaObject;
   const params = await assertValidationAsync(schema, rawParams);
 
   const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();

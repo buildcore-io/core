@@ -25,14 +25,26 @@ export enum URL_PATHS {
 }
 
 export const WEN_NAME = 'Soonaverse';
+/**
+ * Soonaverse space in production.
+ */
 export const SOON_SPACE = '0x5fcc5562385e6c2f6b0a5934280e5d11274f8e07';
+/**
+ * Soonaverse SOON token in production.
+ */
 export const SOON_TOKEN = '0x9600b5afbb84f15e0d4c0f90ea60b2b8d7bd0f1e';
+/**
+ * Soonaverse space in wen.soonaverse.com (sandbox)
+ */
 export const SOON_SPACE_TEST = '0x0702535a8409d58d832fe80660c28dc61dee9704';
+/**
+ * Soonaverse SOON token in wen.soonaverse.com (sandbox)
+ */
 export const SOON_TOKEN_TEST = '0x15e7e6663f3a88c0cce72a4cc3cd5c6786f0b1cf';
 export const SOON_PROD_ADDRESS = 'https://soonaverse.com/';
 export const SOON_TEST_ADDRESS = 'https://wen2.soonaverse.com/';
 export const BUILD5_PROD_ADDRESS_API = 'https://api.build5.com/';
-export const BUILD5_TEST_ADDRESS_API = 'https://api-wen.build5.com/';
+export const BUILD5_TEST_ADDRESS_API = 'https://api-test.build5.com/';
 export const GITHUB_REGEXP = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i;
 export const DISCORD_REGEXP = /^.{3,32}$/i;
 export const TWITTER_REGEXP = /^@?(\w){1,15}$/i;
@@ -78,7 +90,11 @@ export const TOKEN_SALE_TEST = {
   spacetwo: '0xbeac4a5e45080120f43539a638c8de42c2219e28',
 };
 
-// https://home.treasury.gov/policy-issues/financial-sanctions/sanctions-programs-and-country-information
+/**
+ * Blocked countries by default.
+ *
+ * // https://home.treasury.gov/policy-issues/financial-sanctions/sanctions-programs-and-country-information
+ */
 export const DEFAULT_US_BLOCKED_COUNTRIES = [
   'AF',
   'BY',

@@ -22,7 +22,7 @@ export const rankControl = async (owner: string, params: RankRequest) => {
     throw invalidArgument(errorMsg);
   }
 
-  const rankingSpaceId = getRankingSpace(params.collection);
+  const rankingSpaceId = getRankingSpace(params.collection as COL);
   await assertIsGuardian(rankingSpaceId, owner);
 
   await build5Db().runTransaction(async (transaction) => {

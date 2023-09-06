@@ -2,6 +2,9 @@ import { UnsoldMintingOptions } from './collection';
 import { NftAccess } from './nft';
 import { Network } from './transaction';
 
+/**
+ * Timestamp object.
+ */
 export class Timestamp {
   constructor(public readonly seconds: number, public readonly nanoseconds: number) {}
 
@@ -98,9 +101,23 @@ export interface BaseSubCollection {
   parentCol: string;
 }
 
+/**
+ * Base record structure.
+ *
+ * Every object will have these basic fields.
+ */
 export interface BaseRecord extends Base {
+  /**
+   * Date/time it was created on.
+   */
   createdOn?: Timestamp;
+  /**
+   * Date/time it was updated on.
+   */
   updatedOn?: Timestamp;
+  /**
+   * Member UID {@link Member}
+   */
   createdBy?: string;
 
   // Sharabble url
@@ -126,6 +143,11 @@ export enum FILE_SIZES {
   large = '1600X1600',
 }
 
+/**
+ * Access to collections.
+ *
+ * @category Accesss Cat
+ */
 export enum Access {
   OPEN = 0,
   MEMBERS_ONLY = 1,
@@ -134,6 +156,9 @@ export enum Access {
   MEMBERS_WITH_NFT_FROM_COLLECTION = 4,
 }
 
+/**
+ * Validated address sub object.
+ */
 export interface ValidatedAddress {
   [Network.IOTA]: string;
   [Network.ATOI]: string;
@@ -141,6 +166,9 @@ export interface ValidatedAddress {
   [Network.RMS]: string;
 }
 
+/**
+ * NFT Minted Metadata.
+ */
 export interface NftMintingData {
   readonly address?: string;
   readonly network?: Network;
@@ -186,6 +214,9 @@ export interface RankStats {
   readonly avg: number;
 }
 
+/**
+ * Status of media upload to the IPFS.
+ */
 export enum MediaStatus {
   UPLOADED = 'uploaded',
   PENDING_UPLOAD = 'pending_upload',
@@ -193,6 +224,9 @@ export enum MediaStatus {
   PREPARE_IPFS = 'prepare_ipfs',
 }
 
+/**
+ * Restrictions set on the Collection/NFT during the it's purchase.
+ */
 export interface Restrictions {
   readonly collection?: {
     readonly access?: Access;

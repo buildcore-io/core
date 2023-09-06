@@ -1,10 +1,19 @@
 import { BaseRecord, EthAddress, MediaStatus, NftMintingData, Timestamp } from './base';
 import { CollectionType } from './collection';
 
+/**
+ * Max NFT properties.
+ */
 export const MAX_PROPERTIES_COUNT = 25;
+/**
+ * Max NFT stats.
+ */
 export const MAX_STATS_COUNT = 25;
 export const PRICE_UNITS: ('Mi' | 'Gi')[] = ['Mi', 'Gi'];
 
+/**
+ * NFT Prop/stats.
+ */
 export interface PropStats {
   [propName: string]: {
     label: string;
@@ -12,11 +21,17 @@ export interface PropStats {
   };
 }
 
+/**
+ * NFT Access options.
+ */
 export enum NftAccess {
   OPEN = 0,
   MEMBERS = 1,
 }
 
+/**
+ * NFT Available options.
+ */
 export enum NftAvailable {
   UNAVAILABLE = 0,
   SALE = 1,
@@ -24,6 +39,9 @@ export enum NftAvailable {
   AUCTION_AND_SALE = 3,
 }
 
+/**
+ * NFT status.
+ */
 export enum NftStatus {
   PRE_MINTED = 'pre_minted',
   MINTED = 'minted',
@@ -31,48 +49,184 @@ export enum NftStatus {
   STAKED = 'staked',
 }
 
+/**
+ * NFT record.
+ */
 export interface Nft extends BaseRecord {
+  /**
+   * NFT Name
+   */
   name: string;
+  /**
+   * NFT Description
+   */
   description: string;
+  /**
+   * NFT Collection {@link Collection}
+   */
   collection: EthAddress;
+  /**
+   * NFT current owner {@link Member}
+   */
   owner?: EthAddress;
+  /**
+   * NFT Is NFT owned. This field is used to simplify filtering.
+   */
   isOwned?: boolean;
+  /**
+   * URL to the NFT image.
+   */
   media: string;
+  /**
+   * IPFS CID for media link.
+   */
   ipfsMedia: string;
+  /**
+   * IPFS CID for metadata link.
+   */
   ipfsMetadata: string;
+  /**
+   * IPFS Root directory for all IPFS files.
+   */
   ipfsRoot?: string;
+  /**
+   * See {@link NftAccess} for options
+   */
   saleAccess?: NftAccess;
+  /**
+   * Sales access Members {@requires saleAccess}
+   */
   saleAccessMembers?: string[];
+  /**
+   * NFTs Availability.
+   */
   available: NftAvailable;
+  /**
+   * NFT is available from (initial sale only)
+   */
   availableFrom: Timestamp | null;
+  /**
+   * NFT Auction from date/time
+   */
   auctionFrom?: Timestamp | null;
+  /**
+   * NFT Auction to date/time
+   */
   auctionTo?: Timestamp | null;
+  /**
+   * NFT Auction current highest bid
+   */
   auctionHighestBid?: number | null;
+  /**
+   * NFT Auction current highest bidder {@link Member}
+   */
   auctionHighestBidder?: string | null;
+  /**
+   * NFT Auction highest transaction {@link Transaction}
+   */
   auctionHighestTransaction?: string | null;
+  /**
+   * NFT current price based on previous sales
+   */
   price: number;
+  /**
+   * Total number of trades for this NFT
+   */
   totalTrades: number;
+  /**
+   * Last traded on.
+   */
   lastTradedOn: Timestamp | null;
+  /**
+   * If on sale, available price for this NFT.
+   */
   availablePrice?: number | null;
+  /**
+   * Auction minimum price.
+   */
   auctionFloorPrice?: number | null;
+  /**
+   * Auction length.
+   */
   auctionLength?: number | null;
+  /**
+   * Collection Type. Inherited from the {@link Collection}. It's hear for filtering purposes.
+   */
   type: CollectionType;
+  /**
+   * Link to space {@link Space}
+   */
   space: string;
+  /**
+   * URL to NFT
+   */
   url: string;
+  /**
+   * NFT has been approved
+   */
   approved: boolean;
+  /**
+   * NFT has been rejected
+   */
   rejected: boolean;
+  /**
+   * NFTs properties
+   */
   properties: PropStats;
+  /**
+   * NFTs stats
+   */
   stats: PropStats;
+  /**
+   * Is this NFT placeholder
+   */
   placeholderNft: boolean;
+  /**
+   * NFT position in the list. Helps randomness during the initial sale.
+   *
+   * @hidden
+   */
   position: number;
+  /**
+   * NFT locked for sale.
+   */
   locked?: boolean;
+  /**
+   * NFT is locked by member {@link Member}
+   */
   lockedBy?: string | null;
+  /**
+   * Is NFT sold (always true after intial sale)
+   */
   sold?: boolean;
+  /**
+   * NFT Minting data
+   */
   mintingData?: NftMintingData;
+  /**
+   * NFT deposit data
+   */
   depositData?: NftMintingData;
+  /**
+   * NFT status.
+   */
   status?: NftStatus;
+  /**
+   * NFT is hidden
+   *
+   * @hidden
+   */
   hidden?: boolean;
+  /**
+   * NFT Media status
+   */
   mediaStatus?: MediaStatus;
+  /**
+   * NFT Sold on
+   */
   soldOn?: Timestamp;
+  /**
+   * NFT is set as avatar.
+   */
   setAsAvatar?: boolean;
 }

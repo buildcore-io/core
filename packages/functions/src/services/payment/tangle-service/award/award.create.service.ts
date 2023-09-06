@@ -3,6 +3,7 @@ import {
   AwardBadge,
   AwardBadgeType,
   AwardCreateRequest,
+  AwardCreateTangleRequest,
   AwardCreateTangleResponse,
   COL,
   Network,
@@ -11,11 +12,9 @@ import {
   TokenStatus,
   WenError,
 } from '@build-5/interfaces';
-import Joi from 'joi';
 import { isEmpty, set } from 'lodash';
 import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { build5Storage } from '../../../../firebase/storage/build5Storage';
-import { awardBageSchema, createAwardSchema } from '../../../../runtime/firebase/award';
 import { downloadMediaAndPackCar } from '../../../../utils/car.utils';
 import { getBucket } from '../../../../utils/config.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
@@ -25,11 +24,12 @@ import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsSpaceMember } from '../../../../utils/space.utils';
 import { getTokenBySymbol } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { isStorageUrl, toJoiObject } from '../../../joi/common';
+import { isStorageUrl } from '../../../joi/common';
 import { SmrWallet } from '../../../wallet/SmrWalletService';
 import { WalletService } from '../../../wallet/wallet';
 import { getAwardgStorageDeposits } from '../../award/award-service';
 import { TransactionService } from '../../transaction-service';
+import { awardCreateSchema } from './AwardCreateTangleRequestSchema';
 import { createAwardFundOrder } from './award.fund.service';
 
 export class AwardCreateService {
@@ -39,17 +39,8 @@ export class AwardCreateService {
     owner: string,
     request: Record<string, unknown>,
   ): Promise<AwardCreateTangleResponse> => {
-    delete request.requestType;
-    const badgeSchema = awardBageSchema;
-    set(awardBageSchema, 'image', Joi.string().uri());
-    const awardSchema = createAwardSchema;
-    set(awardSchema, 'badge', badgeSchema);
-
-    const params = await assertValidationAsync(
-      toJoiObject<AwardCreateRequest>(awardSchema),
-      request,
-    );
-    const { award, owner: awardOwner } = await createAward(owner, params);
+    const params = await assertValidationAsync(awardCreateSchema, request);
+    const { award, owner: awardOwner } = await createAward(owner, { ...params });
 
     const awardDocRef = build5Db().doc(`${COL.AWARD}/${award.uid}`);
     this.transactionService.push({
@@ -81,11 +72,14 @@ export class AwardCreateService {
   };
 }
 
-export const createAward = async (owner: string, params: AwardCreateRequest) => {
+export const createAward = async (
+  owner: string,
+  params: AwardCreateRequest | AwardCreateTangleRequest,
+) => {
   await assertIsSpaceMember(params.space as string, owner);
 
   const awardId = getRandomEthAddress();
-  const { tokenSymbol, ...badge } = params.badge;
+  const { tokenSymbol, ...badge } = params.badge!;
 
   const token = await getTokenBySymbol(tokenSymbol as string);
   if (!token) {

@@ -15,13 +15,13 @@ import { getOutputMetadata } from '../../../utils/basic-output.utils';
 import { invalidArgument } from '../../../utils/error.utils';
 import { getRandomNonce } from '../../../utils/wallet.utils';
 import { TransactionMatch, TransactionService } from '../transaction-service';
-import { TangleAddressValidationService } from './address-validation.service';
+import { TangleAddressValidationService } from './address/address-validation.service';
 import { AwardApproveParticipantService } from './award/award.approve.participant.service';
 import { AwardCreateService } from './award/award.create.service';
 import { AwardFundService } from './award/award.fund.service';
 import { MintMetadataNftService } from './metadataNft/mint-metadata-nft.service';
-import { TangleNftPurchaseService } from './nft-purchase.service';
 import { NftDepositService } from './nft/nft-deposit.service';
+import { TangleNftPurchaseService } from './nft/nft-purchase.service';
 import { ProposalApprovalService } from './proposal/ProposalApporvalService';
 import { ProposalCreateService } from './proposal/ProposalCreateService';
 import { ProposalVoteService } from './proposal/voting/ProposalVoteService';
@@ -32,9 +32,9 @@ import { SpaceDeclineMemberService } from './space/SpaceDeclineMemberService';
 import { SpaceGuardianService } from './space/SpaceGuardianService';
 import { SpaceJoinService } from './space/SpaceJoinService';
 import { SpaceLeaveService } from './space/SpaceLeaveService';
-import { TangleStakeService } from './stake.service';
-import { TangleTokenClaimService } from './token-claim.service';
-import { TangleTokenTradeService } from './token-trade.service';
+import { TangleStakeService } from './token/stake.service';
+import { TangleTokenClaimService } from './token/token-claim.service';
+import { TangleTokenTradeService } from './token/token-trade.service';
 export class TangleRequestService {
   constructor(readonly transactionService: TransactionService) {}
 

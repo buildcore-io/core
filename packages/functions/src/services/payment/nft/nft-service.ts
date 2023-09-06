@@ -17,7 +17,7 @@ import { build5Db } from '../../../firebase/firestore/build5Db';
 import { getAddress } from '../../../utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
 import { NotificationService } from '../../notification/notification';
-import { createNftWithdrawOrder } from '../tangle-service/nft-purchase.service';
+import { createNftWithdrawOrder } from '../tangle-service/nft/nft-purchase.service';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 
 export class NftService {
