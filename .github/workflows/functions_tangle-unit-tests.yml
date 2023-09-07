@@ -1936,7 +1936,7 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
-                npm run test-tangle:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_9.only.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests test-tangle/minted-nft-trading/minted-nft-trading_9.only.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -1971,7 +1971,7 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
-                npm run test-tangle:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_8.only.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_9.only.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2006,12 +2006,47 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
-                npm run test-tangle:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_11.only.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_8.only.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-chunk_53
+           path: ./packages/functions/firestore-data/
+           retention-days: 1
+  chunk_54:
+    needs: npm-install
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+      - uses: actions/cache@v3
+        with:
+          path: |
+           node_modules
+           packages/functions/node_modules
+           packages/interfaces/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
+      - name: Init
+        run: |
+          npm run build:functions
+          npm install -g firebase-tools
+      - name: Test
+        working-directory: packages/functions
+        run: |
+          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
+          npm run milestone-sync &
+          firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_11.only.spec.ts 
+             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
+      - name: Archive firestore data
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+           name: firestore-data-test-tangle-chunk_54
            path: ./packages/functions/firestore-data/
            retention-days: 1
