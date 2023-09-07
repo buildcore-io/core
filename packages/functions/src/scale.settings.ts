@@ -50,16 +50,16 @@ export function scale(func: WEN_FUNC | WEN_FUNC_TRIGGER): number {
   scaleSettings[WEN_FUNC.validateAddress] = highUse;
 
   scaleSettings[WEN_FUNC.createToken] = lowCold;
-  scaleSettings[WEN_FUNC_TRIGGER.onTokenStatusUpdate] = highUse;
+  scaleSettings[WEN_FUNC_TRIGGER.onTokenStatusUpdate] = lowWarm;
   scaleSettings[WEN_FUNC_TRIGGER.onTokenTradeOrderWrite] = highUse;
   scaleSettings[WEN_FUNC_TRIGGER.onTokenPurchaseCreated] = highUse;
 
   scaleSettings[WEN_FUNC_TRIGGER.milestoneTransactionWrite] = highUse;
   scaleSettings[WEN_FUNC_TRIGGER.nftWrite] = lowWarm;
-  scaleSettings[WEN_FUNC_TRIGGER.transactionWrite] = highUse;
-  scaleSettings[WEN_FUNC_TRIGGER.mnemonicWrite] = highUse;
+  scaleSettings[WEN_FUNC_TRIGGER.transactionWrite] = lowWarm;
+  scaleSettings[WEN_FUNC_TRIGGER.mnemonicWrite] = lowWarm;
   scaleSettings[WEN_FUNC.mintCollection] = lowCold;
-  scaleSettings[WEN_FUNC_TRIGGER.resizeImg] = highUse;
+  scaleSettings[WEN_FUNC_TRIGGER.resizeImg] = lowWarm;
 
   return isProdEnv() ? scaleSettings[func] || lowCold : 0;
 }
@@ -80,7 +80,7 @@ export function scaleAlgolia(col: COL): GlobalOptions {
   };
   // To support concurency.
   scaleSettings[COL.NFT] = {
-    minInstances: highUse,
+    minInstances: lowWarm,
     memory: '512MiB',
     cpu: 1,
     concurrency: 100,
@@ -90,7 +90,7 @@ export function scaleAlgolia(col: COL): GlobalOptions {
     minInstances: highUse,
     memory: '512MiB',
     cpu: 1,
-    concurrency: 100,
+    concurrency: 200,
   };
   scaleSettings[COL.MEMBER] = {
     minInstances: lowWarm,
