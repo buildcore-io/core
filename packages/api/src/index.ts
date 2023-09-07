@@ -15,10 +15,6 @@ import { getTopMilestones } from './getTopMilestones';
 import { getUpdatedAfter } from './getUpdatedAfter';
 import { sendLiveUpdates } from './sendLiveUpdates';
 
-export declare interface Socket extends ws.WebSocket {
-  isAlive: boolean;
-}
-
 const port = process.env.PORT || 3000;
 const app = express();
 
@@ -30,23 +26,8 @@ Object.values(ApiRoutes).forEach((route) => {
 
 const wsServer = new ws.Server({ noServer: true });
 
-wsServer.on('connection', async (socket: Socket, request) => {
-  socket.isAlive = true;
+wsServer.on('connection', async (socket, request) => {
   onConnection(request.url || '', socket);
-});
-
-const pingInterval = setInterval(() => {
-  (wsServer.clients as Set<Socket>).forEach((client) => {
-    if (!client.isAlive) {
-      return client.terminate();
-    }
-    client.isAlive = false;
-    client.ping();
-  });
-}, 5000);
-
-wsServer.on('close', function close() {
-  clearInterval(pingInterval);
 });
 
 const server = app.listen(port);
@@ -59,7 +40,7 @@ server.on('upgrade', (request, socket, head) => {
   });
 });
 
-const onConnection = async (url: string, res: express.Response | Socket) => {
+const onConnection = async (url: string, res: express.Response | ws.WebSocket) => {
   try {
     const observable = await getObservable(url);
     if (res instanceof ws.WebSocket) {
