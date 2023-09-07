@@ -53,7 +53,7 @@ export class TangleNftPurchaseService {
   ): Promise<BaseTangleResponse | undefined> => {
     const params = await assertValidationAsync(nftPurchaseSchema, request);
 
-    const order = await createNftPuchaseOrder(params.collection, params.nft, owner);
+    const order = await createNftPuchaseOrder(params.collection, params.nft, owner, '', true);
     order.payload.tanglePuchase = true;
     order.payload.disableWithdraw = params.disableWithdraw || false;
 
@@ -99,6 +99,7 @@ export const createNftPuchaseOrder = async (
   nftId: string | undefined,
   owner: string,
   ip = '',
+  allowParallelPurchasing = false,
 ): Promise<Transaction> => {
   const collection = await getCollection(collectionId);
   const space = (await getSpace(collection.space))!;
@@ -111,7 +112,7 @@ export const createNftPuchaseOrder = async (
     await assertIpNotBlocked(ip, nft.uid, 'nft');
   }
 
-  await assertNftCanBePurchased(space, collection, nft, nftId, owner);
+  await assertNftCanBePurchased(space, collection, nft, nftId, owner, allowParallelPurchasing);
 
   const currentOwner = nft.owner ? await getMember(nft.owner) : space;
   assertCurrentOwnerAddress(currentOwner, nft);
@@ -238,6 +239,7 @@ const assertNftCanBePurchased = async (
   nft: Nft,
   nftIdParam: string | undefined,
   owner: string,
+  allowParallelPurchasing: boolean,
 ) => {
   if (collection.type !== CollectionType.CLASSIC && nftIdParam && !nft.owner) {
     throw invalidArgument(WenError.generated_spf_nft_must_be_sold_first);
@@ -279,7 +281,9 @@ const assertNftCanBePurchased = async (
     throw invalidArgument(WenError.nft_does_not_belong_to_collection);
   }
 
-  await assertNoOrderInProgress(owner);
+  if (!allowParallelPurchasing) {
+    await assertNoOrderInProgress(owner);
+  }
 };
 
 const assertUserHasAccess = (space: Space, collection: Collection, owner: string) =>

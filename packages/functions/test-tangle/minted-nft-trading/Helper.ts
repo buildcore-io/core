@@ -13,6 +13,8 @@ import {
   NftStatus,
   Space,
   Timestamp,
+  Transaction,
+  TransactionType,
   UnsoldMintingOptions,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
@@ -25,6 +27,8 @@ import {
 import { createNft, orderNft, setForSaleNft } from '../../src/runtime/firebase/nft/index';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
+import { AddressDetails } from '../../src/services/wallet/wallet';
+import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import {
   createMember as createMemberTest,
@@ -123,12 +127,11 @@ export class Helper {
     return this.nft;
   };
 
-  public setAvailableForAuction = async () => {
-    mockWalletReturnValue(this.walletSpy, this.guardian!, this.dummyAuctionData(this.nft!.uid));
+  public setAvailableForAuction = async (nft?: string) => {
+    const uid = nft || this.nft?.uid!;
+    mockWalletReturnValue(this.walletSpy, this.guardian!, this.dummyAuctionData(uid));
     await testEnv.wrap(setForSaleNft)({});
-    await wait(
-      async () => (await build5Db().doc(`${COL.NFT}/${this.nft!.uid}`).get<Nft>())?.available === 3,
-    );
+    await wait(async () => (await build5Db().doc(`${COL.NFT}/${uid}`).get<Nft>())?.available === 3);
   };
 
   public setAvailableForSale = async () => {
@@ -182,4 +185,25 @@ export class Helper {
     availableFrom: dayjs().toDate(),
     access: NftAccess.OPEN,
   });
+
+  public sendNftToAddress = async (
+    sourceAddress: AddressDetails,
+    targetAddressBech32: string,
+    nftId: string,
+  ) => {
+    const order: Transaction = {
+      type: TransactionType.WITHDRAW_NFT,
+      uid: wallet.getRandomEthAddress(),
+      member: this.guardian,
+      createdOn: serverTime(),
+      network: this.network,
+      payload: {
+        sourceAddress: sourceAddress.bech32,
+        targetAddress: targetAddressBech32,
+        nftId,
+      },
+    };
+    await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+    return order.uid;
+  };
 }
