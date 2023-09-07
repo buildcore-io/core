@@ -16,7 +16,7 @@
     "start": "tsc && node lib/index",
     "deploy:prod": "npm run build && npm run gceploy:prod",
     "deploy:test": "npm run build && npm run gceploy:test",
-    "gceploy:prod": "gcloud run deploy api --min-instances=3 --memory=1Gi --cpu=1 --concurrency=250 --allow-unauthenticated --timeout=3600 --ingress=internal-and-cloud-load-balancing --region=us-central1 --source=lib",
+    "gceploy:prod": "gcloud run deploy api --min-instances=3 --memory=1Gi --cpu=1 --concurrency=750 --allow-unauthenticated --timeout=3600 --ingress=internal-and-cloud-load-balancing --region=us-central1 --source=lib",
     "gceploy:test": "gcloud run deploy api --allow-unauthenticated --timeout=3600 --ingress=internal-and-cloud-load-balancing --region=us-central1 --source=lib"
   },
   "dependencies": {
