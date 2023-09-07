@@ -158,6 +158,10 @@ export interface Nft extends BaseRecord {
    */
   extendedAuctionLength?: number | null;
   /**
+   * Auction will be extended if a bid happens this many milliseconds before auction ends
+   */
+  extendAuctionWithin?: number | null;
+  /**
    * Collection Type. Inherited from the {@link Collection}. It's hear for filtering purposes.
    */
   type: CollectionType;
