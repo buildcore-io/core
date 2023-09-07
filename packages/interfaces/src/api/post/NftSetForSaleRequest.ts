@@ -32,7 +32,11 @@ export interface NftSetForSaleRequest {
    */
   availableFrom?: Date;
   /**
-   * If set, auction will automatically extend by this length if a bid comes in within 5 minutes before the end of the auction.
+   * Auction will be extended if a bid happens this many milliseconds before auction ends. Default value is 5 minutes
+   */
+  extendAuctionWithin?: number;
+  /**
+   * If set, auction will automatically extend by this length if a bid comes in within the specified minutes before the end of the auction.
    */
   extendedAuctionLength?: number;
   /**

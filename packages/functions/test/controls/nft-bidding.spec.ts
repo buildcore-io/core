@@ -17,6 +17,7 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
+import { set } from 'lodash';
 import { finalizeAllNftAuctions } from '../../src/cron/nft.cron';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { IDocument } from '../../src/firebase/firestore/interfaces';
@@ -320,12 +321,13 @@ describe('Nft bidding with extended auction', () => {
   let now: dayjs.Dayjs;
   let nftDocRef: IDocument;
 
-  const setForSale = async (auctionCustomLength?: number) => {
+  const setForSale = async (auctionCustomLength?: number, extendAuctionWithin?: number) => {
     now = dayjs();
     const auctionData = {
       ...dummyAuctionData(nft.uid, auctionCustomLength, now),
       extendedAuctionLength: 60000 * 10,
     };
+    extendAuctionWithin && set(auctionData, 'extendAuctionWithin', extendAuctionWithin);
     mockWalletReturnValue(walletSpy, memberAddress, auctionData);
     await testEnv.wrap(setForSaleNft)({});
 
@@ -387,7 +389,6 @@ describe('Nft bidding with extended auction', () => {
 
     nftData = await nftDocRef.get<Nft>();
     auctionToDate = dayjs(nftData?.auctionTo?.toDate());
-    auctionExtendedDate = dayjs(nftData?.extendedAuctionTo?.toDate());
     expect(auctionToDate.isSame(expectedAuctionToDate)).toBe(true);
     expect(nftData?.auctionLength).toBe(60000 * 6);
   });
@@ -396,6 +397,45 @@ describe('Nft bidding with extended auction', () => {
     const auctionData = {
       ...dummyAuctionData(nft.uid),
       extendedAuctionLength: 60000 * 3,
+    };
+    mockWalletReturnValue(walletSpy, memberAddress, auctionData);
+    await expectThrow(testEnv.wrap(setForSaleNft)({}), WenError.invalid_params.key);
+  });
+
+  it('Should bid but custom extend within time', async () => {
+    await setForSale(60000 * 6, 60000 * 6);
+    let nftData = await nftDocRef.get<Nft>();
+
+    expect(nftData?.auctionLength).toBe(60000 * 6);
+    let auctionToDate = dayjs(nftData?.auctionTo?.toDate());
+    const expectedAuctionToDate = dayjs(dateToTimestamp(now, true).toDate()).add(
+      nftData?.auctionLength!,
+    );
+    expect(auctionToDate.isSame(expectedAuctionToDate)).toBe(true);
+
+    let auctionExtendedDate = dayjs(nftData?.extendedAuctionTo?.toDate());
+    const expectedAuctionExtendedToDate = dayjs(dateToTimestamp(now, true).toDate()).add(
+      nftData?.extendedAuctionLength!,
+    );
+    expect(auctionExtendedDate.isSame(expectedAuctionExtendedToDate)).toBe(true);
+    expect(nftData?.extendedAuctionLength).toBe(60000 * 10);
+
+    await bidNft(members[0], MIN_IOTA_AMOUNT);
+    nftData = <Nft>await build5Db().doc(`${COL.NFT}/${nft.uid}`).get();
+    expect(nftData.auctionHighestBidder).toBe(members[0]);
+
+    nftData = await nftDocRef.get<Nft>();
+    auctionToDate = dayjs(nftData?.auctionTo?.toDate());
+    auctionExtendedDate = dayjs(nftData?.extendedAuctionTo?.toDate());
+    expect(auctionToDate.isSame(auctionExtendedDate)).toBe(true);
+    expect(nftData?.auctionLength).toBe(60000 * 10);
+  });
+
+  it('Should throw, invalid extendAuctionWithin', async () => {
+    const auctionData = {
+      ...dummyAuctionData(nft.uid),
+      extendedAuctionLength: 60000 * 10,
+      extendAuctionWithin: 0,
     };
     mockWalletReturnValue(walletSpy, memberAddress, auctionData);
     await expectThrow(testEnv.wrap(setForSaleNft)({}), WenError.invalid_params.key);

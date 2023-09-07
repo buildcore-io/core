@@ -285,8 +285,11 @@ export class NftService {
         auctionHighestBidder: payment.member,
         auctionHighestTransaction: payment.uid,
       };
-      const auctionTTL = dayjs(nft?.auctionTo!.toDate()).diff(dayjs(), 's');
-      if ((nft?.auctionLength || 0) < (nft?.extendedAuctionLength || 0) && auctionTTL < 300) {
+      const auctionTTL = dayjs(nft?.auctionTo!.toDate()).diff(dayjs());
+      if (
+        (nft?.auctionLength || 0) < (nft?.extendedAuctionLength || 0) &&
+        auctionTTL < (nft?.extendAuctionWithin || 0)
+      ) {
         set(nftUpdateData, 'auctionTo', nft?.extendedAuctionTo || null);
         set(nftUpdateData, 'auctionLength', nft?.extendedAuctionLength || null);
       }
