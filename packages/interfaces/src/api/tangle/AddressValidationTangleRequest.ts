@@ -20,6 +20,7 @@ export interface AddressValidationTangleRequest {
     | 'BUY_TOKEN'
     | 'STAKE'
     | 'NFT_PURCHASE'
+    | 'NFT_BID'
     | 'CLAIM_MINTED_AIRDROPS'
     | 'AWARD_CREATE'
     | 'AWARD_FUND'

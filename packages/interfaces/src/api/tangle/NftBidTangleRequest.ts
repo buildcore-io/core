@@ -4,13 +4,17 @@
  */
 
 /**
- * Tangle request object to edit a space member.
+ * Tangle request object to create an NFT bid
  */
-export interface SpaceMemberUpsertTangleRequest {
+export interface NftBidTangleRequest {
   /**
-   * Build5 id of the member
+   * If set to true, NFT will not be sent to the buyer's validated address upon purchase.
    */
-  member: string;
+  disableWithdraw?: boolean;
+  /**
+   * Build5 if of the nft to bid on.
+   */
+  nft: string;
   /**
    * Type of the tangle request.
    */
@@ -38,8 +42,4 @@ export interface SpaceMemberUpsertTangleRequest {
     | 'SPACE_DECLINE_MEMBER'
     | 'SPACE_LEAVE'
     | 'MINT_METADATA_NFT';
-  /**
-   * Build5 id of the space
-   */
-  uid: string;
 }

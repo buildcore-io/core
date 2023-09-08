@@ -8,6 +8,7 @@ export * from './AwardAppParticipantTangleRequest';
 export * from './AwardCreateTangleRequest';
 export * from './AwardFundTangleRequest';
 export * from './MetadataNftTangleRequest';
+export * from './NftBidTangleRequest';
 export * from './NftDeposittTangleRequest';
 export * from './NftPurchaseTangleRequest';
 export * from './ProposalApproveTangleRequest';

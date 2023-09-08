@@ -31,7 +31,7 @@ describe('Minted nft trading', () => {
     await helper.beforeEach();
   });
 
-  it.each([false, true])('Should order nft and withdraaw it', async (hasExpiration: boolean) => {
+  it.each([false, true])('Should order nft and withdraw it', async (hasExpiration: boolean) => {
     const expiresAt = hasExpiration ? dateToTimestamp(dayjs().add(2, 'h').toDate()) : undefined;
 
     await helper.createAndOrderNft();

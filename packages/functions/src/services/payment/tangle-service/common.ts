@@ -3,7 +3,7 @@ import Joi from 'joi';
 
 export const baseTangleSchema = {
   requestType: Joi.string()
-    .equal(...Object.values(TangleRequestType))
+    .valid(...Object.values(TangleRequestType))
     .required()
     .description('Type of the tangle request.'),
 };

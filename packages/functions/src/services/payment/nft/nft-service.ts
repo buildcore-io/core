@@ -47,23 +47,7 @@ export class NftService {
     const tanglePuchase = order.payload.tanglePuchase;
     const disableWithdraw = order.payload.disableWithdraw;
     if (!disableWithdraw && tanglePuchase && AVAILABLE_NETWORKS.includes(order.network!)) {
-      const membderDocRef = build5Db().doc(`${COL.MEMBER}/${order.member}`);
-      const member = <Member>await membderDocRef.get();
-      const { order: withdrawOrder, nftUpdateData } = createNftWithdrawOrder(
-        nft,
-        member.uid,
-        getAddress(member, order.network!),
-      );
-      this.transactionService.push({
-        ref: build5Db().doc(`${COL.TRANSACTION}/${withdrawOrder.uid}`),
-        data: withdrawOrder,
-        action: 'set',
-      });
-      this.transactionService.push({
-        ref: build5Db().doc(`${COL.NFT}/${nft.uid}`),
-        data: nftUpdateData,
-        action: 'update',
-      });
+      await this.withdrawNft(order, nft);
     }
   }
 
@@ -101,7 +85,7 @@ export class NftService {
         ? last(highestPay.payload.sourceTransaction)!
         : highestPay.payload.sourceTransaction!;
       const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${orderId}`);
-      const order = <Transaction | undefined>await orderDocRef.get();
+      const order = await orderDocRef.get<Transaction>();
       if (!order) {
         throw new Error('Unable to find ORDER linked to PAYMENT');
       }
@@ -129,6 +113,12 @@ export class NftService {
       });
 
       this.setTradingStats(nft);
+
+      const tanglePuchase = order.payload.tanglePuchase;
+      const disableWithdraw = order.payload.disableWithdraw;
+      if (!disableWithdraw && tanglePuchase && AVAILABLE_NETWORKS.includes(order.network!)) {
+        await this.withdrawNft(order, nft);
+      }
     } else {
       this.transactionService.push({
         ref: nftDocRef,
@@ -147,6 +137,26 @@ export class NftService {
       });
     }
   }
+
+  private withdrawNft = async (order: Transaction, nft: Nft) => {
+    const membderDocRef = build5Db().doc(`${COL.MEMBER}/${order.member}`);
+    const member = <Member>await membderDocRef.get();
+    const { order: withdrawOrder, nftUpdateData } = createNftWithdrawOrder(
+      nft,
+      member.uid,
+      getAddress(member, order.network!),
+    );
+    this.transactionService.push({
+      ref: build5Db().doc(`${COL.TRANSACTION}/${withdrawOrder.uid}`),
+      data: withdrawOrder,
+      action: 'set',
+    });
+    this.transactionService.push({
+      ref: build5Db().doc(`${COL.NFT}/${nft.uid}`),
+      data: nftUpdateData,
+      action: 'update',
+    });
+  };
 
   public async markAsVoid(transaction: Transaction): Promise<void> {
     const refSource = build5Db().doc(`${COL.TRANSACTION}/${transaction.uid}`);
