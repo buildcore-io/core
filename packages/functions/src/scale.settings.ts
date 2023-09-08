@@ -7,6 +7,7 @@ export const highUse = isProdEnv() ? 3 : lowWarm;
 
 export function scale(func: WEN_FUNC | WEN_FUNC_TRIGGER): number {
   const scaleSettings = {} as { [key: string]: number };
+  // Min MEMORY / CPU instance, so high use works well here.
   scaleSettings[WEN_FUNC.createMember] = highUse;
   scaleSettings[WEN_FUNC.updateMember] = lowWarm;
 
@@ -46,14 +47,17 @@ export function scale(func: WEN_FUNC | WEN_FUNC_TRIGGER): number {
   scaleSettings[WEN_FUNC.createBatchNft] = lowCold;
   scaleSettings[WEN_FUNC.updateUnsoldNft] = lowCold;
 
+  // Min MEMORY / CPU instance, so high use works well here.
   scaleSettings[WEN_FUNC.orderNft] = highUse;
-  scaleSettings[WEN_FUNC.validateAddress] = highUse;
+  scaleSettings[WEN_FUNC.validateAddress] = lowWarm;
 
   scaleSettings[WEN_FUNC.createToken] = lowCold;
   scaleSettings[WEN_FUNC_TRIGGER.onTokenStatusUpdate] = lowWarm;
+  // Min MEMORY / CPU instance, so high use works well here.
   scaleSettings[WEN_FUNC_TRIGGER.onTokenTradeOrderWrite] = highUse;
-  scaleSettings[WEN_FUNC_TRIGGER.onTokenPurchaseCreated] = highUse;
+  scaleSettings[WEN_FUNC_TRIGGER.onTokenPurchaseCreated] = lowWarm;
 
+  // Min MEMORY / CPU instance, so high use works well here.
   scaleSettings[WEN_FUNC_TRIGGER.milestoneTransactionWrite] = highUse;
   scaleSettings[WEN_FUNC_TRIGGER.nftWrite] = lowWarm;
   scaleSettings[WEN_FUNC_TRIGGER.transactionWrite] = lowWarm;
@@ -87,10 +91,10 @@ export function scaleAlgolia(col: COL): GlobalOptions {
   };
   // To support concurency.
   scaleSettings[COL.COLLECTION] = {
-    minInstances: highUse,
+    minInstances: lowWarm,
     memory: '512MiB',
     cpu: 1,
-    concurrency: 200,
+    concurrency: 300,
   };
   scaleSettings[COL.MEMBER] = {
     minInstances: lowWarm,
