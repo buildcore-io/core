@@ -12,6 +12,7 @@ import { CommonJoi, toJoiObject } from '../../../services/joi/common';
 import { availableFromMinMinutes } from './CollectionUpdateMintedRequestSchema';
 import { updateCollectionSchema } from './CollectionUpdateRequestSchema';
 
+// eslint-disable-next-line  @typescript-eslint/no-unused-vars
 const { uid, ...updateCollectionSchemaRest } = updateCollectionSchema;
 
 export const createCollectionSchema = toJoiObject<CreateCollectionRequest>({

@@ -1,10 +1,10 @@
-import { NftPurchaseTangleRequest } from '@build-5/interfaces';
+import { NftPurchaseTangleRequest, TangleRequestType } from '@build-5/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../../joi/common';
 import { baseTangleSchema } from '../common';
 
 export const nftPurchaseSchema = toJoiObject<NftPurchaseTangleRequest>({
-  ...baseTangleSchema,
+  ...baseTangleSchema(TangleRequestType.NFT_PURCHASE),
   collection: CommonJoi.uid().description(
     'Build5 id of the collection in case a random nft is bought.',
   ),

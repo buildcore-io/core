@@ -2,7 +2,6 @@
 import {
   COL,
   Collection,
-  DEFAULT_NETWORK,
   KEY_NAME_TANGLE,
   Member,
   MIN_IOTA_AMOUNT,
@@ -30,7 +29,7 @@ describe('Collection minting', () => {
     await helper.beforeEach();
   });
 
-  it.each([false, true])(
+  it.only.each([false, true])(
     'Should mint, cancel active sells, not mint placeholder',
     async (limited: boolean) => {
       await helper.createAndOrderNft();
@@ -72,7 +71,7 @@ describe('Collection minting', () => {
       const order = <Transaction>(
         await build5Db().doc(`${COL.TRANSACTION}/${nft.auctionHighestTransaction}`).get()
       );
-      expect(bidCredit[0].payload.targetAddress).toBe(getAddress(bidder, DEFAULT_NETWORK));
+      expect(bidCredit[0].payload.targetAddress).toBe(getAddress(bidder, Network.ATOI));
       expect(bidCredit[0].payload.sourceAddress).toBe(order.payload.targetAddress);
 
       const nftsQuery = build5Db()

@@ -44,13 +44,13 @@ import { requestFundsFromFaucet } from '../faucet';
 export class Helper {
   public walletSpy: any = {} as any;
   public network = Network.RMS;
-  public collection: string= {} as any;
-  public guardian: string= {} as any;
+  public collection: string = {} as any;
+  public guardian: string = {} as any;
   public space: Space = {} as any;
   public royaltySpace: Space = {} as any;
   public member: string = {} as any;
   public walletService: SmrWallet = {} as any;
-  public nftWallet: NftWallet= {} as any;
+  public nftWallet: NftWallet = {} as any;
   public nft: Nft = {} as any;
 
   public beforeAll = async () => {

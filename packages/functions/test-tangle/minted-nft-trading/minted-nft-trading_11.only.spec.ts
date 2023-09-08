@@ -31,7 +31,7 @@ describe('Minted nft trading', () => {
 
   it('Should buy 2 nft in parallel, and deposit in parallel', async () => {
     const address = await helper.walletService!.getNewIotaAddressDetails();
-    await requestFundsFromFaucet(Network.RMS, address.bech32, 5 * MIN_IOTA_AMOUNT);
+    requestFundsFromFaucet(Network.RMS, address.bech32, 5 * MIN_IOTA_AMOUNT);
 
     let nft1 = await helper.createAndOrderNft();
     let nft2 = await helper.createAndOrderNft();

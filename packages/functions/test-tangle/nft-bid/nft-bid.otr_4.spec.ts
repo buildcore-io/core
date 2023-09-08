@@ -6,6 +6,7 @@ import {
   NftBidTangleRequest,
   TangleRequestType,
   Transaction,
+  TransactionType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { finalizeAllNftAuctions } from '../../src/cron/nft.cron';
@@ -74,6 +75,15 @@ describe('Nft otr bid', () => {
     await wait(async () => {
       const nft = <Nft>await build5Db().doc(`${COL.NFT}/${helper.nft!.uid}`).get();
       return nft.owner === address2.bech32;
+    });
+
+    const creditQuery = build5Db()
+      .collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.CREDIT)
+      .where('member', '==', address1.bech32);
+    await wait(async () => {
+      const snap = await creditQuery.get<Transaction>();
+      return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
   });
 });
