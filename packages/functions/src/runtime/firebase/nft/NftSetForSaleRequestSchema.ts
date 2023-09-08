@@ -45,7 +45,7 @@ export const setNftForSaleSchema = toJoiObject<NftSetForSaleRequest>({
     .max(TRANSACTION_MAX_EXPIRY_MS)
     .greater(Joi.ref('auctionLength'))
     .description(
-      'If set, auction will automatically extend by this length if a bid comes in within the specified minutes before the end of the auction.',
+      'If set, auction will automatically extended by this length if a bid comes in within {@link extendAuctionWithin} before the end of the auction.',
     ),
   extendAuctionWithin: Joi.number()
     .min(TRANSACTION_AUTO_EXPIRY_MS)
