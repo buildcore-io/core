@@ -1,9 +1,11 @@
+import { API_TIMEOUT_SECONDS } from '@build-5/interfaces';
 import { Observable } from 'rxjs';
-import { WebSocket } from 'ws';
+import ws from 'ws';
 
-export const sendLiveUpdates = <T>(socket: WebSocket, observable: Observable<T>) => {
+export const sendLiveUpdates = <T>(socket: ws.WebSocket, observable: Observable<T>) => {
   let isAlive = true;
-  const pingInterval = setInterval(() => {
+
+  const pingPongInterval = setInterval(() => {
     if (!isAlive) {
       closeConnection();
     }
@@ -23,6 +25,10 @@ export const sendLiveUpdates = <T>(socket: WebSocket, observable: Observable<T>)
     closeConnection(1002);
   });
 
+  const timeout = setTimeout(() => {
+    closeConnection();
+  }, API_TIMEOUT_SECONDS * 1000 * 0.95);
+
   const subscription = observable.subscribe({
     next: (data) => {
       socket.send(JSON.stringify(data));
@@ -34,8 +40,9 @@ export const sendLiveUpdates = <T>(socket: WebSocket, observable: Observable<T>)
   });
 
   const closeConnection = (closeCode?: number) => {
+    clearInterval(pingPongInterval);
+    clearTimeout(timeout);
     subscription.unsubscribe();
     socket.close(closeCode);
-    clearInterval(pingInterval);
   };
 };

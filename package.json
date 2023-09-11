@@ -31,7 +31,7 @@
     "prettier:database": "npx prettier --write ./packages/database",
     "prettier:api": "npx prettier --write ./packages/api",
     "prettier": "npm run prettier:functions; npm run prettier:interfaces; npm run prettier:indexes; npm run prettier:lib; npm run prettier:database; npm run prettier:api",
-    "joi-to-types": "ts-node ./scripts/joi-generator-post.ts && ts-node ./scripts/joi-generator-post.ts && npm run prettier"
+    "joi-to-types": "ts-node ./scripts/joi-generator-post.ts && ts-node ./scripts/joi-generator-tangle.ts && npm run prettier"
   },
   "devDependencies": {
     "joi-to-typescript": "^4.4.1"

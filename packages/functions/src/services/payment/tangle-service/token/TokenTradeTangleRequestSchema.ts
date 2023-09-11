@@ -2,6 +2,7 @@ import {
   MAX_IOTA_AMOUNT,
   MAX_TOTAL_TOKEN_SUPPLY,
   MIN_PRICE_PER_TOKEN,
+  TangleRequestType,
   TokenTradeOrderType,
   TradeTokenTangleRequest,
 } from '@build-5/interfaces';
@@ -15,7 +16,7 @@ const MIN_COUNT = 1;
 const MAX_COUNT = MAX_TOTAL_TOKEN_SUPPLY;
 
 export const tradeMintedTokenSchema = toJoiObject<TradeTokenTangleRequest>({
-  ...baseTangleSchema,
+  ...baseTangleSchema(TangleRequestType.BUY_TOKEN, TangleRequestType.SELL_TOKEN),
   symbol: CommonJoi.tokenSymbol().description('Symbol of the token to trade.'),
   price: Joi.number()
     .min(MIN_PRICE_PER_TOKEN)

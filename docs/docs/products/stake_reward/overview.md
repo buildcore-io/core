@@ -7,5 +7,4 @@ title: Overview
 
 
 __Features__: 
-- Create Stake Rewards
-- Remove Stake Rewards
+- Stake management and token reward management

@@ -176,7 +176,6 @@ export const STAKE_REWARD_TEST_CRON_INTERVAL_CONFIG = 'every 5 minutes';
 export enum Bucket {
   PROD = 'images.soonaverse.com',
   TEST = 'images-wen.soonaverse.com',
-  DEV_DEFAULT = 'soonaverse-dev.appspot.com',
   DEV = 'soonaverse-dev-custom-bucket',
 }
 
@@ -201,6 +200,8 @@ export const IMAGE_CACHE_AGE = 31536000; //  1 year in seconds
 export const AVATAR_COLLECTION_PROD = '0x8b1d2626248961d63460368a642329071fbbf478';
 export const AVATAR_COLLECTION_TEST = '0x439c87f97ece722312162a0b60bb27deb6908ab9';
 
-export const API_TIMEOUT_SECONDS = 3600;
+export const API_TIMEOUT_SECONDS = 600;
 
 export const API_RETRY_TIMEOUT = 2500;
+
+export const EXTEND_AUCTION_WITHIN = 5 * 60000;

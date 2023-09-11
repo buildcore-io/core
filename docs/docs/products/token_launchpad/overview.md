@@ -7,7 +7,5 @@ title: Overview
 
 
 __Features__: 
-- Set token for public sale
-- Cancel public sale
-- Purchase Token
-- Request Credit on Token Purchase
+- Token Launchpad Management
+- Advanced Token Launchpad features (credits, cancellation and more)

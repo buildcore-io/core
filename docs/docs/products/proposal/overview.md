@@ -8,8 +8,6 @@ title: Overview
 
 
 __Features__: 
-
-- Approve Proposal
-- Reject Proposal
-- Create Proposal
-- Vote on Proposal
+- Proposal Management
+- On-Chain voting
+- DAO Management through voting

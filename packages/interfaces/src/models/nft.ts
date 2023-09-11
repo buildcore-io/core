@@ -94,7 +94,7 @@ export interface Nft extends BaseRecord {
    */
   saleAccess?: NftAccess;
   /**
-   * Sales access Members {@requires saleAccess}
+   * Sales access Members {@link saleAccess}
    */
   saleAccessMembers?: string[];
   /**
@@ -113,6 +113,10 @@ export interface Nft extends BaseRecord {
    * NFT Auction to date/time
    */
   auctionTo?: Timestamp | null;
+  /**
+   * NFT Auction extended to date/time
+   */
+  extendedAuctionTo?: Timestamp | null;
   /**
    * NFT Auction current highest bid
    */
@@ -149,6 +153,14 @@ export interface Nft extends BaseRecord {
    * Auction length.
    */
   auctionLength?: number | null;
+  /**
+   * Extended auction length.
+   */
+  extendedAuctionLength?: number | null;
+  /**
+   * Auction will be extended if a bid happens this many milliseconds before auction ends
+   */
+  extendAuctionWithin?: number | null;
   /**
    * Collection Type. Inherited from the {@link Collection}. It's hear for filtering purposes.
    */

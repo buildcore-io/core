@@ -56,7 +56,7 @@ describe('Collection minting', () => {
     });
   });
 
-  it.only('Should migrated collection not minted with alias and claim space', async () => {
+  it('Should migrated collection not minted with alias and claim space', async () => {
     await mintAndDeposit(
       {
         collectionName: 'test-collection',

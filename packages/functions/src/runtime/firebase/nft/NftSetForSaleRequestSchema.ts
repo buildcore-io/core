@@ -1,4 +1,5 @@
 import {
+  EXTEND_AUCTION_WITHIN,
   MAX_IOTA_AMOUNT,
   MIN_IOTA_AMOUNT,
   NftAccess,
@@ -38,6 +39,20 @@ export const setNftForSaleSchema = toJoiObject<NftSetForSaleRequest>({
     .max(TRANSACTION_MAX_EXPIRY_MS)
     .description(
       `Millisecond value of the auction length. Minimum ${TRANSACTION_AUTO_EXPIRY_MS}, maximum ${TRANSACTION_MAX_EXPIRY_MS}`,
+    ),
+  extendedAuctionLength: Joi.number()
+    .min(TRANSACTION_AUTO_EXPIRY_MS)
+    .max(TRANSACTION_MAX_EXPIRY_MS)
+    .greater(Joi.ref('auctionLength'))
+    .description(
+      'If set, auction will automatically extended by this length if a bid comes in within {@link extendAuctionWithin} before the end of the auction.',
+    ),
+  extendAuctionWithin: Joi.number()
+    .min(TRANSACTION_AUTO_EXPIRY_MS)
+    .max(TRANSACTION_MAX_EXPIRY_MS)
+    .description(
+      'Auction will be extended if a bid happens this many milliseconds before auction ends. ' +
+        `Default value is ${EXTEND_AUCTION_WITHIN} minutes`,
     ),
   access: Joi.number()
     .equal(NftAccess.OPEN, NftAccess.MEMBERS)

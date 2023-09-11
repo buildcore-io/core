@@ -1,9 +1,9 @@
-import { ClaimAirdroppedTokensTangleRequest } from '@build-5/interfaces';
+import { ClaimAirdroppedTokensTangleRequest, TangleRequestType } from '@build-5/interfaces';
 import { CommonJoi, toJoiObject } from '../../../joi/common';
 import { baseTangleSchema } from '../common';
 
 export const tokenClaimSchema = toJoiObject<ClaimAirdroppedTokensTangleRequest>({
-  ...baseTangleSchema,
+  ...baseTangleSchema(TangleRequestType.CLAIM_MINTED_AIRDROPS),
   symbol: CommonJoi.tokenSymbol().description('Symbol of the token.'),
 })
   .description('Tangle request object to claim airdropped tokens.')
