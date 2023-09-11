@@ -4,6 +4,7 @@ import {
   Member,
   MIN_IOTA_AMOUNT,
   Network,
+  NetworkAddress,
   Space,
   SUB_COL,
   Token,
@@ -78,7 +79,7 @@ const scenarios = [
   },
 ];
 
-const submitTokenOrderFunc = async <T>(spy: string, address: string, params: T) => {
+const submitTokenOrderFunc = async <T>(spy: string, address: NetworkAddress, params: T) => {
   mockWalletReturnValue(spy, address, params);
   const order = await testEnv.wrap(orderToken)({});
   expect(order?.createdOn).toBeDefined();

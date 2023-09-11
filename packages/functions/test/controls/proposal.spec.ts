@@ -2,6 +2,7 @@ import { build5Db } from '@build-5/database';
 import {
   COL,
   Network,
+  NetworkAddress,
   Proposal,
   ProposalStartDateMin,
   ProposalType,
@@ -178,21 +179,26 @@ describe('ProposalController: ' + WEN_FUNC.createProposal + ' MEMBERS', () => {
   let space: Space;
   let token: Token;
 
-  const cSpace = async (address: string) => {
+  const cSpace = async (address: NetworkAddress) => {
     mockWalletReturnValue(walletSpy, address, { name: 'Space A' });
     const space = await testEnv.wrap(createSpace)({});
     expect(space?.uid).toBeDefined();
     return space as Space;
   };
 
-  const jSpace = async (address: string, space: Space) => {
+  const jSpace = async (address: NetworkAddress, space: Space) => {
     mockWalletReturnValue(walletSpy, address, { uid: space.uid });
     const jSpace = await testEnv.wrap(joinSpace)({});
     expect(jSpace?.uid).toBeDefined();
     return jSpace as Space;
   };
 
-  const cProposal = (address: string, space: Space, type: ProposalType, addAnswers: any[] = []) => {
+  const cProposal = (
+    address: NetworkAddress,
+    space: Space,
+    type: ProposalType,
+    addAnswers: any[] = [],
+  ) => {
     const proposal = {
       name: 'Space Test',
       space: space.uid,
@@ -217,14 +223,14 @@ describe('ProposalController: ' + WEN_FUNC.createProposal + ' MEMBERS', () => {
     return testEnv.wrap(createProposal)({});
   };
 
-  const apprProposal = async (address: string, proposal: any) => {
+  const apprProposal = async (address: NetworkAddress, proposal: any) => {
     mockWalletReturnValue(walletSpy, address, { uid: proposal.uid });
     const pr = await testEnv.wrap(approveProposal)({});
     expect(proposal?.uid).toBeDefined();
     return pr;
   };
 
-  const vote = async (address: string, proposal: any, value: number) => {
+  const vote = async (address: NetworkAddress, proposal: any, value: number) => {
     mockWalletReturnValue(walletSpy, address, { uid: proposal.uid, value });
     const pr = await testEnv.wrap(voteOnProposal)({});
     expect(proposal?.uid).toBeDefined();
@@ -233,7 +239,7 @@ describe('ProposalController: ' + WEN_FUNC.createProposal + ' MEMBERS', () => {
 
   const giveBadge = async (
     guardian: string,
-    address: string,
+    address: NetworkAddress,
     space: any,
     tokenSymbol: string,
     tokenReward = 0,

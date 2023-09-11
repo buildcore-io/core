@@ -1,6 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { build5Db } from '@build-5/database';
-import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build-5/interfaces';
+import {
+  COL,
+  MIN_IOTA_AMOUNT,
+  Network,
+  NetworkAddress,
+  Transaction,
+  TransactionType,
+} from '@build-5/interfaces';
 import { ITransactionPayload, TRANSACTION_ID_LENGTH } from '@iota/iota.js';
 import {
   ITransactionPayload as NextITransactionPayload,
@@ -106,8 +113,8 @@ describe('Transaction trigger spec', () => {
 const dummyPayment = (
   type: TransactionType,
   network: Network,
-  sourceAddress: string,
-  targetAddress: string,
+  sourceAddress: NetworkAddress,
+  targetAddress: NetworkAddress,
   amount = MIN_IOTA_AMOUNT,
 ) =>
   <Transaction>{

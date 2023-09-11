@@ -1,4 +1,4 @@
-import { KEY_NAME_TANGLE, Token } from '@build-5/interfaces';
+import { KEY_NAME_TANGLE, NetworkAddress, Token } from '@build-5/interfaces';
 import * as lib from '@iota/iota.js-next';
 import { IFoundryOutput, INodeInfo, TransactionHelper } from '@iota/iota.js-next';
 import { Converter, HexHelper } from '@iota/util.js-next';
@@ -45,8 +45,8 @@ export const getVaultAndGuardianOutput = async (
   tokenId: string,
   totalSupply: number,
   totalDistributed: number,
-  vaultAddress: string,
-  guardianAddress: string,
+  vaultAddress: NetworkAddress,
+  guardianAddress: NetworkAddress,
   info: INodeInfo,
 ) => {
   const tokensToGuardian = totalSupply - totalDistributed;

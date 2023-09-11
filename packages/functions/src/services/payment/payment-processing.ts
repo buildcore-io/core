@@ -2,9 +2,9 @@ import { ITransaction, build5Db } from '@build-5/database';
 import {
   COL,
   Entity,
-  IotaAddress,
   MilestoneTransaction,
   MilestoneTransactionEntry,
+  NetworkAddress,
   Nft,
   Transaction,
   TransactionPayloadType,
@@ -245,7 +245,7 @@ export class ProcessingService {
     });
   }
 
-  private findAllOrdersWithAddress = (address: IotaAddress) =>
+  private findAllOrdersWithAddress = (address: NetworkAddress) =>
     build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.ORDER)

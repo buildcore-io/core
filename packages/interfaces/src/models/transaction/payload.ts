@@ -1,4 +1,4 @@
-import { EthAddress, IotaAddress, Restrictions, Timestamp } from '../base';
+import { NetworkAddress, Restrictions, Timestamp } from '../base';
 import { UnsoldMintingOptions } from '../collection';
 import { NativeToken } from '../milestone';
 import { StakeType } from '../stake';
@@ -15,8 +15,8 @@ export interface TransactionPayload {
   type?: TransactionPayloadType;
 
   amount?: number;
-  sourceAddress?: IotaAddress;
-  targetAddress?: IotaAddress;
+  sourceAddress?: NetworkAddress;
+  targetAddress?: NetworkAddress;
   sourceTransaction?: string | string[];
   validationType?: TransactionValidationType;
   expiresOn?: Timestamp | null;
@@ -24,7 +24,7 @@ export interface TransactionPayload {
   void?: boolean;
 
   // MINT_COLLECTION
-  collection?: EthAddress | null;
+  collection?: NetworkAddress | null;
   unsoldMintingOptions?: UnsoldMintingOptions;
   newPrice?: number;
   collectionStorageDeposit?: number;
@@ -33,22 +33,22 @@ export interface TransactionPayload {
   nftsToMint?: number;
 
   // TransactionPayloadType.CREDIT_LOCKED_FUNDS,
-  transaction?: EthAddress;
-  unlockedBy?: EthAddress;
+  transaction?: NetworkAddress;
+  unlockedBy?: NetworkAddress;
 
   // TransactionPayloadType.NFT_BID,
   beneficiary?: Entity;
-  beneficiaryUid?: EthAddress;
-  beneficiaryAddress?: IotaAddress;
+  beneficiaryUid?: NetworkAddress;
+  beneficiaryAddress?: NetworkAddress;
   royaltiesFee?: number;
-  royaltiesSpace?: EthAddress;
-  royaltiesSpaceAddress?: IotaAddress;
+  royaltiesSpace?: NetworkAddress;
+  royaltiesSpaceAddress?: NetworkAddress;
   chainReference?: string | null;
-  nft?: EthAddress | null;
+  nft?: NetworkAddress | null;
   restrictions?: Restrictions;
 
   // TransactionPayloadType.TOKEN_AIRDROP,
-  token?: EthAddress;
+  token?: NetworkAddress;
   quantity?: number;
 
   tokenSymbol?: string;
@@ -58,7 +58,7 @@ export interface TransactionPayload {
   totalAirdropCount?: number;
 
   // TransactionPayloadType.IMPORT_TOKEN,
-  tokenId?: EthAddress;
+  tokenId?: NetworkAddress;
 
   // TransactionPayloadType.MINT_TOKEN,
   foundryStorageDeposit?: number;
@@ -67,18 +67,18 @@ export interface TransactionPayload {
   tokensInVault?: number;
 
   // TransactionPayloadType.MINT_ALIAS ,
-  orderId?: EthAddress;
+  orderId?: NetworkAddress;
   collectionOutputAmount?: number;
 
   // TransactionPayloadType.MINT_COLLECTION - METADATA_NFT,
-  aliasId?: EthAddress;
-  aliasBlockId?: EthAddress;
-  aliasGovAddress?: IotaAddress;
+  aliasId?: NetworkAddress;
+  aliasBlockId?: NetworkAddress;
+  aliasGovAddress?: NetworkAddress;
 
   // TransactionPayloadType.UPDATE_MINTED_NFT
   // TransactionPayloadType.MINT_NFT,
-  collectionId?: EthAddress | null;
-  nftId?: EthAddress | null;
+  collectionId?: NetworkAddress | null;
+  nftId?: NetworkAddress | null;
 
   // TransactionPayloadType.STAKE,
   nativeTokens?: NativeToken[];
@@ -91,8 +91,8 @@ export interface TransactionPayload {
   customMetadata?: { [key: string]: string };
   stake?: string;
 
-  award?: EthAddress | null;
-  legacyAwardFundRequestId?: EthAddress;
+  award?: NetworkAddress | null;
+  legacyAwardFundRequestId?: NetworkAddress;
 
   weeks?: number;
   stakeType?: StakeType;
@@ -108,18 +108,18 @@ export interface TransactionPayload {
   participatedOn?: Timestamp;
 
   //  TransactionPayloadType.PROPOSAL_VOTE
-  proposalId?: EthAddress;
+  proposalId?: NetworkAddress;
   voteValues?: number[];
 
   // TransactionPayloadType.MINTED_TOKEN_TRADE
-  storageDepositSourceAddress?: IotaAddress;
+  storageDepositSourceAddress?: NetworkAddress;
   storageReturn?: StorageReturn;
 
-  airdropId?: EthAddress;
+  airdropId?: NetworkAddress;
 
   walletReference?: WalletResult;
 
-  nfts?: EthAddress[];
+  nfts?: NetworkAddress[];
 
   tag?: string;
 
@@ -137,9 +137,9 @@ export interface TransactionPayload {
   weight?: number;
   weightMultiplier?: number;
   votes?: number[];
-  creditId?: EthAddress;
+  creditId?: NetworkAddress;
   outputConsumed?: boolean;
   outputConsumedOn?: Timestamp;
-  stakes?: EthAddress[];
-  stakeReward?: EthAddress;
+  stakes?: NetworkAddress[];
+  stakeReward?: NetworkAddress;
 }

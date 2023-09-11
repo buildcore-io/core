@@ -1,4 +1,4 @@
-import { BaseRecord, EthAddress, MediaStatus, NftMintingData, Timestamp } from './base';
+import { BaseRecord, MediaStatus, NetworkAddress, NftMintingData, Timestamp } from './base';
 import { CollectionType } from './collection';
 
 /**
@@ -64,11 +64,11 @@ export interface Nft extends BaseRecord {
   /**
    * NFT Collection {@link Collection}
    */
-  collection: EthAddress;
+  collection: NetworkAddress;
   /**
    * NFT current owner {@link Member}
    */
-  owner?: EthAddress;
+  owner?: NetworkAddress;
   /**
    * NFT Is NFT owned. This field is used to simplify filtering.
    */

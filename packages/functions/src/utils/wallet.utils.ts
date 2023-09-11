@@ -4,6 +4,7 @@ import {
   DecodedToken,
   Member,
   Network,
+  NetworkAddress,
   WEN_FUNC,
   WenError,
   WenRequest,
@@ -149,7 +150,7 @@ const validateIotaPubKey = async (req: WenRequest) => {
   return { member, address: bech32Address };
 };
 
-const getMember = async (address: string) => {
+const getMember = async (address: NetworkAddress) => {
   const memberDocRef = build5Db().doc(`${COL.MEMBER}/${address}`);
   const member = await memberDocRef.get<Member>();
   if (!member) {

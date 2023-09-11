@@ -1,4 +1,4 @@
-import { EthAddress, WEN_FUNC } from '@build-5/interfaces';
+import { NetworkAddress, WEN_FUNC } from '@build-5/interfaces';
 import cors from 'cors';
 import * as functions from 'firebase-functions/v2';
 import { HttpsOptions } from 'firebase-functions/v2/https';
@@ -11,7 +11,7 @@ import { assertValidationAsync } from '../../utils/schema.utils';
 import { decodeAuth } from '../../utils/wallet.utils';
 
 export interface UidSchemaObject {
-  uid: EthAddress;
+  uid: NetworkAddress;
 }
 export const uidSchema = { uid: CommonJoi.uid() };
 

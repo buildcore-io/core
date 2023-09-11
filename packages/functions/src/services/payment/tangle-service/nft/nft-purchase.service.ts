@@ -12,6 +12,7 @@ import {
   MilestoneTransaction,
   MilestoneTransactionEntry,
   Network,
+  NetworkAddress,
   Nft,
   NftAccess,
   NftStatus,
@@ -364,7 +365,7 @@ const getNftFinalPrice = (nft: Nft, discount: number) => {
 export const createNftWithdrawOrder = (
   nft: Nft,
   member: string,
-  targetAddress: string,
+  targetAddress: NetworkAddress,
   weeks = 0,
   stakeType?: StakeType,
 ) => {

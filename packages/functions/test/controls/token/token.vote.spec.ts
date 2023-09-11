@@ -1,5 +1,13 @@
 import { build5Db } from '@build-5/database';
-import { COL, Space, SUB_COL, TokenAllocation, TokenStats, WenError } from '@build-5/interfaces';
+import {
+  COL,
+  NetworkAddress,
+  Space,
+  SUB_COL,
+  TokenAllocation,
+  TokenStats,
+  WenError,
+} from '@build-5/interfaces';
 import { createToken } from '../../../src/runtime/firebase/token/base';
 import { voteController } from '../../../src/runtime/firebase/vote';
 import * as config from '../../../src/utils/config.utils';
@@ -33,7 +41,7 @@ const dummyToken = (space: string) =>
   } as any);
 
 describe('Token vote test', () => {
-  let memberAddress: string;
+  let memberAddress: NetworkAddress;
   let space: Space;
   let token: any;
 

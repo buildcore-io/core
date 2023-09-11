@@ -1,5 +1,5 @@
 import { build5Db } from '@build-5/database';
-import { COL, Network, Transaction, WEN_FUNC_TRIGGER } from '@build-5/interfaces';
+import { COL, Network, NetworkAddress, Transaction, WEN_FUNC_TRIGGER } from '@build-5/interfaces';
 import { ITransactionPayload } from '@iota/iota.js';
 import { ITransactionPayload as ITransactionPayloadNext } from '@iota/iota.js-next';
 import { Converter } from '@iota/util.js';
@@ -43,7 +43,7 @@ export const confirmTransaction = async (
   await unclockMnemonic(transaction.payload.aliasGovAddress);
 };
 
-export const unclockMnemonic = async (address: string | undefined) => {
+export const unclockMnemonic = async (address: NetworkAddress | undefined) => {
   if (isEmpty(address)) {
     return;
   }

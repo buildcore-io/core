@@ -1,4 +1,4 @@
-import { EthAddress } from '../models/base';
+import { NetworkAddress } from '../models/base';
 
 export enum WEN_FUNC_TRIGGER {
   onProposalUpdated = 'onproposalupdated',
@@ -104,11 +104,11 @@ export enum WEN_FUNC {
 }
 
 export interface cMemberNotExists {
-  address: EthAddress;
+  address: NetworkAddress;
 }
 
 export interface DecodedToken {
-  address: string;
+  address: NetworkAddress;
   body: any;
 }
 

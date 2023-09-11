@@ -9,6 +9,7 @@ import {
   IgnoreWalletReason,
   Member,
   Network,
+  NetworkAddress,
   SUB_COL,
   TokenDrop,
   TokenDropStatus,
@@ -59,7 +60,8 @@ export class AwardApproveParticipantService {
 }
 
 export const approveAwardParticipant =
-  (owner: string, awardId: string, uidOrAddress: string) => async (transaction: ITransaction) => {
+  (owner: string, awardId: string, uidOrAddress: NetworkAddress) =>
+  async (transaction: ITransaction) => {
     const awardDocRef = build5Db().doc(`${COL.AWARD}/${awardId}`);
     const award = await transaction.get<Award>(awardDocRef);
     if (!award) {
@@ -185,7 +187,7 @@ export const approveAwardParticipant =
     return badgeTransaction;
   };
 
-const getMember = async (network: Network, uidOrAddress: string) => {
+const getMember = async (network: Network, uidOrAddress: NetworkAddress) => {
   const memberDocRef = build5Db().doc(`${COL.MEMBER}/${uidOrAddress}`);
   const member = await memberDocRef.get<Member>();
   if (member) {
@@ -198,7 +200,11 @@ const getMember = async (network: Network, uidOrAddress: string) => {
   return head(members);
 };
 
-const getTargetAddres = (member: Member | undefined, network: Network, uidOrAddress: string) => {
+const getTargetAddres = (
+  member: Member | undefined,
+  network: Network,
+  uidOrAddress: NetworkAddress,
+) => {
   const address = getAddress(member, network);
   if (address) {
     return address;

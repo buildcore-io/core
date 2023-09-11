@@ -2,6 +2,7 @@ import { build5Db } from '@build-5/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
+  NetworkAddress,
   Space,
   SUB_COL,
   Token,
@@ -33,7 +34,7 @@ import {
 
 let walletSpy: any;
 
-const submitTokenOrderFunc = async <T>(spy: string, address: string, params: T) => {
+const submitTokenOrderFunc = async <T>(spy: string, address: NetworkAddress, params: T) => {
   mockWalletReturnValue(spy, address, params);
   const order = await testEnv.wrap(orderToken)({});
   expect(order?.createdOn).toBeDefined();
@@ -42,7 +43,7 @@ const submitTokenOrderFunc = async <T>(spy: string, address: string, params: T) 
 
 const setAvailableOrderAndCancelSale = async (
   token: Token,
-  memberAddress: string,
+  memberAddress: NetworkAddress,
   miotas: number,
 ) => {
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
@@ -77,7 +78,7 @@ const setAvailableOrderAndCancelSale = async (
 };
 
 describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
-  let memberAddress: string;
+  let memberAddress: NetworkAddress;
   let space: Space;
   let token: any;
 

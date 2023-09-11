@@ -5,6 +5,7 @@ import {
   MilestoneTransaction,
   MilestoneTransactionEntry,
   Network,
+  NetworkAddress,
   TangleRequestType,
   Transaction,
   WenError,
@@ -203,7 +204,7 @@ export class TangleRequestService {
     }
   };
 
-  private getOwner = async (senderAddress: string, network: Network) => {
+  private getOwner = async (senderAddress: NetworkAddress, network: Network) => {
     const snap = await build5Db()
       .collection(COL.MEMBER)
       .where(`validatedAddress.${network}`, '==', senderAddress)

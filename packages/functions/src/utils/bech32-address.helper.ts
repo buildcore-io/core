@@ -1,8 +1,9 @@
+import { NetworkAddress } from '@build-5/interfaces';
 import {
-  AddressTypes,
   ADDRESS_UNLOCK_CONDITION_TYPE,
   ALIAS_ADDRESS_TYPE,
   ALIAS_OUTPUT_TYPE,
+  AddressTypes,
   BASIC_OUTPUT_TYPE,
   Bech32Helper,
   ED25519_ADDRESS_TYPE,
@@ -38,7 +39,7 @@ export class Bech32AddressHelper {
 
   public static buildAddress(
     hrp: string,
-    address: string | AddressTypes,
+    address: NetworkAddress | AddressTypes,
     typeHint?: number,
   ): string {
     return typeof address === 'string'
@@ -74,7 +75,11 @@ export class Bech32AddressHelper {
     return;
   };
 
-  private static buildAddressFromString(hrp: string, address: string, typeHint?: number): string {
+  private static buildAddressFromString(
+    hrp: string,
+    address: NetworkAddress,
+    typeHint?: number,
+  ): string {
     if (Bech32Helper.matches(address, hrp)) {
       try {
         const result = Bech32Helper.fromBech32(address, hrp);

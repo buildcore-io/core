@@ -1,4 +1,9 @@
-import { EthAddress, MAX_AIRDROP, MAX_TOTAL_TOKEN_SUPPLY, StakeType } from '@build-5/interfaces';
+import {
+  MAX_AIRDROP,
+  MAX_TOTAL_TOKEN_SUPPLY,
+  NetworkAddress,
+  StakeType,
+} from '@build-5/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../../../services/joi/common';
 import { MAX_COUNT, MIN_AIRDROP, MIN_COUNT } from './common';
@@ -6,13 +11,13 @@ import { MAX_COUNT, MIN_AIRDROP, MIN_COUNT } from './common';
 export interface AirdropRequest {
   vestingAt: Date;
   count: number;
-  recipient: EthAddress;
+  recipient: NetworkAddress;
   stakeType: StakeType;
 }
 
 // TODO - remove this
 export interface CreateAirdropsRequest {
-  token: EthAddress;
+  token: NetworkAddress;
   drops: AirdropRequest[];
 }
 

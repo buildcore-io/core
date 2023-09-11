@@ -1,4 +1,4 @@
-import { KEY_NAME_TANGLE, Network } from '@build-5/interfaces';
+import { KEY_NAME_TANGLE, Network, NetworkAddress } from '@build-5/interfaces';
 import { Bip32Path } from '@iota/crypto.js';
 import {
   Bech32Helper,
@@ -118,7 +118,7 @@ export class IotaWallet implements Wallet<WalletParams> {
 
   public send = async (
     fromAddress: AddressDetails,
-    toAddress: string,
+    toAddress: NetworkAddress,
     amount: number,
     params: WalletParams,
   ) => {
@@ -164,7 +164,7 @@ export class IotaWallet implements Wallet<WalletParams> {
 
   public sendToMany = async (
     from: AddressDetails,
-    targets: { toAddress: string; amount: number }[],
+    targets: { toAddress: NetworkAddress; amount: number }[],
     params: WalletParams,
   ) => {
     const consumedOutputIds = (await this.client.addressEd25519Outputs(from.hex)).outputIds;
@@ -211,7 +211,7 @@ export class IotaWallet implements Wallet<WalletParams> {
     return messageId;
   };
 
-  private convertAddressToHex(address: string) {
+  private convertAddressToHex(address: NetworkAddress) {
     const decodeBench32Target = Bech32Helper.fromBech32(address, this.info?.bech32HRP!);
     return Converter.bytesToHex(decodeBench32Target?.addressBytes!);
   }

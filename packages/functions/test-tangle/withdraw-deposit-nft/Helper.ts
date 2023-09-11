@@ -11,6 +11,7 @@ import {
   MediaStatus,
   Member,
   Network,
+  NetworkAddress,
   Nft,
   NftAccess,
   SUB_COL,
@@ -170,7 +171,7 @@ export class Helper {
     expect(ownerChangeTran[0].payload?.walletReference?.confirmed).toBe(true);
   };
 
-  public updateGuardianAddress = (address: string) =>
+  public updateGuardianAddress = (address: NetworkAddress) =>
     build5Db()
       .doc(`${COL.MEMBER}/${this.guardian}`)
       .update({ [`validatedAddress.${this.network}`]: address });

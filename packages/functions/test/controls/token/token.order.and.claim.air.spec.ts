@@ -2,6 +2,7 @@ import { build5Db } from '@build-5/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
+  NetworkAddress,
   Space,
   SUB_COL,
   Token,
@@ -31,7 +32,7 @@ import {
 
 let walletSpy: any;
 
-const submitTokenOrderFunc = async <T>(spy: string, address: string, params: T) => {
+const submitTokenOrderFunc = async <T>(spy: string, address: NetworkAddress, params: T) => {
   mockWalletReturnValue(spy, address, params);
   const order = await testEnv.wrap(orderToken)({});
   expect(order?.createdOn).toBeDefined();
@@ -39,7 +40,7 @@ const submitTokenOrderFunc = async <T>(spy: string, address: string, params: T) 
 };
 
 describe('Order and claim airdropped token test', () => {
-  let memberAddress: string;
+  let memberAddress: NetworkAddress;
   let space: Space;
   let token: Token;
 

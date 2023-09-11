@@ -1,4 +1,4 @@
-import { EthAddress } from '../../models';
+import { NetworkAddress } from '../../models';
 
 /**
  * Tangle response object returned after voting on a proposal
@@ -11,7 +11,7 @@ export interface ProposalVoteTangleResponse {
   /**
    * Build5 id of the created vote transaction
    */
-  voteTransaction?: EthAddress;
+  voteTransaction?: NetworkAddress;
 }
 
 /**
@@ -21,5 +21,5 @@ export interface ProposalCreateTangleResponse {
   /**
    * Build5 id of the created proposal
    */
-  proposal: EthAddress;
+  proposal: NetworkAddress;
 }

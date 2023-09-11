@@ -30,7 +30,7 @@ export class Timestamp {
 }
 
 export interface WenRequest {
-  address: string;
+  address: NetworkAddress;
   signature?: string;
   customToken?: string;
   publicKey?: {
@@ -87,8 +87,11 @@ export const enum AWARD_COL {
   OWNERS = 'owners',
 }
 
-export type EthAddress = string;
-export type IotaAddress = string;
+/**
+ * Accepted networks: Ethereum, Shimmer and IOTA.
+ */
+export type NetworkAddress = string;
+
 export type IpfsCid = string;
 
 export interface Base {

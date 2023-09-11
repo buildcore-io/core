@@ -5,6 +5,7 @@ import {
   Collection,
   CollectionType,
   Network,
+  NetworkAddress,
   Nft,
   NftStatus,
   Space,
@@ -651,7 +652,7 @@ export class NftWallet {
   public packNft = async (
     nft: Nft,
     collection: Collection,
-    royaltySpaceAddress: string,
+    royaltySpaceAddress: NetworkAddress,
     address: AddressDetails,
     collectionNftId: string,
   ) => {
@@ -746,7 +747,7 @@ export class NftWallet {
 
   public getNftOutputs = async (
     nftId: string | undefined,
-    sourceAddress: string | undefined,
+    sourceAddress: NetworkAddress | undefined,
     prevConsumedNftOutputId: string[] = [],
   ) => {
     const outputIds = await this.getNftOutputIds(nftId, sourceAddress, prevConsumedNftOutputId);
@@ -767,7 +768,7 @@ export class NftWallet {
 
   private getNftOutputIds = async (
     nftId: string | undefined,
-    sourceAddress: string | undefined,
+    sourceAddress: NetworkAddress | undefined,
     prevConsumedNftOutputId: string[] = [],
   ) => {
     const indexer = new IndexerPluginClient(this.wallet.client);

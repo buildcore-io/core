@@ -1,4 +1,4 @@
-import { BaseRecord, EthAddress } from './base';
+import { BaseRecord, NetworkAddress } from './base';
 export enum NotificationType {
   NEW_BID = 'NEW_BID',
   LOST_BID = 'LOST_BID',
@@ -44,9 +44,9 @@ export interface NotificationLostBidParams {
  * @deprecated
  */
 export interface Notification extends BaseRecord {
-  uid: EthAddress;
-  space?: EthAddress;
-  member?: EthAddress;
+  uid: NetworkAddress;
+  space?: NetworkAddress;
+  member?: NetworkAddress;
   type: NotificationType;
   params: NotificationBidParams | NotificationWinBidParams | NotificationLostBidParams;
 }

@@ -1,5 +1,12 @@
 import { build5Db, getSnapshot } from '@build-5/database';
-import { COL, SUB_COL, Token, TokenDistribution, TokenDrop } from '@build-5/interfaces';
+import {
+  COL,
+  NetworkAddress,
+  SUB_COL,
+  Token,
+  TokenDistribution,
+  TokenDrop,
+} from '@build-5/interfaces';
 import { INodeInfo } from '@iota/iota.js-next';
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
@@ -30,7 +37,7 @@ export const getOwnedTokenTotal = async (token: string) => {
 export const dropToOutput = (
   token: Token,
   drop: TokenDrop,
-  targetAddress: string,
+  targetAddress: NetworkAddress,
   info: INodeInfo,
 ) => {
   const amount = HexHelper.fromBigInt256(bigInt(drop.count));

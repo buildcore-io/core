@@ -1,3 +1,4 @@
+import { NetworkAddress } from '@build-5/interfaces';
 import * as lib from '@iota/iota.js-next';
 import {
   ALIAS_ADDRESS_TYPE,
@@ -48,7 +49,7 @@ export const getAliasBech32Address = (aliasId: string, info: INodeInfo) =>
     info.protocol.bech32Hrp,
   );
 
-export const isAliasGovernor = (alias: IAliasOutput, address: string, hrp: string) => {
+export const isAliasGovernor = (alias: IAliasOutput, address: NetworkAddress, hrp: string) => {
   const governors =
     alias.unlockConditions?.filter((uc) => uc.type === GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE) ||
     [];

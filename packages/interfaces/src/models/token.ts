@@ -2,8 +2,8 @@ import {
   Access,
   BaseRecord,
   BaseSubCollection,
-  EthAddress,
   MediaStatus,
+  NetworkAddress,
   RankStats,
   Timestamp,
   VoteStats,
@@ -355,7 +355,7 @@ export interface TokenDistribution extends BaseSubCollection {
   /**
    * TODODOC
    */
-  readonly uid?: EthAddress;
+  readonly uid?: NetworkAddress;
   /**
    * TODODOC
    */

@@ -1,4 +1,4 @@
-import { EthAddress, IotaAddress, NativeToken } from '../../models';
+import { NativeToken, NetworkAddress } from '../../models';
 import { ApiError } from '../post/common';
 
 /**
@@ -26,7 +26,7 @@ export interface AwardCreateTangleResponse {
   /**
    * Build5 id of the award created
    */
-  award: EthAddress;
+  award: NetworkAddress;
   /**
    * Amount that is needed to fund the award
    */
@@ -34,7 +34,7 @@ export interface AwardCreateTangleResponse {
   /**
    * Target address that needs to be funded to fund the award
    */
-  address: IotaAddress;
+  address: NetworkAddress;
   /**
    * Native token count in case the award type is Native
    */
