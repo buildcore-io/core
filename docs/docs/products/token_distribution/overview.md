@@ -7,5 +7,5 @@ title: Overview
 
 
 __Features__: 
-- Airdrop Tokens
-- Claim Tokens
+- Token Distribution (Airdrops)
+- Token Claim Management

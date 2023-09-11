@@ -7,6 +7,6 @@ title: Overview
 
 
 __Features__: 
-- Cancel Trade Order
-- Enable Trading for Token
-- Trade Token
+- Token Trading (bids, asks and more)
+- Token order books
+- Token cross chain trading

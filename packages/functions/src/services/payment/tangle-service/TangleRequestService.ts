@@ -21,6 +21,7 @@ import { AwardApproveParticipantService } from './award/award.approve.participan
 import { AwardCreateService } from './award/award.create.service';
 import { AwardFundService } from './award/award.fund.service';
 import { MintMetadataNftService } from './metadataNft/mint-metadata-nft.service';
+import { TangleNftBidService } from './nft/nft-bid.service';
 import { NftDepositService } from './nft/nft-deposit.service';
 import { TangleNftPurchaseService } from './nft/nft-purchase.service';
 import { ProposalApprovalService } from './proposal/ProposalApporvalService';
@@ -128,6 +129,10 @@ export class TangleRequestService {
       case TangleRequestType.NFT_PURCHASE: {
         const service = new TangleNftPurchaseService(this.transactionService);
         return await service.handleNftPurchase(tran, tranEntry, owner, request);
+      }
+      case TangleRequestType.NFT_BID: {
+        const service = new TangleNftBidService(this.transactionService);
+        return await service.handleNftBid(tran, tranEntry, owner, request);
       }
       case TangleRequestType.CLAIM_MINTED_AIRDROPS: {
         const service = new TangleTokenClaimService(this.transactionService);

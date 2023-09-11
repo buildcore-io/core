@@ -7,7 +7,5 @@ title: Overview
 
 
 __Features__: 
-- Set NFT for Sale
-- Set NFT for Auction
-- Buy NFT
-- Bid on NFT
+- NFT Trading
+- NFT Auction

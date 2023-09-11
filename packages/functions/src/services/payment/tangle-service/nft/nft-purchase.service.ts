@@ -26,7 +26,7 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { isEmpty, set } from 'lodash';
+import { isEmpty } from 'lodash';
 import { AVAILABLE_NETWORKS } from '../../../../controls/common';
 import { getAddress } from '../../../../utils/address.utils';
 import { getNftByMintingId } from '../../../../utils/collection-minting-utils/nft.utils';
@@ -54,8 +54,9 @@ export class TangleNftPurchaseService {
   ): Promise<BaseTangleResponse | undefined> => {
     const params = await assertValidationAsync(nftPurchaseSchema, request);
 
-    const order = await createNftPuchaseOrder(params.collection, params.nft, owner);
-    set(order, 'payload.tanglePuchase', true);
+    const order = await createNftPuchaseOrder(params.collection, params.nft, owner, '', true);
+    order.payload.tanglePuchase = true;
+    order.payload.disableWithdraw = params.disableWithdraw || false;
 
     this.transactionService.push({
       ref: build5Db().doc(`${COL.TRANSACTION}/${order.uid}`),
@@ -99,6 +100,7 @@ export const createNftPuchaseOrder = async (
   nftId: string | undefined,
   owner: string,
   ip = '',
+  allowParallelPurchasing = false,
 ): Promise<Transaction> => {
   const collection = await getCollection(collectionId);
   const space = (await getSpace(collection.space))!;
@@ -111,7 +113,7 @@ export const createNftPuchaseOrder = async (
     await assertIpNotBlocked(ip, nft.uid, 'nft');
   }
 
-  await assertNftCanBePurchased(space, collection, nft, nftId, owner);
+  await assertNftCanBePurchased(space, collection, nft, nftId, owner, allowParallelPurchasing);
 
   const currentOwner = nft.owner ? await getMember(nft.owner) : space;
   assertCurrentOwnerAddress(currentOwner, nft);
@@ -238,6 +240,7 @@ const assertNftCanBePurchased = async (
   nft: Nft,
   nftIdParam: string | undefined,
   owner: string,
+  allowParallelPurchasing: boolean,
 ) => {
   if (collection.type !== CollectionType.CLASSIC && nftIdParam && !nft.owner) {
     throw invalidArgument(WenError.generated_spf_nft_must_be_sold_first);
@@ -279,7 +282,9 @@ const assertNftCanBePurchased = async (
     throw invalidArgument(WenError.nft_does_not_belong_to_collection);
   }
 
-  await assertNoOrderInProgress(owner);
+  if (!allowParallelPurchasing) {
+    await assertNoOrderInProgress(owner);
+  }
 };
 
 const assertUserHasAccess = (space: Space, collection: Collection, owner: string) =>

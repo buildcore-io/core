@@ -32,7 +32,7 @@ export const assertValidationAsync = async <T>(
     }
     throw invalidArgument(WenError.invalid_params, `${key} is an invalid url`);
   }
-  return validationResult.value!;
+  return validationResult.value! as T;
 };
 
 export const cleanupParams = (obj: Record<string, unknown>) =>

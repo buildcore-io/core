@@ -127,12 +127,11 @@ export class Helper {
     return this.nft;
   };
 
-  public setAvailableForAuction = async () => {
-    mockWalletReturnValue(this.walletSpy, this.guardian!, this.dummyAuctionData(this.nft!.uid));
+  public setAvailableForAuction = async (nft?: string) => {
+    const uid = nft || this.nft?.uid!;
+    mockWalletReturnValue(this.walletSpy, this.guardian!, this.dummyAuctionData(uid));
     await testEnv.wrap(setForSaleNft)({});
-    await wait(
-      async () => (await build5Db().doc(`${COL.NFT}/${this.nft!.uid}`).get<Nft>())?.available === 3,
-    );
+    await wait(async () => (await build5Db().doc(`${COL.NFT}/${uid}`).get<Nft>())?.available === 3);
   };
 
   public setAvailableForSale = async (nftId?: string) => {

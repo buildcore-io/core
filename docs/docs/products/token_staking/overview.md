@@ -7,12 +7,8 @@ title: Overview
 
 
 __Features__: 
-- Stake Token
-  - Dynamic Staking
-  - Static Staking
-
-Notes:
-- Auto staking through Airdrops
+- Token staking and reward management
+- Token staking and Airdrop integrations
 
 ## Related
 - [Token](../token/overview)

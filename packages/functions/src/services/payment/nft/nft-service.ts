@@ -7,12 +7,11 @@ import {
   MilestoneTransactionEntry,
   Nft,
   NftAccess,
-  Notification,
   Transaction,
   TransactionPayloadType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { get, last } from 'lodash';
+import { last, set } from 'lodash';
 import { AVAILABLE_NETWORKS } from '../../../controls/common';
 import { getAddress } from '../../../utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
@@ -45,25 +44,10 @@ export class NftService {
 
     this.setTradingStats(nft);
 
-    const tanglePuchase = get(order, 'payload.tanglePuchase', false);
-    if (tanglePuchase && AVAILABLE_NETWORKS.includes(order.network!)) {
-      const membderDocRef = build5Db().doc(`${COL.MEMBER}/${order.member}`);
-      const member = <Member>await membderDocRef.get();
-      const { order: withdrawOrder, nftUpdateData } = createNftWithdrawOrder(
-        nft,
-        member.uid,
-        getAddress(member, order.network!),
-      );
-      this.transactionService.push({
-        ref: build5Db().doc(`${COL.TRANSACTION}/${withdrawOrder.uid}`),
-        data: withdrawOrder,
-        action: 'set',
-      });
-      this.transactionService.push({
-        ref: build5Db().doc(`${COL.NFT}/${nft.uid}`),
-        data: nftUpdateData,
-        action: 'update',
-      });
+    const tanglePuchase = order.payload.tanglePuchase;
+    const disableWithdraw = order.payload.disableWithdraw;
+    if (!disableWithdraw && tanglePuchase && AVAILABLE_NETWORKS.includes(order.network!)) {
+      await this.withdrawNft(order, nft);
     }
   }
 
@@ -101,7 +85,7 @@ export class NftService {
         ? last(highestPay.payload.sourceTransaction)!
         : highestPay.payload.sourceTransaction!;
       const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${orderId}`);
-      const order = <Transaction | undefined>await orderDocRef.get();
+      const order = await orderDocRef.get<Transaction>();
       if (!order) {
         throw new Error('Unable to find ORDER linked to PAYMENT');
       }
@@ -129,14 +113,22 @@ export class NftService {
       });
 
       this.setTradingStats(nft);
+
+      const tanglePuchase = order.payload.tanglePuchase;
+      const disableWithdraw = order.payload.disableWithdraw;
+      if (!disableWithdraw && tanglePuchase && AVAILABLE_NETWORKS.includes(order.network!)) {
+        await this.withdrawNft(order, nft);
+      }
     } else {
       this.transactionService.push({
         ref: nftDocRef,
         data: {
           auctionFrom: null,
           auctionTo: null,
+          extendedAuctionTo: null,
           auctionFloorPrice: null,
           auctionLength: null,
+          extendedAuctionLength: null,
           auctionHighestBid: null,
           auctionHighestBidder: null,
           auctionHighestTransaction: null,
@@ -145,6 +137,26 @@ export class NftService {
       });
     }
   }
+
+  private withdrawNft = async (order: Transaction, nft: Nft) => {
+    const membderDocRef = build5Db().doc(`${COL.MEMBER}/${order.member}`);
+    const member = <Member>await membderDocRef.get();
+    const { order: withdrawOrder, nftUpdateData } = createNftWithdrawOrder(
+      nft,
+      member.uid,
+      getAddress(member, order.network!),
+    );
+    this.transactionService.push({
+      ref: build5Db().doc(`${COL.TRANSACTION}/${withdrawOrder.uid}`),
+      data: withdrawOrder,
+      action: 'set',
+    });
+    this.transactionService.push({
+      ref: build5Db().doc(`${COL.NFT}/${nft.uid}`),
+      data: nftUpdateData,
+      action: 'update',
+    });
+  };
 
   public async markAsVoid(transaction: Transaction): Promise<void> {
     const refSource = build5Db().doc(`${COL.TRANSACTION}/${transaction.uid}`);
@@ -261,7 +273,7 @@ export class NftService {
           // Notify them.
           const refMember = build5Db().collection(COL.MEMBER).doc(refHighTranOrder?.member!);
           const sfDocMember = await this.transactionService.get<Member>(refMember);
-          const bidNotification: Notification = NotificationService.prepareLostBid(
+          const bidNotification = NotificationService.prepareLostBid(
             sfDocMember!,
             nft!,
             previousHighestPay,
@@ -278,13 +290,22 @@ export class NftService {
 
     // Update NFT with highest bid.
     if (newValidPayment) {
+      const nftUpdateData = {
+        auctionHighestBid: payment.payload.amount,
+        auctionHighestBidder: payment.member,
+        auctionHighestTransaction: payment.uid,
+      };
+      const auctionTTL = dayjs(nft?.auctionTo!.toDate()).diff(dayjs());
+      if (
+        (nft?.auctionLength || 0) < (nft?.extendedAuctionLength || 0) &&
+        auctionTTL < (nft?.extendAuctionWithin || 0)
+      ) {
+        set(nftUpdateData, 'auctionTo', nft?.extendedAuctionTo || null);
+        set(nftUpdateData, 'auctionLength', nft?.extendedAuctionLength || null);
+      }
       this.transactionService.push({
         ref: nftDocRef,
-        data: {
-          auctionHighestBid: payment.payload.amount,
-          auctionHighestBidder: payment.member,
-          auctionHighestTransaction: payment.uid,
-        },
+        data: nftUpdateData,
         action: 'update',
       });
 
@@ -334,8 +355,10 @@ export class NftService {
       availablePrice: null,
       auctionFrom: null,
       auctionTo: null,
+      extendedAuctionTo: null,
       auctionFloorPrice: null,
       auctionLength: null,
+      extendedAuctionLength: null,
       auctionHighestBid: null,
       auctionHighestBidder: null,
       auctionHighestTransaction: null,

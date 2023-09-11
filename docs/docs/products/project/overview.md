@@ -7,5 +7,4 @@ title: Overview
 
 
 __Features__: 
-- Update Project
-- Update Project Billing
+- Project Billing management
