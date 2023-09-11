@@ -1,5 +1,5 @@
 import { build5Db } from '@build-5/database';
-import { COL, DEFAULT_NETWORK, Network } from '@build-5/interfaces';
+import { COL, DEFAULT_NETWORK, Network, NetworkAddress } from '@build-5/interfaces';
 import { IotaWallet, getIotaClient } from './IotaWalletService';
 import { SmrWallet, getShimmerClient } from './SmrWalletService';
 
@@ -20,7 +20,7 @@ export interface WalletParams {
 }
 
 export interface SendToManyTargets {
-  toAddress: string;
+  toAddress: NetworkAddress;
   amount: number;
   customMetadata?: Record<string, unknown>;
 }
@@ -32,7 +32,7 @@ export interface Wallet<T> {
   getAddressDetails: (bech32: string) => Promise<AddressDetails>;
   send: (
     fromAddress: AddressDetails,
-    toAddress: string,
+    toAddress: NetworkAddress,
     amount: number,
     params: T,
   ) => Promise<string>;
@@ -57,7 +57,7 @@ export class WalletService {
 }
 
 export const setConsumedOutputIds = (
-  address: string,
+  address: NetworkAddress,
   consumedOutputIds: string[] = [],
   consumedNftOutputIds: string[] = [],
   consumedAliasOutputIds: string[] = [],

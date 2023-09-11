@@ -4,6 +4,7 @@ import {
   Member,
   MIN_IOTA_AMOUNT,
   Network,
+  NetworkAddress,
   Proposal,
   ProposalMember,
   ProposalType,
@@ -96,7 +97,7 @@ export class Helper {
   };
 
   public sendTokensToVote = async (
-    targetAddress: string,
+    targetAddress: NetworkAddress,
     tokenAmount = 10,
     sourceAddress: AddressDetails = this.guardianAddress!,
     baseTokenAmount = 0,
@@ -108,7 +109,7 @@ export class Helper {
   };
 
   public awaitVoteTransactionCreditIsConfirmed = async (
-    voteTransactionOrderTargetAddress: string,
+    voteTransactionOrderTargetAddress: NetworkAddress,
   ) => {
     const query = build5Db()
       .collection(COL.TRANSACTION)

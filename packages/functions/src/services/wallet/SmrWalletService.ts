@@ -1,4 +1,4 @@
-import { NativeToken, Network, Timestamp, Transaction } from '@build-5/interfaces';
+import { NativeToken, Network, NetworkAddress, Timestamp, Transaction } from '@build-5/interfaces';
 import { Bip32Path } from '@iota/crypto.js-next';
 import {
   ADDRESS_UNLOCK_CONDITION_TYPE,
@@ -246,7 +246,7 @@ export class SmrWallet implements Wallet<SmrParams> {
   public sendToMany = async (
     from: AddressDetails,
     targets: {
-      toAddress: string;
+      toAddress: NetworkAddress;
       amount: number;
       nativeTokens?: NativeToken[];
       customMetadata?: Record<string, unknown>;

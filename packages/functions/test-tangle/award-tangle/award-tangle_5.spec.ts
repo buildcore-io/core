@@ -5,6 +5,7 @@ import {
   Member,
   MIN_IOTA_AMOUNT,
   Network,
+  NetworkAddress,
   Space,
   TangleRequestType,
   Token,
@@ -109,7 +110,7 @@ describe('Award tangle request', () => {
   });
 });
 
-const badgeQuery = (targetAddress: string) =>
+const badgeQuery = (targetAddress: NetworkAddress) =>
   build5Db()
     .collection(COL.TRANSACTION)
     .where('payload.type', '==', TransactionPayloadType.BADGE)

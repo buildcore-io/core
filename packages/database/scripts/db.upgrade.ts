@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import admin from 'firebase-admin';
 import { getFirestore } from 'firebase-admin/firestore';
 import fs from 'fs';
-import {globSync} from 'glob';
+import { globSync } from 'glob';
 import { FirebaseApp } from '../src/app/app';
 import serviceAccount from './serviceAccountKey.json';
 

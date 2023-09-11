@@ -1,4 +1,4 @@
-import { Network, Timestamp } from '@build-5/interfaces';
+import { Network, NetworkAddress, Timestamp } from '@build-5/interfaces';
 import { SingleNodeClient } from '@iota/iota.js';
 import { SingleNodeClient as SingleNodeClientNext } from '@iota/iota.js-next';
 import { HexHelper } from '@iota/util.js-next';
@@ -49,7 +49,7 @@ export const requestFundsFromFaucet = async (
 
 export const requestFundsForManyFromFaucet = async (
   network: Network,
-  targets: { toAddress: string; amount: number; customMetadata?: any }[],
+  targets: { toAddress: NetworkAddress; amount: number; customMetadata?: any }[],
 ) => {
   const wallet = await getWallet(network);
   for (let i = 0; i < 600; ++i) {

@@ -2,6 +2,7 @@ import { build5Db } from '@build-5/database';
 import {
   COL,
   Network,
+  NetworkAddress,
   SUB_COL,
   Space,
   TOKEN_SALE_TEST,
@@ -22,7 +23,7 @@ import * as ipUtils from '../../src/utils/ip.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { MEDIA, getWallet, testEnv } from '../set-up';
 
-export const mockWalletReturnValue = <T>(walletSpy: any, address: string, body: T) =>
+export const mockWalletReturnValue = <T>(walletSpy: any, address: NetworkAddress, body: T) =>
   walletSpy.mockReturnValue(Promise.resolve({ address, body }));
 
 export const expectThrow = async <C, E>(call: C | Promise<C>, error: E, message?: string) => {
@@ -58,8 +59,11 @@ export const milestoneProcessed = async (
   throw new Error('Milestone was not processed. Id: ' + nextMilestone);
 };
 
-export const submitMilestoneFunc = async (address: string, amount: number, network?: Network) =>
-  submitMilestoneOutputsFunc([{ address, amount }], network);
+export const submitMilestoneFunc = async (
+  address: NetworkAddress,
+  amount: number,
+  network?: Network,
+) => submitMilestoneOutputsFunc([{ address, amount }], network);
 
 export const submitMilestoneOutputsFunc = async <T>(outputs: T[], network?: Network) => {
   const milestoneColl = build5Db().collection(

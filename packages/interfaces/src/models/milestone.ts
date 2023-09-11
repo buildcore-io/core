@@ -1,4 +1,4 @@
-import { Base, Timestamp } from './base';
+import { Base, NetworkAddress, Timestamp } from './base';
 
 export interface NativeToken {
   readonly id: string;
@@ -6,7 +6,7 @@ export interface NativeToken {
 }
 
 export interface MilestoneTransactionEntry {
-  address: string;
+  address: NetworkAddress;
   amount: number;
   nativeTokens?: NativeToken[];
   unlockConditions?: any[];

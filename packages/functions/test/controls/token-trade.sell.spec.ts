@@ -2,6 +2,7 @@ import { build5Db } from '@build-5/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
+  NetworkAddress,
   Space,
   SUB_COL,
   Token,
@@ -30,7 +31,7 @@ import {
 let walletSpy: any;
 
 describe('Trade controller, sell token', () => {
-  let memberAddress: string;
+  let memberAddress: NetworkAddress;
   let token: Token;
   let space: Space;
 

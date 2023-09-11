@@ -3,6 +3,7 @@ import {
   COL,
   MAX_WALLET_RETRY,
   Mnemonic,
+  NetworkAddress,
   Transaction,
   WEN_FUNC_TRIGGER,
 } from '@build-5/interfaces';
@@ -48,7 +49,7 @@ const TYPE_CHUNKS = chunk(DEFAULT_EXECUTABLE_TRANSACTIONS, 10).concat([
   CREDIT_EXECUTABLE_TRANSACTIONS,
 ]);
 
-const getUncofirmedTransactionsId = async (address: string) => {
+const getUncofirmedTransactionsId = async (address: NetworkAddress) => {
   for (const fieldName of Object.values(FieldNameType)) {
     for (const chunk of TYPE_CHUNKS) {
       const transactions = await build5Db()

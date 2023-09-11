@@ -6,6 +6,7 @@ import {
   Collection,
   CollectionType,
   MIN_IOTA_AMOUNT,
+  NetworkAddress,
   Nft,
   NftAccess,
   NftAvailable,
@@ -45,7 +46,7 @@ const dummyNft = (collection: string, description = 'babba') => ({
   price: 10 * 1000 * 1000,
 });
 
-const submitOrderFunc = async <T>(address: string, params: T) => {
+const submitOrderFunc = async <T>(address: NetworkAddress, params: T) => {
   mockWalletReturnValue(walletSpy, address, params);
   return await testEnv.wrap(orderNft)({});
 };
@@ -75,7 +76,7 @@ const bidNft = async (memberId: string, amount: number) => {
   return bidOrder;
 };
 
-let memberAddress: string;
+let memberAddress: NetworkAddress;
 let members: string[];
 let space: Space;
 let collection: Collection;

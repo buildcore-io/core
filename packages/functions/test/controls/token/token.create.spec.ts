@@ -5,6 +5,7 @@ import {
   COL,
   MAX_TOTAL_TOKEN_SUPPLY,
   MIN_IOTA_AMOUNT,
+  NetworkAddress,
   SUB_COL,
   Space,
   StakeType,
@@ -45,7 +46,7 @@ const dummyToken = (space: string) =>
   } as any);
 
 describe('Token controller: ' + WEN_FUNC.createToken, () => {
-  let memberAddress: string;
+  let memberAddress: NetworkAddress;
   let space: Space;
   let token: any;
   let soonTokenId: string;

@@ -6,6 +6,7 @@ import {
   MIN_IOTA_AMOUNT,
   Member,
   Network,
+  NetworkAddress,
   SUB_COL,
   SYSTEM_CONFIG_DOC_ID,
   StakeType,
@@ -43,7 +44,7 @@ import {
 
 let walletSpy: any;
 
-const buyTokenFunc = async (memberAddress: string, request: any) => {
+const buyTokenFunc = async (memberAddress: NetworkAddress, request: any) => {
   mockWalletReturnValue(walletSpy, memberAddress, { ...request, type: TokenTradeOrderType.BUY });
   const order = await testEnv.wrap(tradeToken)({});
   const milestone = await submitMilestoneFunc(

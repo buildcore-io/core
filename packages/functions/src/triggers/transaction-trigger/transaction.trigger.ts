@@ -7,6 +7,7 @@ import {
   Member,
   Mnemonic,
   Network,
+  NetworkAddress,
   Transaction,
   TransactionPayloadType,
   TransactionType,
@@ -471,7 +472,7 @@ const emptyWalletResult = (): WalletResult => ({
 
 const getMnemonic = async (
   transaction: ITransaction,
-  address: string | undefined,
+  address: NetworkAddress | undefined,
 ): Promise<Mnemonic> => {
   if (isEmpty(address)) {
     return {};
@@ -480,7 +481,11 @@ const getMnemonic = async (
   return (await transaction.get(docRef)) || {};
 };
 
-const lockMnemonic = (transaction: ITransaction, lockedBy: string, address: string | undefined) => {
+const lockMnemonic = (
+  transaction: ITransaction,
+  lockedBy: string,
+  address: NetworkAddress | undefined,
+) => {
   if (isEmpty(address)) {
     return;
   }

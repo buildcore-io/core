@@ -1,4 +1,4 @@
-import { BaseRecord, EthAddress, Timestamp, ValidatedAddress } from './base';
+import { BaseRecord, NetworkAddress, Timestamp, ValidatedAddress } from './base';
 
 /**
  * Member Award Stats.
@@ -67,7 +67,7 @@ export interface Member extends BaseRecord {
   /**
    * Member ID.
    */
-  uid: EthAddress;
+  uid: NetworkAddress;
   /**
    * Nonce to sign for authetication purposes.
    */

@@ -2,6 +2,7 @@ import { build5Db } from '@build-5/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
+  NetworkAddress,
   Space,
   TokenAllocation,
   WEN_FUNC,
@@ -37,7 +38,7 @@ const dummyToken = (space: string) =>
   } as any);
 
 describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
-  let memberAddress: string;
+  let memberAddress: NetworkAddress;
   let space: Space;
   let token: any;
   let publicTime = {

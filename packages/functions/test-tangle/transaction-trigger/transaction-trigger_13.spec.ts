@@ -6,6 +6,7 @@ import {
   MIN_IOTA_AMOUNT,
   Mnemonic,
   Network,
+  NetworkAddress,
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
@@ -107,8 +108,8 @@ describe('Transaction trigger spec', () => {
 const dummyPayment = (
   type: TransactionType,
   network: Network,
-  sourceAddress: string,
-  targetAddress: string,
+  sourceAddress: NetworkAddress,
+  targetAddress: NetworkAddress,
   amount = MIN_IOTA_AMOUNT,
 ) =>
   <Transaction>{

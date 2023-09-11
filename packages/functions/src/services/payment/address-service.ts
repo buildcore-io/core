@@ -6,6 +6,7 @@ import {
   Entity,
   Member,
   Network,
+  NetworkAddress,
   Proposal,
   ProposalType,
   SUB_COL,
@@ -135,7 +136,7 @@ export class AddressService {
   }
 }
 
-const claimBadges = async (member: string, memberAddress: string, network: Network) => {
+const claimBadges = async (member: string, memberAddress: NetworkAddress, network: Network) => {
   let lastDocId = '';
   do {
     const lastDoc = await getSnapshot(COL.TRANSACTION, lastDocId);
@@ -158,7 +159,7 @@ const claimBadges = async (member: string, memberAddress: string, network: Netwo
   } while (lastDocId);
 };
 
-const updateBadgeTransaction = async (transactionId: string, memberAddress: string) =>
+const updateBadgeTransaction = async (transactionId: string, memberAddress: NetworkAddress) =>
   build5Db().runTransaction(async (transaction) => {
     const badgeDocRef = build5Db().doc(`${COL.TRANSACTION}/${transactionId}`);
     const badge = await transaction.get<Transaction>(badgeDocRef);
@@ -174,7 +175,7 @@ const updateBadgeTransaction = async (transactionId: string, memberAddress: stri
 
 const createUpdateSpaceValidatedAddressProposal = (
   order: Transaction,
-  validatedAddress: string,
+  validatedAddress: NetworkAddress,
   owner: Member,
   space: Space,
   guardiansCount: number,

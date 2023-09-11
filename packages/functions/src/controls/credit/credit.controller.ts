@@ -4,6 +4,7 @@ import {
   CreditUnrefundableRequest,
   DEFAULT_NETWORK,
   IgnoreWalletReason,
+  NetworkAddress,
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
   TransactionPayloadType,
@@ -49,7 +50,7 @@ export const creditUnrefundableControl = (
 const createCreditOrder = (
   creditTtransaction: Transaction,
   owner: string,
-  targetAddress: string,
+  targetAddress: NetworkAddress,
 ): Transaction => ({
   type: TransactionType.ORDER,
   uid: getRandomEthAddress(),

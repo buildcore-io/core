@@ -10,6 +10,7 @@ import {
   CollectionType,
   MIN_IOTA_AMOUNT,
   Member,
+  NetworkAddress,
   Nft,
   RANKING_TEST,
   SUB_COL,
@@ -64,7 +65,7 @@ const dummyCollection: any = (spaceId: string, royaltiesFee: number) => ({
 });
 
 describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
-  let dummyAddress: string;
+  let dummyAddress: NetworkAddress;
   let space: any;
   let member: Member;
   let soonTokenId: string;
@@ -456,7 +457,7 @@ const dummyNft = (index: number, uid: string, collection: string, description = 
 });
 
 describe('Collection vote test', () => {
-  let memberAddress: string;
+  let memberAddress: NetworkAddress;
   let space: Space;
   let collection: any;
 
