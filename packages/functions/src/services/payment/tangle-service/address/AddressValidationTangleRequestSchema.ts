@@ -1,10 +1,10 @@
-import { AddressValidationTangleRequest } from '@build-5/interfaces';
+import { AddressValidationTangleRequest, TangleRequestType } from '@build-5/interfaces';
 import { validateAddressSchema } from '../../../../runtime/firebase/address/AddressValidationRequestSchema';
 import { toJoiObject } from '../../../joi/common';
 import { baseTangleSchema } from '../common';
 
 export const validateAddressSchemaObject = toJoiObject<AddressValidationTangleRequest>({
-  ...baseTangleSchema,
+  ...baseTangleSchema(TangleRequestType.ADDRESS_VALIDATION),
   ...validateAddressSchema,
 })
   .description(

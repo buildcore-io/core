@@ -4,23 +4,19 @@
  */
 
 /**
- * Tangle request object to create an NFT purchase order
+ * Tangle request object to create an NFT bid
  */
-export interface NftPurchaseTangleRequest {
-  /**
-   * Build5 id of the collection in case a random nft is bought.
-   */
-  collection: string;
+export interface NftBidTangleRequest {
   /**
    * If set to true, NFT will not be sent to the buyer's validated address upon purchase.
    */
   disableWithdraw?: boolean;
   /**
-   * Build5 if of the nft to be purchased.
+   * Build5 if of the nft to bid on.
    */
-  nft?: string;
+  nft: string;
   /**
    * Type of the tangle request.
    */
-  requestType: 'NFT_PURCHASE';
+  requestType: 'NFT_BID';
 }

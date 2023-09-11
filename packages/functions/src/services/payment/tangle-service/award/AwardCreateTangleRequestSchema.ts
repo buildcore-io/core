@@ -1,4 +1,8 @@
-import { AwardCreateBadgeRequest, AwardCreateTangleRequest } from '@build-5/interfaces';
+import {
+  AwardCreateBadgeRequest,
+  AwardCreateTangleRequest,
+  TangleRequestType,
+} from '@build-5/interfaces';
 import Joi from 'joi';
 import {
   awardBageSchema as baseAwardBageSchema,
@@ -13,7 +17,7 @@ const awardBageSchema = {
 };
 
 export const awardCreateSchema = toJoiObject<AwardCreateTangleRequest>({
-  ...baseTangleSchema,
+  ...baseTangleSchema(TangleRequestType.AWARD_CREATE),
   ...baseAwardCreateSchema,
   badge: toJoiObject<AwardCreateBadgeRequest>(awardBageSchema),
 })
