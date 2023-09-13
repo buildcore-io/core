@@ -24,6 +24,7 @@ import { MintMetadataNftService } from './metadataNft/mint-metadata-nft.service'
 import { TangleNftBidService } from './nft/nft-bid.service';
 import { NftDepositService } from './nft/nft-deposit.service';
 import { TangleNftPurchaseService } from './nft/nft-purchase.service';
+import { TangleNftSetForSaleService } from './nft/nft-set-for-sale.service';
 import { ProposalApprovalService } from './proposal/ProposalApporvalService';
 import { ProposalCreateService } from './proposal/ProposalCreateService';
 import { ProposalVoteService } from './proposal/voting/ProposalVoteService';
@@ -129,6 +130,10 @@ export class TangleRequestService {
       case TangleRequestType.NFT_PURCHASE: {
         const service = new TangleNftPurchaseService(this.transactionService);
         return await service.handleNftPurchase(tran, tranEntry, owner, request);
+      }
+      case TangleRequestType.NFT_SET_FOR_SALE: {
+        const service = new TangleNftSetForSaleService(this.transactionService);
+        return await service.handleNftSetForSale(owner, request);
       }
       case TangleRequestType.NFT_BID: {
         const service = new TangleNftBidService(this.transactionService);

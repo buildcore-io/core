@@ -1,6 +1,7 @@
 import { build5Db } from '@build-5/database';
 import {
   COL,
+  IgnoreWalletReason,
   Member,
   MIN_IOTA_AMOUNT,
   Network,
@@ -117,6 +118,35 @@ describe('Simple token trading', () => {
       code: WenError.token_in_invalid_status.code,
       message: WenError.token_in_invalid_status.key,
       status: 'error',
+    });
+  });
+
+  it('Should set member in case of invalid OTR payment', async () => {
+    const memberData = <Member>await build5Db().doc(`${COL.MEMBER}/${member}`).get();
+    const rmsAddress = await rmsWallet.getAddressDetails(getAddress(memberData, Network.RMS)!);
+    await requestFundsFromFaucet(Network.RMS, rmsAddress.bech32, 5 * MIN_IOTA_AMOUNT);
+
+    await rmsWallet.send(rmsAddress, tangleOrder.payload.targetAddress!, 5 * MIN_IOTA_AMOUNT, {
+      customMetadata: {
+        request: {
+          requestType: TangleRequestType.ADDRESS_VALIDATION,
+          network: Network.RMS,
+        },
+      },
+      storageDepositReturnAddress: rmsAddress.bech32,
+    });
+
+    const query = build5Db()
+      .collection(COL.TRANSACTION)
+      .where('member', '==', rmsAddress.bech32)
+      .where(
+        'ignoreWalletReason',
+        '==',
+        IgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION,
+      );
+    await wait(async () => {
+      const snap = await query.get();
+      return snap.length === 1;
     });
   });
 });
