@@ -13,13 +13,12 @@ import { CommonJoi, toJoiObject } from '../../../services/joi/common';
 
 const minAvailableFrom = 10;
 
-export const setNftForSaleSchema = toJoiObject<NftSetForSaleRequest>({
-  nft: CommonJoi.uid().required().description('Build5 id of the nft.'),
+export const baseNftSetForSaleSchema = {
+  nft: CommonJoi.uid().description('Build5 id of the nft.'),
   price: Joi.number()
     .min(MIN_IOTA_AMOUNT)
     .max(MAX_IOTA_AMOUNT)
     .description(`Price of the nft. Minimum ${MIN_IOTA_AMOUNT}, maximum ${MAX_IOTA_AMOUNT}`),
-
   availableFrom: Joi.date()
     .greater(dayjs().subtract(minAvailableFrom, 'minutes').toDate())
     .description(
@@ -63,7 +62,9 @@ export const setNftForSaleSchema = toJoiObject<NftSetForSaleRequest>({
       then: Joi.array().items(CommonJoi.uid(false)).min(1),
     })
     .description('If present, members who can buy this nft'),
-})
+};
+
+export const setNftForSaleSchema = toJoiObject<NftSetForSaleRequest>(baseNftSetForSaleSchema)
   .description('Request object to set an NFT for sale.')
   .meta({
     className: 'NftSetForSaleRequest',
