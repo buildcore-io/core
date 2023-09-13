@@ -81,7 +81,7 @@ export class TransactionService {
     const data: Transaction = {
       type: TransactionType.PAYMENT,
       uid: getRandomEthAddress(),
-      member: order.member || '',
+      member: order.member || tran.from.address,
       space: order.space || '',
       network: order.network || DEFAULT_NETWORK,
       payload: {
@@ -97,7 +97,7 @@ export class TransactionService {
         void: false,
         sourceTransaction: [order.uid],
         chainReference: tran.msgId || null,
-        nft: order.payload.nft || null,
+        nft: order.payload.nft || tran.to.nftOutput?.nftId || null,
         collection: order.payload.collection || null,
         invalidPayment,
       },
@@ -142,7 +142,7 @@ export class TransactionService {
         type: TransactionType.BILL_PAYMENT,
         uid: getRandomEthAddress(),
         space: order.payload.beneficiary !== 'member' ? order.space : null,
-        member: order.member,
+        member: order.member || payment.member || '',
         network: order.network || DEFAULT_NETWORK,
         payload: {
           amount: finalAmt,
