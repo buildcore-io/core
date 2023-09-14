@@ -236,37 +236,45 @@ const getNftOutputAmount = async (
 };
 
 const getIds = async (request: MintMetadataNftTangleRequest, wallet: SmrWallet) => {
+  const indexer = new IndexerPluginClient(wallet.client);
+  const nftId = request.nftId as string;
+  if (nftId) {
+    const collectionId = await getCollectionId(wallet, indexer, nftId);
+    const collectionOutput = await getCollectionOutput(wallet, indexer, collectionId);
+    const aliasId = getAliasId(collectionOutput);
+    return { nftId, collectionId: collectionOutput.nftId, aliasId };
+  }
+
+  const collectionId = request.collectionId as string;
+  if (collectionId) {
+    const collectionOutput = await getCollectionOutput(wallet, indexer, collectionId);
+    const aliasId = getAliasId(collectionOutput);
+    return { nftId: EMPTY_NFT_ID, collectionId, aliasId };
+  }
+
+  const aliasId = (request.aliasId as string) || EMPTY_ALIAS_ID;
+  return { nftId: EMPTY_NFT_ID, collectionId: EMPTY_NFT_ID, aliasId };
+};
+
+const getCollectionId = async (wallet: SmrWallet, indexer: IndexerPluginClient, nftId: string) => {
   try {
-    const indexer = new IndexerPluginClient(wallet.client);
-    const nftId = request.nftId as string;
-    if (nftId) {
-      const nftOutputId = (await indexer.nft(nftId)).items[0];
-      const nftOutput = (await wallet.client.output(nftOutputId)).output as INftOutput;
+    const nftOutputId = (await indexer.nft(nftId)).items[0];
+    const nftOutput = (await wallet.client.output(nftOutputId)).output as INftOutput;
+    return getIssuerNftId(nftOutput);
+  } catch {
+    throw invalidArgument(WenError.invalid_nft_id);
+  }
+};
 
-      const collectionId = getIssuerNftId(nftOutput);
-      const collectionOutputId = (await indexer.nft(collectionId)).items[0];
-      const collectionOutput = (await wallet.client.output(collectionOutputId))
-        .output as INftOutput;
-
-      const aliasId = getAliasId(collectionOutput);
-
-      return { nftId, collectionId, aliasId };
-    }
-
-    const collectionId = request.collectionId as string;
-    if (collectionId) {
-      const collectionOutputId = (await indexer.nft(collectionId)).items[0];
-      const collectionOutput = (await wallet.client.output(collectionOutputId))
-        .output as INftOutput;
-
-      const aliasId = getAliasId(collectionOutput);
-
-      return { nftId: EMPTY_NFT_ID, collectionId, aliasId };
-    }
-
-    const aliasId = (request.aliasId as string) || EMPTY_ALIAS_ID;
-    return { nftId: EMPTY_NFT_ID, collectionId: EMPTY_NFT_ID, aliasId };
-  } catch (error) {
-    throw invalidArgument(WenError.invalid_params);
+const getCollectionOutput = async (
+  wallet: SmrWallet,
+  indexer: IndexerPluginClient,
+  collectionId: string,
+) => {
+  try {
+    const collectionOutputId = (await indexer.nft(collectionId)).items[0];
+    return (await wallet.client.output(collectionOutputId)).output as INftOutput;
+  } catch {
+    throw invalidArgument(WenError.invalid_collection_id);
   }
 };
