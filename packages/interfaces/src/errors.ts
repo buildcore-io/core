@@ -297,4 +297,12 @@ export const WenError = {
     code: 2136,
     key: 'NFT does not belong to selected collection.',
   },
+  invalid_nft_id: {
+    code: 2137,
+    key: 'Invalid nft id.',
+  },
+  invalid_collection_id: {
+    code: 2138,
+    key: 'Invalid collection id.',
+  },
 };
