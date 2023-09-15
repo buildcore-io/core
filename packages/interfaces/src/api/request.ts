@@ -229,3 +229,36 @@ export interface GetPriceChangeResponse {
 export interface GetTopMilestonesRequest {}
 
 export type GetTopMilestonesResponse = { [key: string]: Milestone };
+
+/**
+ * Get mutable metadata for an nft
+ */
+export interface GetNftMutableData {
+  /**
+   * Network, set it only if nft was not minted on mainnet
+   */
+  readonly network?: Network;
+  readonly nftId: string;
+}
+
+/**
+ * Get all nft ids belonging to a collection
+ */
+export interface GetNftIds {
+  /**
+   * Network, set it only if nft was not minted on mainnet
+   */
+  readonly network?: Network;
+  readonly collectionId: string;
+}
+
+/**
+ * Get historycal mutable metadata for an nft
+ */
+export interface GetNftMutableMetadatHistory {
+  /**
+   * Network, set it only if nft was not minted on mainnet
+   */
+  readonly network?: Network;
+  readonly nftId: string;
+}

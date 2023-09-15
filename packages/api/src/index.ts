@@ -13,6 +13,9 @@ import { getPriceChange } from './getPriceChange';
 import { getTokenPrice } from './getTokenPrice';
 import { getTopMilestones } from './getTopMilestones';
 import { getUpdatedAfter } from './getUpdatedAfter';
+import { getNftIds } from './metadataNft/getNftIds';
+import { getNftMutableMetadata } from './metadataNft/getNftMutableMetadata';
+import { getNftMutableMetadataHistory } from './metadataNft/getNftMutableMetadataHistory';
 import { sendLiveUpdates } from './sendLiveUpdates';
 
 const port = process.env.PORT || 3000;
@@ -83,6 +86,12 @@ const getObservable = (url: string): Promise<Observable<unknown>> => {
       return getAddresses(url);
     case ApiRoutes.GET_TOP_MILESTONES:
       return getTopMilestones(url);
+    case ApiRoutes.GET_NFT_MUTABLE_METADATA:
+      return getNftMutableMetadata(url);
+    case ApiRoutes.GET_NFT_IDS:
+      return getNftIds(url);
+    case ApiRoutes.GET_NFT_MUTABLE_METADATA_HISTORY:
+      return getNftMutableMetadataHistory(url);
     default:
       throw { code: 400, message: 'Invalid route' };
   }
