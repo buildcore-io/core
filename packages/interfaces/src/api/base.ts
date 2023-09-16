@@ -67,6 +67,10 @@ export enum ApiRoutes {
   GET_ADDRESSES = '/addresses',
   GET_TOP_MILESTONES = '/getTopMilestones',
   KEEP_ALIVE = '/keepAlive',
+
+  GET_NFT_MUTABLE_METADATA = '/getNftMutableMetadata',
+  GET_NFT_IDS = '/getNftIds',
+  GET_NFT_MUTABLE_METADATA_HISTORY = '/getNftMutableMetadataHistory',
 }
 
 export const PING_INTERVAL = 10000;
