@@ -9,6 +9,7 @@ import {
   TransactionHelper,
 } from '@iota/iota.js-next';
 import Joi from 'joi';
+import { isEqual, last } from 'lodash';
 import { of } from 'rxjs';
 import { CommonJoi, getQueryParams } from '../common';
 import { EMPTY_NFT_ID, getMutableMetadata, getShimmerClient } from './wallet';
@@ -27,7 +28,10 @@ export const getNftMutableMetadataHistory = async (url: string) => {
     const outputId = (await indexer.nft(body.nftId)).items[0];
     let outputResponse: IOutputResponse | undefined = await client.output(outputId);
     do {
-      history.push(getMutableMetadata(outputResponse.output as INftOutput));
+      const metadata = getMutableMetadata(outputResponse.output as INftOutput);
+      if (!isEqual(metadata, last(history))) {
+        history.push(metadata);
+      }
       outputResponse = await getPrevNftOutput(client, outputResponse);
     } while (outputResponse !== undefined);
 
