@@ -27,12 +27,11 @@ import { migrateUriToSotrage, uriToUrl } from '../../../utils/media.utils';
 import { isAliasGovernor } from '../../../utils/token-minting-utils/alias.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';
 import { WalletService } from '../../wallet/wallet';
-import { TransactionMatch, TransactionService } from '../transaction-service';
+import { BaseService, HandlerParams } from '../base';
+import { TransactionMatch } from '../transaction-service';
 
-export class ImportMintedTokenService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleMintedTokenImport = async (order: Transaction, match: TransactionMatch) => {
+export class ImportMintedTokenService extends BaseService {
+  public handleRequest = async ({ order, match }: HandlerParams) => {
     let error: { [key: string]: unknown } = {};
     try {
       const tokenId = order.payload.tokenId!;

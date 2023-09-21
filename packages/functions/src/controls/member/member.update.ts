@@ -8,11 +8,12 @@ import {
   NftStatus,
   WenError,
 } from '@build-5/interfaces';
+import { Context } from '../../runtime/firebase/common';
 import { invalidArgument } from '../../utils/error.utils';
 import { cleanupParams } from '../../utils/schema.utils';
 
 export const updateMemberControl = async (
-  owner: string,
+  { owner }: Context,
   params: MemberUpdateRequest,
 ): Promise<Member> => {
   const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);

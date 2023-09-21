@@ -1,10 +1,8 @@
-import { Transaction, TransactionPayloadType } from '@build-5/interfaces';
-import { TransactionMatch, TransactionService } from '../transaction-service';
+import { TransactionPayloadType } from '@build-5/interfaces';
+import { BaseService, HandlerParams } from '../base';
 
-export class MintedTokenClaimService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleClaimRequest = async (order: Transaction, match: TransactionMatch) => {
+export class MintedTokenClaimService extends BaseService {
+  public handleRequest = async ({ order, match }: HandlerParams) => {
     const payment = await this.transactionService.createPayment(order, match);
     if (order.payload.amount !== match.to.amount) {
       await this.transactionService.createCredit(

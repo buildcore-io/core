@@ -24,17 +24,12 @@ import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';
 import { WalletService } from '../../wallet/wallet';
+import { BaseService, HandlerParams } from '../base';
 import { createNftWithdrawOrder } from '../tangle-service/nft/nft-purchase.service';
-import { TransactionMatch, TransactionService } from '../transaction-service';
-import { NftDepositService } from './nft-deposit-service';
-export class NftStakeService {
-  constructor(readonly transactionService: TransactionService) {}
+import { NftDepositService } from './nft-deposit.service';
 
-  public handleNftStake = async (
-    order: Transaction,
-    match: TransactionMatch,
-    tranEntry: MilestoneTransactionEntry,
-  ) => {
+export class NftStakeService extends BaseService {
+  public handleRequest = async ({ order, match, tranEntry }: HandlerParams) => {
     let customErrorParams = {};
     try {
       if (!tranEntry.nftOutput) {

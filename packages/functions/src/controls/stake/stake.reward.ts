@@ -8,12 +8,13 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
+import { Context } from '../../runtime/firebase/common';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
-export const stakeRewardControl = async (owner: string, params: TokenStakeRewardsRequest) => {
+export const stakeRewardControl = async ({ owner }: Context, params: TokenStakeRewardsRequest) => {
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
   const token = await tokenDocRef.get<Token>();
   if (!token) {

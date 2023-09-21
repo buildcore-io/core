@@ -1,17 +1,12 @@
-import { build5Db } from '@build-5/database';
 import { BaseTangleResponse, COL, SUB_COL } from '@build-5/interfaces';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { editSpaceMemberSchemaObject } from './SpaceEditMemberTangleRequestSchema';
+import { build5Db } from '@build-5/database';
 
-export class SpaceDeclineMemberService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleDeclineMemberRequest = async (
-    owner: string,
-    request: Record<string, unknown>,
-  ): Promise<BaseTangleResponse> => {
+export class SpaceDeclineMemberService extends BaseService {
+  public handleRequest = async ({ owner, request }: HandlerParams): Promise<BaseTangleResponse> => {
     const params = await assertValidationAsync(editSpaceMemberSchemaObject, request);
 
     await assertIsGuardian(params.uid, owner);

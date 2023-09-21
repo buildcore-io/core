@@ -20,6 +20,7 @@ import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { getAddress } from '../../utils/address.utils';
 import { packBasicOutput } from '../../utils/basic-output.utils';
+import { getProject } from '../../utils/common.utils';
 import { getRoyaltyFees } from '../../utils/royalty.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Match } from './match-token';
@@ -327,9 +328,10 @@ export const matchMintedToken = async (
     creditToBuyer,
   ]
     .filter((t) => t !== undefined)
-    .forEach((data) =>
-      transaction.create(build5Db().doc(`${COL.TRANSACTION}/${data!.uid}`), data!),
-    );
+    .forEach((data) => {
+      const docRef = build5Db().doc(`${COL.TRANSACTION}/${data!.uid}`);
+      transaction.create(docRef, data!);
+    });
 
   return {
     purchase: <TokenPurchase>{
@@ -345,7 +347,7 @@ export const matchMintedToken = async (
       buyerBillPaymentId: billPaymentToSeller.uid,
       royaltyBillPayments: royaltyBillPayments.map((o) => o.uid),
 
-      sellerTier: await getMemberTier(seller),
+      sellerTier: await getMemberTier(getProject(sell), seller),
       sellerTokenTradingFeePercentage: getTokenTradingFee(seller),
     },
     sellerCreditId: creditToSeller?.uid,

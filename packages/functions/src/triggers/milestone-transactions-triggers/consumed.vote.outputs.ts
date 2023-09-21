@@ -1,13 +1,11 @@
-import { ITransaction, build5Db } from '@build-5/database';
+import { build5Db } from '@build-5/database';
 import { COL, Proposal, SUB_COL, Transaction, TransactionType } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { getTokenVoteMultiplier } from '../../services/payment/voting-service';
 import { serverTime } from '../../utils/dateTime.utils';
 
-export const processConsumedVoteOutputs = async (
-  transaction: ITransaction,
-  consumedOutputIds: string[],
-) => {
+export const processConsumedVoteOutputs = async (consumedOutputIds: string[]) => {
+  const batch = build5Db().batch();
   for (const consumedOutput of consumedOutputIds) {
     const voteTransactionSnap = await build5Db()
       .collection(COL.TRANSACTION)
@@ -27,7 +25,7 @@ export const processConsumedVoteOutputs = async (
     const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${voteTransaction.payload.proposalId}`);
     const proposal = <Proposal>await proposalDocRef.get();
     if (dayjs().isAfter(proposal.settings.endDate.toDate())) {
-      transaction.update(voteTransactionDocRef, {
+      batch.update(voteTransactionDocRef, {
         'payload.outputConsumed': true,
         'payload.outputConsumedOn': serverTime(),
       });
@@ -51,9 +49,9 @@ export const processConsumedVoteOutputs = async (
         answers: { [value]: build5Db().inc(-prevWeight + currWeight) },
       },
     };
-    transaction.set(proposalDocRef, data, true);
+    batch.set(proposalDocRef, data, true);
 
-    transaction.update(voteTransactionDocRef, {
+    batch.update(voteTransactionDocRef, {
       'payload.weight': currWeight,
       'payload.weightMultiplier': currWeightMultiplier,
       'payload.outputConsumed': true,
@@ -63,7 +61,7 @@ export const processConsumedVoteOutputs = async (
     const proposalMemberDocRef = proposalDocRef
       .collection(SUB_COL.MEMBERS)
       .doc(voteTransaction.member!);
-    transaction.set(
+    batch.set(
       proposalMemberDocRef,
       {
         values: build5Db().arrayRemove({
@@ -75,11 +73,12 @@ export const processConsumedVoteOutputs = async (
       },
       true,
     );
-    transaction.update(proposalMemberDocRef, {
+    batch.update(proposalMemberDocRef, {
       values: build5Db().arrayUnion({
         [value]: currWeight,
         voteTransaction: voteTransaction.uid,
       }),
     });
   }
+  await batch.commit();
 };

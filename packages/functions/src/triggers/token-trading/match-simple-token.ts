@@ -18,6 +18,7 @@ import {
 import bigDecimal from 'js-big-decimal';
 import { isEmpty, tail } from 'lodash';
 import { getAddress } from '../../utils/address.utils';
+import { getProject } from '../../utils/common.utils';
 import { getRoyaltyFees } from '../../utils/royalty.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Match } from './match-token';
@@ -195,9 +196,10 @@ export const matchSimpleToken = async (
   if (isEmpty(buyerPayments)) {
     return { purchase: undefined, buyerCreditId: undefined, sellerCreditId: undefined };
   }
-  buyerPayments.forEach((p) =>
-    transaction.create(build5Db().doc(`${COL.TRANSACTION}/${p.uid}`), p),
-  );
+  buyerPayments.forEach((p) => {
+    const docRef = build5Db().doc(`${COL.TRANSACTION}/${p.uid}`);
+    return transaction.create(docRef, p);
+  });
 
   return {
     purchase: <TokenPurchase>{
@@ -214,7 +216,7 @@ export const matchSimpleToken = async (
         .map((p) => p.uid),
       triggeredBy,
 
-      sellerTier: await getMemberTier(seller),
+      sellerTier: await getMemberTier(getProject(sell), seller),
       sellerTokenTradingFeePercentage: getTokenTradingFee(seller),
     },
     buyerCreditId: buyerPayments.filter((p) => p.type === TransactionType.CREDIT)[0]?.uid || '',

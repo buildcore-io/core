@@ -30,14 +30,13 @@ import { TOKEN_TRADE_ORDER_FETCH_LIMIT } from '../../src/triggers/token-trading/
 import { getAddress } from '../../src/utils/address.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { testEnv } from '../set-up';
+import { soonTokenId, testEnv } from '../set-up';
 import {
   createMember,
   createRoyaltySpaces,
   getRandomSymbol,
   milestoneProcessed,
   mockWalletReturnValue,
-  saveSoon,
   submitMilestoneFunc,
   wait,
 } from './common';
@@ -84,7 +83,6 @@ const getRoyaltyDistribution = (amount: number) => {
 describe('Trade trigger', () => {
   let seller: string;
   let buyer: string;
-  let soonTokenId: string;
 
   let token: Token;
   const tokenCount = 400;
@@ -109,7 +107,6 @@ describe('Trade trigger', () => {
 
   beforeAll(async () => {
     await createRoyaltySpaces();
-    soonTokenId = await saveSoon();
   });
 
   beforeEach(async () => {

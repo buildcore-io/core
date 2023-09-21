@@ -16,13 +16,11 @@ import { assertMemberHasValidAddress } from '../../../../utils/address.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { setNftForSaleTangleSchema } from './NftSetForSaleTangleRequestSchema';
 
-export class TangleNftSetForSaleService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleNftSetForSale = async (owner: string, request: Record<string, unknown>) => {
+export class TangleNftSetForSaleService extends BaseService {
+  public handleRequest = async ({ owner, request }: HandlerParams) => {
     const params = await assertValidationAsync(setNftForSaleTangleSchema, request);
     const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
     const member = await memberDocRef.get<Member>();

@@ -13,6 +13,7 @@ import {
 import { IndexerPluginClient } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
+import { Context } from '../../runtime/firebase/common';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { generateRandomAmount } from '../../utils/common.utils';
@@ -21,7 +22,10 @@ import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
-export const importMintedTokenControl = async (owner: string, params: ImportMintedTokenRequest) =>
+export const importMintedTokenControl = async (
+  { owner }: Context,
+  params: ImportMintedTokenRequest,
+) =>
   build5Db().runTransaction(async (transaction) => {
     await assertIsGuardian(params.space, owner);
 

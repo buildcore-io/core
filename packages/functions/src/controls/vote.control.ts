@@ -1,10 +1,11 @@
 import { build5Db } from '@build-5/database';
 import { COL, Collection, SUB_COL, Token, Vote, VoteRequest, WenError } from '@build-5/interfaces';
-import { hasStakedSoonTokens } from '../services/stake.service';
+import { Context } from '../runtime/firebase/common';
+import { hasStakedTokens } from '../services/stake.service';
 import { invalidArgument } from '../utils/error.utils';
 
-export const voteControl = async (owner: string, params: VoteRequest) => {
-  const hasStakedSoons = await hasStakedSoonTokens(owner);
+export const voteControl = async ({ project, owner }: Context, params: VoteRequest) => {
+  const hasStakedSoons = await hasStakedTokens(project, owner);
   if (!hasStakedSoons) {
     throw invalidArgument(WenError.no_staked_soon);
   }

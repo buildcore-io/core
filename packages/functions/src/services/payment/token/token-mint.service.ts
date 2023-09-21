@@ -1,13 +1,11 @@
 import { build5Db } from '@build-5/database';
-import { COL, Token, TokenStatus, Transaction, TransactionPayloadType } from '@build-5/interfaces';
+import { COL, Token, TokenStatus, TransactionPayloadType } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get } from 'lodash';
-import { TransactionMatch, TransactionService } from '../transaction-service';
+import { BaseService, HandlerParams } from '../base';
 
-export class TokenMintService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleMintingRequest = async (order: Transaction, match: TransactionMatch) => {
+export class TokenMintService extends BaseService {
+  public handleRequest = async ({ order, match }: HandlerParams) => {
     const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${order.payload.token}`);
     const token = <Token>await this.transactionService.get(tokenDocRef);
 

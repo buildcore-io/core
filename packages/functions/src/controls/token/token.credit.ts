@@ -14,6 +14,7 @@ import {
   TransactionType,
   WenError,
 } from '@build-5/interfaces';
+import { Context } from '../../runtime/firebase/common';
 import { getAddress } from '../../utils/address.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import {
@@ -25,7 +26,7 @@ import {
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const creditTokenControl = async (
-  owner: string,
+  { owner }: Context,
   params: CreditTokenRequest,
 ): Promise<Transaction> => {
   const tranId = getRandomEthAddress();

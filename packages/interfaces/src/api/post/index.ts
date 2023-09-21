@@ -29,6 +29,8 @@ export * from './NftSetForSaleRequest';
 export * from './NftStakeRequest';
 export * from './NftUpdateUnsoldRequest';
 export * from './NftWithdrawRequest';
+export * from './ProjectCreate';
+export * from './ProjectDeactivate';
 export * from './ProposalApproveRequest';
 export * from './ProposalCreateRequest';
 export * from './ProposalRejectRequest';

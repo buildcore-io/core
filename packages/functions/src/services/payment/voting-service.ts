@@ -11,12 +11,10 @@ import dayjs from 'dayjs';
 import { get, head } from 'lodash';
 import { getTokenForSpace } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-import { TransactionMatch, TransactionService } from './transaction-service';
+import { BaseService, HandlerParams } from './base';
 
-export class VotingService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public async handleTokenVoteRequest(order: Transaction, match: TransactionMatch) {
+export class VotingService extends BaseService {
+  public handleRequest = async ({ order, match }: HandlerParams) => {
     const payment = await this.transactionService.createPayment(order, match);
     this.transactionService.markAsReconciled(order, match.msgId);
     const token = await getTokenForSpace(order.space!);
@@ -95,7 +93,7 @@ export class VotingService {
       action: 'set',
       merge: true,
     });
-  }
+  };
 
   private createVoteTransaction = (
     order: Transaction,

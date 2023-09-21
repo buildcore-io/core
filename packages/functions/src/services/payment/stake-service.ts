@@ -1,4 +1,3 @@
-import { build5Db } from '@build-5/database';
 import {
   COL,
   Entity,
@@ -14,12 +13,11 @@ import dayjs from 'dayjs';
 import { get } from 'lodash';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-import { TransactionMatch, TransactionService } from './transaction-service';
+import { BaseService, HandlerParams } from './base';
+import { build5Db } from '@build-5/database';
 
-export class StakeService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleStakeOrder = async (order: Transaction, match: TransactionMatch) => {
+export class StakeService extends BaseService {
+  public handleRequest = async ({ order, match }: HandlerParams) => {
     const payment = await this.transactionService.createPayment(order, match);
 
     const matchAmount = match.to.amount;

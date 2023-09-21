@@ -13,13 +13,14 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
+import { Context } from '../../runtime/firebase/common';
 import { WalletService } from '../../services/wallet/wallet';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const creditUnrefundableControl = (
-  owner: string,
+  { owner }: Context,
   params: CreditUnrefundableRequest,
 ): Promise<Transaction> =>
   build5Db().runTransaction(async (transaction) => {

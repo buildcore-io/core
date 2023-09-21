@@ -26,16 +26,11 @@ import { getTokenBySymbol, getUnclaimedDrops } from '../../../../utils/token.uti
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { SmrWallet } from '../../../wallet/SmrWalletService';
 import { WalletService } from '../../../wallet/wallet';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { tokenClaimSchema } from './TokenClaimTangleRequestSchema';
 
-export class TangleTokenClaimService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleMintedTokenAirdropRequest = async (
-    owner: string,
-    request: Record<string, unknown>,
-  ): Promise<BaseTangleResponse> => {
+export class TangleTokenClaimService extends BaseService {
+  public handleRequest = async ({ owner, request }: HandlerParams): Promise<BaseTangleResponse> => {
     const params = await assertValidationAsync(tokenClaimSchema, request);
     const order = await createMintedTokenAirdropCalimOrder(owner, params.symbol);
     this.transactionService.push({

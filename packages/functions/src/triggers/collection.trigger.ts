@@ -314,7 +314,8 @@ const setNftForMinting = async (nftId: string, collection: Collection): Promise<
           collection: nft.collection,
         },
       };
-      transaction.create(build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`), credit);
+      const creditDocRef = build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`);
+      transaction.create(creditDocRef, credit);
     }
 
     if (nft.locked) {

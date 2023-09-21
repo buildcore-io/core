@@ -1,9 +1,10 @@
-import { build5Db } from '@build-5/database';
 import { COL, SUB_COL, Space, SpaceCreateRequest } from '@build-5/interfaces';
+import { Context } from '../../runtime/firebase/common';
 import { getCreateSpaceData } from '../../services/payment/tangle-service/space/SpaceCreateService';
+import { build5Db } from '@build-5/database';
 
 export const createSpaceControl = async (
-  owner: string,
+  { owner }: Context,
   params: SpaceCreateRequest,
 ): Promise<Space> => {
   const { space, guardian, member } = await getCreateSpaceData(owner, { ...params });

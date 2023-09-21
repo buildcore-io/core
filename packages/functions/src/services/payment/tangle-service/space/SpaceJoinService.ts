@@ -14,16 +14,11 @@ import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getTokenForSpace } from '../../../../utils/token.utils';
 import { getStakeForType } from '../../../stake.service';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { joinSpaceSchema } from './SpaceJoinTangleRequestSchema';
 
-export class SpaceJoinService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleSpaceJoinRequest = async (
-    owner: string,
-    request: Record<string, unknown>,
-  ): Promise<BaseTangleResponse> => {
+export class SpaceJoinService extends BaseService {
+  public handleRequest = async ({ owner, request }: HandlerParams): Promise<BaseTangleResponse> => {
     const params = await assertValidationAsync(joinSpaceSchema, request);
 
     const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
@@ -104,9 +99,8 @@ export const getJoinSpaceData = async (owner: string, space: Space) => {
 
 const assertMemberHasEnoughStakedTokens = async (space: Space, member: string) => {
   const token = await getTokenForSpace(space.uid);
-  const distributionDocRef = build5Db().doc(
-    `${COL.TOKEN}/${token?.uid}/${SUB_COL.DISTRIBUTION}/${member}`,
-  );
+  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token?.uid}`);
+  const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member);
   const distribution = await distributionDocRef.get<TokenDistribution>();
   const stakeValue = getStakeForType(distribution, StakeType.DYNAMIC);
   if (stakeValue < (space.minStakedValue || 0)) {

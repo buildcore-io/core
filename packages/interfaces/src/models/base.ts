@@ -32,6 +32,7 @@ export class Timestamp {
 export interface WenRequest {
   address: NetworkAddress;
   signature?: string;
+  projectApiKey?: string;
   customToken?: string;
   publicKey?: {
     hex: string;
@@ -63,6 +64,7 @@ export enum COL {
   STAKE_REWARD = 'stake_reward',
   NFT_STAKE = 'nft_stake',
   AIRDROP = 'airdrop',
+  PROJECT = 'project',
 
   MNEMONIC = '_mnemonic',
   SYSTEM = '_system',
@@ -81,6 +83,7 @@ export const enum SUB_COL {
   STATS = 'stats',
   VOTES = 'votes',
   RANKS = 'ranks',
+  _API_KEY = '_api_key',
 }
 
 export const enum AWARD_COL {
@@ -109,6 +112,14 @@ export interface BaseSubCollection {
  * Every object will have these basic fields.
  */
 export interface BaseRecord extends Base {
+  /**
+   * The project to which this record belongs to.
+   */
+  project?: string;
+  /**
+   * The project to which this record belongs to.
+   */
+  projects?: { [key: string]: boolean };
   /**
    * Date/time it was created on.
    */

@@ -1,18 +1,13 @@
 import { build5Db } from '@build-5/database';
 import { COL, NftPurchaseRequest, Transaction } from '@build-5/interfaces';
+import { Context } from '../../runtime/firebase/common';
 import { createNftPuchaseOrder } from '../../services/payment/tangle-service/nft/nft-purchase.service';
 
 export const orderNftControl = async (
-  owner: string,
+  { owner, ip }: Context,
   params: NftPurchaseRequest,
-  customParams?: Record<string, unknown>,
 ): Promise<Transaction> => {
-  const order = await createNftPuchaseOrder(
-    params.collection,
-    params.nft,
-    owner,
-    (customParams?.ip || '') as string,
-  );
+  const order = await createNftPuchaseOrder(params.collection, params.nft, owner, ip || '');
   const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
   await orderDocRef.create(order);
 

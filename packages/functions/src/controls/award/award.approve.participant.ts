@@ -6,10 +6,11 @@ import {
   Transaction,
 } from '@build-5/interfaces';
 import { get } from 'lodash';
+import { Context } from '../../runtime/firebase/common';
 import { approveAwardParticipant } from '../../services/payment/tangle-service/award/award.approve.participant.service';
 
 export const approveAwardParticipantControl = async (
-  owner: string,
+  { owner }: Context,
   params: AwardApproveParticipantRequest,
 ): Promise<AwardApproveParticipantResponse> => {
   const members = params.members.map((m) => m.toLowerCase());

@@ -9,13 +9,11 @@ import { spaceToIpfsMetadata } from '../../../../utils/space.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { isStorageUrl } from '../../../joi/common';
 import { WalletService } from '../../../wallet/wallet';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { createSpaceSchemaObject } from './SpaceCreateTangleRequestSchema';
 
-export class SpaceCreateService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleSpaceCreateRequest = async (owner: string, request: Record<string, unknown>) => {
+export class SpaceCreateService extends BaseService {
+  public handleRequest = async ({ owner, request }: HandlerParams) => {
     await assertValidationAsync(createSpaceSchemaObject, request);
 
     const { space, guardian, member } = await getCreateSpaceData(owner, request);

@@ -9,16 +9,11 @@ import {
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { proposalApproveSchema } from './ProposalApproveTangleRequestSchema';
 
-export class ProposalApprovalService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleProposalApproval = async (
-    owner: string,
-    request: Record<string, unknown>,
-  ): Promise<BaseTangleResponse> => {
+export class ProposalApprovalService extends BaseService {
+  public handleRequest = async ({ owner, request }: HandlerParams): Promise<BaseTangleResponse> => {
     const params = await assertValidationAsync(proposalApproveSchema, request);
     const data = await getProposalApprovalData(
       owner,

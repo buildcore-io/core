@@ -38,17 +38,13 @@ import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { NftWallet } from '../../wallet/NftWallet';
 import { SmrWallet } from '../../wallet/SmrWalletService';
 import { WalletService } from '../../wallet/wallet';
-import { TransactionMatch, TransactionService } from '../transaction-service';
-export class NftDepositService {
-  constructor(readonly transactionService: TransactionService) {}
+import { BaseService, HandlerParams } from '../base';
+import { TransactionMatch } from '../transaction-service';
 
-  public handleNftDepositRequest = async (
-    order: Transaction,
-    milestoneTransaction: MilestoneTransactionEntry,
-    match: TransactionMatch,
-  ) => {
+export class NftDepositService extends BaseService {
+  public handleRequest = async ({ order, match, tranEntry }: HandlerParams) => {
     try {
-      const nft = await this.depositNft(order, milestoneTransaction, match);
+      const nft = await this.depositNft(order, tranEntry, match);
       await this.transactionService.createPayment(order, match);
       this.transactionService.markAsReconciled(order, match.msgId);
 

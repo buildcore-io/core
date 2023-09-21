@@ -8,6 +8,7 @@ import {
   Transaction,
   WenError,
 } from '@build-5/interfaces';
+import { Context } from '../../runtime/firebase/common';
 import {
   getProposal,
   getProposalMember,
@@ -19,7 +20,7 @@ import { invalidArgument } from '../../utils/error.utils';
 import { getTokenForSpace } from '../../utils/token.utils';
 
 export const voteOnProposalControl = async (
-  owner: string,
+  { owner }: Context,
   params: ProposalVoteRequest,
 ): Promise<Transaction> => {
   const proposal = await getProposal(params.uid);

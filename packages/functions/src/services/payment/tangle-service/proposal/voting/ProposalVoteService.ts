@@ -22,21 +22,19 @@ import { invalidArgument } from '../../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../../utils/schema.utils';
 import { getTokenForSpace } from '../../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../../utils/wallet.utils';
-import { TransactionService } from '../../../transaction-service';
+import { BaseService, HandlerParams } from '../../../base';
 import { voteOnProposalSchemaObject } from './ProposalVoteTangleRequestSchema';
 import { executeSimpleVoting } from './simple.voting';
 import { voteWithStakedTokens } from './staked.token.voting';
 import { createVoteTransactionOrder } from './token.voting';
 
-export class ProposalVoteService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleVoteOnProposal = async (
-    owner: string,
-    request: Record<string, unknown>,
-    milestoneTran: MilestoneTransaction,
-    milestoneTranEntry: MilestoneTransactionEntry,
-  ): Promise<ProposalVoteTangleResponse | undefined> => {
+export class ProposalVoteService extends BaseService {
+  public handleRequest = async ({
+    owner,
+    request,
+    tran,
+    tranEntry,
+  }: HandlerParams): Promise<ProposalVoteTangleResponse | undefined> => {
     const params = await assertValidationAsync(voteOnProposalSchemaObject, request);
 
     const proposal = await getProposal(params.uid as string);
@@ -58,14 +56,7 @@ export class ProposalVoteService {
         return { status: 'success', voteTransaction: voteTransaction.uid };
       }
 
-      await this.handleTokenVoteRequest(
-        owner,
-        proposal,
-        [params.value],
-        token,
-        milestoneTran,
-        milestoneTranEntry,
-      );
+      await this.handleTokenVoteRequest(owner, proposal, [params.value], token, tran, tranEntry);
       return;
     }
 

@@ -1,8 +1,6 @@
 import { build5Db } from '@build-5/database';
 import {
   COL,
-  MilestoneTransaction,
-  MilestoneTransactionEntry,
   StakeType,
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
@@ -23,18 +21,11 @@ import { getTokenBySymbol } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { SmrWallet } from '../../../wallet/SmrWalletService';
 import { WalletService } from '../../../wallet/wallet';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { depositStakeSchemaObject } from './TokenStakeTangleRequestSchema';
 
-export class TangleStakeService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleStaking = async (
-    tran: MilestoneTransaction,
-    tranEntry: MilestoneTransactionEntry,
-    owner: string,
-    request: Record<string, unknown>,
-  ) => {
+export class TangleStakeService extends BaseService {
+  public handleRequest = async ({ owner, request, tran, tranEntry }: HandlerParams) => {
     const params = await assertValidationAsync(depositStakeSchemaObject, request);
 
     const order = await createStakeOrder(

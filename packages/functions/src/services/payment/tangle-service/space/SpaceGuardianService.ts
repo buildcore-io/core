@@ -22,16 +22,14 @@ import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { editSpaceMemberSchemaObject } from './SpaceEditMemberTangleRequestSchema';
 
-export class SpaceGuardianService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleEditGuardianRequest = async (
-    owner: string,
-    request: Record<string, unknown>,
-  ): Promise<SpaceGuardianUpsertTangleResponse> => {
+export class SpaceGuardianService extends BaseService {
+  public handleRequest = async ({
+    owner,
+    request,
+  }: HandlerParams): Promise<SpaceGuardianUpsertTangleResponse> => {
     const type =
       request.requestType == TangleRequestType.SPACE_ADD_GUARDIAN
         ? ProposalType.ADD_GUARDIAN

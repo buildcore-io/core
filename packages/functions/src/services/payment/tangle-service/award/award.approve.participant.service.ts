@@ -26,16 +26,14 @@ import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { approveAwardParticipantSchemaObject } from './AwardAppParticipantTangleRequestSchema';
 
-export class AwardApproveParticipantService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleApproveParticipantRequest = async (
-    owner: string,
-    request: Record<string, unknown>,
-  ): Promise<AwardApproveParticipantTangleResponse> => {
+export class AwardApproveParticipantService extends BaseService {
+  public handleRequest = async ({
+    owner,
+    request,
+  }: HandlerParams): Promise<AwardApproveParticipantTangleResponse> => {
     const params = await assertValidationAsync(approveAwardParticipantSchemaObject, request);
 
     const badges: { [key: string]: string } = {};

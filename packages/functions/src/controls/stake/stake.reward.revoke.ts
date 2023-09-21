@@ -19,13 +19,14 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { uniq } from 'lodash';
+import { Context } from '../../runtime/firebase/common';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const removeStakeRewardControl = async (
-  owner: string,
+  { owner }: Context,
   params: TokenStakeRewardsRemoveRequest,
 ) => {
   const stakeRewardIds = params.stakeRewardIds as string[];

@@ -8,11 +8,12 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
+import { Context } from '../../runtime/firebase/common';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 
 export const awardParticipateControl = async (
-  owner: string,
+  { owner }: Context,
   params: AwardParticpateRequest,
 ): Promise<AwardParticipant> => {
   const awardDocRef = build5Db().doc(`${COL.AWARD}/${params.uid}`);

@@ -10,12 +10,13 @@ import {
   TransactionValidationType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
+import { Context } from '../../runtime/firebase/common';
 import { WalletService } from '../../services/wallet/wallet';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const depositNftControl = async (
-  owner: string,
+  { owner }: Context,
   params: NftDepositRequest,
 ): Promise<Transaction> => {
   const network = params.network as Network;

@@ -20,6 +20,7 @@ import {
 import { AddressTypes, ED25519_ADDRESS_TYPE, INodeInfo } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
+import { Context } from '../../runtime/firebase/common';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress, assertSpaceHasValidAddress } from '../../utils/address.utils';
@@ -36,7 +37,10 @@ import { createAliasOutput } from '../../utils/token-minting-utils/alias.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
-export const mintCollectionOrderControl = async (owner: string, params: CollectionMintRequest) => {
+export const mintCollectionOrderControl = async (
+  { owner }: Context,
+  params: CollectionMintRequest,
+) => {
   const network = params.network as Network;
 
   const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();

@@ -19,16 +19,11 @@ import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { awardFundSchema } from './AwardFundTangleRequestSchema';
 
-export class AwardFundService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleFundRequest = async (
-    owner: string,
-    request: Record<string, unknown>,
-  ): Promise<BaseTangleResponse> => {
+export class AwardFundService extends BaseService {
+  public handleRequest = async ({ owner, request }: HandlerParams): Promise<BaseTangleResponse> => {
     const params = await assertValidationAsync(awardFundSchema, request);
 
     const award = await getAwardForFunding(owner, params.uid);

@@ -10,7 +10,6 @@ import {
 } from '@build-5/interfaces';
 import { createToken } from '../../../src/runtime/firebase/token/base';
 import { voteController } from '../../../src/runtime/firebase/vote';
-import * as config from '../../../src/utils/config.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../../set-up';
 import {
@@ -19,12 +18,12 @@ import {
   expectThrow,
   getRandomSymbol,
   mockWalletReturnValue,
-  saveSoon,
+  setProdTiers,
+  setTestTiers,
   wait,
 } from '../common';
 
 let walletSpy: any;
-let isProdSpy: jest.SpyInstance<boolean, []>;
 
 const dummyToken = (space: string) =>
   ({
@@ -47,12 +46,10 @@ describe('Token vote test', () => {
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    isProdSpy = jest.spyOn(config, 'isProdEnv');
     memberAddress = await createMember(walletSpy);
     space = await createSpace(walletSpy, memberAddress);
     mockWalletReturnValue(walletSpy, memberAddress, dummyToken(space.uid));
     token = await testEnv.wrap(createToken)({});
-    await saveSoon();
   });
 
   it('Should throw, no token', async () => {
@@ -79,9 +76,9 @@ describe('Token vote test', () => {
       uid: token.uid,
       direction: 1,
     });
-    isProdSpy.mockReturnValue(true);
+    await setProdTiers();
     await expectThrow(testEnv.wrap(voteController)({}), WenError.no_staked_soon.key);
-    isProdSpy.mockRestore();
+    await setTestTiers();
   });
 
   const validateStats = async (upvotes: number, downvotes: number, diff: number) => {

@@ -3,16 +3,11 @@ import { BaseTangleResponse, COL, SpaceMember, SUB_COL, WenError } from '@build-
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { editSpaceMemberSchemaObject } from './SpaceEditMemberTangleRequestSchema';
 
-export class SpaceAcceptMemberService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleAcceptMemberRequest = async (
-    owner: string,
-    request: Record<string, unknown>,
-  ): Promise<BaseTangleResponse> => {
+export class SpaceAcceptMemberService extends BaseService {
+  public handleRequest = async ({ owner, request }: HandlerParams): Promise<BaseTangleResponse> => {
     const params = await assertValidationAsync(editSpaceMemberSchemaObject, request);
 
     const { spaceMember, space } = await acceptSpaceMember(owner, params.uid, params.member);

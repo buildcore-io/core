@@ -27,17 +27,15 @@ import { isStorageUrl } from '../../../joi/common';
 import { SmrWallet } from '../../../wallet/SmrWalletService';
 import { WalletService } from '../../../wallet/wallet';
 import { getAwardgStorageDeposits } from '../../award/award-service';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { awardCreateSchema } from './AwardCreateTangleRequestSchema';
 import { createAwardFundOrder } from './award.fund.service';
 
-export class AwardCreateService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleCreateRequest = async (
-    owner: string,
-    request: Record<string, unknown>,
-  ): Promise<AwardCreateTangleResponse> => {
+export class AwardCreateService extends BaseService {
+  public handleRequest = async ({
+    owner,
+    request,
+  }: HandlerParams): Promise<AwardCreateTangleResponse> => {
     const params = await assertValidationAsync(awardCreateSchema, request);
     const { award, owner: awardOwner } = await createAward(owner, { ...params });
 

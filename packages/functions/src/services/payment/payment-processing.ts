@@ -1,254 +1,206 @@
-import { ITransaction, build5Db } from '@build-5/database';
+import { build5Db } from '@build-5/database';
 import {
   COL,
-  Entity,
   MilestoneTransaction,
   MilestoneTransactionEntry,
   NetworkAddress,
-  Nft,
   Transaction,
   TransactionPayloadType,
   TransactionType,
+  WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { isEmpty } from 'lodash';
+import { head, isEmpty } from 'lodash';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
-import { AddressService } from './address-service';
+import { invalidArgument } from '../../utils/error.utils';
+import { MemberAddressService } from './address/address-member.service';
+import { SpaceAddressService } from './address/address.space.service';
 import { AwardService } from './award/award-service';
+import { HandlerParams } from './base';
 import { CreditService } from './credit-service';
 import { MetadataNftService } from './metadataNft-service';
-import { CollectionMintingService } from './nft/collection-minting-service';
-import { NftDepositService } from './nft/nft-deposit-service';
-import { NftService } from './nft/nft-service';
-import { NftStakeService } from './nft/nft-stake-service';
+import { CollectionMintingService } from './nft/collection-minting.service';
+import { NftBidService } from './nft/nft-bid.service';
+import { NftDepositService } from './nft/nft-deposit.service';
+import { NftPurchaseService } from './nft/nft-purchase.service';
+import { NftStakeService } from './nft/nft-stake.service';
 import { SpaceService } from './space/space-service';
 import { StakeService } from './stake-service';
 import { TangleRequestService } from './tangle-service/TangleRequestService';
 import { ImportMintedTokenService } from './token/import-minted-token.service';
-import { MintedTokenClaimService } from './token/minted-token-claim';
-import { TokenMintService } from './token/token-mint-service';
-import { TokenService } from './token/token-service';
+import { TokenAirdropClaimService } from './token/token-airdrop-claim.service';
+import { TokenMintService } from './token/token-mint.service';
+import { TokenMintedAirdropService } from './token/token-minted-airdrop.service';
+import { MintedTokenClaimService } from './token/token-minted-claim.service';
+import { TokenPurchaseService } from './token/token-purchase.service';
+import { TokenTradeService } from './token/token-trade.service';
 import { TransactionService } from './transaction-service';
 import { VotingService } from './voting-service';
 
 export class ProcessingService {
-  private transactionService: TransactionService;
-  private tokenService: TokenService;
-  private tokenMintService: TokenMintService;
-  private mintedTokenClaimService: MintedTokenClaimService;
-  private nftService: NftService;
-  private addressService: AddressService;
-  private collectionMintingService: CollectionMintingService;
-  private creditService: CreditService;
-  private stakeService: StakeService;
-  private tangleRequestService: TangleRequestService;
-  private votingService: VotingService;
+  public markAsVoid = (nftService: NftPurchaseService, transaction: Transaction) =>
+    nftService.markAsVoid(transaction);
 
-  constructor(transaction: ITransaction) {
-    this.transactionService = new TransactionService(transaction);
-    this.tokenService = new TokenService(this.transactionService);
-    this.tokenMintService = new TokenMintService(this.transactionService);
-    this.mintedTokenClaimService = new MintedTokenClaimService(this.transactionService);
-    this.nftService = new NftService(this.transactionService);
-    this.addressService = new AddressService(this.transactionService);
-    this.collectionMintingService = new CollectionMintingService(this.transactionService);
-    this.creditService = new CreditService(this.transactionService);
-    this.stakeService = new StakeService(this.transactionService);
-    this.tangleRequestService = new TangleRequestService(this.transactionService);
-    this.votingService = new VotingService(this.transactionService);
-  }
+  public processMilestoneTransactions = async (tran: MilestoneTransaction): Promise<void> => {
+    const build5Transaction = await this.getBuild5Transaction(tran);
 
-  public submit = () => this.transactionService.submit();
-
-  public markAsVoid = (transaction: Transaction) => this.nftService.markAsVoid(transaction);
-
-  public markNftAsFinalized = (nft: Nft) => this.nftService.markNftAsFinalized(nft);
-
-  public async processMilestoneTransactions(tran: MilestoneTransaction): Promise<void> {
-    if (!tran.outputs?.length) {
-      return;
-    }
-    const build5Transaction = isEmpty(tran.build5TransactionId)
-      ? undefined
-      : await build5Db().doc(`${COL.TRANSACTION}/${tran.build5TransactionId}`).get<Transaction>();
     for (const tranOutput of tran.outputs) {
-      if (
-        build5Transaction?.type !== TransactionType.UNLOCK &&
-        tran.inputs.find((i) => tranOutput.address === i.address)
-      ) {
+      const isSourceAddress = tran.inputs.find((i) => i.address === tranOutput.address);
+      if (build5Transaction?.type !== TransactionType.UNLOCK && isSourceAddress) {
         continue;
       }
-      const orders = await this.findAllOrdersWithAddress(tranOutput.address);
-      for (const order of orders) {
-        await this.processOrderTransaction(tran, tranOutput, order.uid, build5Transaction);
+
+      const order = await this.findOrderForAddress(tranOutput.address);
+      if (order) {
+        await build5Db().runTransaction(async (transaction) => {
+          const tranService = new TransactionService(transaction);
+          await this.processOrderTransaction(
+            tranService,
+            tran,
+            tranOutput,
+            order.uid,
+            build5Transaction,
+          );
+          tranService.submit();
+        });
       }
     }
-  }
+  };
 
   private async processOrderTransaction(
+    tranService: TransactionService,
     tran: MilestoneTransaction,
-    tranOutput: MilestoneTransactionEntry,
+    tranEntry: MilestoneTransactionEntry,
     orderId: string,
-    build5Transaction: Transaction | undefined,
+    build5Tran: Transaction | undefined,
   ): Promise<void> {
     const orderRef = build5Db().doc(`${COL.TRANSACTION}/${orderId}`);
-    const order = await this.transactionService.get<Transaction>(orderRef);
+    const order = await tranService.transaction.get<Transaction>(orderRef);
 
     if (!order) {
       return;
     }
 
-    // This happens here on purpose instead of cron to reduce $$$
     const expireDate = dayjs(order.payload.expiresOn?.toDate());
     let expired = false;
     if (expireDate.isBefore(dayjs(), 'ms')) {
-      await this.markAsVoid(order);
+      const nftService = new NftPurchaseService(tranService);
+      await this.markAsVoid(nftService, order);
       expired = true;
     }
 
-    // Let's process this.'
-    const match = await this.transactionService.isMatch(tran, tranOutput, order, build5Transaction);
-    if (!expired && order.payload.reconciled === false && order.payload.void === false && match) {
-      const expirationUnlock = this.transactionService.getExpirationUnlock(
-        tranOutput.unlockConditions,
-      );
+    const match = await tranService.isMatch(tran, tranEntry, order, build5Tran);
+    if (!expired && !order.payload.reconciled && !order.payload.void && match) {
+      const expirationUnlock = tranService.getExpirationUnlock(tranEntry.unlockConditions);
       if (expirationUnlock !== undefined) {
-        const type = tranOutput.nftOutput
+        const type = tranEntry.nftOutput
           ? TransactionPayloadType.UNLOCK_NFT
           : TransactionPayloadType.UNLOCK_FUNDS;
-        await this.transactionService.createUnlockTransaction(
+        await tranService.createUnlockTransaction(
           order,
           tran,
-          tranOutput,
+          tranEntry,
           type,
-          tranOutput.outputId,
+          tranEntry.outputId,
           dateToTimestamp(dayjs.unix(expirationUnlock.unixTime)),
         );
         return;
       }
 
-      switch (order.payload.type) {
-        case TransactionPayloadType.NFT_PURCHASE:
-          await this.nftService.handleNftPurchaseRequest(
-            tran,
-            tranOutput,
-            order,
-            match,
-            build5Transaction,
-          );
-          break;
-        case TransactionPayloadType.NFT_BID:
-          await this.nftService.handleNftBidRequest(
-            tran,
-            tranOutput,
-            order,
-            match,
-            build5Transaction,
-          );
-          break;
-        case TransactionPayloadType.SPACE_ADDRESS_VALIDATION:
-          await this.addressService.handleSpaceAddressValidationRequest(order, match);
-          break;
-        case TransactionPayloadType.MEMBER_ADDRESS_VALIDATION:
-          await this.addressService.handleAddressValidationRequest(order, match, Entity.MEMBER);
-          break;
-        case TransactionPayloadType.TOKEN_PURCHASE:
-          await this.tokenService.handleTokenPurchaseRequest(order, match);
-          break;
-        case TransactionPayloadType.TOKEN_AIRDROP:
-          await this.tokenService.handleTokenAirdropClaim(order, match);
-          break;
-        case TransactionPayloadType.AIRDROP_MINTED_TOKEN:
-          await this.tokenService.handleMintedTokenAirdrop(order, tranOutput, match);
-          break;
-        case TransactionPayloadType.MINT_TOKEN:
-          await this.tokenMintService.handleMintingRequest(order, match);
-          break;
-        case TransactionPayloadType.CLAIM_MINTED_TOKEN:
-          await this.mintedTokenClaimService.handleClaimRequest(order, match);
-          break;
-        case TransactionPayloadType.SELL_TOKEN:
-        case TransactionPayloadType.BUY_TOKEN:
-          await this.tokenService.handleTokenTradeRequest(
-            order,
-            tranOutput,
-            match,
-            build5Transaction,
-          );
-          break;
-        case TransactionPayloadType.MINT_COLLECTION:
-          await this.collectionMintingService.handleCollectionMintingRequest(order, match);
-          break;
-        case TransactionPayloadType.DEPOSIT_NFT: {
-          const service = new NftDepositService(this.transactionService);
-          await service.handleNftDepositRequest(order, tranOutput, match);
-          break;
-        }
-        case TransactionPayloadType.CREDIT_LOCKED_FUNDS:
-          await this.creditService.handleCreditUnrefundableOrder(order, match);
-          break;
-        case TransactionPayloadType.STAKE:
-          await this.stakeService.handleStakeOrder(order, match);
-          break;
-        case TransactionPayloadType.TANGLE_REQUEST:
-          await this.tangleRequestService.onTangleRequest(
-            order,
-            tran,
-            tranOutput,
-            match,
-            build5Transaction,
-          );
-          break;
-        case TransactionPayloadType.PROPOSAL_VOTE:
-          await this.votingService.handleTokenVoteRequest(order, match);
-          break;
-        case TransactionPayloadType.CLAIM_SPACE: {
-          const service = new SpaceService(this.transactionService);
-          await service.handleSpaceClaim(order, match);
-          break;
-        }
-        case TransactionPayloadType.STAKE_NFT: {
-          const service = new NftStakeService(this.transactionService);
-          await service.handleNftStake(order, match, tranOutput);
-          break;
-        }
-        case TransactionPayloadType.FUND_AWARD: {
-          const service = new AwardService(this.transactionService);
-          await service.handleAwardFundingOrder(order, match);
-          break;
-        }
-        case TransactionPayloadType.IMPORT_TOKEN: {
-          const service = new ImportMintedTokenService(this.transactionService);
-          await service.handleMintedTokenImport(order, match);
-          break;
-        }
-        case TransactionPayloadType.MINT_METADATA_NFT: {
-          const service = new MetadataNftService(this.transactionService);
-          await service.handleMintMetadataNftRequest(order, match);
-          break;
-        }
-      }
+      const serviceParams: HandlerParams = {
+        payment: undefined,
+        match,
+        order,
+        owner: order.member || '',
+        tran,
+        tranEntry,
+        build5Tran,
+        request: {},
+      };
+      const service = this.getService(tranService, order.payload.type!);
+      await service.handleRequest(serviceParams);
     } else {
-      await this.transactionService.processAsInvalid(tran, order, tranOutput, build5Transaction);
+      await tranService.processAsInvalid(tran, order, tranEntry, build5Tran);
     }
 
     // Add linked transaction.
-    this.transactionService.push({
+    tranService.push({
       ref: orderRef,
       data: {
         linkedTransactions: [
           ...(order.linkedTransactions || []),
-          ...this.transactionService.linkedTransactions,
+          ...tranService.linkedTransactions,
         ],
       },
       action: 'update',
     });
   }
 
-  private findAllOrdersWithAddress = (address: NetworkAddress) =>
-    build5Db()
+  private getService = (tranService: TransactionService, type: TransactionPayloadType) => {
+    switch (type) {
+      case TransactionPayloadType.NFT_PURCHASE:
+        return new NftPurchaseService(tranService);
+      case TransactionPayloadType.NFT_BID:
+        return new NftBidService(tranService);
+      case TransactionPayloadType.SPACE_ADDRESS_VALIDATION:
+        return new SpaceAddressService(tranService);
+      case TransactionPayloadType.MEMBER_ADDRESS_VALIDATION:
+        return new MemberAddressService(tranService);
+      case TransactionPayloadType.TOKEN_PURCHASE:
+        return new TokenPurchaseService(tranService);
+      case TransactionPayloadType.TOKEN_AIRDROP:
+        return new TokenAirdropClaimService(tranService);
+      case TransactionPayloadType.AIRDROP_MINTED_TOKEN:
+        return new TokenMintedAirdropService(tranService);
+      case TransactionPayloadType.MINT_TOKEN:
+        return new TokenMintService(tranService);
+      case TransactionPayloadType.CLAIM_MINTED_TOKEN:
+        return new MintedTokenClaimService(tranService);
+      case TransactionPayloadType.SELL_TOKEN:
+      case TransactionPayloadType.BUY_TOKEN:
+        return new TokenTradeService(tranService);
+      case TransactionPayloadType.MINT_COLLECTION:
+        return new CollectionMintingService(tranService);
+      case TransactionPayloadType.DEPOSIT_NFT:
+        return new NftDepositService(tranService);
+      case TransactionPayloadType.CREDIT_LOCKED_FUNDS:
+        return new CreditService(tranService);
+      case TransactionPayloadType.STAKE:
+        return new StakeService(tranService);
+      case TransactionPayloadType.TANGLE_REQUEST:
+        return new TangleRequestService(tranService);
+      case TransactionPayloadType.PROPOSAL_VOTE:
+        return new VotingService(tranService);
+      case TransactionPayloadType.CLAIM_SPACE:
+        return new SpaceService(tranService);
+      case TransactionPayloadType.STAKE_NFT:
+        return new NftStakeService(tranService);
+      case TransactionPayloadType.FUND_AWARD:
+        return new AwardService(tranService);
+      case TransactionPayloadType.IMPORT_TOKEN:
+        return new ImportMintedTokenService(tranService);
+      case TransactionPayloadType.MINT_METADATA_NFT:
+        return new MetadataNftService(tranService);
+      default:
+        throw invalidArgument(WenError.invalid_tangle_request_type);
+    }
+  };
+
+  private findOrderForAddress = async (address: NetworkAddress) => {
+    const snap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.ORDER)
       .where('payload.targetAddress', '==', address)
+      .limit(1)
       .get<Transaction>();
+    return head(snap);
+  };
+
+  private getBuild5Transaction = (tran: MilestoneTransaction) => {
+    if (isEmpty(tran.build5TransactionId)) {
+      return;
+    }
+    const docRef = build5Db().doc(`${COL.TRANSACTION}/${tran.build5TransactionId}`);
+    return docRef.get<Transaction>();
+  };
 }

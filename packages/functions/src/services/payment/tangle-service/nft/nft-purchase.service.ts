@@ -9,8 +9,6 @@ import {
   Entity,
   MIN_AMOUNT_TO_TRANSFER,
   Member,
-  MilestoneTransaction,
-  MilestoneTransactionEntry,
   Network,
   NetworkAddress,
   Nft,
@@ -40,18 +38,16 @@ import { getSpace } from '../../../../utils/space.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { assertHasAccess } from '../../../validators/access';
 import { WalletService } from '../../../wallet/wallet';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { nftPurchaseSchema } from './NftPurchaseTangleRequestSchema';
 
-export class TangleNftPurchaseService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleNftPurchase = async (
-    tran: MilestoneTransaction,
-    tranEntry: MilestoneTransactionEntry,
-    owner: string,
-    request: Record<string, unknown>,
-  ): Promise<BaseTangleResponse | undefined> => {
+export class TangleNftPurchaseService extends BaseService {
+  public handleRequest = async ({
+    request,
+    owner,
+    tran,
+    tranEntry,
+  }: HandlerParams): Promise<BaseTangleResponse | undefined> => {
     const params = await assertValidationAsync(nftPurchaseSchema, request);
 
     const order = await createNftPuchaseOrder(params.collection, params.nft, owner, '', true);

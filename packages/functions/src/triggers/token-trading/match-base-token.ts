@@ -21,6 +21,7 @@ import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { getAddress } from '../../utils/address.utils';
 import { packBasicOutput } from '../../utils/basic-output.utils';
+import { getProject } from '../../utils/common.utils';
 import { getRoyaltyFees } from '../../utils/royalty.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Match } from './match-token';
@@ -261,7 +262,11 @@ export const matchBaseToken = async (
   if (isEmpty(iotaPayments) || isEmpty(smrPayments)) {
     return { sellerCreditId: undefined, buyerCreditId: undefined, purchase: undefined };
   }
-  [...iotaPayments, ...smrPayments].forEach((payment) => {
+  iotaPayments.forEach((payment) => {
+    const docRef = build5Db().doc(`${COL.TRANSACTION}/${payment.uid}`);
+    transaction.create(docRef, payment);
+  });
+  smrPayments.forEach((payment) => {
     const docRef = build5Db().doc(`${COL.TRANSACTION}/${payment.uid}`);
     transaction.create(docRef, payment);
   });
@@ -287,7 +292,7 @@ export const matchBaseToken = async (
         .filter((o) => o.type === TransactionType.BILL_PAYMENT && o.payload.royalty === true)
         .map((o) => o.uid),
 
-      sellerTier: await getMemberTier(seller!),
+      sellerTier: await getMemberTier(getProject(sell), seller!),
       sellerTokenTradingFeePercentage: getTokenTradingFee(seller!),
     },
   };

@@ -1,4 +1,3 @@
-import { build5Db } from '@build-5/database';
 import {
   Award,
   AwardAddOwnerRequest,
@@ -8,11 +7,13 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
+import { Context } from '../../runtime/firebase/common';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
+import { build5Db } from '@build-5/database';
 
 export const addOwnerControl = async (
-  owner: string,
+  { owner }: Context,
   params: AwardAddOwnerRequest,
 ): Promise<AwardOwner> => {
   const awardDocRef = build5Db().doc(`${COL.AWARD}/${params.uid}`);

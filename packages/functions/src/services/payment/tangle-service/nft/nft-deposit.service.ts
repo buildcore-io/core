@@ -1,9 +1,6 @@
 import { build5Db } from '@build-5/database';
 import {
   COL,
-  MilestoneTransaction,
-  MilestoneTransactionEntry,
-  Network,
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
   TransactionPayloadType,
@@ -14,18 +11,11 @@ import dayjs from 'dayjs';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 
-export class NftDepositService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleNftDeposit = async (
-    network: Network,
-    owner: string,
-    tran: MilestoneTransaction,
-    tranEntry: MilestoneTransactionEntry,
-  ) => {
-    const wallet = await WalletService.newWallet(network);
+export class NftDepositService extends BaseService {
+  public handleRequest = async ({ owner, tran, tranEntry, ...params }: HandlerParams) => {
+    const wallet = await WalletService.newWallet(params.order.network);
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
     const order = <Transaction>{
@@ -33,7 +23,7 @@ export class NftDepositService {
       uid: getRandomEthAddress(),
       member: owner,
       space: '',
-      network,
+      network: params.order.network,
       payload: {
         type: TransactionPayloadType.DEPOSIT_NFT,
         targetAddress: targetAddress.bech32,

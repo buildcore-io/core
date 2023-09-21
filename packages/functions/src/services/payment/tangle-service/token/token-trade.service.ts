@@ -3,8 +3,6 @@ import {
   COL,
   DEFAULT_NETWORK,
   Member,
-  MilestoneTransaction,
-  MilestoneTransactionEntry,
   Network,
   SUB_COL,
   TRANSACTION_MAX_EXPIRY_MS,
@@ -41,21 +39,19 @@ import {
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { SmrWallet } from '../../../wallet/SmrWalletService';
 import { WalletService } from '../../../wallet/wallet';
-import { TransactionMatch, TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { tradeMintedTokenSchema } from './TokenTradeTangleRequestSchema';
 
-export class TangleTokenTradeService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleTokenTradeTangleRequest = async (
-    match: TransactionMatch,
-    payment: Transaction,
-    tran: MilestoneTransaction,
-    tranEntry: MilestoneTransactionEntry,
-    owner: string,
-    request: Record<string, unknown>,
-    build5Transaction?: Transaction,
-  ) => {
+export class TangleTokenTradeService extends BaseService {
+  public handleRequest = async ({
+    match,
+    payment,
+    tran,
+    tranEntry,
+    owner,
+    request,
+    build5Tran,
+  }: HandlerParams) => {
     const type =
       request.requestType === TransactionPayloadType.BUY_TOKEN
         ? TokenTradeOrderType.BUY
@@ -98,7 +94,7 @@ export class TangleTokenTradeService {
 
     if (params.type === TokenTradeOrderType.SELL && token?.status === TokenStatus.BASE) {
       this.transactionService.createTangleCredit(
-        payment,
+        payment!,
         match,
         {
           amount: tradeOrderTransaction.payload.amount,
@@ -115,8 +111,7 @@ export class TangleTokenTradeService {
       tranEntry,
       TransactionPayloadType.TANGLE_TRANSFER,
       tranEntry.outputId,
-      build5Transaction?.payload?.expiresOn ||
-        dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms')),
+      build5Tran?.payload?.expiresOn || dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS)),
     );
     return;
   };

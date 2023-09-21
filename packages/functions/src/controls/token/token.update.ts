@@ -1,6 +1,5 @@
-import { build5Db } from '@build-5/database';
 import { COL, Token, TokenStatus, WenError } from '@build-5/interfaces';
-import { UidSchemaObject } from '../../runtime/firebase/common';
+import { Context, UidSchemaObject } from '../../runtime/firebase/common';
 import {
   updateTokenSchemaObject,
   uptdateMintedTokenSchemaObject,
@@ -8,8 +7,9 @@ import {
 import { invalidArgument } from '../../utils/error.utils';
 import { assertValidationAsync } from '../../utils/schema.utils';
 import { assertIsGuardian, assertTokenStatus } from '../../utils/token.utils';
+import { build5Db } from '@build-5/database';
 
-export const updateTokenControl = async (owner: string, params: UidSchemaObject) => {
+export const updateTokenControl = async ({ owner }: Context, params: UidSchemaObject) => {
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.uid}`);
   await build5Db().runTransaction(async (transaction) => {
     const token = await transaction.get<Token>(tokenDocRef);

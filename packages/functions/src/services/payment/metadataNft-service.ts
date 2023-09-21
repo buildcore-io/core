@@ -21,12 +21,10 @@ import {
   getNftByMintingId,
 } from '../../utils/collection-minting-utils/nft.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-import { TransactionMatch, TransactionService } from './transaction-service';
+import { BaseService, HandlerParams } from './base';
 
-export class MetadataNftService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public async handleMintMetadataNftRequest(order: Transaction, match: TransactionMatch) {
+export class MetadataNftService extends BaseService {
+  public handleRequest = async ({ order, match }: HandlerParams) => {
     const payment = await this.transactionService.createPayment(order, match);
     this.transactionService.markAsReconciled(order, match.msgId);
 
@@ -108,7 +106,7 @@ export class MetadataNftService {
     const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${mintNftOrder.uid}`);
     this.transactionService.push({ ref: orderDocRef, data: mintNftOrder, action: 'set' });
     return;
-  }
+  };
 }
 
 export const createMetadataNft = (

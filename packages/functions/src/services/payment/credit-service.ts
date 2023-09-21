@@ -2,12 +2,10 @@ import { build5Db } from '@build-5/database';
 import { COL, Transaction, TransactionPayloadType, TransactionType } from '@build-5/interfaces';
 import { get, isEmpty } from 'lodash';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-import { TransactionMatch, TransactionService } from './transaction-service';
+import { BaseService, HandlerParams } from './base';
 
-export class CreditService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleCreditUnrefundableOrder = async (order: Transaction, match: TransactionMatch) => {
+export class CreditService extends BaseService {
+  public handleRequest = async ({ order, match }: HandlerParams) => {
     const payment = await this.transactionService.createPayment(order, match);
 
     const transactionDocRef = build5Db().doc(

@@ -6,7 +6,6 @@ import {
   SUB_COL,
   Space,
   SpaceMember,
-  Transaction,
   TransactionPayloadType,
 } from '@build-5/interfaces';
 import {
@@ -22,12 +21,10 @@ import { Bech32AddressHelper } from '../../../utils/bech32-address.helper';
 import { serverTime } from '../../../utils/dateTime.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';
 import { WalletService } from '../../wallet/wallet';
-import { TransactionMatch, TransactionService } from '../transaction-service';
+import { BaseService, HandlerParams } from '../base';
 
-export class SpaceService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleSpaceClaim = async (order: Transaction, match: TransactionMatch) => {
+export class SpaceService extends BaseService {
+  public handleRequest = async ({ order, match }: HandlerParams) => {
     const payment = await this.transactionService.createPayment(order, match);
     await this.transactionService.createCredit(
       TransactionPayloadType.SPACE_CALIMED,

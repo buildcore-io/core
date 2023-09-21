@@ -14,14 +14,14 @@ import dayjs from 'dayjs';
 import { isEmpty, last, set } from 'lodash';
 import { updateMintedCollectionSchemaObject } from '../../runtime/firebase/collection/CollectionUpdateMintedRequestSchema';
 import { updateCollectionSchemaObject } from '../../runtime/firebase/collection/CollectionUpdateRequestSchema';
-import { UidSchemaObject } from '../../runtime/firebase/common';
+import { Context, UidSchemaObject } from '../../runtime/firebase/common';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertValidationAsync } from '../../utils/schema.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { populateTokenUidOnDiscounts } from './common';
 
-export const updateCollectionControl = async (owner: string, rawParams: UidSchemaObject) => {
+export const updateCollectionControl = async ({ owner }: Context, rawParams: UidSchemaObject) => {
   const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${rawParams.uid}`);
   const collection = await collectionDocRef.get<Collection>();
   if (!collection) {

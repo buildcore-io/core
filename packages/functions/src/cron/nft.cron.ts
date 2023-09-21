@@ -1,15 +1,18 @@
 import { build5Db } from '@build-5/database';
 import { COL, Nft } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { ProcessingService } from '../services/payment/payment-processing';
+import { NftBidService } from '../services/payment/nft/nft-bid.service';
+import { TransactionService } from '../services/payment/transaction-service';
 
 const finalizeNftAuction = (nftId: string) =>
   build5Db().runTransaction(async (transaction) => {
     const nftDocRef = build5Db().collection(COL.NFT).doc(nftId);
     const nft = (await transaction.get<Nft>(nftDocRef))!;
-    const service = new ProcessingService(transaction);
+
+    const tranService = new TransactionService(transaction);
+    const service = new NftBidService(tranService);
     await service.markNftAsFinalized(nft);
-    service.submit();
+    tranService.submit();
   });
 
 export const finalizeAllNftAuctions = async () => {

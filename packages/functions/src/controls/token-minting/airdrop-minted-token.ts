@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
 import {
   COL,
   StakeType,
@@ -18,6 +17,7 @@ import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
+import { Context } from '../../runtime/firebase/common';
 import { CreateAirdropsRequest } from '../../runtime/firebase/token/base/TokenAirdropRequestSchema';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
@@ -26,8 +26,12 @@ import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { build5Db } from '@build-5/database';
 
-export const airdropMintedTokenControl = async (owner: string, params: CreateAirdropsRequest) => {
+export const airdropMintedTokenControl = async (
+  { owner }: Context,
+  params: CreateAirdropsRequest,
+) => {
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
   await build5Db().runTransaction(async (transaction) => {
     const token = await transaction.get<Token>(tokenDocRef);

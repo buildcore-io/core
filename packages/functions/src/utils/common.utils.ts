@@ -1,4 +1,17 @@
-import { Access, Collection, MIN_AMOUNT_TO_TRANSFER, Nft, Restrictions } from '@build-5/interfaces';
+import { build5Db } from '@build-5/database';
+import {
+  Access,
+  BaseRecord,
+  COL,
+  Collection,
+  MIN_AMOUNT_TO_TRANSFER,
+  Nft,
+  Restrictions,
+  SOON_PROJECT_ID,
+  SUB_COL,
+  WenError,
+} from '@build-5/interfaces';
+import { invalidArgument } from './error.utils';
 
 const MAX_RERUNS = 10;
 
@@ -44,3 +57,13 @@ export const getRestrictions = (collection?: Collection, nft?: Nft): Restriction
 
   return restrictions;
 };
+
+export const assertIsProjectGuardian = async (project: string, member: string) => {
+  const projectDocRef = build5Db().doc(`${COL.PROJECT}/${project}`);
+  const guardianDoc = await projectDocRef.collection(SUB_COL.GUARDIANS).doc(member).get();
+  if (!guardianDoc) {
+    throw invalidArgument(WenError.you_are_not_guardian_of_project);
+  }
+};
+
+export const getProject = (data: BaseRecord | undefined) => data?.project || SOON_PROJECT_ID;

@@ -1,4 +1,3 @@
-import { build5Db } from '@build-5/database';
 import {
   COL,
   ClaimPreMintedAirdroppedTokensRequest,
@@ -14,15 +13,17 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
+import { Context } from '../../runtime/firebase/common';
 import { WalletService } from '../../services/wallet/wallet';
 import { generateRandomAmount } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertTokenStatus, getUnclaimedDrops } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { build5Db } from '@build-5/database';
 
 export const claimAirdroppedTokenControl = async (
-  owner: string,
+  { owner }: Context,
   params: ClaimPreMintedAirdroppedTokensRequest,
 ): Promise<Transaction> => {
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);

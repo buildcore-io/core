@@ -12,17 +12,21 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
+import { Context } from '../../runtime/firebase/common';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
-export const createNftControl = async (owner: string, params: NftCreateRequest): Promise<Nft> => {
+export const createNftControl = async (
+  { owner }: Context,
+  params: NftCreateRequest,
+): Promise<Nft> => {
   const collection = await getCollection(owner, params.collection as string);
   return await processOneCreateNft(params, collection, collection.total + 1);
 };
 
 export const createBatchNftControl = async (
-  owner: string,
+  { owner }: Context,
   params: NftCreateRequest[],
 ): Promise<string[]> => {
   const collection = await getCollection(owner, params[0].collection);

@@ -27,7 +27,6 @@ import {
   createSpace,
   getRandomSymbol,
   mockWalletReturnValue,
-  saveSoon,
   wait,
 } from '../../test/controls/common';
 import { getWallet, MEDIA, testEnv } from '../../test/set-up';
@@ -46,12 +45,9 @@ export class Helper {
   public walletService: SmrWallet | undefined;
   public walletSpy: any;
 
-  public soonTokenId = '';
-
   public berforeAll = async () => {
     this.walletService = (await getWallet(this.network)) as SmrWallet;
     await createRoyaltySpaces();
-    this.soonTokenId = await saveSoon();
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
   };
 

@@ -15,16 +15,14 @@ import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getTokenForSpace } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { proposalCreateSchemaObject } from './ProposalCreateTangleRequestSchema';
 
-export class ProposalCreateService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleProposalCreateRequest = async (
-    owner: string,
-    request: Record<string, unknown>,
-  ): Promise<ProposalCreateTangleResponse> => {
+export class ProposalCreateService extends BaseService {
+  public handleRequest = async ({
+    owner,
+    request,
+  }: HandlerParams): Promise<ProposalCreateTangleResponse> => {
     const params = await assertValidationAsync(proposalCreateSchemaObject, request);
 
     const { proposal, proposalOwner } = await createProposal(owner, { ...params });

@@ -29,12 +29,10 @@ import { getContentType } from '../../../utils/storage.utils';
 import { createAliasOutput } from '../../../utils/token-minting-utils/alias.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';
-import { TransactionMatch, TransactionService } from '../transaction-service';
+import { BaseService, HandlerParams } from '../base';
 
-export class AwardService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleAwardFundingOrder = async (order: Transaction, match: TransactionMatch) => {
+export class AwardService extends BaseService {
+  public handleRequest = async ({ order, match }: HandlerParams) => {
     const payment = await this.transactionService.createPayment(order, match);
 
     const awardDocRef = build5Db().doc(`${COL.AWARD}/${order.payload.award}`);
