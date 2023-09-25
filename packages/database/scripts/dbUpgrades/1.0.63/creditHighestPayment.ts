@@ -13,16 +13,17 @@ import { Firestore } from '../../../src/firestore/firestore';
 export const creditHighestPayment = async (app: FirebaseApp) => {
   const db = new Firestore(app);
 
-  if (app.getName() !== 'soonaverse') {
-    console.log('Not prod env');
-    return;
-  }
-
   const paymentUid = '0xe50e40db6c583e89733fd1b084e30e1d7b878755';
   const batch = db.batch();
 
   const paymentDocRef = db.doc(`${COL.TRANSACTION}/${paymentUid}`);
-  const payment = <Transaction>await paymentDocRef.get();
+  const payment = await paymentDocRef.get<Transaction>();
+
+  if (!payment) {
+    console.log('Payment does not exist');
+    return;
+  }
+
 
   batch.update(paymentDocRef, { 'payload.invalidPayment': true });
 
