@@ -22,6 +22,7 @@ import {
 import { Converter } from '@iota/util.js-next';
 import Joi from 'joi';
 import { get, isEmpty } from 'lodash';
+import { getProject, getProjects } from '../../../utils/common.utils';
 import { getBucket } from '../../../utils/config.utils';
 import { migrateUriToSotrage, uriToUrl } from '../../../utils/media.utils';
 import { isAliasGovernor } from '../../../utils/token-minting-utils/alias.utils';
@@ -59,6 +60,8 @@ export class ImportMintedTokenService extends BaseService {
       const vaultAddress = await wallet.getNewIotaAddressDetails();
       const totalSupply = Number(foundry.tokenScheme.maximumSupply);
       const token: Token = {
+        project: getProject(order),
+        projects: getProjects([order]),
         createdBy: order.member || '',
         uid: tokenId,
         name: metadata.name,

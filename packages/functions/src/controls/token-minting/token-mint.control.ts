@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Member,
@@ -33,9 +34,9 @@ import {
   getUnclaimedAirdropTotalValue,
 } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-import { build5Db } from '@build-5/database';
+import { getProjects } from '../../utils/common.utils';
 
-export const mintTokenControl = ({ owner }: Context, params: TokenMintRequest) =>
+export const mintTokenControl = ({ project, owner }: Context, params: TokenMintRequest) =>
   build5Db().runTransaction(async (transaction) => {
     const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
     const token = await transaction.get<Token>(tokenDocRef);
@@ -66,6 +67,8 @@ export const mintTokenControl = ({ owner }: Context, params: TokenMintRequest) =
     );
 
     const order: Transaction = {
+      project,
+      projects: getProjects([token], project),
       type: TransactionType.ORDER,
       uid: getRandomEthAddress(),
       member: owner,

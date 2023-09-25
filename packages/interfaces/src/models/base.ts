@@ -102,6 +102,8 @@ export interface Base {
 }
 
 export interface BaseSubCollection {
+  project?: string;
+  projects?: { [key: string]: boolean };
   parentId: string;
   parentCol: string;
 }
@@ -112,13 +114,7 @@ export interface BaseSubCollection {
  * Every object will have these basic fields.
  */
 export interface BaseRecord extends Base {
-  /**
-   * The project to which this record belongs to.
-   */
   project?: string;
-  /**
-   * The project to which this record belongs to.
-   */
   projects?: { [key: string]: boolean };
   /**
    * Date/time it was created on.
@@ -207,7 +203,7 @@ export interface NftMintingData {
   readonly nftsStorageDeposit?: number;
 }
 
-export interface Vote extends BaseSubCollection, BaseRecord {
+export interface Vote extends BaseSubCollection {
   readonly direction: -1 | 1;
 }
 
@@ -217,7 +213,7 @@ export interface VoteStats {
   readonly voteDiff: number;
 }
 
-export interface Rank extends BaseSubCollection, BaseRecord {
+export interface Rank extends BaseSubCollection {
   readonly rank: number;
 }
 

@@ -8,7 +8,6 @@ import {
   Member,
   Space,
   Token,
-  TokenPurchase,
   TokenTradeOrder,
   TokenTradeOrderType,
   Transaction,
@@ -21,7 +20,7 @@ import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { getAddress } from '../../utils/address.utils';
 import { packBasicOutput } from '../../utils/basic-output.utils';
-import { getProject } from '../../utils/common.utils';
+import { getProject, getProjects } from '../../utils/common.utils';
 import { getRoyaltyFees } from '../../utils/royalty.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Match } from './match-token';
@@ -30,6 +29,7 @@ import { getMemberTier, getTokenTradingFee } from './token-trade-order.trigger';
 const createIotaPayments = async (
   token: Token,
   sell: TokenTradeOrder,
+  buy: TokenTradeOrder,
   seller: Member,
   buyer: Member,
   count: number,
@@ -44,7 +44,9 @@ const createIotaPayments = async (
   const sellOrder = await build5Db()
     .doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`)
     .get<Transaction>();
-  const billPayment = <Transaction>{
+  const billPayment: Transaction = {
+    project: getProject(sell),
+    projects: getProjects([sell, buy]),
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
     member: sell.owner,
@@ -59,7 +61,7 @@ const createIotaPayments = async (
       previousOwner: seller.uid,
       ownerEntity: Entity.MEMBER,
       owner: buyer.uid,
-      sourceTransaction: [sell.paymentTransactionId],
+      sourceTransaction: [sell.paymentTransactionId || ''],
       royalty: false,
       void: false,
       token: token.uid,
@@ -69,11 +71,13 @@ const createIotaPayments = async (
   if (sell.fulfilled + count < sell.count || !balance) {
     return [billPayment];
   }
-  const credit = <Transaction>{
+  const credit: Transaction = {
+    project: getProject(sell),
+    projects: getProjects([sell, buy]),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     member: sell.owner,
-    network: sell.sourceNetwork,
+    network: sell.sourceNetwork!,
     space: token.space,
     payload: {
       type: TransactionPayloadType.TOKEN_TRADE_FULLFILLMENT,
@@ -85,7 +89,7 @@ const createIotaPayments = async (
       previousOwner: seller.uid,
       ownerEntity: Entity.MEMBER,
       owner: seller.uid,
-      sourceTransaction: [sell.paymentTransactionId],
+      sourceTransaction: [sell.paymentTransactionId || ''],
       royalty: false,
       void: false,
       token: token.uid,
@@ -97,23 +101,26 @@ const createIotaPayments = async (
 
 const createRoyaltyPayment = async (
   token: Token,
+  sell: TokenTradeOrder,
   buy: TokenTradeOrder,
   buyOrder: Transaction,
   seller: Member,
   spaceId: string,
   fee: number,
   info: INodeInfo,
-) => {
+): Promise<Transaction> => {
   const space = (await build5Db().doc(`${COL.SPACE}/${spaceId}`).get<Space>())!;
   const spaceAddress = getAddress(space, buy.sourceNetwork!);
   const sellerAddress = getAddress(seller, buy.sourceNetwork!);
   const output = packBasicOutput(spaceAddress, 0, undefined, info, sellerAddress);
-  return <Transaction>{
+  return {
+    project: getProject(sell),
+    projects: getProjects([sell, buy]),
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
     space: spaceId,
     member: buy.owner,
-    network: buy.sourceNetwork,
+    network: buy.sourceNetwork!,
     payload: {
       type: TransactionPayloadType.BASE_TOKEN_TRADE,
       amount: Number(output.amount) + fee,
@@ -127,7 +134,7 @@ const createRoyaltyPayment = async (
       previousOwner: buy.owner,
       ownerEntity: Entity.SPACE,
       owner: spaceId,
-      sourceTransaction: [buy.paymentTransactionId],
+      sourceTransaction: [buy.paymentTransactionId || ''],
       royalty: true,
       void: false,
       token: token.uid,
@@ -173,7 +180,7 @@ const createSmrPayments = async (
   const royaltyPaymentPromises = Object.entries(royaltyFees)
     .filter((entry) => entry[1] > 0)
     .map(([space, fee]) =>
-      createRoyaltyPayment(token, buy, buyOrder!, seller, space, fee, wallet.info),
+      createRoyaltyPayment(token, sell, buy, buyOrder!, seller, space, fee, wallet.info),
     );
   const royaltyPayments = await Promise.all(royaltyPaymentPromises);
   royaltyPayments.forEach((rp) => {
@@ -185,7 +192,9 @@ const createSmrPayments = async (
     return [];
   }
 
-  const billPayment = <Transaction>{
+  const billPayment: Transaction = {
+    project: getProject(sell),
+    projects: getProjects([sell, buy]),
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
     member: buy.owner,
@@ -200,7 +209,7 @@ const createSmrPayments = async (
       previousOwner: buy.owner,
       ownerEntity: Entity.MEMBER,
       owner: sell.owner,
-      sourceTransaction: [buy.paymentTransactionId],
+      sourceTransaction: [buy.paymentTransactionId || ''],
       royalty: false,
       void: false,
       token: token.uid,
@@ -211,11 +220,13 @@ const createSmrPayments = async (
   if (!fulfilled || !balanceLeft) {
     return [...royaltyPayments, billPayment];
   }
-  const credit = <Transaction>{
+  const credit: Transaction = {
+    project: getProject(buy),
+    projects: getProjects([sell, buy]),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     member: buy.owner,
-    network: buy.sourceNetwork,
+    network: buy.sourceNetwork!,
     space: token.space,
     payload: {
       type: TransactionPayloadType.TOKEN_TRADE_FULLFILLMENT,
@@ -227,7 +238,7 @@ const createSmrPayments = async (
       previousOwner: buy.owner,
       ownerEntity: Entity.MEMBER,
       owner: buy.owner,
-      sourceTransaction: [buy.paymentTransactionId],
+      sourceTransaction: [buy.paymentTransactionId || ''],
       royalty: false,
       void: false,
       token: token.uid,
@@ -249,7 +260,7 @@ export const matchBaseToken = async (
   const seller = await build5Db().doc(`${COL.MEMBER}/${sell.owner}`).get<Member>();
   const buyer = await build5Db().doc(`${COL.MEMBER}/${buy.owner}`).get<Member>();
 
-  const iotaPayments = await createIotaPayments(token, sell, seller!, buyer!, tokensToTrade);
+  const iotaPayments = await createIotaPayments(token, sell, buy, seller!, buyer!, tokensToTrade);
   const smrPayments = await createSmrPayments(
     token,
     sell,
@@ -273,7 +284,9 @@ export const matchBaseToken = async (
   return {
     sellerCreditId: iotaPayments.find((o) => o.type === TransactionType.CREDIT)?.uid,
     buyerCreditId: smrPayments.find((o) => o.type === TransactionType.CREDIT)?.uid,
-    purchase: <TokenPurchase>{
+    purchase: {
+      project: getProject(triggeredBy === TokenTradeOrderType.SELL ? sell : buy),
+      projects: getProjects([sell, buy]),
       uid: getRandomEthAddress(),
       token: buy.token,
       tokenStatus: token.status,
@@ -293,7 +306,9 @@ export const matchBaseToken = async (
         .map((o) => o.uid),
 
       sellerTier: await getMemberTier(getProject(sell), seller!),
-      sellerTokenTradingFeePercentage: getTokenTradingFee(seller!),
+      sellerTokenTradingFeePercentage: getTokenTradingFee(seller!) as number,
+
+      age: {},
     },
   };
 };

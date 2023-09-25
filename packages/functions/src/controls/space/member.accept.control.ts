@@ -4,10 +4,10 @@ import { Context } from '../../runtime/firebase/common';
 import { acceptSpaceMember } from '../../services/payment/tangle-service/space/SpaceAcceptMemberService';
 
 export const acceptSpaceMemberControl = async (
-  { owner }: Context,
+  { project, owner }: Context,
   params: SpaceMemberUpsertRequest,
 ) => {
-  const { spaceMember, space } = await acceptSpaceMember(owner, params.uid, params.member);
+  const { spaceMember, space } = await acceptSpaceMember(project, owner, params.uid, params.member);
 
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
   const memberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(spaceMember.uid);

@@ -12,7 +12,7 @@ import { createAddressValidationOrder } from '../services/payment/tangle-service
 import { invalidArgument } from '../utils/error.utils';
 
 export const validateAddressControl = async (
-  { owner }: Context,
+  { project, owner }: Context,
   params: AddressValidationRequest,
 ) => {
   const network = (params.network as Network) || DEFAULT_NETWORK;
@@ -22,7 +22,7 @@ export const validateAddressControl = async (
     throw invalidArgument(WenError.member_does_not_exists);
   }
 
-  const order = await createAddressValidationOrder(member.uid, network, params.space);
+  const order = await createAddressValidationOrder(project, member.uid, network, params.space);
   await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
 
   return order;

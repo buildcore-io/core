@@ -9,11 +9,12 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { Context } from '../../runtime/firebase/common';
+import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 
 export const awardParticipateControl = async (
-  { owner }: Context,
+  { project, owner }: Context,
   params: AwardParticpateRequest,
 ): Promise<AwardParticipant> => {
   const awardDocRef = build5Db().doc(`${COL.AWARD}/${params.uid}`);
@@ -41,6 +42,8 @@ export const awardParticipateControl = async (
 
   const participant: AwardParticipant = {
     uid: owner,
+    project,
+    projects: getProjects([award], project),
     comment: params.comment || null,
     parentId: award.uid,
     completed: false,

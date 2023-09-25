@@ -29,6 +29,7 @@ import {
   createNftOutput,
   getNftByMintingId,
 } from '../../../../utils/collection-minting-utils/nft.utils';
+import { getProject, getProjects } from '../../../../utils/common.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { getAliasId, getIssuerNftId } from '../../../../utils/nft.output.utils';
@@ -101,7 +102,9 @@ export class MintMetadataNftService extends BaseService {
       this.transactionService.push({ ref: memberDocRef, data: guardian, action: 'set' });
     }
 
-    const order = <Transaction>{
+    const order: Transaction = {
+      project: getProject(tangleOrder),
+      projects: getProjects([tangleOrder]),
       type: TransactionType.ORDER,
       uid: getRandomEthAddress(),
       member: owner,
@@ -121,7 +124,7 @@ export class MintMetadataNftService extends BaseService {
         collectionOutputAmount,
         nftId: nftId === EMPTY_NFT_ID ? '' : nftId,
         nftOutputAmount,
-        metadata: request.metadata,
+        metadata: request.metadata as { [key: string]: unknown },
         tag: match.msgId,
       },
     };

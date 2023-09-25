@@ -4,13 +4,17 @@ import { Context } from '../../runtime/firebase/common';
 import { getJoinSpaceData } from '../../services/payment/tangle-service/space/SpaceJoinService';
 import { invalidArgument } from '../../utils/error.utils';
 
-export const joinSpaceControl = async ({ owner }: Context, params: SpaceJoinRequest) => {
+export const joinSpaceControl = async ({ project, owner }: Context, params: SpaceJoinRequest) => {
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
   const space = await spaceDocRef.get<Space>();
   if (!space) {
     throw invalidArgument(WenError.space_does_not_exists);
   }
-  const { space: spaceUpdateData, spaceMember, member } = await getJoinSpaceData(owner, space);
+  const {
+    space: spaceUpdateData,
+    spaceMember,
+    member,
+  } = await getJoinSpaceData(project, owner, space);
 
   const batch = build5Db().batch();
 

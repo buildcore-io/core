@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Collection,
@@ -13,13 +14,12 @@ import {
 import dayjs from 'dayjs';
 import { Context } from '../../runtime/firebase/common';
 import { WalletService } from '../../services/wallet/wallet';
-import { generateRandomAmount } from '../../utils/common.utils';
+import { generateRandomAmount, getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-import { build5Db } from '@build-5/database';
 
-export const claimSpaceControl = async ({ owner }: Context, params: SpaceClaimRequest) => {
+export const claimSpaceControl = async ({ project, owner }: Context, params: SpaceClaimRequest) => {
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
   const space = await spaceDocRef.get<Space>();
   if (!space) {
@@ -37,6 +37,8 @@ export const claimSpaceControl = async ({ owner }: Context, params: SpaceClaimRe
   const wallet = await WalletService.newWallet(collection?.mintingData?.network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
   const order: Transaction = {
+    project,
+    projects: getProjects([space], project),
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,

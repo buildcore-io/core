@@ -70,6 +70,9 @@ export interface TransactionPayload {
   orderId?: NetworkAddress;
   collectionOutputAmount?: number;
 
+  aliasOutputAmount?: number;
+  nftOutputAmount?: number;
+
   // TransactionPayloadType.MINT_COLLECTION - METADATA_NFT,
   aliasId?: NetworkAddress;
   aliasBlockId?: NetworkAddress;
@@ -145,4 +148,6 @@ export interface TransactionPayload {
 
   tanglePuchase?: boolean;
   disableWithdraw?: boolean;
+
+  lockCollectionNft?: boolean;
 }

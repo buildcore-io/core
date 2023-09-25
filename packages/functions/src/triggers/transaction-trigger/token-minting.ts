@@ -21,6 +21,7 @@ import dayjs from 'dayjs';
 import * as functions from 'firebase-functions/v2';
 import { getAddress } from '../../utils/address.utils';
 import { indexToString } from '../../utils/block.utils';
+import { getProject, getProjects } from '../../utils/common.utils';
 import { getTransactionPayloadHex } from '../../utils/smr.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 export const onTokenMintingUpdate = async (transaction: Transaction) => {
@@ -59,7 +60,9 @@ const onAliasMinted = async (transaction: Transaction) => {
     });
 
   const token = <Token>await build5Db().doc(`${COL.TOKEN}/${transaction.payload.token}`).get();
-  const order = <Transaction>{
+  const order: Transaction = {
+    project: getProject(transaction),
+    projects: getProjects([transaction]),
     type: TransactionType.MINT_TOKEN,
     uid: getRandomEthAddress(),
     member: transaction.member,
@@ -112,7 +115,9 @@ const onFoundryMinted = async (transaction: Transaction) => {
 
   const token = <Token>await build5Db().doc(`${COL.TOKEN}/${transaction.payload.token}`).get();
   const member = <Member>await build5Db().doc(`${COL.MEMBER}/${token.mintingData?.mintedBy}`).get();
-  const order = <Transaction>{
+  const order: Transaction = {
+    project: getProject(transaction),
+    projects: getProjects([transaction]),
     type: TransactionType.MINT_TOKEN,
     uid: getRandomEthAddress(),
     member: transaction.member,

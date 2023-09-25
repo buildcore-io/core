@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { build5Db } from '@build-5/database';
 import {
   COL,
   StakeType,
@@ -26,10 +27,10 @@ import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-import { build5Db } from '@build-5/database';
+import { getProjects } from '../../utils/common.utils';
 
 export const airdropMintedTokenControl = async (
-  { owner }: Context,
+  { project, owner }: Context,
   params: CreateAirdropsRequest,
 ) => {
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
@@ -56,6 +57,8 @@ export const airdropMintedTokenControl = async (
   };
   const output = packBasicOutput(targetAddress.bech32, 0, [nativeToken], wallet.info);
   const order: Transaction = {
+    project,
+    projects: getProjects([], project),
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,
@@ -76,6 +79,8 @@ export const airdropMintedTokenControl = async (
   };
 
   const airdrops: TokenDrop[] = drops.map((drop) => ({
+    project,
+    projects: getProjects([], project),
     createdBy: owner,
     uid: getRandomEthAddress(),
     member: drop.recipient.toLowerCase(),

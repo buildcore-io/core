@@ -88,7 +88,14 @@ export const SOON_PROJ_GUARDIAN = '0x3d5d0b3f40c9438871b1c43d6b70117eeff77ad8';
 export const soonTokenId = '0xa381bfccaf121e38e31362d85b5ad30cd7fc0d06';
 
 const setup = async () => {
-  await build5Db().doc(`${COL.TOKEN}/${soonTokenId}`).set({ uid: soonTokenId, symbol: 'SOON' });
+  await build5Db()
+    .doc(`${COL.TOKEN}/${soonTokenId}`)
+    .set({
+      project: SOON_PROJECT_ID,
+      projects: { [SOON_PROJECT_ID]: true },
+      uid: soonTokenId,
+      symbol: 'SOON',
+    });
 
   const soonProject = {
     uid: SOON_PROJECT_ID,

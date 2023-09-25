@@ -14,6 +14,7 @@ import { getTokenVoteMultiplier } from '../../../voting-service';
 import { createVoteTransaction } from './ProposalVoteService';
 
 export const voteWithStakedTokens = async (
+  project: string,
   transaction: ITransaction,
   member: string,
   proposal: Proposal,
@@ -42,6 +43,7 @@ export const voteWithStakedTokens = async (
   }
 
   const voteTransaction = createVoteTransaction(
+    project,
     proposal,
     member,
     weight,

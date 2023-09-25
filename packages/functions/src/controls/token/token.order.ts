@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -23,9 +24,12 @@ import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIpNotBlocked } from '../../utils/ip.utils';
 import { tokenIsInPublicSalePeriod, tokenOrderTransactionDocId } from '../../utils/token.utils';
-import { build5Db } from '@build-5/database';
+import { getProjects } from '../../utils/common.utils';
 
-export const orderTokenControl = async ({ owner, ip }: Context, params: OrderTokenRequest) => {
+export const orderTokenControl = async (
+  { project, owner, ip }: Context,
+  params: OrderTokenRequest,
+) => {
   const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
   const member = await memberDocRef.get<Member>();
   assertMemberHasValidAddress(member, DEFAULT_NETWORK);
@@ -62,6 +66,8 @@ export const orderTokenControl = async ({ owner, ip }: Context, params: OrderTok
     const order = await transaction.get<Transaction>(orderDoc);
     if (!order) {
       const data: Transaction = {
+        project,
+        projects: getProjects([token], project),
         type: TransactionType.ORDER,
         uid: tranId,
         member: owner,

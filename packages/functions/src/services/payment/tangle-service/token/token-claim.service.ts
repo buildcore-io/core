@@ -18,6 +18,7 @@ import {
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { assertMemberHasValidAddress } from '../../../../utils/address.utils';
+import { getProjects } from '../../../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
@@ -30,9 +31,13 @@ import { BaseService, HandlerParams } from '../../base';
 import { tokenClaimSchema } from './TokenClaimTangleRequestSchema';
 
 export class TangleTokenClaimService extends BaseService {
-  public handleRequest = async ({ owner, request }: HandlerParams): Promise<BaseTangleResponse> => {
+  public handleRequest = async ({
+    project,
+    owner,
+    request,
+  }: HandlerParams): Promise<BaseTangleResponse> => {
     const params = await assertValidationAsync(tokenClaimSchema, request);
-    const order = await createMintedTokenAirdropCalimOrder(owner, params.symbol);
+    const order = await createMintedTokenAirdropCalimOrder(project, owner, params.symbol);
     this.transactionService.push({
       ref: build5Db().doc(`${COL.TRANSACTION}/${order.uid}`),
       data: order,
@@ -43,6 +48,7 @@ export class TangleTokenClaimService extends BaseService {
 }
 
 export const createMintedTokenAirdropCalimOrder = async (
+  project: string,
   owner: string,
   symbol: string,
 ): Promise<Transaction> => {
@@ -71,6 +77,8 @@ export const createMintedTokenAirdropCalimOrder = async (
   }, 0);
 
   return {
+    project,
+    projects: getProjects([], project),
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,
@@ -100,6 +108,8 @@ const getClaimableDrops = async (token: string, member: string) => {
     return airdops;
   }
   const drop: TokenDrop = {
+    project: '',
+    projects: {},
     uid: getRandomEthAddress(),
     member,
     token,

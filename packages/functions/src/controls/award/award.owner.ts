@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   Award,
   AwardAddOwnerRequest,
@@ -8,12 +9,12 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { Context } from '../../runtime/firebase/common';
+import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
-import { build5Db } from '@build-5/database';
 
 export const addOwnerControl = async (
-  { owner }: Context,
+  { project, owner }: Context,
   params: AwardAddOwnerRequest,
 ): Promise<AwardOwner> => {
   const awardDocRef = build5Db().doc(`${COL.AWARD}/${params.uid}`);
@@ -33,6 +34,8 @@ export const addOwnerControl = async (
   }
 
   const newOwner: AwardOwner = {
+    project,
+    projects: getProjects([award], project),
     uid: params.member,
     parentId: award.uid,
     parentCol: COL.AWARD,

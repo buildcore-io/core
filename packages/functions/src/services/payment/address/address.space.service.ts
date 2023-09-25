@@ -16,12 +16,13 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { getAddress } from '../../../utils/address.utils';
+import { getProjects } from '../../../utils/common.utils';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { BaseService, HandlerParams } from '../base';
 
 export class SpaceAddressService extends BaseService {
-  public handleRequest = async ({ order, match }: HandlerParams) => {
+  public handleRequest = async ({ project, order, match }: HandlerParams) => {
     const payment = await this.transactionService.createPayment(order, match);
     await this.transactionService.createCredit(
       TransactionPayloadType.ADDRESS_VALIDATION,
@@ -38,6 +39,7 @@ export class SpaceAddressService extends BaseService {
 
     const guardians = await spaceDocRef.collection(SUB_COL.GUARDIANS).get<SpaceGuardian>();
     const proposal = createUpdateSpaceValidatedAddressProposal(
+      project,
       order,
       match.from.address,
       owner,
@@ -93,17 +95,20 @@ export class SpaceAddressService extends BaseService {
 }
 
 const createUpdateSpaceValidatedAddressProposal = (
+  project: string,
   order: Transaction,
   validatedAddress: string,
   owner: Member,
   space: Space,
   guardiansCount: number,
-) => {
+): Proposal => {
   const additionalInfo =
     `${owner.name || owner.uid} wants to update the space's validated address. ` +
     `Request created on ${dayjs().format('MM/DD/YYYY')}. ` +
     `${UPDATE_SPACE_THRESHOLD_PERCENTAGE} % must agree for this action to proceed`;
-  return <Proposal>{
+  return {
+    project,
+    projects: getProjects([order], project),
     createdBy: owner.uid,
     uid: getRandomEthAddress(),
     name: 'Update validated address',

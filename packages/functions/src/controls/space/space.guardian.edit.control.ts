@@ -11,8 +11,9 @@ import { addRemoveGuardian } from '../../services/payment/tangle-service/space/S
 
 export const editGuardianControl =
   (type: ProposalType) =>
-  async ({ owner }: Context, params: SpaceMemberUpsertRequest) => {
+  async ({ project, owner }: Context, params: SpaceMemberUpsertRequest) => {
     const { proposal, voteTransaction, members } = await addRemoveGuardian(
+      project,
       owner,
       { ...params },
       type,

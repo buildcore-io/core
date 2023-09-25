@@ -18,6 +18,7 @@ import { last } from 'lodash';
 import { scale } from '../scale.settings';
 import { getAddress } from '../utils/address.utils';
 import { collectionToIpfsMetadata, downloadMediaAndPackCar } from '../utils/car.utils';
+import { getProject, getProjects } from '../utils/common.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 
 export const collectionWrite = functions.firestore.onDocumentUpdated(
@@ -96,12 +97,14 @@ const hidePlaceholderNft = async (collection: Collection) => {
 
 const onCollectionMinted = async (collection: Collection) => {
   if (collection.limitedEdition) {
-    const order = <Transaction>{
+    const order: Transaction = {
+      project: getProject(collection),
+      projects: getProjects([collection]),
       type: TransactionType.MINT_COLLECTION,
       uid: getRandomEthAddress(),
       member: collection.mintingData?.mintedBy,
       space: collection.space,
-      network: collection.mintingData?.network,
+      network: collection.mintingData?.network!,
       payload: {
         type: TransactionPayloadType.LOCK_COLLECTION,
         amount: 0,
@@ -115,12 +118,14 @@ const onCollectionMinted = async (collection: Collection) => {
   }
   const memberDocRef = build5Db().doc(`${COL.MEMBER}/${collection.mintingData?.mintedBy}`);
   const member = (await memberDocRef.get<Member>())!;
-  const order = <Transaction>{
+  const order: Transaction = {
+    project: getProject(collection),
+    projects: getProjects([collection]),
     type: TransactionType.MINT_COLLECTION,
     uid: getRandomEthAddress(),
     member: collection.mintingData?.mintedBy,
     space: collection.space,
-    network: collection.mintingData?.network,
+    network: collection.mintingData?.network!,
     payload: {
       type: TransactionPayloadType.SEND_ALIAS_TO_GUARDIAN,
       amount: collection.mintingData?.aliasStorageDeposit,
@@ -153,12 +158,14 @@ const onCollectionMinting = async (collection: Collection) => {
 };
 
 const onNftMediaPrepared = async (collection: Collection) => {
-  const order = <Transaction>{
+  const order: Transaction = {
+    project: getProject(collection),
+    projects: getProjects([collection]),
     type: TransactionType.MINT_COLLECTION,
     uid: getRandomEthAddress(),
     member: collection.mintingData?.mintedBy!,
     space: collection.space,
-    network: collection.mintingData?.network,
+    network: collection.mintingData?.network!,
     payload: {
       type: TransactionPayloadType.MINT_ALIAS,
       amount: collection.mintingData?.aliasStorageDeposit || 0,
@@ -299,7 +306,9 @@ const setNftForMinting = async (nftId: string, collection: Collection): Promise<
       const member = <Member>(
         await build5Db().doc(`${COL.MEMBER}/${nft.auctionHighestBidder}`).get()
       );
-      const credit = <Transaction>{
+      const credit: Transaction = {
+        project: getProject(highestTransaction),
+        projects: getProjects([highestTransaction]),
         type: TransactionType.CREDIT,
         uid: getRandomEthAddress(),
         space: highestTransaction.space,

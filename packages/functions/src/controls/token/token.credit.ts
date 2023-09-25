@@ -16,6 +16,7 @@ import {
 } from '@build-5/interfaces';
 import { Context } from '../../runtime/firebase/common';
 import { getAddress } from '../../utils/address.utils';
+import { getProjects } from '../../utils/common.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import {
   getBoughtByMemberDiff,
@@ -26,7 +27,7 @@ import {
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const creditTokenControl = async (
-  { owner }: Context,
+  { project, owner }: Context,
   params: CreditTokenRequest,
 ): Promise<Transaction> => {
   const tranId = getRandomEthAddress();
@@ -69,6 +70,8 @@ export const creditTokenControl = async (
     });
 
     const creditTransaction: Transaction = {
+      project,
+      projects: getProjects([], project),
       type: TransactionType.CREDIT,
       uid: tranId,
       space: token.space,

@@ -15,6 +15,7 @@ import * as functions from 'firebase-functions/v2';
 import { get } from 'lodash';
 import { getAddress } from '../../utils/address.utils';
 import { indexToString } from '../../utils/block.utils';
+import { getProject, getProjects } from '../../utils/common.utils';
 import { getTransactionPayloadHex } from '../../utils/smr.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -62,7 +63,9 @@ const onCollectionAliasMinted = async (transaction: Transaction) => {
       'mintingData.aliasStorageDeposit': transaction.payload.amount,
     });
 
-  const order = <Transaction>{
+  const order: Transaction = {
+    project: getProject(transaction),
+    projects: getProjects([transaction]),
     type: TransactionType.MINT_COLLECTION,
     uid: getRandomEthAddress(),
     member: transaction.member,
@@ -143,23 +146,26 @@ const onNftMintSuccess = async (transaction: Transaction) => {
   }
 };
 
-const createMintNftsTransaction = (transaction: Transaction) =>
-  <Transaction>{
-    type: TransactionType.MINT_COLLECTION,
-    uid: getRandomEthAddress(),
-    member: transaction.member,
-    space: transaction.space,
-    network: transaction.network,
-    payload: {
-      type: TransactionPayloadType.MINT_NFTS,
-      sourceAddress: transaction.payload.sourceAddress,
-      collection: transaction.payload.collection,
-    },
-  };
+const createMintNftsTransaction = (transaction: Transaction): Transaction => ({
+  project: getProject(transaction),
+  projects: getProjects([transaction]),
+  type: TransactionType.MINT_COLLECTION,
+  uid: getRandomEthAddress(),
+  member: transaction.member,
+  space: transaction.space,
+  network: transaction.network,
+  payload: {
+    type: TransactionPayloadType.MINT_NFTS,
+    sourceAddress: transaction.payload.sourceAddress,
+    collection: transaction.payload.collection,
+  },
+});
 
 const onCollectionLocked = async (transaction: Transaction) => {
   const member = (await build5Db().doc(`${COL.MEMBER}/${transaction.member}`).get<Member>())!;
-  const order = <Transaction>{
+  const order: Transaction = {
+    project: getProject(transaction),
+    projects: getProjects([transaction]),
     type: TransactionType.MINT_COLLECTION,
     uid: getRandomEthAddress(),
     member: transaction.member,

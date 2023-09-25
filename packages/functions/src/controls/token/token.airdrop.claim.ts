@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   ClaimPreMintedAirdroppedTokensRequest,
@@ -15,17 +16,16 @@ import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { Context } from '../../runtime/firebase/common';
 import { WalletService } from '../../services/wallet/wallet';
-import { generateRandomAmount } from '../../utils/common.utils';
+import { generateRandomAmount, getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertTokenStatus, getUnclaimedDrops } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-import { build5Db } from '@build-5/database';
 
 export const claimAirdroppedTokenControl = async (
-  { owner }: Context,
+  { project, owner }: Context,
   params: ClaimPreMintedAirdroppedTokensRequest,
-): Promise<Transaction> => {
+) => {
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
   const token = await tokenDocRef.get<Token>();
   if (!token) {
@@ -48,6 +48,8 @@ export const claimAirdroppedTokenControl = async (
     const quantity = claimableDrops.reduce((sum, act) => sum + act.count, 0);
 
     const order: Transaction = {
+      project,
+      projects: getProjects([], project),
       type: TransactionType.ORDER,
       uid: tranId,
       member: owner,

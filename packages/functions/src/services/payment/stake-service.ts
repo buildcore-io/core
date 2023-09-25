@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Entity,
@@ -11,13 +12,13 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get } from 'lodash';
+import { getProject, getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { BaseService, HandlerParams } from './base';
-import { build5Db } from '@build-5/database';
 
 export class StakeService extends BaseService {
-  public handleRequest = async ({ order, match }: HandlerParams) => {
+  public handleRequest = async ({ project, order, match }: HandlerParams) => {
     const payment = await this.transactionService.createPayment(order, match);
 
     const matchAmount = match.to.amount;
@@ -44,6 +45,8 @@ export class StakeService extends BaseService {
     const token = <Token>await tokenDocRef.get();
 
     const billPayment: Transaction = {
+      project: getProject(order),
+      projects: getProjects([order]),
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       member: order.member,
@@ -70,6 +73,8 @@ export class StakeService extends BaseService {
     };
 
     const stake: Stake = {
+      project,
+      projects: getProjects([order]),
       uid: getRandomEthAddress(),
       member: order.member!,
       token: order.payload.token!,

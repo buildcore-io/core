@@ -8,7 +8,6 @@ import {
   SUB_COL,
   Space,
   Token,
-  TokenPurchase,
   TokenTradeOrder,
   TokenTradeOrderType,
   Transaction,
@@ -18,7 +17,7 @@ import {
 import bigDecimal from 'js-big-decimal';
 import { isEmpty, tail } from 'lodash';
 import { getAddress } from '../../utils/address.utils';
-import { getProject } from '../../utils/common.utils';
+import { getProject, getProjects } from '../../utils/common.utils';
 import { getRoyaltyFees } from '../../utils/royalty.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Match } from './match-token';
@@ -56,9 +55,11 @@ const createBuyPayments = async (
 
   const royaltyPaymentPromises = Object.entries(royaltyFees)
     .filter((entry) => entry[1] > 0)
-    .map(async ([space, fee]) => {
+    .map(async ([space, fee]): Promise<Transaction> => {
       const spaceData = await build5Db().doc(`${COL.SPACE}/${space}`).get<Space>();
-      return <Transaction>{
+      return {
+        project: getProject(buy),
+        projects: getProjects([sell, buy]),
         type: TransactionType.BILL_PAYMENT,
         uid: getRandomEthAddress(),
         space: token.space,
@@ -73,7 +74,7 @@ const createBuyPayments = async (
           previousOwner: buy.owner,
           owner: space,
           ownerEntity: Entity.SPACE,
-          sourceTransaction: [buy.paymentTransactionId],
+          sourceTransaction: [buy.paymentTransactionId || ''],
           royalty: true,
           void: false,
           quantity: tokensToTrade,
@@ -90,7 +91,9 @@ const createBuyPayments = async (
   if (salePrice < MIN_IOTA_AMOUNT) {
     return [];
   }
-  const billPayment = <Transaction>{
+  const billPayment: Transaction = {
+    project: getProject(buy),
+    projects: getProjects([sell, buy]),
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
     space: token.space,
@@ -105,7 +108,7 @@ const createBuyPayments = async (
       previousOwner: buy.owner,
       owner: sell.owner,
       ownerEntity: Entity.MEMBER,
-      sourceTransaction: [buy.paymentTransactionId],
+      sourceTransaction: [buy.paymentTransactionId || ''],
       royalty: false,
       void: false,
       quantity: tokensToTrade,
@@ -116,7 +119,9 @@ const createBuyPayments = async (
   if (!fulfilled || !balanceLeft) {
     return [billPayment, ...royaltyPayments];
   }
-  const credit = <Transaction>{
+  const credit: Transaction = {
+    project: getProject(buy),
+    projects: getProjects([sell, buy]),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: token.space,
@@ -132,7 +137,7 @@ const createBuyPayments = async (
       previousOwner: buy.owner,
       ownerEntity: Entity.MEMBER,
       owner: buy.owner,
-      sourceTransaction: [buy.paymentTransactionId],
+      sourceTransaction: [buy.paymentTransactionId || ''],
       royalty: false,
       void: false,
       token: token.uid,
@@ -202,7 +207,9 @@ export const matchSimpleToken = async (
   });
 
   return {
-    purchase: <TokenPurchase>{
+    purchase: {
+      project: getProject(triggeredBy === TokenTradeOrderType.SELL ? sell : buy),
+      projects: getProjects([sell, buy]),
       uid: getRandomEthAddress(),
       token: buy.token,
       tokenStatus: token.status,
@@ -217,7 +224,8 @@ export const matchSimpleToken = async (
       triggeredBy,
 
       sellerTier: await getMemberTier(getProject(sell), seller),
-      sellerTokenTradingFeePercentage: getTokenTradingFee(seller),
+      sellerTokenTradingFeePercentage: getTokenTradingFee(seller) as number,
+      age: {},
     },
     buyerCreditId: buyerPayments.filter((p) => p.type === TransactionType.CREDIT)[0]?.uid || '',
     sellerCreditId: undefined,

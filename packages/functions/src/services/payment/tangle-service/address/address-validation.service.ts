@@ -13,7 +13,7 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
-import { generateRandomAmount } from '../../../../utils/common.utils';
+import { generateRandomAmount, getProjects } from '../../../../utils/common.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
@@ -25,6 +25,7 @@ import { validateAddressSchemaObject } from './AddressValidationTangleRequestSch
 
 export class TangleAddressValidationService extends BaseService {
   public handleRequest = async ({
+    project,
     tran,
     order: tangleOrder,
     tranEntry,
@@ -33,6 +34,7 @@ export class TangleAddressValidationService extends BaseService {
   }: HandlerParams): Promise<BaseTangleResponse | undefined> => {
     const params = await assertValidationAsync(validateAddressSchemaObject, request);
     const order = await createAddressValidationOrder(
+      project,
       owner,
       (params.network as Network) || tangleOrder.network,
       params.space,
@@ -61,6 +63,7 @@ export class TangleAddressValidationService extends BaseService {
 }
 
 export const createAddressValidationOrder = async (
+  project: string,
   owner: string,
   network: Network,
   spaceId?: string,
@@ -81,6 +84,8 @@ export const createAddressValidationOrder = async (
   const targetAddress = await wallet.getNewIotaAddressDetails();
 
   const order: Transaction = {
+    project,
+    projects: getProjects([], project),
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,

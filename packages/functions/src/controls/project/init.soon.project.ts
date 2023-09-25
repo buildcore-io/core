@@ -30,6 +30,8 @@ export const initSoonProject = functions.https.onRequest(async () => {
 
   const guardianDocRef = projectDocRef.collection(SUB_COL.GUARDIANS).doc(GUARDIAN_ID);
   const guardian: ProjectGuardian = {
+    project: SOON_PROJECT_ID,
+    projects: { [SOON_PROJECT_ID]: true },
     uid: GUARDIAN_ID,
     createdOn: dateToTimestamp(dayjs()),
     parentCol: COL.PROJECT,

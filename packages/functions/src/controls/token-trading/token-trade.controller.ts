@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   SUB_COL,
@@ -10,9 +11,11 @@ import { Context } from '../../runtime/firebase/common';
 import { createTokenTradeOrder } from '../../services/payment/tangle-service/token/token-trade.service';
 import { invalidArgument } from '../../utils/error.utils';
 import { getTokenBySymbol } from '../../utils/token.utils';
-import { build5Db } from '@build-5/database';
 
-export const tradeTokenControl = async ({ owner, ip }: Context, params: TradeTokenRequest) => {
+export const tradeTokenControl = async (
+  { project, owner, ip }: Context,
+  params: TradeTokenRequest,
+) => {
   let token = await getTokenBySymbol(params.symbol);
 
   return await build5Db().runTransaction(async (transaction) => {
@@ -26,6 +29,7 @@ export const tradeTokenControl = async ({ owner, ip }: Context, params: TradeTok
     }
 
     const { tradeOrderTransaction, tradeOrder, distribution } = await createTokenTradeOrder(
+      project,
       transaction,
       owner,
       token,

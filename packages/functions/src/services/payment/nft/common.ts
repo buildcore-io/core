@@ -11,6 +11,7 @@ import {
 import dayjs from 'dayjs';
 import { last, set } from 'lodash';
 import { getAddress } from '../../../utils/address.utils';
+import { getProject } from '../../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
 import { NotificationService } from '../../notification/notification';
 import { BaseService } from '../base';
@@ -30,6 +31,7 @@ export abstract class BaseNftService extends BaseService {
     const membderDocRef = build5Db().doc(`${COL.MEMBER}/${order.member}`);
     const member = <Member>await membderDocRef.get();
     const { order: withdrawOrder, nftUpdateData } = createNftWithdrawOrder(
+      getProject(order),
       nft,
       member.uid,
       getAddress(member, order.network!),

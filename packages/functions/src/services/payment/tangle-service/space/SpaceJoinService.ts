@@ -9,6 +9,7 @@ import {
   TokenDistribution,
   WenError,
 } from '@build-5/interfaces';
+import { getProject, getProjects } from '../../../../utils/common.utils';
 import { serverTime } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
@@ -18,7 +19,11 @@ import { BaseService, HandlerParams } from '../../base';
 import { joinSpaceSchema } from './SpaceJoinTangleRequestSchema';
 
 export class SpaceJoinService extends BaseService {
-  public handleRequest = async ({ owner, request }: HandlerParams): Promise<BaseTangleResponse> => {
+  public handleRequest = async ({
+    order,
+    owner,
+    request,
+  }: HandlerParams): Promise<BaseTangleResponse> => {
     const params = await assertValidationAsync(joinSpaceSchema, request);
 
     const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
@@ -27,7 +32,11 @@ export class SpaceJoinService extends BaseService {
       throw invalidArgument(WenError.space_does_not_exists);
     }
 
-    const { space: spaceUpdateData, spaceMember, member } = await getJoinSpaceData(owner, space);
+    const {
+      space: spaceUpdateData,
+      spaceMember,
+      member,
+    } = await getJoinSpaceData(getProject(order), owner, space);
 
     const joiningMemberDocRef = spaceDocRef
       .collection(space.open || space.tokenBased ? SUB_COL.MEMBERS : SUB_COL.KNOCKING_MEMBERS)
@@ -56,7 +65,7 @@ export class SpaceJoinService extends BaseService {
   };
 }
 
-export const getJoinSpaceData = async (owner: string, space: Space) => {
+export const getJoinSpaceData = async (project: string, owner: string, space: Space) => {
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
 
   const joinedMemberSnap = await spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner).get();
@@ -82,6 +91,8 @@ export const getJoinSpaceData = async (owner: string, space: Space) => {
   }
 
   const spaceMember: SpaceMember = {
+    project,
+    projects: getProjects([space], project),
     uid: owner,
     parentId: space.uid,
     parentCol: COL.SPACE,

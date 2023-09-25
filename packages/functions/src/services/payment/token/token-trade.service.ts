@@ -15,12 +15,19 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get, head } from 'lodash';
+import { getProjects } from '../../../utils/common.utils';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { BaseService, HandlerParams } from '../base';
 
 export class TokenTradeService extends BaseService {
-  public handleRequest = async ({ order, match, tranEntry, build5Tran }: HandlerParams) => {
+  public handleRequest = async ({
+    project,
+    order,
+    match,
+    tranEntry,
+    build5Tran,
+  }: HandlerParams) => {
     const payment = await this.transactionService.createPayment(order, match);
 
     const nativeTokenId = head(order.payload.nativeTokens as NativeToken[])?.id;
@@ -40,9 +47,11 @@ export class TokenTradeService extends BaseService {
     await this.createDistributionDocRef(order.payload.token!, order.member!);
     const token = <Token>await build5Db().doc(`${COL.TOKEN}/${order.payload.token}`).get();
     const network = order.network || DEFAULT_NETWORK;
-    const data = <TokenTradeOrder>{
+    const data: TokenTradeOrder = {
+      project,
+      projects: getProjects([order], project),
       uid: getRandomEthAddress(),
-      owner: order.member,
+      owner: order.member!,
       token: token.uid,
       tokenStatus: token.status,
       type:
@@ -51,8 +60,8 @@ export class TokenTradeService extends BaseService {
           : TokenTradeOrderType.BUY,
       count: nativeTokens || get(order, 'payload.count', 0),
       price: get(order, 'payload.price', 0),
-      totalDeposit: nativeTokens || order.payload.amount,
-      balance: nativeTokens || order.payload.amount,
+      totalDeposit: nativeTokens || order.payload.amount || 0,
+      balance: nativeTokens || order.payload.amount || 0,
       fulfilled: 0,
       status: TokenTradeOrderStatus.ACTIVE,
       orderTransactionId: order.uid,

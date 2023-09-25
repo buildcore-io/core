@@ -9,6 +9,7 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get, head } from 'lodash';
+import { getProject, getProjects } from '../../utils/common.utils';
 import { getTokenForSpace } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { BaseService, HandlerParams } from './base';
@@ -104,6 +105,8 @@ export class VotingService extends BaseService {
     values: number[],
   ) => {
     const voteTransaction: Transaction = {
+      project: getProject(order),
+      projects: getProjects([order]),
       type: TransactionType.VOTE,
       uid: getRandomEthAddress(),
       member: order.member,

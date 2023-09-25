@@ -45,6 +45,8 @@ export const createProjectControl = async ({ owner }: Context, params: ProjectCr
 
   const guardianDocRef = projectDocRef.collection(SUB_COL.GUARDIANS).doc(owner);
   const guardian: ProjectGuardian = {
+    project: projectData.uid,
+    projects: { [projectData.uid]: true },
     uid: owner,
     createdOn: dateToTimestamp(dayjs()),
     parentCol: COL.PROJECT,

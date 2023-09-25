@@ -22,6 +22,7 @@ import { head } from 'lodash';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { getAddress } from '../../utils/address.utils';
+import { getProject, getProjects } from '../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { dropToOutput } from '../../utils/token-minting-utils/member.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -50,6 +51,8 @@ const onPreMintedAirdropClaim = async (order: Transaction, token: Token) => {
     const airdropDocRef = build5Db().doc(`${COL.AIRDROP}/${airdrop.uid}`);
 
     const billPayment: Transaction = {
+      project: getProject(order),
+      projects: getProjects([order]),
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       space: order.space,
@@ -159,7 +162,9 @@ const onMintedAirdropClaim = async (order: Transaction, token: Token) => {
   });
 
   if (storageDepositUsed < order.payload.amount!) {
-    const credit = <Transaction>{
+    const credit: Transaction = {
+      project: getProject(order),
+      projects: getProjects([order]),
       type: TransactionType.CREDIT,
       uid: getRandomEthAddress(),
       space: token.space,
@@ -195,6 +200,8 @@ const claimOwnedMintedTokens = (
     }
 
     const airdrop: TokenDrop = {
+      project: getProject(order),
+      projects: getProjects([order]),
       uid: getRandomEthAddress(),
       member: member.uid,
       token: token.uid,
@@ -239,6 +246,8 @@ const mintedDropToBillPayment = (
   const output = dropToOutput(token, drop, memberAddress, wallet.info);
   const nativeTokens = [{ id: head(output.nativeTokens)?.id!, amount: drop.count.toString() }];
   return {
+    project: getProject(order),
+    projects: getProjects([order]),
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
     space: token.space,
@@ -274,6 +283,8 @@ const mintedDropToStake = (order: Transaction, drop: TokenDrop, billPayment: Tra
     return undefined;
   }
   const stake: Stake = {
+    project: getProject(order),
+    projects: getProjects([order]),
     uid: getRandomEthAddress(),
     member: order.member!,
     token: order.payload.token!,

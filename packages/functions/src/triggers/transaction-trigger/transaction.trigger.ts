@@ -24,6 +24,7 @@ import { SmrParams, SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AliasWallet } from '../../services/wallet/smr-wallets/AliasWallet';
 import { WalletService } from '../../services/wallet/wallet';
 import { getAddress } from '../../utils/address.utils';
+import { getProject, getProjects } from '../../utils/common.utils';
 import { isEmulatorEnv } from '../../utils/config.utils';
 import { serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -193,7 +194,7 @@ const executeTransaction = async (transactionId: string) => {
   }
 
   const docRef = build5Db().doc(`${COL.TRANSACTION}/${transactionId}`);
-  const transaction = <Transaction>await docRef.get();
+  const transaction = (await docRef.get<Transaction>())!;
   const payload = transaction.payload;
 
   const params = await getWalletParams(transaction, transaction.network || DEFAULT_NETWORK);
@@ -517,7 +518,9 @@ const isConfirmed = (prev: Transaction | undefined, curr: Transaction | undefine
 
 const onMintedAirdropCleared = async (curr: Transaction) => {
   const member = <Member>await build5Db().doc(`${COL.MEMBER}/${curr.member}`).get();
-  const credit = <Transaction>{
+  const credit: Transaction = {
+    project: getProject(curr),
+    projects: getProjects([curr]),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: curr.space,

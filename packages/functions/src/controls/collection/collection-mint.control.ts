@@ -30,6 +30,7 @@ import {
   createNftOutput,
   nftToMetadata,
 } from '../../utils/collection-minting-utils/nft.utils';
+import { getProjects } from '../../utils/common.utils';
 import { isProdEnv } from '../../utils/config.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
@@ -38,7 +39,7 @@ import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const mintCollectionOrderControl = async (
-  { owner }: Context,
+  { project, owner }: Context,
   params: CollectionMintRequest,
 ) => {
   const network = params.network as Network;
@@ -106,6 +107,8 @@ export const mintCollectionOrderControl = async (
     const aliasStorageDeposit = Number(createAliasOutput(targetAddress, wallet.info).amount);
 
     const order: Transaction = {
+      project,
+      projects: getProjects([collection], project),
       type: TransactionType.ORDER,
       uid: getRandomEthAddress(),
       member: owner,

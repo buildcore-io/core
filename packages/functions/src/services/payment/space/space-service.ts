@@ -18,12 +18,13 @@ import {
   IndexerPluginClient,
 } from '@iota/iota.js-next';
 import { Bech32AddressHelper } from '../../../utils/bech32-address.helper';
+import { getProject, getProjects } from '../../../utils/common.utils';
 import { serverTime } from '../../../utils/dateTime.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';
 import { WalletService } from '../../wallet/wallet';
 import { BaseService, HandlerParams } from '../base';
 
-export class SpaceService extends BaseService {
+export class SpaceClaimService extends BaseService {
   public handleRequest = async ({ order, match }: HandlerParams) => {
     const payment = await this.transactionService.createPayment(order, match);
     await this.transactionService.createCredit(
@@ -51,6 +52,8 @@ export class SpaceService extends BaseService {
     }
 
     const spaceMember: SpaceMember = {
+      project: getProject(order),
+      projects: getProjects([space, order]),
       uid: order.member!,
       parentId: space.uid,
       parentCol: COL.SPACE,

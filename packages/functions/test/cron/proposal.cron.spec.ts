@@ -1,5 +1,5 @@
 import { build5Db } from '@build-5/database';
-import { COL } from '@build-5/interfaces';
+import { COL, SOON_PROJECT_ID } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { markExpiredProposalCompleted } from '../../src/cron/proposal.cron';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -14,6 +14,8 @@ describe('Set proposal completed', () => {
     let batch = build5Db().batch();
     for (let i = 0; i < count; ++i) {
       const proposal = {
+        project: SOON_PROJECT_ID,
+        projects: { [SOON_PROJECT_ID]: true },
         uid: ids[i],
         settings: {
           startDate: dateToTimestamp(dayjs().subtract(10, 'd')),

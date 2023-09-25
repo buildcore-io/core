@@ -9,6 +9,7 @@ import {
   NetworkAddress,
   Nft,
   NftAccess,
+  SOON_PROJECT_ID,
   Space,
   Transaction,
   TransactionPayloadType,
@@ -494,6 +495,8 @@ describe('Ordering flows', () => {
     );
 
     let badge = {
+      project: SOON_PROJECT_ID,
+      projects: { [SOON_PROJECT_ID]: true },
       member,
       type: TransactionType.AWARD,
       uid: wallet.getRandomEthAddress(),
@@ -506,6 +509,8 @@ describe('Ordering flows', () => {
     );
 
     badge = {
+      project: SOON_PROJECT_ID,
+      projects: { [SOON_PROJECT_ID]: true },
       member,
       type: TransactionType.AWARD,
       uid: wallet.getRandomEthAddress(),

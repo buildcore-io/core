@@ -5,7 +5,6 @@ import {
   Member,
   Space,
   Token,
-  TokenPurchase,
   TokenTradeOrder,
   TokenTradeOrderType,
   Transaction,
@@ -20,7 +19,7 @@ import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
 import { getAddress } from '../../utils/address.utils';
 import { packBasicOutput } from '../../utils/basic-output.utils';
-import { getProject } from '../../utils/common.utils';
+import { getProject, getProjects } from '../../utils/common.utils';
 import { getRoyaltyFees } from '../../utils/royalty.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Match } from './match-token';
@@ -28,6 +27,7 @@ import { getMemberTier, getTokenTradingFee } from './token-trade-order.trigger';
 
 const createRoyaltyBillPayments = async (
   token: Token,
+  sell: TokenTradeOrder,
   buy: TokenTradeOrder,
   seller: Member,
   buyer: Member,
@@ -41,12 +41,14 @@ const createRoyaltyBillPayments = async (
 
   const promises = Object.entries(royaltyFees)
     .filter((entry) => entry[1] > 0)
-    .map(async ([spaceId, fee]) => {
+    .map(async ([spaceId, fee]): Promise<Transaction> => {
       const space = await build5Db().doc(`${COL.SPACE}/${spaceId}`).get<Space>();
       const spaceAddress = getAddress(space, token.mintingData?.network!);
       const sellerAddress = getAddress(seller, token.mintingData?.network!);
       const output = packBasicOutput(spaceAddress, 0, undefined, info, sellerAddress);
-      return <Transaction>{
+      return {
+        project: getProject(buy),
+        projects: getProjects([sell, buy]),
         type: TransactionType.BILL_PAYMENT,
         uid: getRandomEthAddress(),
         space: spaceId,
@@ -65,7 +67,7 @@ const createRoyaltyBillPayments = async (
           previousOwner: buyer.uid,
           ownerEntity: Entity.SPACE,
           owner: spaceId,
-          sourceTransaction: [buy.paymentTransactionId],
+          sourceTransaction: [buy.paymentTransactionId || ''],
           royalty: true,
           void: false,
           token: token.uid,
@@ -82,13 +84,16 @@ const createBillPaymentToSeller = (
   buyer: Member,
   seller: Member,
   buyOrderTran: Transaction,
+  sell: TokenTradeOrder,
   buy: TokenTradeOrder,
   salePrice: number,
   info: INodeInfo,
-) => {
+): Transaction => {
   const sellerAddress = getAddress(seller, token.mintingData?.network!);
   const output = packBasicOutput(sellerAddress, salePrice, undefined, info);
-  return <Transaction>{
+  return {
+    project: getProject(sell),
+    projects: getProjects([sell, buy]),
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
     space: token.space,
@@ -103,7 +108,7 @@ const createBillPaymentToSeller = (
       previousOwner: buyer.uid,
       ownerEntity: Entity.MEMBER,
       owner: seller.uid,
-      sourceTransaction: [buy.paymentTransactionId],
+      sourceTransaction: [buy.paymentTransactionId || ''],
       royalty: false,
       void: false,
       token: token.uid,
@@ -133,6 +138,8 @@ const createBillPaymentWithNativeTokens = (
     sellerAddress,
   );
   return {
+    project: getProject(sell),
+    projects: getProjects([sell, buy]),
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
     space: token.space,
@@ -166,10 +173,13 @@ const createCreditToSeller = (
   token: Token,
   seller: Member,
   sell: TokenTradeOrder,
+  buy: TokenTradeOrder,
   sellOrderTran: Transaction,
-) => {
+): Transaction => {
   const sellerAddress = getAddress(seller, token.mintingData?.network!);
-  return <Transaction>{
+  return {
+    project: getProject(sell),
+    projects: getProjects([sell, buy]),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: token.space,
@@ -185,7 +195,7 @@ const createCreditToSeller = (
       previousOwner: seller.uid,
       ownerEntity: Entity.MEMBER,
       owner: seller.uid,
-      sourceTransaction: [sell.paymentTransactionId],
+      sourceTransaction: [sell.paymentTransactionId || ''],
       royalty: false,
       void: false,
       token: token.uid,
@@ -197,12 +207,15 @@ const createCreditToSeller = (
 const createCreditToBuyer = (
   token: Token,
   buyer: Member,
+  sell: TokenTradeOrder,
   buy: TokenTradeOrder,
   buyOrderTran: Transaction,
   amount: number,
-) => {
+): Transaction => {
   const buyerAddress = getAddress(buyer, token.mintingData?.network!);
-  return <Transaction>{
+  return {
+    project: getProject(buy),
+    projects: getProjects([sell, buy]),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: token.space,
@@ -218,7 +231,7 @@ const createCreditToBuyer = (
       previousOwner: buyer.uid,
       ownerEntity: Entity.MEMBER,
       owner: buyer.uid,
-      sourceTransaction: [buy.paymentTransactionId],
+      sourceTransaction: [buy.paymentTransactionId || ''],
       royalty: false,
       void: false,
       token: token.uid,
@@ -270,6 +283,7 @@ export const matchMintedToken = async (
 
   const royaltyBillPayments = await createRoyaltyBillPayments(
     token,
+    sell,
     buy,
     seller,
     buyer,
@@ -300,6 +314,7 @@ export const matchMintedToken = async (
     buyer,
     seller,
     buyOrderTran,
+    sell,
     buy,
     salePrice,
     wallet.info,
@@ -312,12 +327,12 @@ export const matchMintedToken = async (
 
   const creditToSeller =
     sell.fulfilled + tokensToTrade === sell.count
-      ? createCreditToSeller(token, seller, sell, sellOrderTran)
+      ? createCreditToSeller(token, seller, sell, buy, sellOrderTran)
       : undefined;
 
   const creditToBuyer =
     buyIsFulfilled && balanceLeft
-      ? createCreditToBuyer(token, buyer, buy, buyOrderTran, balanceLeft)
+      ? createCreditToBuyer(token, buyer, sell, buy, buyOrderTran, balanceLeft)
       : undefined;
 
   [
@@ -334,7 +349,9 @@ export const matchMintedToken = async (
     });
 
   return {
-    purchase: <TokenPurchase>{
+    purchase: {
+      project: getProject(triggeredBy === TokenTradeOrderType.SELL ? sell : buy),
+      projects: getProjects([sell, buy]),
       uid: getRandomEthAddress(),
       token: buy.token,
       tokenStatus: token.status,
@@ -348,7 +365,8 @@ export const matchMintedToken = async (
       royaltyBillPayments: royaltyBillPayments.map((o) => o.uid),
 
       sellerTier: await getMemberTier(getProject(sell), seller),
-      sellerTokenTradingFeePercentage: getTokenTradingFee(seller),
+      sellerTokenTradingFeePercentage: getTokenTradingFee(seller) as number,
+      age: {},
     },
     sellerCreditId: creditToSeller?.uid,
     buyerCreditId: creditToBuyer?.uid,

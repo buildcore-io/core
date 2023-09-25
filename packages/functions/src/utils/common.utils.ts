@@ -67,3 +67,9 @@ export const assertIsProjectGuardian = async (project: string, member: string) =
 };
 
 export const getProject = (data: BaseRecord | undefined) => data?.project || SOON_PROJECT_ID;
+
+export const getProjects = (data: (BaseRecord | undefined)[], project?: string) =>
+  data.reduce(
+    (acc, act) => ({ ...acc, ...(act?.projects || {}) }),
+    project ? { [project]: true } : {},
+  );

@@ -7,6 +7,7 @@ import {
   Member,
   Network,
   NetworkAddress,
+  SOON_PROJECT_ID,
   SUB_COL,
   SYSTEM_CONFIG_DOC_ID,
   StakeType,
@@ -89,6 +90,8 @@ describe('Trade trigger', () => {
 
   const saveSellToDb = async (count: number, price: number) => {
     const data = <TokenTradeOrder>{
+      project: SOON_PROJECT_ID,
+      projects: { [SOON_PROJECT_ID]: true },
       createdOn: serverTime(),
       uid: wallet.getRandomEthAddress(),
       owner: seller,
@@ -473,6 +476,8 @@ describe('Trade trigger', () => {
     const sellTokenFunc = async (count: number, price: number) => {
       const sellDocId = wallet.getRandomEthAddress();
       const data = <TokenTradeOrder>{
+        project: SOON_PROJECT_ID,
+        projects: { [SOON_PROJECT_ID]: true },
         uid: sellDocId,
         owner: seller,
         token: token.uid,

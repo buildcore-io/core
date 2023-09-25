@@ -25,13 +25,14 @@ import { set } from 'lodash';
 import { packBasicOutput } from '../../../utils/basic-output.utils';
 import { PLACEHOLDER_CID } from '../../../utils/car.utils';
 import { createNftOutput } from '../../../utils/collection-minting-utils/nft.utils';
+import { getProject, getProjects } from '../../../utils/common.utils';
 import { getContentType } from '../../../utils/storage.utils';
 import { createAliasOutput } from '../../../utils/token-minting-utils/alias.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';
 import { BaseService, HandlerParams } from '../base';
 
-export class AwardService extends BaseService {
+export class AwardFundService extends BaseService {
   public handleRequest = async ({ order, match }: HandlerParams) => {
     const payment = await this.transactionService.createPayment(order, match);
 
@@ -75,7 +76,9 @@ export class AwardService extends BaseService {
       action: 'update',
     });
 
-    const mintAliasOrder = <Transaction>{
+    const mintAliasOrder: Transaction = {
+      project: getProject(order),
+      projects: getProjects([order]),
       type: TransactionType.AWARD,
       uid: getRandomEthAddress(),
       member: order.member,

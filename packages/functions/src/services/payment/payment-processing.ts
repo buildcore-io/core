@@ -11,11 +11,12 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { head, isEmpty } from 'lodash';
+import { getProject } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { MemberAddressService } from './address/address-member.service';
 import { SpaceAddressService } from './address/address.space.service';
-import { AwardService } from './award/award-service';
+import { AwardFundService } from './award/award-service';
 import { HandlerParams } from './base';
 import { CreditService } from './credit-service';
 import { MetadataNftService } from './metadataNft-service';
@@ -24,7 +25,7 @@ import { NftBidService } from './nft/nft-bid.service';
 import { NftDepositService } from './nft/nft-deposit.service';
 import { NftPurchaseService } from './nft/nft-purchase.service';
 import { NftStakeService } from './nft/nft-stake.service';
-import { SpaceService } from './space/space-service';
+import { SpaceClaimService } from './space/space-service';
 import { StakeService } from './stake-service';
 import { TangleRequestService } from './tangle-service/TangleRequestService';
 import { ImportMintedTokenService } from './token/import-minted-token.service';
@@ -111,6 +112,7 @@ export class ProcessingService {
         payment: undefined,
         match,
         order,
+        project: getProject(order),
         owner: order.member || '',
         tran,
         tranEntry,
@@ -172,11 +174,11 @@ export class ProcessingService {
       case TransactionPayloadType.PROPOSAL_VOTE:
         return new VotingService(tranService);
       case TransactionPayloadType.CLAIM_SPACE:
-        return new SpaceService(tranService);
+        return new SpaceClaimService(tranService);
       case TransactionPayloadType.STAKE_NFT:
         return new NftStakeService(tranService);
       case TransactionPayloadType.FUND_AWARD:
-        return new AwardService(tranService);
+        return new AwardFundService(tranService);
       case TransactionPayloadType.IMPORT_TOKEN:
         return new ImportMintedTokenService(tranService);
       case TransactionPayloadType.MINT_METADATA_NFT:
