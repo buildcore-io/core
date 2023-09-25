@@ -14,7 +14,7 @@
     "build:interfaces": "npm i --workspace=packages/interfaces && npm run build --workspace=packages/interfaces",
     "build:lib": "npm run build:interfaces && npm i --workspace=packages/lib && npm run build --workspace=packages/lib",
     "build:indexes": "npm i --workspace=packages/indexes && npm run build --workspace=packages/indexes",
-    "build:database": "npm i --workspace=packages/database && npm run build --workspace=packages/database",
+    "build:database": "npm run build:interfaces && npm i --workspace=packages/database && npm run build --workspace=packages/database",
     "build:api": "npm run build:interfaces && npm run build:database && npm i --workspace=packages/api && npm run build --workspace=packages/api",
     "build": "npm i --workspaces && npm run build --workspaces",
     "clean:api": "rm -rf packages/api/lib; rm -rf packages/api/node_modules",
