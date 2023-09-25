@@ -121,11 +121,11 @@ export class Helper {
     media: MEDIA,
   });
 
-  public dummyAuctionData = (uid: string) => ({
+  public dummyAuctionData = (uid: string, availableFrom?: Date, auctionFrom?: Date) => ({
     nft: uid,
     price: MIN_IOTA_AMOUNT,
-    availableFrom: dayjs().toDate(),
-    auctionFrom: dayjs().toDate(),
+    availableFrom: availableFrom || dayjs().toDate(),
+    auctionFrom: auctionFrom || dayjs().toDate(),
     auctionFloorPrice: MIN_IOTA_AMOUNT,
     auctionLength: 60000 * 4,
     access: NftAccess.OPEN,
