@@ -42,6 +42,10 @@ export const getNftSetForSaleParams = async (params: NftSetForSaleRequest, owner
     throw invalidArgument(WenError.nft_does_not_exists);
   }
 
+  if (nft.auctionFrom && dayjs(nft.auctionFrom.toDate()).isBefore(dayjs())) {
+    throw invalidArgument(WenError.nft_auction_already_in_progress);
+  }
+
   if (nft.setAsAvatar) {
     throw invalidArgument(WenError.nft_set_as_avatar);
   }
@@ -66,10 +70,6 @@ export const getNftSetForSaleParams = async (params: NftSetForSaleRequest, owner
 
   if (params.auctionFrom) {
     params.auctionFrom = dateToTimestamp(params.auctionFrom, true).toDate();
-  }
-
-  if (params.auctionFrom && nft.auctionFrom && dayjs(nft.auctionFrom.toDate()).isBefore(dayjs())) {
-    throw invalidArgument(WenError.nft_auction_already_in_progress);
   }
 
   const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nft.collection}`);
