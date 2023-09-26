@@ -1,19 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import {
-  COL,
-  Timestamp,
-  Transaction,
-  TransactionPayloadType,
-  TransactionType,
-} from '@build-5/interfaces';
+import { COL, Transaction, TransactionPayloadType, TransactionType } from '@build-5/interfaces';
+import dayjs from 'dayjs';
 import { FirebaseApp } from '../../../src/app/app';
 import { Firestore } from '../../../src/firestore/firestore';
 
-export const creditHighestPayment = async (app: FirebaseApp) => {
+const PROD_PAYMENT = '0xe50e40db6c583e89733fd1b084e30e1d7b878755'
+
+export const creditHighestPayment = async (
+  app: FirebaseApp,
+  paymentUid = PROD_PAYMENT,
+) => {
   const db = new Firestore(app);
 
-  const paymentUid = '0xe50e40db6c583e89733fd1b084e30e1d7b878755';
   const batch = db.batch();
 
   const paymentDocRef = db.doc(`${COL.TRANSACTION}/${paymentUid}`);
@@ -21,20 +20,19 @@ export const creditHighestPayment = async (app: FirebaseApp) => {
 
   if (!payment) {
     console.log('Payment does not exist');
-    return;
+    return false;
   }
-
 
   batch.update(paymentDocRef, { 'payload.invalidPayment': true });
 
   // was generated randomly elswhere so getRandomEthAddress is not needed here,
   const creditUid = '0x3c368f6d447e5b703fd5b2d3a9d276809d03affe';
-  const credit: Transaction = {
+  const credit = {
     type: TransactionType.CREDIT,
     uid: creditUid,
     space: payment.space,
     member: payment.member,
-    createdOn: Timestamp.now(),
+    createdOn: dayjs().toDate(),
     network: payment.network,
     payload: {
       type: TransactionPayloadType.DATA_NO_LONGER_VALID,
@@ -54,6 +52,7 @@ export const creditHighestPayment = async (app: FirebaseApp) => {
   batch.create(creditDocRef, credit);
 
   await batch.commit();
+  return true;
 };
 
 export const roll = creditHighestPayment;
