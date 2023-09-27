@@ -1,6 +1,5 @@
 import { WEN_FUNC, WEN_FUNC_TRIGGER } from '@build-5/interfaces';
 import { algoliaTrigger } from './algolia/algolia.trigger';
-import { initSoonProject } from './controls/project/init.soon.project';
 import { validateAddress } from './runtime/firebase/address';
 import { generateCustomToken } from './runtime/firebase/auth';
 import {
@@ -209,6 +208,3 @@ exports[WEN_FUNC.uploadFile] = uploadFile;
 
 exports[WEN_FUNC.createProject] = createProject;
 exports[WEN_FUNC.deactivateProject] = deactivateProject;
-
-// TODO Remove this after release
-exports['init_soon_project'] = initSoonProject;

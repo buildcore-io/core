@@ -3,7 +3,7 @@ import { createProjectControl } from '../../../controls/project/project.create.c
 import { deactivateProjectControl } from '../../../controls/project/project.deactivate.control';
 import { toJoiObject } from '../../../services/joi/common';
 import { onRequest } from '../common';
-import { projectCreateSchema } from './ProjectCreateSchema';
+import { projectCreateSchema } from './ProjectCreateRequestSchema';
 
 export const createProject = onRequest(WEN_FUNC.createProject)(
   projectCreateSchema,

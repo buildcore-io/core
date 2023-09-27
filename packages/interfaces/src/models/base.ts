@@ -76,6 +76,7 @@ export const enum SUB_COL {
   PARTICIPANTS = 'participants',
   MEMBERS = 'members',
   GUARDIANS = 'guardians',
+  ADMINS = 'ADMINS',
   BLOCKED_MEMBERS = 'blockedMembers',
   KNOCKING_MEMBERS = 'knockingMembers',
   TRANSACTIONS = 'transactions',

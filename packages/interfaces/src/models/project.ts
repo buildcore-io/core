@@ -32,20 +32,20 @@ export interface ProjectConfig {
 
   tiers?: number[];
   tokenTradingFeeDiscountPercentage?: number[];
-  baseTokenSymbol?: string;
-  baseTokenUid?: string;
+  nativeTokenSymbol?: string;
+  nativeTokenUid?: string;
 }
 
 /**
  * Project Guardian subcollection.
  */
-export interface ProjectGuardian extends BaseSubCollection {
+export interface ProjectAdmin extends BaseSubCollection {
   /**
    * Member ID {@link Member}
    */
   uid: string;
   /**
-   * Guardian joined on
+   * Admin joined on
    */
   createdOn: Timestamp;
 }

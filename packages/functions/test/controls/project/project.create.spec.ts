@@ -2,8 +2,8 @@ import { build5Db } from '@build-5/database';
 import {
   COL,
   Project,
+  ProjectAdmin,
   ProjectBilling,
-  ProjectGuardian,
   SOON_PROJECT_ID,
   SUB_COL,
   Token,
@@ -57,11 +57,11 @@ describe('Project create', () => {
     expect(project?.deactivated).toBe(false);
     expect(project?.config?.billing).toBe(ProjectBilling.VOLUME_BASED);
 
-    const projectGuardianDocRef = projectDocRef.collection(SUB_COL.GUARDIANS).doc(guardian);
-    const projectGuardian = await projectGuardianDocRef.get<ProjectGuardian>();
-    expect(projectGuardian?.uid).toBe(guardian);
-    expect(projectGuardian?.parentCol).toBe(COL.PROJECT);
-    expect(projectGuardian?.parentId).toBe(project?.uid);
+    const projectAdminDocRef = projectDocRef.collection(SUB_COL.ADMINS).doc(guardian);
+    const projectAdmin = await projectAdminDocRef.get<ProjectAdmin>();
+    expect(projectAdmin?.uid).toBe(guardian);
+    expect(projectAdmin?.parentCol).toBe(COL.PROJECT);
+    expect(projectAdmin?.parentId).toBe(project?.uid);
   });
 
   it('Should throw, volume based project with token based data', async () => {
@@ -82,8 +82,7 @@ describe('Project create', () => {
         billing: ProjectBilling.TOKEN_BASE,
         tiers: [1, 2, 3, 4, 5],
         tokenTradingFeeDiscountPercentage: [0, 0, 0, 0, 0],
-        baseTokenSymbol: token.symbol,
-        baseTokenUid: token.uid,
+        nativeTokenSymbol: token.symbol,
       },
     };
     mockWalletReturnValue(walletSpy, guardian, dummyProject);
@@ -99,13 +98,13 @@ describe('Project create', () => {
     expect(project?.config?.tokenTradingFeeDiscountPercentage).toEqual(
       dummyProject.config.tokenTradingFeeDiscountPercentage,
     );
-    expect(project?.config?.baseTokenSymbol).toBe(dummyProject.config.baseTokenSymbol);
-    expect(project?.config?.baseTokenUid).toBe(dummyProject.config.baseTokenUid);
+    expect(project?.config?.nativeTokenSymbol).toBe(dummyProject.config.nativeTokenSymbol);
+    expect(project?.config?.nativeTokenUid).toBe(token.uid);
 
-    const projectGuardianDocRef = projectDocRef.collection(SUB_COL.GUARDIANS).doc(guardian);
-    const projectGuardian = await projectGuardianDocRef.get<ProjectGuardian>();
-    expect(projectGuardian?.uid).toBe(guardian);
-    expect(projectGuardian?.parentCol).toBe(COL.PROJECT);
-    expect(projectGuardian?.parentId).toBe(project?.uid);
+    const projectAdminDocRef = projectDocRef.collection(SUB_COL.ADMINS).doc(guardian);
+    const adminGuardian = await projectAdminDocRef.get<ProjectAdmin>();
+    expect(adminGuardian?.uid).toBe(guardian);
+    expect(adminGuardian?.parentCol).toBe(COL.PROJECT);
+    expect(adminGuardian?.parentId).toBe(project?.uid);
   });
 });

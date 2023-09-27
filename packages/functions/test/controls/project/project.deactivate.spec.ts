@@ -29,7 +29,7 @@ describe('Project create', () => {
     mockWalletReturnValue(walletSpy, guardian, {});
     await expectThrow(
       testEnv.wrap(deactivateProject)({}),
-      WenError.you_are_not_guardian_of_project.key,
+      WenError.you_are_not_admin_of_project.key,
     );
   });
 });

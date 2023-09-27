@@ -3,8 +3,8 @@ import {
   COL,
   MIN_IOTA_AMOUNT,
   Network,
+  ProjectAdmin,
   ProjectBilling,
-  ProjectGuardian,
   SOON_PROJECT_ID,
   SUB_COL,
 } from '@build-5/interfaces';
@@ -106,21 +106,21 @@ const setup = async () => {
       billing: ProjectBilling.TOKEN_BASE,
       tiers: [0, 0, 0, 0, 0].map((v) => v * MIN_IOTA_AMOUNT),
       tokenTradingFeeDiscountPercentage: [0, 0, 0, 0, 0],
-      baseTokenSymbol: 'SOON',
-      baseTokenUid: soonTokenId,
+      nativeTokenSymbol: 'SOON',
+      nativeTokenUid: soonTokenId,
     },
   };
   const soonProjDocRef = build5Db().doc(`${COL.PROJECT}/${soonProject.uid}`);
   await soonProjDocRef.set(soonProject);
 
-  const guardianDocRef = soonProjDocRef.collection(SUB_COL.GUARDIANS).doc(SOON_PROJ_GUARDIAN);
-  const guardian: ProjectGuardian = {
+  const adminDocRef = soonProjDocRef.collection(SUB_COL.ADMINS).doc(SOON_PROJ_GUARDIAN);
+  const admin: ProjectAdmin = {
     uid: SOON_PROJ_GUARDIAN,
     createdOn: dateToTimestamp(dayjs()),
     parentCol: COL.PROJECT,
     parentId: SOON_PROJECT_ID,
   };
-  guardianDocRef.set(guardian);
+  await adminDocRef.set(admin);
 
   console.log('Setup env');
 };

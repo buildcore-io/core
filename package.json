@@ -34,6 +34,6 @@
     "joi-to-types": "ts-node ./scripts/joi-generator-post.ts && ts-node ./scripts/joi-generator-tangle.ts && npm run prettier"
   },
   "devDependencies": {
-    "joi-to-typescript": "^4.4.1"
+    "joi-to-typescript": "4.7.0"
   }
 }

@@ -17,7 +17,7 @@ export const hasStakedTokens = async (projectId: string, member: string, type?: 
   if (project.config?.billing !== ProjectBilling.TOKEN_BASE) {
     return true;
   }
-  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${project.config.baseTokenUid}`);
+  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${project.config.nativeTokenUid}`);
   const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member);
   const distribution = await distributionDocRef.get<TokenDistribution>();
 

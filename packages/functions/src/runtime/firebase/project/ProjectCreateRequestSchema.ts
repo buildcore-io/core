@@ -36,7 +36,7 @@ export const projectCreateSchema = toJoiObject<ProjectCreateRequest>({
       .description(
         `Discounts for this project. Set only if billing type is ${ProjectBilling.TOKEN_BASE}`,
       ),
-    baseTokenSymbol: Joi.string()
+    nativeTokenSymbol: Joi.string()
       .when('billing', {
         is: Joi.exist().valid(ProjectBilling.TOKEN_BASE),
         then: CommonJoi.tokenSymbol(),
@@ -44,15 +44,6 @@ export const projectCreateSchema = toJoiObject<ProjectCreateRequest>({
       })
       .description(
         `Base token symbol for this project. Set only if billing type is ${ProjectBilling.TOKEN_BASE}`,
-      ),
-    baseTokenUid: Joi.string()
-      .when('billing', {
-        is: Joi.exist().valid(ProjectBilling.TOKEN_BASE),
-        then: CommonJoi.uid(),
-        otherwise: Joi.forbidden(),
-      })
-      .description(
-        `Base token uid for this project. Set only if billing type is ${ProjectBilling.TOKEN_BASE}`,
       ),
   })
     .required()

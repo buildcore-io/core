@@ -12,17 +12,13 @@ export interface ProjectCreateRequest {
    */
   config: {
     /**
-     * Base token symbol for this project. Set only if billing type is token_based
-     */
-    baseTokenSymbol?: string;
-    /**
-     * Base token uid for this project. Set only if billing type is token_based
-     */
-    baseTokenUid?: string;
-    /**
      * Billing type of the project.
      */
     billing: 'token_based' | 'volume_based';
+    /**
+     * Base token symbol for this project. Set only if billing type is token_based
+     */
+    nativeTokenSymbol?: string;
     /**
      * Tiers for this project. Set only if billing type is token_based
      */

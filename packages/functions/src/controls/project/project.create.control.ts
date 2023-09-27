@@ -2,14 +2,15 @@ import { build5Db } from '@build-5/database';
 import {
   COL,
   Project,
+  ProjectAdmin,
   ProjectBilling,
   ProjectCreateRequest,
-  ProjectGuardian,
   SUB_COL,
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import jwt from 'jsonwebtoken';
+import { set } from 'lodash';
 import { Context } from '../../runtime/firebase/common';
 import { getJwtSecretKey } from '../../utils/config.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
@@ -34,17 +35,17 @@ export const createProjectControl = async ({ owner }: Context, params: ProjectCr
   } as Project;
 
   if (projectData.config.billing === ProjectBilling.TOKEN_BASE) {
-    const token = await getTokenBySymbol(projectData.config.baseTokenSymbol!);
-
-    if (token?.uid !== projectData.config.baseTokenUid) {
+    const token = await getTokenBySymbol(projectData.config.nativeTokenSymbol!);
+    if (!token) {
       throw invalidArgument(WenError.token_does_not_exist);
     }
+    set(projectData, 'config.nativeTokenUid', token.uid);
   }
   const projectDocRef = build5Db().doc(`${COL.PROJECT}/${projectData.uid}`);
   batch.create(projectDocRef, projectData);
 
-  const guardianDocRef = projectDocRef.collection(SUB_COL.GUARDIANS).doc(owner);
-  const guardian: ProjectGuardian = {
+  const adminDocRef = projectDocRef.collection(SUB_COL.ADMINS).doc(owner);
+  const admin: ProjectAdmin = {
     project: projectData.uid,
     projects: { [projectData.uid]: true },
     uid: owner,
@@ -52,7 +53,7 @@ export const createProjectControl = async ({ owner }: Context, params: ProjectCr
     parentCol: COL.PROJECT,
     parentId: projectData.uid,
   };
-  batch.create(guardianDocRef, guardian);
+  batch.create(adminDocRef, admin);
 
   const rawJwt = { uid: owner, project: projectData.uid, iat: dayjs().unix() };
   const token = jwt.sign(rawJwt, getJwtSecretKey());

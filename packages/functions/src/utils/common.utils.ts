@@ -6,6 +6,7 @@ import {
   Collection,
   MIN_AMOUNT_TO_TRANSFER,
   Nft,
+  ProjectAdmin,
   Restrictions,
   SOON_PROJECT_ID,
   SUB_COL,
@@ -58,11 +59,11 @@ export const getRestrictions = (collection?: Collection, nft?: Nft): Restriction
   return restrictions;
 };
 
-export const assertIsProjectGuardian = async (project: string, member: string) => {
+export const assertIsProjectAdmin = async (project: string, member: string) => {
   const projectDocRef = build5Db().doc(`${COL.PROJECT}/${project}`);
-  const guardianDoc = await projectDocRef.collection(SUB_COL.GUARDIANS).doc(member).get();
-  if (!guardianDoc) {
-    throw invalidArgument(WenError.you_are_not_guardian_of_project);
+  const admin = await projectDocRef.collection(SUB_COL.ADMINS).doc(member).get<ProjectAdmin>();
+  if (!admin) {
+    throw invalidArgument(WenError.you_are_not_admin_of_project);
   }
 };
 

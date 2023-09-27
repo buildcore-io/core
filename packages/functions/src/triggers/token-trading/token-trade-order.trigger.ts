@@ -70,7 +70,7 @@ export const getMemberTier = async (projectId: string, member: Member) => {
   if (project?.config?.billing !== ProjectBilling.TOKEN_BASE) {
     return 0;
   }
-  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${project.config.baseTokenUid}`);
+  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${project.config.nativeTokenUid}`);
   const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member.uid);
   const distribution = await distributionDocRef.get<TokenDistribution>();
   const stakeValue = getStakeForType(distribution, StakeType.DYNAMIC);
