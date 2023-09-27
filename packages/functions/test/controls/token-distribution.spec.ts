@@ -5,6 +5,7 @@ import {
   Member,
   Network,
   NetworkAddress,
+  SOON_PROJECT_ID,
   SUB_COL,
   SYSTEM_CONFIG_DOC_ID,
   Space,
@@ -310,6 +311,8 @@ const dummyToken = (
   publicPercentageSale: number,
   guardian: string,
 ) => ({
+  project: SOON_PROJECT_ID,
+  projects: { [SOON_PROJECT_ID]: true },
   symbol: getRandomSymbol(),
   totalSupply,
   updatedOn: serverTime(),

@@ -1,4 +1,18 @@
-import { Access, Collection, MIN_AMOUNT_TO_TRANSFER, Nft, Restrictions } from '@build-5/interfaces';
+import { build5Db } from '@build-5/database';
+import {
+  Access,
+  BaseRecord,
+  COL,
+  Collection,
+  MIN_AMOUNT_TO_TRANSFER,
+  Nft,
+  ProjectAdmin,
+  Restrictions,
+  SOON_PROJECT_ID,
+  SUB_COL,
+  WenError,
+} from '@build-5/interfaces';
+import { invalidArgument } from './error.utils';
 
 const MAX_RERUNS = 10;
 
@@ -44,3 +58,19 @@ export const getRestrictions = (collection?: Collection, nft?: Nft): Restriction
 
   return restrictions;
 };
+
+export const assertIsProjectAdmin = async (project: string, member: string) => {
+  const projectDocRef = build5Db().doc(`${COL.PROJECT}/${project}`);
+  const admin = await projectDocRef.collection(SUB_COL.ADMINS).doc(member).get<ProjectAdmin>();
+  if (!admin) {
+    throw invalidArgument(WenError.you_are_not_admin_of_project);
+  }
+};
+
+export const getProject = (data: BaseRecord | undefined) => data?.project || SOON_PROJECT_ID;
+
+export const getProjects = (data: (BaseRecord | undefined)[], project?: string) =>
+  data.reduce(
+    (acc, act) => ({ ...acc, ...(act?.projects || {}) }),
+    project ? { [project]: true } : {},
+  );

@@ -18,10 +18,12 @@
     "@build-5/interfaces": "*",
     "dayjs": "^1.11.9",
     "firebase-admin": "^11.10.1",
+    "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
+    "@types/jsonwebtoken": "^9.0.3",
     "@types/lodash": "^4.14.197",
     "dotenv": "^16.3.1",
     "glob": "^10.3.4",

@@ -44,6 +44,11 @@ export class Firestore implements IDatabase {
   public arrayRemove = <T>(...value: T[]) => admin.firestore.FieldValue.arrayRemove(...value);
 
   public deleteField = () => admin.firestore.FieldValue.delete();
+
+  public get = async <T>(col: COL, uid: string) => {
+    const docRef = this.db.doc(`${col}/${uid}`);
+    return (await docRef.get()).data() as T;
+  };
 }
 
 export class FirestoreBatch implements IBatch {

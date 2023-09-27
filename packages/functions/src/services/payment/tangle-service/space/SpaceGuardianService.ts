@@ -17,21 +17,21 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
+import { getProject, getProjects } from '../../../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { editSpaceMemberSchemaObject } from './SpaceEditMemberTangleRequestSchema';
 
-export class SpaceGuardianService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleEditGuardianRequest = async (
-    owner: string,
-    request: Record<string, unknown>,
-  ): Promise<SpaceGuardianUpsertTangleResponse> => {
+export class SpaceGuardianService extends BaseService {
+  public handleRequest = async ({
+    order,
+    owner,
+    request,
+  }: HandlerParams): Promise<SpaceGuardianUpsertTangleResponse> => {
     const type =
       request.requestType == TangleRequestType.SPACE_ADD_GUARDIAN
         ? ProposalType.ADD_GUARDIAN
@@ -40,6 +40,7 @@ export class SpaceGuardianService {
     const params = await assertValidationAsync(editSpaceMemberSchemaObject, request);
 
     const { proposal, voteTransaction, members } = await addRemoveGuardian(
+      getProject(order),
       owner,
       { ...params },
       type,
@@ -68,6 +69,7 @@ export class SpaceGuardianService {
 }
 
 export const addRemoveGuardian = async (
+  project: string,
   owner: string,
   params: Record<string, unknown>,
   type: ProposalType,
@@ -119,15 +121,19 @@ export const addRemoveGuardian = async (
     .doc(`${COL.SPACE}/${params.uid}`)
     .collection(SUB_COL.GUARDIANS)
     .get<SpaceMember>();
+  const space = await spaceDocRef.get<Space>();
   const proposal = getProposalData(
+    project,
     guardian,
-    params.uid as string,
+    space!,
     member,
     isAddGuardian,
     guardians.length,
   );
 
   const voteTransaction: Transaction = {
+    project,
+    projects: getProjects([space], project),
     type: TransactionType.VOTE,
     uid: getRandomEthAddress(),
     member: owner,
@@ -156,24 +162,27 @@ export const addRemoveGuardian = async (
 };
 
 const getProposalData = (
+  project: string,
   owner: Member,
-  space: string,
+  space: Space,
   member: Member,
   isAddGuardian: boolean,
   guardiansCount: number,
-) => {
+): Proposal => {
   const additionalInfo =
     `${owner.name || owner.uid} wants to ${isAddGuardian ? 'add' : 'remove'} ${
       member.name
     } as guardian. ` +
     `Request created on ${dayjs().format('MM/DD/YYYY')}. ` +
     `${ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE} % must agree for this action to proceed`;
-  return <Proposal>{
+  return {
+    project,
+    projects: getProjects([space], project),
     createdBy: owner.uid,
     uid: getRandomEthAddress(),
     name: `${isAddGuardian ? 'Add' : 'Remove'} guardian`,
     additionalInfo: additionalInfo,
-    space,
+    space: space.uid,
     description: '',
     type: isAddGuardian ? ProposalType.ADD_GUARDIAN : ProposalType.REMOVE_GUARDIAN,
     approved: true,

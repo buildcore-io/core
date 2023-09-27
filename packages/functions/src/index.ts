@@ -31,6 +31,7 @@ import {
   updateUnsoldNft,
   withdrawNft,
 } from './runtime/firebase/nft/index';
+import { createProject, deactivateProject } from './runtime/firebase/project';
 import {
   approveProposal,
   createProposal,
@@ -52,6 +53,7 @@ import {
   updateSpace,
 } from './runtime/firebase/space';
 import { depositStake, removeStakeReward, stakeReward } from './runtime/firebase/stake';
+import { uploadFile } from './runtime/firebase/storage/file.upload';
 import {
   airdropToken,
   cancelPublicSale,
@@ -91,7 +93,6 @@ import { onTokenTradeOrderWrite } from './triggers/token-trading/token-trade-ord
 import { onTokenStatusUpdate } from './triggers/token.trigger';
 import { transactionWrite } from './triggers/transaction-trigger/transaction.trigger';
 import { isProdEnv } from './utils/config.utils';
-import { uploadFile } from './runtime/firebase/storage/file.upload';
 
 // Members functions.
 exports[WEN_FUNC.createMember] = createMember;
@@ -204,3 +205,6 @@ exports[WEN_FUNC.claimSpace] = claimSpace;
 exports[WEN_FUNC.importMintedToken] = importMintedToken;
 
 exports[WEN_FUNC.uploadFile] = uploadFile;
+
+exports[WEN_FUNC.createProject] = createProject;
+exports[WEN_FUNC.deactivateProject] = deactivateProject;

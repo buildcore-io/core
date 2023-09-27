@@ -20,21 +20,17 @@ import {
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions/v2';
 import { cloneDeep, get } from 'lodash';
+import { getProjects } from '../../../utils/common.utils';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';
 import { WalletService } from '../../wallet/wallet';
+import { BaseService, HandlerParams } from '../base';
 import { createNftWithdrawOrder } from '../tangle-service/nft/nft-purchase.service';
-import { TransactionMatch, TransactionService } from '../transaction-service';
-import { NftDepositService } from './nft-deposit-service';
-export class NftStakeService {
-  constructor(readonly transactionService: TransactionService) {}
+import { NftDepositService } from './nft-deposit.service';
 
-  public handleNftStake = async (
-    order: Transaction,
-    match: TransactionMatch,
-    tranEntry: MilestoneTransactionEntry,
-  ) => {
+export class NftStakeService extends BaseService {
+  public handleRequest = async ({ project, order, match, tranEntry }: HandlerParams) => {
     let customErrorParams = {};
     try {
       if (!tranEntry.nftOutput) {
@@ -50,6 +46,7 @@ export class NftStakeService {
       const nft = await nftDepositService.depositNft(order, tranEntry, match);
 
       const { order: withdrawOrder, nftUpdateData } = createNftWithdrawOrder(
+        project,
         nft,
         order.member!,
         match.from.address,
@@ -104,6 +101,7 @@ export class NftStakeService {
 }
 
 export const createNftStakeOrder = async (
+  project: string,
   member: string,
   network: Network,
   weeks: number,
@@ -112,6 +110,8 @@ export const createNftStakeOrder = async (
   const wallet = await WalletService.newWallet(network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
   return {
+    project,
+    projects: getProjects([], project),
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member,

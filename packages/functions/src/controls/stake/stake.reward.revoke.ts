@@ -7,6 +7,7 @@ import {
   Proposal,
   ProposalType,
   REMOVE_STAKE_REWARDS_THRESHOLD_PERCENTAGE,
+  Space,
   SpaceGuardian,
   StakeReward,
   SUB_COL,
@@ -19,13 +20,15 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { uniq } from 'lodash';
+import { Context } from '../../runtime/firebase/common';
+import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const removeStakeRewardControl = async (
-  owner: string,
+  { project, owner }: Context,
   params: TokenStakeRewardsRemoveRequest,
 ) => {
   const stakeRewardIds = params.stakeRewardIds as string[];
@@ -71,15 +74,21 @@ export const removeStakeRewardControl = async (
     .doc(token.space)
     .collection(SUB_COL.GUARDIANS)
     .get<SpaceGuardian>();
+
+  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${token.space}`);
+  const space = await spaceDocRef.get<Space>();
   const proposal = createUpdateSpaceProposal(
+    project,
     guardian,
-    token.space,
+    space!,
     guardians.length,
     stakeRewards as StakeReward[],
     proposalEndDate,
   );
 
   const voteTransaction: Transaction = {
+    project,
+    projects: getProjects([proposal], project),
     type: TransactionType.VOTE,
     uid: getRandomEthAddress(),
     member: owner,
@@ -100,6 +109,8 @@ export const removeStakeRewardControl = async (
       .collection(SUB_COL.MEMBERS)
       .doc(guardian.uid)
       .set({
+        project,
+        projects: getProjects([proposal], project),
         uid: guardian.uid,
         weight: 1,
         voted: guardian.uid === owner,
@@ -119,23 +130,26 @@ export const removeStakeRewardControl = async (
 };
 
 const createUpdateSpaceProposal = (
+  project: string,
   owner: Member,
-  space: string,
+  space: Space,
   guardiansCount: number,
   stakeRewards: StakeReward[],
   endDate: Timestamp,
-) => {
+): Proposal => {
   const additionalInfo =
     `${owner.name || owner.uid} wants to remove stake rewards. ` +
     `Request created on ${dayjs().format('MM/DD/YYYY')}.` +
     `${REMOVE_STAKE_REWARDS_THRESHOLD_PERCENTAGE} % must agree for this action to proceed <br /><br />`;
-  return <Proposal>{
+  return {
+    project,
+    projects: getProjects([space], project),
     createdBy: owner.uid,
     description: '',
     uid: getRandomEthAddress(),
     name: 'Remove stake rewards',
     additionalInfo: additionalInfo + getDescription(stakeRewards),
-    space,
+    space: space.uid,
     type: ProposalType.REMOVE_STAKE_REWARD,
     approved: true,
     rejected: false,
@@ -156,7 +170,6 @@ const createUpdateSpaceProposal = (
             additionalInfo: '',
           },
           {
-            uid: getRandomEthAddress(),
             text: 'Yes',
             value: BaseProposalAnswerValue.YES,
             additionalInfo: '',

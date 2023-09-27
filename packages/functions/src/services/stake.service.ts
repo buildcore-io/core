@@ -1,31 +1,29 @@
-import { build5Db, ITransaction } from '@build-5/database';
+import { ITransaction, build5Db } from '@build-5/database';
 import {
   COL,
+  Project,
+  ProjectBilling,
+  SUB_COL,
   Space,
   Stake,
   StakeType,
-  SUB_COL,
-  tiers,
   TokenDistribution,
-  tokenTradingFeeDicountPercentage,
 } from '@build-5/interfaces';
-import { getTokenSaleConfig, isProdEnv } from '../utils/config.utils';
-import { getSoonToken } from '../utils/token.utils';
+import { getProject } from '../utils/common.utils';
+import { getTokenSaleConfig } from '../utils/config.utils';
 
-export const hasStakedSoonTokens = async (member: string, type?: StakeType) => {
-  if (!isProdEnv()) {
+export const hasStakedTokens = async (projectId: string, member: string, type?: StakeType) => {
+  const project = (await build5Db().get<Project>(COL.PROJECT, projectId))!;
+  if (project.config?.billing !== ProjectBilling.TOKEN_BASE) {
     return true;
   }
-
-  const soon = await getSoonToken();
-  const distributionDocRef = build5Db().doc(
-    `${COL.TOKEN}/${soon.uid}/${SUB_COL.DISTRIBUTION}/${member}`,
-  );
-  const distribution = (await distributionDocRef.get<TokenDistribution>())!;
+  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${project.config.nativeTokenUid}`);
+  const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member);
+  const distribution = await distributionDocRef.get<TokenDistribution>();
 
   const stakeTypes = type ? [type] : Object.values(StakeType);
   const hasAny = stakeTypes.reduce(
-    (acc, act) => acc || getStakeForType(distribution, act) >= tiers[1],
+    (acc, act) => acc || getStakeForType(distribution, act) >= (project.config.tiers || [])[1],
     false,
   );
   return hasAny;
@@ -37,7 +35,13 @@ export const getStakeForType = (distribution: TokenDistribution | undefined, typ
 export const onStakeCreated = async (transaction: ITransaction, stake: Stake) => {
   const distribution = await getTokenDistribution(transaction, stake.token, stake.member);
   if (stake.type === StakeType.DYNAMIC) {
-    updateMemberTokenDiscountPercentage(transaction, distribution, stake.member, stake.value);
+    await updateMemberTokenDiscountPercentage(
+      transaction,
+      getProject(stake),
+      distribution,
+      stake.member,
+      stake.value,
+    );
   }
   updateStakingMembersStats(transaction, distribution, stake.token, stake.type, stake.value);
 };
@@ -45,41 +49,48 @@ export const onStakeCreated = async (transaction: ITransaction, stake: Stake) =>
 export const onStakeExpired = async (transaction: ITransaction, stake: Stake) => {
   const distribution = await getTokenDistribution(transaction, stake.token, stake.member);
   if (stake.type === StakeType.DYNAMIC) {
-    updateMemberTokenDiscountPercentage(transaction, distribution, stake.member, -stake.value);
+    await updateMemberTokenDiscountPercentage(
+      transaction,
+      getProject(stake),
+      distribution,
+      stake.member,
+      -stake.value,
+    );
     await removeMemberFromSpace(transaction, distribution, stake);
   }
   updateStakingMembersStats(transaction, distribution, stake.token, stake.type, -stake.value);
 };
 
 const getTokenDistribution = async (transaction: ITransaction, token: string, member: string) => {
-  const distirbutionDocRef = build5Db().doc(
-    `${COL.TOKEN}/${token}/${SUB_COL.DISTRIBUTION}/${member}`,
-  );
+  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token}`);
+  const distirbutionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member);
   return await transaction.get<TokenDistribution>(distirbutionDocRef);
 };
 
-const updateMemberTokenDiscountPercentage = (
+const updateMemberTokenDiscountPercentage = async (
   transaction: ITransaction,
+  projectId: string,
   distribution: TokenDistribution | undefined,
   member: string,
   stakeValueDiff: number,
 ) => {
+  const project = await build5Db().get<Project>(COL.PROJECT, projectId);
   const stakeValue = getStakeForType(distribution, StakeType.DYNAMIC) + stakeValueDiff;
 
-  const tier = getTier(stakeValue);
+  const tier = getTier(project?.config?.tiers || [], stakeValue);
   if (!tier && stakeValueDiff > 0) {
     return;
   }
-  const discount = tokenTradingFeeDicountPercentage[tier] / 100;
+  const discount = (project?.config?.tokenTradingFeeDiscountPercentage || [])[tier] / 100;
   const tokenTradingFeePercentage = getTokenSaleConfig.percentage * (1 - discount);
 
   const memberDocRef = build5Db().doc(`${COL.MEMBER}/${member}`);
   transaction.update(memberDocRef, { tokenTradingFeePercentage });
 };
 
-export const getTier = (stakeValue: number) => {
-  let tier = 0;
-  while (tiers[tier] <= stakeValue && tier < tiers.length) {
+export const getTier = (tiers: number[], stakeValue: number) => {
+  let tier = 1;
+  while (stakeValue && tiers[tier] <= stakeValue && tier < tiers.length) {
     ++tier;
   }
   return tier - 1;

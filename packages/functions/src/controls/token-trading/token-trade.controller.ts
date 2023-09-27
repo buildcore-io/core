@@ -7,14 +7,14 @@ import {
   TradeTokenRequest,
   WenError,
 } from '@build-5/interfaces';
+import { Context } from '../../runtime/firebase/common';
 import { createTokenTradeOrder } from '../../services/payment/tangle-service/token/token-trade.service';
 import { invalidArgument } from '../../utils/error.utils';
 import { getTokenBySymbol } from '../../utils/token.utils';
 
 export const tradeTokenControl = async (
-  owner: string,
+  { project, owner, ip }: Context,
   params: TradeTokenRequest,
-  customParams?: Record<string, unknown>,
 ) => {
   let token = await getTokenBySymbol(params.symbol);
 
@@ -29,13 +29,14 @@ export const tradeTokenControl = async (
     }
 
     const { tradeOrderTransaction, tradeOrder, distribution } = await createTokenTradeOrder(
+      project,
       transaction,
       owner,
       token,
       params.type as TokenTradeOrderType,
       params.count,
       params.price,
-      customParams?.ip as string | undefined,
+      ip,
     );
     if (tradeOrder) {
       const orderDocRef = build5Db().doc(`${COL.TOKEN_MARKET}/${tradeOrder.uid}`);

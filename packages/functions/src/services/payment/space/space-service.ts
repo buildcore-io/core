@@ -6,7 +6,6 @@ import {
   SUB_COL,
   Space,
   SpaceMember,
-  Transaction,
   TransactionPayloadType,
 } from '@build-5/interfaces';
 import {
@@ -19,15 +18,14 @@ import {
   IndexerPluginClient,
 } from '@iota/iota.js-next';
 import { Bech32AddressHelper } from '../../../utils/bech32-address.helper';
+import { getProject, getProjects } from '../../../utils/common.utils';
 import { serverTime } from '../../../utils/dateTime.utils';
 import { SmrWallet } from '../../wallet/SmrWalletService';
 import { WalletService } from '../../wallet/wallet';
-import { TransactionMatch, TransactionService } from '../transaction-service';
+import { BaseService, HandlerParams } from '../base';
 
-export class SpaceService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleSpaceClaim = async (order: Transaction, match: TransactionMatch) => {
+export class SpaceClaimService extends BaseService {
+  public handleRequest = async ({ order, match }: HandlerParams) => {
     const payment = await this.transactionService.createPayment(order, match);
     await this.transactionService.createCredit(
       TransactionPayloadType.SPACE_CALIMED,
@@ -54,6 +52,8 @@ export class SpaceService {
     }
 
     const spaceMember: SpaceMember = {
+      project: getProject(order),
+      projects: getProjects([space, order]),
       uid: order.member!,
       parentId: space.uid,
       parentCol: COL.SPACE,

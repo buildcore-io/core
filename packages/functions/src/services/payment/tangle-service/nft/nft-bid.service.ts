@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   BaseTangleResponse,
   COL,
@@ -6,8 +7,6 @@ import {
   Entity,
   MIN_AMOUNT_TO_TRANSFER,
   Member,
-  MilestoneTransaction,
-  MilestoneTransactionEntry,
   Network,
   Nft,
   NftAccess,
@@ -18,8 +17,9 @@ import {
   TransactionValidationType,
   WenError,
 } from '@build-5/interfaces';
+import { AVAILABLE_NETWORKS } from '../../../../controls/common';
 import { assertMemberHasValidAddress, getAddress } from '../../../../utils/address.utils';
-import { getRestrictions } from '../../../../utils/common.utils';
+import { getProjects, getRestrictions } from '../../../../utils/common.utils';
 import { isProdEnv } from '../../../../utils/config.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertIpNotBlocked } from '../../../../utils/ip.utils';
@@ -27,23 +27,20 @@ import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getSpace } from '../../../../utils/space.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { nftBidSchema } from './NftBidTangleRequestSchema';
-import { AVAILABLE_NETWORKS } from '../../../../controls/common';
-import { build5Db } from '@build-5/database';
 
-export class TangleNftBidService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleNftBid = async (
-    tran: MilestoneTransaction,
-    tranEntry: MilestoneTransactionEntry,
-    owner: string,
-    request: Record<string, unknown>,
-  ): Promise<BaseTangleResponse | undefined> => {
+export class TangleNftBidService extends BaseService {
+  public handleRequest = async ({
+    project,
+    owner,
+    request,
+    tran,
+    tranEntry,
+  }: HandlerParams): Promise<BaseTangleResponse | undefined> => {
     const params = await assertValidationAsync(nftBidSchema, request);
 
-    const order = await createNftBidOrder(params.nft, owner, '');
+    const order = await createNftBidOrder(project, params.nft, owner, '');
     order.payload.tanglePuchase = true;
     order.payload.disableWithdraw = params.disableWithdraw || false;
 
@@ -74,6 +71,7 @@ export class TangleNftBidService {
 }
 
 export const createNftBidOrder = async (
+  project: string,
   nftId: string,
   owner: string,
   ip = '',
@@ -133,6 +131,8 @@ export const createNftBidOrder = async (
   const finalPrice = Number(Math.max(auctionFloorPrice, MIN_AMOUNT_TO_TRANSFER).toPrecision(2));
 
   return {
+    project,
+    projects: getProjects([], project),
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,

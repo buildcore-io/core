@@ -1,5 +1,12 @@
 import { build5Db } from '@build-5/database';
-import { COL, Stake, StakeReward, StakeRewardStatus, StakeType } from '@build-5/interfaces';
+import {
+  COL,
+  SOON_PROJECT_ID,
+  Stake,
+  StakeReward,
+  StakeRewardStatus,
+  StakeType,
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { getStakedPerMember } from '../../src/cron/stakeReward.cron';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -123,6 +130,8 @@ describe('Stake reward cron: getStakedPerMember', () => {
 
   const createStake = async (createdOn: dayjs.Dayjs, expiresAt: dayjs.Dayjs) => {
     const stake: Stake = {
+      project: SOON_PROJECT_ID,
+      projects: { [SOON_PROJECT_ID]: true },
       uid: getRandomEthAddress(),
       member,
       space,
@@ -143,6 +152,8 @@ describe('Stake reward cron: getStakedPerMember', () => {
 
   const createReward = async (start: dayjs.Dayjs, end: dayjs.Dayjs) => {
     const stakeReward = {
+      project: SOON_PROJECT_ID,
+      projects: { [SOON_PROJECT_ID]: true },
       uid: getRandomEthAddress(),
       startDate: dateToTimestamp(start.toDate()),
       endDate: dateToTimestamp(end.toDate()),

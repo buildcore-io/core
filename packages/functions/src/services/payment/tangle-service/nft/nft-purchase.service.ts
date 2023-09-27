@@ -9,8 +9,6 @@ import {
   Entity,
   MIN_AMOUNT_TO_TRANSFER,
   Member,
-  MilestoneTransaction,
-  MilestoneTransactionEntry,
   Network,
   NetworkAddress,
   Nft,
@@ -30,7 +28,7 @@ import { isEmpty } from 'lodash';
 import { AVAILABLE_NETWORKS } from '../../../../controls/common';
 import { getAddress } from '../../../../utils/address.utils';
 import { getNftByMintingId } from '../../../../utils/collection-minting-utils/nft.utils';
-import { getRestrictions } from '../../../../utils/common.utils';
+import { getProject, getProjects, getRestrictions } from '../../../../utils/common.utils';
 import { isProdEnv } from '../../../../utils/config.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
@@ -40,21 +38,27 @@ import { getSpace } from '../../../../utils/space.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { assertHasAccess } from '../../../validators/access';
 import { WalletService } from '../../../wallet/wallet';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { nftPurchaseSchema } from './NftPurchaseTangleRequestSchema';
 
-export class TangleNftPurchaseService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleNftPurchase = async (
-    tran: MilestoneTransaction,
-    tranEntry: MilestoneTransactionEntry,
-    owner: string,
-    request: Record<string, unknown>,
-  ): Promise<BaseTangleResponse | undefined> => {
+export class TangleNftPurchaseService extends BaseService {
+  public handleRequest = async ({
+    order: tangleOrder,
+    request,
+    owner,
+    tran,
+    tranEntry,
+  }: HandlerParams): Promise<BaseTangleResponse | undefined> => {
     const params = await assertValidationAsync(nftPurchaseSchema, request);
 
-    const order = await createNftPuchaseOrder(params.collection, params.nft, owner, '', true);
+    const order = await createNftPuchaseOrder(
+      getProject(tangleOrder),
+      params.collection,
+      params.nft,
+      owner,
+      '',
+      true,
+    );
     order.payload.tanglePuchase = true;
     order.payload.disableWithdraw = params.disableWithdraw || false;
 
@@ -96,6 +100,7 @@ export class TangleNftPurchaseService {
 }
 
 export const createNftPuchaseOrder = async (
+  project: string,
   collectionId: string,
   nftId: string | undefined,
   owner: string,
@@ -131,6 +136,8 @@ export const createNftPuchaseOrder = async (
   const finalPrice = getNftFinalPrice(nft, discount);
 
   return {
+    project,
+    projects: getProjects([], project),
     type: TransactionType.ORDER,
     uid: nftPurchaseOrderId,
     member: owner,
@@ -368,18 +375,21 @@ const getNftFinalPrice = (nft: Nft, discount: number) => {
 };
 
 export const createNftWithdrawOrder = (
+  project: string,
   nft: Nft,
   member: string,
   targetAddress: NetworkAddress,
   weeks = 0,
   stakeType?: StakeType,
 ) => {
-  const order = <Transaction>{
+  const order: Transaction = {
+    project,
+    projects: getProjects([], project),
     type: TransactionType.WITHDRAW_NFT,
     uid: getRandomEthAddress(),
     member,
     space: nft.space,
-    network: nft.mintingData?.network,
+    network: nft.mintingData?.network!,
     payload: {
       amount: nft.depositData?.storageDeposit || nft.mintingData?.storageDeposit || 0,
       sourceAddress: nft.depositData?.address || nft.mintingData?.address,
@@ -387,7 +397,7 @@ export const createNftWithdrawOrder = (
       collection: nft.collection,
       nft: nft.uid,
       vestingAt: dateToTimestamp(dayjs().add(weeks, 'weeks')),
-      stakeType: stakeType || null,
+      stakeType: (stakeType || null) as StakeType,
       weeks,
       nftId: nft.mintingData?.nftId || '',
     },

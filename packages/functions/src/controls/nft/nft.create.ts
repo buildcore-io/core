@@ -12,22 +12,27 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
+import { Context } from '../../runtime/firebase/common';
+import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
-export const createNftControl = async (owner: string, params: NftCreateRequest): Promise<Nft> => {
+export const createNftControl = async (
+  { project, owner }: Context,
+  params: NftCreateRequest,
+): Promise<Nft> => {
   const collection = await getCollection(owner, params.collection as string);
-  return await processOneCreateNft(params, collection, collection.total + 1);
+  return await processOneCreateNft(project, params, collection, collection.total + 1);
 };
 
 export const createBatchNftControl = async (
-  owner: string,
+  { project, owner }: Context,
   params: NftCreateRequest[],
 ): Promise<string[]> => {
   const collection = await getCollection(owner, params[0].collection);
   const promises = params.map((param, i) =>
-    processOneCreateNft(param, collection, collection.total + i + 1),
+    processOneCreateNft(project, param, collection, collection.total + i + 1),
   );
   return (await Promise.all(promises)).map((n) => n.uid);
 };
@@ -59,6 +64,7 @@ const getCollection = async (owner: string, collectionId: string) => {
 };
 
 const processOneCreateNft = async (
+  project: string,
   params: NftCreateRequest,
   collection: Collection,
   position: number,
@@ -96,6 +102,8 @@ const processOneCreateNft = async (
   const price = Math.max(Number(params.price) || 0, MIN_IOTA_AMOUNT);
   const nft = {
     ...params,
+    project,
+    projects: getProjects([], project),
     uid: getRandomEthAddress(),
     locked: false,
     price,

@@ -9,11 +9,12 @@ import {
   NftWithdrawRequest,
   WenError,
 } from '@build-5/interfaces';
+import { Context } from '../../runtime/firebase/common';
 import { createNftWithdrawOrder } from '../../services/payment/tangle-service/nft/nft-purchase.service';
 import { assertMemberHasValidAddress, getAddress } from '../../utils/address.utils';
 import { invalidArgument } from '../../utils/error.utils';
 
-export const withdrawNftControl = async (owner: string, params: NftWithdrawRequest) =>
+export const withdrawNftControl = async ({ project, owner }: Context, params: NftWithdrawRequest) =>
   build5Db().runTransaction(async (transaction) => {
     const nftDocRef = build5Db().doc(`${COL.NFT}/${params.nft}`);
     const nft = await transaction.get<Nft>(nftDocRef);
@@ -48,6 +49,7 @@ export const withdrawNftControl = async (owner: string, params: NftWithdrawReque
     assertMemberHasValidAddress(member, nft.mintingData?.network!);
 
     const { order, nftUpdateData } = createNftWithdrawOrder(
+      project,
       nft,
       member!.uid,
       getAddress(member, nft.mintingData?.network!),

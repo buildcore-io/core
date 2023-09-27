@@ -13,7 +13,7 @@ import { WalletService } from '../src/services/wallet/wallet';
 import * as config from '../src/utils/config.utils';
 import { getJwtSecretKey } from '../src/utils/config.utils';
 import * as wallet from '../src/utils/wallet.utils';
-import { decodeAuth, getRandomNonce } from '../src/utils/wallet.utils';
+import { decodeAuth, getRandomEthAddress, getRandomNonce } from '../src/utils/wallet.utils';
 import { createMember, expectThrow, mockWalletReturnValue } from './controls/common';
 import { testEnv } from './set-up';
 
@@ -33,7 +33,6 @@ describe('Auth control test', () => {
     mockWalletReturnValue(walletSpy, member, {});
     const token = await testEnv.wrap(generateCustomToken)({});
     walletSpy.mockRestore();
-
     const tokenGeneratedWithToken = await testEnv.wrap(generateCustomToken)({
       address: member,
       customToken: token,
@@ -91,7 +90,7 @@ describe('Pub key test', () => {
       body: {},
     };
 
-    const result = await decodeAuth(request, WEN_FUNC.approveProposal);
+    const result = await decodeAuth(request, WEN_FUNC.approveProposal, false);
 
     expect(result.address).toBe(address.bech32);
 
@@ -124,7 +123,7 @@ describe('Pub key test', () => {
         body: {},
       };
 
-      const result = await decodeAuth(request, WEN_FUNC.approveProposal);
+      const result = await decodeAuth(request, WEN_FUNC.approveProposal, false);
 
       expect(result.address).toBe(address.bech32);
 
@@ -160,7 +159,7 @@ describe('Pub key test', () => {
       body: {},
     };
     try {
-      await decodeAuth(request, WEN_FUNC.approveProposal);
+      await decodeAuth(request, WEN_FUNC.approveProposal, false);
       fail();
     } catch (error: any) {
       expect(error.details.key).toBe(WenError.failed_to_decode_token.key);
@@ -189,7 +188,7 @@ describe('Pub key test', () => {
       body: {},
     };
 
-    const result = await decodeAuth(request, WEN_FUNC.approveProposal);
+    const result = await decodeAuth(request, WEN_FUNC.approveProposal, false);
 
     expect(result.address).toBe(address.bech32);
 
@@ -208,13 +207,9 @@ describe('Pub key test', () => {
     const recoverPersonalSignatureMock = recoverPersonalSignature as jest.Mock;
     recoverPersonalSignatureMock.mockReturnValue(address);
 
-    const request = {
-      address,
-      signature: 'signature',
-      body: {},
-    };
+    const request = { address, signature: 'signature', body: {} };
 
-    const result = await decodeAuth(request, WEN_FUNC.approveProposal);
+    const result = await decodeAuth(request, WEN_FUNC.approveProposal, false);
     expect(result.address).toBe(address);
 
     const user = await userDocRef.get<Member>();
@@ -236,10 +231,75 @@ describe('Pub key test', () => {
       body: {},
     };
     try {
-      await decodeAuth(request, WEN_FUNC.approveProposal);
+      await decodeAuth(request, WEN_FUNC.approveProposal, false);
       fail();
     } catch (error: any) {
       expect(error.details.key).toBe(WenError.invalid_signature.key);
+    }
+  });
+});
+
+describe('Project api key', () => {
+  it('Should decode project api key', async () => {
+    const wallet = (await WalletService.newWallet(Network.RMS)) as SmrWallet;
+    const address = await wallet.getNewIotaAddressDetails();
+
+    const nonce = getRandomNonce();
+    const userDocRef = build5Db().doc(`${COL.MEMBER}/${address.bech32}`);
+    await userDocRef.create({ uid: address.bech32, nonce });
+
+    const signature = Ed25519Next.sign(
+      address.keyPair.privateKey,
+      Converter.utf8ToBytes(`0x${toHex(nonce)}`),
+    );
+
+    const project = getRandomEthAddress();
+    const projectApiKey = jwt.sign({ project }, getJwtSecretKey());
+
+    const request = {
+      address: 'address',
+      signature: ConverterNext.bytesToHex(signature),
+      projectApiKey,
+      publicKey: {
+        hex: ConverterNext.bytesToHex(address.keyPair.publicKey),
+        network: Network.RMS,
+      },
+      body: {},
+    };
+
+    const result = await decodeAuth(request, WEN_FUNC.approveProposal, true);
+
+    expect(result.project).toBe(project);
+  });
+
+  it('Should throw project api key is missing', async () => {
+    const wallet = (await WalletService.newWallet(Network.RMS)) as SmrWallet;
+    const address = await wallet.getNewIotaAddressDetails();
+
+    const nonce = getRandomNonce();
+    const userDocRef = build5Db().doc(`${COL.MEMBER}/${address.bech32}`);
+    await userDocRef.create({ uid: address.bech32, nonce });
+
+    const signature = Ed25519Next.sign(
+      address.keyPair.privateKey,
+      Converter.utf8ToBytes(`0x${toHex(nonce)}`),
+    );
+
+    const request = {
+      address: 'address',
+      signature: ConverterNext.bytesToHex(signature),
+      publicKey: {
+        hex: ConverterNext.bytesToHex(address.keyPair.publicKey),
+        network: Network.RMS,
+      },
+      body: {},
+    };
+
+    try {
+      await decodeAuth(request, WEN_FUNC.approveProposal, true);
+      fail();
+    } catch (error: any) {
+      expect(error.details.key).toBe(WenError.invalid_project_api_key.key);
     }
   });
 });

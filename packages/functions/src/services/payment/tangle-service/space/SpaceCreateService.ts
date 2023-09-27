@@ -2,6 +2,7 @@ import { build5Db, build5Storage } from '@build-5/database';
 import { COL, MediaStatus, Network, SUB_COL } from '@build-5/interfaces';
 import { get, set } from 'lodash';
 import { downloadMediaAndPackCar } from '../../../../utils/car.utils';
+import { getProjects } from '../../../../utils/common.utils';
 import { getBucket, isProdEnv } from '../../../../utils/config.utils';
 import { migrateUriToSotrage, uriToUrl } from '../../../../utils/media.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
@@ -9,16 +10,14 @@ import { spaceToIpfsMetadata } from '../../../../utils/space.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { isStorageUrl } from '../../../joi/common';
 import { WalletService } from '../../../wallet/wallet';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { createSpaceSchemaObject } from './SpaceCreateTangleRequestSchema';
 
-export class SpaceCreateService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleSpaceCreateRequest = async (owner: string, request: Record<string, unknown>) => {
+export class SpaceCreateService extends BaseService {
+  public handleRequest = async ({ project, owner, request }: HandlerParams) => {
     await assertValidationAsync(createSpaceSchemaObject, request);
 
-    const { space, guardian, member } = await getCreateSpaceData(owner, request);
+    const { space, guardian, member } = await getCreateSpaceData(project, owner, request);
 
     const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
     this.transactionService.push({ ref: spaceDocRef, data: space, action: 'set' });
@@ -48,12 +47,18 @@ export class SpaceCreateService {
   };
 }
 
-export const getCreateSpaceData = async (owner: string, params: Record<string, unknown>) => {
+export const getCreateSpaceData = async (
+  project: string,
+  owner: string,
+  params: Record<string, unknown>,
+) => {
   const wallet = await WalletService.newWallet(isProdEnv() ? Network.SMR : Network.RMS);
   const vaultAddress = await wallet.getNewIotaAddressDetails();
 
   const space = {
     uid: getRandomEthAddress(),
+    project,
+    projects: getProjects([], project),
     ...params,
     createdBy: owner,
     open: params.open === false ? false : true,
@@ -89,6 +94,8 @@ export const getCreateSpaceData = async (owner: string, params: Record<string, u
   }
 
   const guardian = {
+    project,
+    projects: getProjects([], project),
     uid: owner,
     parentId: space.uid,
     parentCol: COL.SPACE,

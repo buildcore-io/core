@@ -101,6 +101,10 @@ export enum WEN_FUNC {
   api = 'api',
 
   uploadFile = 'uploadfile',
+
+  createProject = 'createProject',
+  deactivateProject = 'deactivateProject',
+  createProjetApiKey = 'createProjetApiKey',
 }
 
 export interface cMemberNotExists {
@@ -109,6 +113,7 @@ export interface cMemberNotExists {
 
 export interface DecodedToken {
   address: NetworkAddress;
+  project: string;
   body: any;
 }
 

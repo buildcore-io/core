@@ -11,6 +11,7 @@ import {
 } from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
 import { getAddress } from '../utils/address.utils';
+import { getProject, getProjects } from '../utils/common.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 
 export const awardUpdateTrigger = functions.firestore.onDocumentUpdated(
@@ -31,7 +32,9 @@ export const awardUpdateTrigger = functions.firestore.onDocumentUpdated(
       const member = await memberDocRef.get<Member>();
       const targetAddress = getAddress(member, curr.network);
 
-      const burnAlias = <Transaction>{
+      const burnAlias: Transaction = {
+        project: getProject(curr),
+        projects: getProjects([curr]),
         type: TransactionType.AWARD,
         uid: getRandomEthAddress(),
         space: curr.space,
@@ -52,7 +55,9 @@ export const awardUpdateTrigger = functions.firestore.onDocumentUpdated(
       if (curr.badge.type === AwardBadgeType.BASE && remainingBadges) {
         const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${curr.badge.tokenUid}`);
         const token = (await tokenDocRef.get<Token>())!;
-        const baseTokenCredit = <Transaction>{
+        const baseTokenCredit: Transaction = {
+          project: getProject(curr),
+          projects: getProjects([curr]),
           type: TransactionType.CREDIT,
           uid: getRandomEthAddress(),
           space: curr.space,
@@ -90,6 +95,8 @@ export const awardUpdateTrigger = functions.firestore.onDocumentUpdated(
       const token = (await tokenDocRef.get<Token>())!;
 
       const nativeTokensCredit: Transaction = {
+        project: getProject(curr),
+        projects: getProjects([curr]),
         type: TransactionType.CREDIT,
         uid: getRandomEthAddress(),
         space: curr.space,

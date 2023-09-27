@@ -12,14 +12,13 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get } from 'lodash';
+import { getProject, getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-import { TransactionMatch, TransactionService } from './transaction-service';
+import { BaseService, HandlerParams } from './base';
 
-export class StakeService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleStakeOrder = async (order: Transaction, match: TransactionMatch) => {
+export class StakeService extends BaseService {
+  public handleRequest = async ({ project, order, match }: HandlerParams) => {
     const payment = await this.transactionService.createPayment(order, match);
 
     const matchAmount = match.to.amount;
@@ -46,6 +45,8 @@ export class StakeService {
     const token = <Token>await tokenDocRef.get();
 
     const billPayment: Transaction = {
+      project: getProject(order),
+      projects: getProjects([order]),
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       member: order.member,
@@ -72,6 +73,8 @@ export class StakeService {
     };
 
     const stake: Stake = {
+      project,
+      projects: getProjects([order]),
       uid: getRandomEthAddress(),
       member: order.member!,
       token: order.payload.token!,

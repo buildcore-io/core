@@ -5,6 +5,7 @@ import {
   MIN_IOTA_AMOUNT,
   Network,
   NetworkAddress,
+  SOON_PROJECT_ID,
   Space,
   SUB_COL,
   Token,
@@ -93,6 +94,8 @@ const dummyToken = (
   publicPercentageSale: number,
   guardian: string,
 ) => ({
+  project: SOON_PROJECT_ID,
+  projects: { [SOON_PROJECT_ID]: true },
   symbol: getRandomSymbol(),
   totalSupply,
   updatedOn: serverTime(),

@@ -29,6 +29,7 @@ import * as functions from 'firebase-functions/v2';
 import { get, isEmpty, set } from 'lodash';
 import { SmrMilestoneTransactionAdapter } from '../../triggers/milestone-transactions-triggers/SmrMilestoneTransactionAdapter';
 import { getOutputMetadata } from '../../utils/basic-output.utils';
+import { getProject, getProjects } from '../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 export interface TransactionMatch {
@@ -78,6 +79,8 @@ export class TransactionService {
       throw new Error('Order was not provided as transaction.');
     }
     const data: Transaction = {
+      project: getProject(order),
+      projects: getProjects([order]),
       type: TransactionType.PAYMENT,
       uid: getRandomEthAddress(),
       member: order.member || tran.from.address,
@@ -137,10 +140,12 @@ export class TransactionService {
     }
 
     if (finalAmt > 0) {
-      const data = <Transaction>{
+      const data: Transaction = {
+        project: getProject(payment),
+        projects: getProjects([payment]),
         type: TransactionType.BILL_PAYMENT,
         uid: getRandomEthAddress(),
-        space: order.payload.beneficiary !== 'member' ? order.space : null,
+        space: (order.payload.beneficiary !== 'member' ? order.space : null) as string,
         member: order.member || payment.member || '',
         network: order.network || DEFAULT_NETWORK,
         payload: {
@@ -157,7 +162,7 @@ export class TransactionService {
           royalty: false,
           void: false,
           collection: order.payload.collection || null,
-          quantity: order.payload.quantity || null,
+          quantity: (order.payload.quantity || null) as number,
           restrictions: get(order, 'payload.restrictions', {}),
         },
       };
@@ -171,7 +176,9 @@ export class TransactionService {
     }
 
     if (royaltyAmt > 0) {
-      const data = <Transaction>{
+      const data: Transaction = {
+        project: getProject(payment),
+        projects: getProjects([payment]),
         type: TransactionType.BILL_PAYMENT,
         uid: getRandomEthAddress(),
         member: order.member,
@@ -189,7 +196,7 @@ export class TransactionService {
           void: false,
           nft: order.payload.nft || null,
           collection: order.payload.collection || null,
-          quantity: order.payload.quantity || null,
+          quantity: (order.payload.quantity || null) as number,
           restrictions: get(order, 'payload.restrictions', {}),
         },
       };
@@ -218,6 +225,8 @@ export class TransactionService {
   ): Promise<Transaction | undefined> {
     if (payment.payload.amount! > 0) {
       const data: Transaction = {
+        project: getProject(payment),
+        projects: getProjects([payment]),
         type: TransactionType.CREDIT,
         uid: getRandomEthAddress(),
         space: payment.space,
@@ -276,6 +285,8 @@ export class TransactionService {
   ) {
     if (payment.payload.amount! > 0) {
       const data: Transaction = {
+        project: getProject(payment),
+        projects: getProjects([payment]),
         type: TransactionType.CREDIT_TANGLE_REQUEST,
         uid: getRandomEthAddress(),
         space: payment.space,
@@ -320,7 +331,9 @@ export class TransactionService {
     if (!isEmpty(error) && !get(error, 'code')) {
       functions.logger.error(payment.uid, tran.to.nftOutput?.nftId, error);
     }
-    const transaction = <Transaction>{
+    const transaction: Transaction = {
+      project: getProject(payment),
+      projects: getProjects([payment]),
       type: TransactionType.CREDIT_NFT,
       uid: getRandomEthAddress(),
       space: payment.space || '',
@@ -482,6 +495,8 @@ export class TransactionService {
   ) => {
     const network = order.network || DEFAULT_NETWORK;
     const data: Transaction = {
+      project: getProject(order),
+      projects: getProjects([order]),
       type: TransactionType.UNLOCK,
       uid: getRandomEthAddress(),
       space: order.space || '',

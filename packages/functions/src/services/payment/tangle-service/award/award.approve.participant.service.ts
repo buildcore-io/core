@@ -19,23 +19,23 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { get, head, isEmpty } from 'lodash';
+import { get, head, isEmpty, set } from 'lodash';
 import { getAddress } from '../../../../utils/address.utils';
+import { getProjects } from '../../../../utils/common.utils';
 import { serverTime } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { approveAwardParticipantSchemaObject } from './AwardAppParticipantTangleRequestSchema';
 
-export class AwardApproveParticipantService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleApproveParticipantRequest = async (
-    owner: string,
-    request: Record<string, unknown>,
-  ): Promise<AwardApproveParticipantTangleResponse> => {
+export class AwardApproveParticipantService extends BaseService {
+  public handleRequest = async ({
+    project,
+    owner,
+    request,
+  }: HandlerParams): Promise<AwardApproveParticipantTangleResponse> => {
     const params = await assertValidationAsync(approveAwardParticipantSchemaObject, request);
 
     const badges: { [key: string]: string } = {};
@@ -44,7 +44,7 @@ export class AwardApproveParticipantService {
     for (const member of params.members.map((m) => m.toLowerCase())) {
       try {
         const badge = await build5Db().runTransaction(
-          approveAwardParticipant(owner, params.award, member),
+          approveAwardParticipant(project, owner, params.award, member),
         );
         badges[badge.uid] = member;
       } catch (error) {
@@ -60,7 +60,7 @@ export class AwardApproveParticipantService {
 }
 
 export const approveAwardParticipant =
-  (owner: string, awardId: string, uidOrAddress: NetworkAddress) =>
+  (project: string, owner: string, awardId: string, uidOrAddress: NetworkAddress) =>
   async (transaction: ITransaction) => {
     const awardDocRef = build5Db().doc(`${COL.AWARD}/${awardId}`);
     const award = await transaction.get<Award>(awardDocRef);
@@ -102,9 +102,15 @@ export const approveAwardParticipant =
       createdOn: participant?.createdOn || serverTime(),
       tokenReward: build5Db().inc(award.badge.tokenReward),
     };
+    if (!participant) {
+      set(participantUpdateData, 'project', project);
+      set(participantUpdateData, 'projects', { [project]: true });
+    }
     transaction.set(participantDocRef, participantUpdateData, true);
 
     const badgeTransaction: Transaction = {
+      project,
+      projects: getProjects([], project),
       type: TransactionType.AWARD,
       uid: getRandomEthAddress(),
       member: memberId,
@@ -159,6 +165,8 @@ export const approveAwardParticipant =
 
     if (award.badge.tokenReward) {
       const airdrop: TokenDrop = {
+        project,
+        projects: getProjects([], project),
         createdBy: owner,
         uid: getRandomEthAddress(),
         member: memberId,

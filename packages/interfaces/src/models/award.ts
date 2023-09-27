@@ -42,7 +42,7 @@ export interface AwardOwner extends BaseSubCollection {
   /**
    * Added on.
    */
-  createdOn: Timestamp;
+  createdOn?: Timestamp;
 }
 
 /**

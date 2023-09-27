@@ -5,6 +5,7 @@ import {
   Member,
   Network,
   NetworkAddress,
+  SOON_PROJECT_ID,
   WEN_FUNC,
   WenError,
   WenRequest,
@@ -26,7 +27,7 @@ import { Wallet } from 'ethers';
 import jwt from 'jsonwebtoken';
 import { get } from 'lodash';
 import { getCustomTokenLifetime, getJwtSecretKey } from './config.utils';
-import { unAuthenticated } from './error.utils';
+import { invalidArgument, unAuthenticated } from './error.utils';
 
 export const minAddressLength = 42;
 export const maxAddressLength = 255;
@@ -37,28 +38,44 @@ const toHex = (stringToConvert: string) =>
     .map((c) => c.charCodeAt(0).toString(16).padStart(2, '0'))
     .join('');
 
-export async function decodeAuth(req: WenRequest, func: WEN_FUNC): Promise<DecodedToken> {
+export const decodeAuth = async (
+  req: WenRequest,
+  func: WEN_FUNC,
+  projectIsRequired: boolean,
+): Promise<DecodedToken> => {
   if (!req) {
     throw unAuthenticated(WenError.invalid_params);
   }
 
+  if (projectIsRequired && !req.projectApiKey) {
+    throw invalidArgument(WenError.invalid_project_api_key);
+  }
+
+  const decoded = req.projectApiKey
+    ? jwt.verify(req.projectApiKey, getJwtSecretKey())
+    : { project: SOON_PROJECT_ID };
+  const project = get(decoded, 'project', '');
+  if (!project) {
+    throw invalidArgument(WenError.invalid_project_api_key);
+  }
+
   if (req.signature && req.publicKey) {
     const address = await validateWithPublicKey(req);
-    return { address, body: req.body };
+    return { address, project, body: req.body };
   }
 
   if (req.signature) {
     await validateWithSignature(req);
-    return { address: req.address, body: req.body };
+    return { address: req.address, project, body: req.body };
   }
 
   if (req.customToken) {
     await validateWithIdToken(req, func);
-    return { address: req.address, body: req.body };
+    return { address: req.address, project, body: req.body };
   }
 
   throw unAuthenticated(WenError.signature_or_custom_token_must_be_provided);
-}
+};
 
 const validateWithSignature = async (req: WenRequest) => {
   const member = await getMember(req.address);

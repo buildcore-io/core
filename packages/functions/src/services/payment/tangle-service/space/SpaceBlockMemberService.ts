@@ -1,22 +1,27 @@
 import { build5Db } from '@build-5/database';
 import { BaseTangleResponse, COL, Space, SUB_COL, WenError } from '@build-5/interfaces';
+import { getProject, getProjects } from '../../../../utils/common.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { editSpaceMemberSchemaObject } from './SpaceEditMemberTangleRequestSchema';
 
-export class SpaceBlockMemberService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleBlockMemberRequest = async (
-    owner: string,
-    request: Record<string, unknown>,
-  ): Promise<BaseTangleResponse> => {
+export class SpaceBlockMemberService extends BaseService {
+  public handleRequest = async ({
+    order,
+    owner,
+    request,
+  }: HandlerParams): Promise<BaseTangleResponse> => {
     const params = await assertValidationAsync(editSpaceMemberSchemaObject, request);
 
     const member = params.member;
-    const { space, blockedMember } = await getBlockMemberUpdateData(owner, params.uid, member);
+    const { space, blockedMember } = await getBlockMemberUpdateData(
+      getProject(order),
+      owner,
+      params.uid,
+      member,
+    );
 
     const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
     const blockedMemberDocRef = spaceDocRef.collection(SUB_COL.BLOCKED_MEMBERS).doc(member);
@@ -49,7 +54,12 @@ export class SpaceBlockMemberService {
   };
 }
 
-export const getBlockMemberUpdateData = async (owner: string, spaceId: string, member: string) => {
+export const getBlockMemberUpdateData = async (
+  project: string,
+  owner: string,
+  spaceId: string,
+  member: string,
+) => {
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${spaceId}`);
   await assertIsGuardian(spaceId, owner);
 
@@ -75,7 +85,13 @@ export const getBlockMemberUpdateData = async (owner: string, spaceId: string, m
     throw invalidArgument(WenError.can_not_block_guardian);
   }
 
-  const blockedMember = { uid: member, parentId: spaceId, parentCol: COL.SPACE };
+  const blockedMember = {
+    project,
+    projects: getProjects([space]),
+    uid: member,
+    parentId: spaceId,
+    parentCol: COL.SPACE,
+  };
   const spaceUpdateData = {
     totalMembers: build5Db().inc(spaceMember ? -1 : 0),
     totalPendingMembers: build5Db().inc(knockingMember ? -1 : 0),

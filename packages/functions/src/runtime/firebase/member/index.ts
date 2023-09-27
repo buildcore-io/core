@@ -13,10 +13,10 @@ export const createMember = functions.https.onRequest(
   (req, res) =>
     cors({ origin: true })(req, res, async () => {
       try {
-        const address = req.body.data;
+        const address = req.body.data as string;
         await assertValidationAsync(createMemberSchema, { address });
-        res.send({ data: await createMemberControl(address) });
-      } catch {
+        res.send({ data: await createMemberControl({ owner: address, ip: '', project: '' }) });
+      } catch (error) {
         res.status(401);
         res.send({ data: WenError.address_must_be_provided });
       }

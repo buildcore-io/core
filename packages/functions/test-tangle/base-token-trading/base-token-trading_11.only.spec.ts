@@ -12,7 +12,7 @@ import {
 } from '@build-5/interfaces';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { soonTokenId, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
@@ -33,7 +33,7 @@ describe('Base token trading', () => {
           .update({ tokenTradingFeePercentage: 0 });
         await build5Db()
           .collection(COL.TOKEN)
-          .doc(helper.soonTokenId)
+          .doc(soonTokenId)
           .collection(SUB_COL.DISTRIBUTION)
           .doc(helper.seller?.uid!)
           .set(

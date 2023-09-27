@@ -32,6 +32,7 @@ export class Timestamp {
 export interface WenRequest {
   address: NetworkAddress;
   signature?: string;
+  projectApiKey?: string;
   customToken?: string;
   publicKey?: {
     hex: string;
@@ -63,6 +64,7 @@ export enum COL {
   STAKE_REWARD = 'stake_reward',
   NFT_STAKE = 'nft_stake',
   AIRDROP = 'airdrop',
+  PROJECT = 'project',
 
   MNEMONIC = '_mnemonic',
   SYSTEM = '_system',
@@ -74,6 +76,7 @@ export const enum SUB_COL {
   PARTICIPANTS = 'participants',
   MEMBERS = 'members',
   GUARDIANS = 'guardians',
+  ADMINS = 'ADMINS',
   BLOCKED_MEMBERS = 'blockedMembers',
   KNOCKING_MEMBERS = 'knockingMembers',
   TRANSACTIONS = 'transactions',
@@ -81,6 +84,7 @@ export const enum SUB_COL {
   STATS = 'stats',
   VOTES = 'votes',
   RANKS = 'ranks',
+  _API_KEY = '_api_key',
 }
 
 export const enum AWARD_COL {
@@ -99,6 +103,8 @@ export interface Base {
 }
 
 export interface BaseSubCollection {
+  project?: string;
+  projects?: { [key: string]: boolean };
   parentId: string;
   parentCol: string;
 }
@@ -109,6 +115,8 @@ export interface BaseSubCollection {
  * Every object will have these basic fields.
  */
 export interface BaseRecord extends Base {
+  project?: string;
+  projects?: { [key: string]: boolean };
   /**
    * Date/time it was created on.
    */
@@ -196,7 +204,7 @@ export interface NftMintingData {
   readonly nftsStorageDeposit?: number;
 }
 
-export interface Vote extends BaseSubCollection, BaseRecord {
+export interface Vote extends BaseSubCollection {
   readonly direction: -1 | 1;
 }
 
@@ -206,7 +214,7 @@ export interface VoteStats {
   readonly voteDiff: number;
 }
 
-export interface Rank extends BaseSubCollection, BaseRecord {
+export interface Rank extends BaseSubCollection {
   readonly rank: number;
 }
 

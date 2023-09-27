@@ -13,15 +13,20 @@ import {
   SUB_COL,
   WenError,
 } from '@build-5/interfaces';
-import { hasStakedSoonTokens } from '../../services/stake.service';
+import { Context } from '../../runtime/firebase/common';
+import { hasStakedTokens } from '../../services/stake.service';
 import { assertSpaceHasValidAddress } from '../../utils/address.utils';
+import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { populateTokenUidOnDiscounts } from './common';
 
-export const createCollectionControl = async (owner: string, params: CreateCollectionRequest) => {
-  const hasStakedSoons = await hasStakedSoonTokens(owner);
+export const createCollectionControl = async (
+  { project, owner }: Context,
+  params: CreateCollectionRequest,
+) => {
+  const hasStakedSoons = await hasStakedTokens(project, owner);
   if (!hasStakedSoons) {
     throw invalidArgument(WenError.no_staked_soon);
   }
@@ -53,6 +58,8 @@ export const createCollectionControl = async (owner: string, params: CreateColle
   const placeholderNftId = params.type !== CollectionType.CLASSIC ? getRandomEthAddress() : null;
   const collection = {
     ...params,
+    project,
+    projects: getProjects([], project),
     discounts: await populateTokenUidOnDiscounts(discounts),
     uid: getRandomEthAddress(),
     total: 0,
@@ -71,6 +78,8 @@ export const createCollectionControl = async (owner: string, params: CreateColle
 
   if (placeholderNftId) {
     const placeholderNft = {
+      project,
+      projects: getProjects([collection], project),
       uid: placeholderNftId,
       name: params.name,
       description: params.description,

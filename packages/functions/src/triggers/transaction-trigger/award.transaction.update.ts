@@ -2,6 +2,7 @@ import { build5Db } from '@build-5/database';
 import { COL, Transaction, TransactionPayloadType, TransactionType } from '@build-5/interfaces';
 import { ITransactionPayload, TransactionHelper } from '@iota/iota.js-next';
 import { indexToString } from '../../utils/block.utils';
+import { getProject, getProjects } from '../../utils/common.utils';
 import { getTransactionPayloadHex } from '../../utils/smr.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -35,7 +36,9 @@ const onAliasMinted = async (transaction: Transaction) => {
     aliasId: TransactionHelper.resolveIdFromOutputId(aliasOutputId),
   });
 
-  const order = <Transaction>{
+  const order: Transaction = {
+    project: getProject(transaction),
+    projects: getProjects([transaction]),
     type: TransactionType.AWARD,
     uid: getRandomEthAddress(),
     member: transaction.member,

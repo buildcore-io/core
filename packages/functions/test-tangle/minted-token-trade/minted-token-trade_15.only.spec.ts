@@ -13,6 +13,7 @@ import {
 } from '@build-5/interfaces';
 import { head } from 'lodash';
 import { wait } from '../../test/controls/common';
+import { soonTokenId } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { Helper } from './Helper';
 
@@ -36,7 +37,7 @@ describe('Token minting', () => {
           .update({ tokenTradingFeePercentage: 0 });
         await build5Db()
           .collection(COL.TOKEN)
-          .doc(helper.soonTokenId)
+          .doc(soonTokenId)
           .collection(SUB_COL.DISTRIBUTION)
           .doc(helper.seller!)
           .set(

@@ -6,10 +6,11 @@ import {
   Transaction,
 } from '@build-5/interfaces';
 import { get } from 'lodash';
+import { Context } from '../../runtime/firebase/common';
 import { approveAwardParticipant } from '../../services/payment/tangle-service/award/award.approve.participant.service';
 
 export const approveAwardParticipantControl = async (
-  owner: string,
+  { project, owner }: Context,
   params: AwardApproveParticipantRequest,
 ): Promise<AwardApproveParticipantResponse> => {
   const members = params.members.map((m) => m.toLowerCase());
@@ -20,7 +21,7 @@ export const approveAwardParticipantControl = async (
   for (const member of members) {
     try {
       const badge = await build5Db().runTransaction(
-        approveAwardParticipant(owner, awardId, member),
+        approveAwardParticipant(project, owner, awardId, member),
       );
       badges[badge.uid] = badge;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

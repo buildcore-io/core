@@ -9,7 +9,6 @@ import {
   CollectionType,
   MediaStatus,
   MilestoneTransactionEntry,
-  Network,
   Nft,
   NftAccess,
   NftAvailable,
@@ -23,6 +22,7 @@ import { INftOutput } from '@iota/iota.js-next';
 import * as functions from 'firebase-functions/v2';
 import { head, isEmpty, set } from 'lodash';
 import { getNftByMintingId } from '../../../utils/collection-minting-utils/nft.utils';
+import { getProject, getProjects } from '../../../utils/common.utils';
 import { getBucket } from '../../../utils/config.utils';
 import { serverTime } from '../../../utils/dateTime.utils';
 import { migrateUriToSotrage, uriToUrl } from '../../../utils/media.utils';
@@ -38,17 +38,13 @@ import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { NftWallet } from '../../wallet/NftWallet';
 import { SmrWallet } from '../../wallet/SmrWalletService';
 import { WalletService } from '../../wallet/wallet';
-import { TransactionMatch, TransactionService } from '../transaction-service';
-export class NftDepositService {
-  constructor(readonly transactionService: TransactionService) {}
+import { BaseService, HandlerParams } from '../base';
+import { TransactionMatch } from '../transaction-service';
 
-  public handleNftDepositRequest = async (
-    order: Transaction,
-    milestoneTransaction: MilestoneTransactionEntry,
-    match: TransactionMatch,
-  ) => {
+export class NftDepositService extends BaseService {
+  public handleRequest = async ({ order, match, tranEntry }: HandlerParams) => {
     try {
-      const nft = await this.depositNft(order, milestoneTransaction, match);
+      const nft = await this.depositNft(order, tranEntry, match);
       await this.transactionService.createPayment(order, match);
       this.transactionService.markAsReconciled(order, match.msgId);
 
@@ -143,7 +139,7 @@ export class NftDepositService {
       metadata.nft.collectionId as string,
     );
     const migratedCollection = getMigratedCollection(
-      order.network!,
+      order,
       existingCollection,
       space,
       metadata.nft,
@@ -152,6 +148,8 @@ export class NftDepositService {
     );
 
     const nft: Nft = {
+      project: getProject(order),
+      projects: getProjects([order]),
       uid: nftOutput.nftId,
       ipfsMedia: '',
       name: metadata.nft.name,
@@ -329,7 +327,9 @@ const getSpace = async (
     return { space, isNewSpace: false };
   }
 
-  const space = <Space>{
+  const space = {
+    project: getProject(collection),
+    projects: getProjects([collection]),
     uid: getRandomEthAddress(),
     name: collectionName,
     about:
@@ -338,12 +338,12 @@ const getSpace = async (
       '". Don’t forget to claim this space if you are the original author.',
     collectionId,
     claimed: false,
-  };
+  } as Space;
   return { space, isNewSpace: true };
 };
 
 const getMigratedCollection = (
-  network: Network,
+  order: Transaction,
   collection: Collection | undefined,
   space: Space,
   nftMetadata: Record<string, unknown>,
@@ -357,13 +357,15 @@ const getMigratedCollection = (
   const royaltyFee = head(Object.values(collectionMetadata.royalties || {}));
 
   const mintedCollection: Collection = {
+    project: getProject(order),
+    projects: getProjects([order]),
     space: space.uid,
     uid: nftMetadata.collectionId as string,
     name: collectionMetadata.name as string,
     description: collectionMetadata.description as string,
     status: CollectionStatus.MINTED,
     mintingData: {
-      network: network,
+      network: order.network,
       nftId: nftMetadata.collectionId as string,
       aliasId,
     },

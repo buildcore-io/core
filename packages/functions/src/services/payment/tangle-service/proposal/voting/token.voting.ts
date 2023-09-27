@@ -12,6 +12,7 @@ import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { packBasicOutput } from '../../../../../utils/basic-output.utils';
+import { getProjects } from '../../../../../utils/common.utils';
 import { isProdEnv } from '../../../../../utils/config.utils';
 import { dateToTimestamp } from '../../../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../../../utils/wallet.utils';
@@ -19,6 +20,7 @@ import { SmrWallet } from '../../../../wallet/SmrWalletService';
 import { WalletService } from '../../../../wallet/wallet';
 
 export const createVoteTransactionOrder = async (
+  project: string,
   owner: string,
   proposal: Proposal,
   voteValues: number[],
@@ -41,6 +43,8 @@ export const createVoteTransactionOrder = async (
   );
 
   return {
+    project,
+    projects: getProjects([], project),
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,

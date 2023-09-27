@@ -8,12 +8,17 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
+import { Context } from '../../runtime/firebase/common';
+import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
-export const stakeRewardControl = async (owner: string, params: TokenStakeRewardsRequest) => {
+export const stakeRewardControl = async (
+  { project, owner }: Context,
+  params: TokenStakeRewardsRequest,
+) => {
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
   const token = await tokenDocRef.get<Token>();
   if (!token) {
@@ -22,6 +27,8 @@ export const stakeRewardControl = async (owner: string, params: TokenStakeReward
   await assertIsGuardian(token.space, owner);
 
   const stakeRewards = (params.items || []).map<StakeReward>((item) => ({
+    project,
+    projects: getProjects([], project),
     uid: getRandomEthAddress(),
     startDate: dateToTimestamp(dayjs(item.startDate)),
     endDate: dateToTimestamp(dayjs(item.endDate)),

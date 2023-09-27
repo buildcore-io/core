@@ -3,6 +3,7 @@ import {
   COL,
   MAX_WALLET_RETRY,
   Network,
+  SOON_PROJECT_ID,
   Transaction,
   TransactionPayloadType,
   TransactionType,
@@ -13,7 +14,7 @@ import { Converter } from '@iota/util.js-next';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { SmrWallet } from '../src/services/wallet/SmrWalletService';
-import { generateRandomAmount } from '../src/utils/common.utils';
+import { generateRandomAmount, getProjects } from '../src/utils/common.utils';
 import { dateToTimestamp, serverTime } from '../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../src/utils/wallet.utils';
 import { wait } from '../test/controls/common';
@@ -66,6 +67,8 @@ export const getTangleOrder = async () => {
   const walletService = await getWallet(Network.RMS);
   const targetAddress = await walletService.getNewIotaAddressDetails();
   const order = {
+    project: SOON_PROJECT_ID,
+    projects: getProjects([], SOON_PROJECT_ID),
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     network: Network.RMS,

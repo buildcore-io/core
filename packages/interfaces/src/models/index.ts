@@ -8,6 +8,7 @@ export * from './mnemonic';
 export * from './nft';
 export * from './nftStake';
 export * from './notification';
+export * from './project';
 export * from './proposal';
 export * from './space';
 export * from './stake';

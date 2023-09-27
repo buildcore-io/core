@@ -1,8 +1,6 @@
 import { build5Db } from '@build-5/database';
 import {
   COL,
-  MilestoneTransaction,
-  MilestoneTransactionEntry,
   StakeType,
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
@@ -16,6 +14,7 @@ import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
 import { packBasicOutput } from '../../../../utils/basic-output.utils';
+import { getProjects } from '../../../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
@@ -23,21 +22,15 @@ import { getTokenBySymbol } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { SmrWallet } from '../../../wallet/SmrWalletService';
 import { WalletService } from '../../../wallet/wallet';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { depositStakeSchemaObject } from './TokenStakeTangleRequestSchema';
 
-export class TangleStakeService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleStaking = async (
-    tran: MilestoneTransaction,
-    tranEntry: MilestoneTransactionEntry,
-    owner: string,
-    request: Record<string, unknown>,
-  ) => {
+export class TangleStakeService extends BaseService {
+  public handleRequest = async ({ owner, request, tran, tranEntry, project }: HandlerParams) => {
     const params = await assertValidationAsync(depositStakeSchemaObject, request);
 
     const order = await createStakeOrder(
+      project,
       owner,
       params.symbol,
       params.weeks,
@@ -64,6 +57,7 @@ export class TangleStakeService {
 }
 
 export const createStakeOrder = async (
+  project: string,
   owner: string,
   symbol: string,
   weeks: number,
@@ -99,6 +93,8 @@ export const createStakeOrder = async (
     customMetadata,
   );
   return {
+    project,
+    projects: getProjects([], project),
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,

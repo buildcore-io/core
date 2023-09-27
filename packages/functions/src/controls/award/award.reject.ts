@@ -1,10 +1,11 @@
 import { build5Db } from '@build-5/database';
 import { Award, AwardRejectRequest, COL, WenError } from '@build-5/interfaces';
+import { Context } from '../../runtime/firebase/common';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 
 export const rejectAwardControl = async (
-  owner: string,
+  { owner }: Context,
   params: AwardRejectRequest,
 ): Promise<Award> => {
   const awardDocRef = build5Db().doc(`${COL.AWARD}/${params.uid}`);

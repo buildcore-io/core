@@ -3,17 +3,14 @@ import {
   COL,
   Collection,
   CollectionStatus,
-  Transaction,
   TransactionPayloadType,
   UnsoldMintingOptions,
 } from '@build-5/interfaces';
 import { get } from 'lodash';
-import { TransactionMatch, TransactionService } from '../transaction-service';
+import { BaseService, HandlerParams } from '../base';
 
-export class CollectionMintingService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleCollectionMintingRequest = async (order: Transaction, match: TransactionMatch) => {
+export class CollectionMintingService extends BaseService {
+  public handleRequest = async ({ order, match }: HandlerParams) => {
     const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${order.payload.collection}`);
     const collection = <Collection>await this.transactionService.get(collectionDocRef);
 

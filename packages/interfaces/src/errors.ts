@@ -305,4 +305,6 @@ export const WenError = {
     code: 2138,
     key: 'Invalid collection id.',
   },
+  you_are_not_admin_of_project: { code: 2139, key: 'You are not an admin of the project.' },
+  invalid_project_api_key: { code: 2140, key: 'Invalid project api key.' },
 };

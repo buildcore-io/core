@@ -1,5 +1,5 @@
 import { build5Db } from '@build-5/database';
-import { COL, Space, StakeReward, WenError } from '@build-5/interfaces';
+import { COL, SOON_PROJECT_ID, Space, StakeReward, WenError } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { stakeReward } from '../../src/runtime/firebase/stake';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -19,7 +19,14 @@ describe('Stake reward controller', () => {
     space = await createSpace(walletSpy, guardian);
 
     token = wallet.getRandomEthAddress();
-    await build5Db().doc(`${COL.TOKEN}/${token}`).create({ uid: token, space: space.uid });
+    await build5Db()
+      .doc(`${COL.TOKEN}/${token}`)
+      .create({
+        project: SOON_PROJECT_ID,
+        projects: { [SOON_PROJECT_ID]: true },
+        uid: token,
+        space: space.uid,
+      });
   });
 
   it('Should throw, token does not exist', async () => {

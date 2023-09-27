@@ -129,7 +129,8 @@ const runTradeOrderMatching = async (
         postMatchActions(transaction, prevBuy, buy, prevSell, sell);
       }
 
-      transaction.create(build5Db().doc(`${COL.TOKEN_PURCHASE}/${purchase.uid}`), purchase);
+      const purchaseDocRef = build5Db().doc(`${COL.TOKEN_PURCHASE}/${purchase.uid}`);
+      transaction.create(purchaseDocRef, purchase);
       update = isSell ? sell : buy;
     }
     transaction.update(build5Db().doc(`${COL.TOKEN_MARKET}/${tradeOrder.uid}`), update);

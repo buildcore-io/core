@@ -15,6 +15,12 @@ export interface UidSchemaObject {
 }
 export const uidSchema = { uid: CommonJoi.uid() };
 
+export interface Context {
+  ip: string;
+  owner: string;
+  project: string;
+}
+
 export const onRequest =
   (
     funcName: WEN_FUNC,
@@ -23,20 +29,22 @@ export const onRequest =
   ) =>
   <P, R>(
     schema: Joi.AnySchema<P>,
-    func: (owner: string, params: P, customParams?: Record<string, unknown>) => Promise<R>,
+    func: (context: Context, params: P) => Promise<R>,
     validateOnlyUid = false,
+    projectIsRequired = false,
   ) =>
     functions.https.onRequest(onRequestConfig(funcName, runtimeOptions), (req, res) =>
       cors({ origin: true })(req, res, async () => {
         try {
-          const params = await decodeAuth(req.body.data, funcName);
+          const params = await decodeAuth(req.body.data, funcName, projectIsRequired);
           const owner = params.address.toLowerCase();
           await assertValidationAsync(
             schema,
             validateOnlyUid ? { uid: params.body.uid } : params.body,
             joiOptions,
           );
-          const result = await func(owner, params.body, { ip: req.ip });
+          const context = { ip: req.ip || '', owner, project: params.project };
+          const result = await func(context, params.body);
           res.send({ data: result || {} });
         } catch (error) {
           res.status(get(error, 'httpErrorCode.status', 400));

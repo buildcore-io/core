@@ -18,25 +18,25 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
+import { getProject, getProjects } from '../../../../../utils/common.utils';
 import { invalidArgument } from '../../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../../utils/schema.utils';
 import { getTokenForSpace } from '../../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../../utils/wallet.utils';
-import { TransactionService } from '../../../transaction-service';
+import { BaseService, HandlerParams } from '../../../base';
 import { voteOnProposalSchemaObject } from './ProposalVoteTangleRequestSchema';
 import { executeSimpleVoting } from './simple.voting';
 import { voteWithStakedTokens } from './staked.token.voting';
 import { createVoteTransactionOrder } from './token.voting';
 
-export class ProposalVoteService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleVoteOnProposal = async (
-    owner: string,
-    request: Record<string, unknown>,
-    milestoneTran: MilestoneTransaction,
-    milestoneTranEntry: MilestoneTransactionEntry,
-  ): Promise<ProposalVoteTangleResponse | undefined> => {
+export class ProposalVoteService extends BaseService {
+  public handleRequest = async ({
+    order,
+    owner,
+    request,
+    tran,
+    tranEntry,
+  }: HandlerParams): Promise<ProposalVoteTangleResponse | undefined> => {
     const params = await assertValidationAsync(voteOnProposalSchemaObject, request);
 
     const proposal = await getProposal(params.uid as string);
@@ -50,6 +50,7 @@ export class ProposalVoteService {
 
       if (request.voteWithStakedTokes) {
         const voteTransaction = await voteWithStakedTokens(
+          getProject(order),
           this.transactionService.transaction,
           owner,
           proposal,
@@ -59,20 +60,24 @@ export class ProposalVoteService {
       }
 
       await this.handleTokenVoteRequest(
+        getProject(order),
         owner,
         proposal,
         [params.value],
         token,
-        milestoneTran,
-        milestoneTranEntry,
+        tran,
+        tranEntry,
       );
       return;
     }
 
-    return await this.handleSimpleVoteRequest(proposal, proposalMember, [params.value]);
+    return await this.handleSimpleVoteRequest(getProject(order), proposal, proposalMember, [
+      params.value,
+    ]);
   };
 
   private handleTokenVoteRequest = async (
+    project: string,
     owner: string,
     proposal: Proposal,
     values: number[],
@@ -80,7 +85,7 @@ export class ProposalVoteService {
     milestoneTran: MilestoneTransaction,
     milestoneTranEntry: MilestoneTransactionEntry,
   ) => {
-    const order = await createVoteTransactionOrder(owner, proposal, values, token);
+    const order = await createVoteTransactionOrder(project, owner, proposal, values, token);
     const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
 
     this.transactionService.push({
@@ -99,6 +104,7 @@ export class ProposalVoteService {
   };
 
   private handleSimpleVoteRequest = async (
+    project: string,
     proposal: Proposal,
     proposalMember: ProposalMember,
     values: number[],
@@ -106,7 +112,7 @@ export class ProposalVoteService {
     const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
     const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(proposalMember.uid);
 
-    const voteData = await executeSimpleVoting(proposalMember, proposal, values);
+    const voteData = await executeSimpleVoting(project, proposalMember, proposal, values);
 
     this.transactionService.push({
       ref: proposalDocRef,
@@ -190,12 +196,15 @@ const assertAnswerIsValid = (proposal: Proposal, answerSent: number) => {
 };
 
 export const createVoteTransaction = (
+  project: string,
   proposal: Proposal,
   owner: string,
   weight: number,
   values: number[],
   stakes: string[] = [],
 ): Transaction => ({
+  project,
+  projects: getProjects([proposal], project),
   type: TransactionType.VOTE,
   uid: getRandomEthAddress(),
   member: owner,

@@ -15,6 +15,7 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
+import { Context } from '../../runtime/firebase/common';
 import { assertHasAccess } from '../../services/validators/access';
 import { WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress, getAddress } from '../../utils/address.utils';
@@ -23,11 +24,11 @@ import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIpNotBlocked } from '../../utils/ip.utils';
 import { tokenIsInPublicSalePeriod, tokenOrderTransactionDocId } from '../../utils/token.utils';
+import { getProjects } from '../../utils/common.utils';
 
 export const orderTokenControl = async (
-  owner: string,
+  { project, owner, ip }: Context,
   params: OrderTokenRequest,
-  customParams?: Record<string, unknown>,
 ) => {
   const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
   const member = await memberDocRef.get<Member>();
@@ -39,7 +40,7 @@ export const orderTokenControl = async (
   }
 
   if (isProdEnv()) {
-    await assertIpNotBlocked((customParams?.ip as string) || '', token.uid, 'token');
+    await assertIpNotBlocked(ip, token.uid, 'token');
   }
 
   if (!tokenIsInPublicSalePeriod(token) || token.status !== TokenStatus.AVAILABLE) {
@@ -65,6 +66,8 @@ export const orderTokenControl = async (
     const order = await transaction.get<Transaction>(orderDoc);
     if (!order) {
       const data: Transaction = {
+        project,
+        projects: getProjects([token], project),
         type: TransactionType.ORDER,
         uid: tranId,
         member: owner,

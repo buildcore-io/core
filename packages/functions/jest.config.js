@@ -3,5 +3,6 @@ module.exports = {
   testEnvironment: 'node',
   testTimeout: 900000,
   globalSetup: './test/set-up.ts',
+  globalTeardown: './test/teardown.ts',
   reporters: ['default', 'github-actions'],
 };

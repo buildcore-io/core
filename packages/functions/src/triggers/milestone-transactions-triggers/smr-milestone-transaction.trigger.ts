@@ -22,30 +22,23 @@ const handleMilestoneTransactionWrite =
       return;
     }
     try {
-      return build5Db().runTransaction(async (transaction) => {
-        const docRef = build5Db().doc(event.data!.after.ref.path);
-        const data = await transaction.get<Record<string, unknown>>(docRef);
-        if (!data || data.processed) {
-          return;
-        }
-        await confirmTransaction(event.data!.after.ref.path, data, network);
-        await updateTokenSupplyData(data);
-        const adapter = new SmrMilestoneTransactionAdapter(network);
-        const milestoneTransaction = await adapter.toMilestoneTransaction({
-          ...data,
-          uid: event.params.tranId,
-        });
-        const service = new ProcessingService(transaction);
-        await service.processMilestoneTransactions(milestoneTransaction);
-        service.submit();
+      const docRef = build5Db().doc(event.data!.after.ref.path);
+      const data = await docRef.get<Record<string, unknown>>();
+      if (!data || data.processed) {
+        return;
+      }
 
-        await processConsumedVoteOutputs(
-          transaction,
-          milestoneTransaction.inputs.map((i) => i.outputId!),
-        );
+      await confirmTransaction(event.data!.after.ref.path, data, network);
+      await updateTokenSupplyData(data);
 
-        return transaction.update(docRef, { processed: true, processedOn: dayjs().toDate() });
-      });
+      const adapter = new SmrMilestoneTransactionAdapter(network);
+      const milestone = await adapter.toMilestoneTransaction({ ...data, uid: event.params.tranId });
+      const service = new ProcessingService();
+      await service.processMilestoneTransactions(milestone);
+
+      await processConsumedVoteOutputs(milestone.inputs.map((i) => i.outputId!));
+
+      return docRef.update({ processed: true, processedOn: dayjs().toDate() });
     } catch (error) {
       functions.logger.error(`${network} transaction error`, event.data!.after.ref.path, error);
     }

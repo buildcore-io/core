@@ -13,6 +13,8 @@ export interface IDatabase {
   arrayUnion: <T>(...value: T[]) => any;
   arrayRemove: <T>(...value: T[]) => any;
   deleteField: () => any;
+
+  get: <T>(col: COL, uid: string) => Promise<T>;
 }
 
 export interface ICollectionGroup {

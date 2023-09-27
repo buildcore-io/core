@@ -2,6 +2,8 @@ import { build5Db } from '@build-5/database';
 import {
   COL,
   Member,
+  Project,
+  ProjectBilling,
   StakeType,
   SUB_COL,
   TokenDistribution,
@@ -16,7 +18,7 @@ import bigDecimal from 'js-big-decimal';
 import { scale } from '../../scale.settings';
 import { getStakeForType, getTier } from '../../services/stake.service';
 import { cancelTradeOrderUtil } from '../../utils/token-trade.utils';
-import { BIG_DECIMAL_PRECISION, getSoonToken } from '../../utils/token.utils';
+import { BIG_DECIMAL_PRECISION } from '../../utils/token.utils';
 import { matchTradeOrder } from './match-token';
 
 const runParams = {
@@ -63,16 +65,16 @@ const needsHigherBuyAmount = (buy: TokenTradeOrder) => {
   return price > buy.price;
 };
 
-export const getMemberTier = async (member: Member) => {
-  const soon = await getSoonToken();
-  const distributionDocRef = build5Db()
-    .collection(COL.TOKEN)
-    .doc(soon.uid)
-    .collection(SUB_COL.DISTRIBUTION)
-    .doc(member.uid);
+export const getMemberTier = async (projectId: string, member: Member) => {
+  const project = await build5Db().get<Project>(COL.PROJECT, projectId);
+  if (project?.config?.billing !== ProjectBilling.TOKEN_BASE) {
+    return 0;
+  }
+  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${project.config.nativeTokenUid}`);
+  const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member.uid);
   const distribution = await distributionDocRef.get<TokenDistribution>();
   const stakeValue = getStakeForType(distribution, StakeType.DYNAMIC);
-  return getTier(stakeValue);
+  return getTier(project.config.tiers || [], stakeValue);
 };
 
 export const getTokenTradingFee = (member: Member) =>

@@ -7,6 +7,7 @@ import {
   Member,
   Network,
   NetworkAddress,
+  SOON_PROJECT_ID,
   SUB_COL,
   SYSTEM_CONFIG_DOC_ID,
   StakeType,
@@ -30,14 +31,13 @@ import { TOKEN_TRADE_ORDER_FETCH_LIMIT } from '../../src/triggers/token-trading/
 import { getAddress } from '../../src/utils/address.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { testEnv } from '../set-up';
+import { soonTokenId, testEnv } from '../set-up';
 import {
   createMember,
   createRoyaltySpaces,
   getRandomSymbol,
   milestoneProcessed,
   mockWalletReturnValue,
-  saveSoon,
   submitMilestoneFunc,
   wait,
 } from './common';
@@ -84,13 +84,14 @@ const getRoyaltyDistribution = (amount: number) => {
 describe('Trade trigger', () => {
   let seller: string;
   let buyer: string;
-  let soonTokenId: string;
 
   let token: Token;
   const tokenCount = 400;
 
   const saveSellToDb = async (count: number, price: number) => {
     const data = <TokenTradeOrder>{
+      project: SOON_PROJECT_ID,
+      projects: { [SOON_PROJECT_ID]: true },
       createdOn: serverTime(),
       uid: wallet.getRandomEthAddress(),
       owner: seller,
@@ -109,7 +110,6 @@ describe('Trade trigger', () => {
 
   beforeAll(async () => {
     await createRoyaltySpaces();
-    soonTokenId = await saveSoon();
   });
 
   beforeEach(async () => {
@@ -476,6 +476,8 @@ describe('Trade trigger', () => {
     const sellTokenFunc = async (count: number, price: number) => {
       const sellDocId = wallet.getRandomEthAddress();
       const data = <TokenTradeOrder>{
+        project: SOON_PROJECT_ID,
+        projects: { [SOON_PROJECT_ID]: true },
         uid: sellDocId,
         owner: seller,
         token: token.uid,

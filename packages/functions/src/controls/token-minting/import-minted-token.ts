@@ -13,15 +13,19 @@ import {
 import { IndexerPluginClient } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
+import { Context } from '../../runtime/firebase/common';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
-import { generateRandomAmount } from '../../utils/common.utils';
+import { generateRandomAmount, getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
-export const importMintedTokenControl = async (owner: string, params: ImportMintedTokenRequest) =>
+export const importMintedTokenControl = async (
+  { project, owner }: Context,
+  params: ImportMintedTokenRequest,
+) =>
   build5Db().runTransaction(async (transaction) => {
     await assertIsGuardian(params.space, owner);
 
@@ -41,6 +45,8 @@ export const importMintedTokenControl = async (owner: string, params: ImportMint
 
     const targetAddress = await wallet.getNewIotaAddressDetails();
     const order: Transaction = {
+      project,
+      projects: getProjects([], project),
       type: TransactionType.ORDER,
       uid: getRandomEthAddress(),
       member: owner,

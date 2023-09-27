@@ -3,8 +3,6 @@
  * Do not modify this file manually
  */
 
-import { NetworkAddress } from '../../models';
-
 /**
  * Request object to create a member
  */
@@ -12,5 +10,5 @@ export interface CreateMemberRequest {
   /**
    * Wallet address of the member
    */
-  address: NetworkAddress;
+  address: string;
 }

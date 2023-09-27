@@ -23,6 +23,7 @@ import {
 import { WalletService } from '../../services/wallet/wallet';
 import { getAddress } from '../../utils/address.utils';
 import { indexToString } from '../../utils/block.utils';
+import { getProject, getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { getTransactionPayloadHex } from '../../utils/smr.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -128,12 +129,9 @@ const onCollectionMinted = async (transaction: Transaction) => {
   const space = await build5Db().doc(`${COL.SPACE}/${transaction.space}`).get<Space>();
 
   const nftMintOrder = createMintMetadataNftOrder(
+    transaction,
     nft,
-    transaction.network!,
-    transaction.payload.targetAddress!,
     space?.alias?.address!,
-    transaction.payload.targetAddress!,
-    get(transaction, 'payload.aliasId', ''),
     collectionId,
     get(transaction, 'payload.orderId', ''),
   );
@@ -179,7 +177,9 @@ const onNftMinted = async (transaction: Transaction) => {
   const collection = await build5Db().doc(`${COL.COLLECTION}/${nft?.collection}`).get<Collection>();
   const space = await build5Db().doc(`${COL.SPACE}/${collection?.space}`).get<Space>();
 
-  const creditTransaction = <Transaction>{
+  const creditTransaction: Transaction = {
+    project: getProject(order),
+    projects: getProjects([order]),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: transaction.space,
@@ -225,7 +225,9 @@ const onNftUpdated = async (transaction: Transaction) => {
   const collection = await build5Db().doc(`${COL.COLLECTION}/${nft?.collection}`).get<Collection>();
   const space = await build5Db().doc(`${COL.SPACE}/${collection?.space}`).get<Space>();
 
-  const creditTransaction = <Transaction>{
+  const creditTransaction: Transaction = {
+    project: getProject(order),
+    projects: getProjects([order]),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: transaction.space,

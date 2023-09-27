@@ -20,6 +20,7 @@ import {
 import { AddressTypes, ED25519_ADDRESS_TYPE, INodeInfo } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
+import { Context } from '../../runtime/firebase/common';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress, assertSpaceHasValidAddress } from '../../utils/address.utils';
@@ -29,6 +30,7 @@ import {
   createNftOutput,
   nftToMetadata,
 } from '../../utils/collection-minting-utils/nft.utils';
+import { getProjects } from '../../utils/common.utils';
 import { isProdEnv } from '../../utils/config.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
@@ -36,7 +38,10 @@ import { createAliasOutput } from '../../utils/token-minting-utils/alias.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
-export const mintCollectionOrderControl = async (owner: string, params: CollectionMintRequest) => {
+export const mintCollectionOrderControl = async (
+  { project, owner }: Context,
+  params: CollectionMintRequest,
+) => {
   const network = params.network as Network;
 
   const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();
@@ -102,6 +107,8 @@ export const mintCollectionOrderControl = async (owner: string, params: Collecti
     const aliasStorageDeposit = Number(createAliasOutput(targetAddress, wallet.info).amount);
 
     const order: Transaction = {
+      project,
+      projects: getProjects([collection], project),
       type: TransactionType.ORDER,
       uid: getRandomEthAddress(),
       member: owner,

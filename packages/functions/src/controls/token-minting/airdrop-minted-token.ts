@@ -18,6 +18,7 @@ import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
+import { Context } from '../../runtime/firebase/common';
 import { CreateAirdropsRequest } from '../../runtime/firebase/token/base/TokenAirdropRequestSchema';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { WalletService } from '../../services/wallet/wallet';
@@ -26,8 +27,12 @@ import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { getProjects } from '../../utils/common.utils';
 
-export const airdropMintedTokenControl = async (owner: string, params: CreateAirdropsRequest) => {
+export const airdropMintedTokenControl = async (
+  { project, owner }: Context,
+  params: CreateAirdropsRequest,
+) => {
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
   await build5Db().runTransaction(async (transaction) => {
     const token = await transaction.get<Token>(tokenDocRef);
@@ -52,6 +57,8 @@ export const airdropMintedTokenControl = async (owner: string, params: CreateAir
   };
   const output = packBasicOutput(targetAddress.bech32, 0, [nativeToken], wallet.info);
   const order: Transaction = {
+    project,
+    projects: getProjects([], project),
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,
@@ -72,6 +79,8 @@ export const airdropMintedTokenControl = async (owner: string, params: CreateAir
   };
 
   const airdrops: TokenDrop[] = drops.map((drop) => ({
+    project,
+    projects: getProjects([], project),
     createdBy: owner,
     uid: getRandomEthAddress(),
     member: drop.recipient.toLowerCase(),

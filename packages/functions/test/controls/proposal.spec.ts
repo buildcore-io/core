@@ -7,6 +7,7 @@ import {
   ProposalStartDateMin,
   ProposalType,
   RelatedRecordsResponse,
+  SOON_PROJECT_ID,
   Space,
   Token,
   TokenStatus,
@@ -76,12 +77,16 @@ describe('ProposalController: ' + WEN_FUNC.rejectProposal + ' NATIVE', () => {
     body = dummyBody(space.uid);
 
     const tokenId = wallet.getRandomEthAddress();
-    await build5Db().doc(`${COL.TOKEN}/${tokenId}`).create({
-      uid: tokenId,
-      space: space.uid,
-      status: TokenStatus.MINTED,
-      approved: true,
-    });
+    await build5Db()
+      .doc(`${COL.TOKEN}/${tokenId}`)
+      .create({
+        project: SOON_PROJECT_ID,
+        projects: { [SOON_PROJECT_ID]: true },
+        uid: tokenId,
+        space: space.uid,
+        status: TokenStatus.MINTED,
+        approved: true,
+      });
   });
 
   it('successfully create proposal with name', async () => {

@@ -194,6 +194,7 @@ function createEmulatedOnlineTest() {
   init(emulatedOnlineTestFile);
   const files = glob
     .sync(`./test/**/*.spec.ts`)
+    .filter((f) => !f.includes('exclude'))
     .filter((f) => !f.includes('only.spec.ts'))
     .filter((f) => !f.includes('dbRoll'));
   chunk(files, emulatorChunkSize).forEach((chunk, i) =>

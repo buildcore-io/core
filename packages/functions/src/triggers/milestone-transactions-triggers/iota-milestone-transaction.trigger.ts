@@ -19,21 +19,18 @@ const handleMilestoneTransactionWrite =
       return;
     }
     try {
-      return build5Db().runTransaction(async (transaction) => {
-        const docRef = build5Db().doc(event.data!.after.ref.path);
-        const milestoneTransaction = await transaction.get<Record<string, unknown>>(docRef);
-        if (!milestoneTransaction || milestoneTransaction.processed) {
-          return;
-        }
-        await confirmTransaction(event.data!.after.ref.path, milestoneTransaction, network);
+      const docRef = build5Db().doc(event.data!.after.ref.path);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const milestone = await docRef.get<any>();
+      if (!milestone || milestone.processed) {
+        return;
+      }
+      await confirmTransaction(event.data!.after.ref.path, milestone, network);
 
-        const service = new ProcessingService(transaction);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await service.processMilestoneTransactions(milestoneTransaction as any);
-        service.submit();
+      const service = new ProcessingService();
+      await service.processMilestoneTransactions(milestone);
 
-        transaction.update(docRef, { processed: true, processedOn: dayjs().toDate() });
-      });
+      docRef.update({ processed: true, processedOn: dayjs().toDate() });
     } catch (error) {
       functions.logger.error(`${network} transaction error`, event.data!.after.ref.path, error);
     }

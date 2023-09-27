@@ -13,6 +13,7 @@ import {
   NetworkAddress,
   Nft,
   RANKING_TEST,
+  SOON_PROJECT_ID,
   SUB_COL,
   Space,
   StakeType,
@@ -25,9 +26,9 @@ import { chunk } from 'lodash';
 import { createNft } from '../../src/runtime/firebase/nft';
 import { rankController } from '../../src/runtime/firebase/rank';
 import { voteController } from '../../src/runtime/firebase/vote';
-import * as config from '../../src/utils/config.utils';
+import { getProjects } from '../../src/utils/common.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { testEnv } from '../set-up';
+import { soonTokenId, testEnv } from '../set-up';
 import {
   approveCollection,
   createCollection,
@@ -43,12 +44,12 @@ import {
   expectThrow,
   getRandomSymbol,
   mockWalletReturnValue,
-  saveSoon,
+  setProdTiers,
+  setTestTiers,
   wait,
 } from './common';
 
 let walletSpy: any;
-let isProdSpy: jest.SpyInstance<boolean, []>;
 
 const dummyCollection: any = (spaceId: string, royaltiesFee: number) => ({
   name: 'Collection A',
@@ -68,16 +69,13 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
   let dummyAddress: NetworkAddress;
   let space: any;
   let member: Member;
-  let soonTokenId: string;
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    isProdSpy = jest.spyOn(config, 'isProdEnv');
     dummyAddress = await createMemberFunc(walletSpy);
     member = await testEnv.wrap(createMember)(dummyAddress);
     expect(member?.uid).toEqual(dummyAddress.toLowerCase());
     space = await createSpaceFunc(walletSpy, dummyAddress);
-    soonTokenId = await saveSoon();
   });
 
   it('successfully create collection', async () => {
@@ -109,9 +107,9 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
 
   it('Should throw, no soon staked', async () => {
     mockWalletReturnValue(walletSpy, dummyAddress, dummyCollection(space.uid, 0.6));
-    isProdSpy.mockReturnValue(true);
+    await setProdTiers();
     await expectThrow(testEnv.wrap(createCollection)({}), WenError.no_staked_soon.key);
-    isProdSpy.mockRestore();
+    await setTestTiers();
   });
 
   it('Should create collection, soon check', async () => {
@@ -126,10 +124,10 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
       });
 
     mockWalletReturnValue(walletSpy, dummyAddress, dummyCollection(space.uid, 0.6));
-    isProdSpy.mockReturnValue(true);
+    await setProdTiers();
     const collection = await testEnv.wrap(createCollection)({});
     expect(collection?.uid).toBeDefined();
-    isProdSpy.mockRestore();
+    await setTestTiers();
   });
 
   it('fail to create collection - wrong royalties', async () => {
@@ -385,7 +383,12 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
 
 describe('Collection trigger test', () => {
   it('Should set approved&reject properly on nfts', async () => {
-    const collection = { ...dummyCollection('', 0.1), uid: wallet.getRandomEthAddress() };
+    const collection = {
+      ...dummyCollection('', 0.1),
+      project: SOON_PROJECT_ID,
+      projects: { [SOON_PROJECT_ID]: true },
+      uid: wallet.getRandomEthAddress(),
+    };
     await build5Db().doc(`${COL.COLLECTION}/${collection.uid}`).create(collection);
 
     const nftIds = Array.from(Array(1000));
@@ -394,10 +397,11 @@ describe('Collection trigger test', () => {
       const batch = build5Db().batch();
       chunks[chunkIndex].forEach((_, index) => {
         const id = wallet.getRandomEthAddress();
-        batch.create(
-          build5Db().doc(`${COL.NFT}/${id}`),
-          dummyNft(chunkIndex * 500 + index, id, collection.uid),
-        );
+        batch.create(build5Db().doc(`${COL.NFT}/${id}`), {
+          ...dummyNft(chunkIndex * 500 + index, id, collection.uid),
+          project: SOON_PROJECT_ID,
+          projects: { [SOON_PROJECT_ID]: true },
+        });
       });
       await batch.commit();
     }
@@ -463,14 +467,11 @@ describe('Collection vote test', () => {
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    isProdSpy = jest.spyOn(config, 'isProdEnv');
     memberAddress = await createMemberFunc(walletSpy);
     space = await createSpaceFunc(walletSpy, memberAddress);
 
     mockWalletReturnValue(walletSpy, memberAddress, dummyCollection(space.uid, 0.6));
     collection = await testEnv.wrap(createCollection)({});
-
-    await saveSoon();
   });
 
   it('Should throw, no collection', async () => {
@@ -492,14 +493,14 @@ describe('Collection vote test', () => {
   });
 
   it('Should throw, no soons staked', async () => {
+    await setProdTiers();
     mockWalletReturnValue(walletSpy, memberAddress, {
       collection: COL.COLLECTION,
       uid: collection.uid,
       direction: 1,
     });
-    isProdSpy.mockReturnValue(true);
     await expectThrow(testEnv.wrap(voteController)({}), WenError.no_staked_soon.key);
-    isProdSpy.mockRestore();
+    await setTestTiers();
   });
 
   const validateStats = async (upvotes: number, downvotes: number, diff: number) => {
@@ -557,14 +558,11 @@ describe('Collection rank test', () => {
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    isProdSpy = jest.spyOn(config, 'isProdEnv');
     member = await createMemberFunc(walletSpy);
     space = await createSpaceFunc(walletSpy, member);
 
     mockWalletReturnValue(walletSpy, member, dummyCollection(space.uid, 0.6));
     collection = await testEnv.wrap(createCollection)({});
-
-    await saveSoon();
 
     await build5Db()
       .doc(`${COL.SPACE}/${RANKING_TEST.collectionSpace}/${SUB_COL.GUARDIANS}/${member}`)
@@ -599,9 +597,9 @@ describe('Collection rank test', () => {
       uid: collection.uid,
       rank: 1,
     });
-    isProdSpy.mockReturnValue(true);
+    await setProdTiers();
     await expectThrow(testEnv.wrap(rankController)({}), WenError.no_staked_soon.key);
-    isProdSpy.mockRestore();
+    await setTestTiers();
   });
 
   it('Should throw, not space member', async () => {
@@ -678,6 +676,8 @@ describe('Collection rank test', () => {
 
 const saveToken = async (space: string) => {
   const token = {
+    project: SOON_PROJECT_ID,
+    projects: getProjects([], SOON_PROJECT_ID),
     uid: wallet.getRandomEthAddress(),
     symbol: getRandomSymbol(),
     approved: true,

@@ -15,6 +15,7 @@ import {
 } from '@build-5/interfaces';
 import { TransactionHelper } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
+import { Context } from '../../runtime/firebase/common';
 import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
@@ -33,8 +34,9 @@ import {
   getUnclaimedAirdropTotalValue,
 } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { getProjects } from '../../utils/common.utils';
 
-export const mintTokenControl = (owner: string, params: TokenMintRequest) =>
+export const mintTokenControl = ({ project, owner }: Context, params: TokenMintRequest) =>
   build5Db().runTransaction(async (transaction) => {
     const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
     const token = await transaction.get<Token>(tokenDocRef);
@@ -65,6 +67,8 @@ export const mintTokenControl = (owner: string, params: TokenMintRequest) =>
     );
 
     const order: Transaction = {
+      project,
+      projects: getProjects([token], project),
       type: TransactionType.ORDER,
       uid: getRandomEthAddress(),
       member: owner,
@@ -83,7 +87,8 @@ export const mintTokenControl = (owner: string, params: TokenMintRequest) =>
         tokensInVault: totalDistributed,
       },
     };
-    transaction.create(build5Db().doc(`${COL.TRANSACTION}/${order.uid}`), order);
+    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
+    transaction.create(orderDocRef, order);
     return order;
   });
 

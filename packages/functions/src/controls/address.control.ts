@@ -7,10 +7,14 @@ import {
   Network,
   WenError,
 } from '@build-5/interfaces';
+import { Context } from '../runtime/firebase/common';
 import { createAddressValidationOrder } from '../services/payment/tangle-service/address/address-validation.service';
 import { invalidArgument } from '../utils/error.utils';
 
-export const validateAddressControl = async (owner: string, params: AddressValidationRequest) => {
+export const validateAddressControl = async (
+  { project, owner }: Context,
+  params: AddressValidationRequest,
+) => {
   const network = (params.network as Network) || DEFAULT_NETWORK;
   const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();
 
@@ -18,7 +22,7 @@ export const validateAddressControl = async (owner: string, params: AddressValid
     throw invalidArgument(WenError.member_does_not_exists);
   }
 
-  const order = await createAddressValidationOrder(member.uid, network, params.space);
+  const order = await createAddressValidationOrder(project, member.uid, network, params.space);
   await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
 
   return order;

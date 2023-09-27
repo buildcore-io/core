@@ -16,6 +16,7 @@ import {
 } from '@build-5/interfaces';
 import bigDecimal from 'js-big-decimal';
 import { getAddress } from './address.utils';
+import { getProject, getProjects } from './common.utils';
 import { getRandomEthAddress } from './wallet.utils';
 
 export const creditBuyer = async (transaction: ITransaction, buy: TokenTradeOrder) => {
@@ -29,7 +30,9 @@ export const creditBuyer = async (transaction: ITransaction, buy: TokenTradeOrde
   const order = (await orderDocRef.get<Transaction>())!;
 
   const network = order.network || DEFAULT_NETWORK;
-  const credit = <Transaction>{
+  const credit: Transaction = {
+    project: getProject(buy),
+    projects: getProjects([buy]),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: token.space,
@@ -41,7 +44,7 @@ export const creditBuyer = async (transaction: ITransaction, buy: TokenTradeOrde
       amount: buy.balance,
       sourceAddress: order.payload.targetAddress,
       targetAddress: getAddress(member, network),
-      sourceTransaction: [buy.paymentTransactionId],
+      sourceTransaction: [buy.paymentTransactionId || ''],
       reconciled: true,
       void: false,
       token: token.uid,
@@ -66,7 +69,9 @@ const creditBaseTokenSale = async (
   const memberDocRef = build5Db().doc(`${COL.MEMBER}/${sale.owner}`);
   const member = await memberDocRef.get<Member>();
   const network = order.network || DEFAULT_NETWORK;
-  const data = <Transaction>{
+  const data: Transaction = {
+    project: getProject(sale),
+    projects: getProjects([sale]),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: '',
@@ -78,7 +83,7 @@ const creditBaseTokenSale = async (
       amount: sale.balance,
       sourceAddress: order.payload.targetAddress,
       targetAddress: getAddress(member, network),
-      sourceTransaction: [sale.paymentTransactionId],
+      sourceTransaction: [sale.paymentTransactionId || ''],
       reconciled: true,
       void: false,
       token: token.uid,
@@ -138,6 +143,8 @@ const cancelMintedSell = async (transaction: ITransaction, sell: TokenTradeOrder
   const tokensLeft = sell.count - sell.fulfilled;
   const network = order.network || DEFAULT_NETWORK;
   const data: Transaction = {
+    project: getProject(sell),
+    projects: getProjects([sell]),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: token.space,

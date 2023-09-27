@@ -11,7 +11,6 @@ import {
 } from '@build-5/interfaces';
 import { rankController } from '../../../src/runtime/firebase/rank';
 import { createToken } from '../../../src/runtime/firebase/token/base';
-import * as config from '../../../src/utils/config.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../../set-up';
 import {
@@ -21,12 +20,12 @@ import {
   expectThrow,
   getRandomSymbol,
   mockWalletReturnValue,
-  saveSoon,
+  setProdTiers,
+  setTestTiers,
   wait,
 } from '../common';
 
 let walletSpy: any;
-let isProdSpy: jest.SpyInstance<boolean, []>;
 
 const dummyToken = (space: string) =>
   ({
@@ -42,7 +41,7 @@ const dummyToken = (space: string) =>
     decimals: 6,
   } as any);
 
-describe('Token rank test', () => {
+describe.only('Token rank test', () => {
   let member: string;
   let space: Space;
   let token: any;
@@ -53,12 +52,10 @@ describe('Token rank test', () => {
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    isProdSpy = jest.spyOn(config, 'isProdEnv');
     member = await createMember(walletSpy);
     space = await createSpace(walletSpy, member);
     mockWalletReturnValue(walletSpy, member, dummyToken(space.uid));
     token = await testEnv.wrap(createToken)({});
-    await saveSoon();
 
     await build5Db()
       .doc(`${COL.SPACE}/${RANKING_TEST.tokenSpace}/${SUB_COL.GUARDIANS}/${member}`)
@@ -88,14 +85,16 @@ describe('Token rank test', () => {
   });
 
   it('Should throw, no soons staked', async () => {
+    await setProdTiers();
+
     mockWalletReturnValue(walletSpy, member, {
       collection: COL.TOKEN,
       uid: token.uid,
       rank: 1,
     });
-    isProdSpy.mockReturnValue(true);
     await expectThrow(testEnv.wrap(rankController)({}), WenError.no_staked_soon.key);
-    isProdSpy.mockRestore();
+
+    await setTestTiers();
   });
 
   it('Should throw, not space member', async () => {

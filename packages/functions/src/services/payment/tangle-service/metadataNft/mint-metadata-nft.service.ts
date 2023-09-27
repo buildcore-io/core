@@ -1,10 +1,7 @@
 import { build5Db } from '@build-5/database';
 import {
   COL,
-  MilestoneTransaction,
-  MilestoneTransactionEntry,
   MintMetadataNftTangleRequest,
-  Network,
   NftStatus,
   SUB_COL,
   Space,
@@ -32,6 +29,7 @@ import {
   createNftOutput,
   getNftByMintingId,
 } from '../../../../utils/collection-minting-utils/nft.utils';
+import { getProject, getProjects } from '../../../../utils/common.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { getAliasId, getIssuerNftId } from '../../../../utils/nft.output.utils';
@@ -44,23 +42,21 @@ import {
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { SmrWallet } from '../../../wallet/SmrWalletService';
 import { WalletService } from '../../../wallet/wallet';
-import { TransactionMatch, TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { metadataNftSchema } from './MetadataNftTangleRequestSchema';
 
-export class MintMetadataNftService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleMetadataNftMintRequest = async (
-    network: Network,
-    owner: string,
-    request: Record<string, unknown>,
-    match: TransactionMatch,
-    tran: MilestoneTransaction,
-    tranEntry: MilestoneTransactionEntry,
-  ) => {
+export class MintMetadataNftService extends BaseService {
+  public handleRequest = async ({
+    owner,
+    request,
+    match,
+    tran,
+    tranEntry,
+    order: tangleOrder,
+  }: HandlerParams) => {
     const params = await assertValidationAsync(metadataNftSchema, request);
 
-    const wallet = (await WalletService.newWallet(network)) as SmrWallet;
+    const wallet = (await WalletService.newWallet(tangleOrder.network)) as SmrWallet;
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
     const { nftId, collectionId, aliasId } = await getIds(params, wallet);
@@ -106,12 +102,14 @@ export class MintMetadataNftService {
       this.transactionService.push({ ref: memberDocRef, data: guardian, action: 'set' });
     }
 
-    const order = <Transaction>{
+    const order: Transaction = {
+      project: getProject(tangleOrder),
+      projects: getProjects([tangleOrder]),
       type: TransactionType.ORDER,
       uid: getRandomEthAddress(),
       member: owner,
       space: space.uid,
-      network,
+      network: tangleOrder.network,
       payload: {
         type: TransactionPayloadType.MINT_METADATA_NFT,
         amount: match.to.amount,
@@ -126,7 +124,7 @@ export class MintMetadataNftService {
         collectionOutputAmount,
         nftId: nftId === EMPTY_NFT_ID ? '' : nftId,
         nftOutputAmount,
-        metadata: request.metadata,
+        metadata: request.metadata as { [key: string]: unknown },
         tag: match.msgId,
       },
     };

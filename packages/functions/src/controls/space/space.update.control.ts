@@ -18,6 +18,8 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get, startCase } from 'lodash';
+import { Context } from '../../runtime/firebase/common';
+import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { cleanupParams } from '../../utils/schema.utils';
@@ -25,7 +27,10 @@ import { hasActiveEditProposal } from '../../utils/space.utils';
 import { assertIsGuardian, getTokenForSpace } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
-export const updateSpaceControl = async (owner: string, params: SpaceUpdateRequest) => {
+export const updateSpaceControl = async (
+  { project, owner }: Context,
+  params: SpaceUpdateRequest,
+) => {
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
   const space = await spaceDocRef.get<Space>();
 
@@ -55,6 +60,7 @@ export const updateSpaceControl = async (owner: string, params: SpaceUpdateReque
   const guardians = await spaceDocRef.collection(SUB_COL.GUARDIANS).get<SpaceGuardian>();
 
   const proposal = createUpdateSpaceProposal(
+    project,
     space,
     guardian!,
     space.uid,
@@ -63,6 +69,8 @@ export const updateSpaceControl = async (owner: string, params: SpaceUpdateReque
   );
 
   const voteTransaction: Transaction = {
+    project,
+    projects: getProjects([space], project),
     type: TransactionType.VOTE,
     uid: getRandomEthAddress(),
     member: owner,
@@ -102,17 +110,20 @@ export const updateSpaceControl = async (owner: string, params: SpaceUpdateReque
 };
 
 const createUpdateSpaceProposal = (
+  project: string,
   prevSpace: Space,
   owner: Member,
   space: string,
   guardiansCount: number,
   spaceUpdateData: Space,
-) => {
+): Proposal => {
   const additionalInfo =
     `${owner.name || owner.uid} wants to edit the space. ` +
     `Request created on ${dayjs().format('MM/DD/YYYY')}. ` +
     `${UPDATE_SPACE_THRESHOLD_PERCENTAGE} % must agree for this action to proceed`;
-  return <Proposal>{
+  return {
+    project,
+    projects: getProjects([prevSpace], project),
     createdBy: owner.uid,
     uid: getRandomEthAddress(),
     name: 'Edit space',
