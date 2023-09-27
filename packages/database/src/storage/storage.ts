@@ -38,4 +38,10 @@ export class FirebaseBucket implements IBucket {
     const files = await this.bucket.getFiles({ prefix: directory });
     return files[0].length;
   };
+
+  public deleteDirectory = async (directory: string) => {
+    const files = await this.bucket.getFiles({ prefix: directory });
+    const promise = files[0].map((f) => f.delete());
+    await Promise.all(promise);
+  };
 }

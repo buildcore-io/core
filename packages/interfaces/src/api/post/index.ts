@@ -45,6 +45,7 @@ export * from './SpaceUpdateRequest';
 export * from './StakeRewardRemoveRequest';
 export * from './StakeRewardRequest';
 export * from './StakeTokenRequest';
+export * from './StampRequest';
 export * from './FileUploadRequest';
 export * from './TokenAirdropRequest';
 export * from './TokenCancelPubSaleRequest';

@@ -65,6 +65,7 @@ export enum COL {
   NFT_STAKE = 'nft_stake',
   AIRDROP = 'airdrop',
   PROJECT = 'project',
+  STAMP = 'stamp',
 
   MNEMONIC = '_mnemonic',
   SYSTEM = '_system',

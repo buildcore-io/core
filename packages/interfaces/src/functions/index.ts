@@ -105,6 +105,8 @@ export enum WEN_FUNC {
   createProject = 'createProject',
   deactivateProject = 'deactivateProject',
   createProjetApiKey = 'createProjetApiKey',
+
+  stamp = 'stamp',
 }
 
 export interface cMemberNotExists {

@@ -20,10 +20,11 @@ module.exports = {
     sourceType: 'module',
   },
   ignorePatterns: [
-    '/lib/**/*', // Ignore built files.
+    '/lib/**/*',
+    '/scripts/**/*',
+    '/node_modules/**/*',
     '/test/**/*',
-    '/test-online/**/*',
-    '/test-load/**/*',
+    '/test-tangle/**/*',
     '/**/workflow.build.js',
   ],
   plugins: ['@typescript-eslint', 'import'],

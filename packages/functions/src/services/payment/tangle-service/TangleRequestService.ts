@@ -33,6 +33,7 @@ import { SpaceDeclineMemberService } from './space/SpaceDeclineMemberService';
 import { SpaceGuardianService } from './space/SpaceGuardianService';
 import { SpaceJoinService } from './space/SpaceJoinService';
 import { SpaceLeaveService } from './space/SpaceLeaveService';
+import { StampTangleService } from './stamp/StampTangleService';
 import { TangleStakeService } from './token/stake.service';
 import { TangleTokenClaimService } from './token/token-claim.service';
 import { TangleTokenTradeService } from './token/token-trade.service';
@@ -131,6 +132,8 @@ export class TangleRequestService extends BaseService {
         return new SpaceCreateService(this.transactionService);
       case TangleRequestType.MINT_METADATA_NFT:
         return new MintMetadataNftService(this.transactionService);
+      case TangleRequestType.STAMP:
+        return new StampTangleService(this.transactionService);
       default:
         throw invalidArgument(WenError.invalid_tangle_request_type);
     }

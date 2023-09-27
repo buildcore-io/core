@@ -28,19 +28,33 @@ export const isStorageUrl = (url: string | undefined) =>
   !isEmpty(url) && startsWithBaseUrl(url || '') && (isEmulatorEnv() || !url?.includes('?'));
 
 const BASE_URLS = {
-  [Bucket.PROD]: 'https://' + Bucket.PROD,
-  [Bucket.TEST]: 'https://' + Bucket.TEST,
+  [Bucket.PROD]: 'https://' + Bucket.PROD + '/',
+  [Bucket.TEST]: 'https://' + Bucket.TEST + '/',
   [Bucket.DEV]: `https://firebasestorage.googleapis.com/v0/b/${Bucket.DEV}/o/`,
+  local: `http://127.0.0.1:9199/download/storage/v1/b/soonaverse-dev-custom-bucket/o/`,
 };
 
 const startsWithBaseUrl = (url: string) => {
   if (isEmulatorEnv()) {
-    return url.startsWith(BASE_URLS[Bucket.DEV]) || url.startsWith(BASE_URLS[Bucket.TEST]);
+    return (
+      url.startsWith(BASE_URLS[Bucket.DEV]) ||
+      url.startsWith(BASE_URLS[Bucket.TEST]) ||
+      url.startsWith(BASE_URLS['local'])
+    );
   }
   if (isProdEnv()) {
     return url.startsWith(BASE_URLS[Bucket.PROD]);
   }
   return url.startsWith(BASE_URLS[Bucket.TEST]);
 };
+
+export const getBuild5FromUri = (url: string) =>
+  Object.values(BASE_URLS)
+    .reduce((acc, act) => acc.replace(act, ''), url)
+    .replace(/%2F/g, '/')
+    .split('?')[0]
+    .split('/')
+    .slice(0, -1)
+    .join('/');
 
 export const toJoiObject = <T>(object: SchemaMap<T, true>) => Joi.object<T>(object);

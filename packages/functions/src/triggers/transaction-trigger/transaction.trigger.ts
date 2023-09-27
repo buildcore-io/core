@@ -36,6 +36,7 @@ import { onMetadataNftMintUpdate } from './matadatNft-minting';
 import { onNftStaked } from './nft-staked';
 import { onProposalVoteCreditConfirmed } from './proposal.vote';
 import { onStakingConfirmed } from './staking';
+import { onStampMintUpdate } from './stamp-minting';
 import { onTokenMintingUpdate } from './token-minting';
 import { getWalletParams } from './wallet-params';
 
@@ -48,6 +49,7 @@ export const DEFAULT_EXECUTABLE_TRANSACTIONS = [
   TransactionType.UNLOCK,
   TransactionType.AWARD,
   TransactionType.METADATA_NFT,
+  TransactionType.STAMP,
 ];
 
 export const CREDIT_EXECUTABLE_TRANSACTIONS = [
@@ -176,6 +178,11 @@ export const transactionWrite = functions.firestore.onDocumentWritten(
       return;
     }
 
+    if (isConfirmed(prev, curr) && curr.type === TransactionType.STAMP) {
+      await onStampMintUpdate(curr);
+      return;
+    }
+
     if (
       isConfirmed(prev, curr) &&
       curr.payload.award &&
@@ -228,6 +235,9 @@ const executeTransaction = async (transactionId: string) => {
 
         case TransactionType.METADATA_NFT:
           return submitMintMetadataTransaction(transaction, walletService as SmrWallet, params);
+
+        case TransactionType.STAMP:
+          return submitMintStampTransaction(transaction, walletService as SmrWallet, params);
 
         case TransactionType.CREDIT_NFT:
         case TransactionType.WITHDRAW_NFT: {
@@ -377,7 +387,31 @@ const submitMintMetadataTransaction = async (
     }
     default: {
       functions.logger.error(
-        'Unsupported executable transaction type in submitCreateAwardTransaction',
+        'Unsupported executable transaction type in submitMintMetadataTransaction',
+        transaction,
+      );
+      throw Error('Unsupported executable transaction type ' + transaction.payload.type);
+    }
+  }
+};
+
+const submitMintStampTransaction = async (
+  transaction: Transaction,
+  wallet: SmrWallet,
+  params: SmrParams,
+) => {
+  switch (transaction.payload.type) {
+    case TransactionPayloadType.MINT_ALIAS: {
+      const aliasWallet = new AliasWallet(wallet);
+      return aliasWallet.mintAlias(transaction, params);
+    }
+    case TransactionPayloadType.MINT_NFT: {
+      const nftWallet = new NftWallet(wallet);
+      return nftWallet.mintStampNft(transaction, params);
+    }
+    default: {
+      functions.logger.error(
+        'Unsupported executable transaction type in submitMintStampTransaction',
         transaction,
       );
       throw Error('Unsupported executable transaction type ' + transaction.payload.type);

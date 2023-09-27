@@ -29,4 +29,6 @@ export enum TangleRequestType {
   SPACE_LEAVE = 'SPACE_LEAVE',
 
   MINT_METADATA_NFT = 'MINT_METADATA_NFT',
+
+  STAMP = 'STAMP',
 }

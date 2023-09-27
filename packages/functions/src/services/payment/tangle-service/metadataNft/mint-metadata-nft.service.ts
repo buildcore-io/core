@@ -47,6 +47,7 @@ import { metadataNftSchema } from './MetadataNftTangleRequestSchema';
 
 export class MintMetadataNftService extends BaseService {
   public handleRequest = async ({
+    project,
     owner,
     request,
     match,
@@ -61,7 +62,7 @@ export class MintMetadataNftService extends BaseService {
 
     const { nftId, collectionId, aliasId } = await getIds(params, wallet);
 
-    const space = await getSpace(owner, aliasId);
+    const space = await getSpace(project, owner, aliasId);
     const aliasOutputAmount = await getAliasOutputAmount(owner, space, wallet);
     const collectionOutputAmount = await getCollectionOutputAmount(aliasId, collectionId, wallet);
     const nftOutputAmount = await getNftOutputAmount(collectionId, nftId, params.metadata, wallet);
@@ -194,9 +195,11 @@ const createMetadataNftOutput = async (
   );
 };
 
-const getSpace = async (owner: string, aliasId: string) => {
+const getSpace = async (project: string, owner: string, aliasId: string) => {
   if (aliasId === EMPTY_ALIAS_ID) {
     return {
+      project,
+      projects: getProjects([], project),
       uid: getRandomEthAddress(),
       name: `Space of alias: ${aliasId}`,
       open: false,
@@ -206,7 +209,7 @@ const getSpace = async (owner: string, aliasId: string) => {
       totalPendingMembers: 0,
       guardians: {},
       members: {},
-    } as Space;
+    };
   }
 
   const space = await getSpaceByAliasId(aliasId);

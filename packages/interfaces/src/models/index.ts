@@ -12,6 +12,7 @@ export * from './project';
 export * from './proposal';
 export * from './space';
 export * from './stake';
+export * from './stamp';
 export * from './system.config';
 export * from './ticker';
 export * from './token';

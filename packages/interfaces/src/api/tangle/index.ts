@@ -18,6 +18,7 @@ export * from './SpaceCreateTangleRequest';
 export * from './SpaceEditMemberTangleRequest';
 export * from './SpaceJoinTangleRequest';
 export * from './SpaceLeaveTangleRequest';
+export * from './StampTangleRequest';
 export * from './TokenClaimTangleRequest';
 export * from './TokenStakeTangleRequest';
 export * from './TokenTradeTangleRequest';
