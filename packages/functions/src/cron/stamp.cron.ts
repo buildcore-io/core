@@ -16,6 +16,9 @@ export const updateExpiredStamp = async () => {
     await batch.commit();
 
     const promises = stamps.map(async (s) => {
+      if (!s.funded) {
+        return;
+      }
       const folder = getBuild5FromUri(s.build5Url);
       const bucket = build5Storage().bucket(getBucket());
       await bucket.deleteDirectory(folder);

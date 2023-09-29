@@ -132,7 +132,7 @@ const uploadSpaceMedia = async (space: Space) => {
 
 const uploadStampMedia = async (stamp: Stamp) => {
   const stampDocRef = build5Db().doc(`${COL.STAMP}/${stamp.uid}`);
-  const { car, ...ipfs } = await downloadMediaAndPackCar(stamp.uid, stamp.build5Url, {});
+  const { car, ...ipfs } = await downloadMediaAndPackCar(stamp.uid, stamp.build5Url);
   await putCar(car);
   stampDocRef.update({
     mediaStatus: MediaStatus.UPLOADED,

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IBucket } from '@build-5/database';
+import { build5Storage, IBucket } from '@build-5/database';
 import {
   Bucket,
   COL,
@@ -16,6 +16,8 @@ import fs from 'fs';
 import mime from 'mime-types';
 import os from 'os';
 import path from 'path';
+import { BUCKET_BASE_URLS } from '../services/joi/common';
+import { getBucket, isEmulatorEnv } from './config.utils';
 
 export const migrateUriToSotrage = async (
   col: COL,
@@ -85,6 +87,17 @@ export const uriToUrl = (uri: string) => {
   throw WenError.ipfs_retrieve;
 };
 
+export const getRandomBuild5Url = (owner: string, uid: string, extension: string) => {
+  const bucket = build5Storage().bucket(getBucket());
+  const baseUrl = isEmulatorEnv() ? BUCKET_BASE_URLS['local'] : BUCKET_BASE_URLS[bucket.getName()];
+
+  const isEmulatorOrDev = isEmulatorEnv() || bucket.getName() === Bucket.DEV;
+  const destination = `${owner}/${uid}/${generateRandomFileName()}.${extension}`;
+  const url = `${baseUrl}${isEmulatorOrDev ? encodeURIComponent(destination) : destination}`;
+
+  return isEmulatorOrDev ? url + '?generation=1695968595134&alt=media' : url;
+};
+
 export const downloadFile = async (url: string, workDir: string, fileName: string) => {
   const response = await axios({
     method: 'GET',
@@ -101,10 +114,10 @@ export const downloadFile = async (url: string, workDir: string, fileName: strin
   const stream = fs.createWriteStream(destination);
   response.data.pipe(stream);
 
-  return new Promise<{
-    size: number;
-    hash: string;
-  }>((resolve, reject) => {
+  const contentType = response.headers['content-type'] || '';
+  const extension = <string>mime.extension(contentType);
+
+  return new Promise<{ extension: string; size: number; hash: string }>((resolve, reject) => {
     let size = 0;
     const chunks: any = [];
     response.data.on('data', (chunk: any) => {
@@ -118,6 +131,7 @@ export const downloadFile = async (url: string, workDir: string, fileName: strin
         return;
       }
       resolve({
+        extension,
         size,
         hash: crypto
           .createHash('sha1')

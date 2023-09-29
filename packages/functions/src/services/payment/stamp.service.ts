@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { build5Db, build5Storage } from '@build-5/database';
 import {
   COL,
   MediaStatus,
@@ -9,10 +9,13 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
+import { set } from 'lodash';
 import { getProject, getProjects } from '../../utils/common.utils';
-import { getStampRoyaltyAddress } from '../../utils/config.utils';
+import { getBucket, getStampRoyaltyAddress } from '../../utils/config.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
+import { migrateUriToSotrage, uriToUrl } from '../../utils/media.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { isStorageUrl } from '../joi/common';
 import { BaseService, HandlerParams } from './base';
 import { getStampDailyCost } from './tangle-service/stamp/StampTangleService';
 
@@ -52,6 +55,18 @@ export class StampService extends BaseService {
       mediaStatus: stamp.mediaStatus || MediaStatus.PENDING_UPLOAD,
       expiresAt: dateToTimestamp(expiresAt),
     };
+    if (!stamp.funded && !isStorageUrl(stamp.originUri)) {
+      const bucket = build5Storage().bucket(getBucket());
+      const build5Url = await migrateUriToSotrage(
+        COL.STAMP,
+        stamp.createdBy!,
+        stamp.uid,
+        uriToUrl(stamp.originUri),
+        bucket,
+        true,
+      );
+      set(updateData, 'build5Url', build5Url);
+    }
     this.transactionService.push({ ref: stampDocRef, data: updateData, action: 'update' });
 
     const aliasId = order.payload.aliasId;

@@ -102,7 +102,7 @@ export const createAward = async (
       imageUrl = await migrateUriToSotrage(COL.AWARD, owner, awardUid, uriToUrl(imageUrl), bucket);
       set(badge, 'image', imageUrl);
     }
-    const ipfs = await downloadMediaAndPackCar(awardId, imageUrl, {});
+    const ipfs = await downloadMediaAndPackCar(awardId, imageUrl);
     set(badge, 'ipfsMedia', ipfs.ipfsMedia);
     set(badge, 'ipfsMetadata', ipfs.ipfsMetadata);
     set(badge, 'ipfsRoot', ipfs.ipfsRoot);

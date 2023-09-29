@@ -51,7 +51,7 @@ describe('Stamp control', () => {
     expect(order.payload.stamp).toBeDefined();
     expect(order.payload.aliasId).toBe('');
     expect(order.payload.aliasOutputAmount).toBe(53700);
-    expect(order.payload.nftOutputAmount).toBe(65400);
+    expect(order.payload.nftOutputAmount).toBe(108000);
 
     const stampDocRef = build5Db().doc(`${COL.STAMP}/${order.payload.stamp}`);
     const stamp = await stampDocRef.get<Stamp>();

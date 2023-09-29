@@ -1,4 +1,4 @@
-import { build5Db, build5Storage } from '@build-5/database';
+import { build5Db } from '@build-5/database';
 import {
   COL,
   KEY_NAME_TANGLE,
@@ -20,10 +20,9 @@ import { isEmpty, set } from 'lodash';
 import { downloadMediaAndPackCar } from '../../../../utils/car.utils';
 import { createNftOutput } from '../../../../utils/collection-minting-utils/nft.utils';
 import { generateRandomAmount, getProject, getProjects } from '../../../../utils/common.utils';
-import { getBucket } from '../../../../utils/config.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
-import { migrateUriToSotrage, uriToUrl } from '../../../../utils/media.utils';
+import { getRandomBuild5Url, uriToUrl } from '../../../../utils/media.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getSpaceByAliasId } from '../../../../utils/space.utils';
 import {
@@ -85,13 +84,8 @@ export const createStampAndStampOrder = async (
 ) => {
   const stampUid = getRandomEthAddress();
 
-  let build5Url = uri;
-  if (!isStorageUrl(uri)) {
-    const bucket = build5Storage().bucket(getBucket());
-    build5Url = await migrateUriToSotrage(COL.STAMP, owner, stampUid, uriToUrl(uri), bucket, true);
-  }
-
-  const { ipfsMedia, bytes, hash } = await downloadMediaAndPackCar(stampUid, build5Url, {});
+  const url = uriToUrl(uri);
+  const car = await downloadMediaAndPackCar(stampUid, url);
 
   const space = await getSpace(project, owner, aliasId);
   const stamp: Stamp = {
@@ -101,11 +95,12 @@ export const createStampAndStampOrder = async (
     space: space.uid,
     createdBy: owner,
 
-    build5Url,
-    originUri: uri,
-    checksum: hash,
-    bytes,
+    build5Url: isStorageUrl(url) ? url : '',
+    originUri: url,
+    checksum: car.hash,
+    bytes: car.bytes,
     costPerMb: STAMP_COST_PER_MB,
+    extension: car.extension,
 
     network,
 
@@ -114,7 +109,7 @@ export const createStampAndStampOrder = async (
     funded: false,
     expired: false,
 
-    ipfsMedia: ipfsMedia,
+    ipfsMedia: car.ipfsMedia,
     aliasId,
   };
 
@@ -218,7 +213,7 @@ const getNftOutputAmount = async (stamp: Stamp, aliasId: string, wallet: SmrWall
 export const stampToNftMetadata = (stamp: Stamp) => ({
   originUri: stamp.originUri,
   uri: 'ipfs://' + stamp.ipfsMedia,
-  build5Url: stamp.build5Url,
+  build5Url: stamp.build5Url || getRandomBuild5Url(stamp.createdBy!, stamp.uid, stamp.extension),
   checksum: stamp.checksum,
   issuerName: KEY_NAME_TANGLE,
   build5Id: stamp.uid,

@@ -27,7 +27,7 @@ export class CommonJoi {
 export const isStorageUrl = (url: string | undefined) =>
   !isEmpty(url) && startsWithBaseUrl(url || '') && (isEmulatorEnv() || !url?.includes('?'));
 
-const BASE_URLS = {
+export const BUCKET_BASE_URLS = {
   [Bucket.PROD]: 'https://' + Bucket.PROD + '/',
   [Bucket.TEST]: 'https://' + Bucket.TEST + '/',
   [Bucket.DEV]: `https://firebasestorage.googleapis.com/v0/b/${Bucket.DEV}/o/`,
@@ -37,19 +37,19 @@ const BASE_URLS = {
 const startsWithBaseUrl = (url: string) => {
   if (isEmulatorEnv()) {
     return (
-      url.startsWith(BASE_URLS[Bucket.DEV]) ||
-      url.startsWith(BASE_URLS[Bucket.TEST]) ||
-      url.startsWith(BASE_URLS['local'])
+      url.startsWith(BUCKET_BASE_URLS[Bucket.DEV]) ||
+      url.startsWith(BUCKET_BASE_URLS[Bucket.TEST]) ||
+      url.startsWith(BUCKET_BASE_URLS['local'])
     );
   }
   if (isProdEnv()) {
-    return url.startsWith(BASE_URLS[Bucket.PROD]);
+    return url.startsWith(BUCKET_BASE_URLS[Bucket.PROD]);
   }
-  return url.startsWith(BASE_URLS[Bucket.TEST]);
+  return url.startsWith(BUCKET_BASE_URLS[Bucket.TEST]);
 };
 
 export const getBuild5FromUri = (url: string) =>
-  Object.values(BASE_URLS)
+  Object.values(BUCKET_BASE_URLS)
     .reduce((acc, act) => acc.replace(act, ''), url)
     .replace(/%2F/g, '/')
     .split('?')[0]

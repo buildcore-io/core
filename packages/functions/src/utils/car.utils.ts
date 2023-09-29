@@ -35,11 +35,11 @@ export const packCar = async (directory: string) => {
   }
 };
 
-export const downloadMediaAndPackCar = async <M>(uid: string, mediaUrl: string, metadata: M) => {
+export const downloadMediaAndPackCar = async <M>(uid: string, mediaUrl: string, metadata?: M) => {
   const workdir = `${os.tmpdir()}/${randomUUID()}`;
   fs.mkdirSync(workdir);
 
-  const { size: bytes, hash } = await downloadFile(mediaUrl, workdir, uid);
+  const { size: bytes, hash, extension } = await downloadFile(mediaUrl, workdir, uid);
 
   const metadataFileName = `metadata.json`;
   if (!isEmpty(metadata)) {
@@ -56,6 +56,7 @@ export const downloadMediaAndPackCar = async <M>(uid: string, mediaUrl: string, 
     ipfsRoot: cid,
     bytes,
     hash,
+    extension,
   };
 };
 

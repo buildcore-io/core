@@ -6,6 +6,7 @@ export interface Stamp extends BaseRecord {
   build5Url: string;
   originUri: string;
   checksum: string;
+  extension: string;
 
   bytes: number;
   costPerMb: number;
