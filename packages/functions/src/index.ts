@@ -53,6 +53,7 @@ import {
   updateSpace,
 } from './runtime/firebase/space';
 import { depositStake, removeStakeReward, stakeReward } from './runtime/firebase/stake';
+import { stamp } from './runtime/firebase/stamp';
 import { uploadFile } from './runtime/firebase/storage/file.upload';
 import {
   airdropToken,
@@ -208,3 +209,5 @@ exports[WEN_FUNC.uploadFile] = uploadFile;
 
 exports[WEN_FUNC.createProject] = createProject;
 exports[WEN_FUNC.deactivateProject] = deactivateProject;
+
+exports[WEN_FUNC.stamp] = stamp;

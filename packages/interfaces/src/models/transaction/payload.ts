@@ -150,4 +150,6 @@ export interface TransactionPayload {
   disableWithdraw?: boolean;
 
   lockCollectionNft?: boolean;
+
+  stamp?: string;
 }

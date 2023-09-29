@@ -1,5 +1,11 @@
 import { build5Storage } from '@build-5/database';
-import { Bucket, WEN_FUNC, WenError, generateRandomFileName } from '@build-5/interfaces';
+import {
+  Bucket,
+  MAX_FILE_SIZE_BYTES,
+  WEN_FUNC,
+  WenError,
+  generateRandomFileName,
+} from '@build-5/interfaces';
 import busboy from 'busboy';
 import cors from 'cors';
 import express from 'express';
@@ -10,10 +16,8 @@ import os from 'os';
 import path from 'path';
 import { getBucket } from '../../../utils/config.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
-import { fileUploadSchema } from './FileUploadRequestSchema';
 import { onRequestConfig } from '../common';
-
-const MAX_FILE_SIZE_BYTES = 104857600; // 100 MB
+import { fileUploadSchema } from './FileUploadRequestSchema';
 
 export const uploadFile = functions.https.onRequest(
   onRequestConfig(WEN_FUNC.uploadFile, { memory: '512MiB' }),

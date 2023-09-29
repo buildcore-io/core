@@ -26,8 +26,8 @@ process.env.GCLOUD_PROJECT = projectId;
 
 export const getConfig = () => {
   if (process.env.LOCAL_TEST) {
-    process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
-    process.env.FIREBASE_STORAGE_EMULATOR_HOST = 'localhost:9199';
+    process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
+    process.env.FIREBASE_STORAGE_EMULATOR_HOST = '127.0.0.1:9199';
     return {
       projectId,
       storageBucket: 'soonaverse-dev.appspot.com',

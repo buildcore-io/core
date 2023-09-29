@@ -1,0 +1,86 @@
+import { build5Db } from '@build-5/database';
+import {
+  COL,
+  KEY_NAME_TANGLE,
+  MIN_IOTA_AMOUNT,
+  MediaStatus,
+  Stamp,
+  Transaction,
+  TransactionType,
+} from '@build-5/interfaces';
+import { INftOutput, IndexerPluginClient } from '@iota/iota.js-next';
+import dayjs from 'dayjs';
+import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
+import { MnemonicService } from '../../src/services/wallet/mnemonic';
+import { EMPTY_ALIAS_ID } from '../../src/utils/token-minting-utils/alias.utils';
+import { wait } from '../../test/controls/common';
+import { getNftMetadata } from '../collection-minting/Helper';
+import { Helper } from './Helper';
+
+const CUSTOM_MEDIA =
+  'https://ipfs.io/ipfs/bafkreiapx7kczhfukx34ldh3pxhdip5kgvh237dlhp55koefjo6tyupnj4';
+
+describe('Stamp tangle test', () => {
+  const helper = new Helper();
+
+  beforeAll(helper.beforeAll);
+  beforeEach(helper.beforeEach);
+
+  it('Should create and mint stamp with ipfs file', async () => {
+    await helper.wallet!.send(
+      helper.address,
+      helper.tangleOrder.payload.targetAddress!,
+      MIN_IOTA_AMOUNT,
+      { customMetadata: { request: { ...helper.request, uri: CUSTOM_MEDIA } } },
+    );
+    await MnemonicService.store(helper.address.bech32, helper.address.mnemonic);
+
+    const creditResponse = await helper.getCreditResponse();
+    const thirtyDayCost =
+      (creditResponse.dailyCost as number) * 30 + (creditResponse.amountToMint as number);
+    await helper.wallet!.send(helper.address, creditResponse.address as string, thirtyDayCost, {});
+    await MnemonicService.store(helper.address.bech32, helper.address.mnemonic);
+
+    const stampDocRef = build5Db().doc(`${COL.STAMP}/${creditResponse.stamp}`);
+    await wait(async () => {
+      const stamp = await stampDocRef.get<Stamp>();
+      return stamp?.funded;
+    });
+    let stamp = await stampDocRef.get<Stamp>();
+    expect(stamp?.mediaStatus).toBe(MediaStatus.PENDING_UPLOAD);
+    expect(stamp?.ipfsMedia).toBeDefined();
+    expect(stamp?.originUri).toBe(CUSTOM_MEDIA);
+
+    const expiresAfter30Days = dayjs(stamp?.expiresAt.toDate()).isAfter(dayjs().add(8.64e7));
+    expect(expiresAfter30Days).toBe(true);
+
+    await uploadMediaToWeb3();
+    await wait(async () => {
+      const stamp = await stampDocRef.get<Stamp>();
+      return stamp?.mediaStatus === MediaStatus.UPLOADED;
+    });
+    const uploadedMediaStamp = await stampDocRef.get<Stamp>();
+    expect(uploadedMediaStamp?.ipfsMedia).toBe(stamp?.ipfsMedia);
+
+    await wait(async () => {
+      stamp = await stampDocRef.get<Stamp>();
+      return stamp?.aliasId !== EMPTY_ALIAS_ID && stamp?.nftId !== undefined;
+    });
+
+    const indexer = new IndexerPluginClient(helper.wallet.client);
+    const nftOutputId = (await indexer.nft(stamp?.nftId!)).items[0];
+    const nftOutput = (await helper.wallet.client.output(nftOutputId)).output as INftOutput;
+    const metadata = getNftMetadata(nftOutput);
+    expect(metadata.uri).toBe('ipfs://' + stamp!.ipfsMedia);
+    expect(metadata.issuerName).toBe(KEY_NAME_TANGLE);
+    expect(metadata.build5Id).toBe(stamp!.uid);
+
+    const billPayment = await build5Db()
+      .collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .where('payload.stamp', '==', stamp?.uid)
+      .get<Transaction>();
+    expect(billPayment.length).toBe(1);
+    expect(billPayment[0].payload.amount).toBe((creditResponse.dailyCost as number) * 30);
+  });
+});

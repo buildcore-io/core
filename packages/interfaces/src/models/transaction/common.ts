@@ -36,6 +36,8 @@ export enum TransactionType {
   UNLOCK = 'UNLOCK',
 
   METADATA_NFT = 'METADATA_NFT',
+
+  STAMP = 'STAMP',
 }
 
 /**
@@ -113,6 +115,8 @@ export enum TransactionPayloadType {
   MINTED_TOKEN_TRADE = 'MINTED_TOKEN_TRADE',
   BASE_TOKEN_TRADE = 'BASE_TOKEN_TRADE',
   BASE_AIRDROP_CLAIM = 'BASE_AIRDROP_CLAIM',
+
+  STAMP = 'STAMP',
 }
 
 export enum TransactionValidationType {

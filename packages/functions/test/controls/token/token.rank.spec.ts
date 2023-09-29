@@ -41,7 +41,7 @@ const dummyToken = (space: string) =>
     decimals: 6,
   } as any);
 
-describe.only('Token rank test', () => {
+describe('Token rank test', () => {
   let member: string;
   let space: Space;
   let token: any;

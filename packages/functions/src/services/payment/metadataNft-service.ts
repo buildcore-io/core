@@ -14,7 +14,6 @@ import {
   TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
-import { get } from 'lodash';
 import {
   getCollectionByMintingId,
   getNftByMintingId,
@@ -28,9 +27,9 @@ export class MetadataNftService extends BaseService {
     const payment = await this.transactionService.createPayment(order, match);
     this.transactionService.markAsReconciled(order, match.msgId);
 
-    const aliasId = get(order, 'payload.aliasId');
-    const collectionId = get(order, 'payload.collectionId');
-    const nftId = get(order, 'payload.nftId');
+    const aliasId = order.payload.aliasId;
+    const collectionId = order.payload.collectionId;
+    const nftId = order.payload.nftId;
 
     if (!aliasId) {
       const mintAlias: Transaction = {
@@ -43,14 +42,14 @@ export class MetadataNftService extends BaseService {
         network: order.network,
         payload: {
           type: TransactionPayloadType.MINT_ALIAS,
-          amount: get(order, 'payload.aliasOutputAmount', 0),
+          amount: order.payload.aliasOutputAmount || 0,
           sourceAddress: order.payload.targetAddress,
           targetAddress: order.payload.targetAddress,
           sourceTransaction: [payment.uid],
           reconciled: false,
           void: false,
           orderId: order.uid,
-          collectionOutputAmount: get(order, 'payload.collectionOutputAmount', 0),
+          collectionOutputAmount: order.payload.collectionOutputAmount || 0,
         },
       };
       this.transactionService.push({
@@ -83,10 +82,10 @@ export class MetadataNftService extends BaseService {
     const nft = nftId
       ? (await getNftByMintingId(nftId))!
       : createMetadataNft(
-          get(order, 'member', '')!,
-          get(order, 'space', '')!,
+          order.member || '',
+          order.space || '',
           collection!.uid,
-          get(order, 'payload.metadata', {}),
+          order.payload.metadata || {},
         );
     if (!nftId) {
       const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
@@ -99,7 +98,7 @@ export class MetadataNftService extends BaseService {
       order,
       nft,
       space?.alias?.address!,
-      get(order, 'payload.collectionId', ''),
+      order.payload.collectionId || '',
       order.uid,
     );
     const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${mintNftOrder.uid}`);
@@ -198,7 +197,7 @@ export const createMintMetadataNftOrder = (
     sourceAddress: transaction.payload.targetAddress,
     aliasGovAddress,
     targetAddress: transaction.payload.targetAddress,
-    aliasId: get(transaction, 'payload.aliasId', ''),
+    aliasId: transaction.payload.aliasId || '',
     collectionId,
     orderId: baseOrderId,
     nft: nft.uid,

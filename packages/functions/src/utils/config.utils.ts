@@ -2,9 +2,11 @@ import {
   Bucket,
   COL,
   CUSTOM_TOKEN_MAX_LIFETIME,
+  Network,
   PROD_NETWORKS,
   RANKING,
   RANKING_TEST,
+  STAMP_ROYALTY_ADDRESS,
   TEST_NETWORKS,
   TOKEN_SALE,
   TOKEN_SALE_TEST,
@@ -69,3 +71,5 @@ export const algoliaKey = () => process.env.ALGOLIA_KEY!;
 export const xpTokenId = () => process.env.XPTOKEN_ID!;
 export const xpTokenUid = () => process.env.XPTOKEN_UID!;
 export const xpTokenGuardianId = () => process.env.XPTOKEN_GUARDIANID!;
+
+export const getStampRoyaltyAddress = (network: Network) => STAMP_ROYALTY_ADDRESS[network];

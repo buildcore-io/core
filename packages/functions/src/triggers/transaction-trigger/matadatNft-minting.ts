@@ -61,6 +61,7 @@ const onAliasMinted = async (transaction: Transaction) => {
 
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${transaction.space}`);
   batch.update(spaceDocRef, {
+    name: `Space of alias: ${aliasId}`,
     alias: {
       address: transaction.payload.targetAddress,
       aliasId,

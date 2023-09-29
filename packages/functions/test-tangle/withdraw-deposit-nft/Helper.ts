@@ -14,6 +14,7 @@ import {
   NetworkAddress,
   Nft,
   NftAccess,
+  SOON_PROJECT_ID,
   SUB_COL,
   Space,
   Timestamp,
@@ -50,6 +51,7 @@ import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { AddressDetails } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
 import { packEssence, packPayload, submitBlock } from '../../src/utils/block.utils';
+import { getProjects } from '../../src/utils/common.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { createUnlock } from '../../src/utils/smr.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -185,6 +187,8 @@ export class Helper {
   ) => {
     if (!expiresOn) {
       const order: Transaction = {
+        project: SOON_PROJECT_ID,
+        projects: getProjects([], SOON_PROJECT_ID),
         type: TransactionType.WITHDRAW_NFT,
         uid: getRandomEthAddress(),
         member: this.guardian,

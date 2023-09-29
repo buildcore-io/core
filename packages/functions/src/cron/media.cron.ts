@@ -7,6 +7,7 @@ import {
   MediaStatus,
   Nft,
   Space,
+  Stamp,
   Token,
 } from '@build-5/interfaces';
 import * as functions from 'firebase-functions/v2';
@@ -19,7 +20,9 @@ import {
   tokenToIpfsMetadata,
 } from '../utils/car.utils';
 import { spaceToIpfsMetadata } from '../utils/space.utils';
+
 export const MEDIA_UPLOAD_BACH_SIZE = 30;
+
 export const uploadMediaToWeb3 = async () => {
   let batchSize = MEDIA_UPLOAD_BACH_SIZE;
 
@@ -29,6 +32,7 @@ export const uploadMediaToWeb3 = async () => {
     { col: COL.COLLECTION, func: uploadCollectionMedia },
     { col: COL.AWARD, func: uploadAwardMedia },
     { col: COL.SPACE, func: uploadSpaceMedia },
+    { col: COL.STAMP, func: uploadStampMedia },
   ];
 
   const promises: Promise<void>[] = [];
@@ -124,6 +128,17 @@ const uploadSpaceMedia = async (space: Space) => {
   const { car, ...ipfs } = await downloadMediaAndPackCar(space.uid, space.bannerUrl!, metadata);
   await putCar(car);
   await spaceDocRef.update({ mediaStatus: MediaStatus.UPLOADED, ...ipfs });
+};
+
+const uploadStampMedia = async (stamp: Stamp) => {
+  const stampDocRef = build5Db().doc(`${COL.STAMP}/${stamp.uid}`);
+  const { car, ...ipfs } = await downloadMediaAndPackCar(stamp.uid, stamp.build5Url);
+  await putCar(car);
+  stampDocRef.update({
+    mediaStatus: MediaStatus.UPLOADED,
+    ipfsMedia: ipfs.ipfsMedia,
+    ipfsRoot: ipfs.ipfsRoot,
+  });
 };
 
 const pendingUploadQuery = (col: COL, batchSize: number) =>

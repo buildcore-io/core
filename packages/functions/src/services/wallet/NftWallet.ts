@@ -9,6 +9,7 @@ import {
   Nft,
   NftStatus,
   Space,
+  Stamp,
   Transaction,
 } from '@build-5/interfaces';
 import {
@@ -51,6 +52,7 @@ import {
 import { createUnlock } from '../../utils/smr.utils';
 import { EMPTY_ALIAS_ID, getAliasBech32Address } from '../../utils/token-minting-utils/alias.utils';
 import { awardBadgeToNttMetadata, awardToCollectionMetadata } from '../payment/award/award-service';
+import { stampToNftMetadata } from '../payment/tangle-service/stamp/StampTangleService';
 import { SmrParams, SmrWallet } from './SmrWalletService';
 import { MnemonicService } from './mnemonic';
 import { AliasWallet } from './smr-wallets/AliasWallet';
@@ -485,6 +487,85 @@ export class NftWallet {
     );
     if (!sourceIsGov) {
       await setConsumedOutputIds(aliasGovAddress.bech32, [], [collectionOutputId], [aliasOutputId]);
+    }
+    return await submitBlock(this.wallet, packPayload(essence, unlocks));
+  };
+
+  public mintStampNft = async (transaction: Transaction, params: SmrParams) => {
+    const sourceIsGov =
+      !transaction.payload.aliasGovAddress ||
+      transaction.payload.aliasGovAddress === transaction.payload.sourceAddress;
+
+    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress);
+    const sourceMnemonic = await MnemonicService.getData(sourceAddress.bech32);
+
+    const outputsMap = await this.wallet.getOutputs(
+      sourceAddress.bech32,
+      sourceMnemonic.consumedOutputIds,
+      false,
+    );
+    const remainder = mergeOutputs(Object.values(outputsMap));
+
+    const aliasGovAddress = await this.wallet.getAddressDetails(
+      transaction.payload.aliasGovAddress || sourceAddress.bech32,
+    );
+
+    const aliasGovMnemonic = sourceIsGov
+      ? sourceMnemonic
+      : await MnemonicService.getData(aliasGovAddress.bech32);
+    const aliasWallet = new AliasWallet(this.wallet);
+    const aliasOutputs = await aliasWallet.getAliasOutputs(
+      aliasGovAddress.bech32,
+      aliasGovMnemonic.consumedAliasOutputIds,
+    );
+    const [aliasOutputId, aliasOutput] = Object.entries(aliasOutputs)[0];
+    const nextAliasOutput = cloneDeep(aliasOutput);
+    if (nextAliasOutput.aliasId === EMPTY_ALIAS_ID) {
+      nextAliasOutput.aliasId = TransactionHelper.resolveIdFromOutputId(aliasOutputId);
+    }
+    nextAliasOutput.stateIndex++;
+
+    const stampDocRef = build5Db().doc(`${COL.STAMP}/${transaction.payload.stamp}`);
+    const stamp = <Stamp>await stampDocRef.get();
+
+    const issuerAddress: AddressTypes = {
+      type: ALIAS_ADDRESS_TYPE,
+      aliasId: nextAliasOutput.aliasId,
+    };
+    const collectionOutput = createNftOutput(
+      issuerAddress,
+      issuerAddress,
+      JSON.stringify(stampToNftMetadata(stamp)),
+      this.wallet.info,
+    );
+    remainder.amount = (Number(remainder.amount) - Number(collectionOutput.amount)).toString();
+
+    const inputs = [aliasOutputId, ...Object.keys(outputsMap)].map(
+      TransactionHelper.inputFromOutputId,
+    );
+    const inputsCommitment = TransactionHelper.getInputsCommitment([
+      aliasOutput,
+      ...Object.values(outputsMap),
+    ]);
+    const outputs = Number(remainder.amount)
+      ? [nextAliasOutput, collectionOutput, remainder]
+      : [nextAliasOutput, collectionOutput];
+    const essence = packEssence(inputs, inputsCommitment, outputs, this.wallet, params);
+    const unlocks: UnlockTypes[] = [
+      createUnlock(essence, aliasGovAddress.keyPair),
+      sourceIsGov
+        ? { type: REFERENCE_UNLOCK_TYPE, reference: 0 }
+        : createUnlock(essence, sourceAddress.keyPair),
+    ];
+
+    await setConsumedOutputIds(
+      sourceAddress.bech32,
+      Object.keys(outputsMap),
+      [],
+      sourceIsGov ? [aliasOutputId] : [],
+    );
+    if (!sourceIsGov) {
+      await setConsumedOutputIds(aliasGovAddress.bech32, [], [], [aliasOutputId]);
     }
     return await submitBlock(this.wallet, packPayload(essence, unlocks));
   };

@@ -27,6 +27,7 @@ import { NftPurchaseService } from './nft/nft-purchase.service';
 import { NftStakeService } from './nft/nft-stake.service';
 import { SpaceClaimService } from './space/space-service';
 import { StakeService } from './stake-service';
+import { StampService } from './stamp.service';
 import { TangleRequestService } from './tangle-service/TangleRequestService';
 import { ImportMintedTokenService } from './token/import-minted-token.service';
 import { TokenAirdropClaimService } from './token/token-airdrop-claim.service';
@@ -183,6 +184,8 @@ export class ProcessingService {
         return new ImportMintedTokenService(tranService);
       case TransactionPayloadType.MINT_METADATA_NFT:
         return new MetadataNftService(tranService);
+      case TransactionPayloadType.STAMP:
+        return new StampService(tranService);
       default:
         throw invalidArgument(WenError.invalid_tangle_request_type);
     }

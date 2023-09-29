@@ -13,6 +13,7 @@ import { voidExpiredOrdersCron } from './cron/orders.cron';
 import { markExpiredProposalCompleted } from './cron/proposal.cron';
 import { removeExpiredStakesFromSpace } from './cron/stake.cron';
 import { stakeRewardCronTask } from './cron/stakeReward.cron';
+import { updateExpiredStamp } from './cron/stamp.cron';
 import { cancelExpiredSale, tokenCoolDownOver } from './cron/token.cron';
 import { removePurchasesFromVolumeStats } from './cron/token.purchase.cron';
 import { retryWallet } from './cron/wallet.cron';
@@ -97,6 +98,8 @@ const removePurchasesFromVolumeStatsCron = functions.scheduler.onSchedule(
   removePurchasesFromVolumeStats,
 );
 
+const updateExpiredStampCron = functions.scheduler.onSchedule('every 1 hour', updateExpiredStamp);
+
 export const cron = isProdOrTestEnv()
   ? {
       retrywalletcron: retryWalletCron,
@@ -114,5 +117,6 @@ export const cron = isProdOrTestEnv()
       updatefloorpriceoncollectionscron: updateFloorPriceOnCollectionsCron,
       markexpiredproposalcompletedcron: markExpiredProposalCompletedCron,
       removepurchasesfromvolumestatscron: removePurchasesFromVolumeStatsCron,
+      updateexpiredstampcron: updateExpiredStampCron,
     }
   : {};

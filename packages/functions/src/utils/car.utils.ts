@@ -35,25 +35,28 @@ export const packCar = async (directory: string) => {
   }
 };
 
-export const downloadMediaAndPackCar = async <M>(uid: string, mediaUrl: string, metadata: M) => {
+export const downloadMediaAndPackCar = async <M>(uid: string, mediaUrl: string, metadata?: M) => {
   const workdir = `${os.tmpdir()}/${randomUUID()}`;
   fs.mkdirSync(workdir);
 
-  await downloadFile(mediaUrl, workdir, uid);
+  const { size: bytes, hash, extension } = await downloadFile(mediaUrl, workdir, uid);
 
   const metadataFileName = `metadata.json`;
-  fs.writeFileSync(workdir + '/' + metadataFileName, JSON.stringify(metadata));
+  if (!isEmpty(metadata)) {
+    fs.writeFileSync(workdir + '/' + metadataFileName, JSON.stringify(metadata));
+  }
 
   const { car, cid } = await packCar(workdir);
   const cidMap = getNameToCidMap(car);
-
   fs.rmSync(workdir, { recursive: true, force: true });
-
   return {
     car,
     ipfsMedia: cidMap[uid],
-    ipfsMetadata: cidMap[metadataFileName],
+    ipfsMetadata: cidMap[metadataFileName] || '',
     ipfsRoot: cid,
+    bytes,
+    hash,
+    extension,
   };
 };
 

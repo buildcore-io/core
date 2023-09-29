@@ -15,6 +15,7 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
+import { getProjects } from '../../src/utils/common.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -470,6 +471,8 @@ describe('ProposalController: ' + WEN_FUNC.createProposal + ' MEMBERS', () => {
 
 export const saveBaseToken = async (space: string, guardian: string) => {
   const token = {
+    project: SOON_PROJECT_ID,
+    projects: getProjects([], SOON_PROJECT_ID),
     symbol: getRandomSymbol(),
     approved: true,
     updatedOn: serverTime(),
