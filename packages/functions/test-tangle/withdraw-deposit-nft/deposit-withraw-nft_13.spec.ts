@@ -13,8 +13,7 @@ import { cloneDeep } from 'lodash';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { depositNft } from '../../src/runtime/firebase/nft';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
+import { AddressDetails, WalletService } from '../../src/services/wallet/wallet.service';
 import { packBasicOutput } from '../../src/utils/basic-output.utils';
 import { indexToString, packEssence, packPayload, submitBlock } from '../../src/utils/block.utils';
 import { EMPTY_NFT_ID, createNftOutput } from '../../src/utils/collection-minting-utils/nft.utils';
@@ -120,7 +119,7 @@ describe('Collection minting', () => {
 });
 
 const mintCustomCollection = async (address: AddressDetails, metadata: any) => {
-  const wallet = (await WalletService.newWallet(Network.RMS)) as SmrWallet;
+  const wallet = await WalletService.newWallet(Network.RMS);
   const consumedOutputs = await wallet.getOutputs(address.bech32, [], false);
   const totalAmount = Object.values(consumedOutputs).reduce(
     (acc, act) => acc + Number(act.amount),
@@ -155,7 +154,7 @@ const mintCustomCollection = async (address: AddressDetails, metadata: any) => {
 };
 
 const mintNft = async (address: AddressDetails, metadata: any) => {
-  const wallet = (await WalletService.newWallet(Network.RMS)) as SmrWallet;
+  const wallet = await WalletService.newWallet(Network.RMS);
   const nftWallet = new NftWallet(wallet);
 
   const consumedOutputs = await wallet.getOutputs(address.bech32, [], false);

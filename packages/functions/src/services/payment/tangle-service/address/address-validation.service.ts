@@ -21,7 +21,7 @@ import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { WalletService } from '../../../wallet/wallet';
+import { WalletService } from '../../../wallet/wallet.service';
 import { TransactionService } from '../../transaction-service';
 import { validateAddressSchemaObject } from './AddressValidationTangleRequestSchema';
 
@@ -49,10 +49,6 @@ export class TangleAddressValidationService {
       data: order,
       action: 'set',
     });
-
-    if ([Network.IOTA, Network.ATOI].includes(params.network as Network)) {
-      return { amount: order.payload.amount!, address: order.payload.targetAddress! };
-    }
 
     this.transactionService.createUnlockTransaction(
       order,

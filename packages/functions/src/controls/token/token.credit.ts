@@ -2,8 +2,8 @@ import {
   COL,
   CreditTokenRequest,
   DEFAULT_NETWORK,
-  Member,
   MIN_IOTA_AMOUNT,
+  Member,
   SUB_COL,
   Token,
   TokenDistribution,
@@ -34,7 +34,6 @@ export const creditTokenControl = async (
   await build5Db().runTransaction(async (transaction) => {
     const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
     const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(owner);
-
     const distribution = await transaction.get<TokenDistribution>(distributionDocRef);
     if (!distribution || (distribution.totalDeposit || 0) < params.amount) {
       throw invalidArgument(WenError.not_enough_funds);

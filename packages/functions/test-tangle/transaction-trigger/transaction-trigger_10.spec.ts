@@ -2,7 +2,7 @@
 import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
-import { AddressDetails } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { wait } from '../../test/controls/common';

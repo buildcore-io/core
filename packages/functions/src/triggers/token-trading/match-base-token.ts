@@ -18,8 +18,7 @@ import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { ITransaction } from '../../firebase/firestore/interfaces';
-import { SmrWallet } from '../../services/wallet/SmrWalletService';
-import { WalletService } from '../../services/wallet/wallet';
+import { WalletService } from '../../services/wallet/wallet.service';
 import { getAddress } from '../../utils/address.utils';
 import { packBasicOutput } from '../../utils/basic-output.utils';
 import { getRoyaltyFees } from '../../utils/royalty.utils';
@@ -145,7 +144,7 @@ const createSmrPayments = async (
   tokensToTrade: number,
   price: number,
 ): Promise<Transaction[]> => {
-  const wallet = (await WalletService.newWallet(buy.sourceNetwork!)) as SmrWallet;
+  const wallet = await WalletService.newWallet(buy.sourceNetwork!);
   const tmpAddress = await wallet.getNewIotaAddressDetails(false);
   const buyOrder = await build5Db()
     .doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`)

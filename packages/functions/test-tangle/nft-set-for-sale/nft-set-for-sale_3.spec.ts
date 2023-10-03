@@ -24,7 +24,7 @@ describe('Nft set for acution OTR', () => {
 
   beforeAll(async () => {
     await helper.beforeAll();
-    tangleOrder = await getTangleOrder();
+    tangleOrder = await getTangleOrder(Network.RMS);
   });
 
   beforeEach(async () => {

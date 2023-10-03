@@ -42,8 +42,8 @@ import {
   createAliasOutput,
 } from '../../../../utils/token-minting-utils/alias.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { SmrWallet } from '../../../wallet/SmrWalletService';
-import { WalletService } from '../../../wallet/wallet';
+import { Wallet } from '../../../wallet/wallet';
+import { WalletService } from '../../../wallet/wallet.service';
 import { TransactionMatch, TransactionService } from '../../transaction-service';
 import { metadataNftSchema } from './MetadataNftTangleRequestSchema';
 
@@ -60,7 +60,7 @@ export class MintMetadataNftService {
   ) => {
     const params = await assertValidationAsync(metadataNftSchema, request);
 
-    const wallet = (await WalletService.newWallet(network)) as SmrWallet;
+    const wallet = await WalletService.newWallet(network);
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
     const { nftId, collectionId, aliasId } = await getIds(params, wallet);
@@ -144,7 +144,7 @@ export class MintMetadataNftService {
   };
 }
 
-const getAliasOutputAmount = async (owner: string, space: Space, wallet: SmrWallet) => {
+const getAliasOutputAmount = async (owner: string, space: Space, wallet: Wallet) => {
   const targetAddress = await wallet.getNewIotaAddressDetails();
   if (isEmpty(space.alias)) {
     const aliasOutput = createAliasOutput(targetAddress, wallet.info);
@@ -165,11 +165,7 @@ const getAliasOutputAmount = async (owner: string, space: Space, wallet: SmrWall
   return 0;
 };
 
-const getCollectionOutputAmount = async (
-  aliasId: string,
-  collectionId: string,
-  wallet: SmrWallet,
-) => {
+const getCollectionOutputAmount = async (aliasId: string, collectionId: string, wallet: Wallet) => {
   if (collectionId === EMPTY_NFT_ID) {
     const issuerAddress: AddressTypes = { type: ALIAS_ADDRESS_TYPE, aliasId };
     const collectionOutput = createNftOutput(issuerAddress, issuerAddress, '', wallet.info);
@@ -178,11 +174,7 @@ const getCollectionOutputAmount = async (
   return 0;
 };
 
-const createMetadataNftOutput = async (
-  wallet: SmrWallet,
-  collectionId: string,
-  metadata: object,
-) => {
+const createMetadataNftOutput = async (wallet: Wallet, collectionId: string, metadata: object) => {
   const targetAddress = await wallet.getNewIotaAddressDetails();
   const issuerAddress: AddressTypes = { type: NFT_ADDRESS_TYPE, nftId: collectionId };
   const ownerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: targetAddress.hex };
@@ -222,7 +214,7 @@ const getNftOutputAmount = async (
   collectionId: string,
   nftId: string,
   metadata: object,
-  wallet: SmrWallet,
+  wallet: Wallet,
 ) => {
   if (nftId === EMPTY_NFT_ID) {
     const nftOutput = await createMetadataNftOutput(wallet, collectionId, metadata);
@@ -235,7 +227,7 @@ const getNftOutputAmount = async (
   throw invalidArgument(WenError.nft_not_deposited);
 };
 
-const getIds = async (request: MintMetadataNftTangleRequest, wallet: SmrWallet) => {
+const getIds = async (request: MintMetadataNftTangleRequest, wallet: Wallet) => {
   const indexer = new IndexerPluginClient(wallet.client);
   const nftId = request.nftId as string;
   if (nftId) {
@@ -256,7 +248,7 @@ const getIds = async (request: MintMetadataNftTangleRequest, wallet: SmrWallet) 
   return { nftId: EMPTY_NFT_ID, collectionId: EMPTY_NFT_ID, aliasId };
 };
 
-const getCollectionId = async (wallet: SmrWallet, indexer: IndexerPluginClient, nftId: string) => {
+const getCollectionId = async (wallet: Wallet, indexer: IndexerPluginClient, nftId: string) => {
   try {
     const nftOutputId = (await indexer.nft(nftId)).items[0];
     const nftOutput = (await wallet.client.output(nftOutputId)).output as INftOutput;
@@ -267,7 +259,7 @@ const getCollectionId = async (wallet: SmrWallet, indexer: IndexerPluginClient, 
 };
 
 const getCollectionOutput = async (
-  wallet: SmrWallet,
+  wallet: Wallet,
   indexer: IndexerPluginClient,
   collectionId: string,
 ) => {

@@ -14,8 +14,8 @@ import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails, WalletService } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, wait } from '../../test/controls/common';
@@ -31,31 +31,31 @@ describe('Award tangle request', () => {
   let guardian: string;
   let space: Space;
   let guardianAddress: AddressDetails;
-  let walletService: SmrWallet;
+  let walletService: Wallet;
   let token: Token;
   let tangleOrder: Transaction;
 
-  beforeAll(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    walletService = (await WalletService.newWallet(network)) as SmrWallet;
-    tangleOrder = await getTangleOrder();
-  });
+  const beforeEach = async (network: Network) => {
+    tangleOrder = await getTangleOrder(network);
 
-  beforeEach(async () => {
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    walletService = await WalletService.newWallet(network);
+
     guardian = await createMember(walletSpy);
     space = await createSpace(walletSpy, guardian);
 
-    token = await saveBaseToken(space.uid, guardian);
+    token = await saveBaseToken(space.uid, guardian, network);
 
     const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${guardian}`);
     const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, network);
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
-  });
+  };
 
   it('Should create with tangle request, fund and approve', async () => {
-    const newAward = awardRequest(space.uid, token.symbol);
-    await requestFundsFromFaucet(Network.RMS, guardianAddress.bech32, 5 * MIN_IOTA_AMOUNT);
+    await beforeEach(network);
+    const newAward = awardRequest(space.uid, token.symbol, network);
+    await requestFundsFromFaucet(network, guardianAddress.bech32, 5 * MIN_IOTA_AMOUNT);
     await walletService.send(guardianAddress, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
       customMetadata: { request: { requestType: TangleRequestType.AWARD_CREATE, ...newAward } },
     });
@@ -72,7 +72,7 @@ describe('Award tangle request', () => {
     let snap = await creditQuery.get<Transaction>();
     let credit = snap[0] as Transaction;
     await requestFundsFromFaucet(
-      Network.RMS,
+      network,
       credit.payload.response!.address as string,
       credit.payload.response!.amount as number,
     );
@@ -111,7 +111,7 @@ describe('Award tangle request', () => {
   });
 });
 
-const awardRequest = (space: string, tokenSymbol: string) => ({
+const awardRequest = (space: string, tokenSymbol: string, network: Network) => ({
   name: 'award',
   description: 'award',
   space,

@@ -1,4 +1,5 @@
 import { MAX_WEEKS_TO_STAKE } from './config';
+import { COL, Network } from './models';
 
 const M = 1 / (MAX_WEEKS_TO_STAKE - 1);
 const B = 2 - M * MAX_WEEKS_TO_STAKE;
@@ -13,3 +14,16 @@ export const generateRandomFileName = () =>
     const v = c == 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
+
+export const getMilestoneCol = (network: Network) => {
+  switch (network) {
+    case Network.IOTA:
+      return COL.MILESTONE_SMR;
+    case Network.ATOI:
+      return COL.MILESTONE_RMS; //TODO set ti back to ATOI
+    case Network.SMR:
+      return COL.MILESTONE_SMR;
+    case Network.RMS:
+      return COL.MILESTONE_RMS;
+  }
+};

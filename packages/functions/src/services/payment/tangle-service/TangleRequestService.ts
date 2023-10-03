@@ -47,11 +47,11 @@ export class TangleRequestService {
     match: TransactionMatch,
     build5Transaction?: Transaction,
   ) => {
-    let owner = match.from.address;
+    let owner = match.from;
     let payment: Transaction | undefined;
 
     try {
-      owner = await this.getOwner(match.from.address, order.network!);
+      owner = await this.getOwner(match.from, order.network!);
       payment = await this.transactionService.createPayment({ ...order, member: owner }, match);
       const request = getOutputMetadata(tranEntry.output).request;
       const response = await this.handleTangleRequest(
@@ -128,7 +128,7 @@ export class TangleRequestService {
       }
       case TangleRequestType.NFT_PURCHASE: {
         const service = new TangleNftPurchaseService(this.transactionService);
-        return await service.handleNftPurchase(tran, tranEntry, owner, request);
+        return await service.handleNftPurchase(tran, tranEntry, owner, order, request);
       }
       case TangleRequestType.NFT_SET_FOR_SALE: {
         const service = new TangleNftSetForSaleService(this.transactionService);
@@ -136,7 +136,7 @@ export class TangleRequestService {
       }
       case TangleRequestType.NFT_BID: {
         const service = new TangleNftBidService(this.transactionService);
-        return await service.handleNftBid(tran, tranEntry, owner, request);
+        return await service.handleNftBid(tran, tranEntry, owner, order, request);
       }
       case TangleRequestType.CLAIM_MINTED_AIRDROPS: {
         const service = new TangleTokenClaimService(this.transactionService);

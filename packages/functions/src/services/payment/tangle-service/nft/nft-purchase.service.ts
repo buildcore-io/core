@@ -25,7 +25,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { AVAILABLE_NETWORKS } from '../../../../controls/common';
 import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { getAddress } from '../../../../utils/address.utils';
 import { getNftByMintingId } from '../../../../utils/collection-minting-utils/nft.utils';
@@ -38,7 +37,7 @@ import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getSpace } from '../../../../utils/space.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { assertHasAccess } from '../../../validators/access';
-import { WalletService } from '../../../wallet/wallet';
+import { WalletService } from '../../../wallet/wallet.service';
 import { TransactionService } from '../../transaction-service';
 import { nftPurchaseSchema } from './NftPurchaseTangleRequestSchema';
 
@@ -49,6 +48,7 @@ export class TangleNftPurchaseService {
     tran: MilestoneTransaction,
     tranEntry: MilestoneTransactionEntry,
     owner: string,
+    tangleOrder: Transaction,
     request: Record<string, unknown>,
   ): Promise<BaseTangleResponse | undefined> => {
     const params = await assertValidationAsync(nftPurchaseSchema, request);
@@ -63,23 +63,13 @@ export class TangleNftPurchaseService {
       action: 'set',
     });
 
-    const isMintedNft = AVAILABLE_NETWORKS.includes(order.network!);
-
-    if (isMintedNft && tranEntry.amount !== order.payload.amount) {
+    if (tranEntry.amount !== order.payload.amount || tangleOrder.network !== order.network) {
       return {
         status: 'error',
         amount: order.payload.amount!,
         address: order.payload.targetAddress!,
         code: WenError.invalid_base_token_amount.code,
         message: WenError.invalid_base_token_amount.key,
-      };
-    }
-
-    if (!isMintedNft) {
-      return {
-        status: 'success',
-        amount: order.payload.amount!,
-        address: order.payload.targetAddress!,
       };
     }
 

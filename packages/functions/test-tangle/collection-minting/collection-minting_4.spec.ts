@@ -29,7 +29,7 @@ describe('Collection minting', () => {
     await helper.beforeEach();
   });
 
-  it.only.each([false, true])(
+  it.each([false, true])(
     'Should mint, cancel active sells, not mint placeholder',
     async (limited: boolean) => {
       await helper.createAndOrderNft();

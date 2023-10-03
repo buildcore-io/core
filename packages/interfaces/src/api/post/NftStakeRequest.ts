@@ -10,7 +10,7 @@ export interface NftStakeRequest {
   /**
    * Network on which the nft was staked.
    */
-  network: 'smr' | 'rms';
+  network: 'iota' | 'smr' | 'atoi' | 'rms';
   /**
    * Type of the stake.
    */

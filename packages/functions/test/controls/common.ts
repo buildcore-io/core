@@ -10,15 +10,19 @@ import {
   Transaction,
   TransactionPayloadType,
   TransactionType,
+  getMilestoneCol,
 } from '@build-5/interfaces';
-import chance from 'chance';
+import { TransactionHelper } from '@iota/iota.js-next';
+import dayjs from 'dayjs';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { validateAddress } from '../../src/runtime/firebase/address';
 import { createMember as createMemberFunc } from '../../src/runtime/firebase/member';
 import { createSpace as createSpaceFunc } from '../../src/runtime/firebase/space/index';
+import { packBasicOutput } from '../../src/utils/basic-output.utils';
+import { packEssence, packPayload } from '../../src/utils/block.utils';
 import * as config from '../../src/utils/config.utils';
-import { serverTime } from '../../src/utils/dateTime.utils';
 import * as ipUtils from '../../src/utils/ip.utils';
+import { createUnlock } from '../../src/utils/smr.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { MEDIA, getWallet, testEnv } from '../set-up';
 
@@ -40,17 +44,16 @@ export const expectThrow = async <C, E>(call: C | Promise<C>, error: E, message?
 export const milestoneProcessed = async (
   nextMilestone: string,
   defTranId: string,
-  network?: Network,
+  network: Network,
 ) => {
   for (let attempt = 0; attempt < 400; ++attempt) {
     await new Promise((r) => setTimeout(r, 500));
-    const doc = await build5Db()
-      .doc(
-        `${COL.MILESTONE + (network ? `_${network}` : '')}/${nextMilestone}/${
-          SUB_COL.TRANSACTIONS
-        }/${defTranId}`,
-      )
-      .get<Record<string, unknown>>();
+    const milestoneTranDocRef = build5Db()
+      .collection(getMilestoneCol(network))
+      .doc(nextMilestone)
+      .collection(SUB_COL.TRANSACTIONS)
+      .doc(defTranId);
+    const doc = await milestoneTranDocRef.get<Record<string, unknown>>();
     if (doc?.processed) {
       return;
     }
@@ -58,30 +61,42 @@ export const milestoneProcessed = async (
   throw new Error('Milestone was not processed. Id: ' + nextMilestone);
 };
 
-export const submitMilestoneFunc = async (address: string, amount: number, network?: Network) =>
-  submitMilestoneOutputsFunc([{ address, amount }], network);
+export const submitMilestoneFunc = async (order: Transaction, customAmount?: number) => {
+  const amount = customAmount || order.payload.amount || 0;
+  const network = order.network || Network.IOTA;
+  const to = order.payload.targetAddress!;
+  const walletService = await getWallet(network);
 
-export const submitMilestoneOutputsFunc = async <T>(outputs: T[], network?: Network) => {
-  const milestoneColl = build5Db().collection(
-    (COL.MILESTONE + (network ? `_${network}` : '')) as COL,
-  );
+  const from = await walletService.getNewIotaAddressDetails();
+
+  const consumedOutputId = '0xbdb062b39e38c3ea0b37c32d564ee839da4e1d66ceb035a56ed1e87caa3fc5950000';
+  const consumedOutputs = packBasicOutput(from.bech32, amount, [], walletService.info);
+  const inputs = [TransactionHelper.inputFromOutputId(consumedOutputId)];
+  const inputsCommitment = TransactionHelper.getInputsCommitment([consumedOutputs]);
+  const outputs = [packBasicOutput(to, amount, [], walletService.info)];
+  const essence = packEssence(inputs, inputsCommitment, outputs, walletService, {});
+  const unlocks = [createUnlock(essence, from.keyPair)];
+  const payload = packPayload(essence, unlocks);
+
+  const milestoneColl = getMilestoneCol(network);
   const nextMilestone = wallet.getRandomEthAddress();
-  const defTranId = chance().string({
-    pool: 'abcdefghijklmnopqrstuvwxyz',
-    casing: 'lower',
-    length: 40,
+  const defTranId = wallet.getRandomEthAddress();
+  const tranDocRef = build5Db()
+    .doc(`${milestoneColl}/${nextMilestone}`)
+    .collection(SUB_COL.TRANSACTIONS)
+    .doc(defTranId);
+  await tranDocRef.set({
+    uid: defTranId,
+    createdOn: dayjs().toDate(),
+    blockId: wallet.getRandomEthAddress(),
+    milestone: wallet.getRandomEthAddress(),
+    payload,
   });
-  const defaultFromAddress =
-    'iota' + chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
-  const doc = milestoneColl.doc(nextMilestone).collection(SUB_COL.TRANSACTIONS).doc(defTranId);
-  await doc.set({
-    createdOn: serverTime(),
-    messageId: 'mes-' + defTranId,
-    inputs: [{ address: defaultFromAddress, amount: 123 }],
-    outputs: outputs,
-  });
-  await doc.update({ complete: true });
-  return { milestone: nextMilestone, tranId: defTranId, fromAdd: defaultFromAddress };
+  await tranDocRef.update({ complete: true });
+
+  await milestoneProcessed(nextMilestone, defTranId, network);
+
+  return { milestone: nextMilestone, tranId: defTranId, fromAdd: from.bech32 };
 };
 
 export const validateSpaceAddressFunc = async (

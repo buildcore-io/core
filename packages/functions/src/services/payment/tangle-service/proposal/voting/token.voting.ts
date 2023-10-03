@@ -15,8 +15,7 @@ import { packBasicOutput } from '../../../../../utils/basic-output.utils';
 import { isProdEnv } from '../../../../../utils/config.utils';
 import { dateToTimestamp } from '../../../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../../../utils/wallet.utils';
-import { SmrWallet } from '../../../../wallet/SmrWalletService';
-import { WalletService } from '../../../../wallet/wallet';
+import { WalletService } from '../../../../wallet/wallet.service';
 
 export const createVoteTransactionOrder = async (
   owner: string,
@@ -25,7 +24,7 @@ export const createVoteTransactionOrder = async (
   token: Token,
 ): Promise<Transaction> => {
   const network = isProdEnv() ? Network.SMR : Network.RMS;
-  const wallet = (await WalletService.newWallet(network)) as SmrWallet;
+  const wallet = await WalletService.newWallet(network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
 
   const nativeToken = {

@@ -1,22 +1,7 @@
-import {
-  COL,
-  DecodedToken,
-  Member,
-  Network,
-  WEN_FUNC,
-  WenError,
-  WenRequest,
-} from '@build-5/interfaces';
-import { Ed25519 } from '@iota/crypto.js';
-import { Ed25519 as Ed25519Next } from '@iota/crypto.js-next';
-import { Bech32Helper, Ed25519Address } from '@iota/iota.js';
-import {
-  Bech32Helper as Bech32HelperNext,
-  ED25519_ADDRESS_TYPE,
-  Ed25519Address as Ed25519AddressNext,
-} from '@iota/iota.js-next';
-import { Converter } from '@iota/util.js';
-import { Converter as ConverterNext, HexHelper } from '@iota/util.js-next';
+import { COL, DecodedToken, Member, WEN_FUNC, WenError, WenRequest } from '@build-5/interfaces';
+import { Ed25519 } from '@iota/crypto.js-next';
+import { Bech32Helper, ED25519_ADDRESS_TYPE, Ed25519Address } from '@iota/iota.js-next';
+import { Converter, HexHelper } from '@iota/util.js-next';
 import { recoverPersonalSignature } from '@metamask/eth-sig-util';
 import { randomBytes } from 'crypto';
 import dayjs from 'dayjs';
@@ -24,6 +9,7 @@ import { Wallet } from 'ethers';
 import jwt from 'jsonwebtoken';
 import { get } from 'lodash';
 import { build5Db } from '../firebase/firestore/build5Db';
+import { WalletService } from '../services/wallet/wallet.service';
 import { getCustomTokenLifetime, getJwtSecretKey } from './config.utils';
 import { unAuthenticated } from './error.utils';
 
@@ -78,8 +64,7 @@ const validateWithSignature = async (req: WenRequest) => {
 const validateWithPublicKey = async (req: WenRequest) => {
   const network = req.publicKey!.network;
 
-  const validateFunc = getValidateFuncForNetwork(network);
-  const { member, address } = await validateFunc(req);
+  const { member, address } = await validatePubKey(req);
   if (!address) {
     throw unAuthenticated(WenError.failed_to_decode_token);
   }
@@ -95,47 +80,15 @@ const validateWithPublicKey = async (req: WenRequest) => {
   return address;
 };
 
-const getValidateFuncForNetwork = (network: Network) => {
-  const smrNnetworks = [Network.SMR, Network.RMS];
-  if (smrNnetworks.includes(network)) {
-    return validateSmrPubKey;
-  }
-  const iotaNnetworks = [Network.IOTA, Network.ATOI];
-  if (iotaNnetworks.includes(network)) {
-    return validateIotaPubKey;
-  }
-  throw unAuthenticated(WenError.invalid_network);
-};
-
-const validateSmrPubKey = async (req: WenRequest) => {
-  const signedData = ConverterNext.hexToBytes(HexHelper.stripPrefix(req.signature!));
-  const publicKey = ConverterNext.hexToBytes(HexHelper.stripPrefix(req.publicKey?.hex!));
-
-  const bech32Address = Bech32HelperNext.toBech32(
-    ED25519_ADDRESS_TYPE,
-    new Ed25519AddressNext(publicKey).toAddress(),
-    req.publicKey!.network,
-  );
-
-  const member = await getMember(bech32Address);
-  const unsignedData = ConverterNext.utf8ToBytes(`0x${toHex(member.nonce!)}`);
-
-  const verify = Ed25519Next.verify(publicKey, unsignedData, signedData);
-  if (!verify) {
-    throw unAuthenticated(WenError.invalid_signature);
-  }
-
-  return { member, address: bech32Address };
-};
-
-const validateIotaPubKey = async (req: WenRequest) => {
+const validatePubKey = async (req: WenRequest) => {
   const signedData = Converter.hexToBytes(HexHelper.stripPrefix(req.signature!));
   const publicKey = Converter.hexToBytes(HexHelper.stripPrefix(req.publicKey?.hex!));
 
+  const wallet = await WalletService.newWallet(req.publicKey!.network);
   const bech32Address = Bech32Helper.toBech32(
     ED25519_ADDRESS_TYPE,
     new Ed25519Address(publicKey).toAddress(),
-    req.publicKey!.network,
+    wallet.info.protocol.bech32Hrp,
   );
 
   const member = await getMember(bech32Address);

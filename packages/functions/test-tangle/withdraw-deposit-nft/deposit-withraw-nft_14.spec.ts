@@ -13,7 +13,6 @@ import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { creditUnrefundable } from '../../src/runtime/firebase/credit/index';
 import { depositNft, withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -52,7 +51,7 @@ describe('Collection minting', () => {
     let snap = await query.get<Transaction>();
     expect(snap[0].payload.nftId).toBe(nft.mintingData?.nftId);
 
-    const wallet = (await getWallet(helper.network)) as SmrWallet;
+    const wallet = await getWallet(helper.network);
     const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${helper.guardian}`);
     const guardianData = <Member>await guardianDocRef.get();
     const guardianAddress = getAddress(guardianData, helper.network!);

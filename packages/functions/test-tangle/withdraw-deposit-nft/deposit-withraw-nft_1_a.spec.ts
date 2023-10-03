@@ -4,7 +4,6 @@ import { isEqual } from 'lodash';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { depositNft, withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { getAddress } from '../../src/utils/address.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { getWallet, testEnv } from '../../test/set-up';
@@ -46,7 +45,7 @@ describe('Collection minting', () => {
     expect(nft.owner).toBeNull();
     expect(isEqual(nft.mintingData, mintingData)).toBe(true);
 
-    const wallet = (await getWallet(helper.network)) as SmrWallet;
+    const wallet = await getWallet(helper.network);
     const guardianData = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.guardian}`).get();
     const nftWallet = new NftWallet(wallet);
     let outputs = await nftWallet.getNftOutputs(

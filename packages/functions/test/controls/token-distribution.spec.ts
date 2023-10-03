@@ -27,7 +27,6 @@ import {
   createRoyaltySpaces,
   createSpace,
   getRandomSymbol,
-  milestoneProcessed,
   mockWalletReturnValue,
   submitMilestoneFunc,
   tokenProcessed,
@@ -364,11 +363,10 @@ describe('Token trigger test', () => {
 
     const orderPromises = Array.from(Array(input.totalDeposit.length)).map(async (_, i) => {
       const order = await submitTokenOrderFunc(walletSpy, members[i], { token: token.uid });
-      const nextMilestone = await submitMilestoneFunc(
-        order.payload.targetAddress,
+      await submitMilestoneFunc(
+        order,
         Number(bigDecimal.multiply(input.totalDeposit[i], MIN_IOTA_AMOUNT)),
       );
-      await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
       return <Transaction>order;
     });
 
@@ -458,11 +456,7 @@ describe('Token trigger test', () => {
 
     const orderPromises = totalDeposits.map(async (totalDeposit, i) => {
       const order = await submitTokenOrderFunc(walletSpy, members[i], { token: token.uid });
-      const nextMilestone = await submitMilestoneFunc(
-        order.payload.targetAddress,
-        Number(bigDecimal.multiply(totalDeposit, MIN_IOTA_AMOUNT)),
-      );
-      await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+      await submitMilestoneFunc(order, Number(bigDecimal.multiply(totalDeposit, MIN_IOTA_AMOUNT)));
       return <Transaction>order;
     });
 
@@ -512,8 +506,7 @@ describe('Token trigger test', () => {
     await build5Db().doc(`${COL.TOKEN}/${token.uid}`).create(token);
 
     const order = await submitTokenOrderFunc(walletSpy, members[0], { token: token.uid });
-    const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, totalPaid);
-    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+    await submitMilestoneFunc(order, totalPaid);
 
     await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.PROCESSING });
     await tokenProcessed(token.uid, 1, true);

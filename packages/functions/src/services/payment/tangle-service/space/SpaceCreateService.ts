@@ -9,7 +9,7 @@ import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { spaceToIpfsMetadata } from '../../../../utils/space.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { isStorageUrl } from '../../../joi/common';
-import { WalletService } from '../../../wallet/wallet';
+import { WalletService } from '../../../wallet/wallet.service';
 import { TransactionService } from '../../transaction-service';
 import { createSpaceSchemaObject } from './SpaceCreateTangleRequestSchema';
 

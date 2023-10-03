@@ -9,7 +9,7 @@ import {
   TransactionHelper,
 } from '@iota/iota.js-next';
 import { Converter, HexHelper } from '@iota/util.js-next';
-import { AddressDetails } from '../../services/wallet/wallet';
+import { AddressDetails } from '../../services/wallet/wallet.service';
 import { Bech32AddressHelper } from '../bech32-address.helper';
 
 export const EMPTY_ALIAS_ID = '0x0000000000000000000000000000000000000000000000000000000000000000';

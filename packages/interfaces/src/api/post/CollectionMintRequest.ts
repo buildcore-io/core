@@ -14,7 +14,7 @@ export interface CollectionMintRequest {
   /**
    * Network to use for minting the collection.
    */
-  network: 'smr' | 'rms';
+  network: 'iota' | 'smr' | 'atoi' | 'rms';
   /**
    * Price in case unsold minting option is set to new price. Minimum 1000000, maximum 1000000000000
    */

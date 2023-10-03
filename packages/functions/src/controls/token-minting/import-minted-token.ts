@@ -13,8 +13,7 @@ import { IndexerPluginClient } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { build5Db } from '../../firebase/firestore/build5Db';
-import { SmrWallet } from '../../services/wallet/SmrWalletService';
-import { WalletService } from '../../services/wallet/wallet';
+import { WalletService } from '../../services/wallet/wallet.service';
 import { generateRandomAmount } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
@@ -31,7 +30,7 @@ export const importMintedTokenControl = async (owner: string, params: ImportMint
       throw invalidArgument(WenError.token_already_exists_for_space);
     }
 
-    const wallet = (await WalletService.newWallet(params.network as Network)) as SmrWallet;
+    const wallet = await WalletService.newWallet(params.network as Network);
     const indexer = new IndexerPluginClient(wallet.client);
     const foundryResponse = await indexer.foundry(params.tokenId);
 

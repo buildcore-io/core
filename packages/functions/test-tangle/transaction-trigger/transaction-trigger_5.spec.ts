@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { retryWallet } from '../../src/cron/wallet.cron';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
-import { AddressDetails } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { wait } from '../../test/controls/common';

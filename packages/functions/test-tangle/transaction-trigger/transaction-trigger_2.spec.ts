@@ -2,8 +2,7 @@
 import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build-5/interfaces';
 import { STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE } from '@iota/iota.js-next';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { wait } from '../../test/controls/common';
@@ -29,7 +28,7 @@ describe('Transaction trigger spec', () => {
   it('Bill payment with storage return condition', async () => {
     const network = Network.RMS;
     await setup(network);
-    const wallet = (await getWallet(network)) as SmrWallet;
+    const wallet = await getWallet(network);
     const billPayment = <Transaction>{
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),

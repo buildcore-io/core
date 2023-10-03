@@ -2,7 +2,6 @@ import {
   COL,
   IOTATangleTransaction,
   NativeToken,
-  Network,
   Nft,
   Transaction,
   TransactionType,
@@ -10,19 +9,10 @@ import {
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import { build5Db } from '../../firebase/firestore/build5Db';
+import { WalletParams } from '../../services/wallet/wallet';
 import { isProdEnv } from '../../utils/config.utils';
 
-export const getWalletParams = (transaction: Transaction, network: Network) => {
-  switch (network) {
-    case Network.SMR:
-    case Network.RMS:
-      return getShimmerParams(transaction);
-    default:
-      return getParams(transaction);
-  }
-};
-
-const getShimmerParams = async (transaction: Transaction) => ({
+export const getWalletParams = async (transaction: Transaction): Promise<WalletParams> => ({
   ...(await getParams(transaction)),
   nativeTokens: transaction.payload.nativeTokens?.map((nt: NativeToken) => ({
     id: nt.id,

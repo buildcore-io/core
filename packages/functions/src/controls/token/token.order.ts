@@ -16,7 +16,7 @@ import {
 import dayjs from 'dayjs';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { assertHasAccess } from '../../services/validators/access';
-import { WalletService } from '../../services/wallet/wallet';
+import { WalletService } from '../../services/wallet/wallet.service';
 import { assertMemberHasValidAddress, getAddress } from '../../utils/address.utils';
 import { isProdEnv } from '../../utils/config.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';

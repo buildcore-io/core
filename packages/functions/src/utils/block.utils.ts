@@ -15,10 +15,10 @@ import {
   serializeBlock,
 } from '@iota/iota.js-next';
 import { Converter, WriteStream } from '@iota/util.js-next';
-import { SmrParams, SmrWallet } from '../services/wallet/SmrWalletService';
+import { Wallet, WalletParams } from '../services/wallet/wallet';
 
 export const submitBlock = async (
-  wallet: SmrWallet,
+  wallet: Wallet,
   payload: ITransactionPayload,
 ): Promise<string> => {
   const block: IBlock = {
@@ -34,8 +34,8 @@ export const packEssence = (
   inputs: IUTXOInput[],
   inputsCommitment: string,
   outputs: OutputTypes[],
-  wallet: SmrWallet,
-  params: SmrParams,
+  wallet: Wallet,
+  params: WalletParams,
 ) =>
   <ITransactionEssence>{
     type: TRANSACTION_ESSENCE_TYPE,

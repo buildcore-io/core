@@ -1,15 +1,11 @@
-import { COL, Network, Transaction, WEN_FUNC_TRIGGER } from '@build-5/interfaces';
-import { ITransactionPayload } from '@iota/iota.js';
-import { ITransactionPayload as ITransactionPayloadNext } from '@iota/iota.js-next';
-import { Converter } from '@iota/util.js';
-import { Converter as ConverterNext } from '@iota/util.js-next';
+import { COL, Transaction, WEN_FUNC_TRIGGER } from '@build-5/interfaces';
+import { ITransactionPayload } from '@iota/iota.js-next';
+import { Converter } from '@iota/util.js-next';
 import dayjs from 'dayjs';
 import { DocumentOptions } from 'firebase-functions/v2/firestore';
 import { isEmpty } from 'lodash';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { scale } from '../../scale.settings';
-import { IotaWallet } from '../../services/wallet/IotaWalletService';
-import { WalletService } from '../../services/wallet/wallet';
 
 export const milestoneTriggerConfig = {
   timeoutSeconds: 300,
@@ -19,9 +15,8 @@ export const milestoneTriggerConfig = {
 export const confirmTransaction = async (
   milestoneTransactionPath: string,
   milestoneTransaction: Record<string, unknown>,
-  network: Network,
 ) => {
-  const transactionId = await getMilestoneTransactionId(milestoneTransaction, network);
+  const transactionId = await getMilestoneTransactionId(milestoneTransaction);
   if (isEmpty(transactionId)) {
     return;
   }
@@ -55,39 +50,11 @@ export const unclockMnemonic = async (address: string | undefined) => {
   });
 };
 
-const getMilestoneTransactionId = (data: Record<string, unknown>, network: Network) => {
-  switch (network) {
-    case Network.IOTA:
-    case Network.ATOI:
-      return getMilestoneTransactionIdForIota(data, network);
-    default:
-      return getMilestoneTransactionIdForSmr(data);
-  }
-};
-
-export const getMilestoneTransactionIdForSmr = async (
-  milestoneTransaction: Record<string, unknown>,
-) => {
+export const getMilestoneTransactionId = async (milestoneTransaction: Record<string, unknown>) => {
   try {
-    const payload = <ITransactionPayloadNext>milestoneTransaction.payload;
+    const payload = <ITransactionPayload>milestoneTransaction.payload;
     const hexData = payload.essence?.payload?.data || '';
-    const metadata = JSON.parse(ConverterNext.hexToUtf8(hexData));
-    return (metadata.tranId || '') as string;
-  } catch (e) {
-    return '';
-  }
-};
-
-const getMilestoneTransactionIdForIota = async (
-  milestoneTransaction: Record<string, unknown>,
-  network: Network,
-) => {
-  try {
-    const wallet = (await WalletService.newWallet(network)) as IotaWallet;
-    const messageId = (milestoneTransaction.messageId as string) || '';
-    const message = await wallet.client.message(messageId);
-    const hexData = (message.payload as ITransactionPayload).essence.payload?.data || '';
-    const metadata = JSON.parse(Converter.hexToUtf8(hexData) || '{}');
+    const metadata = JSON.parse(Converter.hexToUtf8(hexData));
     return (metadata.tranId || '') as string;
   } catch (e) {
     return '';

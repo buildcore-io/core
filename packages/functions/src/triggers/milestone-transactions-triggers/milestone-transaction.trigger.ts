@@ -1,12 +1,12 @@
-import { COL, Network, SUB_COL } from '@build-5/interfaces';
+import { Network, SUB_COL, getMilestoneCol } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { DocumentSnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions/v2';
 import { FirestoreEvent } from 'firebase-functions/v2/firestore';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { ProcessingService } from '../../services/payment/payment-processing';
-import { SmrMilestoneTransactionAdapter } from './SmrMilestoneTransactionAdapter';
-import { confirmTransaction, milestoneTriggerConfig } from './common';
+import { MilestoneTransactionAdapter } from './MilestoneTransactionAdapter';
+import { confirmTransaction } from './common';
 import { processConsumedVoteOutputs } from './consumed.vote.outputs';
 import { updateTokenSupplyData } from './token.foundry';
 
@@ -28,9 +28,9 @@ const handleMilestoneTransactionWrite =
         if (!data || data.processed) {
           return;
         }
-        await confirmTransaction(event.data!.after.ref.path, data, network);
+        await confirmTransaction(event.data!.after.ref.path, data);
         await updateTokenSupplyData(data);
-        const adapter = new SmrMilestoneTransactionAdapter(network);
+        const adapter = new MilestoneTransactionAdapter(network);
         const milestoneTransaction = await adapter.toMilestoneTransaction({
           ...data,
           uid: event.params.tranId,
@@ -39,10 +39,7 @@ const handleMilestoneTransactionWrite =
         await service.processMilestoneTransactions(milestoneTransaction);
         service.submit();
 
-        await processConsumedVoteOutputs(
-          transaction,
-          milestoneTransaction.inputs.map((i) => i.outputId!),
-        );
+        await processConsumedVoteOutputs(transaction, milestoneTransaction.consumedOutputIds);
 
         return transaction.update(docRef, { processed: true, processedOn: dayjs().toDate() });
       });
@@ -51,18 +48,16 @@ const handleMilestoneTransactionWrite =
     }
   };
 
-export const smrMilestoneTransactionWrite = functions.firestore.onDocumentWritten(
-  {
-    ...milestoneTriggerConfig,
-    document: `${COL.MILESTONE}_${Network.SMR}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`,
-  },
-  handleMilestoneTransactionWrite(Network.SMR),
-);
+const getDoc = (network: Network) =>
+  `${getMilestoneCol(network)}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`;
 
-export const rmsMilestoneTransactionWrite = functions.firestore.onDocumentWritten(
-  {
-    ...milestoneTriggerConfig,
-    document: `${COL.MILESTONE}_${Network.RMS}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`,
-  },
-  handleMilestoneTransactionWrite(Network.RMS),
-);
+const getHandler = (network: Network) =>
+  functions.firestore.onDocumentWritten(
+    { document: getDoc(network) },
+    handleMilestoneTransactionWrite(network || Network.IOTA),
+  );
+
+export const smrMilestoneTransactionWrite = getHandler(Network.SMR);
+export const rmsMilestoneTransactionWrite = getHandler(Network.RMS);
+export const iotaMilestoneTransactionWrite = getHandler(Network.IOTA);
+export const atoiMilestoneTransactionWrite = getHandler(Network.ATOI);

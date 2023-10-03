@@ -16,7 +16,7 @@ import {
 import { build5Db } from '../src/firebase/firestore/build5Db';
 import { createMember } from '../src/runtime/firebase/member';
 import { cancelTradeOrder, tradeToken } from '../src/runtime/firebase/token/trading';
-import { AddressDetails } from '../src/services/wallet/wallet';
+import { AddressDetails } from '../src/services/wallet/wallet.service';
 import { getAddress } from '../src/utils/address.utils';
 import { serverTime } from '../src/utils/dateTime.utils';
 import * as wallet from '../src/utils/wallet.utils';

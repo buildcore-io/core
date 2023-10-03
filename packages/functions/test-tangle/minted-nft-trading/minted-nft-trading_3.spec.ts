@@ -2,6 +2,7 @@ import {
   COL,
   Collection,
   CollectionStatus,
+  Network,
   UnsoldMintingOptions,
   WenError,
 } from '@build-5/interfaces';
@@ -15,15 +16,8 @@ import { Helper } from './Helper';
 describe('Minted nft trading', () => {
   const helper = new Helper();
 
-  beforeAll(async () => {
-    await helper.beforeAll();
-  });
-
-  beforeEach(async () => {
-    await helper.beforeEach();
-  });
-
   it('Should throw can not be set for sale during minting', async () => {
+    await helper.beforeEach(Network.RMS);
     await helper.createAndOrderNft();
 
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, {

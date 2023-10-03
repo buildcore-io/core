@@ -12,7 +12,7 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { build5Db } from '../../firebase/firestore/build5Db';
-import { WalletService } from '../../services/wallet/wallet';
+import { WalletService } from '../../services/wallet/wallet.service';
 import { generateRandomAmount } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';

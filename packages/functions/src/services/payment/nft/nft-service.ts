@@ -6,12 +6,12 @@ import {
   MilestoneTransactionEntry,
   Nft,
   NftAccess,
+  NftStatus,
   Transaction,
   TransactionPayloadType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { last, set } from 'lodash';
-import { AVAILABLE_NETWORKS } from '../../../controls/common';
 import { build5Db } from '../../../firebase/firestore/build5Db';
 import { getAddress } from '../../../utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
@@ -46,7 +46,7 @@ export class NftService {
 
     const tanglePuchase = order.payload.tanglePuchase;
     const disableWithdraw = order.payload.disableWithdraw;
-    if (!disableWithdraw && tanglePuchase && AVAILABLE_NETWORKS.includes(order.network!)) {
+    if (!disableWithdraw && tanglePuchase && nft.status === NftStatus.MINTED) {
       await this.withdrawNft(order, nft);
     }
   }
@@ -116,7 +116,7 @@ export class NftService {
 
       const tanglePuchase = order.payload.tanglePuchase;
       const disableWithdraw = order.payload.disableWithdraw;
-      if (!disableWithdraw && tanglePuchase && AVAILABLE_NETWORKS.includes(order.network!)) {
+      if (!disableWithdraw && tanglePuchase && nft.status === NftStatus.MINTED) {
         await this.withdrawNft(order, nft);
       }
     } else {
@@ -240,10 +240,7 @@ export class NftService {
             address: previousHighestPay.payload.targetAddress!,
             amount: previousHighestPay.payload.amount!,
           },
-          from: {
-            address: previousHighestPay.payload.sourceAddress!,
-            amount: previousHighestPay.payload.amount!,
-          },
+          from: previousHighestPay.payload.sourceAddress!,
         },
         dateToTimestamp(dayjs(payment.createdOn?.toDate()).subtract(1, 's')),
         sameOwner,
@@ -330,10 +327,7 @@ export class NftService {
           address: paymentPayload.targetAddress!,
           amount: paymentPayload.amount!,
         },
-        from: {
-          address: paymentPayload.sourceAddress!,
-          amount: paymentPayload.amount!,
-        },
+        from: paymentPayload.sourceAddress!,
       });
     }
   }
@@ -395,10 +389,7 @@ export class NftService {
             address: highestPay.payload.targetAddress!,
             amount: highestPay.payload.amount!,
           },
-          from: {
-            address: highestPay.payload.sourceAddress!,
-            amount: highestPay.payload.amount!,
-          },
+          from: highestPay.payload.sourceAddress!,
         },
         serverTime(),
         sameOwner,

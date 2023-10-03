@@ -30,13 +30,12 @@ import {
 import { openBid } from '../../src/runtime/firebase/nft';
 import { createNft, orderNft, setForSaleNft } from '../../src/runtime/firebase/nft/index';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
+import { Wallet } from '../../src/services/wallet/wallet';
 import * as wallet from '../../src/utils/wallet.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import {
   createMember as createMemberTest,
   createSpace,
-  milestoneProcessed,
   mockWalletReturnValue,
   submitMilestoneFunc,
   wait,
@@ -52,12 +51,12 @@ export class CollectionMintHelper {
   public space: Space | undefined;
   public royaltySpace: Space | undefined;
   public member: string | undefined;
-  public walletService: SmrWallet | undefined;
+  public walletService: Wallet | undefined;
   public nftWallet: NftWallet | undefined;
 
   public beforeAll = async () => {
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    this.walletService = (await getWallet(this.network)) as SmrWallet;
+    this.walletService = await getWallet(this.network);
     this.nftWallet = new NftWallet(this.walletService);
   };
 
@@ -116,11 +115,7 @@ export class CollectionMintHelper {
         nft: nft.uid,
       });
       const order = await testEnv.wrap(orderNft)({});
-      const milestone = await submitMilestoneFunc(
-        order.payload.targetAddress,
-        order.payload.amount,
-      );
-      await milestoneProcessed(milestone.milestone, milestone.tranId);
+      await submitMilestoneFunc(order);
 
       mockWalletReturnValue(this.walletSpy, this.guardian!, this.dummyAuctionData(nft.uid));
       await testEnv.wrap(setForSaleNft)({});
@@ -131,11 +126,7 @@ export class CollectionMintHelper {
       if (shouldBid) {
         mockWalletReturnValue(this.walletSpy, this.member!, { nft: nft.uid });
         const bidOrder = await testEnv.wrap(openBid)({});
-        const bidMilestone = await submitMilestoneFunc(
-          bidOrder.payload.targetAddress,
-          2 * MIN_IOTA_AMOUNT,
-        );
-        await milestoneProcessed(bidMilestone.milestone, bidMilestone.tranId);
+        await submitMilestoneFunc(bidOrder, 2 * MIN_IOTA_AMOUNT);
       }
     }
     return <Nft>await build5Db().doc(`${COL.NFT}/${nft.uid}`).get();

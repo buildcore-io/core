@@ -18,11 +18,11 @@ import { isEmpty } from 'lodash';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { ITransaction } from '../../firebase/firestore/interfaces';
 import { scale } from '../../scale.settings';
+import { AliasWallet } from '../../services/wallet/AliasWallet';
 import { NativeTokenWallet } from '../../services/wallet/NativeTokenWallet';
 import { NftWallet } from '../../services/wallet/NftWallet';
-import { SmrParams, SmrWallet } from '../../services/wallet/SmrWalletService';
-import { AliasWallet } from '../../services/wallet/smr-wallets/AliasWallet';
-import { WalletService } from '../../services/wallet/wallet';
+import { Wallet, WalletParams } from '../../services/wallet/wallet';
+import { WalletService } from '../../services/wallet/wallet.service';
 import { getAddress } from '../../utils/address.utils';
 import { isEmulatorEnv } from '../../utils/config.utils';
 import { serverTime } from '../../utils/dateTime.utils';
@@ -196,17 +196,17 @@ const executeTransaction = async (transactionId: string) => {
   const transaction = <Transaction>await docRef.get();
   const payload = transaction.payload;
 
-  const params = await getWalletParams(transaction, transaction.network || DEFAULT_NETWORK);
+  const params = await getWalletParams(transaction);
   try {
-    const walletService = await WalletService.newWallet(transaction.network || DEFAULT_NETWORK);
-    const sourceAddress = await walletService.getAddressDetails(payload.sourceAddress!);
+    const wallet = await WalletService.newWallet(transaction.network || DEFAULT_NETWORK);
+    const sourceAddress = await wallet.getAddressDetails(payload.sourceAddress!);
 
     const submit = () => {
       switch (transaction.type) {
         case TransactionType.BILL_PAYMENT:
         case TransactionType.CREDIT:
         case TransactionType.CREDIT_TANGLE_REQUEST:
-          return walletService.send(
+          return wallet.send(
             sourceAddress,
             payload.targetAddress!,
             payload.amount!,
@@ -214,28 +214,28 @@ const executeTransaction = async (transactionId: string) => {
             transaction.payload.outputToConsume,
           );
         case TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED:
-          return (walletService as SmrWallet).creditLocked(transaction, params);
+          return wallet.creditLocked(transaction, params);
 
         case TransactionType.MINT_COLLECTION:
-          return submitCollectionMintTransactions(transaction, walletService as SmrWallet, params);
+          return submitCollectionMintTransactions(transaction, wallet, params);
 
         case TransactionType.MINT_TOKEN:
-          return submitTokenMintTransactions(transaction, walletService as SmrWallet, params);
+          return submitTokenMintTransactions(transaction, wallet, params);
 
         case TransactionType.AWARD:
-          return submitCreateAwardTransaction(transaction, walletService as SmrWallet, params);
+          return submitCreateAwardTransaction(transaction, wallet, params);
 
         case TransactionType.METADATA_NFT:
-          return submitMintMetadataTransaction(transaction, walletService as SmrWallet, params);
+          return submitMintMetadataTransaction(transaction, wallet, params);
 
         case TransactionType.CREDIT_NFT:
         case TransactionType.WITHDRAW_NFT: {
-          const nftWallet = new NftWallet(walletService as SmrWallet);
+          const nftWallet = new NftWallet(wallet);
           return nftWallet.changeNftOwner(transaction, params);
         }
 
         case TransactionType.UNLOCK: {
-          return submitUnlockTransaction(transaction, walletService as SmrWallet, params);
+          return submitUnlockTransaction(transaction, wallet, params);
         }
 
         default: {
@@ -264,8 +264,8 @@ const executeTransaction = async (transactionId: string) => {
 
 const submitCollectionMintTransactions = (
   transaction: Transaction,
-  wallet: SmrWallet,
-  params: SmrParams,
+  wallet: Wallet,
+  params: WalletParams,
 ) => {
   switch (transaction.payload.type) {
     case TransactionPayloadType.MINT_ALIAS: {
@@ -297,8 +297,8 @@ const submitCollectionMintTransactions = (
 
 const submitTokenMintTransactions = (
   transaction: Transaction,
-  wallet: SmrWallet,
-  params: SmrParams,
+  wallet: Wallet,
+  params: WalletParams,
 ) => {
   switch (transaction.payload.type) {
     case TransactionPayloadType.MINT_ALIAS: {
@@ -322,8 +322,8 @@ const submitTokenMintTransactions = (
 
 const submitCreateAwardTransaction = (
   transaction: Transaction,
-  wallet: SmrWallet,
-  params: SmrParams,
+  wallet: Wallet,
+  params: WalletParams,
 ) => {
   switch (transaction.payload.type) {
     case TransactionPayloadType.MINT_ALIAS: {
@@ -354,8 +354,8 @@ const submitCreateAwardTransaction = (
 
 const submitMintMetadataTransaction = async (
   transaction: Transaction,
-  wallet: SmrWallet,
-  params: SmrParams,
+  wallet: Wallet,
+  params: WalletParams,
 ) => {
   switch (transaction.payload.type) {
     case TransactionPayloadType.MINT_ALIAS: {
@@ -386,8 +386,8 @@ const submitMintMetadataTransaction = async (
 
 const submitUnlockTransaction = async (
   transaction: Transaction,
-  wallet: SmrWallet,
-  params: SmrParams,
+  wallet: Wallet,
+  params: WalletParams,
 ) => {
   switch (transaction.payload.type) {
     case TransactionPayloadType.UNLOCK_FUNDS:

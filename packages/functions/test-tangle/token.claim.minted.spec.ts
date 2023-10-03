@@ -22,7 +22,7 @@ import { retryWallet } from '../src/cron/wallet.cron';
 import { build5Db } from '../src/firebase/firestore/build5Db';
 import { claimMintedTokenOrder, mintTokenOrder } from '../src/runtime/firebase/token/minting';
 import { MnemonicService } from '../src/services/wallet/mnemonic';
-import { SmrWallet } from '../src/services/wallet/SmrWalletService';
+import { Wallet } from '../src/services/wallet/wallet';
 import { dateToTimestamp, serverTime } from '../src/utils/dateTime.utils';
 import * as wallet from '../src/utils/wallet.utils';
 import { getRandomEthAddress } from '../src/utils/wallet.utils';
@@ -45,10 +45,10 @@ describe('Token minting', () => {
   let guardian: Member;
   let space: Space;
   let token: any;
-  let walletService: SmrWallet;
+  let walletService: Wallet;
 
   beforeEach(async () => {
-    walletService = (await getWallet(network)) as SmrWallet;
+    walletService = await getWallet(network);
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
 
     const guardianId = await createMember(walletSpy);
@@ -322,7 +322,7 @@ describe('Token minting', () => {
 });
 
 const saveToken = async (
-  walletService: SmrWallet,
+  walletService: Wallet,
   space: string,
   guardian: string,
   notMinted = false,

@@ -23,7 +23,7 @@ import { isEmpty } from 'lodash';
 import { build5Db } from '../firebase/firestore/build5Db';
 import { IBatch } from '../firebase/firestore/interfaces';
 import { scale } from '../scale.settings';
-import { WalletService } from '../services/wallet/wallet';
+import { WalletService } from '../services/wallet/wallet.service';
 import { getAddress } from '../utils/address.utils';
 import { downloadMediaAndPackCar, tokenToIpfsMetadata } from '../utils/car.utils';
 import { guardedRerun } from '../utils/common.utils';

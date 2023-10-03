@@ -1,12 +1,12 @@
 import { COL, Transaction, TransactionType } from '@build-5/interfaces';
 import { build5Db } from '../../firebase/firestore/build5Db';
-import { SmrMilestoneTransactionAdapter } from '../milestone-transactions-triggers/SmrMilestoneTransactionAdapter';
+import { MilestoneTransactionAdapter } from '../milestone-transactions-triggers/MilestoneTransactionAdapter';
 
 export const onProposalVoteCreditConfirmed = async (transaction: Transaction) => {
   const milestoneDoc = (await build5Db()
     .doc(transaction.payload.walletReference?.milestoneTransactionPath!)
     .get<Record<string, unknown>>())!;
-  const adapter = new SmrMilestoneTransactionAdapter(transaction.network!);
+  const adapter = new MilestoneTransactionAdapter(transaction.network!);
   const milestoneTransaction = await adapter.toMilestoneTransaction(milestoneDoc);
   const outputId = milestoneTransaction.outputs[0].outputId!;
   const voteTransactionSnap = await build5Db()

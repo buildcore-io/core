@@ -4,9 +4,8 @@ import express from 'express';
 import test from 'firebase-functions-test';
 import * as functions from 'firebase-functions/v2';
 import { isEmpty } from 'lodash';
-import { IotaWallet } from '../src/services/wallet/IotaWalletService';
-import { SmrWallet } from '../src/services/wallet/SmrWalletService';
-import { WalletService } from '../src/services/wallet/wallet';
+import { Wallet } from '../src/services/wallet/wallet';
+import { WalletService } from '../src/services/wallet/wallet.service';
 
 dotenv.config({ path: '.env.local' });
 
@@ -76,7 +75,7 @@ const setup = async () => {
   console.log('Setup env');
 };
 
-const wallets: { [key: string]: IotaWallet | SmrWallet } = {};
+const wallets: { [key: string]: Wallet } = {};
 
 export const getWallet = async (network: Network) => {
   const wallet = wallets[network];

@@ -20,8 +20,8 @@ import dayjs from 'dayjs';
 import { head } from 'lodash';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { ITransaction } from '../../firebase/firestore/interfaces';
-import { SmrWallet } from '../../services/wallet/SmrWalletService';
-import { WalletService } from '../../services/wallet/wallet';
+import { Wallet } from '../../services/wallet/wallet';
+import { WalletService } from '../../services/wallet/wallet.service';
 import { getAddress } from '../../utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { dropToOutput } from '../../utils/token-minting-utils/member.utils';
@@ -106,7 +106,7 @@ const onMintedAirdropClaim = async (order: Transaction, token: Token) => {
   const memberDocRef = build5Db().doc(`${COL.MEMBER}/${order.member}`);
   const member = (await memberDocRef.get<Member>())!;
 
-  const wallet = (await WalletService.newWallet(token.mintingData?.network!)) as SmrWallet;
+  const wallet = await WalletService.newWallet(token.mintingData?.network!);
   let storageDepositUsed = await claimOwnedMintedTokens(order, paymentsId, token, member, wallet);
 
   storageDepositUsed += await runInAirdropLoop(
@@ -185,7 +185,7 @@ const claimOwnedMintedTokens = (
   sourceTransaction: string[],
   token: Token,
   member: Member,
-  wallet: SmrWallet,
+  wallet: Wallet,
 ) =>
   build5Db().runTransaction(async (transaction) => {
     const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
@@ -234,7 +234,7 @@ const mintedDropToBillPayment = (
   token: Token,
   drop: TokenDrop,
   member: Member,
-  wallet: SmrWallet,
+  wallet: Wallet,
 ): Transaction => {
   const memberAddress = getAddress(member, token.mintingData?.network!);
   const output = dropToOutput(token, drop, memberAddress, wallet.info);

@@ -18,7 +18,7 @@ import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { WalletService } from '../../../wallet/wallet';
+import { WalletService } from '../../../wallet/wallet.service';
 import { TransactionService } from '../../transaction-service';
 import { awardFundSchema } from './AwardFundTangleRequestSchema';
 

@@ -44,9 +44,9 @@ import {
   withdrawNft,
 } from '../../src/runtime/firebase/nft/index';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { AddressDetails } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { mergeOutputs, packBasicOutput } from '../../src/utils/basic-output.utils';
 import { packEssence, packPayload, submitBlock } from '../../src/utils/block.utils';
@@ -57,7 +57,6 @@ import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import {
   createMember as createMemberTest,
   createSpace,
-  milestoneProcessed,
   mockWalletReturnValue,
   submitMilestoneFunc,
   wait,
@@ -70,7 +69,7 @@ export class Helper {
   public collection: string | undefined;
   public guardian: string | undefined;
   public space: Space | undefined;
-  public walletService: SmrWallet | undefined;
+  public walletService: Wallet | undefined;
   public walletSpy: any;
   public nft: Nft | undefined;
   public guardianAddress: AddressDetails | undefined;
@@ -78,7 +77,7 @@ export class Helper {
 
   public beforeAll = async () => {
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    this.walletService = (await getWallet(this.network)) as SmrWallet;
+    this.walletService = await getWallet(this.network);
   };
 
   public beforeEach = async () => {
@@ -117,8 +116,7 @@ export class Helper {
       nft: nft.uid,
     });
     const order = await testEnv.wrap(orderNft)({});
-    const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
-    await milestoneProcessed(milestone.milestone, milestone.tranId);
+    await submitMilestoneFunc(order);
 
     this.nft = <Nft>await build5Db().doc(`${COL.NFT}/${nft.uid}`).get();
     return this.nft;

@@ -15,8 +15,8 @@ import {
 import { TransactionHelper } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { build5Db } from '../../firebase/firestore/build5Db';
-import { SmrWallet } from '../../services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../../services/wallet/wallet';
+import { Wallet } from '../../services/wallet/wallet';
+import { AddressDetails, WalletService } from '../../services/wallet/wallet.service';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
@@ -52,7 +52,7 @@ export const mintTokenControl = (owner: string, params: TokenMintRequest) =>
     const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();
     assertMemberHasValidAddress(member, params.network as Network);
 
-    const wallet = (await WalletService.newWallet(params.network as Network)) as SmrWallet;
+    const wallet = await WalletService.newWallet(params.network as Network);
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
     const totalDistributed =
@@ -91,7 +91,7 @@ const getStorageDepositForMinting = async (
   token: Token,
   totalDistributed: number,
   address: AddressDetails,
-  wallet: SmrWallet,
+  wallet: Wallet,
 ) => {
   const aliasOutput = createAliasOutput(address, wallet.info);
   const metadata = await tokenToFoundryMetadata(token);

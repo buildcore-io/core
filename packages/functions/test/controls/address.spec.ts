@@ -2,7 +2,7 @@ import { COL, Member, Network, Proposal, Space, WenError } from '@build-5/interf
 import { isEmpty } from 'lodash';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { validateAddress } from '../../src/runtime/firebase/address';
-import { WalletService } from '../../src/services/wallet/wallet';
+import { WalletService } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
@@ -10,7 +10,6 @@ import {
   createMember,
   createSpace,
   expectThrow,
-  milestoneProcessed,
   mockWalletReturnValue,
   submitMilestoneFunc,
   validateMemberAddressFunc,
@@ -40,11 +39,7 @@ describe('Address validation test', () => {
 
   it('Should validate member address', async () => {
     const order = await validateMemberAddressFunc(walletSpy, member);
-    const milestone = await submitMilestoneFunc(
-      order.payload.targetAddress!,
-      order.payload.amount!,
-    );
-    await milestoneProcessed(milestone.milestone, milestone.tranId);
+    await submitMilestoneFunc(order);
     await waitForAddressValidation(member, COL.MEMBER);
   });
 
@@ -64,11 +59,7 @@ describe('Address validation test', () => {
 
   it('Should validate space address', async () => {
     let order = await validateSpaceAddressFunc(walletSpy, member, space);
-    const milestone = await submitMilestoneFunc(
-      order.payload.targetAddress!,
-      order.payload.amount!,
-    );
-    await milestoneProcessed(milestone.milestone, milestone.tranId);
+    const milestone = await submitMilestoneFunc(order);
 
     const proposalQuery = build5Db().collection(COL.PROPOSAL).where('space', '==', space);
     await wait(async () => {
@@ -90,11 +81,7 @@ describe('Address validation test', () => {
     await waitForAddressValidation(space, COL.SPACE);
 
     order = await validateSpaceAddressFunc(walletSpy, member, space);
-    const milestone2 = await submitMilestoneFunc(
-      order.payload.targetAddress!,
-      order.payload.amount!,
-    );
-    await milestoneProcessed(milestone2.milestone, milestone2.tranId);
+    const milestone2 = await submitMilestoneFunc(order);
 
     await wait(async () => {
       const snap = await proposalQuery.get();
@@ -131,11 +118,7 @@ describe('Address validation test', () => {
   it('Should replace member address', async () => {
     const validate = async () => {
       const order = await validateMemberAddressFunc(walletSpy, member);
-      const milestone = await submitMilestoneFunc(
-        order.payload.targetAddress!,
-        order.payload.amount!,
-      );
-      await milestoneProcessed(milestone.milestone, milestone.tranId);
+      await submitMilestoneFunc(order);
     };
     await validate();
     await waitForAddressValidation(member, COL.MEMBER);

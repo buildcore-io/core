@@ -20,7 +20,6 @@ import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import {
   expectThrow,
-  milestoneProcessed,
   mockWalletReturnValue,
   submitMilestoneFunc,
   wait,
@@ -47,15 +46,10 @@ describe('Token minting', () => {
     mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, request);
 
     const order = await testEnv.wrap(tradeToken)({});
-    const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
-    await milestoneProcessed(milestone.milestone, milestone.tranId);
+    await submitMilestoneFunc(order);
 
     const order2 = await testEnv.wrap(tradeToken)({});
-    const milestone2 = await submitMilestoneFunc(
-      order2.payload.targetAddress,
-      order2.payload.amount,
-    );
-    await milestoneProcessed(milestone2.milestone, milestone2.tranId);
+    await submitMilestoneFunc(order2);
 
     await wait(async () => {
       const buySnap = await build5Db()

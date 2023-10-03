@@ -16,14 +16,13 @@ import dayjs from 'dayjs';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { approveCollection, createCollection } from '../../src/runtime/firebase/collection/index';
 import { createNft, orderNft } from '../../src/runtime/firebase/nft/index';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import {
   createMember as createMemberTest,
   createSpace,
-  milestoneProcessed,
   mockWalletReturnValue,
   submitMilestoneFunc,
 } from '../../test/controls/common';
@@ -37,12 +36,12 @@ export class Helper {
   public guardianAddress: AddressDetails = {} as any;
   public space: Space = {} as any;
   public royaltySpace: Space = {} as any;
-  public walletService: SmrWallet = {} as any;
+  public walletService: Wallet = {} as any;
   public nft: Nft = {} as any;
 
   public beforeAll = async () => {
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    this.walletService = (await getWallet(this.network)) as SmrWallet;
+    this.walletService = await getWallet(this.network);
   };
 
   public beforeEach = async (collectionType = CollectionType.CLASSIC) => {
@@ -83,11 +82,7 @@ export class Helper {
         nft: nft.uid,
       });
       const order = await testEnv.wrap(orderNft)({});
-      const milestone = await submitMilestoneFunc(
-        order.payload.targetAddress,
-        order.payload.amount,
-      );
-      await milestoneProcessed(milestone.milestone, milestone.tranId);
+      await submitMilestoneFunc(order);
     }
 
     this.nft = <Nft>await build5Db().doc(`${COL.NFT}/${nft.uid}`).get();

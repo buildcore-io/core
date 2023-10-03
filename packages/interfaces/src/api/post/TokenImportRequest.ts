@@ -10,7 +10,7 @@ export interface ImportMintedTokenRequest {
   /**
    * Network name on which the token was minted.
    */
-  network: 'smr' | 'rms';
+  network: 'iota' | 'smr' | 'atoi' | 'rms';
   /**
    * Build5 space id to which the token should be associated with.
    */

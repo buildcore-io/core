@@ -37,7 +37,7 @@ const allConfirmed = (query: IQuery) =>
     return allConfirmed;
   });
 
-export const saveBaseToken = async (space: string, guardian: string) => {
+export const saveBaseToken = async (space: string, guardian: string, network: Network) => {
   const token = {
     symbol: getRandomSymbol(),
     approved: true,
@@ -51,7 +51,7 @@ export const saveBaseToken = async (space: string, guardian: string) => {
     access: 0,
     icon: MEDIA,
     mintingData: {
-      network: Network.RMS,
+      network,
     },
   };
   await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);

@@ -34,7 +34,6 @@ import {
   createMember,
   createRoyaltySpaces,
   getRandomSymbol,
-  milestoneProcessed,
   mockWalletReturnValue,
   saveSoon,
   submitMilestoneFunc,
@@ -46,11 +45,10 @@ let walletSpy: any;
 const buyTokenFunc = async (memberAddress: string, request: any) => {
   mockWalletReturnValue(walletSpy, memberAddress, { ...request, type: TokenTradeOrderType.BUY });
   const order = await testEnv.wrap(tradeToken)({});
-  const milestone = await submitMilestoneFunc(
-    order.payload.targetAddress,
+  await submitMilestoneFunc(
+    order,
     Number(bigDecimal.floor(bigDecimal.multiply(request.price, request.count))),
   );
-  await milestoneProcessed(milestone.milestone, milestone.tranId);
   return order;
 };
 

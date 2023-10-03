@@ -13,7 +13,7 @@ import dayjs from 'dayjs';
 import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { WalletService } from '../../../wallet/wallet';
+import { WalletService } from '../../../wallet/wallet.service';
 import { TransactionService } from '../../transaction-service';
 
 export class NftDepositService {

@@ -8,19 +8,19 @@ import {
   TransactionHelper,
 } from '@iota/iota.js-next';
 import { cloneDeep, isEmpty } from 'lodash';
-import { mergeOutputs, packBasicOutput } from '../../../utils/basic-output.utils';
-import { packEssence, packPayload, submitBlock } from '../../../utils/block.utils';
-import { createUnlock } from '../../../utils/smr.utils';
-import { createAliasOutput } from '../../../utils/token-minting-utils/alias.utils';
-import { SmrParams, SmrWallet } from '../SmrWalletService';
-import { MnemonicService } from '../mnemonic';
-import { setConsumedOutputIds } from '../wallet';
+import { mergeOutputs, packBasicOutput } from '../../utils/basic-output.utils';
+import { packEssence, packPayload, submitBlock } from '../../utils/block.utils';
+import { createUnlock } from '../../utils/smr.utils';
+import { createAliasOutput } from '../../utils/token-minting-utils/alias.utils';
+import { MnemonicService } from './mnemonic';
+import { Wallet, WalletParams } from './wallet';
+import { setConsumedOutputIds } from './wallet.service';
 
 export class AliasWallet {
-  constructor(private readonly wallet: SmrWallet) {}
+  constructor(private readonly wallet: Wallet) {}
 
-  public mintAlias = async (transaction: Transaction, params: SmrParams) => {
-    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress);
+  public mintAlias = async (transaction: Transaction, params: WalletParams) => {
+    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress!);
     const sourceMnemonic = await MnemonicService.getData(sourceAddress.bech32);
 
     const outputsMap = await this.wallet.getOutputs(
@@ -49,8 +49,8 @@ export class AliasWallet {
     );
   };
 
-  public changeAliasOwner = async (transaction: Transaction, params: SmrParams) => {
-    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress);
+  public changeAliasOwner = async (transaction: Transaction, params: WalletParams) => {
+    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress!);
     const sourceMnemonic = await MnemonicService.getData(sourceAddress.bech32);
 
     const aliasOutputs = await this.getAliasOutputs(
@@ -80,8 +80,8 @@ export class AliasWallet {
     );
   };
 
-  public burnAlias = async (transaction: Transaction, params: SmrParams) => {
-    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress);
+  public burnAlias = async (transaction: Transaction, params: WalletParams) => {
+    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress!);
     const sourceMnemonic = await MnemonicService.getData(sourceAddress.bech32);
 
     const aliasOutputs = await this.getAliasOutputs(

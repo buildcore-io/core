@@ -19,7 +19,8 @@ export interface MilestoneTransaction extends Base {
   createdOn: Timestamp;
   messageId: string;
   milestone: number;
-  inputs: MilestoneTransactionEntry[];
+  fromAddresses: string[];
+  consumedOutputIds: string[];
   outputs: MilestoneTransactionEntry[];
   processed: boolean;
   build5TransactionId?: string;

@@ -1,14 +1,11 @@
 import { OutputTypes, TREASURY_OUTPUT_TYPE } from '@iota/iota.js-next';
 
-import { COL, MilestoneTransaction, Network, SUB_COL } from '@build-5/interfaces';
+import { COL, Network, SUB_COL } from '@build-5/interfaces';
 
 import * as adminPackage from 'firebase-admin';
-
 import { last } from 'lodash';
 import { build5Db } from '../src/firebase/firestore/build5Db';
-
-import { SmrWallet } from '../src/services/wallet/SmrWalletService';
-
+import { Wallet } from '../src/services/wallet/wallet';
 import { getWallet, projectId } from './set-up';
 
 process.env.FIRESTORE_EMULATOR_HOST = '';
@@ -21,11 +18,11 @@ const app = adminPackage.initializeApp(config, 'second');
 const onlineDb = app.firestore();
 process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
 
-const syncMilestones = async (col: COL, network: Network) => {
+const syncMilestones = async (col: COL) => {
   const lastDocQuery = onlineDb.collection(col).orderBy('createdOn', 'desc').limit(1);
   let lastDoc = (await lastDocQuery.get()).docs[0];
 
-  const wallet = (await getWallet(Network.RMS)) as SmrWallet;
+  const wallet = await getWallet(Network.RMS);
 
   while (1) {
     const snap = await onlineDb
@@ -37,21 +34,23 @@ const syncMilestones = async (col: COL, network: Network) => {
     lastDoc = last(snap.docs) || lastDoc;
 
     const batch = build5Db().batch();
-    snap.docs.forEach((doc) => batch.create(build5Db().doc(doc.ref.path), doc.data()));
+    snap.docs.forEach((doc) => {
+      batch.create(build5Db().doc(doc.ref.path), doc.data());
+    });
     await batch.commit();
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    const promises = snap.docs.map((doc) => syncTransactions(network, wallet, doc.ref.path));
+    const promises = snap.docs.map((doc) => syncTransactions(wallet, doc.ref.path));
     await Promise.all(promises);
   }
 };
 
-const syncTransactions = async (network: Network, wallet: SmrWallet, parentPath: string) => {
+const syncTransactions = async (wallet: Wallet, parentPath: string) => {
   const snap = await onlineDb.collection(`${parentPath}/${SUB_COL.TRANSACTIONS}`).get();
   const promises = snap.docs.map(async (doc) => {
     const data = doc.data();
-    const addresses = await getAddesses(data, network, wallet);
+    const addresses = getAddesses(data, wallet);
     if (await addressInDb(addresses)) {
       await build5Db()
         .doc(doc!.ref.path)
@@ -61,15 +60,10 @@ const syncTransactions = async (network: Network, wallet: SmrWallet, parentPath:
   await Promise.all(promises);
 };
 
-const getAddesses = async (doc: any, network: Network, wallet: SmrWallet) => {
-  if (network === Network.ATOI) {
-    return (doc as MilestoneTransaction).outputs.map((o) => o.address);
-  }
-  const promises = (doc.payload.essence.outputs as OutputTypes[])
+const getAddesses = (doc: any, wallet: Wallet) =>
+  (doc.payload.essence.outputs as OutputTypes[])
     .filter((o) => o.type !== TREASURY_OUTPUT_TYPE)
     .map((o) => wallet.bechAddressFromOutput(o as any));
-  return await Promise.all(promises);
-};
 
 const addressInDb = async (addresses: string[]) => {
   for (const address of addresses) {
@@ -81,5 +75,5 @@ const addressInDb = async (addresses: string[]) => {
   return false;
 };
 
-syncMilestones(COL.MILESTONE_RMS, Network.RMS);
-syncMilestones(COL.MILESTONE_ATOI, Network.ATOI);
+syncMilestones(COL.MILESTONE_RMS);
+//TODO syncMilestones(COL.MILESTONE_ATOI, Network.ATOI);

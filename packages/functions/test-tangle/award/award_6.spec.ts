@@ -17,8 +17,8 @@ import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { validateAddress } from '../../src/runtime/firebase/address';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
 import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { WalletService } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { WalletService } from '../../src/services/wallet/wallet.service';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
 import { MEDIA, testEnv } from '../../test/set-up';
@@ -33,18 +33,18 @@ describe('Award', () => {
   let space: Space;
   let award: Award;
   let token: Token;
-  let walletService: SmrWallet;
+  let walletService: Wallet;
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    walletService = (await WalletService.newWallet(network)) as SmrWallet;
+    walletService = await WalletService.newWallet(network);
   });
 
   beforeEach(async () => {
     guardian = await createMember(walletSpy);
     space = await createSpace(walletSpy, guardian);
 
-    token = await saveBaseToken(space.uid, guardian);
+    token = await saveBaseToken(space.uid, guardian, network);
 
     mockWalletReturnValue(walletSpy, guardian, awardRequest(space.uid, token.symbol));
     award = await testEnv.wrap(createAward)({});

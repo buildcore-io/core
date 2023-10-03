@@ -1458,9 +1458,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests test-tangle/minted-nft-trading/minted-nft-trading_1_b.spec.ts &&
                 npm run test-tangle:ci -- --findRelatedTests test-tangle/minted-nft-trading/minted-nft-trading_10.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests test-tangle/minted-nft-trading/minted-nft-trading_1.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests test-tangle/metadata-nft/mint-metadata-nft_7.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests test-tangle/minted-nft-trading/minted-nft-trading_1.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -1495,9 +1495,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests test-tangle/metadata-nft/mint-metadata-nft_7.spec.ts &&
                 npm run test-tangle:ci -- --findRelatedTests test-tangle/metadata-nft/mint-metadata-nft_6.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests test-tangle/metadata-nft/mint-metadata-nft_5.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests test-tangle/metadata-nft/mint-metadata-nft_4.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests test-tangle/metadata-nft/mint-metadata-nft_5.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -1532,9 +1532,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests test-tangle/metadata-nft/mint-metadata-nft_4.spec.ts &&
                 npm run test-tangle:ci -- --findRelatedTests test-tangle/metadata-nft/mint-metadata-nft_3.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests test-tangle/metadata-nft/mint-metadata-nft_2.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests test-tangle/metadata-nft/mint-metadata-nft_1.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests test-tangle/metadata-nft/mint-metadata-nft_2.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -1569,7 +1569,7 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
-                npm run test-tangle:ci -- --findRelatedTests test-tangle/db-roll/credit.highest.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests test-tangle/metadata-nft/mint-metadata-nft_1.spec.ts &&
                 npm run test-tangle:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_9.spec.ts &&
                 npm run test-tangle:ci -- --findRelatedTests test-tangle/collection-minting/collection-minting_8.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
@@ -1829,8 +1829,8 @@ jobs:
           npm run milestone-sync &
           firebase emulators:exec "
                 npm run test-tangle:ci -- --findRelatedTests test-tangle/base-token-trading/base-token-trading_1.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests test-tangle/award-tangle/award-tangle_6.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests test-tangle/award-tangle/award-tangle_5.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests test-tangle/award-tangle/award-tangle_7.spec.ts &&
+                npm run test-tangle:ci -- --findRelatedTests test-tangle/award-tangle/award-tangle_6.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -1865,9 +1865,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests test-tangle/award-tangle/award-tangle_5.spec.ts &&
                 npm run test-tangle:ci -- --findRelatedTests test-tangle/award-tangle/award-tangle_4.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests test-tangle/award-tangle/award-tangle_3.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests test-tangle/award-tangle/award-tangle_2.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests test-tangle/award-tangle/award-tangle_3.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -1902,9 +1902,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests test-tangle/award-tangle/award-tangle_2.spec.ts &&
                 npm run test-tangle:ci -- --findRelatedTests test-tangle/award-tangle/award-tangle_1.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests test-tangle/award/award_9.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests test-tangle/award/award_8.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests test-tangle/award/award_9.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -1939,9 +1939,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests test-tangle/award/award_8.spec.ts &&
                 npm run test-tangle:ci -- --findRelatedTests test-tangle/award/award_7.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests test-tangle/award/award_6.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests test-tangle/award/award_5.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests test-tangle/award/award_6.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -1976,9 +1976,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests test-tangle/award/award_5.spec.ts &&
                 npm run test-tangle:ci -- --findRelatedTests test-tangle/award/award_4.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests test-tangle/award/award_3.spec.ts &&
-                npm run test-tangle:ci -- --findRelatedTests test-tangle/award/award_2.spec.ts 
+                npm run test-tangle:ci -- --findRelatedTests test-tangle/award/award_3.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2013,6 +2013,7 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --findRelatedTests test-tangle/award/award_2.spec.ts &&
                 npm run test-tangle:ci -- --findRelatedTests test-tangle/award/award_10.spec.ts &&
                 npm run test-tangle:ci -- --findRelatedTests test-tangle/award/award_1.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
