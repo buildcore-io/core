@@ -198,12 +198,12 @@ export const getNetworkPair = (network: Network) => {
 
 export const NETWORK_DETAIL = {
   [Network.IOTA]: {
-    label: 'MIOTA',
+    label: 'IOTA',
     divideBy: 1000 * 1000,
     decimals: 6,
   },
   [Network.ATOI]: {
-    label: 'MATOI',
+    label: 'ATOI',
     divideBy: 1000 * 1000,
     decimals: 6,
   },
