@@ -26,20 +26,17 @@ export interface SendToManyTargets {
   nativeTokens?: NativeToken[];
 }
 
-// TODO set IOTA to correct node
 const NODES = {
   [Network.SMR]: ['https://smr1.svrs.io/', 'https://smr3.svrs.io/'],
   [Network.RMS]: ['https://rms1.svrs.io/'],
-  // [Network.IOTA]: [
-  //   'https://us3.svrs.io/',
-  //   'https://us4.svrs.io/',
-  //   'https://hs5.svrs.io/',
-  //   'https://hs6.svrs.io/',
-  //   'https://chrysalis-nodes.iota.org',
-  // ],
-  // [Network.ATOI]: ['https://devnet.svrs.io/'],
-  [Network.IOTA]: ['https://smr1.svrs.io/', 'https://smr3.svrs.io/'],
-  [Network.ATOI]: ['https://rms1.svrs.io/'],
+  [Network.IOTA]: [
+    'https://us3.svrs.io/',
+    'https://us4.svrs.io/',
+    'https://hs5.svrs.io/',
+    'https://hs6.svrs.io/',
+    'https://chrysalis-nodes.iota.org',
+  ],
+  [Network.ATOI]: ['https://devnet.svrs.io/'],
 };
 
 const getClient = async (network: Network) => {
