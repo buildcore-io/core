@@ -76,4 +76,4 @@ const addressInDb = async (addresses: string[]) => {
 };
 
 syncMilestones(COL.MILESTONE_RMS);
-//TODO syncMilestones(COL.MILESTONE_ATOI, Network.ATOI);
+syncMilestones(COL.MILESTONE_ATOI);
