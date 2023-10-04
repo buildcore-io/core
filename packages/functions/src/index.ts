@@ -1,5 +1,6 @@
 import { WEN_FUNC, WEN_FUNC_TRIGGER } from '@build-5/interfaces';
 import { algoliaTrigger } from './algolia/algolia.trigger';
+import { iotaOtr } from './dbRoll/iota.otr';
 import { validateAddress } from './runtime/firebase/address';
 import { generateCustomToken } from './runtime/firebase/auth';
 import {
@@ -202,3 +203,6 @@ exports[WEN_FUNC.claimSpace] = claimSpace;
 exports[WEN_FUNC.importMintedToken] = importMintedToken;
 
 exports[WEN_FUNC.uploadFile] = uploadFile;
+
+// TODO remove this
+exports['iota_otr'] = iotaOtr;
