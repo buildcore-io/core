@@ -34,7 +34,6 @@ const NODES = {
     'https://us4.svrs.io/',
     'https://hs5.svrs.io/',
     'https://hs6.svrs.io/',
-    'https://chrysalis-nodes.iota.org',
   ],
   [Network.ATOI]: ['https://devnet.svrs.io/'],
 };

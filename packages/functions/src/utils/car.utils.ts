@@ -116,4 +116,5 @@ export const tokenToIpfsMetadata = (token: Token) => ({
   space: token.space,
   platform: KEY_NAME_TANGLE,
   uid: token.uid,
+  symbol: token.symbol.toUpperCase(),
 });

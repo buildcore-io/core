@@ -74,7 +74,7 @@ export const tokenToFoundryMetadata = async (token: Token) => {
     logoUrl: 'ipfs://' + (token.ipfsMedia || PLACEHOLDER_CID),
     issuerName: KEY_NAME_TANGLE,
     build5Id: token.uid,
-    symbol: token.symbol.toLowerCase(),
+    symbol: token.symbol.toUpperCase(),
     decimals: token.decimals,
   };
 };
