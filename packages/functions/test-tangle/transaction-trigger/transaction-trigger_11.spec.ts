@@ -2,10 +2,8 @@
 import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build-5/interfaces';
 import { isEmpty, isEqual } from 'lodash';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
-import { IotaWallet } from '../../src/services/wallet/IotaWalletService';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { AddressDetails } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { wait } from '../../test/controls/common';
@@ -84,10 +82,6 @@ const dummyPayment = (
 
 const getOutputs = async (network: Network, address: AddressDetails) => {
   const wallet = await getWallet(network);
-  if (network === Network.RMS) {
-    const outputs = await (wallet as SmrWallet).getOutputs(address.bech32, [], false);
-    return Object.keys(outputs);
-  }
-  const outputs = await (wallet as IotaWallet).getOutputs(address.hex);
+  const outputs = await wallet.getOutputs(address.bech32, [], false);
   return Object.keys(outputs);
 };

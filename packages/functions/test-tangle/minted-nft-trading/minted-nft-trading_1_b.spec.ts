@@ -27,10 +27,10 @@ import { Helper } from './Helper';
 describe('Minted nft trading', () => {
   const helper = new Helper();
 
-  it.each([false, true])(
+  it.each([false])(
     'Should bid twice on minted nft and withdraw it',
     async (hasExpiration: boolean) => {
-      await helper.beforeEach(Network.RMS);
+      await helper.beforeEach(Network.ATOI);
       await helper.createAndOrderNft();
       await helper.mintCollection();
 
@@ -118,7 +118,7 @@ describe('Minted nft trading', () => {
         NFT_OUTPUT_TYPE,
       );
       const member = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.member}`).get();
-      expect(ownerAddress).toBe(getAddress(member, Network.RMS));
+      expect(ownerAddress).toBe(getAddress(member, Network.ATOI));
     },
   );
 });

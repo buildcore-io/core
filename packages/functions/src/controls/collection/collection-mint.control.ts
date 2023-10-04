@@ -20,8 +20,7 @@ import { AddressTypes, ED25519_ADDRESS_TYPE, INodeInfo } from '@iota/iota.js-nex
 import dayjs from 'dayjs';
 import { last } from 'lodash';
 import { build5Db, getSnapshot } from '../../firebase/firestore/build5Db';
-import { SmrWallet } from '../../services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../../services/wallet/wallet';
+import { AddressDetails, WalletService } from '../../services/wallet/wallet.service';
 import { assertMemberHasValidAddress, assertSpaceHasValidAddress } from '../../utils/address.utils';
 import {
   EMPTY_NFT_ID,
@@ -82,7 +81,7 @@ export const mintCollectionOrderControl = async (owner: string, params: Collecti
       .get<Space>();
     assertSpaceHasValidAddress(royaltySpace, network);
 
-    const wallet = (await WalletService.newWallet(network)) as SmrWallet;
+    const wallet = await WalletService.newWallet(network);
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
     const { storageDeposit: nftsStorageDeposit, nftsToMint } = await getNftsTotalStorageDeposit(

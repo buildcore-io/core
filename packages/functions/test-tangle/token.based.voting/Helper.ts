@@ -24,8 +24,8 @@ import {
 } from '../../src/runtime/firebase/proposal';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails, WalletService } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -39,13 +39,13 @@ export class Helper {
   public member: string = '';
   public space: Space | undefined;
   public proposal: Proposal | undefined;
-  public walletService: SmrWallet | undefined;
+  public walletService: Wallet | undefined;
   public guardianAddress: AddressDetails | undefined;
   public network = Network.RMS;
   public tokenId = '';
 
   public beforeAll = async () => {
-    this.walletService = (await WalletService.newWallet(Network.RMS)) as SmrWallet;
+    this.walletService = await WalletService.newWallet(Network.RMS);
   };
 
   public beforeEach = async () => {

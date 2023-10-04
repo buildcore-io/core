@@ -31,7 +31,7 @@ describe('Minted token airdrop tangle claim', () => {
 
   beforeAll(async () => {
     await helper.berforeAll();
-    tangleOrder = await getTangleOrder();
+    tangleOrder = await getTangleOrder(Network.RMS);
   });
 
   beforeEach(async () => {

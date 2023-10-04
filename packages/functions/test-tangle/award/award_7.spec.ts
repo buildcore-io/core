@@ -13,9 +13,9 @@ import { INftOutput, IndexerPluginClient } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails, WalletService } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -38,13 +38,13 @@ describe('Create award, base', () => {
   let member: string;
   let space: Space;
   let award: Award;
-  let walletService: SmrWallet;
+  let walletService: Wallet;
   let token: Token;
   let guardianAddress: AddressDetails;
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    walletService = (await WalletService.newWallet(network)) as SmrWallet;
+    walletService = await WalletService.newWallet(network);
   });
 
   beforeEach(async () => {

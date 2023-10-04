@@ -15,8 +15,8 @@ import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails, WalletService } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -39,12 +39,12 @@ describe('Create award, native', () => {
   let space: Space;
   let award: Award;
   let guardianAddress: AddressDetails;
-  let walletService: SmrWallet;
+  let walletService: Wallet;
   let token: Token;
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    walletService = (await WalletService.newWallet(network)) as SmrWallet;
+    walletService = await WalletService.newWallet(network);
   });
 
   beforeEach(async () => {

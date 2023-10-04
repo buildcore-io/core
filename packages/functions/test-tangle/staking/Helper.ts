@@ -23,9 +23,9 @@ import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { depositStake } from '../../src/runtime/firebase/stake';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { AddressDetails } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -48,7 +48,7 @@ export class Helper {
   public member: Member | undefined;
   public memberAddress: AddressDetails | undefined;
   public space: Space | undefined;
-  public walletService: SmrWallet | undefined;
+  public walletService: Wallet | undefined;
   public walletSpy: any;
   public network = Network.RMS;
   public token: Token | undefined;
@@ -56,7 +56,7 @@ export class Helper {
 
   public beforeAll = async () => {
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    this.walletService = (await getWallet(this.network)) as SmrWallet;
+    this.walletService = await getWallet(this.network);
   };
 
   public beforeEach = async () => {

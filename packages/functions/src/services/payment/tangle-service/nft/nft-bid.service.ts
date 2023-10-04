@@ -27,10 +27,9 @@ import { assertIpNotBlocked } from '../../../../utils/ip.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getSpace } from '../../../../utils/space.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { WalletService } from '../../../wallet/wallet';
+import { WalletService } from '../../../wallet/wallet.service';
 import { TransactionService } from '../../transaction-service';
 import { nftBidSchema } from './NftBidTangleRequestSchema';
-import { AVAILABLE_NETWORKS } from '../../../../controls/common';
 
 export class TangleNftBidService {
   constructor(readonly transactionService: TransactionService) {}
@@ -39,6 +38,7 @@ export class TangleNftBidService {
     tran: MilestoneTransaction,
     tranEntry: MilestoneTransactionEntry,
     owner: string,
+    tangleOrder: Transaction,
     request: Record<string, unknown>,
   ): Promise<BaseTangleResponse | undefined> => {
     const params = await assertValidationAsync(nftBidSchema, request);
@@ -47,20 +47,15 @@ export class TangleNftBidService {
     order.payload.tanglePuchase = true;
     order.payload.disableWithdraw = params.disableWithdraw || false;
 
+    if (tangleOrder.network !== order.network) {
+      throw invalidArgument(WenError.invalid_network);
+    }
+
     this.transactionService.push({
       ref: build5Db().doc(`${COL.TRANSACTION}/${order.uid}`),
       data: order,
       action: 'set',
     });
-
-    const isMintedNft = AVAILABLE_NETWORKS.includes(order.network!);
-    if (!isMintedNft) {
-      return {
-        status: 'success',
-        amount: order.payload.amount!,
-        address: order.payload.targetAddress!,
-      };
-    }
 
     this.transactionService.createUnlockTransaction(
       order,

@@ -23,7 +23,7 @@ import { Converter, HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { cloneDeep, isEmpty } from 'lodash';
-import { Expiration } from '../services/wallet/SmrWalletService';
+import { Expiration } from '../services/wallet/IotaWalletService';
 
 export const hasNoTimeLock = (output: IBasicOutput) => {
   const locks = output.unlockConditions.filter(
@@ -84,7 +84,7 @@ export const packBasicOutput = (
   nativeTokens: INativeToken[] | undefined,
   info: INodeInfo,
   retrunAddressBech32?: string,
-  vestingAt?: Timestamp,
+  vestingAt?: Timestamp | null,
   expiration?: Expiration,
   metadata?: Record<string, unknown>,
   tag?: string,

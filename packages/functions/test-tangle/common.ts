@@ -12,7 +12,7 @@ import { Converter } from '@iota/util.js-next';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { build5Db } from '../src/firebase/firestore/build5Db';
-import { SmrWallet } from '../src/services/wallet/SmrWalletService';
+import { Wallet } from '../src/services/wallet/wallet';
 import { generateRandomAmount } from '../src/utils/common.utils';
 import { dateToTimestamp, serverTime } from '../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../src/utils/wallet.utils';
@@ -58,17 +58,17 @@ export const awaitTransactionConfirmationsForToken = async (token: string) => {
   expect(allConfirmed).toBe(true);
 };
 
-let tangleOrder: Transaction;
-export const getTangleOrder = async () => {
-  if (tangleOrder) {
-    return tangleOrder;
+const tangleOrders: { [key: string]: Transaction } = {};
+export const getTangleOrder = async (network: Network) => {
+  if (tangleOrders[network]) {
+    return tangleOrders[network];
   }
-  const walletService = await getWallet(Network.RMS);
+  const walletService = await getWallet(network);
   const targetAddress = await walletService.getNewIotaAddressDetails();
   const order = {
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
-    network: Network.RMS,
+    network: network,
     createdOn: serverTime(),
     payload: {
       type: TransactionPayloadType.TANGLE_REQUEST,
@@ -83,11 +83,11 @@ export const getTangleOrder = async () => {
     linkedTransactions: [],
   };
   await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
-  tangleOrder = order;
-  return tangleOrder;
+  tangleOrders[network] = order;
+  return tangleOrders[network];
 };
 
-export const getRmsSoonTangleResponse = async (doc: Transaction, wallet: SmrWallet) => {
+export const getRmsSoonTangleResponse = async (doc: Transaction, wallet: Wallet) => {
   const blockId = doc?.payload?.walletReference?.chainReference!;
   const block = await wallet!.client.block(blockId);
   const hexData = (<ITransactionPayload>block.payload)?.essence?.payload?.data || '';

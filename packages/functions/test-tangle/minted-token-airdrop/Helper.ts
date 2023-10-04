@@ -9,8 +9,8 @@ import {
   TokenStatus,
 } from '@build-5/interfaces';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
+import { Wallet } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, getRandomSymbol } from '../../test/controls/common';
@@ -23,11 +23,11 @@ export class Helper {
 
   public guardian: string | undefined;
   public member: string | undefined;
-  public walletService: SmrWallet | undefined;
+  public walletService: Wallet | undefined;
   public walletSpy: any;
 
   public berforeAll = async () => {
-    this.walletService = (await getWallet(this.network)) as SmrWallet;
+    this.walletService = await getWallet(this.network);
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
   };
 
@@ -51,7 +51,7 @@ export class Helper {
 export const saveToken = async (
   space: string,
   guardian: string,
-  walletService: SmrWallet,
+  walletService: Wallet,
   tokenId = MINTED_TOKEN_ID,
 ) => {
   const vaultAddress = await walletService.getIotaAddressDetails(VAULT_MNEMONIC);

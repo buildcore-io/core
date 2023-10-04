@@ -14,8 +14,8 @@ import {
 import dayjs from 'dayjs';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails, WalletService } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, wait } from '../../test/controls/common';
@@ -31,21 +31,21 @@ describe('Award tangle request', () => {
   let guardian: string;
   let space: Space;
   let guardianAddress: AddressDetails;
-  let walletService: SmrWallet;
+  let walletService: Wallet;
   let token: Token;
   let tangleOrder: Transaction;
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    walletService = (await WalletService.newWallet(network)) as SmrWallet;
-    tangleOrder = await getTangleOrder();
+    walletService = await WalletService.newWallet(network);
+    tangleOrder = await getTangleOrder(Network.RMS);
   });
 
   beforeEach(async () => {
     guardian = await createMember(walletSpy);
     space = await createSpace(walletSpy, guardian);
 
-    token = await saveBaseToken(space.uid, guardian);
+    token = await saveBaseToken(space.uid, guardian, Network.RMS);
 
     const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${guardian}`);
     const guardianData = <Member>await guardianDocRef.get();
@@ -53,7 +53,7 @@ describe('Award tangle request', () => {
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
   });
 
-  it('Should create with tangle request, fund and approve, only send only to smr address', async () => {
+  it('Should create with tangle request, fund and approve, only send to smr address', async () => {
     const newAward = awardRequest(space.uid, token.symbol);
     await requestFundsFromFaucet(Network.RMS, guardianAddress.bech32, 5 * MIN_IOTA_AMOUNT);
     await walletService.send(guardianAddress, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {

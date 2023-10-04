@@ -19,8 +19,7 @@ import dayjs from 'dayjs';
 import { chunk } from 'lodash';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { CreateAirdropsRequest } from '../../runtime/firebase/token/base/TokenAirdropRequestSchema';
-import { SmrWallet } from '../../services/wallet/SmrWalletService';
-import { WalletService } from '../../services/wallet/wallet';
+import { WalletService } from '../../services/wallet/wallet.service';
 import { packBasicOutput } from '../../utils/basic-output.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
@@ -44,7 +43,7 @@ export const airdropMintedTokenControl = async (owner: string, params: CreateAir
   const drops = params.drops;
 
   const totalDropped = drops.reduce((acc, act) => acc + act.count, 0);
-  const wallet = (await WalletService.newWallet(token.mintingData?.network)) as SmrWallet;
+  const wallet = await WalletService.newWallet(token.mintingData?.network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
   const nativeToken = {
     amount: HexHelper.fromBigInt256(bigInt(totalDropped)),

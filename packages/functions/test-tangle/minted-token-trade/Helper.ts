@@ -16,8 +16,8 @@ import bigInt from 'big-integer';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -43,13 +43,13 @@ export class Helper {
   public buyerAddress: AddressDetails | undefined;
 
   public guardian: string | undefined;
-  public walletService: SmrWallet | undefined;
+  public walletService: Wallet | undefined;
   public walletSpy: any;
 
   public soonTokenId = '';
 
   public berforeAll = async () => {
-    this.walletService = (await getWallet(this.network)) as SmrWallet;
+    this.walletService = await getWallet(this.network);
     await createRoyaltySpaces();
     this.soonTokenId = await saveSoon();
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
@@ -146,7 +146,7 @@ export class Helper {
 export const saveToken = async (
   space: string,
   guardian: string,
-  walletService: SmrWallet,
+  walletService: Wallet,
   tokenId = MINTED_TOKEN_ID,
 ) => {
   const vaultAddress = await walletService.getIotaAddressDetails(VAULT_MNEMONIC);

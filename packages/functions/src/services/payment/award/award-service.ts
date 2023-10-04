@@ -28,7 +28,7 @@ import { createNftOutput } from '../../../utils/collection-minting-utils/nft.uti
 import { getContentType } from '../../../utils/storage.utils';
 import { createAliasOutput } from '../../../utils/token-minting-utils/alias.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
-import { SmrWallet } from '../../wallet/SmrWalletService';
+import { Wallet } from '../../wallet/wallet';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 
 export class AwardService {
@@ -177,7 +177,7 @@ export const awardToIpfsMetadata = (award: Award) => {
   return metadata;
 };
 
-export const getAwardgStorageDeposits = async (award: Award, token: Token, wallet: SmrWallet) => {
+export const getAwardgStorageDeposits = async (award: Award, token: Token, wallet: Wallet) => {
   const address = await wallet.getNewIotaAddressDetails();
 
   const aliasOutput = createAliasOutput(address, wallet.info);

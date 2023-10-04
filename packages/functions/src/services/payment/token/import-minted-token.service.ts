@@ -26,8 +26,8 @@ import { build5Storage } from '../../../firebase/storage/build5Storage';
 import { getBucket } from '../../../utils/config.utils';
 import { migrateUriToSotrage, uriToUrl } from '../../../utils/media.utils';
 import { isAliasGovernor } from '../../../utils/token-minting-utils/alias.utils';
-import { SmrWallet } from '../../wallet/SmrWalletService';
-import { WalletService } from '../../wallet/wallet';
+import { Wallet } from '../../wallet/wallet';
+import { WalletService } from '../../wallet/wallet.service';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 
 export class ImportMintedTokenService {
@@ -44,7 +44,7 @@ export class ImportMintedTokenService {
         throw WenError.token_does_not_exist;
       }
 
-      const wallet = (await WalletService.newWallet(order.network)) as SmrWallet;
+      const wallet = await WalletService.newWallet(order.network);
       const { foundry, alias } = await this.getFoundryOutput(wallet, order, match);
       const metadata = this.getTokenMetadata(foundry);
 
@@ -124,7 +124,7 @@ export class ImportMintedTokenService {
   };
 
   private getFoundryOutput = async (
-    wallet: SmrWallet,
+    wallet: Wallet,
     order: Transaction,
     match: TransactionMatch,
   ) => {
@@ -140,7 +140,7 @@ export class ImportMintedTokenService {
     const alias = await indexer.alias(aliasId);
     const aliasOutput = <IAliasOutput>(await wallet.client.output(alias.items[0])).output;
 
-    if (!isAliasGovernor(aliasOutput, match.from.address, wallet.info.protocol.bech32Hrp)) {
+    if (!isAliasGovernor(aliasOutput, match.from, wallet.info.protocol.bech32Hrp)) {
       throw WenError.not_alias_governor;
     }
 

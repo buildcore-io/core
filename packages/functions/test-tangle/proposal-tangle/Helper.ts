@@ -17,8 +17,8 @@ import dayjs from 'dayjs';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { IQuery } from '../../src/firebase/firestore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails, WalletService } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -33,7 +33,7 @@ export class Helper {
   public guardian: string = '';
   public space: Space = {} as any;
   public guardianAddress: AddressDetails = {} as any;
-  public walletService: SmrWallet = {} as any;
+  public walletService: Wallet = {} as any;
   public tangleOrder: Transaction = {} as any;
   public network = Network.RMS;
   public guardianCreditQuery: IQuery = {} as any;
@@ -41,8 +41,8 @@ export class Helper {
   public proposalUid = '';
 
   public beforeAll = async () => {
-    this.walletService = (await WalletService.newWallet(this.network)) as SmrWallet;
-    this.tangleOrder = await getTangleOrder();
+    this.walletService = await WalletService.newWallet(this.network);
+    this.tangleOrder = await getTangleOrder(Network.RMS);
   };
 
   public beforeEach = async () => {

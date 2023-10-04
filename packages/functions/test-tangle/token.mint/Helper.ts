@@ -18,8 +18,8 @@ import { Converter, HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import { cloneDeep } from 'lodash';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { packBasicOutput } from '../../src/utils/basic-output.utils';
 import { packEssence, packPayload, submitBlock } from '../../src/utils/block.utils';
@@ -35,7 +35,7 @@ export class Helper {
   public address: AddressDetails = {} as any;
   public space: Space = {} as any;
   public token: Token = {} as any;
-  public walletService: SmrWallet = {} as any;
+  public walletService: Wallet = {} as any;
   public member: string = '';
   public walletSpy: any = {} as any;
   public network = Network.RMS;
@@ -57,7 +57,7 @@ export class Helper {
       approved,
       isPublicToken,
     );
-    this.walletService = (await getWallet(this.network)) as SmrWallet;
+    this.walletService = await getWallet(this.network);
     this.address = await this.walletService.getAddressDetails(
       getAddress(this.guardian, this.network),
     );
@@ -95,7 +95,7 @@ export class Helper {
   };
 
   public meltMintedToken = async (
-    wallet: SmrWallet,
+    wallet: Wallet,
     token: Token,
     amount: number,
     fromAddress: string,
@@ -157,14 +157,14 @@ export class Helper {
   };
 }
 
-export const getAliasOutput = async (wallet: SmrWallet, aliasId: string) => {
+export const getAliasOutput = async (wallet: Wallet, aliasId: string) => {
   const indexer = new IndexerPluginClient(wallet.client);
   const response = await indexer.alias(aliasId);
   const outputResponse = await wallet.client.output(response.items[0]);
   return outputResponse.output as IAliasOutput;
 };
 
-export const getStateAndGovernorAddress = async (wallet: SmrWallet, alias: IAliasOutput) => {
+export const getStateAndGovernorAddress = async (wallet: Wallet, alias: IAliasOutput) => {
   const hrp = wallet.info.protocol.bech32Hrp;
   return (alias.unlockConditions as IGovernorAddressUnlockCondition[])
     .map((uc) => (uc.address as IEd25519Address).pubKeyHash)

@@ -23,7 +23,7 @@ describe('Nft otr bid', () => {
 
   beforeAll(async () => {
     await helper.beforeAll();
-    tangleOrder = await getTangleOrder();
+    tangleOrder = await getTangleOrder(Network.RMS);
   });
 
   beforeEach(async () => {

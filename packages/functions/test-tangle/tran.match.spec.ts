@@ -8,8 +8,8 @@ import {
   TransactionValidationType,
 } from '@build-5/interfaces';
 import { build5Db } from '../src/firebase/firestore/build5Db';
-import { SmrWallet } from '../src/services/wallet/SmrWalletService';
-import { AddressDetails } from '../src/services/wallet/wallet';
+import { Wallet } from '../src/services/wallet/wallet';
+import { AddressDetails } from '../src/services/wallet/wallet.service';
 import { generateRandomAmount } from '../src/utils/common.utils';
 import { serverTime } from '../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../src/utils/wallet.utils';
@@ -19,11 +19,11 @@ import { requestFundsFromFaucet } from './faucet';
 
 describe('Transaction match', () => {
   let order: Transaction;
-  let wallet: SmrWallet;
+  let wallet: Wallet;
   let address: AddressDetails;
 
   beforeAll(async () => {
-    wallet = (await getWallet(Network.RMS)) as SmrWallet;
+    wallet = await getWallet(Network.RMS);
   });
 
   beforeEach(async () => {
@@ -69,7 +69,7 @@ describe('Transaction match', () => {
   });
 });
 
-const saveOrder = async (wallet: SmrWallet) => {
+const saveOrder = async (wallet: Wallet) => {
   const targetAddress = await wallet.getNewIotaAddressDetails();
   const data = <Transaction>{
     type: TransactionType.ORDER,

@@ -3,8 +3,6 @@ import { COL, Member, Network, Token, TokenStatus } from '@build-5/interfaces';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { createMember } from '../../src/runtime/firebase/member';
 import { IotaWallet } from '../../src/services/wallet/IotaWalletService';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import {
@@ -17,6 +15,8 @@ import {
 } from '../../test/controls/common';
 import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 import { addValidatedAddress } from '../common';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
+import { Wallet } from '../../src/services/wallet/wallet';
 
 export class Helper {
   public sourceNetwork = Network.ATOI;
@@ -27,7 +27,7 @@ export class Helper {
   public buyerValidateAddress = {} as { [key: string]: AddressDetails };
   public token: Token | undefined;
   public walletSpy: any | undefined;
-  public rmsWallet: SmrWallet | undefined;
+  public rmsWallet: Wallet | undefined;
   public atoiWallet: IotaWallet | undefined;
   public soonTokenId = '';
 
@@ -54,7 +54,7 @@ export class Helper {
     this.token = await this.saveToken(space.uid, guardian);
 
     this.atoiWallet = (await getWallet(Network.ATOI)) as IotaWallet;
-    this.rmsWallet = (await getWallet(Network.RMS)) as SmrWallet;
+    this.rmsWallet = await getWallet(Network.RMS);
   };
 
   public saveToken = async (space: string, guardian: string) => {

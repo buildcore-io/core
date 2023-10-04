@@ -1,15 +1,12 @@
 import { COL, Member, Network, WEN_FUNC, WenError } from '@build-5/interfaces';
-import { Ed25519 } from '@iota/crypto.js';
-import { Ed25519 as Ed25519Next } from '@iota/crypto.js-next';
-import { Converter } from '@iota/util.js';
-import { Converter as ConverterNext } from '@iota/util.js-next';
+import { Ed25519 } from '@iota/crypto.js-next';
+import { Converter } from '@iota/util.js-next';
 import { recoverPersonalSignature } from '@metamask/eth-sig-util';
 import jwt from 'jsonwebtoken';
 import { get } from 'lodash';
 import { build5Db } from '../src/firebase/firestore/build5Db';
 import { generateCustomToken } from '../src/runtime/firebase/auth';
-import { SmrWallet } from '../src/services/wallet/SmrWalletService';
-import { WalletService } from '../src/services/wallet/wallet';
+import { WalletService } from '../src/services/wallet/wallet.service';
 import * as config from '../src/utils/config.utils';
 import { getJwtSecretKey } from '../src/utils/config.utils';
 import * as wallet from '../src/utils/wallet.utils';
@@ -70,22 +67,22 @@ describe('Auth control test', () => {
 
 describe('Pub key test', () => {
   it.each([Network.RMS, Network.SMR])('Should validate SMR pub key', async (network: Network) => {
-    const wallet = (await WalletService.newWallet(network)) as SmrWallet;
+    const wallet = await WalletService.newWallet(network);
     const address = await wallet.getNewIotaAddressDetails();
 
     const nonce = getRandomNonce();
     const userDocRef = build5Db().doc(`${COL.MEMBER}/${address.bech32}`);
     await userDocRef.create({ uid: address.bech32, nonce });
 
-    const signature = Ed25519Next.sign(
+    const signature = Ed25519.sign(
       address.keyPair.privateKey,
       Converter.utf8ToBytes(`0x${toHex(nonce)}`),
     );
     const request = {
       address: 'address',
-      signature: ConverterNext.bytesToHex(signature),
+      signature: Converter.bytesToHex(signature),
       publicKey: {
-        hex: ConverterNext.bytesToHex(address.keyPair.publicKey),
+        hex: Converter.bytesToHex(address.keyPair.publicKey),
         network,
       },
       body: {},
@@ -102,7 +99,7 @@ describe('Pub key test', () => {
   it.each([Network.IOTA, Network.ATOI])(
     'Should validate IOTA pub key',
     async (network: Network) => {
-      const wallet = (await WalletService.newWallet(network)) as SmrWallet;
+      const wallet = await WalletService.newWallet(network);
       const address = await wallet.getNewIotaAddressDetails();
 
       const nonce = getRandomNonce();
@@ -115,7 +112,7 @@ describe('Pub key test', () => {
       );
 
       const request = {
-        address: 'address',
+        address: address.bech32,
         signature: Converter.bytesToHex(signature),
         publicKey: {
           hex: Converter.bytesToHex(address.keyPair.publicKey),
@@ -134,27 +131,27 @@ describe('Pub key test', () => {
   );
 
   it.each([Network.RMS, Network.SMR])('Should throw wrong pub key', async (network: Network) => {
-    const wallet = (await WalletService.newWallet(network)) as SmrWallet;
+    const wallet = await WalletService.newWallet(network);
     const address = await wallet.getNewIotaAddressDetails();
 
     const nonce = getRandomNonce();
     const userDocRef = build5Db().doc(`${COL.MEMBER}/${address.bech32}`);
     await userDocRef.create({ uid: address.bech32, nonce });
 
-    const signature = Ed25519Next.sign(
+    const signature = Ed25519.sign(
       address.keyPair.privateKey,
       Converter.utf8ToBytes(`0x${toHex(nonce)}`),
     );
 
-    const wallet2 = (await WalletService.newWallet(
+    const wallet2 = await WalletService.newWallet(
       network === Network.SMR ? Network.RMS : Network.SMR,
-    )) as SmrWallet;
+    );
     const secondAddress = await wallet2.getNewIotaAddressDetails();
     const request = {
       address: 'address',
-      signature: ConverterNext.bytesToHex(signature),
+      signature: Converter.bytesToHex(signature),
       publicKey: {
-        hex: ConverterNext.bytesToHex(secondAddress.keyPair.publicKey),
+        hex: Converter.bytesToHex(secondAddress.keyPair.publicKey),
         network,
       },
       body: {},
@@ -168,22 +165,22 @@ describe('Pub key test', () => {
   });
 
   it('Should update nonce when public key sign in', async () => {
-    const wallet = (await WalletService.newWallet(Network.RMS)) as SmrWallet;
+    const wallet = await WalletService.newWallet(Network.RMS);
     const address = await wallet.getNewIotaAddressDetails();
 
     const nonce = getRandomNonce();
     const userDocRef = build5Db().doc(`${COL.MEMBER}/${address.bech32}`);
     await userDocRef.create({ uid: address.bech32, nonce });
 
-    const signature = Ed25519Next.sign(
+    const signature = Ed25519.sign(
       address.keyPair.privateKey,
       Converter.utf8ToBytes(`0x${toHex(nonce)}`),
     );
     const request = {
       address: 'address',
-      signature: ConverterNext.bytesToHex(signature),
+      signature: Converter.bytesToHex(signature),
       publicKey: {
-        hex: ConverterNext.bytesToHex(address.keyPair.publicKey),
+        hex: Converter.bytesToHex(address.keyPair.publicKey),
         network: Network.RMS,
       },
       body: {},

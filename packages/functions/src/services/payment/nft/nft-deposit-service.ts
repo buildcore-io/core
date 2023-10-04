@@ -38,8 +38,7 @@ import {
 } from '../../../utils/nft.output.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { NftWallet } from '../../wallet/NftWallet';
-import { SmrWallet } from '../../wallet/SmrWalletService';
-import { WalletService } from '../../wallet/wallet';
+import { WalletService } from '../../wallet/wallet.service';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 export class NftDepositService {
   constructor(readonly transactionService: TransactionService) {}
@@ -277,7 +276,7 @@ export class NftDepositService {
       throw WenError.nft_not_irc27_compilant;
     }
 
-    const wallet = (await WalletService.newWallet(order.network)) as SmrWallet;
+    const wallet = await WalletService.newWallet(order.network);
     const nftWallet = new NftWallet(wallet);
     const collectionOutput = await nftWallet.getById(nftMetadata.collectionId);
     const collectionMetadata = getNftOutputMetadata(collectionOutput);

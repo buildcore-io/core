@@ -22,7 +22,6 @@ import {
   createSpace,
   expectThrow,
   getRandomSymbol,
-  milestoneProcessed,
   mockIpCheck,
   mockWalletReturnValue,
   submitMilestoneFunc,
@@ -94,11 +93,7 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
 
   it('Should create token order', async () => {
     const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
-    const nextMilestone = await submitMilestoneFunc(
-      order.payload.targetAddress,
-      order.payload.amount,
-    );
-    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+    await submitMilestoneFunc(order);
 
     const distribution = await build5Db()
       .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`)
@@ -109,18 +104,10 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
 
   it('Should order more token', async () => {
     const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
-    const nextMilestone = await submitMilestoneFunc(
-      order.payload.targetAddress,
-      order.payload.amount,
-    );
-    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+    await submitMilestoneFunc(order);
 
     const order2 = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
-    const nextMilestone2 = await submitMilestoneFunc(
-      order2.payload.targetAddress,
-      order2.payload.amount,
-    );
-    await milestoneProcessed(nextMilestone2.milestone, nextMilestone2.tranId);
+    await submitMilestoneFunc(order2);
 
     const distribution = await build5Db()
       .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`)
@@ -132,11 +119,7 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
   it('Should create token order and should credit some amount', async () => {
     for (const _ of [0, 1]) {
       const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
-      const nextMilestone = await submitMilestoneFunc(
-        order.payload.targetAddress,
-        order.payload.amount,
-      );
-      await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+      await submitMilestoneFunc(order);
     }
 
     const distribution = await build5Db()
@@ -169,11 +152,7 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
 
   it('Should create token order and should credit all amount', async () => {
     const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
-    const nextMilestone = await submitMilestoneFunc(
-      order.payload.targetAddress,
-      order.payload.amount,
-    );
-    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+    await submitMilestoneFunc(order);
 
     const distribution = await build5Db()
       .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`)
@@ -204,11 +183,7 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
 
   it('Should create token order and should fail credit, not in cool down period', async () => {
     const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
-    const nextMilestone = await submitMilestoneFunc(
-      order.payload.targetAddress,
-      order.payload.amount,
-    );
-    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+    await submitMilestoneFunc(order);
 
     await build5Db()
       .doc(`${COL.TOKEN}/${token.uid}`)
@@ -223,11 +198,7 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
 
   it('Should throw, amount too much to refund', async () => {
     const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
-    const nextMilestone = await submitMilestoneFunc(
-      order.payload.targetAddress,
-      order.payload.amount,
-    );
-    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+    await submitMilestoneFunc(order);
 
     const distribution = await build5Db()
       .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`)
@@ -243,11 +214,7 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
 
   it('Should throw, amount too much to refund after second credit', async () => {
     const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
-    const nextMilestone = await submitMilestoneFunc(
-      order.payload.targetAddress,
-      order.payload.amount,
-    );
-    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+    await submitMilestoneFunc(order);
 
     await build5Db()
       .doc(`${COL.TOKEN}/${token.uid}`)
@@ -310,14 +277,9 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
     mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid });
     await expectThrow(testEnv.wrap(orderToken)({}), WenError.you_dont_have_required_NFTs.key);
   });
-
   it('Should create token order and should credit, not leave less then MIN amount', async () => {
     const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
-    const nextMilestone = await submitMilestoneFunc(
-      order.payload.targetAddress,
-      1.5 * MIN_IOTA_AMOUNT,
-    );
-    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+    await submitMilestoneFunc(order, 1.5 * MIN_IOTA_AMOUNT);
 
     const distribution = await build5Db()
       .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`)
@@ -341,12 +303,10 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
   it('Should create order and deposit in parallel', async () => {
     const array = Array.from(Array(10));
     const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
-    const amounts = array.map((_, index) => index * MIN_IOTA_AMOUNT);
-    const total = array.reduce((sum, _, index) => sum + index * MIN_IOTA_AMOUNT, 0);
-    const deposit = async (amount: number) => {
-      const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, amount);
-      await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
-    };
+    const amounts = array.map((_, index) => (index + 1) * MIN_IOTA_AMOUNT);
+    const total = array.reduce((sum, _, index) => sum + (index + 1) * MIN_IOTA_AMOUNT, 0);
+    const deposit = async (amount: number) => submitMilestoneFunc(order, amount);
+
     const promises = amounts.map(deposit);
     await Promise.all(promises);
     const distribution = <TokenDistribution>(

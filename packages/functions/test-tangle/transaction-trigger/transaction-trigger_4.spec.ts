@@ -2,9 +2,8 @@
 import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build-5/interfaces';
 import { addressBalance } from '@iota/iota.js-next';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { AddressDetails } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { packBasicOutput } from '../../src/utils/basic-output.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -31,7 +30,7 @@ describe('Transaction trigger spec', () => {
   it('Should send native tokens and credit it', async () => {
     const network = Network.RMS;
     await setup(network);
-    const wallet = (await getWallet(network)) as SmrWallet;
+    const wallet = await getWallet(network);
     const vaultAddress = await wallet.getIotaAddressDetails(VAULT_MNEMONIC);
     await MnemonicService.store(vaultAddress.bech32, vaultAddress.mnemonic);
 

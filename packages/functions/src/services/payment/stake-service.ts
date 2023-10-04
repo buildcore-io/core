@@ -56,7 +56,7 @@ export class StakeService {
         amount: matchAmount,
         nativeTokens,
         sourceAddress: order.payload.targetAddress,
-        targetAddress: match.from.address,
+        targetAddress: match.from,
         previousOwnerEntity: Entity.MEMBER,
         previousOwner: order.member!,
         ownerEntity: Entity.MEMBER,

@@ -27,9 +27,9 @@ import {
 } from '../../src/runtime/firebase/award';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails, WalletService } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { mergeOutputs } from '../../src/utils/basic-output.utils';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
@@ -55,12 +55,12 @@ describe('Create award, native', () => {
   let space: Space;
   let award: Award;
   let guardianAddress: AddressDetails;
-  let walletService: SmrWallet;
+  let walletService: Wallet;
   let token: Token;
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    walletService = (await WalletService.newWallet(network)) as SmrWallet;
+    walletService = await WalletService.newWallet(network);
   });
 
   beforeEach(async () => {

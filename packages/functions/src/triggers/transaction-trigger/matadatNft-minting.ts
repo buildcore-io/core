@@ -20,7 +20,7 @@ import {
   createMintMetadataCollectionOrder,
   createMintMetadataNftOrder,
 } from '../../services/payment/metadataNft-service';
-import { WalletService } from '../../services/wallet/wallet';
+import { WalletService } from '../../services/wallet/wallet.service';
 import { getAddress } from '../../utils/address.utils';
 import { indexToString } from '../../utils/block.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
@@ -219,7 +219,7 @@ const onNftUpdated = async (transaction: Transaction) => {
   });
 
   const wallet = await WalletService.newWallet(transaction.network!);
-  const balance = await wallet.getBalance(order.payload.targetAddress);
+  const balance = await wallet.getBalance(order.payload.targetAddress!);
 
   const member = await build5Db().doc(`${COL.MEMBER}/${transaction.member}`).get<Member>();
   const collection = await build5Db().doc(`${COL.COLLECTION}/${nft?.collection}`).get<Collection>();

@@ -75,7 +75,7 @@ export class ProcessingService {
     for (const tranOutput of tran.outputs) {
       if (
         build5Transaction?.type !== TransactionType.UNLOCK &&
-        tran.inputs.find((i) => tranOutput.address === i.address)
+        tran.fromAddresses.includes(tranOutput.address)
       ) {
         continue;
       }

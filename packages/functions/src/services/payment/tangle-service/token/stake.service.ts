@@ -21,8 +21,7 @@ import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getTokenBySymbol } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { SmrWallet } from '../../../wallet/SmrWalletService';
-import { WalletService } from '../../../wallet/wallet';
+import { WalletService } from '../../../wallet/wallet.service';
 import { TransactionService } from '../../transaction-service';
 import { depositStakeSchemaObject } from './TokenStakeTangleRequestSchema';
 
@@ -80,7 +79,7 @@ export const createStakeOrder = async (
   }
 
   const network = token.mintingData?.network!;
-  const wallet = (await WalletService.newWallet(network)) as SmrWallet;
+  const wallet = await WalletService.newWallet(network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
   const nativeTokens = [
     {

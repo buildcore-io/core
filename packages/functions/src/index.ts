@@ -78,11 +78,9 @@ import { collectionWrite } from './triggers/collection.trigger';
 import {
   atoiMilestoneTransactionWrite,
   iotaMilestoneTransactionWrite,
-} from './triggers/milestone-transactions-triggers/iota-milestone-transaction.trigger';
-import {
   rmsMilestoneTransactionWrite,
   smrMilestoneTransactionWrite,
-} from './triggers/milestone-transactions-triggers/smr-milestone-transaction.trigger';
+} from './triggers/milestone-transactions-triggers/milestone-transaction.trigger';
 import { mnemonicWrite } from './triggers/mnemonic.trigger';
 import { nftWrite } from './triggers/nft.trigger';
 import { onProposalUpdated } from './triggers/proposal.trigger';

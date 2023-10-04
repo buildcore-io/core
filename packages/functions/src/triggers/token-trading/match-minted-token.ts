@@ -17,8 +17,7 @@ import bigInt from 'big-integer';
 import bigDecimal from 'js-big-decimal';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { ITransaction } from '../../firebase/firestore/interfaces';
-import { SmrWallet } from '../../services/wallet/SmrWalletService';
-import { WalletService } from '../../services/wallet/wallet';
+import { WalletService } from '../../services/wallet/wallet.service';
 import { getAddress } from '../../utils/address.utils';
 import { packBasicOutput } from '../../utils/basic-output.utils';
 import { getRoyaltyFees } from '../../utils/royalty.utils';
@@ -235,7 +234,7 @@ export const matchMintedToken = async (
   price: number,
   triggeredBy: TokenTradeOrderType,
 ): Promise<Match> => {
-  const wallet = (await WalletService.newWallet(token.mintingData?.network!)) as SmrWallet;
+  const wallet = await WalletService.newWallet(token.mintingData?.network!);
 
   const seller = (await build5Db().doc(`${COL.MEMBER}/${sell.owner}`).get<Member>())!;
   const buyer = (await build5Db().doc(`${COL.MEMBER}/${buy.owner}`).get<Member>())!;

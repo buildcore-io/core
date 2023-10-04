@@ -60,7 +60,7 @@ export interface AwardCreateRequest {
   /**
    * Network on wich the award will be minted and issued
    */
-  network: 'smr' | 'rms';
+  network: 'iota' | 'smr' | 'atoi' | 'rms';
   /**
    * Build5 id of the space
    */

@@ -22,8 +22,7 @@ import { cloneDeep, get } from 'lodash';
 import { build5Db } from '../../../firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
-import { SmrWallet } from '../../wallet/SmrWalletService';
-import { WalletService } from '../../wallet/wallet';
+import { WalletService } from '../../wallet/wallet.service';
 import { createNftWithdrawOrder } from '../tangle-service/nft/nft-purchase.service';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 import { NftDepositService } from './nft-deposit-service';
@@ -52,7 +51,7 @@ export class NftStakeService {
       const { order: withdrawOrder, nftUpdateData } = createNftWithdrawOrder(
         nft,
         order.member!,
-        match.from.address,
+        match.from,
         get(order, 'payload.weeks', 0),
         get(order, 'payload.stakeType', StakeType.DYNAMIC),
       );
@@ -88,7 +87,7 @@ export class NftStakeService {
   };
 
   private getNftOutputAmount = async (order: Transaction, tranEntry: MilestoneTransactionEntry) => {
-    const wallet = (await WalletService.newWallet(order.network)) as SmrWallet;
+    const wallet = await WalletService.newWallet(order.network);
     const weeks = get(order, 'payload.weeks', 0);
     const output = cloneDeep(tranEntry.nftOutput as INftOutput);
     output.features = output.features?.filter((f) => f.type !== TAG_FEATURE_TYPE);

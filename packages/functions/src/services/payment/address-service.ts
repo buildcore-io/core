@@ -68,7 +68,7 @@ export class AddressService {
     const guardians = await spaceDocRef.collection(SUB_COL.GUARDIANS).get<SpaceGuardian>();
     const proposal = createUpdateSpaceValidatedAddressProposal(
       order,
-      match.from.address,
+      match.from,
       owner,
       space!,
       guardians.length,

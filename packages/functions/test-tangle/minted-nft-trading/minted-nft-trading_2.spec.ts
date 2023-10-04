@@ -23,15 +23,8 @@ import { Helper } from './Helper';
 describe('Minted nft trading', () => {
   const helper = new Helper();
 
-  beforeAll(async () => {
-    await helper.beforeAll();
-  });
-
-  beforeEach(async () => {
-    await helper.beforeEach();
-  });
-
   it.each([false, true])('Should order nft and withdraw it', async (hasExpiration: boolean) => {
+    await helper.beforeEach(Network.RMS);
     const expiresAt = hasExpiration ? dateToTimestamp(dayjs().add(2, 'h').toDate()) : undefined;
 
     await helper.createAndOrderNft();

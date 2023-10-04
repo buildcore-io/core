@@ -25,8 +25,7 @@ import { assertIsSpaceMember } from '../../../../utils/space.utils';
 import { getTokenBySymbol } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { isStorageUrl } from '../../../joi/common';
-import { SmrWallet } from '../../../wallet/SmrWalletService';
-import { WalletService } from '../../../wallet/wallet';
+import { WalletService } from '../../../wallet/wallet.service';
 import { getAwardgStorageDeposits } from '../../award/award-service';
 import { TransactionService } from '../../transaction-service';
 import { awardCreateSchema } from './AwardCreateTangleRequestSchema';
@@ -133,7 +132,7 @@ export const createAward = async (
     nativeTokenStorageDeposit: 0,
     funded: false,
   };
-  const wallet = (await WalletService.newWallet(award.network)) as SmrWallet;
+  const wallet = await WalletService.newWallet(award.network);
   const storageDeposits = await getAwardgStorageDeposits(award, token, wallet);
 
   const awardOwner = { uid: owner, parentId: award.uid, parentCol: COL.AWARD };

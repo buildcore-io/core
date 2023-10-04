@@ -50,10 +50,11 @@ import {
 import { createUnlock } from '../../utils/smr.utils';
 import { EMPTY_ALIAS_ID, getAliasBech32Address } from '../../utils/token-minting-utils/alias.utils';
 import { awardBadgeToNttMetadata, awardToCollectionMetadata } from '../payment/award/award-service';
-import { SmrParams, SmrWallet } from './SmrWalletService';
+import { AliasWallet } from './AliasWallet';
 import { MnemonicService } from './mnemonic';
-import { AliasWallet } from './smr-wallets/AliasWallet';
-import { AddressDetails, setConsumedOutputIds } from './wallet';
+import { Wallet, WalletParams } from './wallet';
+import { AddressDetails, setConsumedOutputIds } from './wallet.service';
+
 interface MintNftInputParams {
   readonly aliasOutputId: string;
   readonly aliasOutput: IAliasOutput;
@@ -64,14 +65,14 @@ interface MintNftInputParams {
 }
 
 export class NftWallet {
-  constructor(private readonly wallet: SmrWallet) {}
+  constructor(private readonly wallet: Wallet) {}
 
-  public mintCollection = async (transaction: Transaction, params: SmrParams) => {
+  public mintCollection = async (transaction: Transaction, params: WalletParams) => {
     const sourceIsGov =
       !transaction.payload.aliasGovAddress ||
       transaction.payload.aliasGovAddress === transaction.payload.sourceAddress;
 
-    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress);
+    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress!);
     const sourceMnemonic = await MnemonicService.getData(sourceAddress.bech32);
 
     const outputsMap = await this.wallet.getOutputs(
@@ -159,8 +160,8 @@ export class NftWallet {
     return { immutableMetadata: JSON.stringify(collectionMetadata), mutableMetadata: '' };
   };
 
-  public mintAwardCollection = async (transaction: Transaction, params: SmrParams) => {
-    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress);
+  public mintAwardCollection = async (transaction: Transaction, params: WalletParams) => {
+    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress!);
     const sourceMnemonic = await MnemonicService.getData(sourceAddress.bech32);
 
     const outputsMap = await this.wallet.getOutputs(
@@ -217,8 +218,8 @@ export class NftWallet {
     return await submitBlock(this.wallet, packPayload(essence, unlocks));
   };
 
-  public mintNfts = async (transaction: Transaction, params: SmrParams) => {
-    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress);
+  public mintNfts = async (transaction: Transaction, params: WalletParams) => {
+    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress!);
     const sourceMnemonic = await MnemonicService.getData(sourceAddress.bech32);
 
     const outputsMap = await this.wallet.getOutputs(
@@ -317,8 +318,8 @@ export class NftWallet {
     return await this.wallet.client.blockSubmit(block);
   };
 
-  public mintNtt = async (transaction: Transaction, params: SmrParams) => {
-    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress);
+  public mintNtt = async (transaction: Transaction, params: WalletParams) => {
+    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress!);
     const sourceMnemonic = await MnemonicService.getData(sourceAddress.bech32);
 
     const outputsMap = await this.wallet.getOutputs(
@@ -389,12 +390,12 @@ export class NftWallet {
     return await this.wallet.client.blockSubmit(block);
   };
 
-  public mintMetadataNft = async (transaction: Transaction, params: SmrParams) => {
+  public mintMetadataNft = async (transaction: Transaction, params: WalletParams) => {
     const sourceIsGov =
       !transaction.payload.aliasGovAddress ||
       transaction.payload.aliasGovAddress === transaction.payload.sourceAddress;
 
-    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress);
+    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress!);
     const sourceMnemonic = await MnemonicService.getData(sourceAddress.bech32);
 
     const outputsMap = await this.wallet.getOutputs(
@@ -406,7 +407,7 @@ export class NftWallet {
     const indexer = new IndexerPluginClient(this.wallet.client);
 
     const aliasGovAddress = await this.wallet.getAddressDetails(
-      transaction.payload.aliasGovAddress,
+      transaction.payload.aliasGovAddress!,
     );
     const aliasGovMnemonic = sourceIsGov
       ? sourceMnemonic
@@ -488,12 +489,12 @@ export class NftWallet {
     return await submitBlock(this.wallet, packPayload(essence, unlocks));
   };
 
-  public updateMetadataNft = async (transaction: Transaction, params: SmrParams) => {
+  public updateMetadataNft = async (transaction: Transaction, params: WalletParams) => {
     const sourceIsGov =
       !transaction.payload.aliasGovAddress ||
       transaction.payload.aliasGovAddress === transaction.payload.sourceAddress;
 
-    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress);
+    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress!);
     const sourceMnemonic = await MnemonicService.getData(sourceAddress.bech32);
 
     const outputsMap = await this.wallet.getOutputs(
@@ -506,7 +507,7 @@ export class NftWallet {
     const indexer = new IndexerPluginClient(this.wallet.client);
 
     const aliasGovAddress = await this.wallet.getAddressDetails(
-      transaction.payload.aliasGovAddress,
+      transaction.payload.aliasGovAddress!,
     );
     const aliasGovMnemonic = sourceIsGov
       ? sourceMnemonic
@@ -602,7 +603,7 @@ export class NftWallet {
     address: AddressDetails,
     input: MintNftInputParams,
     nftOutputs: INftOutput[],
-    params: SmrParams,
+    params: WalletParams,
   ) => {
     const inputs = [input.aliasOutputId, input.collectionOutputId, ...input.consumedOutputIds].map(
       TransactionHelper.inputFromOutputId,
@@ -663,7 +664,7 @@ export class NftWallet {
     return createNftOutput(ownerAddress, issuerAddress, metadata, this.wallet.info);
   };
 
-  public changeNftOwner = async (transaction: Transaction, params: SmrParams) => {
+  public changeNftOwner = async (transaction: Transaction, params: WalletParams) => {
     const sourceMnemonic = await MnemonicService.getData(transaction.payload.sourceAddress);
     const nftOutputs = await this.getNftOutputs(
       transaction.payload.nftId || undefined,
@@ -673,7 +674,7 @@ export class NftWallet {
 
     const nftOutput = Object.values(nftOutputs)[0];
 
-    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress);
+    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress!);
     const targetAddress = Bech32Helper.addressFromBech32(
       transaction.payload.targetAddress!,
       this.wallet.info.protocol.bech32Hrp,
@@ -705,8 +706,8 @@ export class NftWallet {
     );
   };
 
-  public lockCollection = async (transaction: Transaction, params: SmrParams) => {
-    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress);
+  public lockCollection = async (transaction: Transaction, params: WalletParams) => {
+    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress!);
     const sourceMnemonic = await MnemonicService.getData(sourceAddress.bech32);
 
     const aliasWallet = new AliasWallet(this.wallet);
@@ -782,7 +783,7 @@ export class NftWallet {
   };
 }
 
-const getNftMintingAddress = (nfts: Nft[], wallet: SmrWallet) => {
+const getNftMintingAddress = (nfts: Nft[], wallet: Wallet) => {
   const promises = nfts.map(async (nft) =>
     nft.mintingData?.address
       ? await wallet.getAddressDetails(nft.mintingData?.address)

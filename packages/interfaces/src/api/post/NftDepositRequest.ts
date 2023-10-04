@@ -10,5 +10,5 @@ export interface NftDepositRequest {
   /**
    * Network on wich the nft was minted.
    */
-  network: 'smr' | 'rms';
+  network: 'iota' | 'smr' | 'atoi' | 'rms';
 }

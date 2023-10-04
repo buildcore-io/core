@@ -14,6 +14,7 @@ import {
   TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
+  getMilestoneCol,
 } from '@build-5/interfaces';
 import {
   ADDRESS_UNLOCK_CONDITION_TYPE,
@@ -28,13 +29,13 @@ import * as functions from 'firebase-functions/v2';
 import { get, isEmpty, set } from 'lodash';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { IDocument, ITransaction } from '../../firebase/firestore/interfaces';
-import { SmrMilestoneTransactionAdapter } from '../../triggers/milestone-transactions-triggers/SmrMilestoneTransactionAdapter';
+import { MilestoneTransactionAdapter } from '../../triggers/milestone-transactions-triggers/MilestoneTransactionAdapter';
 import { getOutputMetadata } from '../../utils/basic-output.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 export interface TransactionMatch {
   msgId: string;
-  from: MilestoneTransactionEntry;
+  from: string;
   to: MilestoneTransactionEntry;
 }
 
@@ -81,7 +82,7 @@ export class TransactionService {
     const data: Transaction = {
       type: TransactionType.PAYMENT,
       uid: getRandomEthAddress(),
-      member: order.member || tran.from.address,
+      member: order.member || tran.from,
       space: order.space || '',
       network: order.network || DEFAULT_NETWORK,
       payload: {
@@ -91,7 +92,7 @@ export class TransactionService {
           ...nt,
           amount: Number(nt.amount).toString(),
         })),
-        sourceAddress: tran.from.address,
+        sourceAddress: tran.from,
         targetAddress: order.payload.targetAddress,
         reconciled: true,
         void: false,
@@ -233,7 +234,7 @@ export class TransactionService {
             amount: Number(nt.amount).toString(),
           })),
           sourceAddress: tran.to.address,
-          targetAddress: tran.from.address,
+          targetAddress: tran.from,
           sourceTransaction: [payment.uid],
           nft: payment.payload.nft || null,
           reconciled: true,
@@ -289,7 +290,7 @@ export class TransactionService {
             amount: Number(nt.amount).toString(),
           })),
           sourceAddress: tran.to.address,
-          targetAddress: tran.from.address,
+          targetAddress: tran.from,
           sourceTransaction: [payment.uid],
           reconciled: true,
           void: false,
@@ -330,7 +331,7 @@ export class TransactionService {
       payload: {
         amount: payment.payload.amount,
         sourceAddress: tran.to.address,
-        targetAddress: tran.from.address,
+        targetAddress: tran.from,
         sourceTransaction: [payment.uid],
         reconciled: true,
         void: false,
@@ -369,11 +370,11 @@ export class TransactionService {
       const doc = (await build5Db()
         .doc(build5Transaction.payload?.milestoneTransactionPath!)
         .get<Record<string, unknown>>())!;
-      const adapter = new SmrMilestoneTransactionAdapter(order.network!);
+      const adapter = new MilestoneTransactionAdapter(order.network!);
       const milestoneTransaction = await adapter.toMilestoneTransaction(doc);
-      return milestoneTransaction.inputs?.[0];
+      return milestoneTransaction.fromAddresses[0];
     }
-    return tran.inputs?.[0];
+    return tran.fromAddresses[0];
   };
 
   public async isMatch(
@@ -389,19 +390,12 @@ export class TransactionService {
       return;
     }
     let found: TransactionMatch | undefined;
-    const fromAddress: MilestoneTransactionEntry = await this.getFromAddress(
-      tran,
-      order,
-      build5Transaction,
-    );
+    const fromAddress = await this.getFromAddress(tran, order, build5Transaction);
     if (fromAddress && tran.outputs) {
       for (const o of tran.outputs) {
-        // Ignore output that contains input address. Remaining balance.
         if (
           build5Transaction?.type !== TransactionType.UNLOCK &&
-          tran.inputs.find((i) => {
-            return o.address === i.address;
-          })
+          tran.fromAddresses.includes(o.address)
         ) {
           continue;
         }
@@ -428,11 +422,7 @@ export class TransactionService {
     tranOutput: MilestoneTransactionEntry,
     build5Transaction?: Transaction,
   ): Promise<void> {
-    const fromAddress: MilestoneTransactionEntry = await this.getFromAddress(
-      tran,
-      order,
-      build5Transaction,
-    );
+    const fromAddress = await this.getFromAddress(tran, order, build5Transaction);
     if (fromAddress) {
       const match: TransactionMatch = {
         msgId: tran.messageId,
@@ -504,7 +494,9 @@ export class TransactionService {
           : tranOutput.address,
         sourceTransaction: [order.uid],
         expiresOn: expiresOn || dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
-        milestoneTransactionPath: `${COL.MILESTONE}_${network}/${tran.milestone}/${SUB_COL.TRANSACTIONS}/${tran.uid}`,
+        milestoneTransactionPath: `${getMilestoneCol(network)}/${tran.milestone}/${
+          SUB_COL.TRANSACTIONS
+        }/${tran.uid}`,
         outputToConsume,
         customMetadata: getOutputMetadata(tranOutput.output),
         nftId: tranOutput.nftOutput?.nftId || '',

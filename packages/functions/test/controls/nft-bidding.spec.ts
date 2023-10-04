@@ -31,7 +31,6 @@ import {
   createMember,
   createSpace,
   expectThrow,
-  milestoneProcessed,
   mockWalletReturnValue,
   submitMilestoneFunc,
   wait,
@@ -72,8 +71,7 @@ const dummySaleData = (uid: string) => ({
 const bidNft = async (memberId: string, amount: number) => {
   mockWalletReturnValue(walletSpy, memberId, { nft: nft.uid });
   const bidOrder = await testEnv.wrap(openBid)({});
-  const nftMilestone = await submitMilestoneFunc(bidOrder.payload.targetAddress, amount);
-  await milestoneProcessed(nftMilestone.milestone, nftMilestone.tranId);
+  await submitMilestoneFunc(bidOrder, amount);
   return bidOrder;
 };
 
@@ -121,11 +119,7 @@ beforeEach(async () => {
     collection: collection.uid,
     nft: nft.uid,
   });
-  const nftMilestone = await submitMilestoneFunc(
-    nftOrder.payload.targetAddress,
-    nftOrder.payload.amount,
-  );
-  await milestoneProcessed(nftMilestone.milestone, nftMilestone.tranId);
+  await submitMilestoneFunc(nftOrder);
   await wait(async () => {
     collection = <Collection>await collectionDocRef.get();
     return collection.availableNfts === 0;

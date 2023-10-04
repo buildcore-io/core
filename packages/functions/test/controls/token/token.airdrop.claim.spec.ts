@@ -27,7 +27,6 @@ import {
   createSpace,
   expectThrow,
   getRandomSymbol,
-  milestoneProcessed,
   mockWalletReturnValue,
   submitMilestoneFunc,
   wait,
@@ -91,11 +90,7 @@ describe('Claim airdropped token test', () => {
     await airdrop();
     mockWalletReturnValue(walletSpy, guardian, { token: token.uid });
     const order = await testEnv.wrap(claimAirdroppedToken)({});
-    const nextMilestone = await submitMilestoneFunc(
-      order.payload.targetAddress,
-      order.payload.amount,
-    );
-    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+    await submitMilestoneFunc(order);
 
     const orderTran = <Transaction>await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).get();
     expect(orderTran.member).toBe(guardian);
@@ -128,11 +123,7 @@ describe('Claim airdropped token test', () => {
 
     mockWalletReturnValue(walletSpy, guardian, { token: token.uid });
     const order = await testEnv.wrap(claimAirdroppedToken)({});
-    const nextMilestone = await submitMilestoneFunc(
-      order.payload.targetAddress,
-      order.payload.amount,
-    );
-    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+    await submitMilestoneFunc(order);
 
     const orderTran = <Transaction>await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).get();
     expect(orderTran.member).toBe(guardian);
@@ -175,11 +166,7 @@ describe('Claim airdropped token test', () => {
 
     mockWalletReturnValue(walletSpy, guardian, { token: token.uid });
     const order = await testEnv.wrap(claimAirdroppedToken)({});
-    const nextMilestone = await submitMilestoneFunc(
-      order.payload.targetAddress,
-      order.payload.amount,
-    );
-    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+    await submitMilestoneFunc(order);
 
     const orderTran = <Transaction>await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).get();
     expect(orderTran.member).toBe(guardian);
@@ -207,11 +194,7 @@ describe('Claim airdropped token test', () => {
     const claimToken = async () => {
       const order = await testEnv.wrap(claimAirdroppedToken)({});
       await new Promise((r) => setTimeout(r, 1000));
-      const nextMilestone = await submitMilestoneFunc(
-        order.payload.targetAddress,
-        order.payload.amount,
-      );
-      await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+      await submitMilestoneFunc(order);
       return order;
     };
     const promises = [claimToken(), claimToken()];
@@ -268,11 +251,7 @@ describe('Claim airdropped token test', () => {
 
     mockWalletReturnValue(walletSpy, guardian, { token: token.uid });
     const order = await testEnv.wrap(claimAirdroppedToken)({});
-    const nextMilestone = await submitMilestoneFunc(
-      order.payload.targetAddress,
-      order.payload.amount,
-    );
-    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+    await submitMilestoneFunc(order);
 
     const orderTran = <Transaction>await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).get();
     expect(orderTran.member).toBe(guardian);

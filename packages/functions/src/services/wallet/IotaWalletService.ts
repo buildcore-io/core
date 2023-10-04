@@ -1,218 +1,364 @@
-import { KEY_NAME_TANGLE, Network } from '@build-5/interfaces';
-import { Bip32Path } from '@iota/crypto.js';
+import { NativeToken, Timestamp, Transaction } from '@build-5/interfaces';
+import { Bip32Path } from '@iota/crypto.js-next';
 import {
+  ADDRESS_UNLOCK_CONDITION_TYPE,
+  BASIC_OUTPUT_TYPE,
   Bech32Helper,
   ED25519_ADDRESS_TYPE,
   Ed25519Address,
   Ed25519Seed,
-  IKeyPair,
-  INodeInfo,
-  IOutputResponse,
-  IUTXOInput,
-  SIG_LOCKED_SINGLE_OUTPUT_TYPE,
-  SingleNodeClient,
-  UTXO_INPUT_TYPE,
-  sendAdvanced,
-} from '@iota/iota.js';
-import { Converter } from '@iota/util.js';
+  IAliasOutput,
+  IBasicOutput,
+  IFoundryOutput,
+  INftOutput,
+  IndexerPluginClient,
+  REFERENCE_UNLOCK_TYPE,
+  TransactionHelper,
+  UnlockTypes,
+  addressBalance,
+} from '@iota/iota.js-next';
+import { Converter, HexHelper } from '@iota/util.js-next';
+import bigInt from 'big-integer';
 import { generateMnemonic } from 'bip39';
-import * as functions from 'firebase-functions/v2';
-import { isEmpty } from 'lodash';
-import { getRandomElement } from '../../utils/common.utils';
+import { cloneDeep, head, isEmpty } from 'lodash';
+import { mergeOutputs, packBasicOutput, subtractHex } from '../../utils/basic-output.utils';
+import { Bech32AddressHelper } from '../../utils/bech32-address.helper';
+import { packEssence, packPayload, submitBlock } from '../../utils/block.utils';
+import { createUnlock } from '../../utils/smr.utils';
+import { NftWallet } from './NftWallet';
 import { MnemonicService } from './mnemonic';
-import { AddressDetails, Wallet, WalletParams, setConsumedOutputIds } from './wallet';
-const IOTA_API_ENDPOINTS = [
-  'https://us3.svrs.io/',
-  'https://us4.svrs.io/',
-  'https://hs5.svrs.io/',
-  'https://hs6.svrs.io/',
-  'https://chrysalis-nodes.iota.org',
-];
+import { Wallet, WalletParams } from './wallet';
+import { AddressDetails, SendToManyTargets, setConsumedOutputIds } from './wallet.service';
 
-const ATOI_API_ENDPOINTS = ['https://devnet.svrs.io/'];
-
-const getEndpointUrl = (network: Network) => {
-  const urls = network === Network.IOTA ? IOTA_API_ENDPOINTS : ATOI_API_ENDPOINTS;
-  return getRandomElement(urls);
-};
-
-interface Input {
-  input: IUTXOInput;
-  addressKeyPair: IKeyPair;
+export interface Expiration {
+  readonly expiresAt: Timestamp;
+  readonly returnAddressBech32: string;
 }
 
-export const getIotaClient = async (network: Network, customUrl?: string) => {
-  let url = '';
-  for (let i = 0; i < 5; ++i) {
-    url = customUrl || getEndpointUrl(network);
-    try {
-      const client = new SingleNodeClient(url);
-      const healty = await client.health();
-      if (healty) {
-        return { client, info: await client.info() };
-      }
-    } catch (error) {
-      functions.logger.warn(`Could not connect to client ${network}`, url, error);
-    }
-    await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 1000 + 500)));
-  }
-  functions.logger.error(`Could not connect to client ${network}`, url);
-  throw Error(`Could not connect to any client ${network}`);
-};
-
-export class IotaWallet implements Wallet<WalletParams> {
-  constructor(
-    public readonly client: SingleNodeClient,
-    public readonly info: INodeInfo,
-    private readonly network: Network,
-  ) {}
-
+export class IotaWallet extends Wallet {
   public getBalance = async (addressBech32: string | undefined) => {
     if (!addressBech32) {
       return 0;
     }
-    return (await this.client.address(addressBech32))?.balance || 0;
+    const balance = await addressBalance(this.client, addressBech32);
+    return Number(balance.balance);
   };
 
-  public getNewIotaAddressDetails = async () => {
+  public getNewIotaAddressDetails = async (saveMnemonic = true) => {
     const address = await this.getIotaAddressDetails(generateMnemonic() + ' ' + generateMnemonic());
-    await MnemonicService.store(address.bech32, address.mnemonic, this.network);
+    saveMnemonic && (await MnemonicService.store(address.bech32, address.mnemonic, this.network));
     return address;
   };
 
   public getIotaAddressDetails = async (mnemonic: string): Promise<AddressDetails> => {
-    const genesisSeed = Ed25519Seed.fromMnemonic(mnemonic);
-    const genesisPath = new Bip32Path("m/44'/4218'/0'/0'/0'");
-    const genesisWalletSeed = genesisSeed.generateSeedFromPath(genesisPath);
-    const keyPair = genesisWalletSeed.keyPair();
-    const genesisEd25519Address = new Ed25519Address(keyPair.publicKey);
-    const genesisWalletAddress = genesisEd25519Address.toAddress();
-    const hex = Converter.bytesToHex(genesisWalletAddress);
+    const walletSeed = Ed25519Seed.fromMnemonic(mnemonic);
+    const walletPath = new Bip32Path("m/44'/4218'/0'/0'/0'");
+    const walletAddressSeed = walletSeed.generateSeedFromPath(walletPath);
+    const keyPair = walletAddressSeed.keyPair();
+    const walletEd25519Address = new Ed25519Address(keyPair.publicKey);
+    const walletAddress = walletEd25519Address.toAddress();
+    const hex = Converter.bytesToHex(walletAddress, true);
     const bech32 = Bech32Helper.toBech32(
       ED25519_ADDRESS_TYPE,
-      genesisWalletAddress,
-      this.info?.bech32HRP!,
+      walletAddress,
+      this.info.protocol.bech32Hrp,
     );
 
-    return { mnemonic, bech32, keyPair, hex };
+    return { mnemonic, keyPair, hex, bech32 };
   };
 
-  public getAddressDetails = async (bech32: string) => {
-    const mnemonic = await MnemonicService.get(bech32);
+  public getAddressDetails = async (bech32: string | undefined) => {
+    const mnemonic = await MnemonicService.get(bech32 || '');
     return this.getIotaAddressDetails(mnemonic);
   };
 
-  public getOutputs = async (addressHex: string, previouslyConsumedOutputIds: string[] = []) => {
-    const consumedOutputIds = isEmpty(previouslyConsumedOutputIds)
-      ? (await this.client.addressEd25519Outputs(addressHex)).outputIds
+  public getTransactionOutput = async (transactionId: string, outputIndex: number) => {
+    const outputId = TransactionHelper.outputIdFromTransactionData(transactionId, outputIndex);
+    return await this.client.output(outputId);
+  };
+
+  public bechAddressFromOutput = (
+    output: IBasicOutput | IAliasOutput | IFoundryOutput | INftOutput,
+  ) => {
+    const hrp = this.info.protocol.bech32Hrp!;
+    return Bech32AddressHelper.addressFromAddressUnlockCondition(
+      output.unlockConditions,
+      hrp,
+      output.type,
+    );
+  };
+
+  public getOutputs = async (
+    addressBech32: string,
+    previouslyConsumedOutputIds: string[] = [],
+    hasStorageDepositReturn: boolean | undefined,
+    hasTimelock = false,
+  ) => {
+    const indexer = new IndexerPluginClient(this.client);
+    const query = {
+      addressBech32,
+      hasStorageDepositReturn,
+      hasTimelock,
+    };
+    const outputIds = isEmpty(previouslyConsumedOutputIds)
+      ? (await indexer.basicOutputs(query)).items
       : previouslyConsumedOutputIds;
-    const outputs: { [id: string]: IOutputResponse } = {};
-    for (const consumedOutputId of consumedOutputIds) {
-      const output = await this.client.output(consumedOutputId);
-      if (output.output.type === SIG_LOCKED_SINGLE_OUTPUT_TYPE) {
-        outputs[consumedOutputId] = output;
+    const outputs: { [key: string]: IBasicOutput } = {};
+    for (const id of outputIds) {
+      const output = (await this.client.output(id)).output;
+      if (output.type === BASIC_OUTPUT_TYPE) {
+        outputs[id] = output;
       }
     }
     return outputs;
   };
 
   public send = async (
-    fromAddress: AddressDetails,
+    from: AddressDetails,
     toAddress: string,
     amount: number,
     params: WalletParams,
-  ) => {
-    const prevConsumedOutputIds =
-      (await MnemonicService.getData(fromAddress.bech32)).consumedOutputIds || [];
-    const consumedOutputs = await this.getOutputs(fromAddress.hex, prevConsumedOutputIds);
-    const totalAmount = Object.values(consumedOutputs).reduce(
-      (acc, act) => acc + act.output.amount,
-      0,
-    );
-    const inputs: Input[] = Object.values(consumedOutputs).map((output) => ({
-      input: {
-        type: UTXO_INPUT_TYPE,
-        transactionId: output.transactionId,
-        transactionOutputIndex: output.outputIndex,
-      },
-      addressKeyPair: fromAddress.keyPair,
-    }));
-
-    const output = {
-      address: this.convertAddressToHex(toAddress),
-      addressType: ED25519_ADDRESS_TYPE,
+    outputToConsume?: string | undefined,
+  ): Promise<string> => {
+    const prevConsumedOutputIds = outputToConsume
+      ? [outputToConsume]
+      : (await MnemonicService.getData(from.bech32)).consumedOutputIds;
+    const outputsMap = await this.getOutputs(from.bech32, prevConsumedOutputIds, false);
+    const output = packBasicOutput(
+      toAddress,
       amount,
-    };
-    const remainder = {
-      address: fromAddress.hex,
-      addressType: ED25519_ADDRESS_TYPE,
-      amount: totalAmount - amount,
-    };
-
-    await setConsumedOutputIds(fromAddress.bech32, Object.keys(consumedOutputs));
-    const { messageId } = await sendAdvanced(
-      this.client,
-      inputs,
-      remainder.amount > 0 ? [output, remainder] : [output],
-      {
-        key: Converter.utf8ToBytes(KEY_NAME_TANGLE),
-        data: Converter.utf8ToBytes(params.data || ''),
-      },
+      params.nativeTokens,
+      this.info,
+      params.storageDepositReturnAddress,
+      params.vestingAt,
+      params.expiration,
+      params.customMetadata,
+      params.tag,
     );
-    return messageId;
+
+    const remainders: IBasicOutput[] = [];
+
+    let storageDepositOutputMap: { [key: string]: IBasicOutput } = {};
+    if (params.storageDepositSourceAddress) {
+      const previouslyConsumedOutputIds =
+        (await MnemonicService.getData(params.storageDepositSourceAddress)).consumedOutputIds || [];
+      storageDepositOutputMap = await this.getOutputs(
+        params.storageDepositSourceAddress,
+        previouslyConsumedOutputIds,
+        false,
+      );
+      const remainder = mergeOutputs(cloneDeep(Object.values(storageDepositOutputMap)));
+      remainder.amount = (Number(remainder.amount) - Number(output.amount)).toString();
+      if (Number(remainder.amount)) {
+        remainders.push(remainder);
+      }
+    }
+    const remainder = mergeOutputs(cloneDeep(Object.values(outputsMap)));
+    remainder.nativeTokens = subtractNativeTokens(remainder, params.nativeTokens);
+    if (!params.storageDepositSourceAddress) {
+      remainder.amount = (Number(remainder.amount) - Number(output.amount)).toString();
+    }
+    if (!isEmpty(remainder.nativeTokens) || Number(remainder.amount) > 0) {
+      remainders.push(remainder);
+    }
+
+    const inputs = [...Object.keys(outputsMap), ...Object.keys(storageDepositOutputMap)].map(
+      TransactionHelper.inputFromOutputId,
+    );
+    const inputsCommitment = TransactionHelper.getInputsCommitment([
+      ...Object.values(outputsMap),
+      ...Object.values(storageDepositOutputMap),
+    ]);
+
+    const essence = packEssence(inputs, inputsCommitment, [output, ...remainders], this, params);
+    const unlocks: UnlockTypes[] = Object.values(outputsMap).map((_, index) =>
+      !index ? createUnlock(essence, from.keyPair) : { type: REFERENCE_UNLOCK_TYPE, reference: 0 },
+    );
+    if (params.storageDepositSourceAddress) {
+      const address = await this.getAddressDetails(params.storageDepositSourceAddress);
+      const storageDepUnlocks: UnlockTypes[] = Object.values(storageDepositOutputMap).map(
+        (_, index) =>
+          !index
+            ? createUnlock(essence, address.keyPair)
+            : { type: REFERENCE_UNLOCK_TYPE, reference: unlocks.length },
+      );
+      unlocks.push(...storageDepUnlocks);
+    }
+
+    if (!outputToConsume) {
+      await setConsumedOutputIds(from.bech32, Object.keys(outputsMap));
+      if (params.storageDepositSourceAddress) {
+        await setConsumedOutputIds(
+          params.storageDepositSourceAddress,
+          Object.keys(storageDepositOutputMap),
+        );
+      }
+    }
+    return await submitBlock(this, packPayload(essence, unlocks));
   };
 
   public sendToMany = async (
     from: AddressDetails,
-    targets: { toAddress: string; amount: number }[],
+    targets: SendToManyTargets[],
     params: WalletParams,
-  ) => {
-    const consumedOutputIds = (await this.client.addressEd25519Outputs(from.hex)).outputIds;
-    const outputPromises = consumedOutputIds.map((id) => this.client.output(id));
-    const consumedOutputResponses = await Promise.all(outputPromises);
-    const total = consumedOutputResponses.reduce((acc, act) => acc + act.output.amount, 0);
+  ): Promise<string> => {
+    const outputsMap = await this.getOutputs(from.bech32, [], false);
+    const mergedConsumedOutput = mergeOutputs(Object.values(cloneDeep(outputsMap)));
 
-    const inputs: Input[] = consumedOutputResponses.map((output) => ({
-      input: {
-        type: UTXO_INPUT_TYPE,
-        transactionId: output.transactionId,
-        transactionOutputIndex: output.outputIndex,
-      },
-      addressKeyPair: from.keyPair,
-    }));
-
-    const outputs = targets.map((target) => ({
-      address: this.convertAddressToHex(target.toAddress),
-      addressType: ED25519_ADDRESS_TYPE,
-      amount: target.amount,
-    }));
-    const outputsTotal = outputs.reduce((acc, act) => acc + act.amount, 0);
-
-    const remainderAmount = total - outputsTotal;
-    const remainder =
-      remainderAmount > 0
-        ? {
-            address: from.hex,
-            addressType: ED25519_ADDRESS_TYPE,
-            amount: remainderAmount,
-          }
-        : undefined;
-
-    await setConsumedOutputIds(from.bech32, consumedOutputIds);
-    const { messageId } = await sendAdvanced(
-      this.client,
-      inputs,
-      remainder ? [...outputs, remainder] : outputs,
-      {
-        key: Converter.utf8ToBytes(KEY_NAME_TANGLE),
-        data: Converter.utf8ToBytes(params.data || ''),
-      },
+    const outputs = targets.map((target) =>
+      packBasicOutput(
+        target.toAddress,
+        target.amount,
+        target.nativeTokens,
+        this.info,
+        undefined,
+        undefined,
+        undefined,
+        target.customMetadata,
+      ),
     );
-    return messageId;
+    const mergedOutputs = mergeOutputs(Object.values(cloneDeep(outputs)));
+
+    const remainderAmount = Number(mergedConsumedOutput.amount) - Number(mergedOutputs.amount);
+    const remainderNativeTokenAmount =
+      Number(head(mergedConsumedOutput.nativeTokens)?.amount || 0) -
+      Number(head(mergedOutputs.nativeTokens)?.amount || 0);
+
+    const remainderNativeTokens = remainderNativeTokenAmount
+      ? [
+          {
+            id: mergedConsumedOutput.nativeTokens![0].id,
+            amount: HexHelper.fromBigInt256(bigInt(remainderNativeTokenAmount)),
+          },
+        ]
+      : [];
+
+    const remainder = packBasicOutput(
+      from.bech32,
+      remainderAmount,
+      remainderNativeTokens,
+      this.info,
+    );
+
+    const inputs = Object.keys(outputsMap).map(TransactionHelper.inputFromOutputId);
+    const inputsCommitment = TransactionHelper.getInputsCommitment(Object.values(outputsMap));
+
+    const essence = packEssence(
+      inputs,
+      inputsCommitment,
+      remainderAmount > 0 ? [...outputs, remainder] : outputs,
+      this,
+      params,
+    );
+    const unlocks: UnlockTypes[] = Object.values(outputsMap).map((_, index) =>
+      !index ? createUnlock(essence, from.keyPair) : { type: REFERENCE_UNLOCK_TYPE, reference: 0 },
+    );
+    await setConsumedOutputIds(from.bech32, Object.keys(outputsMap));
+    return await submitBlock(this, packPayload(essence, unlocks));
   };
 
-  private convertAddressToHex(address: string) {
-    const decodeBench32Target = Bech32Helper.fromBech32(address, this.info?.bech32HRP!);
-    return Converter.bytesToHex(decodeBench32Target?.addressBytes!);
-  }
+  public creditLocked = async (credit: Transaction, params: WalletParams): Promise<string> => {
+    const mnemonicData = await MnemonicService.getData(credit.payload.sourceAddress!);
+    const prevSourceConsumedOutputIds = mnemonicData.consumedOutputIds || [];
+    const sourceConsumedOutputs = await this.getOutputs(
+      credit.payload.sourceAddress!,
+      prevSourceConsumedOutputIds,
+      true,
+    );
+
+    const sourceBasicOutputs = Object.values(sourceConsumedOutputs).map((o) =>
+      packBasicOutput(credit.payload.targetAddress!, Number(o.amount), o.nativeTokens, this.info),
+    );
+
+    const nftWallet = new NftWallet(this);
+    const sourceConsumedNftOutputs = await nftWallet.getNftOutputs(
+      undefined,
+      credit.payload.sourceAddress,
+      mnemonicData.consumedNftOutputIds,
+    );
+    const targetAddress = Bech32Helper.addressFromBech32(
+      credit.payload.targetAddress!,
+      this.info.protocol.bech32Hrp,
+    );
+    const sourceNftOutputs = Object.values(sourceConsumedNftOutputs).map((nftOutput) => {
+      const output = cloneDeep(nftOutput);
+      output.unlockConditions = [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: targetAddress }];
+      return output;
+    });
+
+    const sourceOutputs = [...sourceBasicOutputs, ...sourceNftOutputs];
+
+    const prevStorageDepConsumedOutputIds =
+      (await MnemonicService.getData(credit.payload.storageDepositSourceAddress!))
+        .consumedOutputIds || [];
+    const storageDepConsumedOutputs = await this.getOutputs(
+      credit.payload.storageDepositSourceAddress!,
+      prevStorageDepConsumedOutputIds,
+      false,
+    );
+    const storageDepOutputs = Object.values(storageDepConsumedOutputs).map((o) =>
+      packBasicOutput(credit.payload.targetAddress!, Number(o.amount), o.nativeTokens, this.info),
+    );
+
+    const inputs = [
+      ...Object.keys(sourceConsumedOutputs),
+      ...Object.keys(sourceConsumedNftOutputs),
+      ...Object.keys(storageDepConsumedOutputs),
+    ].map(TransactionHelper.inputFromOutputId);
+    const inputsCommitment = TransactionHelper.getInputsCommitment([
+      ...Object.values(sourceConsumedOutputs),
+      ...Object.values(sourceConsumedNftOutputs),
+      ...Object.values(storageDepConsumedOutputs),
+    ]);
+
+    const essence = packEssence(
+      inputs,
+      inputsCommitment,
+      [...sourceOutputs, ...storageDepOutputs],
+      this,
+      params,
+    );
+
+    const sourceAddress = await this.getAddressDetails(credit.payload.sourceAddress);
+    const storageDepositAddess = await this.getAddressDetails(
+      credit.payload.storageDepositSourceAddress,
+    );
+
+    const sourceUnlocks: UnlockTypes[] = Object.keys(sourceOutputs).map((_, i) =>
+      i
+        ? { type: REFERENCE_UNLOCK_TYPE, reference: 0 }
+        : createUnlock(essence, sourceAddress.keyPair),
+    );
+    const storageDepositUnlocks: UnlockTypes[] = Object.keys(storageDepConsumedOutputs).map(
+      (_, i) =>
+        i
+          ? { type: REFERENCE_UNLOCK_TYPE, reference: sourceUnlocks.length }
+          : createUnlock(essence, storageDepositAddess.keyPair),
+    );
+    await setConsumedOutputIds(
+      sourceAddress.bech32,
+      Object.keys(sourceConsumedOutputs),
+      Object.keys(sourceConsumedNftOutputs),
+    );
+    await setConsumedOutputIds(storageDepositAddess.bech32, Object.keys(storageDepConsumedOutputs));
+    return await submitBlock(
+      this,
+      packPayload(essence, [...sourceUnlocks, ...storageDepositUnlocks]),
+    );
+  };
 }
+
+const subtractNativeTokens = (output: IBasicOutput, tokens: NativeToken[] | undefined) => {
+  if (!output.nativeTokens || !tokens) {
+    return output.nativeTokens;
+  }
+  return cloneDeep(output.nativeTokens || [])
+    .map((token) => {
+      const tokenToSubtract = tokens.find((t) => t.id === token.id)?.amount;
+      if (!tokenToSubtract) {
+        return token;
+      }
+      return { id: token.id, amount: subtractHex(token.amount, tokenToSubtract as string) };
+    })
+    .filter((nt) => Number(nt.amount) !== 0);
+};

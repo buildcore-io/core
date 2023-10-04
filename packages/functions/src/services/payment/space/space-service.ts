@@ -20,8 +20,7 @@ import {
 import { build5Db } from '../../../firebase/firestore/build5Db';
 import { Bech32AddressHelper } from '../../../utils/bech32-address.helper';
 import { serverTime } from '../../../utils/dateTime.utils';
-import { SmrWallet } from '../../wallet/SmrWalletService';
-import { WalletService } from '../../wallet/wallet';
+import { WalletService } from '../../wallet/wallet.service';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 
 export class SpaceService {
@@ -44,11 +43,7 @@ export class SpaceService {
     const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${space.collectionId}`);
     const collection = <Collection>await collectionDocRef.get();
 
-    const senderIsIssuer = await senderIsCollectionIssuer(
-      order.network!,
-      match.from.address,
-      collection,
-    );
+    const senderIsIssuer = await senderIsCollectionIssuer(order.network!, match.from, collection);
     if (!senderIsIssuer) {
       return;
     }
@@ -95,7 +90,7 @@ const senderIsCollectionIssuer = async (
   senderBech32: string,
   collection: Collection,
 ) => {
-  const wallet = (await WalletService.newWallet(network)) as SmrWallet;
+  const wallet = await WalletService.newWallet(network);
   const indexer = new IndexerPluginClient(wallet.client);
   const hrp = wallet.info.protocol.bech32Hrp;
 

@@ -1,11 +1,10 @@
 import { Network, Timestamp } from '@build-5/interfaces';
-import { SingleNodeClient } from '@iota/iota.js';
-import { SingleNodeClient as SingleNodeClientNext } from '@iota/iota.js-next';
+import { SingleNodeClient } from '@iota/iota.js-next';
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
-import { SmrWallet } from '../src/services/wallet/SmrWalletService';
 import { MnemonicService } from '../src/services/wallet/mnemonic';
-import { AddressDetails } from '../src/services/wallet/wallet';
+import { Wallet } from '../src/services/wallet/wallet';
+import { AddressDetails } from '../src/services/wallet/wallet.service';
 import { getRandomElement } from '../src/utils/common.utils';
 import { wait } from '../test/controls/common';
 import { getWallet } from '../test/set-up';
@@ -72,7 +71,7 @@ export const requestFundsForManyFromFaucet = async (
 };
 
 export const requestMintedTokenFromFaucet = async (
-  wallet: SmrWallet,
+  wallet: Wallet,
   targetAddress: AddressDetails,
   tokenId: string,
   vaultMnemonic: string,
@@ -105,18 +104,14 @@ export const requestMintedTokenFromFaucet = async (
 export const awaitLedgerInclusionState = async (blockId: string, network: Network) => {
   let ledgerInclusionState: string | undefined = '';
   await wait(async () => {
-    ledgerInclusionState = await getLedgerInclusionState(blockId, network);
+    ledgerInclusionState = await getLedgerInclusionState(blockId);
     return ledgerInclusionState !== undefined;
   }, 120);
   return ledgerInclusionState;
 };
 
-const getLedgerInclusionState = async (blockId: string, network: Network) => {
-  if (network === Network.RMS) {
-    return (await publicRmsClient.blockMetadata(blockId)).ledgerInclusionState;
-  }
-  return (await publicAtoiClient.messageMetadata(blockId)).ledgerInclusionState;
-};
+const getLedgerInclusionState = async (blockId: string) =>
+  (await publicRmsClient.blockMetadata(blockId)).ledgerInclusionState;
 
 export const getFaucetMnemonic = (network: Network) =>
   getRandomElement(network === Network.ATOI ? ATOI_FAUCET_MNEMONIC : RMS_FAUCET_MNEMONIC);
@@ -140,34 +135,33 @@ export const RMS_FAUCET_MNEMONIC = [
   'ranch castle visa syrup famous mercy primary buddy slim vintage sting wonder fury corn vacant absent once cart waste pluck either stand picture thank',
   'orient math boat embrace despair glass desert toast under vendor letter antique city original essence eagle address paddle pioneer crew liberty strike tragic actress',
 ];
+export const ATOI_FAUCET_MNEMONIC = RMS_FAUCET_MNEMONIC;
+// export const ATOI_FAUCET_MNEMONIC = [
+//   'silver depend civil pilot paper short learn island skill carpet fatal damp damp narrow captain industry pond lion utility reduce seed noble volcano table',
+//   'faint label strike still rapid auto later mesh grunt accuse gaze armed reject float fork dynamic ahead bright jar trouble drink neck open rebuild',
+//   'chief addict broccoli square swim cannon damp lyrics novel evidence web tree sadness frozen provide power echo chalk prosper seminar speak attack wedding magnet',
+//   'rather school always baby print wish worth fiscal lake pudding dial one warm bachelor lawsuit deposit pistol joke lemon rail dog night reform problem',
+//   'chronic future orchard remember ball exhibit salt ghost churn dream urban bicycle hurry home ugly harbor antenna blur sing flock crime turtle tackle volcano',
+//   'crowd patient puppy eternal weekend day ordinary ring runway rack ritual situate indoor glide smart act fetch safe creek disease corn voice legend viable',
+//   'daughter now organ owner stairs quarter used also soap quit online fitness label city palace unaware fall normal summer guard ship erase ride equip',
+//   'chat invest powder language marble still expire panther envelope fish animal sell rail drum lecture screen modify truth surface fashion visit smile impact action',
+//   'doctor virtual pipe casual sock escape matter demise tumble silent annual hazard basket section cheap proof horse spoil river surround vote found sustain ritual',
+//   'orange giant water leave glimpse below steel kick reward unique wealth index observe sure artist faint travel moral report destroy goose type theory sail',
+//   'zebra put acoustic okay goddess clip proud pumpkin join abandon manual uncover scatter outer fatal tilt perfect menu silent route pool disagree credit design',
+//   'renew wisdom goose fat satisfy trade expose era bright giraffe inhale occur bundle topic cactus parrot because remain kit leave dinner medal flash polar',
+//   'slot skirt bracket merit language excess deal rich surface kingdom reunion armor apple receive song man tag man need drama idea relax steel vague',
+//   'boost else leaf alpha shop inhale winner believe race scrap object scheme survey soon carpet pupil cloud odor dove blind palace thank run tribe',
+//   'exist protect clown gown search document weasel next reveal battle excite only surround lottery leopard found history bicycle cattle deputy text utility soccer bacon',
+//   'brown improve asset above fall embrace baby tackle fiber physical keep decide club convince increase three day century today enrich naive melody ethics jungle',
+//   'quantum detect embody assist property judge rent east brain better more false blame table usual excess absent tragic token post unaware topic wrap phone',
+//   'sea panel float tongue mention scrap can typical student section cattle neck bid artwork echo online motion desk chalk fog tail beauty pitch fame',
+//   'whisper budget cup recycle upper jealous still unusual purpose charge twist deposit photo utility online gravity ten reject print unfair price opinion chair impulse',
+//   'dilemma dry emerge tray little dry muffin solid math boil health bulb teach marine grace method smile torch attract brave almost exotic cost direct',
+//   'seminar own leaf fluid avoid like pelican issue remind cradle topple island control parade brass wealth orange place media rebel lumber camera miss item',
+//   'task eager same nerve board icon design trigger enlist blanket humble about april curious venue bounce flip old damage delay help clinic primary science',
+//   'embark warm hen face helmet gauge extend quantum mandate oven unfair announce audit blanket ball like drift pigeon caution dumb error doll apart remain',
+//   'island crucial frequent attitude error hard sock first crazy symbol soldier theme south when impact shuffle pause aerobic truck marine bike arrow turtle unit',
+//   'diagram blame cabin battle vacuum goddess weird develop turn symbol sight dance trap loop sample culture purse pupil hobby deal wheel neglect behind tongue',
+// ];
 
-export const ATOI_FAUCET_MNEMONIC = [
-  'silver depend civil pilot paper short learn island skill carpet fatal damp damp narrow captain industry pond lion utility reduce seed noble volcano table',
-  'faint label strike still rapid auto later mesh grunt accuse gaze armed reject float fork dynamic ahead bright jar trouble drink neck open rebuild',
-  'chief addict broccoli square swim cannon damp lyrics novel evidence web tree sadness frozen provide power echo chalk prosper seminar speak attack wedding magnet',
-  'rather school always baby print wish worth fiscal lake pudding dial one warm bachelor lawsuit deposit pistol joke lemon rail dog night reform problem',
-  'chronic future orchard remember ball exhibit salt ghost churn dream urban bicycle hurry home ugly harbor antenna blur sing flock crime turtle tackle volcano',
-  'crowd patient puppy eternal weekend day ordinary ring runway rack ritual situate indoor glide smart act fetch safe creek disease corn voice legend viable',
-  'daughter now organ owner stairs quarter used also soap quit online fitness label city palace unaware fall normal summer guard ship erase ride equip',
-  'chat invest powder language marble still expire panther envelope fish animal sell rail drum lecture screen modify truth surface fashion visit smile impact action',
-  'doctor virtual pipe casual sock escape matter demise tumble silent annual hazard basket section cheap proof horse spoil river surround vote found sustain ritual',
-  'orange giant water leave glimpse below steel kick reward unique wealth index observe sure artist faint travel moral report destroy goose type theory sail',
-  'zebra put acoustic okay goddess clip proud pumpkin join abandon manual uncover scatter outer fatal tilt perfect menu silent route pool disagree credit design',
-  'renew wisdom goose fat satisfy trade expose era bright giraffe inhale occur bundle topic cactus parrot because remain kit leave dinner medal flash polar',
-  'slot skirt bracket merit language excess deal rich surface kingdom reunion armor apple receive song man tag man need drama idea relax steel vague',
-  'boost else leaf alpha shop inhale winner believe race scrap object scheme survey soon carpet pupil cloud odor dove blind palace thank run tribe',
-  'exist protect clown gown search document weasel next reveal battle excite only surround lottery leopard found history bicycle cattle deputy text utility soccer bacon',
-  'brown improve asset above fall embrace baby tackle fiber physical keep decide club convince increase three day century today enrich naive melody ethics jungle',
-  'quantum detect embody assist property judge rent east brain better more false blame table usual excess absent tragic token post unaware topic wrap phone',
-  'sea panel float tongue mention scrap can typical student section cattle neck bid artwork echo online motion desk chalk fog tail beauty pitch fame',
-  'whisper budget cup recycle upper jealous still unusual purpose charge twist deposit photo utility online gravity ten reject print unfair price opinion chair impulse',
-  'dilemma dry emerge tray little dry muffin solid math boil health bulb teach marine grace method smile torch attract brave almost exotic cost direct',
-  'seminar own leaf fluid avoid like pelican issue remind cradle topple island control parade brass wealth orange place media rebel lumber camera miss item',
-  'task eager same nerve board icon design trigger enlist blanket humble about april curious venue bounce flip old damage delay help clinic primary science',
-  'embark warm hen face helmet gauge extend quantum mandate oven unfair announce audit blanket ball like drift pigeon caution dumb error doll apart remain',
-  'island crucial frequent attitude error hard sock first crazy symbol soldier theme south when impact shuffle pause aerobic truck marine bike arrow turtle unit',
-  'diagram blame cabin battle vacuum goddess weird develop turn symbol sight dance trap loop sample culture purse pupil hobby deal wheel neglect behind tongue',
-];
-
-const publicRmsClient = new SingleNodeClientNext('https://api.testnet.shimmer.network');
-const publicAtoiClient = new SingleNodeClient('https://api.lb-0.h.chrysalis-devnet.iota.cafe/');
+const publicRmsClient = new SingleNodeClient('https://api.testnet.shimmer.network');

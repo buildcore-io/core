@@ -2,6 +2,7 @@ import {
   COL,
   Collection,
   MIN_IOTA_AMOUNT,
+  Network,
   Nft,
   Space,
   TangleRequestType,
@@ -13,27 +14,17 @@ import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { getOutputMetadata } from '../../src/utils/basic-output.utils';
 import { wait } from '../../test/controls/common';
-import { getTangleOrder } from '../common';
 import { Helper } from './Helper';
 
 describe('Metadata nft', () => {
   const helper = new Helper();
-  let tangleOrder: Transaction;
 
-  beforeAll(async () => {
-    await helper.berforeAll();
-    tangleOrder = await getTangleOrder();
-  });
-
-  beforeEach(async () => {
-    await helper.beforeEach();
-  });
-
-  it('Should mint metada nft', async () => {
+  it.each([Network.RMS, Network.ATOI])('Should mint metada nft', async (network: Network) => {
+    await helper.beforeEach(network);
     const metadata = { mytest: 'mytest', asd: 'asdasdasd' };
     const blockId = await helper.walletService.send(
       helper.memberAddress,
-      tangleOrder.payload.targetAddress!,
+      helper.tangleOrder.payload.targetAddress!,
       MIN_IOTA_AMOUNT,
       {
         customMetadata: {

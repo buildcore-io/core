@@ -20,7 +20,7 @@ describe('Base token trading', () => {
 
   beforeEach(async () => {
     await helper.beforeEach();
-    tangleOrder = await getTangleOrder();
+    tangleOrder = await getTangleOrder(Network.RMS);
   });
 
   it('Should create sell order with tangle', async () => {

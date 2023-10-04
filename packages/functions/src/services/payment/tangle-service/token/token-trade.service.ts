@@ -40,8 +40,7 @@ import {
   getTokenBySymbol,
 } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { SmrWallet } from '../../../wallet/SmrWalletService';
-import { WalletService } from '../../../wallet/wallet';
+import { WalletService } from '../../../wallet/wallet.service';
 import { TransactionMatch, TransactionService } from '../../transaction-service';
 import { tradeMintedTokenSchema } from './TokenTradeTangleRequestSchema';
 
@@ -257,7 +256,7 @@ const getAmount = async (token: Token, count: number, price: number, isSell: boo
   if (token.status !== TokenStatus.MINTED) {
     return count;
   }
-  const wallet = (await WalletService.newWallet(token.mintingData?.network)) as SmrWallet;
+  const wallet = await WalletService.newWallet(token.mintingData?.network);
   const tmpAddress = await wallet.getNewIotaAddressDetails(false);
   const nativeTokens = [
     { amount: HexHelper.fromBigInt256(bigInt(count)), id: token.mintingData?.tokenId! },

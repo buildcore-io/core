@@ -24,7 +24,7 @@ describe('Minted toke trading tangle request', () => {
 
   beforeAll(async () => {
     await helper.berforeAll();
-    tangleOrder = await getTangleOrder();
+    tangleOrder = await getTangleOrder(Network.RMS);
   });
 
   beforeEach(async () => {

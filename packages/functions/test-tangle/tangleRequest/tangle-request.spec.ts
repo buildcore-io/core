@@ -11,8 +11,7 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -20,24 +19,25 @@ import { createMember, createSpace, getRandomSymbol, wait } from '../../test/con
 import { getWallet, MEDIA } from '../../test/set-up';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 
 let walletSpy: any;
 
 describe('Tangle request spec', () => {
   let member: string;
-  let rmsWallet: SmrWallet;
+  let rmsWallet: Wallet;
   let tangleOrder: Transaction;
   let rmsAddress: AddressDetails;
   let token: Token;
 
   beforeAll(async () => {
-    tangleOrder = await getTangleOrder();
+    tangleOrder = await getTangleOrder(Network.RMS);
   });
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     member = await createMember(walletSpy);
-    rmsWallet = (await getWallet(Network.RMS)) as SmrWallet;
+    rmsWallet = await getWallet(Network.RMS);
     const space = await createSpace(walletSpy, member);
     token = await saveToken(space.uid, member);
 

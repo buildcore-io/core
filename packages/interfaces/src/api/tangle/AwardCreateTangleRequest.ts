@@ -49,7 +49,7 @@ export interface AwardCreateTangleRequest {
   /**
    * Network on wich the award will be minted and issued
    */
-  network: 'smr' | 'rms';
+  network: 'iota' | 'smr' | 'atoi' | 'rms';
   /**
    * Type of the tangle request.
    */

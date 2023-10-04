@@ -19,16 +19,16 @@ import {
 } from '../../utils/token-minting-utils/foundry.utils';
 import { getOwnedTokenTotal } from '../../utils/token-minting-utils/member.utils';
 import { getUnclaimedAirdropTotalValue } from '../../utils/token.utils';
-import { SmrParams, SmrWallet } from './SmrWalletService';
+import { AliasWallet } from './AliasWallet';
 import { MnemonicService } from './mnemonic';
-import { AliasWallet } from './smr-wallets/AliasWallet';
-import { setConsumedOutputIds } from './wallet';
+import { Wallet, WalletParams } from './wallet';
+import { setConsumedOutputIds } from './wallet.service';
 
 export class NativeTokenWallet {
-  constructor(private readonly wallet: SmrWallet) {}
+  constructor(private readonly wallet: Wallet) {}
 
-  public mintFoundry = async (transaction: Transaction, params: SmrParams) => {
-    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress);
+  public mintFoundry = async (transaction: Transaction, params: WalletParams) => {
+    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress!);
     const sourceMnemonic = await MnemonicService.getData(sourceAddress.bech32);
 
     const outputsMap = await this.wallet.getOutputs(
