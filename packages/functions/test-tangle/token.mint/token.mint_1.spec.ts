@@ -128,7 +128,7 @@ describe('Token minting', () => {
     expect(metadata.logoUrl).toBeDefined();
     expect(metadata.issuerName).toBe(KEY_NAME_TANGLE);
     expect(metadata.build5Id).toBe(helper.token.uid);
-    expect(metadata.symbol).toBe(helper.token.symbol.toLowerCase());
+    expect(metadata.symbol).toBe(helper.token.symbol.toUpperCase());
     expect(metadata.decimals).toBe(5);
   });
 });
