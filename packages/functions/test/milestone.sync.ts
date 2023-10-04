@@ -76,4 +76,3 @@ const addressInDb = async (addresses: string[]) => {
 };
 
 syncMilestones(COL.MILESTONE_RMS);
-syncMilestones(COL.MILESTONE_ATOI);

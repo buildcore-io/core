@@ -35,7 +35,7 @@ const NODES = {
     'https://hs5.svrs.io/',
     'https://hs6.svrs.io/',
   ],
-  [Network.ATOI]: ['https://devnet.svrs.io/'],
+  [Network.ATOI]: ['https://rms1.svrs.io/'],
 };
 
 const getClient = async (network: Network) => {

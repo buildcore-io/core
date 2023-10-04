@@ -19,11 +19,10 @@ export const getMilestoneCol = (network: Network) => {
   switch (network) {
     case Network.IOTA:
       return COL.MILESTONE;
-    case Network.ATOI:
-      return COL.MILESTONE_ATOI;
     case Network.SMR:
       return COL.MILESTONE_SMR;
     case Network.RMS:
+    case Network.ATOI:
       return COL.MILESTONE_RMS;
   }
 };
