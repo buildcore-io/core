@@ -7,12 +7,12 @@ import {
   NFT_OUTPUT_TYPE,
   SingleNodeClient,
   TransactionHelper,
-} from '@iota/iota.js-next';
+} from '@iota/iota.js';
 import Joi from 'joi';
 import { isEqual, last } from 'lodash';
 import { of } from 'rxjs';
 import { CommonJoi, getQueryParams } from '../common';
-import { EMPTY_NFT_ID, getMutableMetadata, getShimmerClient } from './wallet';
+import { EMPTY_NFT_ID, getClient, getMutableMetadata } from './wallet';
 
 const getNftMutableMetadataHistorySchema = Joi.object({
   network: Joi.string().valid(Network.SMR, Network.RMS),
@@ -23,7 +23,7 @@ export const getNftMutableMetadataHistory = async (url: string) => {
   const body = getQueryParams<GetNftMutableMetadatHistory>(url, getNftMutableMetadataHistorySchema);
   const history: any[] = [];
   try {
-    const client = await getShimmerClient(body.network);
+    const client = await getClient(body.network);
     const indexer = new IndexerPluginClient(client);
     const outputId = (await indexer.nft(body.nftId)).items[0];
     let outputResponse: IOutputResponse | undefined = await client.output(outputId);

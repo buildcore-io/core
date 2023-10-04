@@ -5,22 +5,22 @@ import {
   IndexerPluginClient,
   NFT_ADDRESS_TYPE,
   TransactionHelper,
-} from '@iota/iota.js-next';
-import { Converter, HexHelper } from '@iota/util.js-next';
+} from '@iota/iota.js';
+import { Converter, HexHelper } from '@iota/util.js';
 import Joi from 'joi';
 import { of } from 'rxjs';
 import { CommonJoi, getQueryParams } from '../common';
-import { EMPTY_NFT_ID, getShimmerClient } from './wallet';
+import { AVAILABLE_NETWORKS, EMPTY_NFT_ID, getClient } from './wallet';
 
 const getNftIdsSchema = Joi.object({
-  network: Joi.string().valid(Network.SMR, Network.RMS),
+  network: Joi.string().valid(...AVAILABLE_NETWORKS),
   collectionId: CommonJoi.uid(),
 });
 
 export const getNftIds = async (url: string) => {
   const body = getQueryParams<GetNftIds>(url, getNftIdsSchema);
   try {
-    const client = await getShimmerClient(body.network);
+    const client = await getClient(body.network);
     const indexer = new IndexerPluginClient(client);
 
     const collectionOutputId = (await indexer.nft(body.collectionId)).items[0];
