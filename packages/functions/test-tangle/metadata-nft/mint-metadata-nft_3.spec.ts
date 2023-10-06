@@ -7,7 +7,7 @@ import {
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-import { INftOutput, IndexerPluginClient } from '@iota/iota.js-next';
+import { NftOutput } from '@iota/sdk';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { getOutputMetadata } from '../../src/utils/basic-output.utils';
@@ -90,10 +90,9 @@ describe('Metadata nft', () => {
         );
       });
 
-      const indexer = new IndexerPluginClient(helper.walletService.client);
-
-      let nftOutputId = (await indexer.nft(nft.mintingData?.nftId!)).items[0];
-      let nftOutput = (await helper.walletService.client.output(nftOutputId)).output as INftOutput;
+      let nftOutputId = await helper.walletService.client.nftOutputId(nft.mintingData?.nftId!);
+      let nftOutput = (await helper.walletService.client.getOutput(nftOutputId))
+        .output as NftOutput;
       let meta = getOutputMetadata(nftOutput);
       expect(meta).toEqual({ asd: 'hello' });
 
@@ -125,8 +124,8 @@ describe('Metadata nft', () => {
         );
       });
 
-      nftOutputId = (await indexer.nft(nft.mintingData?.nftId!)).items[0];
-      nftOutput = (await helper.walletService.client.output(nftOutputId)).output as INftOutput;
+      nftOutputId = await helper.walletService.client.nftOutputId(nft.mintingData?.nftId!);
+      nftOutput = (await helper.walletService.client.getOutput(nftOutputId)).output as NftOutput;
       meta = getOutputMetadata(nftOutput);
       expect(meta).toEqual({ asd: 'helloasdasd2' });
     },

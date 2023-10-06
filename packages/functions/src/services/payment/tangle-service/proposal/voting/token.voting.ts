@@ -8,8 +8,6 @@ import {
   TransactionType,
   TransactionValidationType,
 } from '@build-5/interfaces';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { packBasicOutput } from '../../../../../utils/basic-output.utils';
 import { isProdEnv } from '../../../../../utils/config.utils';
@@ -29,15 +27,12 @@ export const createVoteTransactionOrder = async (
 
   const nativeToken = {
     id: token.mintingData?.tokenId!,
-    amount: HexHelper.fromBigInt256(bigInt(Number.MAX_SAFE_INTEGER)),
+    amount: BigInt(Number.MAX_SAFE_INTEGER),
   };
-  const output = packBasicOutput(
-    targetAddress.bech32,
-    0,
-    [nativeToken],
-    wallet.info,
-    targetAddress.bech32,
-  );
+  const output = await packBasicOutput(wallet, targetAddress.bech32, 0, {
+    nativeTokens: [nativeToken],
+    storageDepositReturnAddress: targetAddress.bech32,
+  });
 
   return {
     type: TransactionType.ORDER,

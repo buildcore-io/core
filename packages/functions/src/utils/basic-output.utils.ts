@@ -1,65 +1,59 @@
-import { Timestamp } from '@build-5/interfaces';
 import {
-  ADDRESS_UNLOCK_CONDITION_TYPE,
-  BASIC_OUTPUT_TYPE,
-  Bech32Helper,
-  EXPIRATION_UNLOCK_CONDITION_TYPE,
-  FeatureTypes,
-  IBasicOutput,
-  ICommonOutput,
-  IMetadataFeature,
-  INativeToken,
-  INodeInfo,
-  ITagFeature,
-  ITimelockUnlockCondition,
-  METADATA_FEATURE_TYPE,
-  STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
-  TAG_FEATURE_TYPE,
-  TIMELOCK_UNLOCK_CONDITION_TYPE,
-  TransactionHelper,
-  UnlockConditionTypes,
-} from '@iota/iota.js-next';
-import { Converter, HexHelper } from '@iota/util.js-next';
+  AddressUnlockCondition,
+  BasicOutput,
+  BasicOutputBuilderParams,
+  CommonOutput,
+  ExpirationUnlockCondition,
+  Feature,
+  FeatureType,
+  MetadataFeature,
+  StorageDepositReturnUnlockCondition,
+  TagFeature,
+  TimelockUnlockCondition,
+  UnlockCondition,
+  UnlockConditionType,
+  Utils,
+  bigIntToHex,
+  hexToUtf8,
+  utf8ToHex,
+} from '@iota/sdk';
 import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { cloneDeep, isEmpty } from 'lodash';
-import { Expiration } from '../services/wallet/IotaWalletService';
+import { Wallet, WalletParams } from '../services/wallet/wallet';
+import { intToU32 } from './common.utils';
 
-export const hasNoTimeLock = (output: IBasicOutput) => {
+export const hasNoTimeLock = (output: BasicOutput) => {
   const locks = output.unlockConditions.filter(
-    (u) => u.type === TIMELOCK_UNLOCK_CONDITION_TYPE,
-  ) as ITimelockUnlockCondition[];
+    (u) => u.type === UnlockConditionType.Timelock,
+  ) as TimelockUnlockCondition[];
   return locks.reduce((acc, act) => acc && dayjs().isAfter(dayjs.unix(act.unixTime)), true);
 };
 
-export const hasNativeToken = (output: IBasicOutput, token: string) =>
+export const hasNativeToken = (output: BasicOutput, token: string) =>
   !isEmpty(output.nativeTokens?.filter((n) => n.id === token));
 
-export const hasNoReturnCondition = (output: IBasicOutput) =>
-  output.unlockConditions.find((u) => u.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE) ===
+export const hasNoReturnCondition = (output: BasicOutput) =>
+  output.unlockConditions.find((u) => u.type === UnlockConditionType.StorageDepositReturn) ===
   undefined;
 
-export const nativeTokenCount = (output: IBasicOutput, token: string) =>
+export const nativeTokenCount = (output: BasicOutput, token: string) =>
   output.nativeTokens?.reduce(
-    (acc, act) => (act.id === token ? acc + Number(HexHelper.toBigInt256(act.amount)) : acc),
+    (acc, act) => (act.id === token ? acc + Number(act.amount) : acc),
     0,
   ) || 0;
 
-export const nativeTokenCountTotal = (outputs: IBasicOutput[], token: string) =>
+export const nativeTokenCountTotal = (outputs: BasicOutput[], token: string) =>
   outputs.reduce((acc, act) => acc + nativeTokenCount(act, token), 0) || 0;
 
-const addHex = (a: string, b: string) =>
-  HexHelper.fromBigInt256(HexHelper.toBigInt256(a).add(HexHelper.toBigInt256(b)));
-export const subtractHex = (a: string, b: string) =>
-  HexHelper.fromBigInt256(HexHelper.toBigInt256(a).subtract(HexHelper.toBigInt256(b)));
+export const subtractHex = (a: string, b: string) => bigIntToHex(BigInt(a) - BigInt(b));
 
-export const mergeOutputs = (outputs: IBasicOutput[]) => {
+export const mergeOutputs = (outputs: BasicOutput[]) => {
   const addressUnlock = outputs[0].unlockConditions.find(
-    (u) => u.type === ADDRESS_UNLOCK_CONDITION_TYPE,
+    (u) => u.type === UnlockConditionType.Address,
   )!;
-  const merged: IBasicOutput = {
-    type: BASIC_OUTPUT_TYPE,
-    amount: '0',
+  const merged: BasicOutputBuilderParams = {
+    amount: BigInt(0),
     unlockConditions: [addressUnlock],
   };
   for (const output of outputs) {
@@ -69,125 +63,112 @@ export const mergeOutputs = (outputs: IBasicOutput[]) => {
       if (index === -1) {
         nativeTokens.push(nativeToken);
       } else {
-        nativeTokens[index].amount = addHex(nativeTokens[index].amount, nativeToken.amount);
+        nativeTokens[index].amount =
+          BigInt(nativeTokens[index].amount) + BigInt(nativeToken.amount);
       }
     }
-    merged.amount = (Number(output.amount) + Number(merged.amount)).toString();
+    merged.amount = BigInt(output.amount) + BigInt(merged.amount!);
     merged.nativeTokens = nativeTokens;
   }
   return merged;
 };
 
-export const packBasicOutput = (
+export const packBasicOutput = async (
+  wallet: Wallet,
   toBech32: string,
   amount: number,
-  nativeTokens: INativeToken[] | undefined,
-  info: INodeInfo,
-  retrunAddressBech32?: string,
-  vestingAt?: Timestamp | null,
-  expiration?: Expiration,
-  metadata?: Record<string, unknown>,
-  tag?: string,
+  {
+    storageDepositReturnAddress,
+    vestingAt,
+    expiration,
+    nativeTokens,
+    customMetadata,
+    tag,
+  }: WalletParams,
 ) => {
-  const targetAddress = Bech32Helper.addressFromBech32(toBech32, info.protocol.bech32Hrp);
-  const unlockConditions: UnlockConditionTypes[] = [
-    { type: ADDRESS_UNLOCK_CONDITION_TYPE, address: targetAddress },
-  ];
-  if (retrunAddressBech32) {
-    const returnAddress = Bech32Helper.addressFromBech32(
-      retrunAddressBech32,
-      info.protocol.bech32Hrp,
-    );
-    unlockConditions.push({
-      type: STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
-      amount: '0',
-      returnAddress,
-    });
+  const targetAddress = Utils.parseBech32Address(toBech32);
+  const unlockConditions: UnlockCondition[] = [new AddressUnlockCondition(targetAddress)];
+  if (storageDepositReturnAddress) {
+    const returnAddress = Utils.parseBech32Address(storageDepositReturnAddress);
+    unlockConditions.push(new StorageDepositReturnUnlockCondition(returnAddress, BigInt(10)));
   }
   if (vestingAt) {
-    unlockConditions.push({
-      type: TIMELOCK_UNLOCK_CONDITION_TYPE,
-      unixTime: dayjs(vestingAt.toDate()).unix(),
-    });
+    unlockConditions.push(new TimelockUnlockCondition(intToU32(dayjs(vestingAt.toDate()).unix())));
   }
   if (expiration) {
-    unlockConditions.push({
-      type: EXPIRATION_UNLOCK_CONDITION_TYPE,
-      unixTime: dayjs(expiration.expiresAt.toDate()).unix(),
-      returnAddress: Bech32Helper.addressFromBech32(
-        expiration.returnAddressBech32,
-        info.protocol.bech32Hrp,
+    unlockConditions.push(
+      new ExpirationUnlockCondition(
+        Utils.parseBech32Address(expiration.returnAddressBech32),
+        dayjs(expiration.expiresAt.toDate()).unix(),
       ),
-    });
+    );
   }
-  const output: IBasicOutput = {
-    type: BASIC_OUTPUT_TYPE,
-    amount: '0',
+  const params: BasicOutputBuilderParams = {
     nativeTokens: nativeTokens?.map((nt) => ({
       id: nt.id,
-      amount: HexHelper.fromBigInt256(bigInt(Number(nt.amount))),
+      amount: BigInt(nt.amount),
     })),
     unlockConditions,
   };
 
-  if (!isEmpty(metadata)) {
-    const data = Converter.utf8ToHex(JSON.stringify(metadata), true);
-    const metadataFeture = { type: METADATA_FEATURE_TYPE, data } as IMetadataFeature;
-    output.features = (output.features || []) as FeatureTypes[];
-    output.features.push(metadataFeture);
+  if (!isEmpty(customMetadata)) {
+    const data = utf8ToHex(JSON.stringify(customMetadata));
+    const metadataFeture = new MetadataFeature(data);
+    params.features = (params.features || []) as Feature[];
+    params.features.push(metadataFeture);
   }
 
   if (tag) {
-    const tagFeature = { type: TAG_FEATURE_TYPE, tag } as ITagFeature;
-    output.features = (output.features || []) as FeatureTypes[];
-    output.features.push(tagFeature);
+    const tagFeature = new TagFeature(tag);
+    params.features = (params.features || []) as Feature[];
+    params.features.push(tagFeature);
   }
 
-  const storageDeposit = TransactionHelper.getStorageDeposit(output, info.protocol.rentStructure!);
-  output.amount = bigInt.max(bigInt(amount), storageDeposit).toString();
+  const output = await wallet.client.buildBasicOutput(params);
+  const rent = (await wallet.client.getInfo()).nodeInfo.protocol.rentStructure;
+  const storageDeposit = Utils.computeStorageDeposit(output, rent);
+  params.amount = bigInt.max(bigInt(amount), storageDeposit).toString();
 
-  if (retrunAddressBech32) {
-    output.unlockConditions = output.unlockConditions.map((u) =>
-      u.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE
-        ? { ...u, amount: storageDeposit.toString() }
+  if (storageDepositReturnAddress) {
+    const returnAddress = Utils.parseBech32Address(storageDepositReturnAddress);
+    params.unlockConditions = params.unlockConditions.map((u) =>
+      u.type === UnlockConditionType.StorageDepositReturn
+        ? new StorageDepositReturnUnlockCondition(returnAddress, storageDeposit)
         : u,
     );
   }
-  return output;
+  return await wallet.client.buildBasicOutput(params);
 };
 
-export const subtractNativeTokens = (
-  output: IBasicOutput,
+export const subtractNativeTokens = async (
+  wallet: Wallet,
+  basicOutput: BasicOutput,
   amount: number,
   token: string,
-  info: INodeInfo,
 ) => {
-  const result = cloneDeep(output);
-  result.amount = '0';
-  const total = nativeTokenCount(output, token);
+  const params: BasicOutputBuilderParams = cloneDeep(basicOutput);
+  params.amount = BigInt(0);
+  const total = nativeTokenCount(basicOutput, token);
   if (total < amount) {
     throw new Error(`Not enough native tokens, ${token}, ${total}`);
   }
-  result.nativeTokens = (result.nativeTokens || [])
-    .map((n) =>
-      n.id === token
-        ? { ...n, amount: subtractHex(n.amount, HexHelper.fromBigInt256(bigInt(amount))) }
-        : n,
-    )
+  params.nativeTokens = (params.nativeTokens || [])
+    .map((n) => (n.id === token ? { ...n, amount: n.amount - BigInt(amount) } : n))
     .filter((n) => Number(n.amount) > 0);
-  result.amount = TransactionHelper.getStorageDeposit(
-    output,
-    info.protocol.rentStructure,
-  ).toString();
-  return result;
+
+  const output = await wallet.client.buildBasicOutput(params);
+  const rent = (await wallet.client.getInfo()).nodeInfo.protocol.rentStructure;
+  params.amount = Utils.computeStorageDeposit(output, rent);
+
+  return params;
 };
 
-export const getOutputMetadata = (output: ICommonOutput | undefined) => {
+export const getOutputMetadata = (output: CommonOutput | undefined) => {
   try {
-    const metadataFeature = <IMetadataFeature | undefined>(
-      output?.features?.find((f) => f.type === METADATA_FEATURE_TYPE)
+    const metadataFeature = <MetadataFeature | undefined>(
+      output?.features?.find((f) => f.type === FeatureType.Metadata)
     );
-    const decoded = Converter.hexToUtf8(metadataFeature?.data || '{}');
+    const decoded = hexToUtf8(metadataFeature?.data || '{}');
     const metadata = JSON.parse(decoded);
     return metadata || {};
   } catch (e) {

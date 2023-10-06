@@ -1,8 +1,6 @@
 import { COL, Transaction, TransactionPayloadType, TransactionType } from '@build-5/interfaces';
-import { ITransactionPayload, TransactionHelper } from '@iota/iota.js-next';
+import { TransactionPayload, Utils } from '@iota/sdk';
 import { build5Db } from '../../firebase/firestore/build5Db';
-import { indexToString } from '../../utils/block.utils';
-import { getTransactionPayloadHex } from '../../utils/smr.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const onAwardUpdate = async (transaction: Transaction) => {
@@ -25,14 +23,15 @@ export const onAwardUpdate = async (transaction: Transaction) => {
 const onAliasMinted = async (transaction: Transaction) => {
   const path = transaction.payload.walletReference?.milestoneTransactionPath!;
   const milestoneTransaction = (await build5Db().doc(path).get<Record<string, unknown>>())!;
-  const aliasOutputId =
-    getTransactionPayloadHex(milestoneTransaction.payload as ITransactionPayload) +
-    indexToString(0);
+  const aliasOutputId = Utils.computeOutputId(
+    Utils.transactionId(milestoneTransaction.payload as TransactionPayload),
+    0,
+  );
 
   const awardDocRef = build5Db().doc(`${COL.AWARD}/${transaction.payload.award}`);
   await awardDocRef.update({
     aliasBlockId: milestoneTransaction.blockId,
-    aliasId: TransactionHelper.resolveIdFromOutputId(aliasOutputId),
+    aliasId: Utils.computeAliasId(aliasOutputId),
   });
 
   const order = <Transaction>{
@@ -53,15 +52,16 @@ const onAliasMinted = async (transaction: Transaction) => {
 const onCollectionMinted = async (transaction: Transaction) => {
   const path = transaction.payload.walletReference?.milestoneTransactionPath!;
   const milestoneTransaction = (await build5Db().doc(path).get<Record<string, unknown>>())!;
-  const collectionOutputId =
-    getTransactionPayloadHex(milestoneTransaction.payload as ITransactionPayload) +
-    indexToString(1);
+  const collectionOutputId = Utils.computeOutputId(
+    Utils.transactionId(milestoneTransaction.payload as TransactionPayload),
+    1,
+  );
 
   await build5Db()
     .doc(`${COL.AWARD}/${transaction.payload.award}`)
     .update({
       collectionBlockId: milestoneTransaction.blockId,
-      collectionId: TransactionHelper.resolveIdFromOutputId(collectionOutputId),
+      collectionId: Utils.computeNftId(collectionOutputId),
       approved: true,
       rejected: false,
     });

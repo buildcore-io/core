@@ -7,8 +7,12 @@ import {
   TransactionType,
   TransactionValidationType,
 } from '@build-5/interfaces';
-import { ITransactionPayload } from '@iota/iota.js-next';
-import { Converter } from '@iota/util.js-next';
+import {
+  RegularTransactionEssence,
+  TaggedDataPayload,
+  TransactionPayload,
+  hexToUtf8,
+} from '@iota/sdk';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { build5Db } from '../src/firebase/firestore/build5Db';
@@ -63,8 +67,8 @@ export const getTangleOrder = async (network: Network) => {
   if (tangleOrders[network]) {
     return tangleOrders[network];
   }
-  const walletService = await getWallet(network);
-  const targetAddress = await walletService.getNewIotaAddressDetails();
+  const wallet = await getWallet(network);
+  const targetAddress = await wallet.getNewIotaAddressDetails();
   const order = {
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
@@ -89,8 +93,10 @@ export const getTangleOrder = async (network: Network) => {
 
 export const getRmsSoonTangleResponse = async (doc: Transaction, wallet: Wallet) => {
   const blockId = doc?.payload?.walletReference?.chainReference!;
-  const block = await wallet!.client.block(blockId);
-  const hexData = (<ITransactionPayload>block.payload)?.essence?.payload?.data || '';
-  const { response } = JSON.parse(Converter.hexToUtf8(hexData));
+  const block = await wallet!.client.getBlock(blockId);
+  const payload = <TransactionPayload>block.payload;
+  const essence = payload?.essence as RegularTransactionEssence;
+  const hexData = (essence?.payload as TaggedDataPayload)?.data || '';
+  const { response } = JSON.parse(hexToUtf8(hexData));
   return response;
 };

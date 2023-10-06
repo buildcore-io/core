@@ -9,7 +9,7 @@ import {
   TransactionType,
   WenError,
 } from '@build-5/interfaces';
-import { IndexerPluginClient, INftOutput, NFT_OUTPUT_TYPE } from '@iota/iota.js-next';
+import { NftOutput } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { finalizeAllNftAuctions } from '../../src/cron/nft.cron';
@@ -104,18 +104,14 @@ describe('Minted nft trading', () => {
         return transaction?.payload?.walletReference?.confirmed;
       });
 
-      const indexer = new IndexerPluginClient(helper.walletService?.client!);
       const output = (
-        await helper.walletService!.client.output(
-          (
-            await indexer.nft(nft.mintingData?.nftId!)
-          ).items[0],
+        await helper.walletService!.client.getOutput(
+          await helper.walletService!.client.nftOutputId(nft.mintingData?.nftId!),
         )
       ).output;
-      const ownerAddress = Bech32AddressHelper.addressFromAddressUnlockCondition(
-        (output as INftOutput).unlockConditions,
+      const ownerAddress = Bech32AddressHelper.bech32FromUnlockConditions(
+        output as NftOutput,
         'rms',
-        NFT_OUTPUT_TYPE,
       );
       const member = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.member}`).get();
       expect(ownerAddress).toBe(getAddress(member, Network.RMS));

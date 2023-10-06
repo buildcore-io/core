@@ -1,7 +1,6 @@
-import { OutputTypes, TREASURY_OUTPUT_TYPE } from '@iota/iota.js-next';
-
 import { COL, Network, SUB_COL } from '@build-5/interfaces';
 
+import { Output, OutputType } from '@iota/sdk';
 import * as adminPackage from 'firebase-admin';
 import { last } from 'lodash';
 import { build5Db } from '../src/firebase/firestore/build5Db';
@@ -61,8 +60,8 @@ const syncTransactions = async (wallet: Wallet, parentPath: string) => {
 };
 
 const getAddesses = (doc: any, wallet: Wallet) =>
-  (doc.payload.essence.outputs as OutputTypes[])
-    .filter((o) => o.type !== TREASURY_OUTPUT_TYPE)
+  (doc.payload.essence.outputs as Output[])
+    .filter((o) => o.type !== OutputType.Treasury)
     .map((o) => wallet.bechAddressFromOutput(o as any));
 
 const addressInDb = async (addresses: string[]) => {

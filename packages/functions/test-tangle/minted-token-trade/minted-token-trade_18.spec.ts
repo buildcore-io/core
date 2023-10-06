@@ -8,8 +8,7 @@ import {
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
+
 import dayjs from 'dayjs';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -86,9 +85,7 @@ describe('Minted toke trading tangle request', () => {
               price: MIN_IOTA_AMOUNT,
             },
           },
-          nativeTokens: [
-            { id: helper.token?.mintingData?.tokenId!, amount: HexHelper.fromBigInt256(bigInt(5)) },
-          ],
+          nativeTokens: [{ id: helper.token?.mintingData?.tokenId!, amount: BigInt(5) }],
           expiration: expiresAt
             ? { expiresAt, returnAddressBech32: helper.sellerAddress!.bech32 }
             : undefined,

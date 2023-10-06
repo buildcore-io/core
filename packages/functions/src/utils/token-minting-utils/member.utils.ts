@@ -1,10 +1,8 @@
 import { COL, SUB_COL, Token, TokenDistribution, TokenDrop } from '@build-5/interfaces';
-import { INodeInfo } from '@iota/iota.js-next';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
 import { build5Db, getSnapshot } from '../../firebase/firestore/build5Db';
+import { Wallet } from '../../services/wallet/wallet';
 import { packBasicOutput } from '../basic-output.utils';
 
 export const getOwnedTokenTotal = async (token: string) => {
@@ -28,13 +26,14 @@ export const getOwnedTokenTotal = async (token: string) => {
 };
 
 export const dropToOutput = (
+  wallet: Wallet,
   token: Token,
   drop: TokenDrop,
   targetAddress: string,
-  info: INodeInfo,
 ) => {
-  const amount = HexHelper.fromBigInt256(bigInt(drop.count));
-  const nativeTokens = drop.isBaseToken ? undefined : [{ amount, id: token.mintingData?.tokenId! }];
+  const nativeTokens = drop.isBaseToken
+    ? undefined
+    : [{ amount: BigInt(drop.count), id: token.mintingData?.tokenId! }];
   const vestingAt = dayjs(drop.vestingAt.toDate()).isAfter(dayjs()) ? drop.vestingAt : undefined;
-  return packBasicOutput(targetAddress, 0, nativeTokens, info, undefined, vestingAt);
+  return packBasicOutput(wallet, targetAddress, 0, { nativeTokens, vestingAt });
 };

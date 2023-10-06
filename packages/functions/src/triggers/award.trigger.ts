@@ -102,7 +102,7 @@ export const awardUpdateTrigger = functions.firestore.onDocumentUpdated(
             ? [
                 {
                   id: curr.badge.tokenId!,
-                  amount: (remainingBadges * curr.badge.tokenReward).toString(),
+                  amount: BigInt(remainingBadges * curr.badge.tokenReward),
                 },
               ]
             : [],

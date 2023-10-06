@@ -11,8 +11,7 @@ import {
   TokenTradeOrderType,
   Transaction,
 } from '@build-5/interfaces';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
+
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
@@ -93,9 +92,7 @@ export class Helper {
     });
     const sellOrder: Transaction = await testEnv.wrap(tradeToken)({});
     await this.walletService!.send(this.sellerAddress!, sellOrder.payload.targetAddress!, 0, {
-      nativeTokens: [
-        { amount: HexHelper.fromBigInt256(bigInt(count)), id: this.token!.mintingData?.tokenId! },
-      ],
+      nativeTokens: [{ amount: BigInt(count), id: this.token!.mintingData?.tokenId! }],
       expiration: expiresAt
         ? {
             expiresAt,

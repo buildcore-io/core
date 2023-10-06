@@ -1,21 +1,21 @@
 import {
-  ALIAS_ADDRESS_TYPE,
-  IIssuerFeature,
-  IMetadataFeature,
-  INftOutput,
-  ISSUER_FEATURE_TYPE,
-  METADATA_FEATURE_TYPE,
-  NFT_ADDRESS_TYPE,
-} from '@iota/iota.js-next';
-import { Converter } from '@iota/util.js-next';
+  AddressType,
+  AliasAddress,
+  FeatureType,
+  IssuerFeature,
+  MetadataFeature,
+  NftAddress,
+  NftOutput,
+  hexToUtf8,
+} from '@iota/sdk';
 import Joi from 'joi';
 
-export const getNftOutputMetadata = (output: INftOutput | undefined) => {
+export const getNftOutputMetadata = (output: NftOutput | undefined) => {
   try {
-    const metadataFeature = <IMetadataFeature | undefined>(
-      output?.immutableFeatures?.find((f) => f.type === METADATA_FEATURE_TYPE)
+    const metadataFeature = <MetadataFeature | undefined>(
+      output?.immutableFeatures?.find((f) => f.type === FeatureType.Metadata)
     );
-    const decoded = Converter.hexToUtf8(metadataFeature?.data || '{}');
+    const decoded = hexToUtf8(metadataFeature?.data || '{}');
     const metadata = JSON.parse(decoded);
     return metadata || {};
   } catch (e) {
@@ -51,22 +51,22 @@ export const isMetadataIrc27 = (metadata: Record<string, unknown>, schema: Joi.O
   return result.error === undefined;
 };
 
-export const getAliasId = (output: INftOutput) => {
-  const issuer = <IIssuerFeature | undefined>(
-    output.immutableFeatures?.find((f) => f.type === ISSUER_FEATURE_TYPE)
+export const getAliasId = (output: NftOutput) => {
+  const issuer = <IssuerFeature | undefined>(
+    output.immutableFeatures?.find((f) => f.type === FeatureType.Issuer)
   );
-  if (!issuer || issuer.address.type !== ALIAS_ADDRESS_TYPE) {
+  if (!issuer || issuer.address.type !== AddressType.Alias) {
     return '';
   }
-  return issuer.address.aliasId;
+  return (issuer.address as AliasAddress).aliasId;
 };
 
-export const getIssuerNftId = (output: INftOutput) => {
-  const issuer = <IIssuerFeature | undefined>(
-    output.immutableFeatures?.find((f) => f.type === ISSUER_FEATURE_TYPE)
+export const getIssuerNftId = (output: NftOutput) => {
+  const issuer = <IssuerFeature | undefined>(
+    output.immutableFeatures?.find((f) => f.type === FeatureType.Issuer)
   );
-  if (!issuer || issuer.address.type !== NFT_ADDRESS_TYPE) {
+  if (!issuer || issuer.address.type !== AddressType.Nft) {
     return '';
   }
-  return issuer.address.nftId;
+  return (issuer.address as NftAddress).nftId;
 };

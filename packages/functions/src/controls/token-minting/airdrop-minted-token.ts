@@ -13,8 +13,6 @@ import {
   TransactionValidationType,
   WenError,
 } from '@build-5/interfaces';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
 import { build5Db } from '../../firebase/firestore/build5Db';
@@ -46,10 +44,12 @@ export const airdropMintedTokenControl = async (owner: string, params: CreateAir
   const wallet = await WalletService.newWallet(token.mintingData?.network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
   const nativeToken = {
-    amount: HexHelper.fromBigInt256(bigInt(totalDropped)),
+    amount: BigInt(totalDropped),
     id: token.mintingData?.tokenId!,
   };
-  const output = packBasicOutput(targetAddress.bech32, 0, [nativeToken], wallet.info);
+  const output = await packBasicOutput(wallet, targetAddress.bech32, 0, {
+    nativeTokens: [nativeToken],
+  });
   const order: Transaction = {
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),

@@ -3,13 +3,7 @@ import {
   PROD_AVAILABLE_MINTABLE_NETWORKS,
   TEST_AVAILABLE_MINTABLE_NETWORKS,
 } from '@build-5/interfaces';
-import {
-  IMetadataFeature,
-  INftOutput,
-  METADATA_FEATURE_TYPE,
-  SingleNodeClient,
-} from '@iota/iota.js';
-import { Converter } from '@iota/util.js';
+import { Client, FeatureType, MetadataFeature, NftOutput, hexToUtf8 } from '@iota/sdk';
 
 const NODES = {
   [Network.SMR]: ['https://smr1.svrs.io/', 'https://smr3.svrs.io/'],
@@ -28,9 +22,9 @@ export const getClient = async (network = Network.SMR) => {
   for (let i = 0; i < 5; ++i) {
     nodeUrl = getRandomElement(NODES[network]);
     try {
-      const client = new SingleNodeClient(nodeUrl);
-      const healty = await client.health();
-      if (healty) {
+      const client = new Client({ nodes: [nodeUrl] });
+      const info = await client.getInfo();
+      if (info.nodeInfo.status.isHealthy) {
         return client;
       }
     } catch (error) {
@@ -46,14 +40,14 @@ const getRandomElement = <T>(array: T[]) => array[Math.floor(Math.random() * arr
 
 export const EMPTY_NFT_ID = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
-export const getMutableMetadata = (output: INftOutput) => {
-  const hexMetadata = <IMetadataFeature | undefined>(
-    output?.features?.find((f) => f.type === METADATA_FEATURE_TYPE)
+export const getMutableMetadata = (output: NftOutput) => {
+  const hexMetadata = <MetadataFeature | undefined>(
+    output?.features?.find((f) => f.type === FeatureType.Metadata)
   );
   if (!hexMetadata?.data) {
     return {};
   }
-  const mutableMetadata = JSON.parse(Converter.hexToUtf8(hexMetadata.data) || '{}');
+  const mutableMetadata = JSON.parse(hexToUtf8(hexMetadata.data) || '{}');
   return mutableMetadata;
 };
 

@@ -12,18 +12,17 @@ import {
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
+
 import dayjs from 'dayjs';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet.service';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, getRandomSymbol, wait } from '../../test/controls/common';
-import { MEDIA } from '../../test/set-up';
+import { getWallet, MEDIA } from '../../test/set-up';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 
@@ -41,7 +40,7 @@ describe('Award tangle request', () => {
     tangleOrder = await getTangleOrder(network);
 
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    walletService = await WalletService.newWallet(network);
+    walletService = await getWallet(network);
     guardian = await createMember(walletSpy);
     space = await createSpace(walletSpy, guardian);
 
@@ -97,7 +96,7 @@ describe('Award tangle request', () => {
         {
           nativeTokens: (credit.payload.response!.nativeTokens as NativeToken[]).map((nt: any) => ({
             ...nt,
-            amount: HexHelper.fromBigInt256(bigInt(nt.amount)),
+            amount: BigInt(nt.amount),
           })),
         },
       );

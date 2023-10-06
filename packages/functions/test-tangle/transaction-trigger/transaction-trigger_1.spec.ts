@@ -43,8 +43,8 @@ describe('Transaction trigger spec', () => {
       };
       await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
       await wait(async () => {
-        const balance = await wallet.getBalance(targetAddress.bech32);
-        return balance === MIN_IOTA_AMOUNT;
+        const { amount } = await wallet.getBalance(targetAddress.bech32);
+        return amount === MIN_IOTA_AMOUNT;
       });
 
       await wait(async () => {

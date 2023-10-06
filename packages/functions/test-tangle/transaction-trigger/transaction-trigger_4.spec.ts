@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build-5/interfaces';
-import { addressBalance } from '@iota/iota.js-next';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
@@ -34,12 +33,9 @@ describe('Transaction trigger spec', () => {
     const vaultAddress = await wallet.getIotaAddressDetails(VAULT_MNEMONIC);
     await MnemonicService.store(vaultAddress.bech32, vaultAddress.mnemonic);
 
-    const output = packBasicOutput(
-      targetAddress.bech32,
-      0,
-      [{ amount: '0x1', id: MINTED_TOKEN_ID }],
-      wallet.info,
-    );
+    const output = await packBasicOutput(wallet, targetAddress.bech32, 0, {
+      nativeTokens: [{ amount: BigInt(1), id: MINTED_TOKEN_ID }],
+    });
     await requestFundsFromFaucet(network, sourceAddress.bech32, Number(output.amount));
 
     let billPayment: Transaction = {
@@ -49,7 +45,7 @@ describe('Transaction trigger spec', () => {
       network,
       payload: {
         amount: Number(output.amount),
-        nativeTokens: [{ amount: '1', id: MINTED_TOKEN_ID }],
+        nativeTokens: [{ amount: BigInt(1), id: MINTED_TOKEN_ID }],
         storageDepositSourceAddress: sourceAddress.bech32,
         sourceAddress: vaultAddress.bech32,
         targetAddress: targetAddress.bech32,
@@ -58,8 +54,8 @@ describe('Transaction trigger spec', () => {
     };
     await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
     await wait(async () => {
-      const balance = await addressBalance(wallet.client, targetAddress.bech32);
-      return Number(Object.values(balance.nativeTokens)[0]) === 1;
+      const { nativeTokens } = await wallet.getBalance(targetAddress.bech32);
+      return Number(Object.values(nativeTokens)[0]) === 1;
     });
 
     let credit: Transaction = {
@@ -69,7 +65,7 @@ describe('Transaction trigger spec', () => {
       network,
       payload: {
         amount: Number(output.amount),
-        nativeTokens: [{ amount: '1', id: MINTED_TOKEN_ID }],
+        nativeTokens: [{ amount: BigInt(1), id: MINTED_TOKEN_ID }],
         sourceAddress: targetAddress.bech32,
         targetAddress: sourceAddress.bech32,
         void: false,
@@ -77,8 +73,8 @@ describe('Transaction trigger spec', () => {
     };
     await build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`).create(credit);
     await wait(async () => {
-      const balance = await addressBalance(wallet.client, sourceAddress.bech32);
-      return Number(Object.values(balance.nativeTokens)[0]) === 1;
+      const { nativeTokens } = await wallet.getBalance(sourceAddress.bech32);
+      return Number(Object.values(nativeTokens)[0]) === 1;
     });
 
     await wait(async () => {

@@ -434,7 +434,7 @@ const setIpfsData = async (token: Token) => {
 
 const onTokenVaultEmptied = async (token: Token) => {
   const wallet = await WalletService.newWallet(token.mintingData?.network);
-  const vaultBalance = await wallet.getBalance(token.mintingData?.vaultAddress!);
+  const { amount: vaultBalance } = await wallet.getBalance(token.mintingData?.vaultAddress!);
   const minter = await build5Db().doc(`${COL.MEMBER}/${token.mintingData?.mintedBy}`).get<Member>();
   const paymentsSnap = await build5Db()
     .collection(COL.TRANSACTION)
@@ -450,7 +450,7 @@ const onTokenVaultEmptied = async (token: Token) => {
     payload: {
       type: TransactionPayloadType.TOKEN_VAULT_EMPTIED,
       dependsOnBillPayment: true,
-      amount: vaultBalance,
+      amount: Number(vaultBalance),
       sourceAddress: token.mintingData?.vaultAddress!,
       targetAddress: getAddress(minter, token.mintingData?.network!),
       sourceTransaction: paymentsSnap.map((p) => p.uid),

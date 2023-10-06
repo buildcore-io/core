@@ -139,7 +139,7 @@ const createAirdrops = async (
           nativeTokens: [
             {
               id: token.mintingData!.tokenId!,
-              amount: Math.min(distribution.extraStakeRewards, reward.value).toString(),
+              amount: BigInt(Math.min(distribution.extraStakeRewards, reward.value)),
             },
           ],
           ownerEntity: Entity.MEMBER,

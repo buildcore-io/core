@@ -18,11 +18,12 @@ import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { IQuery } from '../../src/firebase/firestore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet.service';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, wait } from '../../test/controls/common';
+import { getWallet } from '../../test/set-up';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 
@@ -41,7 +42,7 @@ export class Helper {
   public proposalUid = '';
 
   public beforeAll = async () => {
-    this.walletService = await WalletService.newWallet(this.network);
+    this.walletService = await getWallet(this.network);
     this.tangleOrder = await getTangleOrder(Network.RMS);
   };
 

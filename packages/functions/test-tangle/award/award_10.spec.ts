@@ -1,13 +1,12 @@
 import { Award, COL, Member, Network, Space, Token, TokenStatus } from '@build-5/interfaces';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
+
 import dayjs from 'dayjs';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet.service';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -18,7 +17,7 @@ import {
   mockWalletReturnValue,
   wait,
 } from '../../test/controls/common';
-import { MEDIA, testEnv } from '../../test/set-up';
+import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 
 const network = Network.RMS;
@@ -35,7 +34,7 @@ describe('Create award, native', () => {
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    walletService = await WalletService.newWallet(network);
+    walletService = await getWallet(network);
   });
 
   beforeEach(async () => {
@@ -70,7 +69,7 @@ describe('Create award, native', () => {
       15,
     );
     await walletService.send(guardianAddress, order.payload.targetAddress, order.payload.amount, {
-      nativeTokens: [{ id: MINTED_TOKEN_ID, amount: HexHelper.fromBigInt256(bigInt(15)) }],
+      nativeTokens: [{ id: MINTED_TOKEN_ID, amount: BigInt(15) }],
     });
     await MnemonicService.store(guardianAddress.bech32, guardianAddress.mnemonic);
 

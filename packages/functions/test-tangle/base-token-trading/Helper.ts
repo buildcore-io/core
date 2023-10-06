@@ -3,6 +3,8 @@ import { COL, Member, Network, Token, TokenStatus } from '@build-5/interfaces';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { createMember } from '../../src/runtime/firebase/member';
 import { IotaWallet } from '../../src/services/wallet/IotaWalletService';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import {
@@ -15,8 +17,6 @@ import {
 } from '../../test/controls/common';
 import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 import { addValidatedAddress } from '../common';
-import { AddressDetails } from '../../src/services/wallet/wallet.service';
-import { Wallet } from '../../src/services/wallet/wallet';
 
 export class Helper {
   public sourceNetwork = Network.ATOI;

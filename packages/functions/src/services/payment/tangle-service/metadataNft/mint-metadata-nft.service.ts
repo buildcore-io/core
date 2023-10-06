@@ -15,14 +15,7 @@ import {
   TransactionValidationType,
   WenError,
 } from '@build-5/interfaces';
-import {
-  ALIAS_ADDRESS_TYPE,
-  AddressTypes,
-  ED25519_ADDRESS_TYPE,
-  INftOutput,
-  IndexerPluginClient,
-  NFT_ADDRESS_TYPE,
-} from '@iota/iota.js-next';
+import { AliasAddress, Ed25519Address, NftAddress, NftOutput } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { build5Db } from '../../../../firebase/firestore/build5Db';
@@ -73,17 +66,10 @@ export class MintMetadataNftService {
     const amount = aliasOutputAmount + collectionOutputAmount + nftOutputAmount;
 
     const remainingAmount = match.to.amount - amount;
-    const remainderOutput = packBasicOutput(
-      targetAddress.bech32,
-      remainingAmount,
-      undefined,
-      wallet.info,
-      undefined,
-      undefined,
-      undefined,
-      { nftId, collectionId, aliasId },
-      match.msgId,
-    );
+    const remainderOutput = await packBasicOutput(wallet, targetAddress.bech32, remainingAmount, {
+      customMetadata: { nftId, collectionId, aliasId },
+      tag: match.msgId,
+    });
 
     if (remainingAmount !== Number(remainderOutput.amount)) {
       return {
@@ -147,7 +133,7 @@ export class MintMetadataNftService {
 const getAliasOutputAmount = async (owner: string, space: Space, wallet: Wallet) => {
   const targetAddress = await wallet.getNewIotaAddressDetails();
   if (isEmpty(space.alias)) {
-    const aliasOutput = createAliasOutput(targetAddress, wallet.info);
+    const aliasOutput = await createAliasOutput(wallet, targetAddress);
     return Number(aliasOutput.amount);
   }
 
@@ -167,8 +153,8 @@ const getAliasOutputAmount = async (owner: string, space: Space, wallet: Wallet)
 
 const getCollectionOutputAmount = async (aliasId: string, collectionId: string, wallet: Wallet) => {
   if (collectionId === EMPTY_NFT_ID) {
-    const issuerAddress: AddressTypes = { type: ALIAS_ADDRESS_TYPE, aliasId };
-    const collectionOutput = createNftOutput(issuerAddress, issuerAddress, '', wallet.info);
+    const issuerAddress = new AliasAddress(aliasId);
+    const collectionOutput = await createNftOutput(wallet, issuerAddress, issuerAddress, '');
     return Number(collectionOutput.amount);
   }
   return 0;
@@ -176,13 +162,13 @@ const getCollectionOutputAmount = async (aliasId: string, collectionId: string, 
 
 const createMetadataNftOutput = async (wallet: Wallet, collectionId: string, metadata: object) => {
   const targetAddress = await wallet.getNewIotaAddressDetails();
-  const issuerAddress: AddressTypes = { type: NFT_ADDRESS_TYPE, nftId: collectionId };
-  const ownerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: targetAddress.hex };
+  const issuerAddress = new NftAddress(collectionId);
+  const ownerAddress = new Ed25519Address(targetAddress.hex);
   return createNftOutput(
+    wallet,
     ownerAddress,
     issuerAddress,
     '',
-    wallet.info,
     undefined,
     JSON.stringify(metadata),
   );
@@ -228,18 +214,17 @@ const getNftOutputAmount = async (
 };
 
 const getIds = async (request: MintMetadataNftTangleRequest, wallet: Wallet) => {
-  const indexer = new IndexerPluginClient(wallet.client);
   const nftId = request.nftId as string;
   if (nftId) {
-    const collectionId = await getCollectionId(wallet, indexer, nftId);
-    const collectionOutput = await getCollectionOutput(wallet, indexer, collectionId);
+    const collectionId = await getCollectionId(wallet, nftId);
+    const collectionOutput = await getCollectionOutput(wallet, collectionId);
     const aliasId = getAliasId(collectionOutput);
     return { nftId, collectionId: collectionOutput.nftId, aliasId };
   }
 
   const collectionId = request.collectionId as string;
   if (collectionId) {
-    const collectionOutput = await getCollectionOutput(wallet, indexer, collectionId);
+    const collectionOutput = await getCollectionOutput(wallet, collectionId);
     const aliasId = getAliasId(collectionOutput);
     return { nftId: EMPTY_NFT_ID, collectionId, aliasId };
   }
@@ -248,24 +233,20 @@ const getIds = async (request: MintMetadataNftTangleRequest, wallet: Wallet) => 
   return { nftId: EMPTY_NFT_ID, collectionId: EMPTY_NFT_ID, aliasId };
 };
 
-const getCollectionId = async (wallet: Wallet, indexer: IndexerPluginClient, nftId: string) => {
+const getCollectionId = async (wallet: Wallet, nftId: string) => {
   try {
-    const nftOutputId = (await indexer.nft(nftId)).items[0];
-    const nftOutput = (await wallet.client.output(nftOutputId)).output as INftOutput;
+    const nftOutputId = await wallet.client.nftOutputId(nftId);
+    const nftOutput = (await wallet.client.getOutput(nftOutputId)).output as NftOutput;
     return getIssuerNftId(nftOutput);
   } catch {
     throw invalidArgument(WenError.invalid_nft_id);
   }
 };
 
-const getCollectionOutput = async (
-  wallet: Wallet,
-  indexer: IndexerPluginClient,
-  collectionId: string,
-) => {
+const getCollectionOutput = async (wallet: Wallet, collectionId: string) => {
   try {
-    const collectionOutputId = (await indexer.nft(collectionId)).items[0];
-    return (await wallet.client.output(collectionOutputId)).output as INftOutput;
+    const collectionOutputId = await wallet.client.nftOutputId(collectionId);
+    return (await wallet.client.getOutput(collectionOutputId)).output as NftOutput;
   } catch {
     throw invalidArgument(WenError.invalid_collection_id);
   }

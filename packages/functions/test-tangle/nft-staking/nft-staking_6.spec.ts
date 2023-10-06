@@ -1,11 +1,5 @@
 import { COL, KEY_NAME_TANGLE, Network, Nft, StakeType } from '@build-5/interfaces';
-import {
-  INftOutput,
-  IndexerPluginClient,
-  TAG_FEATURE_TYPE,
-  TransactionHelper,
-} from '@iota/iota.js-next';
-import { Converter } from '@iota/util.js-next';
+import { NftOutput, NftOutputBuilderParams, TagFeature, Utils, utf8ToHex } from '@iota/sdk';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { stakeNft } from '../../src/runtime/firebase/nft';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -41,17 +35,18 @@ describe('Stake nft', () => {
       type: StakeType.DYNAMIC,
     });
 
-    const indexer = new IndexerPluginClient(helper.walletService!.client);
-    const items = (await indexer.nft(nft.mintingData?.nftId!)).items;
-    const nftOutput = <INftOutput>(await helper.walletService!.client.output(items[0])).output;
+    const nftOutputId = await helper.walletService!.client.nftOutputId(nft.mintingData?.nftId!);
+    const nftOutput = <NftOutput>(await helper.walletService!.client.getOutput(nftOutputId)).output;
+    const nftOutputParams = <NftOutputBuilderParams>nftOutput;
     const tag = KEY_NAME_TANGLE + KEY_NAME_TANGLE + KEY_NAME_TANGLE;
-    nftOutput.features = nftOutput.features || [];
-    nftOutput.features.push({ type: TAG_FEATURE_TYPE, tag: Converter.utf8ToHex(tag) });
-    const extraAmount =
-      TransactionHelper.getStorageDeposit(
-        nftOutput,
-        helper.walletService!.info.protocol.rentStructure,
-      ) - Number(nftOutput.amount);
+    nftOutputParams.features = nftOutput.features || [];
+    nftOutputParams.features.push(new TagFeature(utf8ToHex(tag)));
+    const output = await helper.walletService!.client.buildNftOutput(nftOutputParams);
+    const storageDeposit = Utils.computeStorageDeposit(
+      output,
+      helper.walletService!.info.protocol.rentStructure,
+    );
+    const extraAmount = Number(storageDeposit) - Number(nftOutput.amount);
     const stakeNftOrder = await testEnv.wrap(stakeNft)({});
     await helper.sendNftToAddress(
       helper.guardianAddress!,

@@ -12,7 +12,7 @@ import {
   TransactionValidationType,
   WenError,
 } from '@build-5/interfaces';
-import { TransactionHelper } from '@iota/iota.js-next';
+import { Utils } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { Wallet } from '../../services/wallet/wallet';
@@ -93,38 +93,38 @@ const getStorageDepositForMinting = async (
   address: AddressDetails,
   wallet: Wallet,
 ) => {
-  const aliasOutput = createAliasOutput(address, wallet.info);
+  const aliasOutput = await createAliasOutput(wallet, address);
   const metadata = await tokenToFoundryMetadata(token);
-  const foundryOutput = createFoundryOutput(
+  const foundryOutput = await createFoundryOutput(
+    wallet,
     token.totalSupply,
     aliasOutput,
     JSON.stringify(metadata),
-    wallet.info,
   );
-  const tokenId = TransactionHelper.constructTokenId(
+  const tokenId = Utils.computeFoundryId(
     aliasOutput.aliasId,
     foundryOutput.serialNumber,
     foundryOutput.tokenScheme.type,
   );
   const { vaultOutput, guardianOutput } = await getVaultAndGuardianOutput(
+    wallet,
     tokenId,
     token.totalSupply,
     totalDistributed,
     address.bech32,
     address.bech32,
-    wallet.info,
   );
-  const aliasStorageDeposit = TransactionHelper.getStorageDeposit(
+  const aliasStorageDeposit = Utils.computeStorageDeposit(
     aliasOutput,
     wallet.info.protocol.rentStructure,
   );
-  const foundryStorageDeposit = TransactionHelper.getStorageDeposit(
+  const foundryStorageDeposit = Utils.computeStorageDeposit(
     foundryOutput,
     wallet.info.protocol.rentStructure,
   );
   return {
-    aliasStorageDeposit,
-    foundryStorageDeposit,
+    aliasStorageDeposit: Number(aliasStorageDeposit),
+    foundryStorageDeposit: Number(foundryStorageDeposit),
     vaultStorageDeposit: Number(vaultOutput?.amount || 0),
     guardianStorageDeposit: Number(guardianOutput?.amount || 0),
   };

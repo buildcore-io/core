@@ -9,9 +9,8 @@ import {
   TransactionType,
   WenError,
 } from '@build-5/interfaces';
-import { TIMELOCK_UNLOCK_CONDITION_TYPE } from '@iota/iota.js-next';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
+
+import { UnlockConditionType } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
@@ -148,8 +147,7 @@ describe('Staking test', () => {
     );
     expect(Object.keys(outputs).length).toBe(2);
     const hasTimelock = Object.values(outputs).filter(
-      (o) =>
-        o.unlockConditions.find((u) => u.type === TIMELOCK_UNLOCK_CONDITION_TYPE) !== undefined,
+      (o) => o.unlockConditions.find((u) => u.type === UnlockConditionType.Timelock) !== undefined,
     );
     expect(hasTimelock.length).toBe(2);
   });
@@ -179,7 +177,7 @@ describe('Staking test', () => {
       order.payload.amount,
       {
         expiration: { expiresAt, returnAddressBech32: helper.memberAddress!.bech32 },
-        nativeTokens: [{ id: helper.TOKEN_ID, amount: HexHelper.fromBigInt256(bigInt(10)) }],
+        nativeTokens: [{ id: helper.TOKEN_ID, amount: BigInt(10) }],
       },
     );
     await MnemonicService.store(

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { COL, Member, Token, TokenStatus, TransactionType, WenError } from '@build-5/interfaces';
-import { addressBalance } from '@iota/iota.js-next';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { getAddress } from '../../src/utils/address.utils';
@@ -37,8 +36,8 @@ describe('Token minting', () => {
     const guardianData = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.guardian.uid}`).get();
     const guardianAddress = getAddress(guardianData, helper.network);
     await wait(async () => {
-      const balance = await addressBalance(helper.walletService.client, guardianAddress);
-      return Number(Object.values(balance.nativeTokens)[0]) === 500;
+      const { nativeTokens } = await helper.walletService.getBalance(guardianAddress);
+      return Number(Object.values(nativeTokens)[0]) === 500;
     });
 
     await helper.meltMintedToken(helper.walletService, helper.token, 250, guardianAddress);

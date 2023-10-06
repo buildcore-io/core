@@ -26,7 +26,7 @@ import { getTokenBySymbol } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { isStorageUrl } from '../../../joi/common';
 import { WalletService } from '../../../wallet/wallet.service';
-import { getAwardgStorageDeposits } from '../../award/award-service';
+import { getAwardgStorageDeposits as getAwardStorageDeposits } from '../../award/award-service';
 import { TransactionService } from '../../transaction-service';
 import { awardCreateSchema } from './AwardCreateTangleRequestSchema';
 import { createAwardFundOrder } from './award.fund.service';
@@ -133,7 +133,7 @@ export const createAward = async (
     funded: false,
   };
   const wallet = await WalletService.newWallet(award.network);
-  const storageDeposits = await getAwardgStorageDeposits(award, token, wallet);
+  const storageDeposits = await getAwardStorageDeposits(award, token, wallet);
 
   const awardOwner = { uid: owner, parentId: award.uid, parentCol: COL.AWARD };
 

@@ -1,6 +1,10 @@
 import { COL, Transaction, WEN_FUNC_TRIGGER } from '@build-5/interfaces';
-import { ITransactionPayload } from '@iota/iota.js-next';
-import { Converter } from '@iota/util.js-next';
+import {
+  RegularTransactionEssence,
+  TaggedDataPayload,
+  TransactionPayload,
+  hexToUtf8,
+} from '@iota/sdk';
 import dayjs from 'dayjs';
 import { DocumentOptions } from 'firebase-functions/v2/firestore';
 import { isEmpty } from 'lodash';
@@ -52,9 +56,10 @@ export const unclockMnemonic = async (address: string | undefined) => {
 
 export const getMilestoneTransactionId = async (milestoneTransaction: Record<string, unknown>) => {
   try {
-    const payload = <ITransactionPayload>milestoneTransaction.payload;
-    const hexData = payload.essence?.payload?.data || '';
-    const metadata = JSON.parse(Converter.hexToUtf8(hexData));
+    const payload = <TransactionPayload>milestoneTransaction.payload;
+    const essence = payload.essence as RegularTransactionEssence;
+    const hexData = (essence?.payload as TaggedDataPayload)?.data || '';
+    const metadata = JSON.parse(hexToUtf8(hexData));
     return (metadata.tranId || '') as string;
   } catch (e) {
     return '';

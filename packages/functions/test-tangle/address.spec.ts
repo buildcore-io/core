@@ -15,7 +15,6 @@ import {
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
 import { build5Db } from '../src/firebase/firestore/build5Db';
-import { WalletService } from '../src/services/wallet/wallet.service';
 import { getAddress } from '../src/utils/address.utils';
 import { dateToTimestamp } from '../src/utils/dateTime.utils';
 import * as wallet from '../src/utils/wallet.utils';
@@ -158,8 +157,8 @@ describe('Address validation', () => {
       return snap.length === 1 && snap[0].payload?.walletReference?.confirmed;
     });
 
-    const balanace = await walletService.getBalance(tmpAddress.bech32);
-    expect(balanace).toBe(order.payload.amount);
+    const { amount } = await walletService.getBalance(tmpAddress.bech32);
+    expect(amount).toBe(order.payload.amount);
   });
 
   it.each([
@@ -169,7 +168,7 @@ describe('Address validation', () => {
     { network: Network.ATOI, validateSpace: false },
   ])('Should validate address with tangle request', async ({ network, validateSpace }) => {
     tangleOrder = await getTangleOrder(network);
-    const wallet = await WalletService.newWallet(network);
+    const wallet = await getWallet(network);
     const tmp = await wallet.getNewIotaAddressDetails();
 
     await build5Db()

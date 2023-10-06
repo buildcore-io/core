@@ -4,4 +4,5 @@ module.exports = {
   testTimeout: 900000,
   globalSetup: './test/set-up.ts',
   reporters: ['default', 'github-actions'],
+  setupFilesAfterEnv: ['./test/teardown.ts'],
 };

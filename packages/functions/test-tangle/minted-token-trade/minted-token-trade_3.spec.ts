@@ -10,8 +10,7 @@ import {
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
+
 import dayjs from 'dayjs';
 import { cancelExpiredSale } from '../../src/cron/token.cron';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
@@ -108,9 +107,7 @@ describe('Token minting', () => {
       .update({ 'payload.expiresOn': dateToTimestamp(dayjs().subtract(2, 'h').toDate()) });
 
     await helper.walletService!.send(helper.sellerAddress!, sellOrder.payload.targetAddress!, 0, {
-      nativeTokens: [
-        { amount: HexHelper.fromBigInt256(bigInt(10)), id: helper.token!.mintingData?.tokenId! },
-      ],
+      nativeTokens: [{ amount: BigInt(10), id: helper.token!.mintingData?.tokenId! }],
       expiration: expiresAt
         ? {
             expiresAt,

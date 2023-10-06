@@ -16,10 +16,11 @@ import {
   UnsoldMintingOptions,
   WenError,
 } from '@build-5/interfaces';
-import { AddressTypes, ED25519_ADDRESS_TYPE, INodeInfo } from '@iota/iota.js-next';
+import { Ed25519Address } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
 import { build5Db, getSnapshot } from '../../firebase/firestore/build5Db';
+import { Wallet } from '../../services/wallet/wallet';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet.service';
 import { assertMemberHasValidAddress, assertSpaceHasValidAddress } from '../../utils/address.utils';
 import {
@@ -85,20 +86,21 @@ export const mintCollectionOrderControl = async (owner: string, params: Collecti
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
     const { storageDeposit: nftsStorageDeposit, nftsToMint } = await getNftsTotalStorageDeposit(
+      wallet,
       collection,
       params.unsoldMintingOptions as UnsoldMintingOptions,
       targetAddress,
-      wallet.info,
     );
     if (!nftsStorageDeposit) {
       throw invalidArgument(WenError.no_nfts_to_mint);
     }
     const collectionStorageDeposit = await getCollectionStorageDeposit(
+      wallet,
       targetAddress,
       collection,
-      wallet.info,
     );
-    const aliasStorageDeposit = Number(createAliasOutput(targetAddress, wallet.info).amount);
+    const aliasOutput = await createAliasOutput(wallet, targetAddress);
+    const aliasStorageDeposit = Number(aliasOutput.amount);
 
     const order: Transaction = {
       type: TransactionType.ORDER,
@@ -130,10 +132,10 @@ export const mintCollectionOrderControl = async (owner: string, params: Collecti
 };
 
 const getNftsTotalStorageDeposit = async (
+  wallet: Wallet,
   collection: Collection,
   unsoldMintingOptions: UnsoldMintingOptions,
   address: AddressDetails,
-  info: INodeInfo,
 ) => {
   let storageDeposit = 0;
   let nftsToMint = 0;
@@ -153,11 +155,11 @@ const getNftsTotalStorageDeposit = async (
       if (unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD && !nft.sold) {
         return 0;
       }
-      const ownerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: address.hex };
+      const ownerAddress = new Ed25519Address(address.hex);
       const metadata = JSON.stringify(
         await nftToMetadata(nft, collection, address.bech32, EMPTY_NFT_ID),
       );
-      const output = createNftOutput(ownerAddress, ownerAddress, metadata, info);
+      const output = await createNftOutput(wallet, ownerAddress, ownerAddress, metadata);
       return Number(output.amount);
     });
     const amounts = await Promise.all(promises);
@@ -169,12 +171,17 @@ const getNftsTotalStorageDeposit = async (
 };
 
 const getCollectionStorageDeposit = async (
+  wallet: Wallet,
   address: AddressDetails,
   collection: Collection,
-  info: INodeInfo,
 ) => {
-  const ownerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: address.hex };
+  const ownerAddress = new Ed25519Address(address.hex);
   const metadata = await collectionToMetadata(collection, address.bech32);
-  const output = createNftOutput(ownerAddress, ownerAddress, JSON.stringify(metadata), info);
+  const output = await createNftOutput(
+    wallet,
+    ownerAddress,
+    ownerAddress,
+    JSON.stringify(metadata),
+  );
   return Number(output.amount);
 };

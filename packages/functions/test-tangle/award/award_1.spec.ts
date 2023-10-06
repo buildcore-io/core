@@ -12,12 +12,7 @@ import {
   TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
-import {
-  IndexerPluginClient,
-  INftOutput,
-  ITimelockUnlockCondition,
-  TIMELOCK_UNLOCK_CONDITION_TYPE,
-} from '@iota/iota.js-next';
+import { NftOutput, TimelockUnlockCondition, UnlockConditionType } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import {
@@ -28,11 +23,11 @@ import {
 } from '../../src/runtime/firebase/award';
 import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { Wallet } from '../../src/services/wallet/wallet';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet.service';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
-import { MEDIA, testEnv } from '../../test/set-up';
+import { getWallet, MEDIA, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { awaitAllTransactionsForAward, saveBaseToken } from './common';
 
@@ -54,7 +49,7 @@ describe('Create award, base', () => {
 
   const setup = async (network: Network) => {
     now = dayjs();
-    walletService = await WalletService.newWallet(network);
+    walletService = await getWallet(network);
     guardian = await createMember(walletSpy);
     member = await createMember(walletSpy);
     space = await createSpace(walletSpy, guardian);
@@ -136,26 +131,24 @@ describe('Create award, base', () => {
       expect(distribution.totalUnclaimedAirdrop).toBe(0);
 
       await wait(async () => {
-        let balance = await walletService.getBalance(memberBech32);
-        return balance === 2 * MIN_IOTA_AMOUNT + claimOrder.payload.amount;
+        let { amount } = await walletService.getBalance(memberBech32);
+        return amount === 2 * MIN_IOTA_AMOUNT + claimOrder.payload.amount;
       });
 
-      const indexer = new IndexerPluginClient(walletService.client);
-
       await wait(async () => {
-        const response = await indexer.nfts({ addressBech32: memberBech32 });
+        const response = await walletService.client.nftOutputIds([{ address: memberBech32 }]);
         return response.items.length === 2;
       });
 
-      const response = await indexer.nfts({ addressBech32: memberBech32 });
+      const response = await walletService.client.nftOutputIds([{ address: memberBech32 }]);
       const promises = response.items.map(
-        async (outputId) => (await walletService.client.output(outputId)).output as INftOutput,
+        async (outputId) => (await walletService.client.getOutput(outputId)).output as NftOutput,
       );
       const outputs = await Promise.all(promises);
       for (const nttOutput of outputs) {
         const timelock = nttOutput.unlockConditions.find(
-          (uc) => uc.type === TIMELOCK_UNLOCK_CONDITION_TYPE,
-        ) as ITimelockUnlockCondition;
+          (uc) => uc.type === UnlockConditionType.Timelock,
+        ) as TimelockUnlockCondition;
         expect(dayjs.unix(timelock.unixTime).isAfter(now.add(31557600000))).toBe(true);
       }
 
@@ -169,8 +162,8 @@ describe('Create award, base', () => {
       });
 
       await wait(async () => {
-        const balance = await walletService.getBalance(guardianAddress.bech32);
-        return balance === award.aliasStorageDeposit;
+        const { amount } = await walletService.getBalance(guardianAddress.bech32);
+        return amount === award.aliasStorageDeposit;
       });
     },
   );

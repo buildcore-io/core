@@ -12,17 +12,16 @@ import {
   TransactionType,
   getMilestoneCol,
 } from '@build-5/interfaces';
-import { TransactionHelper } from '@iota/iota.js-next';
+import { TransactionPayload, UTXOInput, Utils } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { validateAddress } from '../../src/runtime/firebase/address';
 import { createMember as createMemberFunc } from '../../src/runtime/firebase/member';
 import { createSpace as createSpaceFunc } from '../../src/runtime/firebase/space/index';
 import { packBasicOutput } from '../../src/utils/basic-output.utils';
-import { packEssence, packPayload } from '../../src/utils/block.utils';
+import { createUnlock, packEssence } from '../../src/utils/block.utils';
 import * as config from '../../src/utils/config.utils';
 import * as ipUtils from '../../src/utils/ip.utils';
-import { createUnlock } from '../../src/utils/smr.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { MEDIA, getWallet, testEnv } from '../set-up';
 
@@ -70,13 +69,13 @@ export const submitMilestoneFunc = async (order: Transaction, customAmount?: num
   const from = await walletService.getNewIotaAddressDetails();
 
   const consumedOutputId = '0xbdb062b39e38c3ea0b37c32d564ee839da4e1d66ceb035a56ed1e87caa3fc5950000';
-  const consumedOutputs = packBasicOutput(from.bech32, amount, [], walletService.info);
-  const inputs = [TransactionHelper.inputFromOutputId(consumedOutputId)];
-  const inputsCommitment = TransactionHelper.getInputsCommitment([consumedOutputs]);
-  const outputs = [packBasicOutput(to, amount, [], walletService.info)];
-  const essence = packEssence(inputs, inputsCommitment, outputs, walletService, {});
-  const unlocks = [createUnlock(essence, from.keyPair)];
-  const payload = packPayload(essence, unlocks);
+  const consumedOutputs = await packBasicOutput(walletService, from.bech32, amount, {});
+  const inputs = [UTXOInput.fromOutputId(consumedOutputId)];
+  const inputsCommitment = Utils.computeInputsCommitment([consumedOutputs]);
+  const outputs = [await packBasicOutput(walletService, to, amount, {})];
+  const essence = await packEssence(walletService, inputs, inputsCommitment, outputs, {});
+  const unlocks = [await createUnlock(essence, from)];
+  const payload = new TransactionPayload(essence, unlocks);
 
   const milestoneColl = getMilestoneCol(network);
   const nextMilestone = wallet.getRandomEthAddress();
@@ -90,7 +89,7 @@ export const submitMilestoneFunc = async (order: Transaction, customAmount?: num
     createdOn: dayjs().toDate(),
     blockId: wallet.getRandomEthAddress(),
     milestone: wallet.getRandomEthAddress(),
-    payload,
+    payload: JSON.parse(JSON.stringify(payload)),
   });
   await tranDocRef.update({ complete: true });
 

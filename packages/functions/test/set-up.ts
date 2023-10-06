@@ -75,7 +75,7 @@ const setup = async () => {
   console.log('Setup env');
 };
 
-const wallets: { [key: string]: Wallet } = {};
+export const wallets: { [key: string]: Wallet } = {};
 
 export const getWallet = async (network: Network) => {
   const wallet = wallets[network];

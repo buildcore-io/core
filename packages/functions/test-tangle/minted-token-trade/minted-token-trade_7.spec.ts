@@ -72,7 +72,7 @@ describe('Token minting', () => {
       (bp) => bp.payload.targetAddress === helper.buyerAddress!.bech32,
     )!;
     expect(paymentToBuyer.payload.amount).toBe(53800);
-    expect(paymentToBuyer.payload.nativeTokens![0].amount).toBe('5');
+    expect(paymentToBuyer.payload.nativeTokens![0].amount).toBe(5);
     expect(paymentToBuyer.payload.sourceAddress).toBe(sellOrder.payload.targetAddress);
     expect(paymentToBuyer.payload.storageDepositSourceAddress).toBe(buyOrder.payload.targetAddress);
     expect(paymentToBuyer.payload.storageReturn!.amount).toBe(53800);
@@ -86,7 +86,7 @@ describe('Token minting', () => {
     expect(sellerCreditSnap.length).toBe(1);
     const sellerCredit = sellerCreditSnap.map((d) => d as Transaction)[0];
     expect(sellerCredit.payload.amount).toBe(49600);
-    expect(sellerCredit.payload.nativeTokens![0].amount).toBe('5');
+    expect(sellerCredit.payload.nativeTokens![0].amount).toBe(5);
     expect(sellerCredit.payload.reason).toBe(CreditPaymentReason.TRADE_CANCELLED);
 
     const buyerCreditSnap = await build5Db()

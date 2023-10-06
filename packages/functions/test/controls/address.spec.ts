@@ -2,10 +2,9 @@ import { COL, Member, Network, Proposal, Space, WenError } from '@build-5/interf
 import { isEmpty } from 'lodash';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { validateAddress } from '../../src/runtime/firebase/address';
-import { WalletService } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { testEnv } from '../set-up';
+import { getWallet, testEnv } from '../set-up';
 import {
   createMember,
   createSpace,
@@ -46,7 +45,7 @@ describe('Address validation test', () => {
   it.each([Network.RMS, Network.SMR])(
     'Should throw, member id is address',
     async (network: Network) => {
-      const wallet = await WalletService.newWallet(network);
+      const wallet = await getWallet(network);
       const address = await wallet.getNewIotaAddressDetails();
       const memberDocRef = build5Db().doc(`${COL.MEMBER}/${address.bech32}`);
       await memberDocRef.create({ uid: address.bech32 });

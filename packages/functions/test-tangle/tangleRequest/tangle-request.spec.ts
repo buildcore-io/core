@@ -12,6 +12,7 @@ import {
 } from '@build-5/interfaces';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -19,7 +20,6 @@ import { createMember, createSpace, getRandomSymbol, wait } from '../../test/con
 import { getWallet, MEDIA } from '../../test/set-up';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
-import { AddressDetails } from '../../src/services/wallet/wallet.service';
 
 let walletSpy: any;
 

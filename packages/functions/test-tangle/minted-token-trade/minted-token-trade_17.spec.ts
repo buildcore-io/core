@@ -8,8 +8,7 @@ import {
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
+
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { creditUnrefundable } from '../../src/runtime/firebase/credit/index';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
@@ -38,9 +37,7 @@ describe('Token minting', () => {
     });
     const sellOrder: Transaction = await testEnv.wrap(tradeToken)({});
     await helper.walletService!.send(helper.sellerAddress!, sellOrder.payload.targetAddress!, 0, {
-      nativeTokens: [
-        { amount: HexHelper.fromBigInt256(bigInt(10)), id: helper.token!.mintingData?.tokenId! },
-      ],
+      nativeTokens: [{ amount: BigInt(10), id: helper.token!.mintingData?.tokenId! }],
       storageDepositReturnAddress: helper.sellerAddress?.bech32,
     });
     const query = build5Db()
@@ -109,9 +106,7 @@ describe('Token minting', () => {
     });
     const sellOrder: Transaction = await testEnv.wrap(tradeToken)({});
     await helper.walletService!.send(helper.sellerAddress!, sellOrder.payload.targetAddress!, 0, {
-      nativeTokens: [
-        { amount: HexHelper.fromBigInt256(bigInt(10)), id: helper.token!.mintingData?.tokenId! },
-      ],
+      nativeTokens: [{ amount: BigInt(10), id: helper.token!.mintingData?.tokenId! }],
       storageDepositReturnAddress: helper.sellerAddress?.bech32,
     });
     const query = build5Db()
