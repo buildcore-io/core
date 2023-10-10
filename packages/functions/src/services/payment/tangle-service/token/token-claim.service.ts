@@ -69,10 +69,11 @@ export const createMintedTokenAirdropCalimOrder = async (
 
   const wallet = await WalletService.newWallet(token.mintingData?.network!);
   const targetAddress = await wallet.getNewIotaAddressDetails();
-  const storageDeposit = drops.reduce((acc, drop) => {
-    const output = dropToOutput(token, drop, targetAddress.bech32, wallet.info);
-    return acc + Number(output.amount);
-  }, 0);
+  let storageDeposit = 0;
+  for (const drop of drops) {
+    const output = await dropToOutput(wallet, token, drop, targetAddress.bech32);
+    storageDeposit += Number(output.amount);
+  }
 
   return {
     type: TransactionType.ORDER,

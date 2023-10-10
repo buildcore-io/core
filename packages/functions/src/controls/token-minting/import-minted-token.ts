@@ -9,7 +9,6 @@ import {
   TransactionValidationType,
   WenError,
 } from '@build-5/interfaces';
-import { IndexerPluginClient } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { build5Db } from '../../firebase/firestore/build5Db';
@@ -31,10 +30,9 @@ export const importMintedTokenControl = async (owner: string, params: ImportMint
     }
 
     const wallet = await WalletService.newWallet(params.network as Network);
-    const indexer = new IndexerPluginClient(wallet.client);
-    const foundryResponse = await indexer.foundry(params.tokenId);
+    const foundryOutputId = await wallet.client.foundryOutputId(params.tokenId);
 
-    if (isEmpty(foundryResponse.items)) {
+    if (isEmpty(foundryOutputId)) {
       throw invalidArgument(WenError.token_does_not_exist);
     }
 

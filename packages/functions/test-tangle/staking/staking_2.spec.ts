@@ -1,10 +1,5 @@
 import { COL, Space, StakeType } from '@build-5/interfaces';
-import {
-  IMetadataFeature,
-  METADATA_FEATURE_TYPE,
-  TIMELOCK_UNLOCK_CONDITION_TYPE,
-} from '@iota/iota.js-next';
-import { Converter } from '@iota/util.js-next';
+import { FeatureType, MetadataFeature, UnlockConditionType, hexToUtf8 } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
@@ -40,10 +35,10 @@ describe('Staking test', () => {
     );
     expect(Object.keys(outputs).length).toBe(1);
 
-    const hexMetadata = <IMetadataFeature>(
-      Object.values(outputs)[0].features?.find((t) => t.type === METADATA_FEATURE_TYPE)!
+    const hexMetadata = <MetadataFeature>(
+      Object.values(outputs)[0].features?.find((t) => t.type === FeatureType.Metadata)!
     );
-    const decoded = JSON.parse(Converter.hexToUtf8(hexMetadata.data));
+    const decoded = JSON.parse(hexToUtf8(hexMetadata.data));
     expect(decoded.name).toBe(customMetadata.name);
     expect(decoded.asd).toBe(customMetadata.asd);
   });
@@ -96,7 +91,7 @@ describe('Staking test', () => {
       expect(Object.keys(outputs).length).toBe(2);
       const hasTimelock = Object.values(outputs).filter(
         (o) =>
-          o.unlockConditions.find((u) => u.type === TIMELOCK_UNLOCK_CONDITION_TYPE) !== undefined,
+          o.unlockConditions.find((u) => u.type === UnlockConditionType.Timelock) !== undefined,
       );
       expect(hasTimelock.length).toBe(2);
     },

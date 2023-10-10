@@ -13,11 +13,11 @@ import {
 import dayjs from 'dayjs';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { Wallet } from '../../src/services/wallet/wallet';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet.service';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, wait } from '../../test/controls/common';
-import { MEDIA } from '../../test/set-up';
+import { getWallet, MEDIA } from '../../test/set-up';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
 import { saveBaseToken } from './common';
@@ -38,7 +38,7 @@ describe('Award tangle request', () => {
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    walletService = await WalletService.newWallet(network);
+    walletService = await getWallet(network);
     tangleOrder = await getTangleOrder(Network.RMS);
   });
 

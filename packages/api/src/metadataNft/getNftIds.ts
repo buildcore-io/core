@@ -1,12 +1,5 @@
-import { GetNftIds, Network, WenError } from '@build-5/interfaces';
-import {
-  Bech32Helper,
-  INftOutput,
-  IndexerPluginClient,
-  NFT_ADDRESS_TYPE,
-  TransactionHelper,
-} from '@iota/iota.js';
-import { Converter, HexHelper } from '@iota/util.js';
+import { GetNftIds, WenError } from '@build-5/interfaces';
+import { NftOutput, Utils } from '@iota/sdk';
 import Joi from 'joi';
 import { of } from 'rxjs';
 import { CommonJoi, getQueryParams } from '../common';
@@ -21,21 +14,20 @@ export const getNftIds = async (url: string) => {
   const body = getQueryParams<GetNftIds>(url, getNftIdsSchema);
   try {
     const client = await getClient(body.network);
-    const indexer = new IndexerPluginClient(client);
 
-    const collectionOutputId = (await indexer.nft(body.collectionId)).items[0];
-    const { nftId: collectionId } = (await client.output(collectionOutputId)).output as INftOutput;
-    const issuerAddress = Bech32Helper.toBech32(
-      NFT_ADDRESS_TYPE,
-      Converter.hexToBytes(HexHelper.stripPrefix(collectionId)),
-      body.network || Network.SMR,
+    const collectionOutputId = await client.nftOutputId(body.collectionId);
+    const { nftId: collectionId } = (await client.getOutput(collectionOutputId))
+      .output as NftOutput;
+    const issuerAddress = Utils.nftIdToBech32(
+      collectionId,
+      (await client.getInfo()).nodeInfo.protocol.bech32Hrp,
     );
 
-    const nftOutputIds = (await indexer.nfts({ issuerBech32: issuerAddress })).items;
+    const nftOutputIds = (await client.nftOutputIds([{ issuer: issuerAddress }])).items;
     const promises = nftOutputIds.map(async (outputId) => {
-      const output = (await client.output(outputId)).output as INftOutput;
+      const output = (await client.getOutput(outputId)).output as NftOutput;
       if (output.nftId === EMPTY_NFT_ID) {
-        return TransactionHelper.resolveIdFromOutputId(outputId);
+        return Utils.computeNftId(outputId);
       }
       return output.nftId;
     });

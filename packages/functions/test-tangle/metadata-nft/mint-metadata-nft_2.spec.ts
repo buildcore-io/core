@@ -8,7 +8,7 @@ import {
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-import { IBasicOutput, ITransactionPayload } from '@iota/iota.js-next';
+import { BasicOutput, RegularTransactionEssence, TransactionPayload } from '@iota/sdk';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
@@ -110,8 +110,8 @@ describe('Metadata nft', () => {
 });
 
 const getMetadata = async (wallet: Wallet, blockId: string) => {
-  const block = await wallet.client.block(blockId);
-  const payload = block.payload! as ITransactionPayload;
-  const output = payload.essence.outputs[0] as IBasicOutput;
+  const block = await wallet.client.getBlock(blockId);
+  const payload = block.payload! as TransactionPayload;
+  const output = (payload.essence as RegularTransactionEssence).outputs[0] as BasicOutput;
   return getOutputMetadata(output);
 };

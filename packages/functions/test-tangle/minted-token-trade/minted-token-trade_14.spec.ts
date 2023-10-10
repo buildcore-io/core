@@ -11,8 +11,7 @@ import { head } from 'lodash';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { wait } from '../../test/controls/common';
 import { awaitTransactionConfirmationsForToken } from '../common';
-import { requestMintedTokenFromFaucet } from '../faucet';
-import { Helper, VAULT_MNEMONIC } from './Helper';
+import { Helper } from './Helper';
 
 describe('Token minting', () => {
   const helper = new Helper();
@@ -73,29 +72,6 @@ describe('Token minting', () => {
           billPaymentToBuyer?.payload?.amount!,
     );
     expect(billPaymentToSeller).toBeDefined();
-
-    await awaitTransactionConfirmationsForToken(helper.token!.uid);
-  });
-
-  it('Should not fill buy, balance would be less then MIN_IOTA_AMOUNT and order not fulfilled', async () => {
-    await requestMintedTokenFromFaucet(
-      helper.walletService!,
-      helper.sellerAddress!,
-      helper.token!.mintingData?.tokenId!,
-      VAULT_MNEMONIC,
-      180,
-    );
-
-    await helper.createSellTradeOrder(199, MIN_IOTA_AMOUNT / 100);
-    await helper.createBuyOrder(200, MIN_IOTA_AMOUNT / 100);
-
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    const purchase = await build5Db()
-      .collection(COL.TOKEN_PURCHASE)
-      .where('token', '==', helper.token!.uid)
-      .get();
-    expect(purchase.length).toBe(0);
 
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
   });

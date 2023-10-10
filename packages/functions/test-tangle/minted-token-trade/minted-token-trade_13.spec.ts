@@ -12,7 +12,6 @@ import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
-import { awaitTransactionConfirmationsForToken } from '../common';
 import { requestFundsForManyFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
@@ -65,7 +64,5 @@ describe('Token minting', () => {
       );
       return allFulfilled;
     });
-
-    await awaitTransactionConfirmationsForToken(helper.token!.uid);
   });
 });

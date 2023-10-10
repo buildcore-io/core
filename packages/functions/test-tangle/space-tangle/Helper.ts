@@ -2,10 +2,11 @@ import { COL, Member, Network, Space, Transaction, TransactionType } from '@buil
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { IQuery } from '../../src/firebase/firestore/interfaces';
 import { Wallet } from '../../src/services/wallet/wallet';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet.service';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace } from '../../test/controls/common';
+import { getWallet } from '../../test/set-up';
 import { getTangleOrder } from '../common';
 
 export class Helper {
@@ -22,7 +23,7 @@ export class Helper {
   public guardianAddress: AddressDetails = {} as any;
 
   public beforeAll = async () => {
-    this.walletService = await WalletService.newWallet(this.network);
+    this.walletService = await getWallet(this.network);
     this.tangleOrder = await getTangleOrder(Network.RMS);
   };
 

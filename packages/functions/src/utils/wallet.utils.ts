@@ -1,7 +1,5 @@
 import { COL, DecodedToken, Member, WEN_FUNC, WenError, WenRequest } from '@build-5/interfaces';
-import { Ed25519 } from '@iota/crypto.js-next';
-import { Bech32Helper, ED25519_ADDRESS_TYPE, Ed25519Address } from '@iota/iota.js-next';
-import { Converter, HexHelper } from '@iota/util.js-next';
+import { Ed25519Signature, INodeInfo, Utils } from '@iota/sdk';
 import { recoverPersonalSignature } from '@metamask/eth-sig-util';
 import { randomBytes } from 'crypto';
 import dayjs from 'dayjs';
@@ -64,7 +62,8 @@ const validateWithSignature = async (req: WenRequest) => {
 const validateWithPublicKey = async (req: WenRequest) => {
   const network = req.publicKey!.network;
 
-  const { member, address } = await validatePubKey(req);
+  const wallet = await WalletService.newWallet(network);
+  const { member, address } = await validatePubKey(wallet.info, req);
   if (!address) {
     throw unAuthenticated(WenError.failed_to_decode_token);
   }
@@ -80,21 +79,18 @@ const validateWithPublicKey = async (req: WenRequest) => {
   return address;
 };
 
-const validatePubKey = async (req: WenRequest) => {
-  const signedData = Converter.hexToBytes(HexHelper.stripPrefix(req.signature!));
-  const publicKey = Converter.hexToBytes(HexHelper.stripPrefix(req.publicKey?.hex!));
-
-  const wallet = await WalletService.newWallet(req.publicKey!.network);
-  const bech32Address = Bech32Helper.toBech32(
-    ED25519_ADDRESS_TYPE,
-    new Ed25519Address(publicKey).toAddress(),
-    wallet.info.protocol.bech32Hrp,
+const validatePubKey = async (info: INodeInfo, req: WenRequest) => {
+  const bech32Address = Utils.hexPublicKeyToBech32Address(
+    req.publicKey?.hex!,
+    info.protocol.bech32Hrp,
   );
 
   const member = await getMember(bech32Address);
-  const unsignedData = Converter.utf8ToBytes(`0x${toHex(member.nonce!)}`);
 
-  const verify = Ed25519.verify(publicKey, unsignedData, signedData);
+  const verify = Utils.verifyEd25519Signature(
+    new Ed25519Signature(req.publicKey?.hex!, req.signature!),
+    `0x${toHex(member.nonce!)}`,
+  );
   if (!verify) {
     throw unAuthenticated(WenError.invalid_signature);
   }

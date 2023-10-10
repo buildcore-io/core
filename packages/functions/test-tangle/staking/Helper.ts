@@ -17,8 +17,7 @@ import {
   TransactionPayloadType,
   calcStakedMultiplier,
 } from '@build-5/interfaces';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
+
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
@@ -130,7 +129,7 @@ export class Helper {
       expiration: expiresAt
         ? { expiresAt, returnAddressBech32: this.memberAddress!.bech32 }
         : undefined,
-      nativeTokens: [{ id: this.TOKEN_ID, amount: HexHelper.fromBigInt256(bigInt(amount)) }],
+      nativeTokens: [{ id: this.TOKEN_ID, amount: BigInt(amount) }],
     });
     await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
     const query = build5Db().collection(COL.STAKE).where('orderId', '==', order.uid);

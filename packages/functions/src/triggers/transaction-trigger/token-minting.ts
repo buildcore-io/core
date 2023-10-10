@@ -8,21 +8,20 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 import {
-  ALIAS_OUTPUT_TYPE,
-  FOUNDRY_OUTPUT_TYPE,
-  IAliasOutput,
-  IFoundryOutput,
-  ITransactionPayload,
-  OutputTypes,
-  TransactionHelper,
-} from '@iota/iota.js-next';
+  AliasOutput,
+  FoundryOutput,
+  OutputType,
+  RegularTransactionEssence,
+  SimpleTokenScheme,
+  TransactionPayload,
+  Utils,
+} from '@iota/sdk';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions/v2';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { getAddress } from '../../utils/address.utils';
-import { indexToString } from '../../utils/block.utils';
-import { getTransactionPayloadHex } from '../../utils/smr.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+
 export const onTokenMintingUpdate = async (transaction: Transaction) => {
   switch (transaction.payload.type) {
     case TransactionPayloadType.MINT_ALIAS: {
@@ -48,14 +47,15 @@ const onAliasMinted = async (transaction: Transaction) => {
   const path = transaction.payload.walletReference?.milestoneTransactionPath!;
   const milestoneTransaction = (await build5Db().doc(path).get<Record<string, unknown>>())!;
 
-  const aliasOutputId =
-    getTransactionPayloadHex(milestoneTransaction.payload as ITransactionPayload) +
-    indexToString(0);
+  const aliasOutputId = Utils.computeOutputId(
+    Utils.transactionId(milestoneTransaction.payload as TransactionPayload),
+    0,
+  );
   await build5Db()
     .doc(`${COL.TOKEN}/${transaction.payload.token}`)
     .update({
       'mintingData.aliasBlockId': milestoneTransaction.blockId,
-      'mintingData.aliasId': TransactionHelper.resolveIdFromOutputId(aliasOutputId),
+      'mintingData.aliasId': Utils.computeAliasId(aliasOutputId),
     });
 
   const token = <Token>await build5Db().doc(`${COL.TOKEN}/${transaction.payload.token}`).get();
@@ -82,24 +82,19 @@ const onFoundryMinted = async (transaction: Transaction) => {
   const path = transaction.payload.walletReference?.milestoneTransactionPath!;
   const milestoneTransaction = (await build5Db().doc(path).get<Record<string, unknown>>())!;
 
-  const aliasOutput = <IAliasOutput>(
-    ((milestoneTransaction.payload as ITransactionPayload).essence.outputs as OutputTypes[]).find(
-      (o) => o.type === ALIAS_OUTPUT_TYPE,
-    )
-  );
-  const foundryOutput = <IFoundryOutput>(
-    ((milestoneTransaction.payload as ITransactionPayload).essence.outputs as OutputTypes[]).find(
-      (o) => o.type === FOUNDRY_OUTPUT_TYPE,
-    )
-  );
-  const foundryId = TransactionHelper.constructTokenId(
+  const payload = milestoneTransaction.payload as TransactionPayload;
+  const essence = payload.essence as RegularTransactionEssence;
+  const aliasOutput = <AliasOutput>essence.outputs.find((o) => o.type === OutputType.Alias);
+  const foundryOutput = <FoundryOutput>essence.outputs.find((o) => o.type === OutputType.Foundry);
+  const foundryId = Utils.computeFoundryId(
     aliasOutput.aliasId,
     foundryOutput.serialNumber,
     foundryOutput.tokenScheme.type,
   );
 
-  const meltedTokens = Number(foundryOutput.tokenScheme.meltedTokens);
-  const totalSupply = Number(foundryOutput.tokenScheme.maximumSupply);
+  const tokenScheme = foundryOutput.tokenScheme as SimpleTokenScheme;
+  const meltedTokens = Number(tokenScheme.meltedTokens);
+  const totalSupply = Number(tokenScheme.maximumSupply);
 
   await build5Db()
     .doc(`${COL.TOKEN}/${transaction.payload.token}`)

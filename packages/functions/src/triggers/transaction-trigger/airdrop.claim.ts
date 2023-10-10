@@ -47,7 +47,7 @@ const onPreMintedAirdropClaim = async (order: Transaction, token: Token) => {
     order,
     token,
     true,
-  )((transaction, airdrop) => {
+  )(async (transaction, airdrop) => {
     const airdropDocRef = build5Db().doc(`${COL.AIRDROP}/${airdrop.uid}`);
 
     const billPayment: Transaction = {
@@ -112,10 +112,17 @@ const onMintedAirdropClaim = async (order: Transaction, token: Token) => {
   storageDepositUsed += await runInAirdropLoop(
     order,
     token,
-  )((transaction, airdrop) => {
+  )(async (transaction, airdrop) => {
     const airdropDocRef = build5Db().doc(`${COL.AIRDROP}/${airdrop.uid}`);
 
-    const billPayment = mintedDropToBillPayment(order, paymentsId, token, airdrop, member, wallet);
+    const billPayment = await mintedDropToBillPayment(
+      order,
+      paymentsId,
+      token,
+      airdrop,
+      member,
+      wallet,
+    );
     const billPaymentDocRef = build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
     transaction.create(billPaymentDocRef, billPayment);
 
@@ -205,7 +212,7 @@ const claimOwnedMintedTokens = (
       status: TokenDropStatus.UNCLAIMED,
     };
 
-    const billPayment = mintedDropToBillPayment(
+    const billPayment = await mintedDropToBillPayment(
       order,
       sourceTransaction,
       token,
@@ -228,17 +235,17 @@ const claimOwnedMintedTokens = (
     return billPayment.payload.amount!;
   });
 
-const mintedDropToBillPayment = (
+const mintedDropToBillPayment = async (
   order: Transaction,
   sourceTransaction: string[],
   token: Token,
   drop: TokenDrop,
   member: Member,
   wallet: Wallet,
-): Transaction => {
+): Promise<Transaction> => {
   const memberAddress = getAddress(member, token.mintingData?.network!);
-  const output = dropToOutput(token, drop, memberAddress, wallet.info);
-  const nativeTokens = [{ id: head(output.nativeTokens)?.id!, amount: drop.count.toString() }];
+  const output = await dropToOutput(wallet, token, drop, memberAddress);
+  const nativeTokens = [{ id: head(output.nativeTokens)?.id!, amount: BigInt(drop.count) }];
   return {
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
@@ -314,7 +321,7 @@ const airdropsQuery = (
 
 const runInAirdropLoop =
   (order: Transaction, token: Token, isPreMintedClaim?: boolean) =>
-  async (func: (transaction: ITransaction, airdrop: TokenDrop) => number) => {
+  async (func: (transaction: ITransaction, airdrop: TokenDrop) => Promise<number>) => {
     let storageDeposit = 0;
     for (let i = 0; i < LOOP_SIZE; ++i) {
       const snap = await airdropsQuery(
@@ -333,7 +340,7 @@ const runInAirdropLoop =
           (drop) => drop!.status === TokenDropStatus.UNCLAIMED,
         );
         for (const airdrop of airdrops) {
-          actStorageDeposit += func(transaction, airdrop!);
+          actStorageDeposit += await func(transaction, airdrop!);
         }
         return actStorageDeposit;
       });

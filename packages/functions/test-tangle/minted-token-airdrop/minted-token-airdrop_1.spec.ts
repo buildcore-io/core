@@ -87,7 +87,7 @@ describe('Minted token airdrop', () => {
       expiration: expiresAt
         ? { expiresAt, returnAddressBech32: guardianAddress.bech32 }
         : undefined,
-      nativeTokens: [{ id: helper.token?.mintingData?.tokenId!, amount: total.toString(16) }],
+      nativeTokens: [{ id: helper.token?.mintingData?.tokenId!, amount: BigInt(total) }],
     });
 
     await wait(async () => {
@@ -166,8 +166,8 @@ describe('Minted token airdrop', () => {
       return snap.length === 2;
     });
 
-    const balance = await helper.walletService?.getBalance(guardianAddress.bech32);
-    expect(balance).toBe(5 * MIN_IOTA_AMOUNT);
+    const { amount } = await helper.walletService!.getBalance(guardianAddress.bech32);
+    expect(amount).toBe(5 * MIN_IOTA_AMOUNT);
 
     const member = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.member}`).get();
     const memberAddress = await helper.walletService!.getAddressDetails(
@@ -252,7 +252,7 @@ describe('Minted token airdrop', () => {
     );
 
     await helper.walletService!.send(guardianAddress, order.payload.targetAddress, 0, {
-      nativeTokens: [{ id: helper.token?.mintingData?.tokenId!, amount: '0x1' }],
+      nativeTokens: [{ id: helper.token?.mintingData?.tokenId!, amount: BigInt(1) }],
     });
 
     await wait(async () => {

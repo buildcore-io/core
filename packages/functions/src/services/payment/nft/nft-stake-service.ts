@@ -11,15 +11,18 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import {
-  INftOutput,
-  TAG_FEATURE_TYPE,
-  TIMELOCK_UNLOCK_CONDITION_TYPE,
-  TransactionHelper,
-} from '@iota/iota.js-next';
+  FeatureType,
+  NftOutput,
+  NftOutputBuilderParams,
+  TimelockUnlockCondition,
+  UnlockConditionType,
+  Utils,
+} from '@iota/sdk';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions/v2';
 import { cloneDeep, get } from 'lodash';
 import { build5Db } from '../../../firebase/firestore/build5Db';
+import { intToU32 } from '../../../utils/common.utils';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { WalletService } from '../../wallet/wallet.service';
@@ -89,16 +92,16 @@ export class NftStakeService {
   private getNftOutputAmount = async (order: Transaction, tranEntry: MilestoneTransactionEntry) => {
     const wallet = await WalletService.newWallet(order.network);
     const weeks = get(order, 'payload.weeks', 0);
-    const output = cloneDeep(tranEntry.nftOutput as INftOutput);
-    output.features = output.features?.filter((f) => f.type !== TAG_FEATURE_TYPE);
-    output.unlockConditions = output.unlockConditions.filter(
-      (uc) => uc.type !== TIMELOCK_UNLOCK_CONDITION_TYPE,
+    const params: NftOutputBuilderParams = cloneDeep(tranEntry.nftOutput as NftOutput);
+    params.features = params.features?.filter((f) => f.type !== FeatureType.Tag);
+    params.unlockConditions = params.unlockConditions.filter(
+      (uc) => uc.type !== UnlockConditionType.Timelock,
     );
-    output.unlockConditions.push({
-      type: TIMELOCK_UNLOCK_CONDITION_TYPE,
-      unixTime: dayjs().add(weeks, 'weeks').unix(),
-    });
-    return TransactionHelper.getStorageDeposit(output, wallet.info.protocol.rentStructure!);
+    params.unlockConditions.push(
+      new TimelockUnlockCondition(intToU32(dayjs().add(weeks, 'weeks').unix())),
+    );
+    const output = await wallet.client.buildNftOutput(params);
+    return Utils.computeStorageDeposit(output, wallet.info.protocol.rentStructure!);
   };
 }
 

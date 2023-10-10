@@ -44,7 +44,7 @@ describe('Create proposal via tangle request', () => {
             value: 1,
           },
         },
-        nativeTokens: [{ amount: '0xa', id: MINTED_TOKEN_ID }],
+        nativeTokens: [{ amount: BigInt(10), id: MINTED_TOKEN_ID }],
       },
     );
     await MnemonicService.store(helper.guardianAddress.bech32, helper.guardianAddress.mnemonic);
@@ -53,22 +53,28 @@ describe('Create proposal via tangle request', () => {
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.VOTE)
       .where('member', '==', helper.guardian);
+    console.log('asd', 1);
     await wait(async () => {
       const snap = await orderQuery.get();
       return snap.length === 1;
     });
+    console.log('asd', 2);
 
     const snap = await orderQuery.get<Transaction>();
     const voteTransaction = snap[0];
 
+    console.log('asd', helper.guardianAddress.bech32);
     await wait(async () => {
-      const balance = await helper.walletService.getBalance(helper.guardianAddress.bech32);
-      return balance === 6 * MIN_IOTA_AMOUNT;
+      const { amount } = await helper.walletService.getBalance(helper.guardianAddress.bech32);
+      console.log(amount);
+      return amount === 6 * MIN_IOTA_AMOUNT;
     });
 
+    console.log('asd', 4);
     await helper.assertProposalWeights(10, 10);
     await helper.assertProposalMemberWeightsPerAnser(helper.guardian, 10, 1);
 
+    console.log('asd', 5);
     await helper.updatePropoasalDates(dayjs().subtract(2, 'd'), dayjs().add(2, 'd'));
     await helper.updateVoteTranCreatedOn(voteTransaction.uid, dayjs().subtract(3, 'd'));
   });

@@ -44,3 +44,5 @@ export const getRestrictions = (collection?: Collection, nft?: Nft): Restriction
 
   return restrictions;
 };
+
+export const intToU32 = (value: number) => value & 0xffffffff;

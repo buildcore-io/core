@@ -11,17 +11,15 @@ import {
   TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
-import { IndexerPluginClient } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { validateAddress } from '../../src/runtime/firebase/address';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
 import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { Wallet } from '../../src/services/wallet/wallet';
-import { WalletService } from '../../src/services/wallet/wallet.service';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
-import { MEDIA, testEnv } from '../../test/set-up';
+import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { saveBaseToken } from './common';
 
@@ -37,7 +35,7 @@ describe('Award', () => {
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    walletService = await WalletService.newWallet(network);
+    walletService = await getWallet(network);
   });
 
   beforeEach(async () => {
@@ -83,9 +81,8 @@ describe('Award', () => {
       {},
     );
 
-    const indexer = new IndexerPluginClient(walletService.client);
     await wait(async () => {
-      const response = await indexer.nfts({ addressBech32: tmpAddress.bech32 });
+      const response = await walletService.client.nftOutputIds([{ address: tmpAddress.bech32 }]);
       return response.items.length === 2;
     });
 
@@ -111,9 +108,9 @@ describe('Award', () => {
     });
 
     await wait(async () => {
-      const balance = await walletService.getBalance(tmpAddress.bech32);
+      const { amount } = await walletService.getBalance(tmpAddress.bech32);
       return (
-        balance ===
+        amount ===
         2 * MIN_IOTA_AMOUNT + claimOrder.payload.amount + addressValidationOrder.payload.amount
       );
     });

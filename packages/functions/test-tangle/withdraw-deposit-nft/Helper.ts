@@ -21,13 +21,14 @@ import {
   UnsoldMintingOptions,
 } from '@build-5/interfaces';
 import {
-  ADDRESS_UNLOCK_CONDITION_TYPE,
-  Bech32Helper,
-  EXPIRATION_UNLOCK_CONDITION_TYPE,
-  REFERENCE_UNLOCK_TYPE,
-  STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
-  TransactionHelper,
-} from '@iota/iota.js-next';
+  AddressUnlockCondition,
+  ExpirationUnlockCondition,
+  NftOutputBuilderParams,
+  ReferenceUnlock,
+  StorageDepositReturnUnlockCondition,
+  UTXOInput,
+  Utils,
+} from '@iota/sdk';
 import dayjs from 'dayjs';
 import { cloneDeep } from 'lodash';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
@@ -48,9 +49,8 @@ import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
-import { packEssence, packPayload, submitBlock } from '../../src/utils/block.utils';
+import { createUnlock, packEssence, submitBlock } from '../../src/utils/block.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
-import { createUnlock } from '../../src/utils/smr.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import {
@@ -207,51 +207,46 @@ export class Helper {
       await nftWallet.getNftOutputs(undefined, sourceAddress.bech32),
     )[0];
 
-    const nftOutput = cloneDeep(consumedNftOutput);
-    const targetAddress = Bech32Helper.addressFromBech32(
-      targetAddressBech32,
-      this.walletService!.info.protocol.bech32Hrp,
-    );
-    nftOutput.unlockConditions = [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: targetAddress }];
+    const nftOutput: NftOutputBuilderParams = cloneDeep(consumedNftOutput);
+    const targetAddress = Utils.parseBech32Address(targetAddressBech32);
+    nftOutput.unlockConditions = [new AddressUnlockCondition(targetAddress)];
     nftOutput.amount = (Number(nftOutput.amount) + total).toString();
 
+    nftOutput.unlockConditions.push(
+      new ExpirationUnlockCondition(
+        Utils.parseBech32Address(sourceAddress.bech32),
+        dayjs(expiresOn.toDate()).unix(),
+      ),
+    );
+
     if (storageReturnAddress) {
-      nftOutput.unlockConditions.push({
-        type: STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
-        amount: TransactionHelper.getStorageDeposit(
-          nftOutput,
-          this.walletService!.info.protocol.rentStructure,
-        ).toString(),
-        returnAddress: Bech32Helper.addressFromBech32(
-          storageReturnAddress,
-          this.walletService!.info.protocol.bech32Hrp,
+      const storageDeposit = Utils.computeStorageDeposit(
+        await this.walletService!.client.buildNftOutput(nftOutput),
+        this.walletService!.info.protocol.rentStructure,
+      );
+      nftOutput.unlockConditions.push(
+        new StorageDepositReturnUnlockCondition(
+          Utils.parseBech32Address(storageReturnAddress),
+          storageDeposit,
         ),
-      });
+      );
     }
 
-    nftOutput.unlockConditions.push({
-      type: EXPIRATION_UNLOCK_CONDITION_TYPE,
-      returnAddress: Bech32Helper.addressFromBech32(
-        sourceAddress.bech32,
-        this.walletService!.info.protocol.bech32Hrp,
-      ),
-      unixTime: dayjs(expiresOn.toDate()).unix(),
-    });
-
-    const inputs = [...Object.keys(outputs), nftOutputId].map(TransactionHelper.inputFromOutputId);
-    const inputsCommitment = TransactionHelper.getInputsCommitment([
+    const inputs = [...Object.keys(outputs), nftOutputId].map(UTXOInput.fromOutputId);
+    const inputsCommitment = Utils.computeInputsCommitment([
       ...Object.values(outputs),
       consumedNftOutput,
     ]);
-    const essence = packEssence(inputs, inputsCommitment, [nftOutput], this.walletService!, {});
-
-    return await submitBlock(
+    const essence = await packEssence(
       this.walletService!,
-      packPayload(essence, [
-        createUnlock(essence, sourceAddress.keyPair),
-        { type: REFERENCE_UNLOCK_TYPE, reference: 0 },
-      ]),
+      inputs,
+      inputsCommitment,
+      [await this.walletService!.client.buildNftOutput(nftOutput)],
+      {},
     );
+
+    const unlocks = [await createUnlock(essence, sourceAddress), new ReferenceUnlock(0)];
+    return await submitBlock(this.walletService!, essence, unlocks);
   };
 
   public withdrawNftAndAwait = async (nft: string) => {

@@ -12,9 +12,7 @@ import {
   TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
-import { IndexerPluginClient } from '@iota/iota.js-next';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
+
 import dayjs from 'dayjs';
 import { processExpiredAwards } from '../../src/cron/award.cron';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
@@ -29,7 +27,7 @@ import { joinSpace } from '../../src/runtime/firebase/space';
 import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet.service';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { mergeOutputs } from '../../src/utils/basic-output.utils';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
@@ -41,7 +39,7 @@ import {
   mockWalletReturnValue,
   wait,
 } from '../../test/controls/common';
-import { MEDIA, testEnv } from '../../test/set-up';
+import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 import { awaitAllTransactionsForAward } from './common';
@@ -60,7 +58,7 @@ describe('Create award, native', () => {
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    walletService = await WalletService.newWallet(network);
+    walletService = await getWallet(network);
   });
 
   beforeEach(async () => {
@@ -95,7 +93,7 @@ describe('Create award, native', () => {
       15,
     );
     await walletService.send(guardianAddress, order.payload.targetAddress, order.payload.amount, {
-      nativeTokens: [{ id: MINTED_TOKEN_ID, amount: HexHelper.fromBigInt256(bigInt(15)) }],
+      nativeTokens: [{ id: MINTED_TOKEN_ID, amount: BigInt(15) }],
     });
     await MnemonicService.store(guardianAddress.bech32, guardianAddress.mnemonic);
 
@@ -139,9 +137,8 @@ describe('Create award, native', () => {
     const memberDocRef = build5Db().doc(`${COL.MEMBER}/${member}`);
     const memberData = <Member>await memberDocRef.get();
     const memberBech32 = getAddress(memberData, network);
-    const indexer = new IndexerPluginClient(walletService.client);
     await wait(async () => {
-      const response = await indexer.nfts({ addressBech32: memberBech32 });
+      const response = await walletService.client.nftOutputIds([{ address: memberBech32 }]);
       return response.items.length === 1;
     });
 
@@ -192,8 +189,8 @@ describe('Create award, native', () => {
       const snap = await burnAliasQuery.get<Transaction>();
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
-    const balance = await walletService.getBalance(guardianAddress.bech32);
-    expect(balance).toBe(award.nativeTokenStorageDeposit + award.aliasStorageDeposit);
+    const { amount } = await walletService.getBalance(guardianAddress.bech32);
+    expect(amount).toBe(award.nativeTokenStorageDeposit + award.aliasStorageDeposit);
   });
 });
 

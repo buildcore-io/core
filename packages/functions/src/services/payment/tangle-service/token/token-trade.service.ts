@@ -20,8 +20,6 @@ import {
   WenError,
   getNetworkPair,
 } from '@build-5/interfaces';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { set } from 'lodash';
@@ -234,7 +232,7 @@ const createTradeOrderTransaction = async (
       type: isSell ? TransactionPayloadType.SELL_TOKEN : TransactionPayloadType.BUY_TOKEN,
       amount: await getAmount(token, count, price, isSell),
       nativeTokens:
-        isMinted && isSell ? [{ id: token.mintingData?.tokenId!, amount: count.toString() }] : [],
+        isMinted && isSell ? [{ id: token.mintingData?.tokenId!, amount: BigInt(count) }] : [],
       targetAddress: targetAddress.bech32,
       expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS)),
       validationType: getValidationType(token, isSell),
@@ -258,10 +256,8 @@ const getAmount = async (token: Token, count: number, price: number, isSell: boo
   }
   const wallet = await WalletService.newWallet(token.mintingData?.network);
   const tmpAddress = await wallet.getNewIotaAddressDetails(false);
-  const nativeTokens = [
-    { amount: HexHelper.fromBigInt256(bigInt(count)), id: token.mintingData?.tokenId! },
-  ];
-  const output = packBasicOutput(tmpAddress.bech32, 0, nativeTokens, wallet.info);
+  const nativeTokens = [{ amount: BigInt(count), id: token.mintingData?.tokenId! }];
+  const output = await packBasicOutput(wallet, tmpAddress.bech32, 0, { nativeTokens });
   return Number(output.amount);
 };
 

@@ -1,5 +1,3 @@
-import { INodeInfo } from '@iota/iota.js-next';
-
 import {
   COL,
   Entity,
@@ -18,6 +16,7 @@ import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { ITransaction } from '../../firebase/firestore/interfaces';
+import { Wallet } from '../../services/wallet/wallet';
 import { WalletService } from '../../services/wallet/wallet.service';
 import { getAddress } from '../../utils/address.utils';
 import { packBasicOutput } from '../../utils/basic-output.utils';
@@ -95,18 +94,20 @@ const createIotaPayments = async (
 };
 
 const createRoyaltyPayment = async (
+  wallet: Wallet,
   token: Token,
   buy: TokenTradeOrder,
   buyOrder: Transaction,
   seller: Member,
   spaceId: string,
   fee: number,
-  info: INodeInfo,
 ) => {
   const space = (await build5Db().doc(`${COL.SPACE}/${spaceId}`).get<Space>())!;
   const spaceAddress = getAddress(space, buy.sourceNetwork!);
   const sellerAddress = getAddress(seller, buy.sourceNetwork!);
-  const output = packBasicOutput(spaceAddress, 0, undefined, info, sellerAddress);
+  const output = await packBasicOutput(wallet, spaceAddress, 0, {
+    storageDepositReturnAddress: sellerAddress,
+  });
   return <Transaction>{
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
@@ -159,7 +160,7 @@ const createSmrPayments = async (
   }
 
   const royaltyFees = await getRoyaltyFees(salePrice, seller.tokenTradingFeePercentage);
-  const remainder = packBasicOutput(tmpAddress.bech32, balanceLeft, undefined, wallet.info);
+  const remainder = await packBasicOutput(wallet, tmpAddress.bech32, balanceLeft, {});
   if (balanceLeft > 0 && balanceLeft < Number(remainder.amount)) {
     if (!fulfilled) {
       return [];
@@ -171,15 +172,13 @@ const createSmrPayments = async (
 
   const royaltyPaymentPromises = Object.entries(royaltyFees)
     .filter((entry) => entry[1] > 0)
-    .map(([space, fee]) =>
-      createRoyaltyPayment(token, buy, buyOrder!, seller, space, fee, wallet.info),
-    );
+    .map(([space, fee]) => createRoyaltyPayment(wallet, token, buy, buyOrder!, seller, space, fee));
   const royaltyPayments = await Promise.all(royaltyPaymentPromises);
   royaltyPayments.forEach((rp) => {
     salePrice -= rp.payload.amount!;
   });
 
-  const billPaymentOutput = packBasicOutput(tmpAddress.bech32, salePrice, undefined, wallet.info);
+  const billPaymentOutput = await packBasicOutput(wallet, tmpAddress.bech32, salePrice, {});
   if (salePrice < Number(billPaymentOutput.amount)) {
     return [];
   }

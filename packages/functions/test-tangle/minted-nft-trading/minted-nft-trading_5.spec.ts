@@ -10,8 +10,8 @@ import {
 } from '@build-5/interfaces';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { WalletService } from '../../src/services/wallet/wallet.service';
 import { wait } from '../../test/controls/common';
+import { getWallet } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
@@ -58,7 +58,7 @@ describe('Minted nft trading', () => {
     expect(collection.nftsOnSale).toBe(0);
     expect(collection.nftsOnAuction).toBe(0);
 
-    const atoiWallet = await WalletService.newWallet(Network.ATOI);
+    const atoiWallet = await getWallet(Network.ATOI);
     const atoiAddress = await atoiWallet.getNewIotaAddressDetails();
     await requestFundsFromFaucet(Network.ATOI, atoiAddress.bech32, 5 * MIN_IOTA_AMOUNT);
 

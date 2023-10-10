@@ -7,7 +7,6 @@ import {
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-import { IndexerPluginClient } from '@iota/iota.js-next';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
@@ -50,8 +49,9 @@ describe('Minted nft trading', () => {
           .get<Transaction>();
         return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
       });
-      const indexer = new IndexerPluginClient(helper.walletService!.client);
-      const nftOutputIds = await indexer.nfts({ addressBech32: address.bech32 });
+      const nftOutputIds = await helper.walletService!.client.nftOutputIds([
+        { address: address.bech32 },
+      ]);
       expect(nftOutputIds.items.length).toBe(1);
     },
   );

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build-5/interfaces';
-import { STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE } from '@iota/iota.js-next';
+import { UnlockConditionType } from '@iota/sdk';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { serverTime } from '../../src/utils/dateTime.utils';
@@ -55,7 +55,7 @@ describe('Transaction trigger spec', () => {
     expect(Object.values(outputs).length).toBe(1);
     const hasStorageUnlock =
       Object.values(outputs)[0].unlockConditions.find(
-        (u) => u.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
+        (u) => u.type === UnlockConditionType.StorageDepositReturn,
       ) !== undefined;
     expect(hasStorageUnlock).toBe(true);
   });

@@ -12,8 +12,7 @@ import {
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
+
 import dayjs from 'dayjs';
 import { set } from 'lodash';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
@@ -25,12 +24,12 @@ import {
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet.service';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { getWallet, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 
 export class Helper {
@@ -45,7 +44,7 @@ export class Helper {
   public tokenId = '';
 
   public beforeAll = async () => {
-    this.walletService = await WalletService.newWallet(Network.RMS);
+    this.walletService = await getWallet(Network.RMS);
   };
 
   public beforeEach = async () => {
@@ -102,7 +101,7 @@ export class Helper {
     baseTokenAmount = 0,
   ) => {
     await this.walletService!.send(sourceAddress, targetAddress, baseTokenAmount, {
-      nativeTokens: [{ id: MINTED_TOKEN_ID, amount: HexHelper.fromBigInt256(bigInt(tokenAmount)) }],
+      nativeTokens: [{ id: MINTED_TOKEN_ID, amount: BigInt(tokenAmount) }],
     });
     await MnemonicService.store(sourceAddress.bech32, sourceAddress.mnemonic, Network.RMS);
   };

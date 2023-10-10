@@ -18,7 +18,7 @@ import {
   Transaction,
   WenError,
 } from '@build-5/interfaces';
-import { INftOutput } from '@iota/iota.js-next';
+import { NftOutput } from '@iota/sdk';
 import * as functions from 'firebase-functions/v2';
 import { head, isEmpty, set } from 'lodash';
 import { build5Db } from '../../../firebase/firestore/build5Db';
@@ -87,7 +87,7 @@ export class NftDepositService {
   private depositNftMintedOnBuild5 = async (
     nft: Nft,
     order: Transaction,
-    nftOutput: INftOutput,
+    nftOutput: NftOutput,
     match: TransactionMatch,
   ) => {
     const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nft.collection}`);
@@ -130,7 +130,7 @@ export class NftDepositService {
   private depositNftMintedOutsideBuild5 = async (
     order: Transaction,
     blockId: string,
-    nftOutput: INftOutput,
+    nftOutput: NftOutput,
   ) => {
     const metadata = await this.validateInputAndGetMetadata(order, nftOutput);
 
@@ -269,7 +269,7 @@ export class NftDepositService {
     return nft;
   };
 
-  private validateInputAndGetMetadata = async (order: Transaction, nftOutput: INftOutput) => {
+  private validateInputAndGetMetadata = async (order: Transaction, nftOutput: NftOutput) => {
     const nftMetadata = getNftOutputMetadata(nftOutput);
     set(nftMetadata, 'collectionId', getIssuerNftId(nftOutput));
     if (!isMetadataIrc27(nftMetadata, nftIrc27Schema)) {

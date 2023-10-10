@@ -1,18 +1,17 @@
 import { COL, Member, Network, WEN_FUNC, WenError } from '@build-5/interfaces';
-import { Ed25519 } from '@iota/crypto.js-next';
-import { Converter } from '@iota/util.js-next';
+import { CoinType, utf8ToHex } from '@iota/sdk';
 import { recoverPersonalSignature } from '@metamask/eth-sig-util';
 import jwt from 'jsonwebtoken';
 import { get } from 'lodash';
 import { build5Db } from '../src/firebase/firestore/build5Db';
 import { generateCustomToken } from '../src/runtime/firebase/auth';
-import { WalletService } from '../src/services/wallet/wallet.service';
 import * as config from '../src/utils/config.utils';
 import { getJwtSecretKey } from '../src/utils/config.utils';
+import { getSecretManager } from '../src/utils/secret.manager.utils';
 import * as wallet from '../src/utils/wallet.utils';
 import { decodeAuth, getRandomNonce } from '../src/utils/wallet.utils';
 import { createMember, expectThrow, mockWalletReturnValue } from './controls/common';
-import { testEnv } from './set-up';
+import { getWallet, testEnv } from './set-up';
 
 jest.mock('@metamask/eth-sig-util');
 
@@ -67,22 +66,22 @@ describe('Auth control test', () => {
 
 describe('Pub key test', () => {
   it.each([Network.RMS, Network.SMR])('Should validate SMR pub key', async (network: Network) => {
-    const wallet = await WalletService.newWallet(network);
+    const wallet = await getWallet(network);
     const address = await wallet.getNewIotaAddressDetails();
 
     const nonce = getRandomNonce();
     const userDocRef = build5Db().doc(`${COL.MEMBER}/${address.bech32}`);
     await userDocRef.create({ uid: address.bech32, nonce });
 
-    const signature = Ed25519.sign(
-      address.keyPair.privateKey,
-      Converter.utf8ToBytes(`0x${toHex(nonce)}`),
-    );
+    const secretManager = getSecretManager(address.mnemonic);
+    const signature = await secretManager.signEd25519(utf8ToHex(nonce), {
+      coinType: CoinType.IOTA,
+    });
     const request = {
       address: 'address',
-      signature: Converter.bytesToHex(signature),
+      signature: signature.signature,
       publicKey: {
-        hex: Converter.bytesToHex(address.keyPair.publicKey),
+        hex: signature.publicKey,
         network,
       },
       body: {},
@@ -99,23 +98,22 @@ describe('Pub key test', () => {
   it.each([Network.IOTA, Network.ATOI])(
     'Should validate IOTA pub key',
     async (network: Network) => {
-      const wallet = await WalletService.newWallet(network);
+      const wallet = await getWallet(network);
       const address = await wallet.getNewIotaAddressDetails();
 
       const nonce = getRandomNonce();
       const userDocRef = build5Db().doc(`${COL.MEMBER}/${address.bech32}`);
       await userDocRef.create({ uid: address.bech32, nonce });
 
-      const signature = Ed25519.sign(
-        address.keyPair.privateKey,
-        Converter.utf8ToBytes(`0x${toHex(nonce)}`),
-      );
-
+      const secretManager = getSecretManager(address.mnemonic);
+      const signature = await secretManager.signEd25519(utf8ToHex(nonce), {
+        coinType: CoinType.IOTA,
+      });
       const request = {
         address: address.bech32,
-        signature: Converter.bytesToHex(signature),
+        signature: signature.signature,
         publicKey: {
-          hex: Converter.bytesToHex(address.keyPair.publicKey),
+          hex: signature.publicKey,
           network,
         },
         body: {},
@@ -131,27 +129,29 @@ describe('Pub key test', () => {
   );
 
   it.each([Network.RMS, Network.SMR])('Should throw wrong pub key', async (network: Network) => {
-    const wallet = await WalletService.newWallet(network);
+    const wallet = await getWallet(network);
     const address = await wallet.getNewIotaAddressDetails();
 
     const nonce = getRandomNonce();
     const userDocRef = build5Db().doc(`${COL.MEMBER}/${address.bech32}`);
     await userDocRef.create({ uid: address.bech32, nonce });
 
-    const signature = Ed25519.sign(
-      address.keyPair.privateKey,
-      Converter.utf8ToBytes(`0x${toHex(nonce)}`),
-    );
+    const secretManager = getSecretManager(address.mnemonic);
+    const signature = await secretManager.signEd25519(utf8ToHex(nonce), {
+      coinType: CoinType.IOTA,
+    });
 
-    const wallet2 = await WalletService.newWallet(
-      network === Network.SMR ? Network.RMS : Network.SMR,
-    );
+    const wallet2 = await getWallet(network === Network.SMR ? Network.RMS : Network.SMR);
     const secondAddress = await wallet2.getNewIotaAddressDetails();
+    const secretManagerSecond = getSecretManager(secondAddress.mnemonic);
+    const signatureSecond = await secretManagerSecond.signEd25519(utf8ToHex(nonce), {
+      coinType: CoinType.IOTA,
+    });
     const request = {
       address: 'address',
-      signature: Converter.bytesToHex(signature),
+      signature: signature.signature,
       publicKey: {
-        hex: Converter.bytesToHex(secondAddress.keyPair.publicKey),
+        hex: signatureSecond.publicKey,
         network,
       },
       body: {},
@@ -165,22 +165,22 @@ describe('Pub key test', () => {
   });
 
   it('Should update nonce when public key sign in', async () => {
-    const wallet = await WalletService.newWallet(Network.RMS);
+    const wallet = await getWallet(Network.RMS);
     const address = await wallet.getNewIotaAddressDetails();
 
     const nonce = getRandomNonce();
     const userDocRef = build5Db().doc(`${COL.MEMBER}/${address.bech32}`);
     await userDocRef.create({ uid: address.bech32, nonce });
 
-    const signature = Ed25519.sign(
-      address.keyPair.privateKey,
-      Converter.utf8ToBytes(`0x${toHex(nonce)}`),
-    );
+    const secretManager = getSecretManager(address.mnemonic);
+    const signature = await secretManager.signEd25519(utf8ToHex(nonce), {
+      coinType: CoinType.IOTA,
+    });
     const request = {
       address: 'address',
-      signature: Converter.bytesToHex(signature),
+      signature: signature.signature,
       publicKey: {
-        hex: Converter.bytesToHex(address.keyPair.publicKey),
+        hex: signature.publicKey,
         network: Network.RMS,
       },
       body: {},
@@ -240,9 +240,3 @@ describe('Pub key test', () => {
     }
   });
 });
-
-const toHex = (stringToConvert: string) =>
-  stringToConvert
-    .split('')
-    .map((c) => c.charCodeAt(0).toString(16).padStart(2, '0'))
-    .join('');

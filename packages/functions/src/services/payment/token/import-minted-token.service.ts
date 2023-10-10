@@ -9,16 +9,16 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import {
-  IAliasAddress,
-  IAliasOutput,
-  IFoundryOutput,
-  IImmutableAliasUnlockCondition,
-  IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE,
-  IMetadataFeature,
-  IndexerPluginClient,
-  METADATA_FEATURE_TYPE,
-} from '@iota/iota.js-next';
-import { Converter } from '@iota/util.js-next';
+  AliasAddress,
+  AliasOutput,
+  FeatureType,
+  FoundryOutput,
+  ImmutableAliasAddressUnlockCondition,
+  MetadataFeature,
+  SimpleTokenScheme,
+  UnlockConditionType,
+  hexToUtf8,
+} from '@iota/sdk';
 import Joi from 'joi';
 import { get, isEmpty } from 'lodash';
 import { build5Db } from '../../../firebase/firestore/build5Db';
@@ -59,7 +59,8 @@ export class ImportMintedTokenService {
         : '';
 
       const vaultAddress = await wallet.getNewIotaAddressDetails();
-      const totalSupply = Number(foundry.tokenScheme.maximumSupply);
+      const tokenScheme = foundry.tokenScheme as SimpleTokenScheme;
+      const totalSupply = Number(tokenScheme.maximumSupply);
       const token: Token = {
         createdBy: order.member || '',
         uid: tokenId,
@@ -90,8 +91,8 @@ export class ImportMintedTokenService {
           network: order.network,
           networkFormat: order.network,
           vaultAddress: vaultAddress.bech32,
-          meltedTokens: Number(foundry.tokenScheme.meltedTokens),
-          circulatingSupply: totalSupply - Number(foundry.tokenScheme.meltedTokens),
+          meltedTokens: Number(tokenScheme.meltedTokens),
+          circulatingSupply: totalSupply - Number(tokenScheme.meltedTokens),
         },
         mediaStatus: icon ? MediaStatus.PENDING_UPLOAD : MediaStatus.UPLOADED,
         tradingDisabled: true,
@@ -128,17 +129,18 @@ export class ImportMintedTokenService {
     order: Transaction,
     match: TransactionMatch,
   ) => {
-    const indexer = new IndexerPluginClient(wallet.client);
-    const foundry = await indexer.foundry(order.payload.tokenId!);
-    const foundryOutput = <IFoundryOutput>(await wallet.client.output(foundry.items[0])).output;
+    const foundry = await wallet.client.foundryOutputId(order.payload.tokenId!);
+    const foundryOutput = <FoundryOutput>(await wallet.client.getOutput(foundry)).output;
 
-    const unlockCondition = <IImmutableAliasUnlockCondition>(
-      foundryOutput.unlockConditions.find((uc) => uc.type === IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE)
+    const unlockCondition = <ImmutableAliasAddressUnlockCondition>(
+      foundryOutput.unlockConditions.find(
+        (uc) => uc.type === UnlockConditionType.ImmutableAliasAddress,
+      )
     );
-    const aliasId = (unlockCondition.address as IAliasAddress).aliasId;
+    const aliasId = (unlockCondition.address as AliasAddress).aliasId;
 
-    const alias = await indexer.alias(aliasId);
-    const aliasOutput = <IAliasOutput>(await wallet.client.output(alias.items[0])).output;
+    const alias = await wallet.client.aliasOutputId(aliasId);
+    const aliasOutput = <AliasOutput>(await wallet.client.getOutput(alias)).output;
 
     if (!isAliasGovernor(aliasOutput, match.from, wallet.info.protocol.bech32Hrp)) {
       throw WenError.not_alias_governor;
@@ -147,11 +149,11 @@ export class ImportMintedTokenService {
     return { foundry: foundryOutput, alias: aliasOutput };
   };
 
-  private getTokenMetadata = (foundry: IFoundryOutput) => {
-    const metadataFeature = <IMetadataFeature | undefined>(
-      foundry?.immutableFeatures?.find((f) => f.type === METADATA_FEATURE_TYPE)
+  private getTokenMetadata = (foundry: FoundryOutput) => {
+    const metadataFeature = <MetadataFeature | undefined>(
+      foundry?.immutableFeatures?.find((f) => f.type === FeatureType.Metadata)
     );
-    const decoded = Converter.hexToUtf8(metadataFeature?.data || '{}');
+    const decoded = hexToUtf8(metadataFeature?.data || '{}');
     const metadata = JSON.parse(decoded) || {};
     const result = tokenIrc30Schema.validate(metadata, { allowUnknown: true });
     if (result.error) {

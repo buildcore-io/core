@@ -5,26 +5,21 @@ import {
   Timestamp,
 } from '@build-5/interfaces';
 import {
-  BASIC_OUTPUT_TYPE,
-  Bech32Helper,
-  ED25519_ADDRESS_TYPE,
-  Ed25519Address,
-  IBasicOutput,
-  INftOutput,
-  ISignatureUnlock,
-  ITransactionPayload,
-  NFT_OUTPUT_TYPE,
-  SIGNATURE_UNLOCK_TYPE,
-  TransactionHelper,
-} from '@iota/iota.js-next';
-import { Converter, HexHelper } from '@iota/util.js-next';
+  BasicOutput,
+  NftOutput,
+  OutputType,
+  RegularTransactionEssence,
+  SignatureUnlock,
+  TransactionPayload,
+  UTXOInput,
+  UnlockType,
+  Utils,
+} from '@iota/sdk';
 import { WalletService } from '../../services/wallet/wallet.service';
-import { indexToString } from '../../utils/block.utils';
-import { getTransactionPayloadHex } from '../../utils/smr.utils';
 import { getMilestoneTransactionId } from './common';
 
-const VALID_OUTPUTS_TYPES = [BASIC_OUTPUT_TYPE, NFT_OUTPUT_TYPE];
-type VALID_OUTPUT = IBasicOutput | INftOutput;
+const VALID_OUTPUTS_TYPES = [OutputType.Basic, OutputType.Nft];
+type VALID_OUTPUT = BasicOutput | NftOutput;
 
 export class MilestoneTransactionAdapter {
   constructor(private readonly network: Network) {}
@@ -33,8 +28,9 @@ export class MilestoneTransactionAdapter {
     data: Record<string, unknown>,
   ): Promise<MilestoneTransaction> => {
     const wallet = await WalletService.newWallet(this.network);
-    const payload = data.payload as ITransactionPayload;
-    const outputs = payload.essence.outputs
+    const payload = data.payload as TransactionPayload;
+    const essence = payload.essence as RegularTransactionEssence;
+    const outputs = essence.outputs
       .filter((o) => VALID_OUTPUTS_TYPES.includes(o.type))
       .map((o) => <VALID_OUTPUT>o);
 
@@ -50,26 +46,21 @@ export class MilestoneTransactionAdapter {
         address,
         nativeTokens: output.nativeTokens || [],
         unlockConditions: output.unlockConditions,
-        outputId: getTransactionPayloadHex(payload) + indexToString(i),
+        outputId: Utils.computeOutputId(Utils.transactionId(payload), i),
       };
-      if (output.type === NFT_OUTPUT_TYPE) {
+      if (output.type === OutputType.Nft) {
         entry.nftOutput = output;
-      } else if (output.type === BASIC_OUTPUT_TYPE) {
+      } else if (output.type === OutputType.Basic) {
         entry.output = output;
       }
       entries.push(entry);
     }
 
     const fromAddresses: string[] = [];
-    const unlocks = payload.unlocks.filter((u) => u.type === SIGNATURE_UNLOCK_TYPE);
-    for (const signatureUnlock of unlocks) {
-      const senderPublicKey = (<ISignatureUnlock>signatureUnlock).signature.publicKey;
-      const pubKeyBytes = Converter.hexToBytes(HexHelper.stripPrefix(senderPublicKey));
-      const walletEd25519Address = new Ed25519Address(pubKeyBytes);
-      const walletAddress = walletEd25519Address.toAddress();
-      const senderBech32 = Bech32Helper.toBech32(
-        ED25519_ADDRESS_TYPE,
-        walletAddress,
+    const unlocks = payload.unlocks.filter((u) => u.type === UnlockType.Signature);
+    for (const unlock of unlocks) {
+      const senderBech32 = Utils.hexPublicKeyToBech32Address(
+        (<SignatureUnlock>unlock).signature.publicKey,
         wallet.info.protocol.bech32Hrp,
       );
       fromAddresses.push(senderBech32);
@@ -77,12 +68,10 @@ export class MilestoneTransactionAdapter {
 
     const build5TransactionId = await getMilestoneTransactionId(data);
 
-    const consumedOutputIds = payload.essence.inputs.map((input) =>
-      TransactionHelper.outputIdFromTransactionData(
-        input.transactionId,
-        input.transactionOutputIndex,
-      ),
-    );
+    const consumedOutputIds = essence.inputs.map((i) => {
+      const { transactionId, transactionOutputIndex } = i as UTXOInput;
+      return Utils.computeOutputId(transactionId, transactionOutputIndex);
+    });
 
     return {
       uid: data.uid as string,

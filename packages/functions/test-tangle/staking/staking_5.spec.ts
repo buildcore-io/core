@@ -8,8 +8,7 @@ import {
   TokenDistribution,
   Transaction,
 } from '@build-5/interfaces';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
+
 import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
@@ -43,9 +42,7 @@ describe('Stake reward test test', () => {
       );
 
       await helper.walletService!.send(tmp, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
-        nativeTokens: [
-          { id: helper.token?.mintingData?.tokenId!, amount: HexHelper.fromBigInt256(bigInt(100)) },
-        ],
+        nativeTokens: [{ id: helper.token?.mintingData?.tokenId!, amount: BigInt(100) }],
         customMetadata: {
           request: {
             requestType: TangleRequestType.STAKE,

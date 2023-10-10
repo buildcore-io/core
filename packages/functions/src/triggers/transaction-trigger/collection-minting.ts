@@ -8,14 +8,12 @@ import {
   TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
-import { ITransactionPayload, TransactionHelper } from '@iota/iota.js-next';
+import { TransactionPayload, Utils } from '@iota/sdk';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions/v2';
 import { get } from 'lodash';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { getAddress } from '../../utils/address.utils';
-import { indexToString } from '../../utils/block.utils';
-import { getTransactionPayloadHex } from '../../utils/smr.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const onCollectionMintingUpdate = async (transaction: Transaction) => {
@@ -51,14 +49,15 @@ const onCollectionAliasMinted = async (transaction: Transaction) => {
   const path = transaction.payload.walletReference?.milestoneTransactionPath!;
   const milestoneTransaction = (await build5Db().doc(path).get<Record<string, unknown>>())!;
 
-  const aliasOutputId =
-    getTransactionPayloadHex(milestoneTransaction.payload as ITransactionPayload) +
-    indexToString(0);
+  const aliasOutputId = Utils.computeOutputId(
+    Utils.transactionId(milestoneTransaction.payload as TransactionPayload),
+    0,
+  );
   await build5Db()
     .doc(`${COL.COLLECTION}/${transaction.payload.collection}`)
     .update({
       'mintingData.aliasBlockId': milestoneTransaction.blockId,
-      'mintingData.aliasId': TransactionHelper.resolveIdFromOutputId(aliasOutputId),
+      'mintingData.aliasId': Utils.computeAliasId(aliasOutputId),
       'mintingData.aliasStorageDeposit': transaction.payload.amount,
     });
 
@@ -81,9 +80,10 @@ const onCollectionAliasMinted = async (transaction: Transaction) => {
 const onCollectionMinted = async (transaction: Transaction) => {
   const path = transaction.payload.walletReference?.milestoneTransactionPath!;
   const milestoneTransaction = (await build5Db().doc(path).get<Record<string, unknown>>())!;
-  const collectionOutputId =
-    getTransactionPayloadHex(milestoneTransaction.payload as ITransactionPayload) +
-    indexToString(1);
+  const collectionOutputId = Utils.computeOutputId(
+    Utils.transactionId(milestoneTransaction.payload as TransactionPayload),
+    1,
+  );
   const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${transaction.payload.collection}`);
   const collection = (await collectionDocRef.get<Collection>())!;
   await saveCollectionMintingData(
@@ -106,7 +106,7 @@ const saveCollectionMintingData = (
     .doc(`${COL.COLLECTION}/${transaction.payload.collection}`)
     .update({
       'mintingData.blockId': blockId,
-      'mintingData.nftId': TransactionHelper.resolveIdFromOutputId(collectionOutputId),
+      'mintingData.nftId': Utils.computeNftId(collectionOutputId),
       'mintingData.mintedOn': dayjs().toDate(),
     });
 
@@ -122,9 +122,10 @@ const onNftMintSuccess = async (transaction: Transaction) => {
     .doc(transaction.payload.walletReference?.milestoneTransactionPath!)
     .get<Record<string, unknown>>())!;
   const promises = (transaction.payload.nfts as string[]).map((nftId, i) => {
-    const outputId =
-      getTransactionPayloadHex(milestoneTransaction.payload as ITransactionPayload) +
-      indexToString(i + 2);
+    const outputId = Utils.computeOutputId(
+      Utils.transactionId(milestoneTransaction.payload as TransactionPayload),
+      i + 2,
+    );
     return build5Db()
       .doc(`${COL.NFT}/${nftId}`)
       .update({
@@ -132,7 +133,7 @@ const onNftMintSuccess = async (transaction: Transaction) => {
         'mintingData.mintedOn': dayjs().toDate(),
         'mintingData.mintedBy': transaction.member,
         'mintingData.blockId': milestoneTransaction.blockId,
-        'mintingData.nftId': TransactionHelper.resolveIdFromOutputId(outputId),
+        'mintingData.nftId': Utils.computeNftId(outputId),
         status: NftStatus.MINTED,
       });
   });

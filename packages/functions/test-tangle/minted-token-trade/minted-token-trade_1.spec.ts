@@ -85,7 +85,7 @@ describe('Token minting', () => {
       (bp) => bp.payload.targetAddress === helper.buyerAddress!.bech32,
     )!;
     expect(paymentToBuyer.payload.amount).toBe(53800);
-    expect(paymentToBuyer.payload.nativeTokens![0].amount).toBe('10');
+    expect(paymentToBuyer.payload.nativeTokens![0].amount).toBe(10);
     expect(paymentToBuyer.payload.sourceAddress).toBe(sellOrder.payload.targetAddress);
     expect(paymentToBuyer.payload.storageDepositSourceAddress).toBe(buyOrder.payload.targetAddress);
     expect(paymentToBuyer.payload.storageReturn!.amount).toBe(53800);

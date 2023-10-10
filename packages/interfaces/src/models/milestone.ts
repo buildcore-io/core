@@ -2,7 +2,7 @@ import { Base, Timestamp } from './base';
 
 export interface NativeToken {
   readonly id: string;
-  readonly amount: string;
+  readonly amount: bigint;
 }
 
 export interface MilestoneTransactionEntry {

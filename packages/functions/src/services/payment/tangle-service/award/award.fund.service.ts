@@ -60,7 +60,7 @@ export const createAwardFundOrder = async (owner: string, award: Award): Promise
   const wallet = await WalletService.newWallet(award.network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
 
-  const nativeTokens = [{ id: award.badge.tokenId!, amount: totalReward.toString() }];
+  const nativeTokens = [{ id: award.badge.tokenId!, amount: BigInt(totalReward) }];
   return {
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),

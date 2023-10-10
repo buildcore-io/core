@@ -1,5 +1,5 @@
 import { COL, DEFAULT_NETWORK, NativeToken, Network } from '@build-5/interfaces';
-import { SingleNodeClient } from '@iota/iota.js-next';
+import { Client } from '@iota/sdk';
 import * as functions from 'firebase-functions/v2';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { getRandomElement } from '../../utils/common.utils';
@@ -7,14 +7,8 @@ import { IotaWallet } from './IotaWalletService';
 import { SmrWallet } from './SmrWalletService';
 import { Wallet } from './wallet';
 
-export interface IKeyPair {
-  publicKey: Uint8Array;
-  privateKey: Uint8Array;
-}
-
 export interface AddressDetails {
   bech32: string;
-  keyPair: IKeyPair;
   hex: string;
   mnemonic: string;
 }
@@ -35,7 +29,7 @@ const NODES = {
     'https://hs5.svrs.io/',
     'https://hs6.svrs.io/',
   ],
-  [Network.ATOI]: ['https://devnet.svrs.io/'],
+  [Network.ATOI]: ['https://rms1.svrs.io/'],
 };
 
 const getClient = async (network: Network) => {
@@ -43,10 +37,10 @@ const getClient = async (network: Network) => {
   for (let i = 0; i < 5; ++i) {
     nodeUrl = getRandomElement(NODES[network]);
     try {
-      const client = new SingleNodeClient(nodeUrl);
-      const healty = await client.health();
-      if (healty) {
-        return { client, info: await client.info() };
+      const client = new Client({ nodes: [nodeUrl] });
+      const info = await client.getInfo();
+      if (info.nodeInfo.status.isHealthy) {
+        return { client, info: info.nodeInfo };
       }
     } catch (error) {
       functions.logger.warn(`Could not connect to client ${network}`, nodeUrl, error);

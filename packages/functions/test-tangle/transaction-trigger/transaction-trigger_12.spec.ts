@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build-5/interfaces';
-import { ITransactionPayload, TransactionHelper } from '@iota/iota.js-next';
+import { RegularTransactionEssence, TransactionPayload, UTXOInput, Utils } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { retryWallet } from '../../src/cron/wallet.cron';
@@ -72,14 +72,15 @@ describe('Transaction trigger spec', () => {
 
       consumedOutputIds = [];
 
-      const block = await wallet.client.block(billPayment.payload.walletReference!.chainReference!);
-      const inputs = (block.payload as ITransactionPayload).essence.inputs;
-      consumedOutputIds = inputs.map((input) =>
-        TransactionHelper.outputIdFromTransactionData(
-          input.transactionId,
-          input.transactionOutputIndex,
-        ),
+      const block = await wallet.client.getBlock(
+        billPayment.payload.walletReference!.chainReference!,
       );
+      const payload = block.payload as TransactionPayload;
+      const inputs = (payload.essence as RegularTransactionEssence).inputs;
+      consumedOutputIds = inputs.map((i) => {
+        const { transactionId, transactionOutputIndex } = i as UTXOInput;
+        return Utils.computeOutputId(transactionId, transactionOutputIndex);
+      });
       expect(outputIds.sort()).toEqual(consumedOutputIds.sort());
     },
   );

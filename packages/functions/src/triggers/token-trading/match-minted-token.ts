@@ -11,12 +11,11 @@ import {
   TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
-import { INodeInfo } from '@iota/iota.js-next';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
+
 import bigDecimal from 'js-big-decimal';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { ITransaction } from '../../firebase/firestore/interfaces';
+import { Wallet } from '../../services/wallet/wallet';
 import { WalletService } from '../../services/wallet/wallet.service';
 import { getAddress } from '../../utils/address.utils';
 import { packBasicOutput } from '../../utils/basic-output.utils';
@@ -26,6 +25,7 @@ import { Match } from './match-token';
 import { getMemberTier, getTokenTradingFee } from './token-trade-order.trigger';
 
 const createRoyaltyBillPayments = async (
+  wallet: Wallet,
   token: Token,
   buy: TokenTradeOrder,
   seller: Member,
@@ -33,7 +33,6 @@ const createRoyaltyBillPayments = async (
   buyOrderTran: Transaction,
   sellPrice: number,
   dust: number,
-  info: INodeInfo,
 ) => {
   const royaltyFees = await getRoyaltyFees(sellPrice - dust, seller.tokenTradingFeePercentage);
   royaltyFees[Object.keys(royaltyFees)[0]] += dust;
@@ -44,7 +43,9 @@ const createRoyaltyBillPayments = async (
       const space = await build5Db().doc(`${COL.SPACE}/${spaceId}`).get<Space>();
       const spaceAddress = getAddress(space, token.mintingData?.network!);
       const sellerAddress = getAddress(seller, token.mintingData?.network!);
-      const output = packBasicOutput(spaceAddress, 0, undefined, info, sellerAddress);
+      const output = await packBasicOutput(wallet, spaceAddress, 0, {
+        storageDepositReturnAddress: sellerAddress,
+      });
       return <Transaction>{
         type: TransactionType.BILL_PAYMENT,
         uid: getRandomEthAddress(),
@@ -76,17 +77,17 @@ const createRoyaltyBillPayments = async (
   return await Promise.all(promises);
 };
 
-const createBillPaymentToSeller = (
+const createBillPaymentToSeller = async (
+  wallet: Wallet,
   token: Token,
   buyer: Member,
   seller: Member,
   buyOrderTran: Transaction,
   buy: TokenTradeOrder,
   salePrice: number,
-  info: INodeInfo,
 ) => {
   const sellerAddress = getAddress(seller, token.mintingData?.network!);
-  const output = packBasicOutput(sellerAddress, salePrice, undefined, info);
+  const output = await packBasicOutput(wallet, sellerAddress, salePrice, {});
   return <Transaction>{
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
@@ -111,7 +112,8 @@ const createBillPaymentToSeller = (
   };
 };
 
-const createBillPaymentWithNativeTokens = (
+const createBillPaymentWithNativeTokens = async (
+  wallet: Wallet,
   token: Token,
   buyer: Member,
   seller: Member,
@@ -120,17 +122,13 @@ const createBillPaymentWithNativeTokens = (
   buy: TokenTradeOrder,
   sell: TokenTradeOrder,
   tokensToSell: number,
-  info: INodeInfo,
-): Transaction => {
+): Promise<Transaction> => {
   const sellerAddress = getAddress(seller, token.mintingData?.network!);
   const buyerAddress = getAddress(buyer, token.mintingData?.network!);
-  const output = packBasicOutput(
-    buyerAddress,
-    0,
-    [{ id: token.mintingData?.tokenId!, amount: HexHelper.fromBigInt256(bigInt(tokensToSell)) }],
-    info,
-    sellerAddress,
-  );
+  const output = await packBasicOutput(wallet, buyerAddress, 0, {
+    nativeTokens: [{ id: token.mintingData?.tokenId!, amount: BigInt(tokensToSell) }],
+    storageDepositReturnAddress: sellerAddress,
+  });
   return {
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
@@ -140,7 +138,7 @@ const createBillPaymentWithNativeTokens = (
     payload: {
       type: TransactionPayloadType.MINTED_TOKEN_TRADE,
       amount: Number(output.amount),
-      nativeTokens: [{ id: token.mintingData?.tokenId!, amount: tokensToSell.toString() }],
+      nativeTokens: [{ id: token.mintingData?.tokenId!, amount: BigInt(tokensToSell) }],
       sourceAddress: sellOrderTran.payload.targetAddress,
       storageDepositSourceAddress: buyOrderTran.payload.targetAddress,
       storageReturn: {
@@ -256,7 +254,7 @@ export const matchMintedToken = async (
   }
 
   const buyerAddress = getAddress(buyer, token.mintingData?.network!);
-  const remainder = packBasicOutput(buyerAddress, balanceLeft, undefined, wallet.info);
+  const remainder = await packBasicOutput(wallet, buyerAddress, balanceLeft, {});
   let dust = 0;
   if (balanceLeft > 0 && balanceLeft < Number(remainder.amount)) {
     if (!buyIsFulfilled) {
@@ -268,6 +266,7 @@ export const matchMintedToken = async (
   }
 
   const royaltyBillPayments = await createRoyaltyBillPayments(
+    wallet,
     token,
     buy,
     seller,
@@ -275,13 +274,13 @@ export const matchMintedToken = async (
     buyOrderTran,
     salePrice,
     dust,
-    wallet.info,
   );
   royaltyBillPayments.forEach((o) => {
     salePrice -= o.payload.amount!;
   });
 
-  const billPaymentWithNativeTokens = createBillPaymentWithNativeTokens(
+  const billPaymentWithNativeTokens = await createBillPaymentWithNativeTokens(
+    wallet,
     token,
     buyer,
     seller,
@@ -290,18 +289,17 @@ export const matchMintedToken = async (
     buy,
     sell,
     tokensToTrade,
-    wallet.info,
   );
   salePrice -= billPaymentWithNativeTokens.payload.amount!;
 
-  const billPaymentToSeller = createBillPaymentToSeller(
+  const billPaymentToSeller = await createBillPaymentToSeller(
+    wallet,
     token,
     buyer,
     seller,
     buyOrderTran,
     buy,
     salePrice,
-    wallet.info,
   );
   salePrice -= billPaymentToSeller.payload.amount!;
 

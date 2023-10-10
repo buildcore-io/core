@@ -17,8 +17,7 @@ import {
   TransactionType,
   UnsoldMintingOptions,
 } from '@build-5/interfaces';
-import { IMetadataFeature, INftOutput, METADATA_FEATURE_TYPE } from '@iota/iota.js-next';
-import { Converter } from '@iota/util.js-next';
+import { FeatureType, MetadataFeature, NftOutput, hexToUtf8 } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
 import { build5Db } from '../../src/firebase/firestore/build5Db';
@@ -246,15 +245,15 @@ export class CollectionMintHelper {
       .join('');
 }
 
-export const getNftMetadata = (nft: INftOutput | undefined) => {
+export const getNftMetadata = (nft: NftOutput | undefined) => {
   try {
-    const hexMetadata = <IMetadataFeature | undefined>(
-      nft?.immutableFeatures?.find((f) => f.type === METADATA_FEATURE_TYPE)
+    const hexMetadata = <MetadataFeature | undefined>(
+      nft?.immutableFeatures?.find((f) => f.type === FeatureType.Metadata)
     );
     if (!hexMetadata?.data) {
       return {};
     }
-    return JSON.parse(Converter.hexToUtf8(hexMetadata.data) || '{}');
+    return JSON.parse(hexToUtf8(hexMetadata.data) || '{}');
   } catch {
     return {};
   }

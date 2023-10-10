@@ -16,14 +16,7 @@ import {
   TransactionValidationType,
   getMilestoneCol,
 } from '@build-5/interfaces';
-import {
-  ADDRESS_UNLOCK_CONDITION_TYPE,
-  EXPIRATION_UNLOCK_CONDITION_TYPE,
-  IExpirationUnlockCondition,
-  STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
-  TIMELOCK_UNLOCK_CONDITION_TYPE,
-  UnlockConditionTypes,
-} from '@iota/iota.js-next';
+import { ExpirationUnlockCondition, UnlockCondition, UnlockConditionType } from '@iota/sdk';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions/v2';
 import { get, isEmpty, set } from 'lodash';
@@ -90,7 +83,7 @@ export class TransactionService {
         amount: tran.to.amount,
         nativeTokens: (tran.to.nativeTokens || []).map((nt) => ({
           ...nt,
-          amount: Number(nt.amount).toString(),
+          amount: BigInt(nt.amount),
         })),
         sourceAddress: tran.from,
         targetAddress: order.payload.targetAddress,
@@ -231,7 +224,7 @@ export class TransactionService {
           amount: payment.payload.amount,
           nativeTokens: (tran.to.nativeTokens || []).map((nt) => ({
             ...nt,
-            amount: Number(nt.amount).toString(),
+            amount: BigInt(nt.amount),
           })),
           sourceAddress: tran.to.address,
           targetAddress: tran.from,
@@ -287,7 +280,7 @@ export class TransactionService {
           amount: payment.payload.amount,
           nativeTokens: (tran.to.nativeTokens || []).map((nt) => ({
             ...nt,
-            amount: Number(nt.amount).toString(),
+            amount: BigInt(nt.amount),
           })),
           sourceAddress: tran.to.address,
           targetAddress: tran.from,
@@ -446,16 +439,14 @@ export class TransactionService {
     }
   }
 
-  private getIngnoreWalletReason = (
-    unlockConditions: UnlockConditionTypes[],
-  ): IgnoreWalletReason => {
+  private getIngnoreWalletReason = (unlockConditions: UnlockCondition[]): IgnoreWalletReason => {
     const hasTimelock =
-      unlockConditions.find((u) => u.type === TIMELOCK_UNLOCK_CONDITION_TYPE) !== undefined;
+      unlockConditions.find((u) => u.type === UnlockConditionType.Timelock) !== undefined;
     if (hasTimelock) {
       return IgnoreWalletReason.UNREFUNDABLE_DUE_TIMELOCK_CONDITION;
     }
     const hasStorageDepositLock =
-      unlockConditions.find((u) => u.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE) !==
+      unlockConditions.find((u) => u.type === UnlockConditionType.StorageDepositReturn) !==
       undefined;
     if (hasStorageDepositLock) {
       return IgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION;
@@ -483,7 +474,7 @@ export class TransactionService {
         amount: tranOutput.amount,
         nativeTokens: (tranOutput.nativeTokens || []).map((nt) => ({
           ...nt,
-          amount: Number(nt.amount).toString(),
+          amount: BigInt(nt.amount),
         })),
         sourceAddress: tranOutput.address,
         targetAddress: [
@@ -509,18 +500,15 @@ export class TransactionService {
     });
   };
 
-  public getExpirationUnlock = (unlockCondiiton: UnlockConditionTypes[] = []) =>
-    unlockCondiiton.find((u) => u.type === EXPIRATION_UNLOCK_CONDITION_TYPE) as
-      | IExpirationUnlockCondition
+  public getExpirationUnlock = (unlockCondiiton: UnlockCondition[] = []) =>
+    unlockCondiiton.find((u) => u.type === UnlockConditionType.Expiration) as
+      | ExpirationUnlockCondition
       | undefined;
 
   private getUnsupportedUnlockCondition = (
-    unlockConditions: UnlockConditionTypes[] = [],
+    unlockConditions: UnlockCondition[] = [],
     supportedUnlockConditions = SUPPORTED_UNLOCK_CONDITION,
   ) => unlockConditions.find((u) => !supportedUnlockConditions.includes(u.type));
 }
 
-const SUPPORTED_UNLOCK_CONDITION = [
-  ADDRESS_UNLOCK_CONDITION_TYPE,
-  EXPIRATION_UNLOCK_CONDITION_TYPE,
-];
+const SUPPORTED_UNLOCK_CONDITION = [UnlockConditionType.Address, UnlockConditionType.Expiration];

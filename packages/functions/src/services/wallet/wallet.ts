@@ -1,13 +1,5 @@
 import { NativeToken, Network, Timestamp, Transaction } from '@build-5/interfaces';
-import {
-  IAliasOutput,
-  IBasicOutput,
-  IFoundryOutput,
-  INftOutput,
-  INodeInfo,
-  IOutputResponse,
-  SingleNodeClient,
-} from '@iota/iota.js-next';
+import { AliasOutput, BasicOutput, Client, FoundryOutput, INodeInfo, NftOutput } from '@iota/sdk';
 import { Expiration } from './IotaWalletService';
 import { AddressDetails, SendToManyTargets } from './wallet.service';
 
@@ -23,7 +15,9 @@ export interface WalletParams {
 }
 
 export abstract class Wallet {
-  public abstract getBalance: (addressBech32: string) => Promise<number>;
+  public abstract getBalance: (
+    addressBech32: string,
+  ) => Promise<{ amount: number; nativeTokens: { [id: string]: bigint } }>;
   public abstract getNewIotaAddressDetails: (saveMnemonic?: boolean) => Promise<AddressDetails>;
   public abstract getIotaAddressDetails: (mnemonic: string) => Promise<AddressDetails>;
   public abstract getAddressDetails: (bech32: string) => Promise<AddressDetails>;
@@ -40,7 +34,7 @@ export abstract class Wallet {
     params: WalletParams,
   ) => Promise<string>;
   public abstract bechAddressFromOutput: (
-    output: IBasicOutput | IAliasOutput | IFoundryOutput | INftOutput,
+    output: BasicOutput | AliasOutput | FoundryOutput | NftOutput,
   ) => string;
   public abstract getOutputs: (
     addressBech32: string,
@@ -48,16 +42,12 @@ export abstract class Wallet {
     hasStorageDepositReturn?: boolean,
     hasTimelock?: boolean,
   ) => Promise<{
-    [key: string]: IBasicOutput;
+    [key: string]: BasicOutput;
   }>;
   public abstract creditLocked: (credit: Transaction, params: WalletParams) => Promise<string>;
-  public abstract getTransactionOutput: (
-    transactionId: string,
-    outputIndex: number,
-  ) => Promise<IOutputResponse>;
 
   constructor(
-    public readonly client: SingleNodeClient,
+    public readonly client: Client,
     public readonly info: INodeInfo,
     public readonly network: Network,
   ) {}
