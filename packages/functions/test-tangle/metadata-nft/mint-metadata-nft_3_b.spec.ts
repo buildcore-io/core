@@ -18,7 +18,7 @@ describe('Metadata nft', () => {
   const helper = new Helper();
 
   it('Should mint metada nft then update metadata', async () => {
-    await helper.beforeEach(Network.RMS);
+    await helper.beforeEach(Network.ATOI);
     const metadata = { mytest: 'mytest', asd: 'asdasdasd' };
     await helper.walletService.send(
       helper.memberAddress,

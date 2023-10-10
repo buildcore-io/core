@@ -77,6 +77,7 @@ export class TangleTokenTradeService {
       params.type as TokenTradeOrderType,
       params.count || 0,
       params.price,
+      params.targetAddress,
       '',
       [TokenStatus.BASE, TokenStatus.MINTED],
     );
@@ -93,19 +94,6 @@ export class TangleTokenTradeService {
       data: tradeOrderTransaction,
       action: 'set',
     });
-
-    if (params.type === TokenTradeOrderType.SELL && token?.status === TokenStatus.BASE) {
-      this.transactionService.createTangleCredit(
-        payment,
-        match,
-        {
-          amount: tradeOrderTransaction.payload.amount,
-          address: tradeOrderTransaction.payload.targetAddress,
-        },
-        tranEntry.outputId!,
-      );
-      return;
-    }
 
     this.transactionService.createUnlockTransaction(
       tradeOrderTransaction,
@@ -133,6 +121,7 @@ export const createTokenTradeOrder = async (
   type: TokenTradeOrderType,
   count: number,
   price: number,
+  targetAddress = '',
   ip = '',
   acceptedTokenStatuses = ACCEPTED_TOKEN_STATUSES,
 ) => {
@@ -146,7 +135,13 @@ export const createTokenTradeOrder = async (
   const [sourceNetwork, targetNetwork] = getSourceAndTargetNetwork(token, isSell);
   const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();
   assertMemberHasValidAddress(member, sourceNetwork);
-  assertMemberHasValidAddress(member, targetNetwork);
+  if (targetAddress) {
+    if (!targetAddress.startsWith(targetNetwork === Network.ATOI ? 'rms' : targetNetwork)) {
+      throw invalidArgument(WenError.invalid_target_address);
+    }
+  } else {
+    assertMemberHasValidAddress(member, targetNetwork);
+  }
 
   if ([TokenStatus.BASE, TokenStatus.MINTED].includes(token.status) || !isSell) {
     const tradeOrderTransaction = await createTradeOrderTransaction(
@@ -156,6 +151,7 @@ export const createTokenTradeOrder = async (
       isSell,
       Number(count),
       Number(price),
+      targetAddress,
     );
 
     return { tradeOrderTransaction, tradeOrder: undefined, distribution: undefined };
@@ -218,11 +214,12 @@ const createTradeOrderTransaction = async (
   isSell: boolean,
   count: number,
   price: number,
+  tokenTradeOderTargetAddress = '',
 ): Promise<Transaction> => {
   const wallet = await WalletService.newWallet(network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
   const isMinted = token.status === TokenStatus.MINTED;
-  return {
+  const order: Transaction = {
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member,
@@ -245,6 +242,10 @@ const createTradeOrderTransaction = async (
     },
     linkedTransactions: [],
   };
+  if (tokenTradeOderTargetAddress) {
+    set(order, 'payload.tokenTradeOderTargetAddress', tokenTradeOderTargetAddress);
+  }
+  return order;
 };
 
 const getAmount = async (token: Token, count: number, price: number, isSell: boolean) => {

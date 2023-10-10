@@ -611,6 +611,10 @@ export interface TokenTradeOrder extends BaseRecord {
    * TODODOC
    */
   readonly targetNetwork?: Network;
+  /**
+   * TODODOC
+   */
+  readonly targetAddress?: string;
 }
 
 /**
