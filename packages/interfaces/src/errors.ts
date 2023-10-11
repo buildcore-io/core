@@ -305,4 +305,5 @@ export const WenError = {
     code: 2138,
     key: 'Invalid collection id.',
   },
+  invalid_target_address: { code: 2139, key: 'Invalid target address.' },
 };

@@ -17,7 +17,7 @@ export interface WalletParams {
 export abstract class Wallet {
   public abstract getBalance: (
     addressBech32: string,
-  ) => Promise<{ amount: number; nativeTokens: { [id: string]: bigint } }>;
+  ) => Promise<{ amount: number; nativeTokens: { [id: string]: number } }>;
   public abstract getNewIotaAddressDetails: (saveMnemonic?: boolean) => Promise<AddressDetails>;
   public abstract getIotaAddressDetails: (mnemonic: string) => Promise<AddressDetails>;
   public abstract getAddressDetails: (bech32: string) => Promise<AddressDetails>;

@@ -83,17 +83,19 @@ const createBillPaymentToSeller = async (
   buyer: Member,
   seller: Member,
   buyOrderTran: Transaction,
+  sell: TokenTradeOrder,
   buy: TokenTradeOrder,
   salePrice: number,
 ) => {
-  const sellerAddress = getAddress(seller, token.mintingData?.network!);
+  const network = token.mintingData?.network!;
+  const sellerAddress = sell.targetAddress || getAddress(seller, network);
   const output = await packBasicOutput(wallet, sellerAddress, salePrice, {});
   return <Transaction>{
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
     space: token.space,
     member: buyer.uid,
-    network: token.mintingData?.network!,
+    network,
     payload: {
       type: TransactionPayloadType.MINTED_TOKEN_TRADE,
       amount: Number(output.amount),
@@ -123,8 +125,9 @@ const createBillPaymentWithNativeTokens = async (
   sell: TokenTradeOrder,
   tokensToSell: number,
 ): Promise<Transaction> => {
-  const sellerAddress = getAddress(seller, token.mintingData?.network!);
-  const buyerAddress = getAddress(buyer, token.mintingData?.network!);
+  const network = token.mintingData?.network!;
+  const sellerAddress = getAddress(seller, network);
+  const buyerAddress = buy.targetAddress || getAddress(buyer, network);
   const output = await packBasicOutput(wallet, buyerAddress, 0, {
     nativeTokens: [{ id: token.mintingData?.tokenId!, amount: BigInt(tokensToSell) }],
     storageDepositReturnAddress: sellerAddress,
@@ -134,7 +137,7 @@ const createBillPaymentWithNativeTokens = async (
     uid: getRandomEthAddress(),
     space: token.space,
     member: seller.uid,
-    network: token.mintingData?.network!,
+    network,
     payload: {
       type: TransactionPayloadType.MINTED_TOKEN_TRADE,
       amount: Number(output.amount),
@@ -164,9 +167,8 @@ const createCreditToSeller = (
   seller: Member,
   sell: TokenTradeOrder,
   sellOrderTran: Transaction,
-) => {
-  const sellerAddress = getAddress(seller, token.mintingData?.network!);
-  return <Transaction>{
+) =>
+  <Transaction>{
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: token.space,
@@ -177,7 +179,7 @@ const createCreditToSeller = (
       dependsOnBillPayment: true,
       amount: sellOrderTran.payload.amount,
       sourceAddress: sellOrderTran.payload.targetAddress,
-      targetAddress: sellerAddress,
+      targetAddress: getAddress(seller, token.mintingData?.network!),
       previousOwnerEntity: Entity.MEMBER,
       previousOwner: seller.uid,
       ownerEntity: Entity.MEMBER,
@@ -189,7 +191,6 @@ const createCreditToSeller = (
       tokenSymbol: token.symbol,
     },
   };
-};
 
 const createCreditToBuyer = (
   token: Token,
@@ -197,9 +198,8 @@ const createCreditToBuyer = (
   buy: TokenTradeOrder,
   buyOrderTran: Transaction,
   amount: number,
-) => {
-  const buyerAddress = getAddress(buyer, token.mintingData?.network!);
-  return <Transaction>{
+) =>
+  <Transaction>{
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: token.space,
@@ -210,7 +210,7 @@ const createCreditToBuyer = (
       dependsOnBillPayment: true,
       amount,
       sourceAddress: buyOrderTran.payload.targetAddress,
-      targetAddress: buyerAddress,
+      targetAddress: getAddress(buyer, token.mintingData?.network!),
       previousOwnerEntity: Entity.MEMBER,
       previousOwner: buyer.uid,
       ownerEntity: Entity.MEMBER,
@@ -222,7 +222,6 @@ const createCreditToBuyer = (
       tokenSymbol: token.symbol,
     },
   };
-};
 
 export const matchMintedToken = async (
   transaction: ITransaction,
@@ -298,6 +297,7 @@ export const matchMintedToken = async (
     buyer,
     seller,
     buyOrderTran,
+    sell,
     buy,
     salePrice,
   );

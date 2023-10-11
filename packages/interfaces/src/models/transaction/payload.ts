@@ -145,4 +145,6 @@ export interface TransactionPayload {
 
   tanglePuchase?: boolean;
   disableWithdraw?: boolean;
+
+  tokenTradeOderTargetAddress?: string;
 }

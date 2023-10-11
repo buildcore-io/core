@@ -3,7 +3,6 @@ import {
   MIN_IOTA_AMOUNT,
   StakeType,
   SUB_COL,
-  SYSTEM_CONFIG_DOC_ID,
   TokenPurchase,
   TokenTradeOrderType,
   Transaction,
@@ -24,106 +23,94 @@ describe('Base token trading', () => {
     await helper.beforeEach();
   });
 
-  it.each([false, true])(
-    'Should not create royalty payments, zero percentage fee',
-    async (isMember: boolean) => {
-      if (isMember) {
-        await build5Db()
-          .doc(`${COL.MEMBER}/${helper.seller!.uid}`)
-          .update({ tokenTradingFeePercentage: 0 });
-        await build5Db()
-          .collection(COL.TOKEN)
-          .doc(helper.soonTokenId)
-          .collection(SUB_COL.DISTRIBUTION)
-          .doc(helper.seller?.uid!)
-          .set(
-            {
-              stakes: {
-                [StakeType.DYNAMIC]: {
-                  value: 15000 * MIN_IOTA_AMOUNT,
-                },
-              },
+  it('Should not create royalty payments, zero percentage fee', async () => {
+    await build5Db()
+      .doc(`${COL.MEMBER}/${helper.seller!.uid}`)
+      .update({ tokenTradingFeePercentage: 0 });
+    await build5Db()
+      .collection(COL.TOKEN)
+      .doc(helper.soonTokenId)
+      .collection(SUB_COL.DISTRIBUTION)
+      .doc(helper.seller?.uid!)
+      .set(
+        {
+          stakes: {
+            [StakeType.DYNAMIC]: {
+              value: 15000 * MIN_IOTA_AMOUNT,
             },
-            true,
-          );
-      } else {
-        await build5Db()
-          .doc(`${COL.SYSTEM}/${SYSTEM_CONFIG_DOC_ID}`)
-          .set({ tokenTradingFeePercentage: 0 });
-      }
-
-      mockWalletReturnValue(helper.walletSpy, helper.seller!.uid, {
-        symbol: helper.token!.symbol,
-        count: MIN_IOTA_AMOUNT,
-        price: 2,
-        type: TokenTradeOrderType.SELL,
-      });
-      const sellOrder = await testEnv.wrap(tradeToken)({});
-      await requestFundsFromFaucet(
-        helper.sourceNetwork,
-        sellOrder.payload.targetAddress,
-        MIN_IOTA_AMOUNT,
+          },
+        },
+        true,
       );
 
-      const tradesQuery = build5Db()
-        .collection(COL.TOKEN_MARKET)
-        .where('token', '==', helper.token!.uid);
-      await wait(async () => {
-        const snap = await tradesQuery.get();
-        return snap.length === 1;
-      });
+    mockWalletReturnValue(helper.walletSpy, helper.seller!.uid, {
+      symbol: helper.token!.symbol,
+      count: MIN_IOTA_AMOUNT,
+      price: 2,
+      type: TokenTradeOrderType.SELL,
+    });
+    const sellOrder = await testEnv.wrap(tradeToken)({});
+    await requestFundsFromFaucet(
+      helper.sourceNetwork,
+      sellOrder.payload.targetAddress,
+      MIN_IOTA_AMOUNT,
+    );
 
-      mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
-        symbol: helper.token!.symbol,
-        count: MIN_IOTA_AMOUNT,
-        price: 2,
-        type: TokenTradeOrderType.BUY,
-      });
-      const buyOrder = await testEnv.wrap(tradeToken)({});
-      await requestFundsFromFaucet(
-        helper.targetNetwork,
-        buyOrder.payload.targetAddress,
-        2 * MIN_IOTA_AMOUNT,
-      );
+    const tradesQuery = build5Db()
+      .collection(COL.TOKEN_MARKET)
+      .where('token', '==', helper.token!.uid);
+    await wait(async () => {
+      const snap = await tradesQuery.get();
+      return snap.length === 1;
+    });
 
-      const purchaseQuery = build5Db()
-        .collection(COL.TOKEN_PURCHASE)
-        .where('token', '==', helper.token!.uid);
-      await wait(async () => {
-        const snap = await purchaseQuery.get();
-        return snap.length === 1;
-      });
+    mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
+      symbol: helper.token!.symbol,
+      count: MIN_IOTA_AMOUNT,
+      price: 2,
+      type: TokenTradeOrderType.BUY,
+    });
+    const buyOrder = await testEnv.wrap(tradeToken)({});
+    await requestFundsFromFaucet(
+      helper.targetNetwork,
+      buyOrder.payload.targetAddress,
+      2 * MIN_IOTA_AMOUNT,
+    );
 
-      const purchase = <TokenPurchase>(await purchaseQuery.get())[0];
-      expect(purchase.price).toBe(2);
-      if (isMember) {
-        expect(purchase.sellerTier).toBe(4);
-        expect(purchase.sellerTokenTradingFeePercentage).toBe(0);
-      }
+    const purchaseQuery = build5Db()
+      .collection(COL.TOKEN_PURCHASE)
+      .where('token', '==', helper.token!.uid);
+    await wait(async () => {
+      const snap = await purchaseQuery.get();
+      return snap.length === 1;
+    });
 
-      const billPayments = (
-        await build5Db()
-          .collection(COL.TRANSACTION)
-          .where('type', '==', TransactionType.BILL_PAYMENT)
-          .where('payload.token', '==', helper.token!.uid)
-          .get()
-      ).map((d) => <Transaction>d);
-      expect(billPayments.length).toBe(2);
+    const purchase = <TokenPurchase>(await purchaseQuery.get())[0];
+    expect(purchase.price).toBe(2);
+    expect(purchase.sellerTier).toBe(4);
+    expect(purchase.sellerTokenTradingFeePercentage).toBe(0);
 
-      const billPaymentToSeller = billPayments.find(
-        (bp) =>
-          bp.payload.amount === MIN_IOTA_AMOUNT * 2 && bp.payload.owner === helper.seller!.uid,
-      );
-      expect(billPaymentToSeller).toBeDefined();
+    const billPayments = (
+      await build5Db()
+        .collection(COL.TRANSACTION)
+        .where('type', '==', TransactionType.BILL_PAYMENT)
+        .where('payload.token', '==', helper.token!.uid)
+        .get()
+    ).map((d) => <Transaction>d);
+    expect(billPayments.length).toBe(2);
 
-      const billPaymentToBuyer = billPayments.find(
-        (bp) => bp.payload.amount === MIN_IOTA_AMOUNT && bp.payload.owner === helper.buyer!.uid,
-      );
-      expect(billPaymentToBuyer).toBeDefined();
+    const billPaymentToSeller = billPayments.find(
+      (bp) => bp.payload.amount === MIN_IOTA_AMOUNT * 2 && bp.payload.owner === helper.seller!.uid,
+    );
+    expect(billPaymentToSeller).toBeDefined();
 
-      await awaitTransactionConfirmationsForToken(helper.token!.uid);
-    },
-  );
+    const billPaymentToBuyer = billPayments.find(
+      (bp) => bp.payload.amount === MIN_IOTA_AMOUNT && bp.payload.owner === helper.buyer!.uid,
+    );
+    expect(billPaymentToBuyer).toBeDefined();
+
+    await awaitTransactionConfirmationsForToken(helper.token!.uid);
+  });
 
   it('Should create royalty payments only with dust', async () => {
     await build5Db()

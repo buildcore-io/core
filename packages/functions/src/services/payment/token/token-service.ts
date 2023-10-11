@@ -19,7 +19,7 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
-import { get, head, last } from 'lodash';
+import { get, head, last, set } from 'lodash';
 import { build5Db, getSnapshot } from '../../../firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { getBoughtByMemberDiff, getTotalPublicSupply } from '../../../utils/token.utils';
@@ -159,6 +159,9 @@ export class TokenService {
       sourceNetwork: network,
       targetNetwork: token.status === TokenStatus.BASE ? getNetworkPair(network) : network,
     };
+    if (order.payload.tokenTradeOderTargetAddress) {
+      set(data, 'targetAddress', order.payload.tokenTradeOderTargetAddress);
+    }
 
     const ref = build5Db().doc(`${COL.TOKEN_MARKET}/${data.uid}`);
     this.transactionService.push({ ref, data, action: 'set' });

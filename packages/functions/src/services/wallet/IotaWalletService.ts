@@ -38,12 +38,12 @@ export class IotaWallet extends Wallet {
     ).items;
     const outputs = await this.client.getOutputs(outputIds);
     let totalAmount = BigInt(0);
-    const totalNativeTokens: { [id: string]: bigint } = {};
+    const totalNativeTokens: { [id: string]: number } = {};
     for (const outputResponse of outputs) {
       const output = outputResponse.output;
       if (output instanceof CommonOutput) {
         (output as CommonOutput).getNativeTokens()?.forEach((token) => {
-          totalNativeTokens[token.id] = (totalNativeTokens[token.id] || BigInt(0)) + token.amount;
+          totalNativeTokens[token.id] = (totalNativeTokens[token.id] || 0) + Number(token.amount);
         });
       }
       totalAmount += output.getAmount();

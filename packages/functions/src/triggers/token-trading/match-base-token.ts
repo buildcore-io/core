@@ -28,6 +28,7 @@ import { getMemberTier, getTokenTradingFee } from './token-trade-order.trigger';
 const createIotaPayments = async (
   token: Token,
   sell: TokenTradeOrder,
+  buy: TokenTradeOrder,
   seller: Member,
   buyer: Member,
   count: number,
@@ -52,7 +53,7 @@ const createIotaPayments = async (
       type: TransactionPayloadType.BASE_TOKEN_TRADE,
       amount: count,
       sourceAddress: sellOrder!.payload.targetAddress,
-      targetAddress: getAddress(buyer, sell.sourceNetwork!),
+      targetAddress: buy.targetAddress || getAddress(buyer, sell.sourceNetwork!),
       previousOwnerEntity: Entity.MEMBER,
       previousOwner: seller.uid,
       ownerEntity: Entity.MEMBER,
@@ -193,7 +194,7 @@ const createSmrPayments = async (
       type: TransactionPayloadType.BASE_TOKEN_TRADE,
       amount: salePrice,
       sourceAddress: buyOrder!.payload.targetAddress,
-      targetAddress: getAddress(seller, buy.sourceNetwork!),
+      targetAddress: sell.targetAddress || getAddress(seller, buy.sourceNetwork!),
       previousOwnerEntity: Entity.MEMBER,
       previousOwner: buy.owner,
       ownerEntity: Entity.MEMBER,
@@ -247,7 +248,7 @@ export const matchBaseToken = async (
   const seller = await build5Db().doc(`${COL.MEMBER}/${sell.owner}`).get<Member>();
   const buyer = await build5Db().doc(`${COL.MEMBER}/${buy.owner}`).get<Member>();
 
-  const iotaPayments = await createIotaPayments(token, sell, seller!, buyer!, tokensToTrade);
+  const iotaPayments = await createIotaPayments(token, sell, buy, seller!, buyer!, tokensToTrade);
   const smrPayments = await createSmrPayments(
     token,
     sell,
