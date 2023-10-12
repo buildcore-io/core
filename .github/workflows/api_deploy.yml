@@ -21,11 +21,11 @@ jobs:
       - name: Build 
         run: |
             cp packages/api/Dockerfile .
-            gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/api
+            gcloud builds submit --tag gcr.io/soonaverse-test/api
       - name: Deploy
         run: |    
             gcloud run deploy api \
-              --image gcr.io/$GOOGLE_CLOUD_PROJECT/api \
+              --image gcr.io/soonaverse-test/api \
               --min-instances=3 --memory=1Gi \
               --cpu=1 \
               --concurrency=1000 \
