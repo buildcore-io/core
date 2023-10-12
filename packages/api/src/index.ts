@@ -18,7 +18,7 @@ import { getNftMutableMetadata } from './metadataNft/getNftMutableMetadata';
 import { getNftMutableMetadataHistory } from './metadataNft/getNftMutableMetadataHistory';
 import { sendLiveUpdates } from './sendLiveUpdates';
 
-const port = process.env.PORT || 3000;
+const port = 8080;
 const app = express();
 
 app.use(cors());
