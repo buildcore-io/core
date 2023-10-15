@@ -18,6 +18,8 @@ jobs:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE_TEST }}'
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
+      - name: 'Use gcloud CLI'
+        run: 'gcloud info'
       - name: Build and deploy
         run: |
             cp packages/api/Dockerfile .
