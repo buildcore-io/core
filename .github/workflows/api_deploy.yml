@@ -18,10 +18,12 @@ jobs:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE_TEST }}'
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
-      - name: Build and deploy
+      - name: Build image
         run: |
             cp packages/api/Dockerfile .
             gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/api
+      - name: Deploy
+        run: |
             gcloud run deploy api \
               --image gcr.io/$GOOGLE_CLOUD_PROJECT/api \
               --min-instances=3 
