@@ -23,7 +23,7 @@ jobs:
       - name: Build and deploy
         run: |
             cp packages/api/Dockerfile .
-            gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/api --suppress-logs
+            gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/api
             gcloud run deploy api \
               --image gcr.io/$GOOGLE_CLOUD_PROJECT/api \
               --min-instances=3 
