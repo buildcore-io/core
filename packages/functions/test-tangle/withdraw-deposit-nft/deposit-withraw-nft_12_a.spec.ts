@@ -69,10 +69,7 @@ describe('Collection minting', () => {
       helper.guardianAddress!,
       collectionMetadata,
     );
-    const collectionBlockState = await awaitLedgerInclusionState(
-      collectionMintingBlock,
-      Network.RMS,
-    );
+    const collectionBlockState = await awaitLedgerInclusionState(collectionMintingBlock);
     if (collectionBlockState !== 'included') {
       fail();
     }
@@ -81,7 +78,7 @@ describe('Collection minting', () => {
       collectionId,
       ...nftMetadata,
     });
-    const nftBlockState = await awaitLedgerInclusionState(nftMintingBlock, Network.RMS);
+    const nftBlockState = await awaitLedgerInclusionState(nftMintingBlock);
     if (nftBlockState !== 'included') {
       fail();
     }
@@ -124,6 +121,7 @@ const mintCustomCollection = async (address: AddressDetails, metadata: any) => {
   const unlocks = [await createUnlock(essence, address)];
 
   const blockId = await submitBlock(wallet, essence, unlocks);
+  await build5Db().doc(`blocks/${blockId}`).create({ blockId });
 
   const payload = new TransactionPayload(essence, unlocks);
   const collectionOutputId = Utils.computeOutputId(Utils.transactionId(payload), 0);
@@ -181,6 +179,7 @@ const mintNft = async (address: AddressDetails, metadata: any) => {
 
   const payload = new TransactionPayload(essence, unlocks);
   const blockId = await submitBlock(wallet, essence, unlocks);
+  await build5Db().doc(`blocks/${blockId}`).create({ blockId });
 
   const nftId = Utils.computeNftId(Utils.transactionId(payload) + indexToString(1));
   return [blockId, nftId];

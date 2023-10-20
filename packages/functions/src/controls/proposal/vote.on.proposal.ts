@@ -17,11 +17,12 @@ import { voteWithStakedTokens } from '../../services/payment/tangle-service/prop
 import { createVoteTransactionOrder } from '../../services/payment/tangle-service/proposal/voting/token.voting';
 import { invalidArgument } from '../../utils/error.utils';
 import { getTokenForSpace } from '../../utils/token.utils';
+import { Context } from '../common';
 
-export const voteOnProposalControl = async (
-  owner: string,
-  params: ProposalVoteRequest,
-): Promise<Transaction> => {
+export const voteOnProposalControl = async ({
+  owner,
+  params,
+}: Context<ProposalVoteRequest>): Promise<Transaction> => {
   const proposal = await getProposal(params.uid);
   const proposalMember = await getProposalMember(owner, proposal, params.value);
 

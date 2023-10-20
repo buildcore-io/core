@@ -31,7 +31,7 @@ export const requestFundsFromFaucet = async (
           ? { expiresAt, returnAddressBech32: faucetAddress.bech32 }
           : undefined,
       });
-      const ledgerInclusionState = await awaitLedgerInclusionState(blockId, network);
+      const ledgerInclusionState = await awaitLedgerInclusionState(blockId);
       if (ledgerInclusionState === 'included') {
         return { blockId, faucetAddress };
       }
@@ -55,7 +55,7 @@ export const requestFundsForManyFromFaucet = async (
     try {
       await MnemonicService.store(faucetAddress.bech32, faucetAddress.mnemonic, network);
       const blockId = await wallet.sendToMany(faucetAddress, targets, {});
-      const ledgerInclusionState = await awaitLedgerInclusionState(blockId, network);
+      const ledgerInclusionState = await awaitLedgerInclusionState(blockId);
       if (ledgerInclusionState === 'included') {
         return blockId;
       }
@@ -86,7 +86,7 @@ export const requestMintedTokenFromFaucet = async (
         nativeTokens: [{ id: tokenId, amount: BigInt(amount) }],
         storageDepositSourceAddress: targetAddress.bech32,
       });
-      const ledgerInclusionState = await awaitLedgerInclusionState(blockId, Network.RMS);
+      const ledgerInclusionState = await awaitLedgerInclusionState(blockId);
       if (ledgerInclusionState === 'included') {
         return blockId;
       }
@@ -100,7 +100,7 @@ export const requestMintedTokenFromFaucet = async (
   throw Error('Could not get native tokens from faucet');
 };
 
-export const awaitLedgerInclusionState = async (blockId: string, network: Network) => {
+export const awaitLedgerInclusionState = async (blockId: string) => {
   let ledgerInclusionState: string | undefined = '';
   const client = new Client({ nodes: ['https://api.testnet.shimmer.network'] });
   await wait(async () => {

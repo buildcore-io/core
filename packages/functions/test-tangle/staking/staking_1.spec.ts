@@ -177,7 +177,7 @@ describe('Staking test', () => {
       order.payload.amount,
       {
         expiration: { expiresAt, returnAddressBech32: helper.memberAddress!.bech32 },
-        nativeTokens: [{ id: helper.TOKEN_ID, amount: BigInt(10) }],
+        nativeTokens: [{ id: helper.MINTED_TOKEN_ID, amount: BigInt(10) }],
       },
     );
     await MnemonicService.store(

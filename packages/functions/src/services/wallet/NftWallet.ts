@@ -33,7 +33,6 @@ import {
   utf8ToHex,
 } from '@iota/sdk';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions/v2';
 import { cloneDeep, get, head, isEmpty } from 'lodash';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { unclockMnemonic } from '../../triggers/milestone-transactions-triggers/common';
@@ -312,7 +311,7 @@ export class NftWallet {
 
     if (!nftsToMint) {
       await unclockMnemonic(sourceAddress.bech32);
-      functions.logger.error('Nft data to big to mint', head(nfts));
+      console.error('Nft data to big to mint', head(nfts));
       throw Error('Nft data to big to mint');
     }
     return blockId;

@@ -2,11 +2,12 @@ import { COL, EnableTokenTradingRequest, Token, WenError } from '@build-5/interf
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
+import { Context } from '../common';
 
-export const enableTokenTradingControl = async (
-  owner: string,
-  params: EnableTokenTradingRequest,
-) => {
+export const enableTokenTradingControl = async ({
+  owner,
+  params,
+}: Context<EnableTokenTradingRequest>) => {
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.uid}`);
   const token = await tokenDocRef.get<Token>();
   if (!token) {

@@ -18,9 +18,13 @@ import { assertSpaceHasValidAddress } from '../../utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 import { populateTokenUidOnDiscounts } from './common';
 
-export const createCollectionControl = async (owner: string, params: CreateCollectionRequest) => {
+export const createCollectionControl = async ({
+  owner,
+  params,
+}: Context<CreateCollectionRequest>) => {
   const hasStakedSoons = await hasStakedSoonTokens(owner);
   if (!hasStakedSoons) {
     throw invalidArgument(WenError.no_staked_soon);

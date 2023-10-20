@@ -7,50 +7,37 @@ import {
   TokenTradeOrder,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
-  WEN_FUNC_TRIGGER,
 } from '@build-5/interfaces';
-import * as functions from 'firebase-functions/v2';
-import { DocumentOptions } from 'firebase-functions/v2/firestore';
 import bigDecimal from 'js-big-decimal';
 import { build5Db } from '../../firebase/firestore/build5Db';
-import { scale } from '../../scale.settings';
 import { getStakeForType, getTier } from '../../services/stake.service';
 import { cancelTradeOrderUtil } from '../../utils/token-trade.utils';
 import { BIG_DECIMAL_PRECISION, getSoonToken } from '../../utils/token.utils';
+import { FirestoreDocEvent } from '../common';
 import { matchTradeOrder } from './match-token';
 
-const runParams = {
-  document: `${COL.TOKEN_MARKET}/{tradeId}`,
-  timeoutSeconds: 540,
-  minInstances: scale(WEN_FUNC_TRIGGER.onTokenTradeOrderWrite),
-} as DocumentOptions<string>;
+export const onTokenTradeOrderWrite = async (event: FirestoreDocEvent<TokenTradeOrder>) => {
+  const { prev, curr } = event;
+  if (!curr) {
+    return;
+  }
 
-export const onTokenTradeOrderWrite = functions.firestore.onDocumentWritten(
-  runParams,
-  async (event) => {
-    const prev = <TokenTradeOrder | undefined>event.data?.before?.data();
-    const next = <TokenTradeOrder | undefined>event.data?.after?.data();
-    if (!next) {
-      return;
+  if (!prev || (!prev.shouldRetry && curr?.shouldRetry)) {
+    return await matchTradeOrder(curr);
+  }
+
+  return await build5Db().runTransaction(async (transaction) => {
+    const tradeOrderDocRef = build5Db().doc(`${COL.TOKEN_MARKET}/${curr.uid}`);
+    const tradeOrder = await transaction.get<TokenTradeOrder>(tradeOrderDocRef);
+    if (tradeOrder && isActiveBuy(tradeOrder) && needsHigherBuyAmount(tradeOrder!)) {
+      await cancelTradeOrderUtil(
+        transaction,
+        tradeOrder,
+        TokenTradeOrderStatus.CANCELLED_UNFULFILLABLE,
+      );
     }
-
-    if (!prev || (!prev.shouldRetry && next?.shouldRetry)) {
-      return await matchTradeOrder(next);
-    }
-
-    return await build5Db().runTransaction(async (transaction) => {
-      const tradeOrderDocRef = build5Db().doc(`${COL.TOKEN_MARKET}/${next.uid}`);
-      const tradeOrder = await transaction.get<TokenTradeOrder>(tradeOrderDocRef);
-      if (tradeOrder && isActiveBuy(tradeOrder) && needsHigherBuyAmount(tradeOrder!)) {
-        await cancelTradeOrderUtil(
-          transaction,
-          tradeOrder,
-          TokenTradeOrderStatus.CANCELLED_UNFULFILLABLE,
-        );
-      }
-    });
-  },
-);
+  });
+};
 
 const isActiveBuy = (sale?: TokenTradeOrder) =>
   sale?.type === TokenTradeOrderType.BUY && sale?.status === TokenTradeOrderStatus.ACTIVE;

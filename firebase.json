@@ -5,16 +5,6 @@
     "indexes": "firestore.indexes.json"
   },
   "functions": {
-    "predeploy": [
-      "npm run build:functions",
-      "cp -r packages/interfaces packages/functions/interfaces",
-      "sed -i.bu 's/\"*\"/\"file:.\\/interfaces\"/g' packages/functions/package.json",
-      "rm packages/functions/package.json.bu"
-    ],
-    "postdeploy": [
-      "sed -i.bu 's/\"file:.\\/interfaces\"/\"*\"/g' packages/functions/package.json",
-      "rm packages/functions/package.json.bu"
-    ],
     "source": "packages/functions"
   },
   "emulators": {

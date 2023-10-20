@@ -3,12 +3,13 @@ import { build5Db } from '../../firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
+import { Context } from '../common';
 import { getPublicSaleTimeFrames, shouldSetPublicSaleTimeFrames } from './common';
 
-export const setTokenAvailableForSaleControl = async (
-  owner: string,
-  params: SetTokenForSaleRequest,
-) => {
+export const setTokenAvailableForSaleControl = async ({
+  owner,
+  params,
+}: Context<SetTokenForSaleRequest>) => {
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
 
   await build5Db().runTransaction(async (transaction) => {

@@ -8,10 +8,6 @@ export class ProposalStartDateMin {
   public static value = 5 * 60 * 1000;
 }
 
-export class AppCheck {
-  public static enabled = true;
-}
-
 export enum URL_PATHS {
   NFT = 'nft',
   SPACE = 'space',

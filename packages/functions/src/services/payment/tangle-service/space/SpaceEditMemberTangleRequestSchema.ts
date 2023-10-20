@@ -1,5 +1,5 @@
 import { SpaceMemberUpsertTangleRequest, TangleRequestType } from '@build-5/interfaces';
-import { editSpaceMemberSchema } from '../../../../runtime/firebase/space/SpaceEditMemberRequestSchema';
+import { editSpaceMemberSchema } from '../../../../controls/space/SpaceEditMemberRequestSchema';
 import { toJoiObject } from '../../../joi/common';
 import { baseTangleSchema } from '../common';
 

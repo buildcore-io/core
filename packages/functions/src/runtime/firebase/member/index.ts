@@ -1,29 +1,5 @@
-import { WEN_FUNC, WenError } from '@build-5/interfaces';
-import cors from 'cors';
-import * as functions from 'firebase-functions/v2';
-import { createMemberControl } from '../../../controls/member/member.create';
-import { updateMemberControl } from '../../../controls/member/member.update';
-import { onRequest, onRequestConfig } from '../../../firebase/functions/onRequest';
-import { assertValidationAsync } from '../../../utils/schema.utils';
-import { createMemberSchema } from './CreateMemberRequestSchema';
-import { updateMemberSchema } from './UpdateMemberRequestSchema';
+import { WEN_FUNC } from '@build-5/interfaces';
+import { https } from '../../..';
 
-export const createMember = functions.https.onRequest(
-  onRequestConfig(WEN_FUNC.createMember),
-  (req, res) =>
-    cors({ origin: true })(req, res, async () => {
-      try {
-        const address = req.body.data;
-        await assertValidationAsync(createMemberSchema, { address });
-        res.send({ data: await createMemberControl(address) });
-      } catch {
-        res.status(401);
-        res.send({ data: WenError.address_must_be_provided });
-      }
-    }),
-);
-
-export const updateMember = onRequest(WEN_FUNC.updateMember)(
-  updateMemberSchema,
-  updateMemberControl,
-);
+export const createMember = https[WEN_FUNC.createMember];
+export const updateMember = https[WEN_FUNC.updateMember];

@@ -17,8 +17,9 @@ import { generateRandomAmount } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 
-export const claimSpaceControl = async (owner: string, params: SpaceClaimRequest) => {
+export const claimSpaceControl = async ({ owner, params }: Context<SpaceClaimRequest>) => {
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
   const space = await spaceDocRef.get<Space>();
   if (!space) {

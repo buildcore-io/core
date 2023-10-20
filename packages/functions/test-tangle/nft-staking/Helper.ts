@@ -242,10 +242,12 @@ export class Helper {
       {},
     );
     const refUnlocks = Object.keys(outputs).map(() => new ReferenceUnlock(0));
-    return await submitBlock(this.walletService!, essence, [
+    const blockId = await submitBlock(this.walletService!, essence, [
       await createUnlock(essence, sourceAddress),
       ...refUnlocks,
     ]);
+    await build5Db().doc(`blocks/${blockId}`).create({ blockId });
+    return blockId;
   };
 
   public withdrawNftAndAwait = async (nft: string) => {

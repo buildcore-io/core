@@ -1,8 +1,9 @@
 import { COL, Proposal, ProposalCreateRequest, SUB_COL } from '@build-5/interfaces';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { createProposal } from '../../services/payment/tangle-service/proposal/ProposalCreateService';
+import { Context } from '../common';
 
-export const createProposalControl = async (owner: string, params: ProposalCreateRequest) => {
+export const createProposalControl = async ({ owner, params }: Context<ProposalCreateRequest>) => {
   const { proposal, proposalOwner } = await createProposal(owner, { ...params });
 
   const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);

@@ -52,7 +52,7 @@ describe('Token minting', () => {
   });
 });
 
-const VAULT_MNEMONIC =
-  'silent boost spin repeat scene planet similar sibling pink rely require castle enact drum fashion menu room cattle argue over carpet sustain slow artist';
-const MINTED_TOKEN_ID =
-  '0x08be19ed1c31bae0f1f3aa17be7f3de0ead117e012f94c1d9448a0628ab6c4d2ec0100000000';
+export const VAULT_MNEMONIC =
+  'wreck detail wheat pony leg rib grit width clog nominee giggle behave beef boy help maple robot avocado orphan spider exist hair fury tomato';
+export const MINTED_TOKEN_ID =
+  '0x08e855e4178b569d03e6866aebda32ac8de6926a98d286bdd35ff72cdffbcc92a80100000000';

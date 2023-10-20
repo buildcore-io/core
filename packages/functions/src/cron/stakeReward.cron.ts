@@ -16,7 +16,6 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions/v2';
 import { isEmpty, last } from 'lodash';
 import { build5Db, getSnapshot } from '../firebase/firestore/build5Db';
 import { serverTime } from '../utils/dateTime.utils';
@@ -31,7 +30,7 @@ export const stakeRewardCronTask = async () => {
       const { totalAirdropped, totalStaked } = await executeStakeRewardDistribution(stakeReward);
       await stakeRewardDocRef.update({ totalStaked, totalAirdropped });
     } catch (error) {
-      functions.logger.error('Stake reward error', stakeReward.uid, error);
+      console.error('Stake reward error', stakeReward.uid, error);
       await stakeRewardDocRef.update({ status: StakeRewardStatus.ERROR });
     }
   }

@@ -35,8 +35,12 @@ import { invalidArgument } from '../../utils/error.utils';
 import { createAliasOutput } from '../../utils/token-minting-utils/alias.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 
-export const mintCollectionOrderControl = async (owner: string, params: CollectionMintRequest) => {
+export const mintCollectionOrderControl = async ({
+  owner,
+  params,
+}: Context<CollectionMintRequest>) => {
   const network = params.network as Network;
 
   const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();

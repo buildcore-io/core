@@ -36,7 +36,7 @@ describe('Stake reward test test', () => {
       await requestMintedTokenFromFaucet(
         helper.walletService!,
         tmp,
-        helper.TOKEN_ID,
+        helper.MINTED_TOKEN_ID,
         helper.VAULT_MNEMONIC,
         100,
       );

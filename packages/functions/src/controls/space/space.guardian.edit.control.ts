@@ -7,9 +7,11 @@ import {
 } from '@build-5/interfaces';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { addRemoveGuardian } from '../../services/payment/tangle-service/space/SpaceGuardianService';
+import { Context } from '../common';
 
 export const editGuardianControl =
-  (type: ProposalType) => async (owner: string, params: SpaceMemberUpsertRequest) => {
+  (type: ProposalType) =>
+  async ({ owner, params }: Context<SpaceMemberUpsertRequest>) => {
     const { proposal, voteTransaction, members } = await addRemoveGuardian(
       owner,
       { ...params },

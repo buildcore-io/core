@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   COL,
+  CreateAirdropsRequest,
   StakeType,
   TRANSACTION_AUTO_EXPIRY_MS,
   Token,
@@ -16,15 +17,18 @@ import {
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
 import { build5Db } from '../../firebase/firestore/build5Db';
-import { CreateAirdropsRequest } from '../../runtime/firebase/token/base/TokenAirdropRequestSchema';
 import { WalletService } from '../../services/wallet/wallet.service';
 import { packBasicOutput } from '../../utils/basic-output.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 
-export const airdropMintedTokenControl = async (owner: string, params: CreateAirdropsRequest) => {
+export const airdropMintedTokenControl = async ({
+  owner,
+  params,
+}: Context<CreateAirdropsRequest>) => {
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
   await build5Db().runTransaction(async (transaction) => {
     const token = await transaction.get<Token>(tokenDocRef);
@@ -80,7 +84,7 @@ export const airdropMintedTokenControl = async (owner: string, params: CreateAir
     status: TokenDropStatus.DEPOSIT_NEEDED,
     orderId: order.uid,
     sourceAddress: targetAddress.bech32,
-    stakeType: drop.stakeType || StakeType.DYNAMIC,
+    stakeType: (drop.stakeType as StakeType) || StakeType.DYNAMIC,
   }));
 
   const chunks = chunk(airdrops, 500);

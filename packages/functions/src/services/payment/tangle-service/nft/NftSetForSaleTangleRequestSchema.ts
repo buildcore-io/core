@@ -1,5 +1,5 @@
 import { NftSetForSaleTangleRequest, TangleRequestType } from '@build-5/interfaces';
-import { baseNftSetForSaleSchema } from '../../../../runtime/firebase/nft/NftSetForSaleRequestSchema';
+import { baseNftSetForSaleSchema } from '../../../../controls/nft/NftSetForSaleRequestSchema';
 import { toJoiObject } from '../../../joi/common';
 import { baseTangleSchema } from '../common';
 

@@ -246,7 +246,9 @@ export class Helper {
     );
 
     const unlocks = [await createUnlock(essence, sourceAddress), new ReferenceUnlock(0)];
-    return await submitBlock(this.walletService!, essence, unlocks);
+    const blockId = await submitBlock(this.walletService!, essence, unlocks);
+    await build5Db().doc(`blocks/${blockId}`).create({ blockId });
+    return blockId;
   };
 
   public withdrawNftAndAwait = async (nft: string) => {

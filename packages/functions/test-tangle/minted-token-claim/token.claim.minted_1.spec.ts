@@ -44,7 +44,7 @@ describe('Token minting', () => {
   });
 });
 
-const VAULT_MNEMONIC =
-  'suit buyer board limit suspect cycle month promote wolf company smile salt banner arrest burden raccoon chat ridge novel gallery diary roast coach visual';
-const MINTED_TOKEN_ID =
-  '0x084880278c0a02f22f3fe388edd51a340be1c22e31a572307e44296d639bf359d80100000000';
+export const VAULT_MNEMONIC =
+  'egg festival about walnut drama exclude thrive chest edge hollow miss civil turkey april toast survey already mail sign fire exile rack kidney wagon';
+export const MINTED_TOKEN_ID =
+  '0x0844694a6b67ba375246148afd9cca94d7a3d06e91d77c51f2cc4e68dcb69508ba0100000000';

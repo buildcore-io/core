@@ -202,7 +202,6 @@ const saveToken = async (space: string, guardian: string) => {
 };
 
 export const VAULT_MNEMONIC =
-  'media income depth opera health hybrid person expect supply kid napkin science maze believe they inspire hockey random escape size below monkey lemon veteran';
-
+  'figure random fitness double guard write auction penalty mimic office capital asthma laptop rifle club chuckle organ era prepare unit road echo bundle shrug';
 export const MINTED_TOKEN_ID =
-  '0x08f56bb2eefc47c050e67f8ba85d4a08e1de5ac0580fb9e80dc2f62eab97f944350100000000';
+  '0x08f33de73663373e0c0fa11cb4c93bf83c7905357573882a21a001d2ddc176d57e0100000000';

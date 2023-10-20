@@ -8,3 +8,9 @@ export interface File extends BaseRecord {
   uid: string;
   ipfsCid: string;
 }
+
+export enum ImageWidth {
+  tb = '200',
+  md = '680',
+  lg = '1600',
+}

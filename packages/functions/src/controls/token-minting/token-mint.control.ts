@@ -33,8 +33,9 @@ import {
   getUnclaimedAirdropTotalValue,
 } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 
-export const mintTokenControl = (owner: string, params: TokenMintRequest) =>
+export const mintTokenControl = ({ owner, params }: Context<TokenMintRequest>) =>
   build5Db().runTransaction(async (transaction) => {
     const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
     const token = await transaction.get<Token>(tokenDocRef);

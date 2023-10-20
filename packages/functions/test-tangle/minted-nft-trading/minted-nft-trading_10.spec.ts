@@ -45,7 +45,7 @@ describe('Minted nft trading', () => {
     );
     await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
 
-    await awaitLedgerInclusionState(blockId, helper.tangleOrder.network);
+    await awaitLedgerInclusionState(blockId);
 
     await helper.walletService!.send(
       address,

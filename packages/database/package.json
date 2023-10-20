@@ -24,6 +24,6 @@
     "@types/lodash": "^4.14.197",
     "dotenv": "^16.3.1",
     "glob": "8.0.3",
-    "typescript": "^5.2.2"
+    "typescript": "4.9.5"
   }
 }

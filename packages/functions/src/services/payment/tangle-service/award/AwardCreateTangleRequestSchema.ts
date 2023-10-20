@@ -7,7 +7,7 @@ import Joi from 'joi';
 import {
   awardBageSchema as baseAwardBageSchema,
   awardCreateSchema as baseAwardCreateSchema,
-} from '../../../../runtime/firebase/award/AwardCreateRequestSchema';
+} from '../../../../controls/award/AwardCreateRequestSchema';
 import { toJoiObject } from '../../../joi/common';
 import { baseTangleSchema } from '../common';
 

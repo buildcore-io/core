@@ -10,11 +10,12 @@ import dayjs from 'dayjs';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
+import { Context } from '../common';
 
-export const addOwnerControl = async (
-  owner: string,
-  params: AwardAddOwnerRequest,
-): Promise<AwardOwner> => {
+export const addOwnerControl = async ({
+  owner,
+  params,
+}: Context<AwardAddOwnerRequest>): Promise<AwardOwner> => {
   const awardDocRef = build5Db().doc(`${COL.AWARD}/${params.uid}`);
   const award = await awardDocRef.get<Award>();
   if (!award) {

@@ -8,7 +8,6 @@ import {
   Space,
   Token,
 } from '@build-5/interfaces';
-import * as functions from 'firebase-functions/v2';
 import { build5Db } from '../firebase/firestore/build5Db';
 import { awardToIpfsMetadata } from '../services/payment/award/award-service';
 import {
@@ -139,7 +138,7 @@ const setMediaStatusToError = async (col: COL, uid: string, errorCount: number, 
   };
   if (errorCount >= MAX_WALLET_RETRY) {
     data.mediaStatus = MediaStatus.ERROR;
-    functions.logger.error(col, uid, 'Image upload error', error);
+    console.error(col, uid, 'Image upload error', error);
   }
   const docRef = build5Db().doc(`${col}/${uid}`);
   await docRef.update(data);

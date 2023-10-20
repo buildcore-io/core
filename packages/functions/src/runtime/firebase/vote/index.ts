@@ -1,6 +1,4 @@
 import { WEN_FUNC } from '@build-5/interfaces';
-import { voteControl } from '../../../controls/vote.control';
-import { onRequest } from '../../../firebase/functions/onRequest';
-import { voteSchema } from './VoteRequestSchema';
+import { https } from '../../..';
 
-export const voteController = onRequest(WEN_FUNC.voteController)(voteSchema, voteControl);
+export const voteController = https[WEN_FUNC.voteController];

@@ -23,11 +23,12 @@ import {
   tokenOrderTransactionDocId,
 } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 
-export const creditTokenControl = async (
-  owner: string,
-  params: CreditTokenRequest,
-): Promise<Transaction> => {
+export const creditTokenControl = async ({
+  owner,
+  params,
+}: Context<CreditTokenRequest>): Promise<Transaction> => {
   const tranId = getRandomEthAddress();
   const creditTranDoc = build5Db().doc(`${COL.TRANSACTION}/${tranId}`);
 

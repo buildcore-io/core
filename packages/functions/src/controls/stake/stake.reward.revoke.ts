@@ -23,11 +23,12 @@ import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 
-export const removeStakeRewardControl = async (
-  owner: string,
-  params: TokenStakeRewardsRemoveRequest,
-) => {
+export const removeStakeRewardControl = async ({
+  owner,
+  params,
+}: Context<TokenStakeRewardsRemoveRequest>) => {
   const stakeRewardIds = params.stakeRewardIds as string[];
   const stakeRewardPromises = stakeRewardIds.map(async (stakeId) => {
     const docRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeId}`);

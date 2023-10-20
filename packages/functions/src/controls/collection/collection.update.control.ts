@@ -12,16 +12,19 @@ import {
 import dayjs from 'dayjs';
 import { isEmpty, last, set } from 'lodash';
 import { build5Db, getSnapshot } from '../../firebase/firestore/build5Db';
-import { updateMintedCollectionSchemaObject } from '../../runtime/firebase/collection/CollectionUpdateMintedRequestSchema';
-import { updateCollectionSchemaObject } from '../../runtime/firebase/collection/CollectionUpdateRequestSchema';
-import { UidSchemaObject } from '../../runtime/firebase/common';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertValidationAsync } from '../../utils/schema.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
+import { Context, UidSchemaObject } from '../common';
+import { updateMintedCollectionSchemaObject } from './CollectionUpdateMintedRequestSchema';
+import { updateCollectionSchemaObject } from './CollectionUpdateRequestSchema';
 import { populateTokenUidOnDiscounts } from './common';
 
-export const updateCollectionControl = async (owner: string, rawParams: UidSchemaObject) => {
+export const updateCollectionControl = async ({
+  owner,
+  params: rawParams,
+}: Context<UidSchemaObject>) => {
   const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${rawParams.uid}`);
   const collection = await collectionDocRef.get<Collection>();
   if (!collection) {

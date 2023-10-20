@@ -72,7 +72,7 @@ describe('Transaction trigger spec', () => {
   });
 });
 
-const VAULT_MNEMONIC =
-  'crouch violin broom degree diet primary juice vacuum crouch invite cotton endorse zebra mosquito dawn evil motion turkey apple secret indicate miracle lady husband';
-const MINTED_TOKEN_ID =
-  '0x08a7d756feb7427a5e31b152fb425ede7ee938a8af0b0e2730ea809c8435022ecd0100000000';
+export const VAULT_MNEMONIC =
+  'metal access lucky twelve glare museum craft bullet symbol photo manage almost approve rich piano clown cargo race town few story fit bomb volcano';
+export const MINTED_TOKEN_ID =
+  '0x08dad66e6994b77a07e02448707b27f220e1a8b10a48687a3601734327c74b10a60100000000';

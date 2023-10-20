@@ -18,14 +18,12 @@ import { getNftMutableMetadata } from './metadataNft/getNftMutableMetadata';
 import { getNftMutableMetadataHistory } from './metadataNft/getNftMutableMetadataHistory';
 import { sendLiveUpdates } from './sendLiveUpdates';
 
-const port = process.env.PORT || 3000;
+const port = 8080;
 const app = express();
 
 app.use(cors());
 
-Object.values(ApiRoutes).forEach((route) => {
-  app.get('/api' + route, (req, res) => onConnection(req.url, res));
-});
+app.get('/*', (req, res) => onConnection(req.url, res));
 
 const wsServer = new ws.Server({ noServer: true });
 

@@ -2,7 +2,6 @@ import { Collection, KEY_NAME_TANGLE, Nft, Token } from '@build-5/interfaces';
 import { CarReader } from '@ipld/car';
 import * as dagPb from '@ipld/dag-pb';
 import { randomUUID } from 'crypto';
-import * as functions from 'firebase-functions/v2';
 import fs from 'fs';
 import { FsBlockStore as Blockstore } from 'ipfs-car/blockstore/fs';
 import { pack } from 'ipfs-car/pack';
@@ -28,7 +27,7 @@ export const packCar = async (directory: string) => {
     const car = await CarReader.fromIterable(out);
     return { car, cid: root.toString() };
   } catch (error) {
-    functions.logger.error('Pack car error', error);
+    console.error('Pack car error', error);
     throw error;
   } finally {
     await blockstore.close();

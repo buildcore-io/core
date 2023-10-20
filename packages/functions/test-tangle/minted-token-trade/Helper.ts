@@ -174,7 +174,6 @@ export const dummyTokenId =
   '0x080c409a8c0ffa795676e55f24e0223e5b48dbe2b1bc4314140333543b5e7e8d360100000000';
 
 export const VAULT_MNEMONIC =
-  'offer kingdom rate never hurt follow wrestle cloud alien admit bird usage avoid cloth soldier evidence crawl harsh electric wheat ten mushroom glare reject';
-
+  'dad core rival blush concert cool aunt drum pupil youth original example issue around absent amused alley parrot blade intact visa noise slam slab';
 export const MINTED_TOKEN_ID =
-  '0x085f6308dd034c70ea90b4e2600c4f8fb65d0b53504a0d96e37ce8641a8835d2110100000000';
+  '0x0808ee67386034f8c76b331745655a3eff500cb7ee0875f89213b2c826a20ddc570100000000';

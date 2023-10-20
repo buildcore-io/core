@@ -18,8 +18,12 @@ import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 
-export const importMintedTokenControl = async (owner: string, params: ImportMintedTokenRequest) =>
+export const importMintedTokenControl = async ({
+  owner,
+  params,
+}: Context<ImportMintedTokenRequest>) =>
   build5Db().runTransaction(async (transaction) => {
     await assertIsGuardian(params.space, owner);
 

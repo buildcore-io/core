@@ -39,10 +39,10 @@ import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 
 export class Helper {
-  public TOKEN_ID =
-    '0x087dbad2655a6b8846f51a91973745e583657614c5160e0ab969309c0322132f8b0100000000';
+  public MINTED_TOKEN_ID =
+    '0x08b97105c2c2a57205798940be8d955a2e5491a99229540bbcd9c98530660952bc0100000000';
   public VAULT_MNEMONIC =
-    'woman bulk engine voice travel tobacco other fiscal dress life text gossip tag situate skill social item dance friend scissors small setup lava key';
+    'ask vintage language rescue slab gas soda rebel delay crew vault bunker march palm supply novel whisper saddle enhance size embark minute penalty buyer';
 
   public member: Member | undefined;
   public memberAddress: AddressDetails | undefined;
@@ -74,7 +74,7 @@ export class Helper {
     await requestMintedTokenFromFaucet(
       this.walletService!,
       this.memberAddress!,
-      this.TOKEN_ID,
+      this.MINTED_TOKEN_ID,
       this.VAULT_MNEMONIC,
       100,
     );
@@ -93,7 +93,7 @@ export class Helper {
       name: 'MyToken',
       status: TokenStatus.MINTED,
       mintingData: {
-        tokenId: this.TOKEN_ID,
+        tokenId: this.MINTED_TOKEN_ID,
         network: Network.RMS,
         vaultAddress: vaultAddress.bech32,
       },
@@ -129,7 +129,7 @@ export class Helper {
       expiration: expiresAt
         ? { expiresAt, returnAddressBech32: this.memberAddress!.bech32 }
         : undefined,
-      nativeTokens: [{ id: this.TOKEN_ID, amount: BigInt(amount) }],
+      nativeTokens: [{ id: this.MINTED_TOKEN_ID, amount: BigInt(amount) }],
     });
     await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
     const query = build5Db().collection(COL.STAKE).where('orderId', '==', order.uid);

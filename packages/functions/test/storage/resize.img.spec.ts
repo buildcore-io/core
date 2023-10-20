@@ -1,6 +1,5 @@
-import { Bucket } from '@build-5/interfaces';
+import { Bucket, ImageWidth } from '@build-5/interfaces';
 import { build5Storage } from '../../src/firebase/storage/build5Storage';
-import { ImageWidth } from '../../src/triggers/storage/resize.img.trigger';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { wait } from '../controls/common';
 

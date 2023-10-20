@@ -150,7 +150,9 @@ export class Helper {
       new ReferenceUnlock(0),
     ];
 
-    return await submitBlock(wallet, essence, unlocks);
+    const blockId = await submitBlock(wallet, essence, unlocks);
+    await build5Db().doc(`blocks/${blockId}`).create({ blockId });
+    return blockId;
   };
 }
 

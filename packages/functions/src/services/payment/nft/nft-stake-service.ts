@@ -19,7 +19,6 @@ import {
   Utils,
 } from '@iota/sdk';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions/v2';
 import { cloneDeep, get } from 'lodash';
 import { build5Db } from '../../../firebase/firestore/build5Db';
 import { intToU32 } from '../../../utils/common.utils';
@@ -85,7 +84,7 @@ export class NftStakeService {
     } catch (error: any) {
       const payment = await this.transactionService.createPayment(order, match, true);
       this.transactionService.createNftCredit(payment, match, error, customErrorParams);
-      functions.logger.error(order.uid, payment.uid, error, customErrorParams);
+      console.error(order.uid, payment.uid, error, customErrorParams);
     }
   };
 

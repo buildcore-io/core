@@ -41,7 +41,7 @@ describe('Token minting', () => {
   });
 });
 
-const VAULT_MNEMONIC =
-  'you right side purity bracket orphan control strong affair east pet bean future file spy wet witness flat garden flavor mechanic path load amused';
-const MINTED_TOKEN_ID =
-  '0x08a0dfb75950fc14feb84f6152aa41d518959831f8f4253ec355ee1dab5747f37e0100000000';
+export const VAULT_MNEMONIC =
+  'grief supreme rural sugar coral finish muffin giraffe require slice hurdle annual opera concert skirt enough hood hollow clip inner home return almost regular';
+export const MINTED_TOKEN_ID =
+  '0x083e0ec0612f9429e95cc23bc9110a2a119a65f0a4cdf5cccabb99bb135e5afb590100000000';

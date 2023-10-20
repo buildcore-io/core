@@ -86,7 +86,7 @@ describe('Stake reward test test', () => {
     await requestMintedTokenFromFaucet(
       helper.walletService!,
       helper.memberAddress!,
-      helper.TOKEN_ID,
+      helper.MINTED_TOKEN_ID,
       helper.VAULT_MNEMONIC,
       1000,
     );
@@ -102,7 +102,7 @@ describe('Stake reward test test', () => {
     await requestMintedTokenFromFaucet(
       helper.walletService!,
       member2Address,
-      helper.TOKEN_ID,
+      helper.MINTED_TOKEN_ID,
       helper.VAULT_MNEMONIC,
       500,
     );
@@ -142,7 +142,7 @@ describe('Stake reward test test', () => {
     await requestMintedTokenFromFaucet(
       helper.walletService!,
       vaultAddress,
-      helper.TOKEN_ID,
+      helper.MINTED_TOKEN_ID,
       helper.VAULT_MNEMONIC,
       149,
     );
@@ -251,7 +251,7 @@ describe('Stake reward test test', () => {
     await requestMintedTokenFromFaucet(
       helper.walletService!,
       vaultAddress,
-      helper.TOKEN_ID,
+      helper.MINTED_TOKEN_ID,
       helper.VAULT_MNEMONIC,
       149,
     );
@@ -289,7 +289,7 @@ describe('Stake reward test test', () => {
     await requestMintedTokenFromFaucet(
       helper.walletService!,
       vaultAddress,
-      helper.TOKEN_ID,
+      helper.MINTED_TOKEN_ID,
       helper.VAULT_MNEMONIC,
       149,
     );
@@ -346,7 +346,7 @@ describe('Stake reward test test', () => {
     await requestMintedTokenFromFaucet(
       helper.walletService!,
       vaultAddress,
-      helper.TOKEN_ID,
+      helper.MINTED_TOKEN_ID,
       helper.VAULT_MNEMONIC,
       149,
     );

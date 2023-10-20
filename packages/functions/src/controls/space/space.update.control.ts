@@ -24,8 +24,9 @@ import { cleanupParams } from '../../utils/schema.utils';
 import { hasActiveEditProposal } from '../../utils/space.utils';
 import { assertIsGuardian, getTokenForSpace } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 
-export const updateSpaceControl = async (owner: string, params: SpaceUpdateRequest) => {
+export const updateSpaceControl = async ({ owner, params }: Context<SpaceUpdateRequest>) => {
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
   const space = await spaceDocRef.get<Space>();
 

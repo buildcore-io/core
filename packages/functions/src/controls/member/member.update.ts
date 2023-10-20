@@ -10,11 +10,9 @@ import {
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { invalidArgument } from '../../utils/error.utils';
 import { cleanupParams } from '../../utils/schema.utils';
+import { Context } from '../common';
 
-export const updateMemberControl = async (
-  owner: string,
-  params: MemberUpdateRequest,
-): Promise<Member> => {
+export const updateMemberControl = async ({ owner, params }: Context<MemberUpdateRequest>) => {
   const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
   const member = await memberDocRef.get<Member>();
   if (!member) {

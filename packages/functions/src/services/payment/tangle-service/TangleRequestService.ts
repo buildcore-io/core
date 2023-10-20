@@ -8,7 +8,6 @@ import {
   Transaction,
   WenError,
 } from '@build-5/interfaces';
-import * as functions from 'firebase-functions/v2';
 import { get } from 'lodash';
 import { build5Db } from '../../../firebase/firestore/build5Db';
 import { getOutputMetadata } from '../../../utils/basic-output.utils';
@@ -73,7 +72,7 @@ export class TangleRequestService {
         );
       }
     } catch (error) {
-      functions.logger.warn(owner, error);
+      console.warn(owner, error);
       if (!payment) {
         payment = await this.transactionService.createPayment({ ...order, member: owner }, match);
       }

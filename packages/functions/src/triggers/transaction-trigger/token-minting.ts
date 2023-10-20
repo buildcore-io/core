@@ -17,7 +17,6 @@ import {
   Utils,
 } from '@iota/sdk';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions/v2';
 import { build5Db } from '../../firebase/firestore/build5Db';
 import { getAddress } from '../../utils/address.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -37,7 +36,7 @@ export const onTokenMintingUpdate = async (transaction: Transaction) => {
       break;
     }
     default: {
-      functions.logger.error('Unsupported executable transaction type', transaction);
+      console.error('Unsupported executable transaction type', transaction);
       throw Error('Unsupported executable transaction type ' + transaction.type);
     }
   }
