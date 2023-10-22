@@ -1,7 +1,7 @@
 import { build5Db } from '@build-5/database';
 import { COL, Project } from '@build-5/interfaces';
-import { Context } from '../../runtime/firebase/common';
 import { assertIsProjectAdmin } from '../../utils/common.utils';
+import { Context } from '../common';
 
 export const deactivateProjectControl = async ({ project, owner }: Context): Promise<Project> => {
   await assertIsProjectAdmin(project, owner);

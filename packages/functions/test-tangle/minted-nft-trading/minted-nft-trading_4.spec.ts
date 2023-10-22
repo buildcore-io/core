@@ -11,42 +11,36 @@ import {
   TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
-import { IndexerPluginClient } from '@iota/iota.js-next';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
-import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
 describe('Minted nft trading', () => {
   const helper = new Helper();
-  let tangleOrder: Transaction;
-
-  beforeAll(async () => {
-    await helper.beforeAll();
-    tangleOrder = await getTangleOrder();
-  });
-
-  beforeEach(async () => {
-    await helper.beforeEach();
-  });
 
   it('Should purchase nft with tangle request', async () => {
+    await helper.beforeEach(Network.RMS);
     const address = await helper.walletService!.getNewIotaAddressDetails();
     await requestFundsFromFaucet(Network.RMS, address.bech32, 5 * MIN_IOTA_AMOUNT);
 
     await helper.createAndOrderNft();
     await helper.mintCollection();
 
-    await helper.walletService!.send(address, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
-      customMetadata: {
-        request: {
-          requestType: TangleRequestType.NFT_PURCHASE,
-          collection: helper.collection,
-          nft: helper.nft!.uid,
+    await helper.walletService!.send(
+      address,
+      helper.tangleOrder.payload.targetAddress!,
+      MIN_IOTA_AMOUNT,
+      {
+        customMetadata: {
+          request: {
+            requestType: TangleRequestType.NFT_PURCHASE,
+            collection: helper.collection,
+            nft: helper.nft!.uid,
+          },
         },
       },
-    });
+    );
     await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
 
     await wait(async () => {
@@ -65,15 +59,20 @@ describe('Minted nft trading', () => {
     expect(collection.nftsOnSale).toBe(1);
     expect(collection.nftsOnAuction).toBe(0);
 
-    await helper.walletService!.send(address, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
-      customMetadata: {
-        request: {
-          requestType: TangleRequestType.NFT_PURCHASE,
-          collection: helper.collection,
-          nft: helper.nft!.mintingData?.nftId,
+    await helper.walletService!.send(
+      address,
+      helper.tangleOrder.payload.targetAddress!,
+      MIN_IOTA_AMOUNT,
+      {
+        customMetadata: {
+          request: {
+            requestType: TangleRequestType.NFT_PURCHASE,
+            collection: helper.collection,
+            nft: helper.nft!.mintingData?.nftId,
+          },
         },
       },
-    });
+    );
 
     const nftDocRef = build5Db().doc(`${COL.NFT}/${helper.nft?.uid}`);
     await wait(async () => {
@@ -90,8 +89,9 @@ describe('Minted nft trading', () => {
       return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
     });
 
-    const indexer = new IndexerPluginClient(helper.walletService!.client);
-    const nftOutputIds = await indexer.nfts({ addressBech32: address.bech32 });
+    const nftOutputIds = await helper.walletService!.client.nftOutputIds([
+      { address: address.bech32 },
+    ]);
     expect(nftOutputIds.items.length).toBe(1);
 
     collection = <Collection>await collectionDocRef.get();

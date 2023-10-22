@@ -15,9 +15,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
-import { IotaWallet } from '../src/services/wallet/IotaWalletService';
-import { SmrWallet } from '../src/services/wallet/SmrWalletService';
-import { WalletService } from '../src/services/wallet/wallet';
 import { getAddress } from '../src/utils/address.utils';
 import { dateToTimestamp } from '../src/utils/dateTime.utils';
 import * as wallet from '../src/utils/wallet.utils';
@@ -29,7 +26,7 @@ import {
   wait,
 } from '../test/controls/common';
 import { getWallet } from '../test/set-up';
-import { getRmsSoonTangleResponse, getTangleOrder } from './common';
+import { getTangleOrder } from './common';
 import { requestFundsFromFaucet } from './faucet';
 
 let walletSpy: any;
@@ -54,10 +51,6 @@ describe('Address validation', () => {
   let member: string;
   let space: string;
   let tangleOrder: Transaction;
-
-  beforeAll(async () => {
-    tangleOrder = await getTangleOrder();
-  });
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
@@ -164,128 +157,62 @@ describe('Address validation', () => {
       return snap.length === 1 && snap[0].payload?.walletReference?.confirmed;
     });
 
-    const balanace = await walletService.getBalance(tmpAddress.bech32);
-    expect(balanace).toBe(order.payload.amount);
+    const { amount } = await walletService.getBalance(tmpAddress.bech32);
+    expect(amount).toBe(order.payload.amount);
   });
 
-  it.each([false, true])(
-    'Should validate rms address with tangle request',
-    async (validateSpace) => {
-      const wallet = await WalletService.newWallet(Network.RMS);
-      const tmp = await wallet.getNewIotaAddressDetails();
+  it.each([
+    { network: Network.RMS, validateSpace: true },
+    { network: Network.RMS, validateSpace: false },
+    { network: Network.ATOI, validateSpace: true },
+    { network: Network.ATOI, validateSpace: false },
+  ])('Should validate address with tangle request', async ({ network, validateSpace }) => {
+    tangleOrder = await getTangleOrder(network);
+    const wallet = await getWallet(network);
+    const tmp = await wallet.getNewIotaAddressDetails();
 
-      await build5Db()
-        .doc(`${COL.MEMBER}/${member}`)
-        .set({ validatedAddress: { [Network.RMS]: tmp.bech32 } }, true);
+    await build5Db()
+      .doc(`${COL.MEMBER}/${member}`)
+      .set({ validatedAddress: { [network]: tmp.bech32 } }, true);
 
-      if (validateSpace) {
-        space = (await createSpace(walletSpy, member)).uid;
-        await build5Db().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} });
-      }
-      await requestFundsFromFaucet(Network.RMS, tmp.bech32, 5 * MIN_IOTA_AMOUNT);
+    if (validateSpace) {
+      space = (await createSpace(walletSpy, member)).uid;
+      await build5Db().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} });
+    }
+    await requestFundsFromFaucet(network, tmp.bech32, 5 * MIN_IOTA_AMOUNT);
 
-      const request = {
-        requestType: TangleRequestType.ADDRESS_VALIDATION,
-      };
-      validateSpace && set(request, 'space', space);
-      await wallet.send(tmp, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
-        customMetadata: { request },
-      });
+    const request = {
+      requestType: TangleRequestType.ADDRESS_VALIDATION,
+    };
+    validateSpace && set(request, 'space', space);
+    await wallet.send(tmp, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
+      customMetadata: { request },
+    });
 
-      const query = build5Db()
-        .collection(COL.TRANSACTION)
-        .where('type', '==', TransactionType.CREDIT)
-        .where('member', '==', member);
+    const query = build5Db()
+      .collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.CREDIT)
+      .where('member', '==', member);
 
-      await wait(async () => {
-        const snap = await query.get<Transaction>();
-        return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
-      });
+    await wait(async () => {
+      const snap = await query.get<Transaction>();
+      return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
+    });
 
-      if (validateSpace) {
-        const spaceData = <Space>await build5Db().doc(`${COL.SPACE}/${space}`).get();
-        expect(spaceData.validatedAddress![Network.RMS]).toBe(tmp.bech32);
-      } else {
-        const memberData = <Member>await build5Db().doc(`${COL.MEMBER}/${member}`).get();
-        expect(memberData.validatedAddress![Network.RMS]).toBe(tmp.bech32);
-        expect(memberData.prevValidatedAddresses).toEqual([tmp.bech32]);
-      }
+    if (validateSpace) {
+      const spaceData = <Space>await build5Db().doc(`${COL.SPACE}/${space}`).get();
+      expect(spaceData.validatedAddress![network]).toBe(tmp.bech32);
+    } else {
+      const memberData = <Member>await build5Db().doc(`${COL.MEMBER}/${member}`).get();
+      expect(memberData.validatedAddress![network]).toBe(tmp.bech32);
+      expect(memberData.prevValidatedAddresses).toEqual([tmp.bech32]);
+    }
 
-      const snap = await build5Db()
-        .collection(COL.TRANSACTION)
-        .where('member', '==', member)
-        .where('payload.type', '==', TransactionPayloadType.TANGLE_TRANSFER)
-        .get();
-      expect(snap.length).toBe(1);
-    },
-  );
-
-  it.each([false, true])(
-    'Should validate atoi address with tangle request',
-    async (validateSpace) => {
-      const rmsWallet = (await WalletService.newWallet(Network.RMS)) as SmrWallet;
-      const rmsTmp = await rmsWallet.getNewIotaAddressDetails();
-      const atoiWallet = (await WalletService.newWallet(Network.ATOI)) as IotaWallet;
-      const atoiTmp = await atoiWallet.getNewIotaAddressDetails();
-      if (validateSpace) {
-        space = (await createSpace(walletSpy, member)).uid;
-        await build5Db().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} });
-        await build5Db()
-          .doc(`${COL.MEMBER}/${member}`)
-          .set({ validatedAddress: { [Network.RMS]: rmsTmp.bech32 } }, true);
-      }
-      const memberId = validateSpace ? member : rmsTmp.bech32;
-
-      await requestFundsFromFaucet(Network.RMS, rmsTmp.bech32, 5 * MIN_IOTA_AMOUNT);
-      await requestFundsFromFaucet(Network.ATOI, atoiTmp.bech32, 5 * MIN_IOTA_AMOUNT);
-
-      const request = {
-        requestType: TangleRequestType.ADDRESS_VALIDATION,
-        network: Network.ATOI,
-      };
-      validateSpace && set(request, 'space', space);
-      await rmsWallet.send(rmsTmp, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
-        customMetadata: { request },
-      });
-
-      let query = build5Db()
-        .collection(COL.TRANSACTION)
-        .where('member', '==', memberId)
-        .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
-      await wait(async () => {
-        const snap = await query.get<Transaction>();
-        return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
-      });
-      let snap = await query.get<Transaction>();
-      expect(snap.length).toBe(1);
-      const response = await getRmsSoonTangleResponse(snap[0], rmsWallet);
-      await atoiWallet.send(atoiTmp, response.address, response.amount, {});
-
-      query = build5Db()
-        .collection(COL.TRANSACTION)
-        .where('type', '==', TransactionType.CREDIT)
-        .where('member', '==', memberId);
-      await wait(async () => {
-        const snap = await query.get<Transaction>();
-        return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
-      });
-
-      if (validateSpace) {
-        const spaceData = <Space>await build5Db().doc(`${COL.SPACE}/${space}`).get();
-        expect(spaceData.validatedAddress![Network.ATOI]).toBe(atoiTmp.bech32);
-      } else {
-        const member = <Member>await build5Db().doc(`${COL.MEMBER}/${memberId}`).get();
-        expect(member.validatedAddress![Network.RMS]).toBe(rmsTmp.bech32);
-        expect(member.validatedAddress![Network.ATOI]).toBe(atoiTmp.bech32);
-        expect(member.prevValidatedAddresses).toBeUndefined();
-      }
-
-      snap = await build5Db()
-        .collection(COL.TRANSACTION)
-        .where('member', '==', memberId)
-        .where('payload.type', '==', TransactionPayloadType.TANGLE_TRANSFER)
-        .get();
-      expect(snap.length).toBe(0);
-    },
-  );
+    const snap = await build5Db()
+      .collection(COL.TRANSACTION)
+      .where('member', '==', member)
+      .where('payload.type', '==', TransactionPayloadType.TANGLE_TRANSFER)
+      .get();
+    expect(snap.length).toBe(1);
+  });
 });

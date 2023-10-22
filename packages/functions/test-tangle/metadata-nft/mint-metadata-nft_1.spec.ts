@@ -3,37 +3,28 @@ import {
   COL,
   Collection,
   MIN_IOTA_AMOUNT,
+  Network,
   Nft,
   Space,
   TangleRequestType,
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-import { IBasicOutput, ITransactionPayload, IndexerPluginClient } from '@iota/iota.js-next';
+import { BasicOutput, RegularTransactionEssence, TransactionPayload } from '@iota/sdk';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { getOutputMetadata } from '../../src/utils/basic-output.utils';
 import { wait } from '../../test/controls/common';
-import { getTangleOrder } from '../common';
 import { Helper } from './Helper';
 
 describe('Metadata nft', () => {
   const helper = new Helper();
-  let tangleOrder: Transaction;
-
-  beforeAll(async () => {
-    await helper.berforeAll();
-    tangleOrder = await getTangleOrder();
-  });
-
-  beforeEach(async () => {
-    await helper.beforeEach();
-  });
 
   it('Should mint metada nft', async () => {
+    await helper.beforeEach(Network.RMS);
     const metadata = { mytest: 'mytest', asd: 'asdasdasd' };
     const blockId = await helper.walletService.send(
       helper.memberAddress,
-      tangleOrder.payload.targetAddress!,
+      helper.tangleOrder.payload.targetAddress!,
       MIN_IOTA_AMOUNT,
       {
         customMetadata: {
@@ -68,11 +59,11 @@ describe('Metadata nft', () => {
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
     const credit = (await creditQuery.get<Transaction>())[0];
-    const block = await helper.walletService.client.block(
+    const block = await helper.walletService.client.getBlock(
       credit.payload.walletReference!.chainReference!,
     );
-    const payload = block.payload! as ITransactionPayload;
-    const output = payload.essence.outputs[0] as IBasicOutput;
+    const payload = block.payload! as TransactionPayload;
+    const output = (payload.essence as RegularTransactionEssence).outputs[0] as BasicOutput;
     const outputMetadata = getOutputMetadata(output);
 
     const nftQuery = build5Db().collection(COL.NFT).where('owner', '==', helper.member);
@@ -87,8 +78,7 @@ describe('Metadata nft', () => {
       aliasId: space!.alias!.aliasId,
     });
 
-    const indexer = new IndexerPluginClient(helper.walletService.client);
-    const items = (await indexer.basicOutputs({ tagHex: blockId })).items;
+    const items = (await helper.walletService.client.basicOutputIds([{ tag: blockId }])).items;
     expect(items.length).toBe(1);
   });
 });

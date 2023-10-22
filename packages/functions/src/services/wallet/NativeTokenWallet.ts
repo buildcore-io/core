@@ -1,17 +1,18 @@
 import { build5Db } from '@build-5/database';
 import { COL, Member, Token, Transaction } from '@build-5/interfaces';
 import {
-  IAliasOutput,
-  OutputTypes,
-  REFERENCE_UNLOCK_TYPE,
-  TransactionHelper,
-  UnlockTypes,
-} from '@iota/iota.js-next';
+  AliasOutputBuilderParams,
+  Client,
+  Output,
+  ReferenceUnlock,
+  UTXOInput,
+  Unlock,
+  Utils,
+} from '@iota/sdk';
 import { cloneDeep } from 'lodash';
 import { getAddress } from '../../utils/address.utils';
 import { mergeOutputs } from '../../utils/basic-output.utils';
-import { packEssence, packPayload, submitBlock } from '../../utils/block.utils';
-import { createUnlock } from '../../utils/smr.utils';
+import { createUnlock, packEssence, submitBlock } from '../../utils/block.utils';
 import {
   createFoundryOutput,
   getVaultAndGuardianOutput,
@@ -19,16 +20,19 @@ import {
 } from '../../utils/token-minting-utils/foundry.utils';
 import { getOwnedTokenTotal } from '../../utils/token-minting-utils/member.utils';
 import { getUnclaimedAirdropTotalValue } from '../../utils/token.utils';
-import { SmrParams, SmrWallet } from './SmrWalletService';
+import { AliasWallet } from './AliasWallet';
 import { MnemonicService } from './mnemonic';
-import { AliasWallet } from './smr-wallets/AliasWallet';
-import { setConsumedOutputIds } from './wallet';
+import { Wallet, WalletParams } from './wallet';
+import { setConsumedOutputIds } from './wallet.service';
 
 export class NativeTokenWallet {
-  constructor(private readonly wallet: SmrWallet) {}
+  private client: Client;
+  constructor(private readonly wallet: Wallet) {
+    this.client = this.wallet.client;
+  }
 
-  public mintFoundry = async (transaction: Transaction, params: SmrParams) => {
-    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress);
+  public mintFoundry = async (transaction: Transaction, params: WalletParams) => {
+    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress!);
     const sourceMnemonic = await MnemonicService.getData(sourceAddress.bech32);
 
     const outputsMap = await this.wallet.getOutputs(
@@ -36,7 +40,6 @@ export class NativeTokenWallet {
       sourceMnemonic.consumedOutputIds,
       false,
     );
-    const remainder = mergeOutputs(Object.values(outputsMap));
 
     const aliasWallet = new AliasWallet(this.wallet);
     const aliasOutputs = await aliasWallet.getAliasOutputs(
@@ -45,62 +48,62 @@ export class NativeTokenWallet {
     );
     const [aliasOutputId, aliasOutput] = Object.entries(aliasOutputs)[0];
 
-    const nextAliasOutput = cloneDeep(aliasOutput) as IAliasOutput;
-    nextAliasOutput.aliasId = TransactionHelper.resolveIdFromOutputId(aliasOutputId);
-    nextAliasOutput.stateIndex++;
-    nextAliasOutput.foundryCounter++;
+    const nextAliasOutput: AliasOutputBuilderParams = cloneDeep(aliasOutput);
+    nextAliasOutput.aliasId = Utils.computeAliasId(aliasOutputId);
+    nextAliasOutput.stateIndex!++;
+    nextAliasOutput.foundryCounter!++;
 
     const token = <Token>await build5Db().doc(`${COL.TOKEN}/${transaction.payload.token}`).get();
 
     const metadata = await tokenToFoundryMetadata(token);
-    const foundryOutput = createFoundryOutput(
+    const foundryOutput = await createFoundryOutput(
+      this.wallet,
       token.totalSupply,
-      nextAliasOutput,
+      await this.client.buildAliasOutput(nextAliasOutput),
       JSON.stringify(metadata),
-      this.wallet.info,
     );
 
     const totalDistributed =
       (await getOwnedTokenTotal(token.uid)) + (await getUnclaimedAirdropTotalValue(token.uid));
     const member = <Member>await build5Db().doc(`${COL.MEMBER}/${transaction.member}`).get();
-    const tokenId = TransactionHelper.constructTokenId(
+    const tokenId = Utils.computeFoundryId(
       nextAliasOutput.aliasId,
       foundryOutput.serialNumber,
       foundryOutput.tokenScheme.type,
     );
     const { vaultOutput, guardianOutput } = await getVaultAndGuardianOutput(
+      this.wallet,
       tokenId,
       token.totalSupply,
       totalDistributed,
       sourceAddress.bech32,
       getAddress(member, transaction.network!),
-      this.wallet.info,
     );
-    const constumedAmount = [foundryOutput, vaultOutput, guardianOutput].reduce(
+    const consumedAmount = [foundryOutput, vaultOutput, guardianOutput].reduce(
       (acc, act) => acc + Number(act?.amount || 0),
       0,
     );
-    remainder.amount = (Number(remainder.amount) - constumedAmount).toString();
 
-    const inputs = [...Object.keys(outputsMap), aliasOutputId].map(
-      TransactionHelper.inputFromOutputId,
-    );
-    const inputsCommitment = TransactionHelper.getInputsCommitment([
+    const inputs = [...Object.keys(outputsMap), aliasOutputId].map(UTXOInput.fromOutputId);
+    const inputsCommitment = Utils.computeInputsCommitment([
       ...Object.values(outputsMap),
       aliasOutput,
     ]);
 
     const baseOutputs = [nextAliasOutput, foundryOutput, vaultOutput, guardianOutput].filter(
       (o) => o !== undefined,
-    ) as OutputTypes[];
-    const outputs = Number(remainder.amount) ? [...baseOutputs, remainder] : baseOutputs;
-    const essence = packEssence(inputs, inputsCommitment, outputs, this.wallet, params);
-    const unlocks: UnlockTypes[] = [
-      createUnlock(essence, sourceAddress.keyPair),
-      { type: REFERENCE_UNLOCK_TYPE, reference: 0 },
-    ];
+    ) as Output[];
+    const outputs = [...baseOutputs];
+
+    const remainderParams = mergeOutputs(Object.values(outputsMap));
+    remainderParams.amount = (Number(remainderParams.amount) - consumedAmount).toString();
+    if (Number(remainderParams.amount)) {
+      outputs.push(await this.client.buildBasicOutput(remainderParams));
+    }
+    const essence = await packEssence(this.wallet, inputs, inputsCommitment, outputs, params);
+    const unlocks: Unlock[] = [await createUnlock(essence, sourceAddress), new ReferenceUnlock(0)];
 
     await setConsumedOutputIds(sourceAddress.bech32, Object.keys(outputsMap), [], [aliasOutputId]);
-    return submitBlock(this.wallet, packPayload(essence, unlocks));
+    return submitBlock(this.wallet, essence, unlocks);
   };
 }

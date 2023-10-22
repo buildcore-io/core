@@ -19,8 +19,8 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { head } from 'lodash';
-import { SmrWallet } from '../../services/wallet/SmrWalletService';
-import { WalletService } from '../../services/wallet/wallet';
+import { Wallet } from '../../services/wallet/wallet';
+import { WalletService } from '../../services/wallet/wallet.service';
 import { getAddress } from '../../utils/address.utils';
 import { getProject, getProjects } from '../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
@@ -47,7 +47,7 @@ const onPreMintedAirdropClaim = async (order: Transaction, token: Token) => {
     order,
     token,
     true,
-  )((transaction, airdrop) => {
+  )(async (transaction, airdrop) => {
     const airdropDocRef = build5Db().doc(`${COL.AIRDROP}/${airdrop.uid}`);
 
     const billPayment: Transaction = {
@@ -108,16 +108,23 @@ const onMintedAirdropClaim = async (order: Transaction, token: Token) => {
   const memberDocRef = build5Db().doc(`${COL.MEMBER}/${order.member}`);
   const member = (await memberDocRef.get<Member>())!;
 
-  const wallet = (await WalletService.newWallet(token.mintingData?.network!)) as SmrWallet;
+  const wallet = await WalletService.newWallet(token.mintingData?.network!);
   let storageDepositUsed = await claimOwnedMintedTokens(order, paymentsId, token, member, wallet);
 
   storageDepositUsed += await runInAirdropLoop(
     order,
     token,
-  )((transaction, airdrop) => {
+  )(async (transaction, airdrop) => {
     const airdropDocRef = build5Db().doc(`${COL.AIRDROP}/${airdrop.uid}`);
 
-    const billPayment = mintedDropToBillPayment(order, paymentsId, token, airdrop, member, wallet);
+    const billPayment = await mintedDropToBillPayment(
+      order,
+      paymentsId,
+      token,
+      airdrop,
+      member,
+      wallet,
+    );
     const billPaymentDocRef = build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
     transaction.create(billPaymentDocRef, billPayment);
 
@@ -189,7 +196,7 @@ const claimOwnedMintedTokens = (
   sourceTransaction: string[],
   token: Token,
   member: Member,
-  wallet: SmrWallet,
+  wallet: Wallet,
 ) =>
   build5Db().runTransaction(async (transaction) => {
     const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
@@ -211,7 +218,7 @@ const claimOwnedMintedTokens = (
       status: TokenDropStatus.UNCLAIMED,
     };
 
-    const billPayment = mintedDropToBillPayment(
+    const billPayment = await mintedDropToBillPayment(
       order,
       sourceTransaction,
       token,
@@ -234,17 +241,17 @@ const claimOwnedMintedTokens = (
     return billPayment.payload.amount!;
   });
 
-const mintedDropToBillPayment = (
+const mintedDropToBillPayment = async (
   order: Transaction,
   sourceTransaction: string[],
   token: Token,
   drop: TokenDrop,
   member: Member,
-  wallet: SmrWallet,
-): Transaction => {
+  wallet: Wallet,
+): Promise<Transaction> => {
   const memberAddress = getAddress(member, token.mintingData?.network!);
-  const output = dropToOutput(token, drop, memberAddress, wallet.info);
-  const nativeTokens = [{ id: head(output.nativeTokens)?.id!, amount: drop.count.toString() }];
+  const output = await dropToOutput(wallet, token, drop, memberAddress);
+  const nativeTokens = [{ id: head(output.nativeTokens)?.id!, amount: BigInt(drop.count) }];
   return {
     project: getProject(order),
     projects: getProjects([order]),
@@ -324,7 +331,7 @@ const airdropsQuery = (
 
 const runInAirdropLoop =
   (order: Transaction, token: Token, isPreMintedClaim?: boolean) =>
-  async (func: (transaction: ITransaction, airdrop: TokenDrop) => number) => {
+  async (func: (transaction: ITransaction, airdrop: TokenDrop) => Promise<number>) => {
     let storageDeposit = 0;
     for (let i = 0; i < LOOP_SIZE; ++i) {
       const snap = await airdropsQuery(
@@ -343,7 +350,7 @@ const runInAirdropLoop =
           (drop) => drop!.status === TokenDropStatus.UNCLAIMED,
         );
         for (const airdrop of airdrops) {
-          actStorageDeposit += func(transaction, airdrop!);
+          actStorageDeposit += await func(transaction, airdrop!);
         }
         return actStorageDeposit;
       });

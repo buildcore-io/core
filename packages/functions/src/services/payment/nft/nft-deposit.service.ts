@@ -1,9 +1,9 @@
-import { build5Db, build5Storage, ITransaction } from '@build-5/database';
+import { ITransaction, build5Db, build5Storage } from '@build-5/database';
 import {
   Access,
   Award,
-  Categories,
   COL,
+  Categories,
   Collection,
   CollectionStatus,
   CollectionType,
@@ -18,8 +18,7 @@ import {
   Transaction,
   WenError,
 } from '@build-5/interfaces';
-import { INftOutput } from '@iota/iota.js-next';
-import * as functions from 'firebase-functions/v2';
+import { NftOutput } from '@iota/sdk';
 import { head, isEmpty, set } from 'lodash';
 import { getNftByMintingId } from '../../../utils/collection-minting-utils/nft.utils';
 import { getProject, getProjects } from '../../../utils/common.utils';
@@ -36,8 +35,7 @@ import {
 } from '../../../utils/nft.output.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { NftWallet } from '../../wallet/NftWallet';
-import { SmrWallet } from '../../wallet/SmrWalletService';
-import { WalletService } from '../../wallet/wallet';
+import { WalletService } from '../../wallet/wallet.service';
 import { BaseService, HandlerParams } from '../base';
 import { TransactionMatch } from '../transaction-service';
 
@@ -82,7 +80,7 @@ export class NftDepositService extends BaseService {
   private depositNftMintedOnBuild5 = async (
     nft: Nft,
     order: Transaction,
-    nftOutput: INftOutput,
+    nftOutput: NftOutput,
     match: TransactionMatch,
   ) => {
     const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nft.collection}`);
@@ -125,7 +123,7 @@ export class NftDepositService extends BaseService {
   private depositNftMintedOutsideBuild5 = async (
     order: Transaction,
     blockId: string,
-    nftOutput: INftOutput,
+    nftOutput: NftOutput,
   ) => {
     const metadata = await this.validateInputAndGetMetadata(order, nftOutput);
 
@@ -221,7 +219,7 @@ export class NftDepositService extends BaseService {
         set(migratedCollection, 'mediaStatus', MediaStatus.PENDING_UPLOAD);
         set(space, 'avatarUrl', bannerUrl);
       } catch (error) {
-        functions.logger.warn('Could not get banner url', order.uid, nftOutput.nftId, error);
+        console.warn('Could not get banner url', order.uid, nftOutput.nftId, error);
       }
     }
 
@@ -266,14 +264,14 @@ export class NftDepositService extends BaseService {
     return nft;
   };
 
-  private validateInputAndGetMetadata = async (order: Transaction, nftOutput: INftOutput) => {
+  private validateInputAndGetMetadata = async (order: Transaction, nftOutput: NftOutput) => {
     const nftMetadata = getNftOutputMetadata(nftOutput);
     set(nftMetadata, 'collectionId', getIssuerNftId(nftOutput));
     if (!isMetadataIrc27(nftMetadata, nftIrc27Schema)) {
       throw WenError.nft_not_irc27_compilant;
     }
 
-    const wallet = (await WalletService.newWallet(order.network)) as SmrWallet;
+    const wallet = await WalletService.newWallet(order.network);
     const nftWallet = new NftWallet(wallet);
     const collectionOutput = await nftWallet.getById(nftMetadata.collectionId);
     const collectionMetadata = getNftOutputMetadata(collectionOutput);

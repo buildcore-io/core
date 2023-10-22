@@ -8,8 +8,6 @@ import {
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -42,9 +40,7 @@ describe('Token minting', () => {
     });
     const sellOrder = await testEnv.wrap(tradeToken)({});
     await helper.walletService!.send(helper.sellerAddress!, sellOrder.payload.targetAddress, 0, {
-      nativeTokens: [
-        { amount: HexHelper.fromBigInt256(bigInt(10)), id: helper.token!.mintingData?.tokenId! },
-      ],
+      nativeTokens: [{ amount: BigInt(10), id: helper.token!.mintingData?.tokenId! }],
     });
 
     const query = build5Db()
@@ -59,7 +55,7 @@ describe('Token minting', () => {
     const credit = <Transaction>snap[0];
     expect(credit.payload.amount).toBe(sellOrder.payload.amount);
     expect(credit.payload.nativeTokens![0].id).toBe(MINTED_TOKEN_ID);
-    expect(credit.payload.nativeTokens![0].amount).toBe('10');
+    expect(credit.payload.nativeTokens![0].amount).toBe(10);
     const sellSnap = await build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.seller)

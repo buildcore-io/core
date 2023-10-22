@@ -1,9 +1,9 @@
-import { ITransaction, build5Db } from '@build-5/database';
+import { build5Db, ITransaction } from '@build-5/database';
 import {
   COL,
   Proposal,
-  SUB_COL,
   Stake,
+  SUB_COL,
   TokenDistribution,
   Transaction,
   WenError,

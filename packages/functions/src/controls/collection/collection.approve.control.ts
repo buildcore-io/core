@@ -1,13 +1,13 @@
 import { build5Db } from '@build-5/database';
 import { ApproveCollectionRequest, COL, Collection, WenError } from '@build-5/interfaces';
-import { Context } from '../../runtime/firebase/common';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
+import { Context } from '../common';
 
-export const approveCollectionControl = async (
-  { owner }: Context,
-  params: ApproveCollectionRequest,
-): Promise<Collection> => {
+export const approveCollectionControl = async ({
+  owner,
+  params,
+}: Context<ApproveCollectionRequest>): Promise<Collection> => {
   const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${params.uid}`);
   const collection = await collectionDocRef.get<Collection>();
   if (!collection) {

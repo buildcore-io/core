@@ -2,7 +2,7 @@ import { Base, NetworkAddress, Timestamp } from './base';
 
 export interface NativeToken {
   readonly id: string;
-  readonly amount: string;
+  readonly amount: bigint;
 }
 
 export interface MilestoneTransactionEntry {
@@ -19,7 +19,8 @@ export interface MilestoneTransaction extends Base {
   createdOn: Timestamp;
   messageId: string;
   milestone: number;
-  inputs: MilestoneTransactionEntry[];
+  fromAddresses: string[];
+  consumedOutputIds: string[];
   outputs: MilestoneTransactionEntry[];
   processed: boolean;
   build5TransactionId?: string;

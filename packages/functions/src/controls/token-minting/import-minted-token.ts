@@ -10,22 +10,21 @@ import {
   TransactionValidationType,
   WenError,
 } from '@build-5/interfaces';
-import { IndexerPluginClient } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { Context } from '../../runtime/firebase/common';
-import { SmrWallet } from '../../services/wallet/SmrWalletService';
-import { WalletService } from '../../services/wallet/wallet';
+import { WalletService } from '../../services/wallet/wallet.service';
 import { generateRandomAmount, getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 
-export const importMintedTokenControl = async (
-  { project, owner }: Context,
-  params: ImportMintedTokenRequest,
-) =>
+export const importMintedTokenControl = async ({
+  owner,
+  params,
+  project,
+}: Context<ImportMintedTokenRequest>) =>
   build5Db().runTransaction(async (transaction) => {
     await assertIsGuardian(params.space, owner);
 
@@ -35,11 +34,10 @@ export const importMintedTokenControl = async (
       throw invalidArgument(WenError.token_already_exists_for_space);
     }
 
-    const wallet = (await WalletService.newWallet(params.network as Network)) as SmrWallet;
-    const indexer = new IndexerPluginClient(wallet.client);
-    const foundryResponse = await indexer.foundry(params.tokenId);
+    const wallet = await WalletService.newWallet(params.network as Network);
+    const foundryOutputId = await wallet.client.foundryOutputId(params.tokenId);
 
-    if (isEmpty(foundryResponse.items)) {
+    if (isEmpty(foundryOutputId)) {
       throw invalidArgument(WenError.token_does_not_exist);
     }
 

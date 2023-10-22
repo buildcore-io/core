@@ -26,7 +26,7 @@ export class VotingService extends BaseService {
     const values = get(order, 'payload.voteValues', []);
     const customData = hasValidToken ? { proposalId, values } : undefined;
 
-    const storageReturn = match.to.amount >= order.payload.amount! ? match.from.address : undefined;
+    const storageReturn = match.to.amount >= order.payload.amount! ? match.from : undefined;
     const credit = await this.transactionService.createCredit(
       TransactionPayloadType.TOKEN_VOTE,
       payment,

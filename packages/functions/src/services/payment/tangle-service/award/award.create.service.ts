@@ -26,9 +26,8 @@ import { assertIsSpaceMember } from '../../../../utils/space.utils';
 import { getTokenBySymbol } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { isStorageUrl } from '../../../joi/common';
-import { SmrWallet } from '../../../wallet/SmrWalletService';
-import { WalletService } from '../../../wallet/wallet';
-import { getAwardgStorageDeposits } from '../../award/award-service';
+import { WalletService } from '../../../wallet/wallet.service';
+import { getAwardgStorageDeposits as getAwardStorageDeposits } from '../../award/award-service';
 import { BaseService, HandlerParams } from '../../base';
 import { awardCreateSchema } from './AwardCreateTangleRequestSchema';
 import { createAwardFundOrder } from './award.fund.service';
@@ -139,8 +138,8 @@ export const createAward = async (
     nativeTokenStorageDeposit: 0,
     funded: false,
   };
-  const wallet = (await WalletService.newWallet(award.network)) as SmrWallet;
-  const storageDeposits = await getAwardgStorageDeposits(award, token, wallet);
+  const wallet = await WalletService.newWallet(award.network);
+  const storageDeposits = await getAwardStorageDeposits(award, token, wallet);
 
   const awardOwner: AwardOwner = {
     uid: owner,

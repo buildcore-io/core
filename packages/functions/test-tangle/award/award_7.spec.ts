@@ -10,12 +10,12 @@ import {
   Transaction,
   TransactionPayloadType,
 } from '@build-5/interfaces';
-import { INftOutput, IndexerPluginClient } from '@iota/iota.js-next';
+import { NftOutput } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -26,7 +26,7 @@ import {
   mockWalletReturnValue,
   wait,
 } from '../../test/controls/common';
-import { MEDIA, testEnv } from '../../test/set-up';
+import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 import { getNftMetadata } from '../collection-minting/Helper';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 
@@ -38,13 +38,13 @@ describe('Create award, base', () => {
   let member: string;
   let space: Space;
   let award: Award;
-  let walletService: SmrWallet;
+  let walletService: Wallet;
   let token: Token;
   let guardianAddress: AddressDetails;
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    walletService = (await WalletService.newWallet(network)) as SmrWallet;
+    walletService = await getWallet(network);
   });
 
   beforeEach(async () => {
@@ -76,7 +76,7 @@ describe('Create award, base', () => {
       10,
     );
     await walletService.send(guardianAddress, order.payload.targetAddress, order.payload.amount, {
-      nativeTokens: [{ id: MINTED_TOKEN_ID, amount: '0xA' }],
+      nativeTokens: [{ id: MINTED_TOKEN_ID, amount: BigInt('0xA') }],
     });
     await MnemonicService.store(guardianAddress.bech32, guardianAddress.mnemonic);
 
@@ -102,10 +102,8 @@ describe('Create award, base', () => {
       return snap.length === 2;
     });
 
-    const indexer = new IndexerPluginClient(walletService.client);
-
     await wait(async () => {
-      const response = await indexer.nfts({ addressBech32: memberBech32 });
+      const response = await walletService.client.nftOutputIds([{ address: memberBech32 }]);
       return response.items.length === 2;
     });
 
@@ -113,9 +111,9 @@ describe('Create award, base', () => {
     space = <Space>await spaceDocRef.get();
     expect(space.ipfsMedia).toBeDefined();
 
-    const collectionOutputItems = (await indexer.nft(award.collectionId!)).items;
-    const collectionOutput = (await walletService.client.output(collectionOutputItems[0])).output;
-    const collectionMetadata = getNftMetadata(collectionOutput as INftOutput);
+    const collectionOutputId = await walletService.client.nftOutputId(award.collectionId!);
+    const collectionOutput = (await walletService.client.getOutput(collectionOutputId)).output;
+    const collectionMetadata = getNftMetadata(collectionOutput as NftOutput);
     expect(collectionMetadata.standard).toBe('IRC27');
     expect(collectionMetadata.version).toBe('v1.0');
     expect(collectionMetadata.type).toBe('image/png');
@@ -125,9 +123,9 @@ describe('Create award, base', () => {
     expect(collectionMetadata.issuerName).toBe('Soonaverse');
     expect(collectionMetadata.build5Id).toBe(award.uid);
 
-    const nttItems = (await indexer.nfts({ addressBech32: memberBech32 })).items;
+    const nttItems = (await walletService.client.nftOutputIds([{ address: memberBech32 }])).items;
     const promises = nttItems.map(
-      async (outputId) => (await walletService.client.output(outputId)).output as INftOutput,
+      async (outputId) => (await walletService.client.getOutput(outputId)).output as NftOutput,
     );
     const outputs = await Promise.all(promises);
 
@@ -204,7 +202,6 @@ const saveToken = async (space: string, guardian: string) => {
 };
 
 export const VAULT_MNEMONIC =
-  'media income depth opera health hybrid person expect supply kid napkin science maze believe they inspire hockey random escape size below monkey lemon veteran';
-
+  'figure random fitness double guard write auction penalty mimic office capital asthma laptop rifle club chuckle organ era prepare unit road echo bundle shrug';
 export const MINTED_TOKEN_ID =
-  '0x08f56bb2eefc47c050e67f8ba85d4a08e1de5ac0580fb9e80dc2f62eab97f944350100000000';
+  '0x08f33de73663373e0c0fa11cb4c93bf83c7905357573882a21a001d2ddc176d57e0100000000';

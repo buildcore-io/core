@@ -1,55 +1,46 @@
 import { IBucket, build5Storage } from '@build-5/database';
-import { IMAGE_CACHE_AGE, WEN_FUNC_TRIGGER } from '@build-5/interfaces';
+import { IMAGE_CACHE_AGE, ImageWidth } from '@build-5/interfaces';
 import { path as ffmpegPath } from '@ffmpeg-installer/ffmpeg';
 import { spawn } from 'child-process-promise';
-import * as functions from 'firebase-functions/v2';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import sharp from 'sharp';
-import { scale } from '../../scale.settings';
-import { getBucket } from '../../utils/config.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const ffprobePath = require('@ffprobe-installer/ffprobe').path;
 
-export enum ImageWidth {
-  tb = '200',
-  md = '680',
-  lg = '1600',
+export interface StorageObject {
+  metadata?: Record<string, unknown>;
+  name: string;
+  bucket: string;
+  contentType?: string;
 }
 
-export const resizeImageTrigger = functions.storage.onObjectFinalized(
-  {
-    memory: '4GiB',
-    minInstances: scale(WEN_FUNC_TRIGGER.resizeImg),
-    bucket: getBucket(),
-  },
-  async (event) => {
-    if (event.data.metadata?.resized) {
-      return;
-    }
+export const onStorageObjectFinalized = async (data: StorageObject) => {
+  if (!data || data.metadata?.resized) {
+    return;
+  }
 
-    const workdir = `${os.tmpdir()}/${getRandomEthAddress()}`;
-    try {
-      fs.mkdirSync(workdir);
-      const downloadedMediaPath = await downloadMedia(workdir, event.data);
-      if (event.data.contentType?.startsWith('image/')) {
-        await uploadeResizedImages(workdir, event.data, downloadedMediaPath);
-      } else {
-        await uploadVideoPreview(workdir, event.data, downloadedMediaPath);
-      }
-    } catch (error) {
-      functions.logger.error(error);
-      throw error;
-    } finally {
-      fs.rmSync(workdir, { recursive: true, force: true });
+  const workdir = `${os.tmpdir()}/${getRandomEthAddress()}`;
+  try {
+    fs.mkdirSync(workdir);
+    const downloadedMediaPath = await downloadMedia(workdir, data);
+    if (data.contentType?.startsWith('image/')) {
+      await uploadeResizedImages(workdir, data, downloadedMediaPath);
+    } else {
+      await uploadVideoPreview(workdir, data, downloadedMediaPath);
     }
-  },
-);
+  } catch (error) {
+    console.error(error);
+    throw error;
+  } finally {
+    fs.rmSync(workdir, { recursive: true, force: true });
+  }
+};
 
-const downloadMedia = async (workdir: string, object: functions.storage.StorageObjectData) => {
+const downloadMedia = async (workdir: string, object: StorageObject) => {
   const destination = path.join(workdir, path.basename(object.name!));
   await build5Storage().bucket(object.bucket).download(object.name!, destination);
   return destination;
@@ -57,7 +48,7 @@ const downloadMedia = async (workdir: string, object: functions.storage.StorageO
 
 const uploadeResizedImages = async (
   workdir: string,
-  object: functions.storage.StorageObjectData,
+  object: StorageObject,
   downloadedImgPath: string,
 ) => {
   const extension = path.extname(downloadedImgPath);
@@ -78,7 +69,7 @@ const uploadeResizedImages = async (
 
 const uploadVideoPreview = async (
   workdir: string,
-  object: functions.storage.StorageObjectData,
+  object: StorageObject,
   downloadedVideoPath: string,
 ) => {
   const extension = path.extname(downloadedVideoPath);

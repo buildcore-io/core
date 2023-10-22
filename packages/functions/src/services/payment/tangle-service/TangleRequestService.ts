@@ -8,7 +8,6 @@ import {
   Transaction,
   WenError,
 } from '@build-5/interfaces';
-import * as functions from 'firebase-functions/v2';
 import { get } from 'lodash';
 import { getOutputMetadata } from '../../../utils/basic-output.utils';
 import { invalidArgument } from '../../../utils/error.utils';
@@ -41,11 +40,11 @@ import { TangleTokenTradeService } from './token/token-trade.service';
 export class TangleRequestService extends BaseService {
   public handleRequest = async (params: HandlerParams) => {
     const { match, order, tranEntry } = params;
-    let owner = match.from.address;
+    let owner = match.from;
     let payment: Transaction | undefined;
 
     try {
-      owner = await this.getOwner(match.from.address, order.network!);
+      owner = await this.getOwner(match.from, order.network!);
       payment = await this.transactionService.createPayment({ ...order, member: owner }, match);
       const request = getOutputMetadata(tranEntry.output).request;
 
@@ -62,7 +61,7 @@ export class TangleRequestService extends BaseService {
         );
       }
     } catch (error) {
-      functions.logger.warn(owner, error);
+      console.warn(owner, error);
       if (!payment) {
         payment = await this.transactionService.createPayment({ ...order, member: owner }, match);
       }
@@ -87,7 +86,6 @@ export class TangleRequestService extends BaseService {
       case TangleRequestType.ADDRESS_VALIDATION:
         return new TangleAddressValidationService(this.transactionService);
       case TangleRequestType.BUY_TOKEN:
-        return new TangleTokenTradeService(this.transactionService);
       case TangleRequestType.SELL_TOKEN:
         return new TangleTokenTradeService(this.transactionService);
       case TangleRequestType.STAKE:

@@ -14,9 +14,12 @@ import express from 'express';
 import test from 'firebase-functions-test';
 import * as functions from 'firebase-functions/v2';
 import { isEmpty } from 'lodash';
-import { IotaWallet } from '../src/services/wallet/IotaWalletService';
-import { SmrWallet } from '../src/services/wallet/SmrWalletService';
-import { WalletService } from '../src/services/wallet/wallet';
+import { Wallet, WalletParams } from '../src/services/wallet/wallet';
+import {
+  AddressDetails,
+  SendToManyTargets,
+  WalletService,
+} from '../src/services/wallet/wallet.service';
 import { dateToTimestamp } from '../src/utils/dateTime.utils';
 
 dotenv.config({ path: '.env.local' });
@@ -40,7 +43,7 @@ export const getConfig = () => {
   };
 };
 
-export const sentOnRequest =
+export const sendOnRequest =
   (func: (req: functions.https.Request, response: express.Response<any>) => void | Promise<void>) =>
   async (data: any) => {
     const req = { ip: '127.0.0.1', body: { data }, headers: { origin: true } } as any;
@@ -77,7 +80,7 @@ export const testEnv = {
   config: process.env.LOCAL_TEST
     ? test(getConfig())
     : test(getConfig(), './test-service-account-key.json'),
-  wrap: sentOnRequest,
+  wrap: sendOnRequest,
 };
 
 export const MEDIA =
@@ -125,12 +128,49 @@ const setup = async () => {
   console.log('Setup env');
 };
 
-const wallets: { [key: string]: IotaWallet | SmrWallet } = {};
+export const wallets: { [key: string]: Wallet } = {};
+
+class TestWallet extends Wallet {
+  constructor(private readonly wallet: Wallet) {
+    super(wallet.client, wallet.info, wallet.network);
+  }
+
+  public getBalance = this.wallet.getBalance;
+  public getNewIotaAddressDetails = this.wallet.getNewIotaAddressDetails;
+  public getIotaAddressDetails = this.wallet.getIotaAddressDetails;
+  public getAddressDetails = this.wallet.getAddressDetails;
+
+  public bechAddressFromOutput = this.wallet.bechAddressFromOutput;
+  public getOutputs = this.wallet.getOutputs;
+  public creditLocked = this.wallet.creditLocked;
+
+  public send = async (
+    from: AddressDetails,
+    toAddress: string,
+    amount: number,
+    params: WalletParams,
+    outputToConsume?: string | undefined,
+  ) => {
+    const blockId = await this.wallet.send(from, toAddress, amount, params, outputToConsume);
+    await build5Db().doc(`blocks/${blockId}`).create({ blockId });
+    return blockId;
+  };
+  public sendToMany = async (
+    from: AddressDetails,
+    targets: SendToManyTargets[],
+    params: WalletParams,
+  ) => {
+    const blockId = await this.wallet.sendToMany(from, targets, params);
+    await build5Db().doc(`blocks/${blockId}`).create({ blockId });
+    return blockId;
+  };
+}
 
 export const getWallet = async (network: Network) => {
   const wallet = wallets[network];
   if (!wallet) {
-    wallets[network] = await WalletService.newWallet(network);
+    const baseWallet = await WalletService.newWallet(network);
+    wallets[network] = new TestWallet(baseWallet);
   }
   return wallets[network];
 };

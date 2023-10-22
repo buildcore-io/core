@@ -11,14 +11,14 @@ import {
 import dayjs from 'dayjs';
 import jwt from 'jsonwebtoken';
 import { set } from 'lodash';
-import { Context } from '../../runtime/firebase/common';
 import { getJwtSecretKey } from '../../utils/config.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { getTokenBySymbol } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 
-export const createProjectControl = async ({ owner }: Context, params: ProjectCreateRequest) => {
+export const createProjectControl = async ({ owner, params }: Context<ProjectCreateRequest>) => {
   const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
   const member = await memberDocRef.get();
   if (!member) {

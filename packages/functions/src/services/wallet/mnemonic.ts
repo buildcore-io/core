@@ -1,6 +1,7 @@
 import { build5Db } from '@build-5/database';
 import { COL, DEFAULT_NETWORK, Mnemonic, NetworkAddress } from '@build-5/interfaces';
 import { AES, enc } from 'crypto-js';
+
 export class MnemonicService {
   public static async store(
     address: NetworkAddress,

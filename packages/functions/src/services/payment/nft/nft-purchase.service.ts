@@ -1,6 +1,5 @@
 import { build5Db } from '@build-5/database';
-import { COL, Nft, Transaction, TransactionPayloadType } from '@build-5/interfaces';
-import { AVAILABLE_NETWORKS } from '../../../controls/common';
+import { COL, Nft, NftStatus, Transaction, TransactionPayloadType } from '@build-5/interfaces';
 import { HandlerParams } from '../base';
 import { BaseNftService } from './common';
 
@@ -23,7 +22,7 @@ export class NftPurchaseService extends BaseNftService {
 
     const tanglePuchase = order.payload.tanglePuchase;
     const disableWithdraw = order.payload.disableWithdraw;
-    if (!disableWithdraw && tanglePuchase && AVAILABLE_NETWORKS.includes(order.network!)) {
+    if (!disableWithdraw && tanglePuchase && nft.status === NftStatus.MINTED) {
       await this.withdrawNft(order, nft);
     }
   };

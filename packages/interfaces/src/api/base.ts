@@ -10,7 +10,6 @@ export enum PublicCollections {
   PROPOSAL = 'proposal',
   NOTIFICATION = 'notification',
   MILESTONE = 'milestone',
-  MILESTONE_ATOI = 'milestone_atoi',
   MILESTONE_RMS = 'milestone_rms',
   MILESTONE_SMR = 'milestone_smr',
   TRANSACTION = 'transaction',

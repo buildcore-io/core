@@ -1,4 +1,3 @@
-import { build5Db } from '@build-5/database';
 import {
   COL,
   Member,
@@ -9,31 +8,30 @@ import {
   Token,
   TokenStatus,
 } from '@build-5/interfaces';
+
+import { build5Db } from '@build-5/database';
 import {
-  ALIAS_UNLOCK_TYPE,
-  Bech32Helper,
-  ED25519_ADDRESS_TYPE,
-  IAliasOutput,
-  IEd25519Address,
-  IFoundryOutput,
-  IGovernorAddressUnlockCondition,
-  IMetadataFeature,
-  IndexerPluginClient,
-  METADATA_FEATURE_TYPE,
-  REFERENCE_UNLOCK_TYPE,
-  TransactionHelper,
-  UnlockTypes,
-} from '@iota/iota.js-next';
-import { Converter, HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
+  AliasOutput,
+  AliasOutputBuilderParams,
+  AliasUnlock,
+  Ed25519Address,
+  FeatureType,
+  FoundryOutput,
+  GovernorAddressUnlockCondition,
+  MetadataFeature,
+  ReferenceUnlock,
+  UTXOInput,
+  Unlock,
+  Utils,
+  hexToUtf8,
+} from '@iota/sdk';
 import { cloneDeep } from 'lodash';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { packBasicOutput } from '../../src/utils/basic-output.utils';
-import { packEssence, packPayload, submitBlock } from '../../src/utils/block.utils';
+import { createUnlock, packEssence, submitBlock } from '../../src/utils/block.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
-import { createUnlock } from '../../src/utils/smr.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { createMember, createSpace, getRandomSymbol } from '../../test/controls/common';
@@ -44,7 +42,7 @@ export class Helper {
   public address: AddressDetails = {} as any;
   public space: Space = {} as any;
   public token: Token = {} as any;
-  public walletService: SmrWallet = {} as any;
+  public walletService: Wallet = {} as any;
   public member: string = '';
   public walletSpy: any = {} as any;
   public network = Network.RMS;
@@ -66,7 +64,7 @@ export class Helper {
       approved,
       isPublicToken,
     );
-    this.walletService = (await getWallet(this.network)) as SmrWallet;
+    this.walletService = await getWallet(this.network);
     this.address = await this.walletService.getAddressDetails(
       getAddress(this.guardian, this.network),
     );
@@ -104,7 +102,7 @@ export class Helper {
   };
 
   public meltMintedToken = async (
-    wallet: SmrWallet,
+    wallet: Wallet,
     token: Token,
     amount: number,
     fromAddress: NetworkAddress,
@@ -114,83 +112,81 @@ export class Helper {
       .map((o) => o.nativeTokens![0].amount)
       .reduce((acc, act) => acc + Number(act), 0);
 
-    const indexer = new IndexerPluginClient(wallet.client);
-    const aliasOutputId = (await indexer.alias(token.mintingData?.aliasId!)).items[0];
-    const aliasOutput = <IAliasOutput>(await wallet.client.output(aliasOutputId)).output;
-
-    const foundryOutputId = (await indexer.foundry(token.mintingData?.tokenId!)).items[0];
-    const foundryOutput = <IFoundryOutput>(await wallet.client.output(foundryOutputId)).output;
-
-    const nextAliasOutput = cloneDeep(aliasOutput);
-    nextAliasOutput.stateIndex++;
-
-    const nextFoundryOutput = cloneDeep(foundryOutput);
-    nextFoundryOutput.tokenScheme.meltedTokens = HexHelper.fromBigInt256(bigInt(amount));
-
-    const output = packBasicOutput(
-      fromAddress,
-      0,
-      [
-        {
-          amount: HexHelper.fromBigInt256(bigInt(nativeTokens - amount)),
-          id: token.mintingData?.tokenId!,
-        },
-      ],
-      wallet.info,
+    const aliasOutputId = await this.walletService.client.aliasOutputId(
+      token.mintingData?.aliasId!,
     );
+    const aliasOutput = <AliasOutput>(await wallet.client.getOutput(aliasOutputId)).output;
+
+    const foundryOutputId = await this.walletService.client.foundryOutputId(
+      token.mintingData?.tokenId!,
+    );
+    const foundryOutput = <FoundryOutput>(await wallet.client.getOutput(foundryOutputId)).output;
+
+    const nextAliasOutput: AliasOutputBuilderParams = cloneDeep(aliasOutput);
+    nextAliasOutput.stateIndex!++;
+
+    const nextFoundryOutput: any = cloneDeep(foundryOutput);
+    nextFoundryOutput.tokenScheme.meltedTokens = BigInt(amount);
+
+    const output = await packBasicOutput(this.walletService, fromAddress, 0, {
+      nativeTokens: [{ amount: BigInt(nativeTokens - amount), id: token.mintingData?.tokenId! }],
+    });
 
     const inputs = [aliasOutputId, foundryOutputId, ...Object.keys(outputs)].map(
-      TransactionHelper.inputFromOutputId,
+      UTXOInput.fromOutputId,
     );
-    const inputsCommitment = TransactionHelper.getInputsCommitment([
+    const inputsCommitment = Utils.computeInputsCommitment([
       aliasOutput,
       foundryOutput,
       ...Object.values(outputs),
     ]);
-    const essence = packEssence(
+    const essence = await packEssence(
+      this.walletService,
       inputs,
       inputsCommitment,
-      [nextAliasOutput, nextFoundryOutput, output],
-      wallet,
+      [
+        await this.walletService.client.buildAliasOutput(nextAliasOutput),
+        nextFoundryOutput,
+        output,
+      ],
       {},
     );
 
     const address = await wallet.getAddressDetails(fromAddress);
-    const unlocks: UnlockTypes[] = [
-      createUnlock(essence, address.keyPair),
-      { type: ALIAS_UNLOCK_TYPE, reference: 0 },
-      { type: REFERENCE_UNLOCK_TYPE, reference: 0 },
+    const unlocks: Unlock[] = [
+      await createUnlock(essence, address),
+      new AliasUnlock(0),
+      new ReferenceUnlock(0),
     ];
 
-    return await submitBlock(wallet, packPayload(essence, unlocks));
+    const blockId = await submitBlock(wallet, essence, unlocks);
+    await build5Db().doc(`blocks/${blockId}`).create({ blockId });
+    return blockId;
   };
 }
 
-export const getAliasOutput = async (wallet: SmrWallet, aliasId: string) => {
-  const indexer = new IndexerPluginClient(wallet.client);
-  const response = await indexer.alias(aliasId);
-  const outputResponse = await wallet.client.output(response.items[0]);
-  return outputResponse.output as IAliasOutput;
+export const getAliasOutput = async (wallet: Wallet, aliasId: string) => {
+  const aliasOutputId = await wallet.client.aliasOutputId(aliasId);
+  const outputResponse = await wallet.client.getOutput(aliasOutputId);
+  return outputResponse.output as AliasOutput;
 };
 
-export const getStateAndGovernorAddress = async (wallet: SmrWallet, alias: IAliasOutput) => {
+export const getStateAndGovernorAddress = async (wallet: Wallet, alias: AliasOutput) => {
   const hrp = wallet.info.protocol.bech32Hrp;
-  return (alias.unlockConditions as IGovernorAddressUnlockCondition[])
-    .map((uc) => (uc.address as IEd25519Address).pubKeyHash)
-    .map((pubHash) =>
-      Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, Converter.hexToBytes(pubHash), hrp),
-    );
+  return (alias.unlockConditions as GovernorAddressUnlockCondition[])
+    .map((uc) => (uc.address as Ed25519Address).pubKeyHash)
+    .map((pubHash) => Utils.hexToBech32(pubHash, hrp));
 };
 
-export const getFoundryMetadata = (foundry: IFoundryOutput | undefined) => {
+export const getFoundryMetadata = (foundry: FoundryOutput | undefined) => {
   try {
-    const hexMetadata = <IMetadataFeature | undefined>(
-      foundry?.immutableFeatures?.find((f) => f.type === METADATA_FEATURE_TYPE)
+    const hexMetadata = <MetadataFeature | undefined>(
+      foundry?.immutableFeatures?.find((f) => f.type === FeatureType.Metadata)
     );
     if (!hexMetadata?.data) {
       return {};
     }
-    return JSON.parse(Converter.hexToUtf8(hexMetadata.data) || '{}');
+    return JSON.parse(hexToUtf8(hexMetadata.data) || '{}');
   } catch {
     return {};
   }

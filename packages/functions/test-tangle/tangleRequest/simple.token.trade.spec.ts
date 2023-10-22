@@ -13,7 +13,7 @@ import {
   TransactionType,
   WenError,
 } from '@build-5/interfaces';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
+import { Wallet } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, getRandomSymbol, wait } from '../../test/controls/common';
@@ -26,11 +26,11 @@ let walletSpy: any;
 describe('Simple token trading', () => {
   let member: string;
   let token: Token;
-  let rmsWallet: SmrWallet;
+  let rmsWallet: Wallet;
   let tangleOrder: Transaction;
 
   beforeAll(async () => {
-    tangleOrder = await getTangleOrder();
+    tangleOrder = await getTangleOrder(Network.RMS);
   });
 
   beforeEach(async () => {
@@ -52,7 +52,7 @@ describe('Simple token trading', () => {
       tokenOwned: 100,
     });
 
-    rmsWallet = (await getWallet(Network.RMS)) as SmrWallet;
+    rmsWallet = await getWallet(Network.RMS);
   });
 
   it('Should credit on simple token buy', async () => {

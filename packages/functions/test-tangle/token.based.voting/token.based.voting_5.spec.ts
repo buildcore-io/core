@@ -1,5 +1,6 @@
 import { build5Db } from '@build-5/database';
-import { COL, TokenStatus } from '@build-5/interfaces';
+import { COL, SOON_PROJECT_ID, TokenStatus } from '@build-5/interfaces';
+import { getProjects } from '../../src/utils/common.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { Helper } from './Helper';
 
@@ -17,6 +18,8 @@ describe('Token based voting', () => {
 
   it('Should vote full, space has two tokens', async () => {
     const falseToken = {
+      project: SOON_PROJECT_ID,
+      projects: getProjects([], SOON_PROJECT_ID),
       uid: getRandomEthAddress(),
       space: helper.space!.uid,
       status: TokenStatus.PRE_MINTED,

@@ -9,8 +9,8 @@ import {
   TokenDropStatus,
   TokenStatus,
 } from '@build-5/interfaces';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
+import { Wallet } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, getRandomSymbol } from '../../test/controls/common';
@@ -23,11 +23,11 @@ export class Helper {
 
   public guardian: string | undefined;
   public member: string | undefined;
-  public walletService: SmrWallet | undefined;
+  public walletService: Wallet | undefined;
   public walletSpy: any;
 
   public berforeAll = async () => {
-    this.walletService = (await getWallet(this.network)) as SmrWallet;
+    this.walletService = await getWallet(this.network);
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
   };
 
@@ -51,7 +51,7 @@ export class Helper {
 export const saveToken = async (
   space: string,
   guardian: string,
-  walletService: SmrWallet,
+  walletService: Wallet,
   tokenId = MINTED_TOKEN_ID,
 ) => {
   const vaultAddress = await walletService.getIotaAddressDetails(VAULT_MNEMONIC);
@@ -83,6 +83,6 @@ export const dummyTokenId =
   '0x080c409a8c0ffa795676e55f24e0223e5b48dbe2b1bc4314140333543b5e7e8d360100000000';
 
 export const VAULT_MNEMONIC =
-  'add peanut behind flame hundred luxury dress loan anger depth tag round elbow damage celery clever crew question enlist near gun differ when already';
+  'pipe jump moment hybrid palm faint wait minute sustain crane income unable hobby antique bleak advance deputy mandate explain clip deal viable sponsor silly';
 export const MINTED_TOKEN_ID =
-  '0x08d5d8c4f4139a3d09e780edd4826162c095b787ab94af7425c0d079b0b8e4302e0100000000';
+  '0x08774bcb5848829764241e1bd5b1a8ebb6da08f22e88c2f656d1fa4deafb3217bc0100000000';

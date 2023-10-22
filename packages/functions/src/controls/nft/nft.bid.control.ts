@@ -1,10 +1,15 @@
 import { build5Db } from '@build-5/database';
 import { COL, NftBidRequest, Transaction, WenError } from '@build-5/interfaces';
-import { Context } from '../../runtime/firebase/common';
 import { createNftBidOrder } from '../../services/payment/tangle-service/nft/nft-bid.service';
 import { invalidArgument } from '../../utils/error.utils';
+import { Context } from '../common';
 
-export const nftBidControl = async ({ project, owner, ip }: Context, params: NftBidRequest) => {
+export const nftBidControl = async ({
+  ip,
+  owner,
+  params,
+  project,
+}: Context<NftBidRequest>): Promise<Transaction> => {
   const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
   const member = await memberDocRef.get();
   if (!member) {

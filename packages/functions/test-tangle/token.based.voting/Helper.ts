@@ -8,14 +8,13 @@ import {
   Proposal,
   ProposalMember,
   ProposalType,
+  SOON_PROJECT_ID,
   Space,
   SUB_COL,
   TokenStatus,
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
 import {
@@ -25,13 +24,14 @@ import {
 } from '../../src/runtime/firebase/proposal';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
+import { getProjects } from '../../src/utils/common.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { getWallet, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 
 export class Helper {
@@ -40,13 +40,13 @@ export class Helper {
   public member: string = '';
   public space: Space | undefined;
   public proposal: Proposal | undefined;
-  public walletService: SmrWallet | undefined;
+  public walletService: Wallet | undefined;
   public guardianAddress: AddressDetails | undefined;
   public network = Network.RMS;
   public tokenId = '';
 
   public beforeAll = async () => {
-    this.walletService = (await WalletService.newWallet(Network.RMS)) as SmrWallet;
+    this.walletService = await getWallet(Network.RMS);
   };
 
   public beforeEach = async () => {
@@ -69,6 +69,8 @@ export class Helper {
     await build5Db()
       .doc(`${COL.TOKEN}/${this.tokenId}`)
       .create({
+        project: SOON_PROJECT_ID,
+        projects: getProjects([], SOON_PROJECT_ID),
         uid: this.tokenId,
         space: this.space.uid,
         mintingData: { tokenId: MINTED_TOKEN_ID },
@@ -103,7 +105,7 @@ export class Helper {
     baseTokenAmount = 0,
   ) => {
     await this.walletService!.send(sourceAddress, targetAddress, baseTokenAmount, {
-      nativeTokens: [{ id: MINTED_TOKEN_ID, amount: HexHelper.fromBigInt256(bigInt(tokenAmount)) }],
+      nativeTokens: [{ id: MINTED_TOKEN_ID, amount: BigInt(tokenAmount) }],
     });
     await MnemonicService.store(sourceAddress.bech32, sourceAddress.mnemonic, Network.RMS);
   };
@@ -235,7 +237,6 @@ export const dummyProposal = (space: string): Proposal => ({
 });
 
 export const VAULT_MNEMONIC =
-  'offer kingdom rate never hurt follow wrestle cloud alien admit bird usage avoid cloth soldier evidence crawl harsh electric wheat ten mushroom glare reject';
-
+  'spoil combine iron zero junk confirm present erase miracle lazy town rough chapter broken atom scare that mutual step parade always face loan guide';
 export const MINTED_TOKEN_ID =
-  '0x085f6308dd034c70ea90b4e2600c4f8fb65d0b53504a0d96e37ce8641a8835d2110100000000';
+  '0x087c042b2aea020609809189e329fed4a0bbf549a4156bae3c52e07c9b4466975c0100000000';

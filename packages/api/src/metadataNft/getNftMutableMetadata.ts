@@ -1,22 +1,21 @@
-import { GetNftMutableData, Network, WenError } from '@build-5/interfaces';
-import { INftOutput, IndexerPluginClient } from '@iota/iota.js-next';
+import { GetNftMutableData, WenError } from '@build-5/interfaces';
+import { NftOutput } from '@iota/sdk';
 import Joi from 'joi';
 import { of } from 'rxjs';
 import { CommonJoi, getQueryParams } from '../common';
-import { getMutableMetadata, getShimmerClient } from './wallet';
+import { AVAILABLE_NETWORKS, getClient, getMutableMetadata } from './wallet';
 
 const getNftMutableDataSchema = Joi.object({
-  network: Joi.string().valid(Network.SMR, Network.RMS),
+  network: Joi.string().valid(...AVAILABLE_NETWORKS),
   nftId: CommonJoi.uid(),
 });
 
 export const getNftMutableMetadata = async (url: string) => {
   const body = getQueryParams<GetNftMutableData>(url, getNftMutableDataSchema);
   try {
-    const client = await getShimmerClient(body.network);
-    const indexer = new IndexerPluginClient(client);
-    const outputId = (await indexer.nft(body.nftId)).items[0];
-    const output = (await client.output(outputId)).output as INftOutput;
+    const client = await getClient(body.network);
+    const outputId = await client.nftOutputId(body.nftId);
+    const output = (await client.getOutput(outputId)).output as NftOutput;
     return of(getMutableMetadata(output));
   } catch {
     throw { code: 400, message: WenError.invalid_nft_id.key };

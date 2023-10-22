@@ -105,10 +105,7 @@ export abstract class BaseNftService extends BaseService {
             address: highestPay.payload.targetAddress!,
             amount: highestPay.payload.amount!,
           },
-          from: {
-            address: highestPay.payload.sourceAddress!,
-            amount: highestPay.payload.amount!,
-          },
+          from: highestPay.payload.sourceAddress!,
         },
         serverTime(),
         sameOwner,
@@ -168,7 +165,7 @@ export abstract class BaseNftService extends BaseService {
       previousHighestPay = (await this.transactionService.get<Transaction>(previousHighestPayRef))!;
 
       if (
-        previousHighestPay.payload.amount! < paymentPayload.amount! &&
+        previousHighestPay!.payload.amount! < paymentPayload.amount! &&
         paymentPayload.amount! >= (nft?.auctionFloorPrice || 0)
       ) {
         newValidPayment = true;
@@ -200,10 +197,7 @@ export abstract class BaseNftService extends BaseService {
             address: previousHighestPay.payload.targetAddress!,
             amount: previousHighestPay.payload.amount!,
           },
-          from: {
-            address: previousHighestPay.payload.sourceAddress!,
-            amount: previousHighestPay.payload.amount!,
-          },
+          from: previousHighestPay.payload.sourceAddress!,
         },
         dateToTimestamp(dayjs(payment.createdOn?.toDate()).subtract(1, 's')),
         sameOwner,
@@ -290,10 +284,7 @@ export abstract class BaseNftService extends BaseService {
           address: paymentPayload.targetAddress!,
           amount: paymentPayload.amount!,
         },
-        from: {
-          address: paymentPayload.sourceAddress!,
-          amount: paymentPayload.amount!,
-        },
+        from: paymentPayload.sourceAddress!,
       });
     }
   }

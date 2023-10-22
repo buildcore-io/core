@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -15,7 +16,6 @@ import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
-import { build5Db } from '@build-5/database';
 
 describe('Nft otr bid', () => {
   const helper = new Helper();
@@ -23,7 +23,7 @@ describe('Nft otr bid', () => {
 
   beforeAll(async () => {
     await helper.beforeAll();
-    tangleOrder = await getTangleOrder();
+    tangleOrder = await getTangleOrder(Network.RMS);
   });
 
   beforeEach(async () => {

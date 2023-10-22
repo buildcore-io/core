@@ -13,12 +13,12 @@ import {
   TransactionValidationType,
   WenError,
 } from '@build-5/interfaces';
-import { TransactionHelper } from '@iota/iota.js-next';
+import { Utils } from '@iota/sdk';
 import dayjs from 'dayjs';
-import { Context } from '../../runtime/firebase/common';
-import { SmrWallet } from '../../services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../../services/wallet/wallet';
+import { Wallet } from '../../services/wallet/wallet';
+import { AddressDetails, WalletService } from '../../services/wallet/wallet.service';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
+import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { createAliasOutput } from '../../utils/token-minting-utils/alias.utils';
@@ -34,9 +34,9 @@ import {
   getUnclaimedAirdropTotalValue,
 } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-import { getProjects } from '../../utils/common.utils';
+import { Context } from '../common';
 
-export const mintTokenControl = ({ project, owner }: Context, params: TokenMintRequest) =>
+export const mintTokenControl = ({ owner, params, project }: Context<TokenMintRequest>) =>
   build5Db().runTransaction(async (transaction) => {
     const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
     const token = await transaction.get<Token>(tokenDocRef);
@@ -54,7 +54,7 @@ export const mintTokenControl = ({ project, owner }: Context, params: TokenMintR
     const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();
     assertMemberHasValidAddress(member, params.network as Network);
 
-    const wallet = (await WalletService.newWallet(params.network as Network)) as SmrWallet;
+    const wallet = await WalletService.newWallet(params.network as Network);
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
     const totalDistributed =
@@ -96,40 +96,40 @@ const getStorageDepositForMinting = async (
   token: Token,
   totalDistributed: number,
   address: AddressDetails,
-  wallet: SmrWallet,
+  wallet: Wallet,
 ) => {
-  const aliasOutput = createAliasOutput(address, wallet.info);
+  const aliasOutput = await createAliasOutput(wallet, address);
   const metadata = await tokenToFoundryMetadata(token);
-  const foundryOutput = createFoundryOutput(
+  const foundryOutput = await createFoundryOutput(
+    wallet,
     token.totalSupply,
     aliasOutput,
     JSON.stringify(metadata),
-    wallet.info,
   );
-  const tokenId = TransactionHelper.constructTokenId(
+  const tokenId = Utils.computeFoundryId(
     aliasOutput.aliasId,
     foundryOutput.serialNumber,
     foundryOutput.tokenScheme.type,
   );
   const { vaultOutput, guardianOutput } = await getVaultAndGuardianOutput(
+    wallet,
     tokenId,
     token.totalSupply,
     totalDistributed,
     address.bech32,
     address.bech32,
-    wallet.info,
   );
-  const aliasStorageDeposit = TransactionHelper.getStorageDeposit(
+  const aliasStorageDeposit = Utils.computeStorageDeposit(
     aliasOutput,
     wallet.info.protocol.rentStructure,
   );
-  const foundryStorageDeposit = TransactionHelper.getStorageDeposit(
+  const foundryStorageDeposit = Utils.computeStorageDeposit(
     foundryOutput,
     wallet.info.protocol.rentStructure,
   );
   return {
-    aliasStorageDeposit,
-    foundryStorageDeposit,
+    aliasStorageDeposit: Number(aliasStorageDeposit),
+    foundryStorageDeposit: Number(foundryStorageDeposit),
     vaultStorageDeposit: Number(vaultOutput?.amount || 0),
     guardianStorageDeposit: Number(guardianOutput?.amount || 0),
   };

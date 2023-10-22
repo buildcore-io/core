@@ -1,27 +1,11 @@
 import { NetworkAddress } from '../models/base';
 
-export enum WEN_FUNC_TRIGGER {
-  onProposalUpdated = 'onproposalupdated',
-  awardTrigger = 'awardtrigger',
-  collectionWrite = 'collectionwrite',
-  onTokenStatusUpdate = 'ontokenstatusupdate',
-  onTokenTradeOrderWrite = 'ontokentradeorderwrite',
-  onTokenPurchaseCreated = 'ontokenpurchasecreated',
-  milestoneTransactionWrite = 'milestonetransactionwrite',
-  nftWrite = 'nftwrite',
-  transactionWrite = 'transactionwrite',
-  mnemonicWrite = 'mnemonicwrite',
-  collectionStatsUpdate = 'collectionstatsupdate',
-  algolia = 'algolia',
-  resizeImg = 'resizeimg',
-}
-
 export enum WEN_FUNC {
-  // Member functions.
+  // Member functions
   createMember = 'cmembernotexists',
   updateMember = 'umember',
 
-  // Space functions.
+  // Space functions
   createSpace = 'cspace',
   updateSpace = 'uspace',
   joinSpace = 'joinspace',
@@ -48,14 +32,14 @@ export enum WEN_FUNC {
   rejectProposal = 'rproposal',
   voteOnProposal = 'voteonproposal',
 
-  // Collection functions.
+  // Collection functions
   createCollection = 'ccollection',
   updateCollection = 'ucollection',
   approveCollection = 'approvecollection',
   rejectCollection = 'rejectcollection',
   mintCollection = 'mintcollection',
 
-  // NFT functions.
+  // NFT functions
   createNft = 'cnft',
   createBatchNft = 'cbatchnft',
   setForSaleNft = 'setforsalenft',
@@ -64,7 +48,7 @@ export enum WEN_FUNC {
   updateUnsoldNft = 'updateunsoldnft',
   stakeNft = 'stakenft',
 
-  // ORDER functions.
+  // ORDER functions
   orderNft = 'ordernft',
   openBid = 'openbid',
   validateAddress = 'validateaddress',
@@ -97,8 +81,6 @@ export enum WEN_FUNC {
   removeStakeReward = 'removestakereward',
 
   generateCustomToken = 'generatecustomtoken',
-
-  api = 'api',
 
   uploadFile = 'uploadfile',
 

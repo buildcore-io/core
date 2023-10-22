@@ -1,18 +1,19 @@
 import { GetNftMutableMetadatHistory, Network, WenError } from '@build-5/interfaces';
 import {
-  INftOutput,
-  IOutputResponse,
-  ITransactionPayload,
-  IndexerPluginClient,
-  NFT_OUTPUT_TYPE,
-  SingleNodeClient,
-  TransactionHelper,
-} from '@iota/iota.js-next';
+  Client,
+  NftOutput,
+  OutputResponse,
+  OutputType,
+  RegularTransactionEssence,
+  TransactionPayload,
+  UTXOInput,
+  Utils,
+} from '@iota/sdk';
 import Joi from 'joi';
 import { isEqual, last } from 'lodash';
 import { of } from 'rxjs';
 import { CommonJoi, getQueryParams } from '../common';
-import { EMPTY_NFT_ID, getMutableMetadata, getShimmerClient } from './wallet';
+import { EMPTY_NFT_ID, getClient, getMutableMetadata } from './wallet';
 
 const getNftMutableMetadataHistorySchema = Joi.object({
   network: Joi.string().valid(Network.SMR, Network.RMS),
@@ -23,12 +24,11 @@ export const getNftMutableMetadataHistory = async (url: string) => {
   const body = getQueryParams<GetNftMutableMetadatHistory>(url, getNftMutableMetadataHistorySchema);
   const history: any[] = [];
   try {
-    const client = await getShimmerClient(body.network);
-    const indexer = new IndexerPluginClient(client);
-    const outputId = (await indexer.nft(body.nftId)).items[0];
-    let outputResponse: IOutputResponse | undefined = await client.output(outputId);
+    const client = await getClient(body.network);
+    const outputId = await client.nftOutputId(body.nftId);
+    let outputResponse: OutputResponse | undefined = await client.getOutput(outputId);
     do {
-      const metadata = getMutableMetadata(outputResponse.output as INftOutput);
+      const metadata = getMutableMetadata(outputResponse.output as NftOutput);
       if (!isEqual(metadata, last(history))) {
         history.push(metadata);
       }
@@ -43,23 +43,24 @@ export const getNftMutableMetadataHistory = async (url: string) => {
   }
 };
 
-const getPrevNftOutput = async (client: SingleNodeClient, output: IOutputResponse) => {
-  if ((output.output as INftOutput).nftId === EMPTY_NFT_ID) {
+const getPrevNftOutput = async (client: Client, output: OutputResponse) => {
+  if ((output.output as NftOutput).nftId === EMPTY_NFT_ID) {
     return undefined;
   }
-  const block = await client.block(output.metadata.blockId);
-  const inputs = (block.payload as ITransactionPayload).essence.inputs;
-  const prevOutputIds = inputs.map(({ transactionId, transactionOutputIndex }) =>
-    TransactionHelper.outputIdFromTransactionData(transactionId, transactionOutputIndex),
-  );
+  const block = await client.getBlock(output.metadata.blockId);
+  const essence = (block.payload as TransactionPayload).essence as RegularTransactionEssence;
+  const prevOutputIds = essence.inputs.map((i) => {
+    const { transactionId, transactionOutputIndex } = i as UTXOInput;
+    return Utils.computeOutputId(transactionId, transactionOutputIndex);
+  });
   for (const prevOutputId of prevOutputIds) {
-    const prevOutputResponse = await client.output(prevOutputId);
+    const prevOutputResponse = await client.getOutput(prevOutputId);
     const prevOutput = prevOutputResponse.output;
-    if (prevOutput.type !== NFT_OUTPUT_TYPE) {
+    if (prevOutput.type !== OutputType.Nft) {
       continue;
     }
-    const prevNftId = getNftId(prevOutputId, prevOutput);
-    if (prevNftId === (output.output as INftOutput).nftId) {
+    const prevNftId = getNftId(prevOutputId, prevOutput as NftOutput);
+    if (prevNftId === (output.output as NftOutput).nftId) {
       return prevOutputResponse;
     }
   }
@@ -67,9 +68,9 @@ const getPrevNftOutput = async (client: SingleNodeClient, output: IOutputRespons
   return undefined;
 };
 
-const getNftId = (outputId: string, output: INftOutput) => {
+const getNftId = (outputId: string, output: NftOutput) => {
   if (output.nftId === EMPTY_NFT_ID) {
-    return TransactionHelper.resolveIdFromOutputId(outputId);
+    return Utils.computeNftId(outputId);
   }
   return output.nftId;
 };

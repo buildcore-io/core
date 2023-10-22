@@ -1,5 +1,5 @@
 import { ProposalVoteTangleRequest, TangleRequestType } from '@build-5/interfaces';
-import { voteOnProposalSchema } from '../../../../../runtime/firebase/proposal/ProposalVoteRequestSchema';
+import { voteOnProposalSchema } from '../../../../../controls/proposal/ProposalVoteRequestSchema';
 import { toJoiObject } from '../../../../joi/common';
 import { baseTangleSchema } from '../../common';
 

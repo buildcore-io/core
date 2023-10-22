@@ -15,21 +15,23 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { Context } from '../../runtime/firebase/common';
 import { assertHasAccess } from '../../services/validators/access';
-import { WalletService } from '../../services/wallet/wallet';
+import { WalletService } from '../../services/wallet/wallet.service';
 import { assertMemberHasValidAddress, getAddress } from '../../utils/address.utils';
+import { getProjects } from '../../utils/common.utils';
 import { isProdEnv } from '../../utils/config.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIpNotBlocked } from '../../utils/ip.utils';
 import { tokenIsInPublicSalePeriod, tokenOrderTransactionDocId } from '../../utils/token.utils';
-import { getProjects } from '../../utils/common.utils';
+import { Context } from '../common';
 
-export const orderTokenControl = async (
-  { project, owner, ip }: Context,
-  params: OrderTokenRequest,
-) => {
+export const orderTokenControl = async ({
+  ip,
+  owner,
+  params,
+  project,
+}: Context<OrderTokenRequest>) => {
   const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
   const member = await memberDocRef.get<Member>();
   assertMemberHasValidAddress(member, DEFAULT_NETWORK);

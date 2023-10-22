@@ -1,6 +1,5 @@
 import { build5Db } from '@build-5/database';
 import {
-  BaseTangleResponse,
   COL,
   Collection,
   CollectionStatus,
@@ -17,7 +16,6 @@ import {
   TransactionValidationType,
   WenError,
 } from '@build-5/interfaces';
-import { AVAILABLE_NETWORKS } from '../../../../controls/common';
 import { assertMemberHasValidAddress, getAddress } from '../../../../utils/address.utils';
 import { getProjects, getRestrictions } from '../../../../utils/common.utils';
 import { isProdEnv } from '../../../../utils/config.utils';
@@ -26,38 +24,37 @@ import { assertIpNotBlocked } from '../../../../utils/ip.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getSpace } from '../../../../utils/space.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { WalletService } from '../../../wallet/wallet';
-import { BaseService, HandlerParams } from '../../base';
+import { WalletService } from '../../../wallet/wallet.service';
+import { HandlerParams } from '../../base';
+import { TransactionService } from '../../transaction-service';
 import { nftBidSchema } from './NftBidTangleRequestSchema';
 
-export class TangleNftBidService extends BaseService {
+export class TangleNftBidService {
+  constructor(readonly transactionService: TransactionService) {}
+
   public handleRequest = async ({
+    request,
     project,
     owner,
-    request,
+    order: tangleOrder,
     tran,
     tranEntry,
-  }: HandlerParams): Promise<BaseTangleResponse | undefined> => {
+  }: HandlerParams) => {
     const params = await assertValidationAsync(nftBidSchema, request);
 
     const order = await createNftBidOrder(project, params.nft, owner, '');
     order.payload.tanglePuchase = true;
     order.payload.disableWithdraw = params.disableWithdraw || false;
 
+    if (tangleOrder.network !== order.network) {
+      throw invalidArgument(WenError.invalid_network);
+    }
+
     this.transactionService.push({
       ref: build5Db().doc(`${COL.TRANSACTION}/${order.uid}`),
       data: order,
       action: 'set',
     });
-
-    const isMintedNft = AVAILABLE_NETWORKS.includes(order.network!);
-    if (!isMintedNft) {
-      return {
-        status: 'success',
-        amount: order.payload.amount!,
-        address: order.payload.targetAddress!,
-      };
-    }
 
     this.transactionService.createUnlockTransaction(
       order,

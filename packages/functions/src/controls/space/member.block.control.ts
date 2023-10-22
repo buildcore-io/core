@@ -1,12 +1,13 @@
 import { build5Db } from '@build-5/database';
 import { COL, SpaceMember, SpaceMemberUpsertRequest, SUB_COL } from '@build-5/interfaces';
-import { Context } from '../../runtime/firebase/common';
 import { getBlockMemberUpdateData } from '../../services/payment/tangle-service/space/SpaceBlockMemberService';
+import { Context } from '../common';
 
-export const blockMemberControl = async (
-  { project, owner }: Context,
-  params: SpaceMemberUpsertRequest,
-) => {
+export const blockMemberControl = async ({
+  owner,
+  params,
+  project,
+}: Context<SpaceMemberUpsertRequest>) => {
   const member = params.member;
   const { space, blockedMember } = await getBlockMemberUpdateData(
     project,

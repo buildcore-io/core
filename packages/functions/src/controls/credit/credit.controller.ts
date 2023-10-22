@@ -13,17 +13,18 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { Context } from '../../runtime/firebase/common';
-import { WalletService } from '../../services/wallet/wallet';
+import { WalletService } from '../../services/wallet/wallet.service';
 import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 
-export const creditUnrefundableControl = (
-  { project, owner }: Context,
-  params: CreditUnrefundableRequest,
-) =>
+export const creditUnrefundableControl = ({
+  owner,
+  params,
+  project,
+}: Context<CreditUnrefundableRequest>): Promise<Transaction> =>
   build5Db().runTransaction(async (transaction) => {
     const transactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${params.transaction}`);
     const creditTransaction = await transaction.get<Transaction>(transactionDocRef);

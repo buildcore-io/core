@@ -8,16 +8,13 @@ import {
   TransactionType,
   TransactionValidationType,
 } from '@build-5/interfaces';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { packBasicOutput } from '../../../../../utils/basic-output.utils';
 import { getProjects } from '../../../../../utils/common.utils';
 import { isProdEnv } from '../../../../../utils/config.utils';
 import { dateToTimestamp } from '../../../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../../../utils/wallet.utils';
-import { SmrWallet } from '../../../../wallet/SmrWalletService';
-import { WalletService } from '../../../../wallet/wallet';
+import { WalletService } from '../../../../wallet/wallet.service';
 
 export const createVoteTransactionOrder = async (
   project: string,
@@ -27,20 +24,17 @@ export const createVoteTransactionOrder = async (
   token: Token,
 ): Promise<Transaction> => {
   const network = isProdEnv() ? Network.SMR : Network.RMS;
-  const wallet = (await WalletService.newWallet(network)) as SmrWallet;
+  const wallet = await WalletService.newWallet(network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
 
   const nativeToken = {
     id: token.mintingData?.tokenId!,
-    amount: HexHelper.fromBigInt256(bigInt(Number.MAX_SAFE_INTEGER)),
+    amount: BigInt(Number.MAX_SAFE_INTEGER),
   };
-  const output = packBasicOutput(
-    targetAddress.bech32,
-    0,
-    [nativeToken],
-    wallet.info,
-    targetAddress.bech32,
-  );
+  const output = await packBasicOutput(wallet, targetAddress.bech32, 0, {
+    nativeTokens: [nativeToken],
+    storageDepositReturnAddress: targetAddress.bech32,
+  });
 
   return {
     project,

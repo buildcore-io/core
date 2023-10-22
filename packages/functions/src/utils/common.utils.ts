@@ -74,3 +74,5 @@ export const getProjects = (data: (BaseRecord | undefined)[], project?: string) 
     (acc, act) => ({ ...acc, ...(act?.projects || {}) }),
     project ? { [project]: true } : {},
   );
+
+export const intToU32 = (value: number) => value & 0xffffffff;

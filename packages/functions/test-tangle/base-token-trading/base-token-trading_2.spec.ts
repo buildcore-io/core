@@ -166,12 +166,12 @@ describe('Base token trading', () => {
 
     const sellerAddress = getAddress(helper.seller, helper.targetNetwork);
     const targetWallet = await getWallet(helper.targetNetwork);
-    expect(await targetWallet.getBalance(sellerAddress)).toBe(881400);
+    expect((await targetWallet.getBalance(sellerAddress)).amount).toBe(881400);
 
     const buyerAddress = getAddress(helper.buyer, helper.sourceNetwork);
     const buyerCreditAddress = getAddress(helper.buyer, helper.targetNetwork);
     const sourceWallet = await getWallet(helper.sourceNetwork);
-    expect(await sourceWallet.getBalance(buyerAddress)).toBe(MIN_IOTA_AMOUNT);
-    expect(await targetWallet.getBalance(buyerCreditAddress)).toBe(MIN_IOTA_AMOUNT);
+    expect((await sourceWallet.getBalance(buyerAddress)).amount).toBe(MIN_IOTA_AMOUNT);
+    expect((await targetWallet.getBalance(buyerCreditAddress)).amount).toBe(MIN_IOTA_AMOUNT);
   });
 });

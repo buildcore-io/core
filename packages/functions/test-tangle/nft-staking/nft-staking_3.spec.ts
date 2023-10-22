@@ -8,7 +8,7 @@ import {
   StakeType,
   Transaction,
 } from '@build-5/interfaces';
-import { TIMELOCK_UNLOCK_CONDITION_TYPE } from '@iota/iota.js-next';
+import { UnlockConditionType } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { stakeNft } from '../../src/runtime/firebase/nft';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
@@ -77,7 +77,7 @@ describe('Stake nft', () => {
     expect(Object.keys(nftOutputs).length).toBe(1);
     const output = Object.values(nftOutputs)[0];
     expect(
-      output.unlockConditions.find((uc) => uc.type === TIMELOCK_UNLOCK_CONDITION_TYPE),
+      output.unlockConditions.find((uc) => uc.type === UnlockConditionType.Timelock),
     ).toBeDefined();
 
     const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nftStake.collection}`);

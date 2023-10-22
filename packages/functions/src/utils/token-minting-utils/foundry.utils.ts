@@ -1,64 +1,58 @@
-import { KEY_NAME_TANGLE, NetworkAddress, Token } from '@build-5/interfaces';
-import * as lib from '@iota/iota.js-next';
-import { IFoundryOutput, INodeInfo, TransactionHelper } from '@iota/iota.js-next';
-import { Converter, HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
+import { KEY_NAME_TANGLE, Token } from '@build-5/interfaces';
+import {
+  AliasAddress,
+  AliasOutput,
+  FoundryOutputBuilderParams,
+  ImmutableAliasAddressUnlockCondition,
+  MetadataFeature,
+  SimpleTokenScheme,
+  Utils,
+  utf8ToHex,
+} from '@iota/sdk';
 import { head } from 'lodash';
+import { Wallet } from '../../services/wallet/wallet';
 import { packBasicOutput } from '../basic-output.utils';
 import { PLACEHOLDER_CID } from '../car.utils';
 import { getContentType } from '../storage.utils';
 
-export const createFoundryOutput = (
+export const createFoundryOutput = async (
+  wallet: Wallet,
   maximumSupply: number,
-  alias: lib.IAliasOutput,
+  alias: AliasOutput,
   metadata: string,
-  info: INodeInfo,
-): lib.IFoundryOutput => {
-  const output: IFoundryOutput = {
-    type: lib.FOUNDRY_OUTPUT_TYPE,
-    amount: '0',
-    serialNumber: alias.foundryCounter,
-    tokenScheme: {
-      type: lib.SIMPLE_TOKEN_SCHEME_TYPE,
-      mintedTokens: HexHelper.fromBigInt256(bigInt(maximumSupply)),
-      meltedTokens: HexHelper.fromBigInt256(bigInt(0)),
-      maximumSupply: HexHelper.fromBigInt256(bigInt(maximumSupply)),
-    },
-    unlockConditions: [
-      {
-        type: lib.IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE,
-        address: { type: lib.ALIAS_ADDRESS_TYPE, aliasId: alias.aliasId },
-      },
-    ],
-    immutableFeatures: [
-      { type: lib.METADATA_FEATURE_TYPE, data: Converter.utf8ToHex(metadata, true) },
-    ],
+) => {
+  const params: FoundryOutputBuilderParams = {
+    serialNumber: alias.foundryCounter || 1,
+    tokenScheme: new SimpleTokenScheme(BigInt(maximumSupply), BigInt(0), BigInt(maximumSupply)),
+    unlockConditions: [new ImmutableAliasAddressUnlockCondition(new AliasAddress(alias.aliasId))],
+    immutableFeatures: [new MetadataFeature(utf8ToHex(metadata))],
   };
-  output.amount = TransactionHelper.getStorageDeposit(
-    output,
-    info.protocol.rentStructure,
-  ).toString();
-  return output;
+  const output = await wallet.client.buildFoundryOutput(params);
+  const rent = (await wallet.client.getInfo()).nodeInfo.protocol.rentStructure;
+  params.amount = Utils.computeStorageDeposit(output, rent);
+  return await wallet.client.buildFoundryOutput(params);
 };
 
 export const getVaultAndGuardianOutput = async (
+  wallet: Wallet,
   tokenId: string,
   totalSupply: number,
   totalDistributed: number,
-  vaultAddress: NetworkAddress,
-  guardianAddress: NetworkAddress,
-  info: INodeInfo,
+  vaultAddress: string,
+  guardianAddress: string,
 ) => {
   const tokensToGuardian = totalSupply - totalDistributed;
-  const guardianAmount = HexHelper.fromBigInt256(bigInt(tokensToGuardian));
   const guardianOutput =
     tokensToGuardian > 0
-      ? packBasicOutput(guardianAddress, 0, [{ amount: guardianAmount, id: tokenId }], info)
+      ? await packBasicOutput(wallet, guardianAddress, 0, {
+          nativeTokens: [{ amount: BigInt(tokensToGuardian), id: tokenId }],
+        })
       : undefined;
 
-  const vaultAmount = HexHelper.fromBigInt256(bigInt(totalDistributed));
   const vaultOutput = totalDistributed
-    ? packBasicOutput(vaultAddress, 0, [{ amount: vaultAmount, id: tokenId }], info)
+    ? await packBasicOutput(wallet, vaultAddress, 0, {
+        nativeTokens: [{ amount: BigInt(totalDistributed), id: tokenId }],
+      })
     : undefined;
 
   return { vaultOutput, guardianOutput };
@@ -74,7 +68,7 @@ export const tokenToFoundryMetadata = async (token: Token) => {
     logoUrl: 'ipfs://' + (token.ipfsMedia || PLACEHOLDER_CID),
     issuerName: KEY_NAME_TANGLE,
     build5Id: token.uid,
-    symbol: token.symbol.toLowerCase(),
+    symbol: token.symbol.toUpperCase(),
     decimals: token.decimals,
   };
 };

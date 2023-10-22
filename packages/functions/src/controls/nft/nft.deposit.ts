@@ -10,13 +10,17 @@ import {
   TransactionValidationType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { Context } from '../../runtime/firebase/common';
-import { WalletService } from '../../services/wallet/wallet';
+import { WalletService } from '../../services/wallet/wallet.service';
 import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 
-export const depositNftControl = async ({ project, owner }: Context, params: NftDepositRequest) => {
+export const depositNftControl = async ({
+  owner,
+  params,
+  project,
+}: Context<NftDepositRequest>): Promise<Transaction> => {
   const network = params.network as Network;
   const wallet = await WalletService.newWallet(network);
   const targetAddress = await wallet.getNewIotaAddressDetails();

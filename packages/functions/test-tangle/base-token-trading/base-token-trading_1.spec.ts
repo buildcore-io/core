@@ -182,11 +182,11 @@ describe('Base token trading', () => {
 
     const sellerAddress = getAddress(helper.seller, helper.targetNetwork);
     const targetWallet = await getWallet(helper.targetNetwork);
-    expect(await targetWallet.getBalance(sellerAddress)).toBe(1856400);
+    expect((await targetWallet.getBalance(sellerAddress)).amount).toBe(1856400);
 
     const buyerAddress = getAddress(helper.buyer, helper.sourceNetwork);
     const sourceWallet = await getWallet(helper.sourceNetwork);
-    expect(await sourceWallet.getBalance(buyerAddress)).toBe(MIN_IOTA_AMOUNT);
+    expect((await sourceWallet.getBalance(buyerAddress)).amount).toBe(MIN_IOTA_AMOUNT);
   });
 
   it('Should create buy order with expiration from expiration unlock', async () => {

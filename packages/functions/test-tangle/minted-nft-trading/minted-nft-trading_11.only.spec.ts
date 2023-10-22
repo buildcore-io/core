@@ -12,24 +12,14 @@ import {
 } from '@build-5/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
-import { getTangleOrder } from '../common';
 import { awaitLedgerInclusionState, requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
 describe('Minted nft trading', () => {
   const helper = new Helper();
-  let tangleOrder: Transaction;
-
-  beforeAll(async () => {
-    await helper.beforeAll();
-    tangleOrder = await getTangleOrder();
-  });
-
-  beforeEach(async () => {
-    await helper.beforeEach();
-  });
 
   it('Should buy 2 nft in parallel, and deposit in parallel', async () => {
+    await helper.beforeEach(Network.RMS);
     const address = await helper.walletService!.getNewIotaAddressDetails();
     requestFundsFromFaucet(Network.RMS, address.bech32, 5 * MIN_IOTA_AMOUNT);
 
@@ -43,7 +33,7 @@ describe('Minted nft trading', () => {
 
     const blockId = await helper.walletService!.send(
       address,
-      tangleOrder.payload.targetAddress!,
+      helper.tangleOrder.payload.targetAddress!,
       MIN_IOTA_AMOUNT,
       {
         customMetadata: {
@@ -57,17 +47,22 @@ describe('Minted nft trading', () => {
     );
     await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
 
-    await awaitLedgerInclusionState(blockId, tangleOrder.network);
+    await awaitLedgerInclusionState(blockId);
 
-    await helper.walletService!.send(address, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
-      customMetadata: {
-        request: {
-          requestType: TangleRequestType.NFT_PURCHASE,
-          collection: helper.collection,
-          nft: nft2.uid,
-        } as NftPurchaseTangleRequest,
+    await helper.walletService!.send(
+      address,
+      helper.tangleOrder.payload.targetAddress!,
+      MIN_IOTA_AMOUNT,
+      {
+        customMetadata: {
+          request: {
+            requestType: TangleRequestType.NFT_PURCHASE,
+            collection: helper.collection,
+            nft: nft2.uid,
+          } as NftPurchaseTangleRequest,
+        },
       },
-    });
+    );
     await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
 
     const nftDocRef1 = build5Db().doc(`${COL.NFT}/${nft1.uid}`);
@@ -90,12 +85,12 @@ describe('Minted nft trading', () => {
 
     await helper.sendNftToAddress(
       address,
-      tangleOrder.payload.targetAddress!,
+      helper.tangleOrder.payload.targetAddress!,
       nft1.mintingData?.nftId!,
     );
     await helper.sendNftToAddress(
       address,
-      tangleOrder.payload.targetAddress!,
+      helper.tangleOrder.payload.targetAddress!,
       nft2.mintingData?.nftId!,
     );
 

@@ -12,16 +12,14 @@ import {
   TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
-import { IndexerPluginClient } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { validateAddress } from '../../src/runtime/firebase/address';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
 import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { WalletService } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
-import { MEDIA, testEnv } from '../../test/set-up';
+import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { saveBaseToken } from './common';
 
@@ -33,18 +31,18 @@ describe('Award', () => {
   let space: Space;
   let award: Award;
   let token: Token;
-  let walletService: SmrWallet;
+  let walletService: Wallet;
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    walletService = (await WalletService.newWallet(network)) as SmrWallet;
+    walletService = await getWallet(network);
   });
 
   beforeEach(async () => {
     guardian = await createMember(walletSpy);
     space = await createSpace(walletSpy, guardian);
 
-    token = await saveBaseToken(space.uid, guardian);
+    token = await saveBaseToken(space.uid, guardian, network);
 
     mockWalletReturnValue(walletSpy, guardian, awardRequest(space.uid, token.symbol));
     award = await testEnv.wrap(createAward)({});
@@ -83,9 +81,8 @@ describe('Award', () => {
       {},
     );
 
-    const indexer = new IndexerPluginClient(walletService.client);
     await wait(async () => {
-      const response = await indexer.nfts({ addressBech32: tmpAddress.bech32 });
+      const response = await walletService.client.nftOutputIds([{ address: tmpAddress.bech32 }]);
       return response.items.length === 2;
     });
 
@@ -111,9 +108,9 @@ describe('Award', () => {
     });
 
     await wait(async () => {
-      const balance = await walletService.getBalance(tmpAddress.bech32);
+      const { amount } = await walletService.getBalance(tmpAddress.bech32);
       return (
-        balance ===
+        amount ===
         2 * MIN_IOTA_AMOUNT + claimOrder.payload.amount + addressValidationOrder.payload.amount
       );
     });

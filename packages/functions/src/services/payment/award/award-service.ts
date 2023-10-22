@@ -11,15 +11,7 @@ import {
   TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
-import {
-  ALIAS_ADDRESS_TYPE,
-  AddressTypes,
-  ED25519_ADDRESS_TYPE,
-  INftAddress,
-  NFT_ADDRESS_TYPE,
-} from '@iota/iota.js-next';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
+import { AliasAddress, Ed25519Address, NftAddress } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
 import { packBasicOutput } from '../../../utils/basic-output.utils';
@@ -29,7 +21,7 @@ import { getProject, getProjects } from '../../../utils/common.utils';
 import { getContentType } from '../../../utils/storage.utils';
 import { createAliasOutput } from '../../../utils/token-minting-utils/alias.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
-import { SmrWallet } from '../../wallet/SmrWalletService';
+import { Wallet } from '../../wallet/wallet';
 import { BaseService, HandlerParams } from '../base';
 
 export class AwardFundService extends BaseService {
@@ -178,25 +170,22 @@ export const awardToIpfsMetadata = (award: Award) => {
   return metadata;
 };
 
-export const getAwardgStorageDeposits = async (award: Award, token: Token, wallet: SmrWallet) => {
+export const getAwardgStorageDeposits = async (award: Award, token: Token, wallet: Wallet) => {
   const address = await wallet.getNewIotaAddressDetails();
 
-  const aliasOutput = createAliasOutput(address, wallet.info);
+  const aliasOutput = await createAliasOutput(wallet, address);
 
-  const collectioIssuerAddress: AddressTypes = {
-    type: ALIAS_ADDRESS_TYPE,
-    aliasId: aliasOutput.aliasId,
-  };
+  const collectioIssuerAddress = new AliasAddress(aliasOutput.aliasId);
 
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${award.space}`);
   const space = <Space>await spaceDocRef.get();
 
   const collectionMetadata = await awardToCollectionMetadata(award, space);
-  const collectionOutput = createNftOutput(
+  const collectionOutput = await createNftOutput(
+    wallet,
     collectioIssuerAddress,
     collectioIssuerAddress,
     JSON.stringify(collectionMetadata),
-    wallet.info,
   );
 
   const nttMetadata = await awardBadgeToNttMetadata(
@@ -206,13 +195,13 @@ export const getAwardgStorageDeposits = async (award: Award, token: Token, walle
     dayjs(),
     0,
   );
-  const issuerAddress: INftAddress = { type: NFT_ADDRESS_TYPE, nftId: collectionOutput.nftId };
-  const ownerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: address.hex };
-  const ntt = createNftOutput(
+  const issuerAddress = new NftAddress(collectionOutput.nftId);
+  const ownerAddress = new Ed25519Address(address.hex);
+  const ntt = await createNftOutput(
+    wallet,
     ownerAddress,
     issuerAddress,
     JSON.stringify(nttMetadata),
-    wallet.info,
     dayjs().add(100, 'y'),
   );
 
@@ -227,9 +216,11 @@ export const getAwardgStorageDeposits = async (award: Award, token: Token, walle
     const nativeTokenAmount = award.badge.total * award.badge.tokenReward;
     const nativeToken = {
       id: token?.mintingData?.tokenId!,
-      amount: HexHelper.fromBigInt256(bigInt(nativeTokenAmount)),
+      amount: BigInt(nativeTokenAmount),
     };
-    const nativeTokenOutput = packBasicOutput(address.bech32, 0, [nativeToken], wallet.info);
+    const nativeTokenOutput = await packBasicOutput(wallet, address.bech32, 0, {
+      nativeTokens: [nativeToken],
+    });
     storageDeposit.nativeTokenStorageDeposit = Number(nativeTokenOutput.amount);
   }
 

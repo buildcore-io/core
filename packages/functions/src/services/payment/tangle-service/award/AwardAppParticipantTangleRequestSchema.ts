@@ -1,5 +1,5 @@
 import { AwardApproveParticipantTangleRequest, TangleRequestType } from '@build-5/interfaces';
-import { approveAwardParticipantSchema } from '../../../../runtime/firebase/award/AwardApproveParticipantRequestSchema';
+import { approveAwardParticipantSchema } from '../../../../controls/award/AwardApproveParticipantRequestSchema';
 import { toJoiObject } from '../../../joi/common';
 import { baseTangleSchema } from '../common';
 

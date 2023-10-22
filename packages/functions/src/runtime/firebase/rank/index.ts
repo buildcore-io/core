@@ -1,6 +1,4 @@
 import { WEN_FUNC } from '@build-5/interfaces';
-import { rankControl } from '../../../controls/rank.control';
-import { rankSchema } from './RankRequestSchema';
-import { onRequest } from '../common';
+import { https } from '../../..';
 
-export const rankController = onRequest(WEN_FUNC.rankController)(rankSchema, rankControl);
+export const rankController = https[WEN_FUNC.rankController];

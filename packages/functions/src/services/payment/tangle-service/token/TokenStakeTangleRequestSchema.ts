@@ -1,5 +1,5 @@
 import { TangleRequestType, TokenStakeTangleRequest } from '@build-5/interfaces';
-import { depositStakeSchema } from '../../../../runtime/firebase/stake/StakeTokenRequestSchema';
+import { depositStakeSchema } from '../../../../controls/stake/StakeTokenRequestSchema';
 import { toJoiObject } from '../../../joi/common';
 import { baseTangleSchema } from '../common';
 

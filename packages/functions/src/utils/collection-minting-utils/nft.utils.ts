@@ -1,68 +1,57 @@
 import { build5Db } from '@build-5/database';
 import { COL, Collection, KEY_NAME_TANGLE, NetworkAddress, Nft } from '@build-5/interfaces';
 import {
-  ADDRESS_UNLOCK_CONDITION_TYPE,
-  AddressTypes,
-  ED25519_ADDRESS_TYPE,
-  INftOutput,
-  INodeInfo,
-  ISSUER_FEATURE_TYPE,
-  METADATA_FEATURE_TYPE,
-  NFT_OUTPUT_TYPE,
-  TIMELOCK_UNLOCK_CONDITION_TYPE,
-  TransactionHelper,
-} from '@iota/iota.js-next';
-import { Converter } from '@iota/util.js-next';
+  Address,
+  AddressUnlockCondition,
+  Ed25519Address,
+  IssuerFeature,
+  MetadataFeature,
+  NftOutput,
+  NftOutputBuilderParams,
+  TimelockUnlockCondition,
+  Utils,
+  utf8ToHex,
+} from '@iota/sdk';
 import dayjs from 'dayjs';
 import { head } from 'lodash';
+import { Wallet } from '../../services/wallet/wallet';
 import { PLACEHOLDER_CID } from '../car.utils';
+import { intToU32 } from '../common.utils';
 import { getContentType } from '../storage.utils';
 import { propsToAttributes } from './nft.prop.utils';
 
 export const EMPTY_NFT_ID = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
-export const ZERO_ADDRESS: AddressTypes = {
-  type: ED25519_ADDRESS_TYPE,
-  pubKeyHash: '0x0000000000000000000000000000000000000000000000000000000000000000',
-};
+export const ZERO_ADDRESS = new Ed25519Address(
+  '0x0000000000000000000000000000000000000000000000000000000000000000',
+);
 
-export const createNftOutput = (
-  ownerAddress: AddressTypes,
-  issuerAddress: AddressTypes,
+export const createNftOutput = async (
+  wallet: Wallet,
+  ownerAddress: Address,
+  issuerAddress: Address,
   metadata: string,
-  info: INodeInfo,
   vestingAt?: dayjs.Dayjs,
   mutableMetadata?: string,
-): INftOutput => {
-  const output: INftOutput = {
-    type: NFT_OUTPUT_TYPE,
-    amount: '0',
+): Promise<NftOutput> => {
+  const params: NftOutputBuilderParams = {
     nftId: EMPTY_NFT_ID,
-    immutableFeatures: [{ type: ISSUER_FEATURE_TYPE, address: issuerAddress }],
-    unlockConditions: [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: ownerAddress }],
+    immutableFeatures: [new IssuerFeature(issuerAddress)],
+    unlockConditions: [new AddressUnlockCondition(ownerAddress)],
   };
   if (metadata) {
-    output.immutableFeatures?.push({
-      type: METADATA_FEATURE_TYPE,
-      data: Converter.utf8ToHex(metadata, true),
-    });
+    params.immutableFeatures?.push(new MetadataFeature(utf8ToHex(metadata)));
   }
   if (mutableMetadata) {
-    output.features = [
-      { type: METADATA_FEATURE_TYPE, data: Converter.utf8ToHex(mutableMetadata, true) },
-    ];
+    params.features = [new MetadataFeature(utf8ToHex(mutableMetadata))];
   }
   if (vestingAt && vestingAt.isAfter(dayjs())) {
-    output.unlockConditions.push({
-      type: TIMELOCK_UNLOCK_CONDITION_TYPE,
-      unixTime: vestingAt.unix(),
-    });
+    params.unlockConditions.push(new TimelockUnlockCondition(intToU32(vestingAt.unix())));
   }
-  output.amount = TransactionHelper.getStorageDeposit(
-    output,
-    info.protocol.rentStructure,
-  ).toString();
-  return output;
+  const output = await wallet.client.buildNftOutput(params);
+  const rent = wallet.info.protocol.rentStructure;
+  params.amount = Utils.computeStorageDeposit(output, rent);
+  return await wallet.client.buildNftOutput(params);
 };
 
 export const nftToMetadata = async (

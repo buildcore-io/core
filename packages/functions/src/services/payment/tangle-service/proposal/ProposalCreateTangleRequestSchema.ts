@@ -1,5 +1,5 @@
 import { ProposalCreateTangleRequest, TangleRequestType } from '@build-5/interfaces';
-import { createProposalSchema } from '../../../../runtime/firebase/proposal/ProposalCreateRequestSchema';
+import { createProposalSchema } from '../../../../controls/proposal/ProposalCreateRequestSchema';
 import { toJoiObject } from '../../../joi/common';
 import { baseTangleSchema } from '../common';
 

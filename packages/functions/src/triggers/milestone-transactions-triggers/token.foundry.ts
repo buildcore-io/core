@@ -1,23 +1,26 @@
 import { build5Db } from '@build-5/database';
 import { COL } from '@build-5/interfaces';
 import {
-  FOUNDRY_OUTPUT_TYPE,
-  IAddressUnlockCondition,
-  IAliasAddress,
-  IFoundryOutput,
-  IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE,
-  ITransactionPayload,
-  OutputTypes,
-  TransactionHelper,
-} from '@iota/iota.js-next';
+  AddressUnlockCondition,
+  AliasAddress,
+  FoundryOutput,
+  OutputType,
+  RegularTransactionEssence,
+  SimpleTokenScheme,
+  TransactionPayload,
+  UnlockConditionType,
+  Utils,
+} from '@iota/sdk';
 import { getTokenByMintId } from '../../utils/token.utils';
 
 export const updateTokenSupplyData = async (data: Record<string, unknown>) => {
-  const foundryOutputs = ((data.payload as ITransactionPayload).essence.outputs as OutputTypes[])
-    .filter((o) => o.type === FOUNDRY_OUTPUT_TYPE)
-    .map((o) => <IFoundryOutput>o);
+  const foundryOutputs = (
+    (data.payload as TransactionPayload).essence as RegularTransactionEssence
+  ).outputs
+    .filter((o) => o.type === OutputType.Foundry)
+    .map((o) => <FoundryOutput>o);
   for (const foundryOutput of foundryOutputs) {
-    const tokenId = TransactionHelper.constructTokenId(
+    const tokenId = Utils.computeFoundryId(
       getAliasAddress(foundryOutput),
       foundryOutput.serialNumber,
       foundryOutput.tokenScheme.type,
@@ -26,8 +29,9 @@ export const updateTokenSupplyData = async (data: Record<string, unknown>) => {
     if (!token) {
       continue;
     }
-    const meltedTokens = Number(foundryOutput.tokenScheme.meltedTokens);
-    const totalSupply = Number(foundryOutput.tokenScheme.maximumSupply);
+    const tokenScheme = foundryOutput.tokenScheme as SimpleTokenScheme;
+    const meltedTokens = Number(tokenScheme.meltedTokens);
+    const totalSupply = Number(tokenScheme.maximumSupply);
     const tokendDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
     await tokendDocRef.update({
       'mintingData.meltedTokens': meltedTokens,
@@ -36,9 +40,9 @@ export const updateTokenSupplyData = async (data: Record<string, unknown>) => {
   }
 };
 
-const getAliasAddress = (output: IFoundryOutput) => {
-  const aliasUnlock = <IAddressUnlockCondition>(
-    output.unlockConditions.find((uc) => uc.type === IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE)!
+const getAliasAddress = (output: FoundryOutput) => {
+  const aliasUnlock = <AddressUnlockCondition>(
+    output.unlockConditions.find((uc) => uc.type === UnlockConditionType.ImmutableAliasAddress)!
   );
-  return (<IAliasAddress>aliasUnlock.address).aliasId;
+  return (<AliasAddress>aliasUnlock.address).aliasId;
 };

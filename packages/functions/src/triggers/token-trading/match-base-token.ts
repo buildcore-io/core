@@ -1,5 +1,3 @@
-import { INodeInfo } from '@iota/iota.js-next';
-
 import { ITransaction, build5Db } from '@build-5/database';
 import {
   COL,
@@ -16,8 +14,8 @@ import {
 } from '@build-5/interfaces';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
-import { SmrWallet } from '../../services/wallet/SmrWalletService';
-import { WalletService } from '../../services/wallet/wallet';
+import { Wallet } from '../../services/wallet/wallet';
+import { WalletService } from '../../services/wallet/wallet.service';
 import { getAddress } from '../../utils/address.utils';
 import { packBasicOutput } from '../../utils/basic-output.utils';
 import { getProject, getProjects } from '../../utils/common.utils';
@@ -56,7 +54,7 @@ const createIotaPayments = async (
       type: TransactionPayloadType.BASE_TOKEN_TRADE,
       amount: count,
       sourceAddress: sellOrder!.payload.targetAddress,
-      targetAddress: getAddress(buyer, sell.sourceNetwork!),
+      targetAddress: buy.targetAddress || getAddress(buyer, sell.sourceNetwork!),
       previousOwnerEntity: Entity.MEMBER,
       previousOwner: seller.uid,
       ownerEntity: Entity.MEMBER,
@@ -100,6 +98,7 @@ const createIotaPayments = async (
 };
 
 const createRoyaltyPayment = async (
+  wallet: Wallet,
   token: Token,
   sell: TokenTradeOrder,
   buy: TokenTradeOrder,
@@ -107,13 +106,14 @@ const createRoyaltyPayment = async (
   seller: Member,
   spaceId: string,
   fee: number,
-  info: INodeInfo,
-): Promise<Transaction> => {
+) => {
   const space = (await build5Db().doc(`${COL.SPACE}/${spaceId}`).get<Space>())!;
   const spaceAddress = getAddress(space, buy.sourceNetwork!);
   const sellerAddress = getAddress(seller, buy.sourceNetwork!);
-  const output = packBasicOutput(spaceAddress, 0, undefined, info, sellerAddress);
-  return {
+  const output = await packBasicOutput(wallet, spaceAddress, 0, {
+    storageDepositReturnAddress: sellerAddress,
+  });
+  return <Transaction>{
     project: getProject(sell),
     projects: getProjects([sell, buy]),
     type: TransactionType.BILL_PAYMENT,
@@ -152,7 +152,7 @@ const createSmrPayments = async (
   tokensToTrade: number,
   price: number,
 ): Promise<Transaction[]> => {
-  const wallet = (await WalletService.newWallet(buy.sourceNetwork!)) as SmrWallet;
+  const wallet = await WalletService.newWallet(buy.sourceNetwork!);
   const tmpAddress = await wallet.getNewIotaAddressDetails(false);
   const buyOrder = await build5Db()
     .doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`)
@@ -167,7 +167,7 @@ const createSmrPayments = async (
   }
 
   const royaltyFees = await getRoyaltyFees(salePrice, seller.tokenTradingFeePercentage);
-  const remainder = packBasicOutput(tmpAddress.bech32, balanceLeft, undefined, wallet.info);
+  const remainder = await packBasicOutput(wallet, tmpAddress.bech32, balanceLeft, {});
   if (balanceLeft > 0 && balanceLeft < Number(remainder.amount)) {
     if (!fulfilled) {
       return [];
@@ -180,14 +180,14 @@ const createSmrPayments = async (
   const royaltyPaymentPromises = Object.entries(royaltyFees)
     .filter((entry) => entry[1] > 0)
     .map(([space, fee]) =>
-      createRoyaltyPayment(token, sell, buy, buyOrder!, seller, space, fee, wallet.info),
+      createRoyaltyPayment(wallet, token, sell, buy, buyOrder!, seller, space, fee),
     );
   const royaltyPayments = await Promise.all(royaltyPaymentPromises);
   royaltyPayments.forEach((rp) => {
     salePrice -= rp.payload.amount!;
   });
 
-  const billPaymentOutput = packBasicOutput(tmpAddress.bech32, salePrice, undefined, wallet.info);
+  const billPaymentOutput = await packBasicOutput(wallet, tmpAddress.bech32, salePrice, {});
   if (salePrice < Number(billPaymentOutput.amount)) {
     return [];
   }
@@ -204,7 +204,7 @@ const createSmrPayments = async (
       type: TransactionPayloadType.BASE_TOKEN_TRADE,
       amount: salePrice,
       sourceAddress: buyOrder!.payload.targetAddress,
-      targetAddress: getAddress(seller, buy.sourceNetwork!),
+      targetAddress: sell.targetAddress || getAddress(seller, buy.sourceNetwork!),
       previousOwnerEntity: Entity.MEMBER,
       previousOwner: buy.owner,
       ownerEntity: Entity.MEMBER,

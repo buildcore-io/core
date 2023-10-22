@@ -15,11 +15,11 @@ import {
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { getAddress } from '../../../utils/address.utils';
 import { getProjects } from '../../../utils/common.utils';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { BaseService, HandlerParams } from '../base';
+import { getAddress } from '../../../utils/address.utils';
 
 export class SpaceAddressService extends BaseService {
   public handleRequest = async ({ project, order, match }: HandlerParams) => {
@@ -41,7 +41,7 @@ export class SpaceAddressService extends BaseService {
     const proposal = createUpdateSpaceValidatedAddressProposal(
       project,
       order,
-      match.from.address,
+      match.from,
       owner,
       space!,
       guardians.length,

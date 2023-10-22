@@ -9,25 +9,25 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import {
-  AddressTypes,
-  ED25519_ADDRESS_TYPE,
-  INftAddress,
-  NFT_ADDRESS_TYPE,
-  REFERENCE_UNLOCK_TYPE,
-  TransactionHelper,
-  UnlockTypes,
-} from '@iota/iota.js-next';
+  Ed25519Address,
+  NftAddress,
+  NftOutputBuilderParams,
+  Output,
+  ReferenceUnlock,
+  TransactionPayload,
+  UTXOInput,
+  Unlock,
+  Utils,
+} from '@iota/sdk';
 import { cloneDeep } from 'lodash';
 import { depositNft } from '../../src/runtime/firebase/nft';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { packBasicOutput } from '../../src/utils/basic-output.utils';
-import { indexToString, packEssence, packPayload, submitBlock } from '../../src/utils/block.utils';
+import { createUnlock, indexToString, packEssence, submitBlock } from '../../src/utils/block.utils';
 import { EMPTY_NFT_ID, createNftOutput } from '../../src/utils/collection-minting-utils/nft.utils';
-import { createUnlock, getTransactionPayloadHex } from '../../src/utils/smr.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { getWallet, testEnv } from '../../test/set-up';
 import { awaitLedgerInclusionState, requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
@@ -69,10 +69,7 @@ describe('Collection minting', () => {
       helper.guardianAddress!,
       collectionMetadata,
     );
-    const collectionBlockState = await awaitLedgerInclusionState(
-      collectionMintingBlock,
-      Network.RMS,
-    );
+    const collectionBlockState = await awaitLedgerInclusionState(collectionMintingBlock);
     if (collectionBlockState !== 'included') {
       fail();
     }
@@ -81,7 +78,7 @@ describe('Collection minting', () => {
       collectionId,
       ...nftMetadata,
     });
-    const nftBlockState = await awaitLedgerInclusionState(nftMintingBlock, Network.RMS);
+    const nftBlockState = await awaitLedgerInclusionState(nftMintingBlock);
     if (nftBlockState !== 'included') {
       fail();
     }
@@ -98,42 +95,42 @@ describe('Collection minting', () => {
 });
 
 const mintCustomCollection = async (address: AddressDetails, metadata: any) => {
-  const wallet = (await WalletService.newWallet(Network.RMS)) as SmrWallet;
+  const wallet = await getWallet(Network.RMS);
   const consumedOutputs = await wallet.getOutputs(address.bech32, [], false);
   const totalAmount = Object.values(consumedOutputs).reduce(
     (acc, act) => acc + Number(act.amount),
     0,
   );
 
-  const issuerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: address.hex };
-  const collectionOutput = createNftOutput(
+  const issuerAddress = new Ed25519Address(address.hex);
+  const collectionOutput = await createNftOutput(
+    wallet,
     issuerAddress,
     issuerAddress,
     JSON.stringify(metadata),
-    wallet.info,
   );
 
   const remainderAmount = totalAmount - Number(collectionOutput.amount);
-  const remainder = packBasicOutput(address.bech32, remainderAmount, [], wallet.info);
+  const remainder = await packBasicOutput(wallet, address.bech32, remainderAmount, {});
 
-  const inputs = Object.keys(consumedOutputs).map(TransactionHelper.inputFromOutputId);
-  const inputsCommitment = TransactionHelper.getInputsCommitment(Object.values(consumedOutputs));
+  const inputs = Object.keys(consumedOutputs).map(UTXOInput.fromOutputId);
+  const inputsCommitment = Utils.computeInputsCommitment(Object.values(consumedOutputs));
 
   const outputs = remainderAmount ? [collectionOutput, remainder] : [collectionOutput];
-  const essence = packEssence(inputs, inputsCommitment, outputs, wallet, {});
-  const unlocks: UnlockTypes[] = [createUnlock(essence, address.keyPair)];
+  const essence = await packEssence(wallet, inputs, inputsCommitment, outputs, {});
+  const unlocks = [await createUnlock(essence, address)];
 
-  const payload = packPayload(essence, unlocks);
-  const blockId = await submitBlock(wallet, payload);
+  const blockId = await submitBlock(wallet, essence, unlocks);
+  await build5Db().doc(`blocks/${blockId}`).create({ blockId });
 
-  const collectionId = TransactionHelper.resolveIdFromOutputId(
-    getTransactionPayloadHex(payload) + indexToString(0),
-  );
+  const payload = new TransactionPayload(essence, unlocks);
+  const collectionOutputId = Utils.computeOutputId(Utils.transactionId(payload), 0);
+  const collectionId = Utils.computeNftId(collectionOutputId);
   return [blockId, collectionId];
 };
 
 const mintNft = async (address: AddressDetails, metadata: any) => {
-  const wallet = (await WalletService.newWallet(Network.RMS)) as SmrWallet;
+  const wallet = await getWallet(Network.RMS);
   const nftWallet = new NftWallet(wallet);
 
   const consumedOutputs = await wallet.getOutputs(address.bech32, [], false);
@@ -146,48 +143,44 @@ const mintNft = async (address: AddressDetails, metadata: any) => {
   const [collectionOutputId, collectionOutput] = Object.entries(collectionOutputs)[0];
   const collectionNftId =
     collectionOutput.nftId === EMPTY_NFT_ID
-      ? TransactionHelper.resolveIdFromOutputId(collectionOutputId)
+      ? Utils.computeNftId(collectionOutputId)
       : collectionOutput.nftId;
 
-  const issuerAddress: INftAddress = { type: NFT_ADDRESS_TYPE, nftId: collectionNftId };
-  const ownerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: address.hex };
-  const nftOutput = createNftOutput(
+  const issuerAddress = new NftAddress(collectionNftId);
+  const ownerAddress = new Ed25519Address(address.hex);
+  const nftOutput = await createNftOutput(
+    wallet,
     ownerAddress,
     issuerAddress,
     JSON.stringify(metadata),
-    wallet.info,
   );
 
   const remainderAmount = totalAmount - Number(nftOutput.amount);
-  const remainder = packBasicOutput(address.bech32, remainderAmount, [], wallet.info);
+  const remainder = await packBasicOutput(wallet, address.bech32, remainderAmount, {});
 
-  const nextCollectionOutput = cloneDeep(collectionOutput);
+  const nextCollectionOutput: NftOutputBuilderParams = cloneDeep(collectionOutput);
   if (nextCollectionOutput.nftId === EMPTY_NFT_ID) {
-    nextCollectionOutput.nftId = TransactionHelper.resolveIdFromOutputId(collectionOutputId);
+    nextCollectionOutput.nftId = Utils.computeNftId(collectionOutputId);
   }
 
-  const inputs = [collectionOutputId, ...Object.keys(consumedOutputs)].map(
-    TransactionHelper.inputFromOutputId,
-  );
-  const inputsCommitment = TransactionHelper.getInputsCommitment([
+  const inputs = [collectionOutputId, ...Object.keys(consumedOutputs)].map(UTXOInput.fromOutputId);
+  const inputsCommitment = Utils.computeInputsCommitment([
     collectionOutput,
     ...Object.values(consumedOutputs),
   ]);
 
-  const outputs = remainderAmount
-    ? [nextCollectionOutput, nftOutput, remainder]
-    : [nextCollectionOutput, nftOutput];
-  const essence = packEssence(inputs, inputsCommitment, outputs, wallet, {});
-  const unlocks: UnlockTypes[] = [
-    createUnlock(essence, address.keyPair),
-    { type: REFERENCE_UNLOCK_TYPE, reference: 0 },
-  ];
+  const outputs: Output[] = [await wallet.client.buildNftOutput(nextCollectionOutput), nftOutput];
+  if (remainderAmount) {
+    outputs.push(remainder);
+  }
 
-  const payload = packPayload(essence, unlocks);
-  const blockId = await submitBlock(wallet, payload);
+  const essence = await packEssence(wallet, inputs, inputsCommitment, outputs, {});
+  const unlocks: Unlock[] = [await createUnlock(essence, address), new ReferenceUnlock(0)];
 
-  const nftId = TransactionHelper.resolveIdFromOutputId(
-    getTransactionPayloadHex(payload) + indexToString(1),
-  );
+  const payload = new TransactionPayload(essence, unlocks);
+  const blockId = await submitBlock(wallet, essence, unlocks);
+  await build5Db().doc(`blocks/${blockId}`).create({ blockId });
+
+  const nftId = Utils.computeNftId(Utils.transactionId(payload) + indexToString(1));
   return [blockId, nftId];
 };

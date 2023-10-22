@@ -25,8 +25,7 @@ import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { dropToOutput } from '../../../../utils/token-minting-utils/member.utils';
 import { getTokenBySymbol, getUnclaimedDrops } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { SmrWallet } from '../../../wallet/SmrWalletService';
-import { WalletService } from '../../../wallet/wallet';
+import { WalletService } from '../../../wallet/wallet.service';
 import { BaseService, HandlerParams } from '../../base';
 import { tokenClaimSchema } from './TokenClaimTangleRequestSchema';
 
@@ -69,12 +68,13 @@ export const createMintedTokenAirdropCalimOrder = async (
     throw invalidArgument(WenError.no_tokens_to_claim);
   }
 
-  const wallet = (await WalletService.newWallet(token.mintingData?.network!)) as SmrWallet;
+  const wallet = await WalletService.newWallet(token.mintingData?.network!);
   const targetAddress = await wallet.getNewIotaAddressDetails();
-  const storageDeposit = drops.reduce((acc, drop) => {
-    const output = dropToOutput(token, drop, targetAddress.bech32, wallet.info);
-    return acc + Number(output.amount);
-  }, 0);
+  let storageDeposit = 0;
+  for (const drop of drops) {
+    const output = await dropToOutput(wallet, token, drop, targetAddress.bech32);
+    storageDeposit += Number(output.amount);
+  }
 
   return {
     project,

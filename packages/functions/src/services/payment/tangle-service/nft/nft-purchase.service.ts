@@ -25,7 +25,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { AVAILABLE_NETWORKS } from '../../../../controls/common';
 import { getAddress } from '../../../../utils/address.utils';
 import { getNftByMintingId } from '../../../../utils/collection-minting-utils/nft.utils';
 import { getProject, getProjects, getRestrictions } from '../../../../utils/common.utils';
@@ -37,7 +36,7 @@ import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getSpace } from '../../../../utils/space.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { assertHasAccess } from '../../../validators/access';
-import { WalletService } from '../../../wallet/wallet';
+import { WalletService } from '../../../wallet/wallet.service';
 import { BaseService, HandlerParams } from '../../base';
 import { nftPurchaseSchema } from './NftPurchaseTangleRequestSchema';
 
@@ -68,23 +67,13 @@ export class TangleNftPurchaseService extends BaseService {
       action: 'set',
     });
 
-    const isMintedNft = AVAILABLE_NETWORKS.includes(order.network!);
-
-    if (isMintedNft && tranEntry.amount !== order.payload.amount) {
+    if (tranEntry.amount !== order.payload.amount || tangleOrder.network !== order.network) {
       return {
         status: 'error',
         amount: order.payload.amount!,
         address: order.payload.targetAddress!,
         code: WenError.invalid_base_token_amount.code,
         message: WenError.invalid_base_token_amount.key,
-      };
-    }
-
-    if (!isMintedNft) {
-      return {
-        status: 'success',
-        amount: order.payload.amount!,
-        address: order.payload.targetAddress!,
       };
     }
 

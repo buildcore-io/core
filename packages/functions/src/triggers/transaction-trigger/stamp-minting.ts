@@ -1,11 +1,9 @@
 import { build5Db } from '@build-5/database';
 import { COL, Transaction, TransactionPayloadType, TransactionType } from '@build-5/interfaces';
-import { ITransactionPayload, TransactionHelper } from '@iota/iota.js-next';
+import { TransactionPayload, Utils } from '@iota/sdk';
 import dayjs from 'dayjs';
-import { indexToString } from '../../utils/block.utils';
 import { getProject, getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
-import { getTransactionPayloadHex } from '../../utils/smr.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const onStampMintUpdate = async (transaction: Transaction) => {
@@ -24,10 +22,11 @@ export const onStampMintUpdate = async (transaction: Transaction) => {
 const onAliasMinted = async (transaction: Transaction) => {
   const path = transaction.payload.walletReference?.milestoneTransactionPath!;
   const milestoneTransaction = (await build5Db().doc(path).get<Record<string, unknown>>())!;
-  const aliasOutputId =
-    getTransactionPayloadHex(milestoneTransaction.payload as ITransactionPayload) +
-    indexToString(0);
-  const aliasId = TransactionHelper.resolveIdFromOutputId(aliasOutputId);
+  const aliasOutputId = Utils.computeOutputId(
+    Utils.transactionId(milestoneTransaction.payload as TransactionPayload),
+    0,
+  );
+  const aliasId = Utils.computeAliasId(aliasOutputId);
 
   const batch = build5Db().batch();
 
@@ -72,10 +71,11 @@ const onAliasMinted = async (transaction: Transaction) => {
 const onNftMinted = async (transaction: Transaction) => {
   const path = transaction.payload.walletReference?.milestoneTransactionPath!;
   const milestoneTransaction = (await build5Db().doc(path).get<Record<string, unknown>>())!;
-  const nftOutputId =
-    getTransactionPayloadHex(milestoneTransaction.payload as ITransactionPayload) +
-    indexToString(1);
-  const nftId = TransactionHelper.resolveIdFromOutputId(nftOutputId);
+  const nftOutputId = Utils.computeOutputId(
+    Utils.transactionId(milestoneTransaction.payload as TransactionPayload),
+    1,
+  );
+  const nftId = Utils.computeNftId(nftOutputId);
   const stampDocRef = build5Db().doc(`${COL.STAMP}/${transaction.payload.stamp}`);
   await stampDocRef.update({ nftId });
 };

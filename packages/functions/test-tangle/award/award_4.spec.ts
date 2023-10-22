@@ -22,13 +22,13 @@ import {
 } from '../../src/runtime/firebase/award';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
-import { MEDIA, testEnv } from '../../test/set-up';
+import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { awaitAllTransactionsForAward, saveBaseToken } from './common';
 
@@ -41,12 +41,12 @@ describe('Create award, base', () => {
   let space: Space;
   let award: Award;
   let guardianAddress: AddressDetails;
-  let walletService: SmrWallet;
+  let walletService: Wallet;
   let token: Token;
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    walletService = (await WalletService.newWallet(network)) as SmrWallet;
+    walletService = await getWallet(network);
   });
 
   beforeEach(async () => {
@@ -57,7 +57,7 @@ describe('Create award, base', () => {
     mockWalletReturnValue(walletSpy, member, { uid: space?.uid });
     await testEnv.wrap(joinSpace)({});
 
-    token = await saveBaseToken(space.uid, guardian);
+    token = await saveBaseToken(space.uid, guardian, network);
 
     mockWalletReturnValue(walletSpy, guardian, awardRequest(space.uid, token.symbol));
     award = await testEnv.wrap(createAward)({});
@@ -152,8 +152,8 @@ describe('Create award, base', () => {
         return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
       });
 
-      const balance = await walletService.getBalance(guardianAddress.bech32);
-      expect(balance).toBe(award.aliasStorageDeposit + 2 * award.badge.tokenReward);
+      const { amount } = await walletService.getBalance(guardianAddress.bech32);
+      expect(amount).toBe(award.aliasStorageDeposit + 2 * award.badge.tokenReward);
     },
   );
 });

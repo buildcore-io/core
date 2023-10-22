@@ -1,9 +1,13 @@
 import { build5Db } from '@build-5/database';
-import { COL, Network, NftStakeRequest, StakeType } from '@build-5/interfaces';
-import { Context } from '../../runtime/firebase/common';
+import { COL, Network, NftStakeRequest, StakeType, Transaction } from '@build-5/interfaces';
+import { Context } from '../common';
 import { createNftStakeOrder } from '../../services/payment/nft/nft-stake.service';
 
-export const nftStakeControl = async ({ project, owner }: Context, params: NftStakeRequest) => {
+export const nftStakeControl = async ({
+  owner,
+  params,
+  project,
+}: Context<NftStakeRequest>): Promise<Transaction> => {
   const order = await createNftStakeOrder(
     project,
     owner,

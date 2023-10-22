@@ -19,16 +19,23 @@ jobs:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE }}'
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
-      - name: 'Use gcloud CLI'
-        run: 'gcloud info'
-      - name: Install dependencies
-        run:  npm install
-      - name: Build Instance
-        run:  npm run build:api
-      - name: Deploy Instance
+      - name: Build image
         run: |
-          cd packages/api
-          npm run deploy:prod
+            cp packages/api/Dockerfile .
+            gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/api
+      - name: Deploy
+        run: |
+            gcloud run deploy api \
+              --image gcr.io/$GOOGLE_CLOUD_PROJECT/api \
+              --min-instances=3 \
+              --memory=1Gi \
+              --cpu=1 \
+              --concurrency=1000 \
+              --allow-unauthenticated \
+              --timeout=600 \
+              --ingress=internal-and-cloud-load-balancing \
+              --region=us-central1 \
+
   deploy_functions:
     runs-on: ubuntu-latest
     environment: production
@@ -37,17 +44,17 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Set env vars
-        working-directory: packages/functions
-        run: echo "$FUNCTIONS_ENV_VARS" >> .env
-        env:
-          FUNCTIONS_ENV_VARS: ${{ secrets.FUNCTIONS_ENV_VARS_PROD }}
-      - name: Deploy to Firebase
-        uses: w9jds/firebase-action@master
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v1'
         with:
-          args: deploy --only functions,firestore:indexes -P soonaverse -f
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE_TEST }}'
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+      - name: Build and deploy
+        run: |
+            npm run create-deploy-script
+            chmod 777 ./deploy.sh
+            ./deploy.sh
 
   deploy_to_npm:
     runs-on: ubuntu-latest

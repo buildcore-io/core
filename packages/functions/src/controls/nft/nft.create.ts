@@ -12,24 +12,26 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { Context } from '../../runtime/firebase/common';
 import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 
-export const createNftControl = async (
-  { project, owner }: Context,
-  params: NftCreateRequest,
-): Promise<Nft> => {
+export const createNftControl = async ({
+  owner,
+  params,
+  project,
+}: Context<NftCreateRequest>): Promise<Nft> => {
   const collection = await getCollection(owner, params.collection as string);
   return await processOneCreateNft(project, params, collection, collection.total + 1);
 };
 
-export const createBatchNftControl = async (
-  { project, owner }: Context,
-  params: NftCreateRequest[],
-): Promise<string[]> => {
+export const createBatchNftControl = async ({
+  owner,
+  params,
+  project,
+}: Context<NftCreateRequest[]>): Promise<string[]> => {
   const collection = await getCollection(owner, params[0].collection);
   const promises = params.map((param, i) =>
     processOneCreateNft(project, param, collection, collection.total + i + 1),

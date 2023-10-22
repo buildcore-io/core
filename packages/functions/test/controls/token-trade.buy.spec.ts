@@ -20,7 +20,6 @@ import {
   createMember,
   expectThrow,
   getRandomSymbol,
-  milestoneProcessed,
   mockIpCheck,
   mockWalletReturnValue,
   submitMilestoneFunc,
@@ -57,8 +56,7 @@ describe('Trade controller, buy token', () => {
     };
     mockWalletReturnValue(walletSpy, memberAddress, request);
     const order = await testEnv.wrap(tradeToken)({});
-    const milestone = await submitMilestoneFunc(order.payload.targetAddress, MIN_IOTA_AMOUNT * 5);
-    await milestoneProcessed(milestone.milestone, milestone.tranId);
+    await submitMilestoneFunc(order, MIN_IOTA_AMOUNT * 5);
 
     const buySnap = await build5Db()
       .collection(COL.TOKEN_MARKET)
@@ -97,11 +95,8 @@ describe('Trade controller, buy token', () => {
     mockWalletReturnValue(walletSpy, memberAddress, request);
     const order = await testEnv.wrap(tradeToken)({});
 
-    const milestone = await submitMilestoneFunc(order.payload.targetAddress, MIN_IOTA_AMOUNT * 5);
-    await milestoneProcessed(milestone.milestone, milestone.tranId);
-
-    const milestone2 = await submitMilestoneFunc(order.payload.targetAddress, MIN_IOTA_AMOUNT * 5);
-    await milestoneProcessed(milestone2.milestone, milestone2.tranId);
+    await submitMilestoneFunc(order, MIN_IOTA_AMOUNT * 5);
+    await submitMilestoneFunc(order, MIN_IOTA_AMOUNT * 5);
 
     const buysSnap = await build5Db()
       .collection(COL.TOKEN_MARKET)

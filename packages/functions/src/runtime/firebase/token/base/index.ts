@@ -1,57 +1,20 @@
 import { WEN_FUNC } from '@build-5/interfaces';
-import { airdropTokenControl } from '../../../../controls/token/token.airdrop';
-import { claimAirdroppedTokenControl } from '../../../../controls/token/token.airdrop.claim';
-import { cancelPublicSaleControl } from '../../../../controls/token/token.cancel.pub.sale';
-import { createTokenControl } from '../../../../controls/token/token.create';
-import { creditTokenControl } from '../../../../controls/token/token.credit';
-import { enableTokenTradingControl } from '../../../../controls/token/token.enable.trading';
-import { orderTokenControl } from '../../../../controls/token/token.order';
-import { setTokenAvailableForSaleControl } from '../../../../controls/token/token.set.for.sale';
-import { updateTokenControl } from '../../../../controls/token/token.update';
-import { toJoiObject } from '../../../../services/joi/common';
-import { UidSchemaObject, onRequest, uidSchema } from '../../common';
-import { airdropTokenSchema } from './TokenAirdropRequestSchema';
-import { cancelPubSaleSchema } from './TokenCancelPubSaleRequestSchema';
-import { claimAirdroppedTokenSchema } from './TokenClaimAirdroppedRequestSchema';
-import { createTokenSchema } from './TokenCreateRequestSchema';
-import { creditTokenSchema } from './TokenCreditRequestSchema';
-import { enableTradingSchema } from './TokenEnableTradingRequestSchema';
-import { orderTokenSchema } from './TokenOrderRequestSchema';
-import { setAvailableForSaleSchema } from './TokenSetAvailableForSaleRequestSchema';
+import { https } from '../../../..';
 
-export const createToken = onRequest(WEN_FUNC.createToken)(createTokenSchema, createTokenControl);
+export const createToken = https[WEN_FUNC.createToken];
 
-export const updateToken = onRequest(WEN_FUNC.updateToken)(
-  toJoiObject<UidSchemaObject>(uidSchema),
-  updateTokenControl,
-  true,
-);
+export const updateToken = https[WEN_FUNC.updateToken];
 
-export const setTokenAvailableForSale = onRequest(WEN_FUNC.setTokenAvailableForSale)(
-  setAvailableForSaleSchema,
-  setTokenAvailableForSaleControl,
-);
+export const setTokenAvailableForSale = https[WEN_FUNC.setTokenAvailableForSale];
 
-export const cancelPublicSale = onRequest(WEN_FUNC.cancelPublicSale)(
-  cancelPubSaleSchema,
-  cancelPublicSaleControl,
-);
+export const cancelPublicSale = https[WEN_FUNC.cancelPublicSale];
 
-export const creditToken = onRequest(WEN_FUNC.creditToken)(creditTokenSchema, creditTokenControl);
+export const creditToken = https[WEN_FUNC.creditToken];
 
-export const orderToken = onRequest(WEN_FUNC.orderToken)(orderTokenSchema, orderTokenControl);
+export const orderToken = https[WEN_FUNC.orderToken];
 
-export const enableTokenTrading = onRequest(WEN_FUNC.enableTokenTrading)(
-  enableTradingSchema,
-  enableTokenTradingControl,
-);
+export const enableTokenTrading = https[WEN_FUNC.enableTokenTrading];
 
-export const airdropToken = onRequest(WEN_FUNC.airdropToken)(
-  airdropTokenSchema,
-  airdropTokenControl,
-);
+export const airdropToken = https[WEN_FUNC.airdropToken];
 
-export const claimAirdroppedToken = onRequest(WEN_FUNC.claimAirdroppedToken)(
-  claimAirdroppedTokenSchema,
-  claimAirdroppedTokenControl,
-);
+export const claimAirdroppedToken = https[WEN_FUNC.claimAirdroppedToken];

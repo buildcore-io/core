@@ -9,7 +9,7 @@ import {
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-import { INftOutput, IndexerPluginClient, NFT_OUTPUT_TYPE } from '@iota/iota.js-next';
+import { NftOutput } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { finalizeAllNftAuctions } from '../../src/cron/nft.cron';
@@ -26,7 +26,7 @@ describe('Nft otr bid', () => {
 
   beforeAll(async () => {
     await helper.beforeAll();
-    tangleOrder = await getTangleOrder();
+    tangleOrder = await getTangleOrder(Network.RMS);
   });
 
   beforeEach(async () => {
@@ -73,19 +73,12 @@ describe('Nft otr bid', () => {
       return transaction?.payload?.walletReference?.confirmed;
     });
 
-    const indexer = new IndexerPluginClient(helper.walletService?.client!);
     const output = (
-      await helper.walletService!.client.output(
-        (
-          await indexer.nft(helper.nft.mintingData?.nftId!)
-        ).items[0],
+      await helper.walletService!.client.getOutput(
+        await helper.walletService!.client.nftOutputId(helper.nft.mintingData?.nftId!),
       )
     ).output;
-    const ownerAddress = Bech32AddressHelper.addressFromAddressUnlockCondition(
-      (output as INftOutput).unlockConditions,
-      'rms',
-      NFT_OUTPUT_TYPE,
-    );
+    const ownerAddress = Bech32AddressHelper.bech32FromUnlockConditions(output as NftOutput, 'rms');
     expect(ownerAddress).toBe(address.bech32);
   });
 });

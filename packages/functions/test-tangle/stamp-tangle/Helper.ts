@@ -12,7 +12,7 @@ import {
 import crypto from 'crypto';
 import fs from 'fs';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { wait } from '../../test/controls/common';
 import { getWallet } from '../../test/set-up';
@@ -28,7 +28,7 @@ export class Helper {
 
   public request: StampTangleRequest = {} as any;
   public beforeAll = async () => {
-    this.tangleOrder = await getTangleOrder();
+    this.tangleOrder = await getTangleOrder(Network.RMS);
     this.wallet = (await getWallet(Network.RMS)) as SmrWallet;
   };
 
@@ -38,11 +38,7 @@ export class Helper {
     this.dowloadUrl = await bucket.upload('./test/puppy.jpeg', destination, {
       contentType: 'image/jpeg',
     });
-    this.request = {
-      requestType: TangleRequestType.STAMP,
-      uri: this.dowloadUrl,
-      network: Network.RMS,
-    };
+    this.request = { requestType: TangleRequestType.STAMP, uri: this.dowloadUrl };
     const content = fs.readFileSync('./test/puppy.jpeg');
     this.checksum = crypto
       .createHash('sha1')

@@ -1,14 +1,14 @@
 import { build5Db } from '@build-5/database';
 import { Award, AwardCancelRequest, COL, WenError } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { Context } from '../../runtime/firebase/common';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
+import { Context } from '../common';
 
-export const cancelAwardControl = (
-  { owner }: Context,
-  params: AwardCancelRequest,
-): Promise<Award> =>
+export const cancelAwardControl = ({
+  owner,
+  params,
+}: Context<AwardCancelRequest>): Promise<Award> =>
   build5Db().runTransaction(async (transaction) => {
     const awardDocRef = build5Db().doc(`${COL.AWARD}/${params.uid}`);
     const award = await transaction.get<Award>(awardDocRef);

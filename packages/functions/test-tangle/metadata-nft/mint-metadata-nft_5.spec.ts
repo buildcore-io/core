@@ -3,6 +3,7 @@ import {
   COL,
   Collection,
   MIN_IOTA_AMOUNT,
+  Network,
   Space,
   TangleRequestType,
   Transaction,
@@ -10,27 +11,18 @@ import {
 } from '@build-5/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
-import { getTangleOrder } from '../common';
 import { Helper } from './Helper';
 
 describe('Metadata nft', () => {
   const helper = new Helper();
-  let tangleOrder: Transaction;
-
-  beforeAll(async () => {
-    await helper.berforeAll();
-    tangleOrder = await getTangleOrder();
-  });
-
-  beforeEach(async () => {
-    await helper.beforeEach();
-  });
 
   it('Should mint metada nft, mint two new one for same collection&alias, in parallel', async () => {
+    await helper.beforeEach(Network.RMS);
+
     const metadata = { mytest: 'mytest', asd: 'asdasdasd' };
     await helper.walletService.send(
       helper.memberAddress,
-      tangleOrder.payload.targetAddress!,
+      helper.tangleOrder.payload.targetAddress!,
       MIN_IOTA_AMOUNT,
       {
         customMetadata: {
@@ -75,7 +67,7 @@ describe('Metadata nft', () => {
       helper.memberAddress,
       [
         {
-          toAddress: tangleOrder.payload.targetAddress!,
+          toAddress: helper.tangleOrder.payload.targetAddress!,
           amount: MIN_IOTA_AMOUNT,
           customMetadata: {
             request: {
@@ -87,7 +79,7 @@ describe('Metadata nft', () => {
           },
         },
         {
-          toAddress: tangleOrder.payload.targetAddress!,
+          toAddress: helper.tangleOrder.payload.targetAddress!,
           amount: MIN_IOTA_AMOUNT,
           customMetadata: {
             request: {

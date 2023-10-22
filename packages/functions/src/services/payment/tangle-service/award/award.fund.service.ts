@@ -19,7 +19,7 @@ import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { WalletService } from '../../../wallet/wallet';
+import { WalletService } from '../../../wallet/wallet.service';
 import { BaseService, HandlerParams } from '../../base';
 import { awardFundSchema } from './AwardFundTangleRequestSchema';
 
@@ -64,7 +64,7 @@ export const createAwardFundOrder = async (
   const wallet = await WalletService.newWallet(award.network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
 
-  const nativeTokens = [{ id: award.badge.tokenId!, amount: totalReward.toString() }];
+  const nativeTokens = [{ id: award.badge.tokenId!, amount: BigInt(totalReward) }];
   return {
     project,
     projects: getProjects([], project),

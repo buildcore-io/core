@@ -26,7 +26,6 @@ import {
   createMember,
   createSpace,
   getRandomSymbol,
-  milestoneProcessed,
   mockWalletReturnValue,
   submitMilestoneFunc,
   wait,
@@ -61,11 +60,7 @@ const setAvailableOrderAndCancelSale = async (
     ),
   });
   const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
-  const nextMilestone = await submitMilestoneFunc(
-    order.payload.targetAddress,
-    miotas * MIN_IOTA_AMOUNT,
-  );
-  await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+  await submitMilestoneFunc(order, miotas * MIN_IOTA_AMOUNT);
 
   const distribution = <TokenDistribution>await distributionDocRef.get();
   expect(distribution.totalDeposit).toBe(miotas * MIN_IOTA_AMOUNT);
@@ -167,11 +162,7 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
       ),
     });
     const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
-    const nextMilestone = await submitMilestoneFunc(
-      order.payload.targetAddress,
-      7 * MIN_IOTA_AMOUNT,
-    );
-    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+    await submitMilestoneFunc(order, 7 * MIN_IOTA_AMOUNT);
 
     await tokenDocRef.update({ status: TokenStatus.PROCESSING });
     await wait(async () => (await tokenDocRef.get<Token>())?.status === TokenStatus.PRE_MINTED);

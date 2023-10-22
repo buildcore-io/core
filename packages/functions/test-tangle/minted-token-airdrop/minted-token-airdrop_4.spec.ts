@@ -31,7 +31,7 @@ describe('Minted token airdrop tangle claim', () => {
 
   beforeAll(async () => {
     await helper.berforeAll();
-    tangleOrder = await getTangleOrder();
+    tangleOrder = await getTangleOrder(Network.RMS);
   });
 
   beforeEach(async () => {
@@ -80,7 +80,7 @@ describe('Minted token airdrop tangle claim', () => {
       expiration: expiresAt
         ? { expiresAt, returnAddressBech32: guardianAddress.bech32 }
         : undefined,
-      nativeTokens: [{ id: helper.token?.mintingData?.tokenId!, amount: total.toString(16) }],
+      nativeTokens: [{ id: helper.token?.mintingData?.tokenId!, amount: BigInt(total) }],
     });
 
     await wait(async () => {

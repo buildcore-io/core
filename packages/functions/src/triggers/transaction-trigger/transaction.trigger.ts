@@ -11,23 +11,21 @@ import {
   Transaction,
   TransactionPayloadType,
   TransactionType,
-  WEN_FUNC_TRIGGER,
   WalletResult,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions/v2';
 import { isEmpty } from 'lodash';
-import { scale } from '../../scale.settings';
+import { AliasWallet } from '../../services/wallet/AliasWallet';
 import { NativeTokenWallet } from '../../services/wallet/NativeTokenWallet';
 import { NftWallet } from '../../services/wallet/NftWallet';
-import { SmrParams, SmrWallet } from '../../services/wallet/SmrWalletService';
-import { AliasWallet } from '../../services/wallet/smr-wallets/AliasWallet';
-import { WalletService } from '../../services/wallet/wallet';
+import { Wallet, WalletParams } from '../../services/wallet/wallet';
+import { WalletService } from '../../services/wallet/wallet.service';
 import { getAddress } from '../../utils/address.utils';
 import { getProject, getProjects } from '../../utils/common.utils';
 import { isEmulatorEnv } from '../../utils/config.utils';
 import { serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { FirestoreDocEvent } from '../common';
 import { unclockMnemonic } from '../milestone-transactions-triggers/common';
 import { onAirdropClaim } from './airdrop.claim';
 import { onAwardUpdate } from './award.transaction.update';
@@ -63,136 +61,123 @@ export const EXECUTABLE_TRANSACTIONS = [
   ...CREDIT_EXECUTABLE_TRANSACTIONS,
 ];
 
-export const transactionWrite = functions.firestore.onDocumentWritten(
-  {
-    document: COL.TRANSACTION + '/{tranId}',
-    timeoutSeconds: 540,
-    minInstances: scale(WEN_FUNC_TRIGGER.transactionWrite),
-    memory: '4GiB',
-  },
-  async (event) => {
-    const prev = <Transaction | undefined>event.data?.before?.data();
-    const curr = <Transaction | undefined>event.data?.after?.data();
+export const onTransactionWrite = async (event: FirestoreDocEvent<Transaction>) => {
+  const { prev, curr } = event;
+  if (!curr) {
+    return;
+  }
 
-    if (!curr) {
-      return;
-    }
+  const isExecutableType = EXECUTABLE_TRANSACTIONS.includes(curr.type);
+  const isCreate = prev === undefined;
+  const shouldRetry = !prev?.shouldRetry && curr?.shouldRetry;
 
-    const isExecutableType = EXECUTABLE_TRANSACTIONS.includes(curr.type);
-    const isCreate = prev === undefined;
-    const shouldRetry = !prev?.shouldRetry && curr?.shouldRetry;
+  if (isCreate) {
+    const docRef = build5Db().doc(`${COL.TRANSACTION}/${curr.uid}`);
+    await docRef.update({ isOrderType: curr.type === TransactionType.ORDER });
+  }
 
-    if (isCreate) {
-      const docRef = build5Db().doc(`${COL.TRANSACTION}/${curr.uid}`);
-      await docRef.update({ isOrderType: curr.type === TransactionType.ORDER });
-    }
+  if (isExecutableType && !curr?.ignoreWallet && (isCreate || shouldRetry)) {
+    return await executeTransaction(curr.uid);
+  }
 
-    if (isExecutableType && !curr?.ignoreWallet && (isCreate || shouldRetry)) {
-      return await executeTransaction(curr.uid);
-    }
+  if (
+    curr.payload.type === TransactionPayloadType.AIRDROP_MINTED_TOKEN &&
+    prev?.payload?.unclaimedAirdrops &&
+    curr.payload.unclaimedAirdrops === 0
+  ) {
+    await onMintedAirdropCleared(curr);
+    return;
+  }
 
-    if (
-      curr.payload.type === TransactionPayloadType.AIRDROP_MINTED_TOKEN &&
-      prev?.payload?.unclaimedAirdrops &&
-      curr.payload.unclaimedAirdrops === 0
-    ) {
-      await onMintedAirdropCleared(curr);
-      return;
-    }
+  if (curr.type === TransactionType.MINT_COLLECTION && isConfirmed(prev, curr)) {
+    await onCollectionMintingUpdate(curr);
+    return;
+  }
 
-    if (curr.type === TransactionType.MINT_COLLECTION && isConfirmed(prev, curr)) {
-      await onCollectionMintingUpdate(curr);
-      return;
-    }
+  if (curr.type === TransactionType.MINT_TOKEN && isConfirmed(prev, curr)) {
+    await onTokenMintingUpdate(curr);
+    return;
+  }
 
-    if (curr.type === TransactionType.MINT_TOKEN && isConfirmed(prev, curr)) {
-      await onTokenMintingUpdate(curr);
-      return;
-    }
+  if (curr.type === TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED && isConfirmed(prev, curr)) {
+    await build5Db()
+      .doc(`${COL.TRANSACTION}/${curr.payload.transaction}`)
+      .update({
+        'payload.walletReference.confirmed': true,
+        'payload.walletReference.inProgress': false,
+        'payload.walletReference.count': build5Db().inc(1),
+        'payload.walletReference.processedOn': dayjs().toDate(),
+        'payload.walletReference.chainReference':
+          curr.payload?.walletReference?.chainReference || '',
+        'payload.walletReference.chainReferences': build5Db().arrayUnion(
+          curr.payload?.walletReference?.chainReference || '',
+        ),
+      });
+    return;
+  }
 
-    if (curr.type === TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED && isConfirmed(prev, curr)) {
-      await build5Db()
-        .doc(`${COL.TRANSACTION}/${curr.payload.transaction}`)
-        .update({
-          'payload.walletReference.confirmed': true,
-          'payload.walletReference.inProgress': false,
-          'payload.walletReference.count': build5Db().inc(1),
-          'payload.walletReference.processedOn': dayjs().toDate(),
-          'payload.walletReference.chainReference':
-            curr.payload?.walletReference?.chainReference || '',
-          'payload.walletReference.chainReferences': build5Db().arrayUnion(
-            curr.payload?.walletReference?.chainReference || '',
-          ),
-        });
-      return;
-    }
+  if (
+    curr.type === TransactionType.BILL_PAYMENT &&
+    isConfirmed(prev, curr) &&
+    !isEmpty(curr.payload.stake)
+  ) {
+    await onStakingConfirmed(curr);
+    return;
+  }
 
-    if (
-      curr.type === TransactionType.BILL_PAYMENT &&
-      isConfirmed(prev, curr) &&
-      !isEmpty(curr.payload.stake)
-    ) {
-      await onStakingConfirmed(curr);
-      return;
-    }
+  const airdropOrderTypes = [
+    TransactionPayloadType.TOKEN_AIRDROP,
+    TransactionPayloadType.CLAIM_MINTED_TOKEN,
+    TransactionPayloadType.CLAIM_BASE_TOKEN,
+  ];
+  if (
+    airdropOrderTypes.includes(curr.payload.type!) &&
+    !prev?.payload.reconciled &&
+    curr.payload.reconciled
+  ) {
+    await onAirdropClaim(curr);
+    return;
+  }
 
-    const airdropOrderTypes = [
-      TransactionPayloadType.TOKEN_AIRDROP,
-      TransactionPayloadType.CLAIM_MINTED_TOKEN,
-      TransactionPayloadType.CLAIM_BASE_TOKEN,
-    ];
-    if (
-      airdropOrderTypes.includes(curr.payload.type!) &&
-      !prev?.payload.reconciled &&
-      curr.payload.reconciled
-    ) {
-      await onAirdropClaim(curr);
-      return;
-    }
+  if (isConfirmed(prev, curr) && curr.payload.proposalId && curr.type === TransactionType.CREDIT) {
+    await onProposalVoteCreditConfirmed(curr);
+    return;
+  }
 
-    if (
-      isConfirmed(prev, curr) &&
-      curr.payload.proposalId &&
-      curr.type === TransactionType.CREDIT
-    ) {
-      await onProposalVoteCreditConfirmed(curr);
-      return;
-    }
+  if (isConfirmed(prev, curr) && curr.payload.weeks && curr.type === TransactionType.WITHDRAW_NFT) {
+    await onNftStaked(curr);
+    return;
+  }
 
-    if (
-      isConfirmed(prev, curr) &&
-      curr.payload.weeks &&
-      curr.type === TransactionType.WITHDRAW_NFT
-    ) {
-      await onNftStaked(curr);
-      return;
-    }
+  if (isConfirmed(prev, curr) && curr.type === TransactionType.AWARD) {
+    await onAwardUpdate(curr);
+    return;
+  }
 
-    if (isConfirmed(prev, curr) && curr.type === TransactionType.AWARD) {
-      await onAwardUpdate(curr);
-      return;
-    }
+  if (isConfirmed(prev, curr) && curr.type === TransactionType.METADATA_NFT) {
+    await onMetadataNftMintUpdate(curr);
+    return;
+  }
 
-    if (isConfirmed(prev, curr) && curr.type === TransactionType.METADATA_NFT) {
-      await onMetadataNftMintUpdate(curr);
-      return;
-    }
+  if (isConfirmed(prev, curr) && curr.type === TransactionType.METADATA_NFT) {
+    await onMetadataNftMintUpdate(curr);
+    return;
+  }
 
-    if (isConfirmed(prev, curr) && curr.type === TransactionType.STAMP) {
-      await onStampMintUpdate(curr);
-      return;
-    }
+  if (isConfirmed(prev, curr) && curr.type === TransactionType.STAMP) {
+    await onStampMintUpdate(curr);
+    return;
+  }
 
-    if (
-      isConfirmed(prev, curr) &&
-      curr.payload.award &&
-      curr.payload.type === TransactionPayloadType.MINTED_AIRDROP_CLAIM
-    ) {
-      const awardDocRef = build5Db().doc(`${COL.AWARD}/${curr.payload.award}`);
-      await awardDocRef.update({ airdropClaimed: build5Db().inc(1) });
-    }
-  },
-);
+  if (
+    isConfirmed(prev, curr) &&
+    curr.payload.award &&
+    curr.payload.type === TransactionPayloadType.MINTED_AIRDROP_CLAIM
+  ) {
+    const awardDocRef = build5Db().doc(`${COL.AWARD}/${curr.payload.award}`);
+    await awardDocRef.update({ airdropClaimed: build5Db().inc(1) });
+  }
+};
 
 const executeTransaction = async (transactionId: string) => {
   const shouldProcess = await prepareTransaction(transactionId);
@@ -204,17 +189,17 @@ const executeTransaction = async (transactionId: string) => {
   const transaction = (await docRef.get<Transaction>())!;
   const payload = transaction.payload;
 
-  const params = await getWalletParams(transaction, transaction.network || DEFAULT_NETWORK);
+  const params = await getWalletParams(transaction);
   try {
-    const walletService = await WalletService.newWallet(transaction.network || DEFAULT_NETWORK);
-    const sourceAddress = await walletService.getAddressDetails(payload.sourceAddress!);
+    const wallet = await WalletService.newWallet(transaction.network || DEFAULT_NETWORK);
+    const sourceAddress = await wallet.getAddressDetails(payload.sourceAddress!);
 
     const submit = () => {
       switch (transaction.type) {
         case TransactionType.BILL_PAYMENT:
         case TransactionType.CREDIT:
         case TransactionType.CREDIT_TANGLE_REQUEST:
-          return walletService.send(
+          return wallet.send(
             sourceAddress,
             payload.targetAddress!,
             payload.amount!,
@@ -222,35 +207,35 @@ const executeTransaction = async (transactionId: string) => {
             transaction.payload.outputToConsume,
           );
         case TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED:
-          return (walletService as SmrWallet).creditLocked(transaction, params);
+          return wallet.creditLocked(transaction, params);
 
         case TransactionType.MINT_COLLECTION:
-          return submitCollectionMintTransactions(transaction, walletService as SmrWallet, params);
+          return submitCollectionMintTransactions(transaction, wallet, params);
 
         case TransactionType.MINT_TOKEN:
-          return submitTokenMintTransactions(transaction, walletService as SmrWallet, params);
+          return submitTokenMintTransactions(transaction, wallet, params);
 
         case TransactionType.AWARD:
-          return submitCreateAwardTransaction(transaction, walletService as SmrWallet, params);
+          return submitCreateAwardTransaction(transaction, wallet, params);
 
         case TransactionType.METADATA_NFT:
-          return submitMintMetadataTransaction(transaction, walletService as SmrWallet, params);
+          return submitMintMetadataTransaction(transaction, wallet, params);
 
         case TransactionType.STAMP:
-          return submitMintStampTransaction(transaction, walletService as SmrWallet, params);
+          return submitMintStampTransaction(transaction, wallet, params);
 
         case TransactionType.CREDIT_NFT:
         case TransactionType.WITHDRAW_NFT: {
-          const nftWallet = new NftWallet(walletService as SmrWallet);
+          const nftWallet = new NftWallet(wallet);
           return nftWallet.changeNftOwner(transaction, params);
         }
 
         case TransactionType.UNLOCK: {
-          return submitUnlockTransaction(transaction, walletService as SmrWallet, params);
+          return submitUnlockTransaction(transaction, wallet, params);
         }
 
         default: {
-          functions.logger.error('Unsupported executable transaction type', transaction);
+          console.error('Unsupported executable transaction type', transaction);
           throw Error('Unsupported executable transaction type ' + transaction.type);
         }
       }
@@ -263,7 +248,7 @@ const executeTransaction = async (transactionId: string) => {
       'payload.walletReference.chainReferences': build5Db().arrayUnion(chainReference),
     });
   } catch (error) {
-    functions.logger.error(transaction.uid, error);
+    console.error(transaction.uid, error);
     await docRef.update({
       'payload.walletReference.chainReference': null,
       'payload.walletReference.processedOn': dayjs().toDate(),
@@ -275,8 +260,8 @@ const executeTransaction = async (transactionId: string) => {
 
 const submitCollectionMintTransactions = (
   transaction: Transaction,
-  wallet: SmrWallet,
-  params: SmrParams,
+  wallet: Wallet,
+  params: WalletParams,
 ) => {
   switch (transaction.payload.type) {
     case TransactionPayloadType.MINT_ALIAS: {
@@ -300,7 +285,7 @@ const submitCollectionMintTransactions = (
       return aliasWallet.changeAliasOwner(transaction, params);
     }
     default: {
-      functions.logger.error('Unsupported executable transaction type', transaction);
+      console.error('Unsupported executable transaction type', transaction);
       throw Error('Unsupported executable transaction type ' + transaction.payload.type);
     }
   }
@@ -308,8 +293,8 @@ const submitCollectionMintTransactions = (
 
 const submitTokenMintTransactions = (
   transaction: Transaction,
-  wallet: SmrWallet,
-  params: SmrParams,
+  wallet: Wallet,
+  params: WalletParams,
 ) => {
   switch (transaction.payload.type) {
     case TransactionPayloadType.MINT_ALIAS: {
@@ -325,7 +310,7 @@ const submitTokenMintTransactions = (
       return aliasWallet.changeAliasOwner(transaction, params);
     }
     default: {
-      functions.logger.error('Unsupported executable transaction type', transaction);
+      console.error('Unsupported executable transaction type', transaction);
       throw Error('Unsupported executable transaction type ' + transaction.payload.type);
     }
   }
@@ -333,8 +318,8 @@ const submitTokenMintTransactions = (
 
 const submitCreateAwardTransaction = (
   transaction: Transaction,
-  wallet: SmrWallet,
-  params: SmrParams,
+  wallet: Wallet,
+  params: WalletParams,
 ) => {
   switch (transaction.payload.type) {
     case TransactionPayloadType.MINT_ALIAS: {
@@ -354,7 +339,7 @@ const submitCreateAwardTransaction = (
       return aliasWallet.burnAlias(transaction, params);
     }
     default: {
-      functions.logger.error(
+      console.error(
         'Unsupported executable transaction type in submitCreateAwardTransaction',
         transaction,
       );
@@ -365,8 +350,8 @@ const submitCreateAwardTransaction = (
 
 const submitMintMetadataTransaction = async (
   transaction: Transaction,
-  wallet: SmrWallet,
-  params: SmrParams,
+  wallet: Wallet,
+  params: WalletParams,
 ) => {
   switch (transaction.payload.type) {
     case TransactionPayloadType.MINT_ALIAS: {
@@ -386,7 +371,7 @@ const submitMintMetadataTransaction = async (
       return nftWallet.updateMetadataNft(transaction, params);
     }
     default: {
-      functions.logger.error(
+      console.error(
         'Unsupported executable transaction type in submitMintMetadataTransaction',
         transaction,
       );
@@ -397,8 +382,8 @@ const submitMintMetadataTransaction = async (
 
 const submitMintStampTransaction = async (
   transaction: Transaction,
-  wallet: SmrWallet,
-  params: SmrParams,
+  wallet: Wallet,
+  params: WalletParams,
 ) => {
   switch (transaction.payload.type) {
     case TransactionPayloadType.MINT_ALIAS: {
@@ -410,8 +395,8 @@ const submitMintStampTransaction = async (
       return nftWallet.mintStampNft(transaction, params);
     }
     default: {
-      functions.logger.error(
-        'Unsupported executable transaction type in submitMintStampTransaction',
+      console.error(
+        'Unsupported executable transaction type in submitCreateAwardTransaction',
         transaction,
       );
       throw Error('Unsupported executable transaction type ' + transaction.payload.type);
@@ -421,8 +406,8 @@ const submitMintStampTransaction = async (
 
 const submitUnlockTransaction = async (
   transaction: Transaction,
-  wallet: SmrWallet,
-  params: SmrParams,
+  wallet: Wallet,
+  params: WalletParams,
 ) => {
   switch (transaction.payload.type) {
     case TransactionPayloadType.UNLOCK_FUNDS:
@@ -441,7 +426,7 @@ const submitUnlockTransaction = async (
       return nftWallet.changeNftOwner(transaction, params);
     }
     default: {
-      functions.logger.error('Unsupported executable transaction type', transaction);
+      console.error('Unsupported executable transaction type', transaction);
       throw Error('Unsupported executable transaction type ' + transaction.payload.type);
     }
   }

@@ -20,17 +20,18 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { uniq } from 'lodash';
-import { Context } from '../../runtime/firebase/common';
 import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 
-export const removeStakeRewardControl = async (
-  { project, owner }: Context,
-  params: TokenStakeRewardsRemoveRequest,
-) => {
+export const removeStakeRewardControl = async ({
+  project,
+  owner,
+  params,
+}: Context<TokenStakeRewardsRemoveRequest>) => {
   const stakeRewardIds = params.stakeRewardIds as string[];
   const stakeRewardPromises = stakeRewardIds.map(async (stakeId) => {
     const docRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeId}`);

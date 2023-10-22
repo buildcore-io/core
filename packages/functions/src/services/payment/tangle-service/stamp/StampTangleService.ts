@@ -14,7 +14,7 @@ import {
   TransactionValidationType,
   WenError,
 } from '@build-5/interfaces';
-import { ALIAS_ADDRESS_TYPE, AddressTypes, ED25519_ADDRESS_TYPE } from '@iota/iota.js-next';
+import { AliasAddress, Ed25519Address } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
 import { downloadMediaAndPackCar } from '../../../../utils/car.utils';
@@ -31,8 +31,8 @@ import {
 } from '../../../../utils/token-minting-utils/alias.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { isStorageUrl } from '../../../joi/common';
-import { SmrWallet } from '../../../wallet/SmrWalletService';
-import { WalletService } from '../../../wallet/wallet';
+import { Wallet } from '../../../wallet/wallet';
+import { WalletService } from '../../../wallet/wallet.service';
 import { BaseService, HandlerParams } from '../../base';
 import { stampTangleSchema } from './StampTangleRequestSchema';
 
@@ -43,7 +43,7 @@ export class StampTangleService extends BaseService {
     const { order, stamp, space } = await createStampAndStampOrder(
       project,
       owner,
-      (params.network as Network) || tangleOrder.network,
+      tangleOrder.network,
       params.uri,
       params.aliasId,
     );
@@ -121,7 +121,7 @@ export const createStampAndStampOrder = async (
 };
 
 const createStampOrder = async (stamp: Stamp, space: Space, aliasId: string) => {
-  const wallet = (await WalletService.newWallet(stamp.network)) as SmrWallet;
+  const wallet = await WalletService.newWallet(stamp.network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
 
   const aliasOutputAmount = await getAliasOutputAmount(stamp, space, wallet);
@@ -176,10 +176,10 @@ const getSpace = async (project: string, owner: string, aliasId: string) => {
   return space;
 };
 
-const getAliasOutputAmount = async (stamp: Stamp, space: Space, wallet: SmrWallet) => {
+const getAliasOutputAmount = async (stamp: Stamp, space: Space, wallet: Wallet) => {
   const targetAddress = await wallet.getNewIotaAddressDetails();
   if (isEmpty(space.alias)) {
-    const aliasOutput = createAliasOutput(targetAddress, wallet.info);
+    const aliasOutput = await createAliasOutput(wallet, targetAddress);
     return Number(aliasOutput.amount);
   }
 
@@ -197,15 +197,15 @@ const getAliasOutputAmount = async (stamp: Stamp, space: Space, wallet: SmrWalle
   return 0;
 };
 
-const getNftOutputAmount = async (stamp: Stamp, aliasId: string, wallet: SmrWallet) => {
+const getNftOutputAmount = async (stamp: Stamp, aliasId: string, wallet: Wallet) => {
   const targetAddress = await wallet.getNewIotaAddressDetails();
-  const issuerAddress: AddressTypes = { type: ALIAS_ADDRESS_TYPE, aliasId };
-  const ownerAddress: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: targetAddress.hex };
-  const output = createNftOutput(
+  const issuerAddress = new AliasAddress(aliasId);
+  const ownerAddress = new Ed25519Address(targetAddress.hex);
+  const output = await createNftOutput(
+    wallet,
     ownerAddress,
     issuerAddress,
     JSON.stringify(stampToNftMetadata(stamp)),
-    wallet.info,
   );
   return Number(output.amount);
 };

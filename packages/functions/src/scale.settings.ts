@@ -1,113 +1,121 @@
-import { COL, WEN_FUNC, WEN_FUNC_TRIGGER } from '@build-5/interfaces';
-import { GlobalOptions } from 'firebase-functions/v2';
-import { isProdEnv } from './utils/config.utils';
+import { COL, WEN_FUNC } from '@build-5/interfaces';
+import {
+  RuntimeOptions,
+  WEN_FUNC_TRIGGER,
+  WEN_SCHEDULED,
+  WEN_STORAGE_TRIGGER,
+} from './runtime/common';
+import { getBucket, isProdEnv } from './utils/config.utils';
 export const lowCold = 0;
 export const lowWarm = isProdEnv() ? 1 : lowCold;
 export const highUse = isProdEnv() ? 3 : lowWarm;
 
-export function scale(func: WEN_FUNC | WEN_FUNC_TRIGGER): number {
-  const scaleSettings = {} as { [key: string]: number };
+export const WEN_FUNC_SCALE: { [key: string]: RuntimeOptions } = {
   // Min MEMORY / CPU instance, so high use works well here.
-  scaleSettings[WEN_FUNC.createMember] = highUse;
-  scaleSettings[WEN_FUNC.updateMember] = lowWarm;
+  [WEN_FUNC.createMember]: { minInstances: highUse },
+  [WEN_FUNC.updateMember]: { minInstances: lowWarm },
 
-  // Space functions.
-  scaleSettings[WEN_FUNC.createSpace] = lowCold;
-  scaleSettings[WEN_FUNC.updateSpace] = lowCold;
-  scaleSettings[WEN_FUNC.joinSpace] = lowWarm;
-  scaleSettings[WEN_FUNC.leaveSpace] = lowCold;
-  scaleSettings[WEN_FUNC.addGuardianSpace] = lowCold;
-  scaleSettings[WEN_FUNC.removeGuardianSpace] = lowCold;
-  scaleSettings[WEN_FUNC.blockMemberSpace] = lowCold;
-  scaleSettings[WEN_FUNC.unblockMemberSpace] = lowCold;
-  scaleSettings[WEN_FUNC.acceptMemberSpace] = lowCold;
-  scaleSettings[WEN_FUNC.declineMemberSpace] = lowCold;
+  // Space functions
+  [WEN_FUNC.createSpace]: { minInstances: lowCold },
+  [WEN_FUNC.updateSpace]: { minInstances: lowCold },
+  [WEN_FUNC.joinSpace]: { minInstances: lowWarm },
+  [WEN_FUNC.leaveSpace]: { minInstances: lowCold },
+  [WEN_FUNC.addGuardianSpace]: { minInstances: lowCold },
+  [WEN_FUNC.removeGuardianSpace]: { minInstances: lowCold },
+  [WEN_FUNC.blockMemberSpace]: { minInstances: lowCold },
+  [WEN_FUNC.unblockMemberSpace]: { minInstances: lowCold },
+  [WEN_FUNC.acceptMemberSpace]: { minInstances: lowCold },
+  [WEN_FUNC.declineMemberSpace]: { minInstances: lowCold },
 
   // Award Functions
-  scaleSettings[WEN_FUNC.createAward] = lowCold;
-  scaleSettings[WEN_FUNC.addOwnerAward] = lowCold;
-  scaleSettings[WEN_FUNC.participateAward] = lowWarm;
-  scaleSettings[WEN_FUNC.approveParticipantAward] = lowCold;
+  [WEN_FUNC.createAward]: { minInstances: lowCold },
+  [WEN_FUNC.addOwnerAward]: { minInstances: lowCold },
+  [WEN_FUNC.participateAward]: { minInstances: lowWarm },
+  [WEN_FUNC.approveParticipantAward]: {
+    minInstances: lowCold,
+    timeoutSeconds: 540,
+    memory: '4GiB',
+  },
 
   // Proposal Functions
-  scaleSettings[WEN_FUNC.createProposal] = lowCold;
-  scaleSettings[WEN_FUNC.approveProposal] = lowCold;
-  scaleSettings[WEN_FUNC.rejectProposal] = lowCold;
-  scaleSettings[WEN_FUNC.voteOnProposal] = lowCold;
+  [WEN_FUNC.createProposal]: { minInstances: lowCold, timeoutSeconds: 300, memory: '2GiB' },
+  [WEN_FUNC.approveProposal]: { minInstances: lowCold },
+  [WEN_FUNC.rejectProposal]: { minInstances: lowCold },
+  [WEN_FUNC.voteOnProposal]: { minInstances: lowCold },
 
   // Collections
-  scaleSettings[WEN_FUNC.createCollection] = lowCold;
-  scaleSettings[WEN_FUNC.updateCollection] = lowWarm;
-  scaleSettings[WEN_FUNC.approveCollection] = lowCold;
-  scaleSettings[WEN_FUNC.rejectCollection] = lowCold;
-  scaleSettings[WEN_FUNC_TRIGGER.collectionWrite] = lowWarm;
+  [WEN_FUNC.createCollection]: { minInstances: lowCold },
+  [WEN_FUNC.updateCollection]: { minInstances: lowWarm },
+  [WEN_FUNC.approveCollection]: { minInstances: lowCold },
+  [WEN_FUNC.rejectCollection]: { minInstances: lowCold },
 
-  scaleSettings[WEN_FUNC.createNft] = lowCold;
-  scaleSettings[WEN_FUNC.setForSaleNft] = lowWarm;
-  scaleSettings[WEN_FUNC.createBatchNft] = lowCold;
-  scaleSettings[WEN_FUNC.updateUnsoldNft] = lowCold;
-
-  // Min MEMORY / CPU instance, so high use works well here.
-  scaleSettings[WEN_FUNC.orderNft] = highUse;
-  scaleSettings[WEN_FUNC.validateAddress] = lowWarm;
-
-  scaleSettings[WEN_FUNC.createToken] = lowCold;
-  scaleSettings[WEN_FUNC_TRIGGER.onTokenStatusUpdate] = lowWarm;
-  // Min MEMORY / CPU instance, so high use works well here.
-  scaleSettings[WEN_FUNC_TRIGGER.onTokenTradeOrderWrite] = highUse;
-  scaleSettings[WEN_FUNC_TRIGGER.onTokenPurchaseCreated] = lowWarm;
+  [WEN_FUNC.createNft]: { minInstances: lowCold },
+  [WEN_FUNC.setForSaleNft]: { minInstances: lowWarm },
+  [WEN_FUNC.createBatchNft]: { minInstances: lowCold, timeoutSeconds: 300, memory: '4GiB' },
+  [WEN_FUNC.updateUnsoldNft]: { minInstances: lowCold },
 
   // Min MEMORY / CPU instance, so high use works well here.
-  scaleSettings[WEN_FUNC_TRIGGER.milestoneTransactionWrite] = highUse;
-  scaleSettings[WEN_FUNC_TRIGGER.nftWrite] = lowWarm;
-  scaleSettings[WEN_FUNC_TRIGGER.transactionWrite] = lowWarm;
-  scaleSettings[WEN_FUNC_TRIGGER.mnemonicWrite] = lowWarm;
-  scaleSettings[WEN_FUNC.mintCollection] = lowCold;
-  scaleSettings[WEN_FUNC_TRIGGER.resizeImg] = lowWarm;
+  [WEN_FUNC.orderNft]: { minInstances: highUse },
+  [WEN_FUNC.validateAddress]: { minInstances: lowWarm },
 
-  return isProdEnv() ? scaleSettings[func] || lowCold : 0;
-}
+  [WEN_FUNC.createToken]: { minInstances: lowCold },
 
-export function scaleAlgolia(col: COL): GlobalOptions {
-  const scaleSettings = {} as { [key: string]: GlobalOptions };
-  scaleSettings[COL.SPACE] = {
-    minInstances: lowWarm,
-    memory: '256MiB',
-  };
-  scaleSettings[COL.TOKEN] = {
-    minInstances: lowWarm,
-    memory: '256MiB',
-  };
-  scaleSettings[COL.AWARD] = {
-    minInstances: lowWarm,
-    memory: '256MiB',
-  };
-  // To support concurency.
-  scaleSettings[COL.NFT] = {
-    minInstances: lowWarm,
-    memory: '512MiB',
-    cpu: 1,
-    concurrency: 100,
-  };
-  // To support concurency.
-  scaleSettings[COL.COLLECTION] = {
-    minInstances: lowWarm,
-    memory: '512MiB',
-    cpu: 1,
-    concurrency: 300,
-  };
-  scaleSettings[COL.MEMBER] = {
-    minInstances: lowWarm,
-    memory: '256MiB',
-  };
-  scaleSettings[COL.PROPOSAL] = {
-    minInstances: lowWarm,
-    memory: '256MiB',
-  };
+  // Min MEMORY / CPU instance, so high use works well here.
+  [WEN_FUNC.mintCollection]: { minInstances: lowCold, memory: '8GiB', timeoutSeconds: 540, cpu: 2 },
 
-  return isProdEnv()
-    ? scaleSettings[col] || {
-        minInstances: lowWarm,
-      }
-    : { minInstances: 0 };
-}
+  [WEN_FUNC.uploadFile]: { memory: '512MiB' },
+};
+
+export const ALGOLIA_TRIGGER_SCALE: { [key: string]: RuntimeOptions } = {
+  [COL.SPACE]: { minInstances: lowWarm, memory: '256MiB' },
+  [COL.TOKEN]: { minInstances: lowWarm, memory: '256MiB' },
+  [COL.AWARD]: { minInstances: lowWarm, memory: '256MiB' },
+  [COL.NFT]: { minInstances: lowWarm, memory: '512MiB', cpu: 1, concurrency: 100 },
+  [COL.COLLECTION]: { minInstances: lowWarm, memory: '512MiB', cpu: 1, concurrency: 300 },
+  [COL.MEMBER]: { minInstances: lowWarm, memory: '256MiB' },
+  [COL.PROPOSAL]: { minInstances: lowWarm, memory: '256MiB' },
+};
+
+export const TRIGGER_SCALE: { [key: string]: RuntimeOptions } = {
+  [WEN_FUNC_TRIGGER.onMilestoneTransactionWrite]: { minInstances: highUse },
+  [WEN_FUNC_TRIGGER.onAwardUpdated]: { concurrency: 1000 },
+  [WEN_FUNC_TRIGGER.onCollectionUpdated]: {
+    timeoutSeconds: 540,
+    minInstances: lowWarm,
+    memory: isProdEnv() ? '1GiB' : undefined,
+  },
+  [WEN_FUNC_TRIGGER.onTokenStatusUpdated]: {
+    timeoutSeconds: 540,
+    memory: '4GiB',
+    minInstances: lowWarm,
+  },
+  [WEN_FUNC_TRIGGER.onTokenTradeOrderWrite]: { timeoutSeconds: 540, minInstances: highUse },
+  [WEN_FUNC_TRIGGER.onTokenPurchaseCreated]: { minInstances: lowWarm, concurrency: 1000 },
+  [WEN_FUNC_TRIGGER.onNftWrite]: {
+    minInstances: lowWarm,
+    timeoutSeconds: 540,
+    memory: '2GiB',
+    concurrency: 40,
+  },
+  [WEN_FUNC_TRIGGER.onTransactionWrite]: {
+    timeoutSeconds: 540,
+    minInstances: lowWarm,
+    memory: '4GiB',
+  },
+  [WEN_FUNC_TRIGGER.onMnemonicUpdated]: { minInstances: lowWarm, concurrency: 500 },
+  [WEN_FUNC_TRIGGER.onCollectionStatsWrite]: { concurrency: 1000 },
+};
+
+export const STORAGE_TRIGGER_SCALE: { [key: string]: RuntimeOptions } = {
+  [WEN_STORAGE_TRIGGER.onUploadFinalized]: {
+    memory: '4GiB',
+    minInstances: lowWarm,
+    bucket: getBucket(),
+  },
+};
+
+export const CRON_TRIGGER_SCALE: { [key: string]: RuntimeOptions } = {
+  [WEN_SCHEDULED.stakeReward]: { timeoutSeconds: 540, memory: '1GiB' },
+  [WEN_SCHEDULED.mediaUpload]: { memory: '4GiB' },
+  [WEN_SCHEDULED.updateFloorPriceOnCollections]: { timeoutSeconds: 1800 },
+};

@@ -8,7 +8,6 @@ import {
   Transaction,
   WenError,
 } from '@build-5/interfaces';
-import { Context } from '../../runtime/firebase/common';
 import {
   getProposal,
   getProposalMember,
@@ -18,11 +17,13 @@ import { voteWithStakedTokens } from '../../services/payment/tangle-service/prop
 import { createVoteTransactionOrder } from '../../services/payment/tangle-service/proposal/voting/token.voting';
 import { invalidArgument } from '../../utils/error.utils';
 import { getTokenForSpace } from '../../utils/token.utils';
+import { Context } from '../common';
 
-export const voteOnProposalControl = async (
-  { project, owner }: Context,
-  params: ProposalVoteRequest,
-): Promise<Transaction> => {
+export const voteOnProposalControl = async ({
+  owner,
+  params,
+  project,
+}: Context<ProposalVoteRequest>): Promise<Transaction> => {
   const proposal = await getProposal(params.uid);
   const proposalMember = await getProposalMember(owner, proposal, params.value);
 

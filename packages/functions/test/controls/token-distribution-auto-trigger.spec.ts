@@ -26,7 +26,6 @@ import {
   createMember,
   createSpace,
   getRandomSymbol,
-  milestoneProcessed,
   mockWalletReturnValue,
   submitMilestoneFunc,
   tokenProcessed,
@@ -145,11 +144,10 @@ describe('Token trigger test', () => {
 
     const orderPromises = input.totalDeposit.map(async (_, i) => {
       const order = await submitTokenOrderFunc(walletSpy, members[i], { token: token.uid });
-      const nextMilestone = await submitMilestoneFunc(
-        order.payload.targetAddress,
+      await submitMilestoneFunc(
+        order,
         Number(bigDecimal.multiply(input.totalDeposit[i], MIN_IOTA_AMOUNT)),
       );
-      await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
       return <Transaction>order;
     });
 
@@ -224,11 +222,10 @@ describe('Token trigger test', () => {
       .map(() => 7)
       .map(async (totalDeposit, i) => {
         const order = await submitTokenOrderFunc(walletSpy, members[i], { token: token.uid });
-        const nextMilestone = await submitMilestoneFunc(
-          order.payload.targetAddress,
+        await submitMilestoneFunc(
+          order,
           Number(bigDecimal.multiply(totalDeposit, MIN_IOTA_AMOUNT)),
         );
-        await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
         return <Transaction>order;
       });
 
