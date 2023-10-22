@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { build5Db } from '@build-5/database';
 import {
   COL,
   CreateAirdropsRequest,
@@ -16,7 +17,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { WalletService } from '../../services/wallet/wallet.service';
 import { packBasicOutput } from '../../utils/basic-output.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';

@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -8,7 +9,6 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import { merge } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { hasStakedSoonTokens } from '../../services/stake.service';
 import { assertSpaceHasValidAddress } from '../../utils/address.utils';
 import { isProdEnv } from '../../utils/config.utils';

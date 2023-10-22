@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { COL, SUB_COL, TokenPurchase, TokenPurchaseAge } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { FirestoreDocEvent } from '../common';
 
 export const onTokenPurchaseCreated = async (event: FirestoreDocEvent<TokenPurchase>) => {

@@ -12,9 +12,8 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 
+import { ITransaction, build5Db } from '@build-5/database';
 import bigDecimal from 'js-big-decimal';
-import { build5Db } from '../../firebase/firestore/build5Db';
-import { ITransaction } from '../../firebase/firestore/interfaces';
 import { Wallet } from '../../services/wallet/wallet';
 import { WalletService } from '../../services/wallet/wallet.service';
 import { getAddress } from '../../utils/address.utils';

@@ -1,3 +1,4 @@
+import { build5Db, getSnapshot } from '@build-5/database';
 import {
   COL,
   Collection,
@@ -19,7 +20,6 @@ import {
 import { Ed25519Address } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
-import { build5Db, getSnapshot } from '../../firebase/firestore/build5Db';
 import { Wallet } from '../../services/wallet/wallet';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet.service';
 import { assertMemberHasValidAddress, assertSpaceHasValidAddress } from '../../utils/address.utils';

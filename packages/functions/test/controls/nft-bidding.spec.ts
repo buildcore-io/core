@@ -1,3 +1,4 @@
+import { build5Db, IDocument } from '@build-5/database';
 import {
   Access,
   Categories,
@@ -19,8 +20,6 @@ import {
 import dayjs from 'dayjs';
 import { set } from 'lodash';
 import { finalizeAllNftAuctions } from '../../src/cron/nft.cron';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
-import { IDocument } from '../../src/firebase/firestore/interfaces';
 import { approveCollection, createCollection } from '../../src/runtime/firebase/collection/index';
 import { openBid } from '../../src/runtime/firebase/nft';
 import { createNft, orderNft, setForSaleNft } from '../../src/runtime/firebase/nft/index';

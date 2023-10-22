@@ -1,3 +1,4 @@
+import { build5Db, ITransaction } from '@build-5/database';
 import {
   COL,
   Space,
@@ -8,8 +9,6 @@ import {
   TokenDistribution,
   tokenTradingFeeDicountPercentage,
 } from '@build-5/interfaces';
-import { build5Db } from '../firebase/firestore/build5Db';
-import { ITransaction } from '../firebase/firestore/interfaces';
 import { getTokenSaleConfig, isProdEnv } from '../utils/config.utils';
 import { getSoonToken } from '../utils/token.utils';
 

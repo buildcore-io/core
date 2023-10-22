@@ -1,7 +1,7 @@
+import { build5Db, getSnapshot } from '@build-5/database';
 import { COL, SUB_COL, Token, TokenDistribution, TokenDrop } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
-import { build5Db, getSnapshot } from '../../firebase/firestore/build5Db';
 import { Wallet } from '../../services/wallet/wallet';
 import { packBasicOutput } from '../basic-output.utils';
 

@@ -18,9 +18,9 @@ import {
   calcStakedMultiplier,
 } from '@build-5/interfaces';
 
+import { build5Db } from '@build-5/database';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { depositStake } from '../../src/runtime/firebase/stake';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';

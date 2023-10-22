@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import { COL, Transaction } from '@build-5/interfaces';
 import {
   RegularTransactionEssence,
@@ -7,7 +8,6 @@ import {
 } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
 
 export const confirmTransaction = async (
   milestoneTransactionPath: string,

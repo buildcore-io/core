@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { COL, SUB_COL, Space, SpaceCreateRequest } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { getCreateSpaceData } from '../../services/payment/tangle-service/space/SpaceCreateService';
 import { Context } from '../common';
 

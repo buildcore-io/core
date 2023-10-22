@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { COL, Collection, SUB_COL, Token, Vote, VoteRequest, WenError } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { hasStakedSoonTokens } from '../../services/stake.service';
 import { invalidArgument } from '../../utils/error.utils';
 import { Context } from '../common';

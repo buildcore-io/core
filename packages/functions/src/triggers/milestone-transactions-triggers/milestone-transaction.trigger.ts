@@ -1,6 +1,6 @@
+import { build5Db } from '@build-5/database';
 import { Network } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { ProcessingService } from '../../services/payment/payment-processing';
 import { FirestoreDocEvent } from '../common';
 import { MilestoneTransactionAdapter } from './MilestoneTransactionAdapter';

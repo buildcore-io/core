@@ -1,3 +1,4 @@
+import { ITransaction, build5Db } from '@build-5/database';
 import {
   COL,
   MAX_WALLET_RETRY,
@@ -5,8 +6,6 @@ import {
   Transaction,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../firebase/firestore/build5Db';
-import { ITransaction } from '../firebase/firestore/interfaces';
 
 export const retryWallet = async () => {
   const snap = await getFailedTransactionsSnap();

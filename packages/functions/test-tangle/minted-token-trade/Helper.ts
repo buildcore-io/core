@@ -12,7 +12,7 @@ import {
   Transaction,
 } from '@build-5/interfaces';
 
-import { build5Db } from '../../src/firebase/firestore/build5Db';
+import { build5Db } from '@build-5/database';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';

@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE,
   BaseProposalAnswerValue,
@@ -18,7 +19,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get, set } from 'lodash';
-import { build5Db } from '../firebase/firestore/build5Db';
 import { getStakeForType } from '../services/stake.service';
 import { downloadMediaAndPackCar } from '../utils/car.utils';
 import { dateToTimestamp } from '../utils/dateTime.utils';

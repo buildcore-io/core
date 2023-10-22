@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -10,7 +11,6 @@ import {
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { finalizeAllNftAuctions } from '../../src/cron/nft.cron';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { IotaWallet } from '../../src/services/wallet/IotaWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';

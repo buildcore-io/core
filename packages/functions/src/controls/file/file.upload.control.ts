@@ -5,7 +5,7 @@ import fs from 'fs';
 import mime from 'mime-types';
 import os from 'os';
 import path from 'path';
-import { build5Storage } from '../../firebase/storage/build5Storage';
+import { build5Storage } from '@build-5/database';
 import { getBucket } from '../../utils/config.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertValidationAsync } from '../../utils/schema.utils';

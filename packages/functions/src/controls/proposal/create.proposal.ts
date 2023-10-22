@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { COL, Proposal, ProposalCreateRequest, SUB_COL } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { createProposal } from '../../services/payment/tangle-service/proposal/ProposalCreateService';
 import { Context } from '../common';
 

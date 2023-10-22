@@ -1,6 +1,6 @@
+import { build5Db } from '@build-5/database';
 import { COL, DEFAULT_NETWORK, Mnemonic } from '@build-5/interfaces';
 import { AES, enc } from 'crypto-js';
-import { build5Db } from '../../firebase/firestore/build5Db';
 export class MnemonicService {
   public static async store(
     address: string,

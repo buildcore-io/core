@@ -1,8 +1,8 @@
+import { build5Db } from '@build-5/database';
 import { COL, Space, StakeType } from '@build-5/interfaces';
 import { FeatureType, MetadataFeature, UnlockConditionType, hexToUtf8 } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { Helper } from './Helper';
 

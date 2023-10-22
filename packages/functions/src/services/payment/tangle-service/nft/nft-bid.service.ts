@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   BaseTangleResponse,
   COL,
@@ -18,7 +19,6 @@ import {
   TransactionValidationType,
   WenError,
 } from '@build-5/interfaces';
-import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { assertMemberHasValidAddress, getAddress } from '../../../../utils/address.utils';
 import { getRestrictions } from '../../../../utils/common.utils';
 import { isProdEnv } from '../../../../utils/config.utils';

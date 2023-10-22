@@ -1,6 +1,6 @@
+import { build5Db } from '@build-5/database';
 import { Award, AwardCancelRequest, COL, WenError } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { Context } from '../common';

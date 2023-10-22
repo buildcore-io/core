@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { COL, NftBidRequest, Transaction, WenError } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { createNftBidOrder } from '../../services/payment/tangle-service/nft/nft-bid.service';
 import { invalidArgument } from '../../utils/error.utils';
 import { Context } from '../common';

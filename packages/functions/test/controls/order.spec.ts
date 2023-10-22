@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   Access,
   COL,
@@ -23,7 +24,6 @@ import {
   approveCollection,
   createCollection,
 } from '../../../functions/src/runtime/firebase/collection/index';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import {

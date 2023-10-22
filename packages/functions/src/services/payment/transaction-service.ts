@@ -1,3 +1,4 @@
+import { IDocument, ITransaction, build5Db } from '@build-5/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -19,8 +20,6 @@ import {
 import { ExpirationUnlockCondition, UnlockCondition, UnlockConditionType } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { get, isEmpty, set } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
-import { IDocument, ITransaction } from '../../firebase/firestore/interfaces';
 import { MilestoneTransactionAdapter } from '../../triggers/milestone-transactions-triggers/MilestoneTransactionAdapter';
 import { getOutputMetadata } from '../../utils/basic-output.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';

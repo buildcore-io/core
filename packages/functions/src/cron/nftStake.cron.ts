@@ -1,7 +1,7 @@
+import { build5Db, getSnapshot } from '@build-5/database';
 import { COL, NftStake } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
-import { build5Db, getSnapshot } from '../firebase/firestore/build5Db';
 
 export const processExpiredNftStakes = async () => {
   let lastDocId = '';

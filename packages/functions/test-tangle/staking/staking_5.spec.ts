@@ -9,7 +9,7 @@ import {
   Transaction,
 } from '@build-5/interfaces';
 
-import { build5Db } from '../../src/firebase/firestore/build5Db';
+import { build5Db } from '@build-5/database';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';

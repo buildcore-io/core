@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   MilestoneTransactionEntry,
@@ -20,7 +21,6 @@ import {
 } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { cloneDeep, get } from 'lodash';
-import { build5Db } from '../../../firebase/firestore/build5Db';
 import { intToU32 } from '../../../utils/common.utils';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';

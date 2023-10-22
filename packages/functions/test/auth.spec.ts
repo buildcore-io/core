@@ -1,8 +1,8 @@
+import { build5Db } from '@build-5/database';
 import { COL, Member, Network, WEN_FUNC, WenError } from '@build-5/interfaces';
 import { CoinType, utf8ToHex } from '@iota/sdk';
 import jwt from 'jsonwebtoken';
 import { get } from 'lodash';
-import { build5Db } from '../src/firebase/firestore/build5Db';
 import { generateCustomToken } from '../src/runtime/firebase/auth';
 import * as config from '../src/utils/config.utils';
 import { getJwtSecretKey } from '../src/utils/config.utils';

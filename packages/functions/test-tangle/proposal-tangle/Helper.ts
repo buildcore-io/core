@@ -1,3 +1,4 @@
+import { build5Db, IQuery } from '@build-5/database';
 import {
   COL,
   Member,
@@ -14,8 +15,6 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
-import { IQuery } from '../../src/firebase/firestore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';

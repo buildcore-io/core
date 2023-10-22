@@ -1,6 +1,6 @@
+import { build5Db } from '@build-5/database';
 import { COL, KEY_NAME_TANGLE, Network, Nft, StakeType } from '@build-5/interfaces';
 import { NftOutput, NftOutputBuilderParams, TagFeature, Utils, utf8ToHex } from '@iota/sdk';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { stakeNft } from '../../src/runtime/firebase/nft';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';

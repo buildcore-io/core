@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { COL, Collection, MediaStatus, Nft, NftAvailable } from '@build-5/interfaces';
-import { build5Db } from '../firebase/firestore/build5Db';
 import { downloadMediaAndPackCar, nftToIpfsMetadata } from '../utils/car.utils';
 import { FirestoreDocEvent } from './common';
 

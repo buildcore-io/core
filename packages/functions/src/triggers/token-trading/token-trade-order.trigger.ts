@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Member,
@@ -9,7 +10,6 @@ import {
   TokenTradeOrderType,
 } from '@build-5/interfaces';
 import bigDecimal from 'js-big-decimal';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { getStakeForType, getTier } from '../../services/stake.service';
 import { cancelTradeOrderUtil } from '../../utils/token-trade.utils';
 import { BIG_DECIMAL_PRECISION, getSoonToken } from '../../utils/token.utils';

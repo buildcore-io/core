@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   ProposalType,
@@ -7,7 +8,6 @@ import {
   Transaction,
   WenError,
 } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import {
   getProposal,
   getProposalMember,

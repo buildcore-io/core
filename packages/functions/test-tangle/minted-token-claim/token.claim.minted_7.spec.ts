@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { build5Db } from '@build-5/database';
 import { COL, Member, SUB_COL, Token, TokenStatus, TransactionType } from '@build-5/interfaces';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { claimMintedTokenOrder, mintTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { createMember, createSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';

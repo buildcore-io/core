@@ -1,10 +1,10 @@
+import { build5Db } from '@build-5/database';
 import { Network } from '@build-5/interfaces';
 import dotenv from 'dotenv';
 import express from 'express';
 import test from 'firebase-functions-test';
 import * as functions from 'firebase-functions/v2';
 import { isEmpty } from 'lodash';
-import { build5Db } from '../src/firebase/firestore/build5Db';
 import { Wallet, WalletParams } from '../src/services/wallet/wallet';
 import {
   AddressDetails,

@@ -1,6 +1,6 @@
+import { build5Db } from '@build-5/database';
 import { COL, MAX_WALLET_RETRY, Mnemonic, Transaction } from '@build-5/interfaces';
 import { chunk, isEmpty } from 'lodash';
-import { build5Db } from '../firebase/firestore/build5Db';
 import { FirestoreDocEvent } from './common';
 import {
   CREDIT_EXECUTABLE_TRANSACTIONS,

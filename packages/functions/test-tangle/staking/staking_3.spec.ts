@@ -1,7 +1,7 @@
+import { build5Db } from '@build-5/database';
 import { COL, Member, MIN_IOTA_AMOUNT, Stake, StakeType } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { wait } from '../../test/controls/common';
 import { requestMintedTokenFromFaucet } from '../faucet';

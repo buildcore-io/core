@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { COL, Member, Nft, NftSetForSaleRequest, WenError } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { getNftSetForSaleParams } from '../../services/payment/tangle-service/nft/nft-set-for-sale.service';
 import { invalidArgument } from '../../utils/error.utils';
 import { Context } from '../common';

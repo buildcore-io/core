@@ -1,3 +1,4 @@
+import { IBatch, build5Db } from '@build-5/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -18,8 +19,6 @@ import {
 } from '@build-5/interfaces';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
-import { build5Db } from '../firebase/firestore/build5Db';
-import { IBatch } from '../firebase/firestore/interfaces';
 import { WalletService } from '../services/wallet/wallet.service';
 import { getAddress } from '../utils/address.utils';
 import { downloadMediaAndPackCar, tokenToIpfsMetadata } from '../utils/car.utils';

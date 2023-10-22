@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import { COL, DecodedToken, Member, WEN_FUNC, WenError, WenRequest } from '@build-5/interfaces';
 import { Ed25519Signature, INodeInfo, Utils } from '@iota/sdk';
 import { recoverPersonalSignature } from '@metamask/eth-sig-util';
@@ -6,7 +7,6 @@ import dayjs from 'dayjs';
 import { Wallet } from 'ethers';
 import jwt from 'jsonwebtoken';
 import { get } from 'lodash';
-import { build5Db } from '../firebase/firestore/build5Db';
 import { WalletService } from '../services/wallet/wallet.service';
 import { getCustomTokenLifetime, getJwtSecretKey } from './config.utils';
 import { unAuthenticated } from './error.utils';

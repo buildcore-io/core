@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { COL, Nft, NftAvailable, NftStatus, WEN_FUNC, WenError } from '@build-5/interfaces';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { createMember, updateMember } from '../../src/runtime/firebase/member';
 import * as wallet from '../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../../test/set-up';

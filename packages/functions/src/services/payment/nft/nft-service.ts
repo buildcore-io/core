@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Collection,
@@ -12,7 +13,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { last, set } from 'lodash';
-import { build5Db } from '../../../firebase/firestore/build5Db';
 import { getAddress } from '../../../utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
 import { NotificationService } from '../../notification/notification';
@@ -208,7 +208,7 @@ export class NftService {
       previousHighestPay = (await this.transactionService.get<Transaction>(previousHighestPayRef))!;
 
       if (
-        previousHighestPay.payload.amount! < paymentPayload.amount! &&
+        previousHighestPay!.payload.amount! < paymentPayload.amount! &&
         paymentPayload.amount! >= (nft?.auctionFloorPrice || 0)
       ) {
         newValidPayment = true;

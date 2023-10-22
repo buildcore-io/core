@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   Award,
   COL,
@@ -34,7 +35,6 @@ import {
 } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { cloneDeep, get, head, isEmpty } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { unclockMnemonic } from '../../triggers/milestone-transactions-triggers/common';
 import { getAddress } from '../../utils/address.utils';
 import { mergeOutputs } from '../../utils/basic-output.utils';

@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Collection,
@@ -11,7 +12,6 @@ import {
 import { TransactionPayload, Utils } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { get } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { getAddress } from '../../utils/address.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 

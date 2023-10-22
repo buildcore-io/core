@@ -7,7 +7,7 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 
-import { build5Db } from '../../firebase/firestore/build5Db';
+import { build5Db } from '@build-5/database';
 import { WalletParams } from '../../services/wallet/wallet';
 import { isProdEnv } from '../../utils/config.utils';
 

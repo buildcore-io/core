@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { build5Db, build5Storage } from '@build-5/database';
 import { Bucket, COL, Collection, Nft, Transaction, TransactionType } from '@build-5/interfaces';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
-import { build5Storage } from '../../src/firebase/storage/build5Storage';
 import { depositNft, withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
