@@ -1,3 +1,4 @@
+import { build5Db, getSnapshot } from '@build-5/database';
 import {
   BaseProposalAnswerValue,
   COL,
@@ -17,7 +18,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { last } from 'lodash';
-import { build5Db, getSnapshot } from '../../firebase/firestore/build5Db';
 import { getAddress } from '../../utils/address.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';

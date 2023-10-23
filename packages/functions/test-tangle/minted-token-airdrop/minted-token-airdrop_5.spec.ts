@@ -10,8 +10,8 @@ import {
   WenError,
 } from '@build-5/interfaces';
 
+import { build5Db } from '@build-5/database';
 import dayjs from 'dayjs';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import {
   airdropMintedToken,
   claimMintedTokenOrder,

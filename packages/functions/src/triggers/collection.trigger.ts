@@ -1,3 +1,4 @@
+import { build5Db, getSnapshot } from '@build-5/database';
 import {
   COL,
   Collection,
@@ -10,57 +11,45 @@ import {
   TransactionPayloadType,
   TransactionType,
   UnsoldMintingOptions,
-  WEN_FUNC_TRIGGER,
 } from '@build-5/interfaces';
-import * as functions from 'firebase-functions/v2';
 import { last } from 'lodash';
-import { build5Db, getSnapshot } from '../firebase/firestore/build5Db';
-import { scale } from '../scale.settings';
 import { getAddress } from '../utils/address.utils';
 import { collectionToIpfsMetadata, downloadMediaAndPackCar } from '../utils/car.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
+import { FirestoreDocEvent } from './common';
 
-export const collectionWrite = functions.firestore.onDocumentUpdated(
-  {
-    document: COL.COLLECTION + '/{collectionId}',
-    timeoutSeconds: 540,
-    minInstances: scale(WEN_FUNC_TRIGGER.collectionWrite),
-    memory: '1GiB',
-  },
-  async (event) => {
-    const prev = <Collection>event.data?.before?.data();
-    const curr = <Collection>event.data?.after?.data();
-    if (!curr) {
-      return;
+export const onCollectionUpdated = async (event: FirestoreDocEvent<Collection>) => {
+  const { prev, curr } = event;
+  if (!prev || !curr) {
+    return;
+  }
+  try {
+    if (prev && (curr.approved !== prev.approved || curr.rejected !== prev.rejected)) {
+      return await updateNftApprovalState(curr.uid);
     }
-    try {
-      if (prev && (curr.approved !== prev.approved || curr.rejected !== prev.rejected)) {
-        return await updateNftApprovalState(curr.uid);
-      }
 
-      if (curr.placeholderNft && prev.availableNfts !== curr.availableNfts) {
-        return await hidePlaceholderNft(curr);
-      }
-
-      if (prev.mintingData?.nftsToMint !== 0 && curr.mintingData?.nftsToMint === 0) {
-        return await onCollectionMinted(curr);
-      }
-
-      if (prev.status !== curr.status && curr.status === CollectionStatus.MINTING) {
-        return await onCollectionMinting(curr);
-      }
-      if (
-        curr.status === CollectionStatus.MINTING &&
-        prev.mintingData?.nftMediaToPrepare &&
-        curr.mintingData?.nftMediaToPrepare === 0
-      ) {
-        return await onNftMediaPrepared(curr);
-      }
-    } catch (error) {
-      functions.logger.error(curr.uid, error);
+    if (curr.placeholderNft && prev.availableNfts !== curr.availableNfts) {
+      return await hidePlaceholderNft(curr);
     }
-  },
-);
+
+    if (prev.mintingData?.nftsToMint !== 0 && curr.mintingData?.nftsToMint === 0) {
+      return await onCollectionMinted(curr);
+    }
+
+    if (prev.status !== curr.status && curr.status === CollectionStatus.MINTING) {
+      return await onCollectionMinting(curr);
+    }
+    if (
+      curr.status === CollectionStatus.MINTING &&
+      prev.mintingData?.nftMediaToPrepare &&
+      curr.mintingData?.nftMediaToPrepare === 0
+    ) {
+      return await onNftMediaPrepared(curr);
+    }
+  } catch (error) {
+    console.error(curr.uid, error);
+  }
+};
 
 const updateNftApprovalState = async (collectionId: string) => {
   let lastDocId = '';

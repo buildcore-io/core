@@ -1,5 +1,6 @@
 import { COL, Member, Network, SUB_COL, Space, Token, TokenStatus } from '@build-5/interfaces';
 
+import { build5Db } from '@build-5/database';
 import {
   AliasOutput,
   AliasOutputBuilderParams,
@@ -16,7 +17,6 @@ import {
   hexToUtf8,
 } from '@iota/sdk';
 import { cloneDeep } from 'lodash';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
@@ -150,7 +150,9 @@ export class Helper {
       new ReferenceUnlock(0),
     ];
 
-    return await submitBlock(wallet, essence, unlocks);
+    const blockId = await submitBlock(wallet, essence, unlocks);
+    await build5Db().doc(`blocks/${blockId}`).create({ blockId });
+    return blockId;
   };
 }
 

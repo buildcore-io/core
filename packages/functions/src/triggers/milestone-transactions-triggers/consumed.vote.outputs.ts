@@ -1,7 +1,6 @@
+import { ITransaction, build5Db } from '@build-5/database';
 import { COL, Proposal, SUB_COL, Transaction, TransactionType } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../../firebase/firestore/build5Db';
-import { ITransaction } from '../../firebase/firestore/interfaces';
 import { getTokenVoteMultiplier } from '../../services/payment/voting-service';
 import { serverTime } from '../../utils/dateTime.utils';
 

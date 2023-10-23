@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { build5Db } from '@build-5/database';
 import {
   COL,
   SUB_COL,
@@ -11,7 +12,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -73,7 +73,7 @@ describe('Token minting', () => {
   });
 });
 
-const VAULT_MNEMONIC =
-  'tuna all present setup soldier cup pluck sponsor act grit top uncover flash mammal tilt liquid truck expose snack best swift shove slab adjust';
-const MINTED_TOKEN_ID =
-  '0x08aecdbb63390b390b3234716b2435fd2beee03490181685ee4810173eb0ba1a3d0100000000';
+export const VAULT_MNEMONIC =
+  'ball rack trash outside mix decade detail unfair select dad concert praise erupt urge cabbage cruise program knock daughter dinosaur exhaust rhythm innocent portion';
+export const MINTED_TOKEN_ID =
+  '0x08554b7257adc1a7a0d4eea5b3d7d146ce473720f349d17a7bfc31f41c43c22a930100000000';

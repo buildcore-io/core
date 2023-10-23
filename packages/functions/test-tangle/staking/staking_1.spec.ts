@@ -10,10 +10,10 @@ import {
   WenError,
 } from '@build-5/interfaces';
 
+import { build5Db } from '@build-5/database';
 import { UnlockConditionType } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { depositStake } from '../../src/runtime/firebase/stake';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -177,7 +177,7 @@ describe('Staking test', () => {
       order.payload.amount,
       {
         expiration: { expiresAt, returnAddressBech32: helper.memberAddress!.bech32 },
-        nativeTokens: [{ id: helper.TOKEN_ID, amount: BigInt(10) }],
+        nativeTokens: [{ id: helper.MINTED_TOKEN_ID, amount: BigInt(10) }],
       },
     );
     await MnemonicService.store(

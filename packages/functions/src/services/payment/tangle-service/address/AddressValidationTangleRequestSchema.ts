@@ -1,5 +1,5 @@
 import { AddressValidationTangleRequest, TangleRequestType } from '@build-5/interfaces';
-import { validateAddressSchema } from '../../../../runtime/firebase/address/AddressValidationRequestSchema';
+import { validateAddressSchema } from '../../../../controls/address/AddressValidationRequestSchema';
 import { toJoiObject } from '../../../joi/common';
 import { baseTangleSchema } from '../common';
 

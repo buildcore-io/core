@@ -1,7 +1,6 @@
+import { build5Db } from '@build-5/database';
 import { COL, DEFAULT_NETWORK, NativeToken, Network } from '@build-5/interfaces';
 import { Client } from '@iota/sdk';
-import * as functions from 'firebase-functions/v2';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { getRandomElement } from '../../utils/common.utils';
 import { IotaWallet } from './IotaWalletService';
 import { SmrWallet } from './SmrWalletService';
@@ -43,11 +42,11 @@ const getClient = async (network: Network) => {
         return { client, info: info.nodeInfo };
       }
     } catch (error) {
-      functions.logger.warn(`Could not connect to client ${network}`, nodeUrl, error);
+      console.warn(`Could not connect to client ${network}`, nodeUrl, error);
     }
     await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 1000 + 500)));
   }
-  functions.logger.error(`Could not connect to client ${network}`, nodeUrl);
+  console.error(`Could not connect to client ${network}`, nodeUrl);
   throw Error(`Could not connect to any client ${network}`);
 };
 

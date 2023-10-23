@@ -1,3 +1,4 @@
+import { ITransaction, build5Db } from '@build-5/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -16,8 +17,6 @@ import {
 } from '@build-5/interfaces';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty, tail } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
-import { ITransaction } from '../../firebase/firestore/interfaces';
 import { getAddress } from '../../utils/address.utils';
 import { getRoyaltyFees } from '../../utils/royalty.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';

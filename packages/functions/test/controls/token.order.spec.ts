@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   Access,
   COL,
@@ -11,7 +12,6 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { creditToken, orderToken } from '../../src/runtime/firebase/token/base';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';

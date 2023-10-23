@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   Access,
   Bucket,
@@ -20,7 +21,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { createNft } from '../../src/runtime/firebase/nft';
 import { rankController } from '../../src/runtime/firebase/rank';
 import { voteController } from '../../src/runtime/firebase/vote';

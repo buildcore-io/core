@@ -1,6 +1,6 @@
+import { build5Db } from '@build-5/database';
 import { COL, MediaStatus, Space } from '@build-5/interfaces';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { updateSpace } from '../../src/runtime/firebase/space';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, mockWalletReturnValue, wait } from '../../test/controls/common';

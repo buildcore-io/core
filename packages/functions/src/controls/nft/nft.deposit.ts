@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Network,
@@ -9,15 +10,15 @@ import {
   TransactionValidationType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { WalletService } from '../../services/wallet/wallet.service';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 
-export const depositNftControl = async (
-  owner: string,
-  params: NftDepositRequest,
-): Promise<Transaction> => {
+export const depositNftControl = async ({
+  owner,
+  params,
+}: Context<NftDepositRequest>): Promise<Transaction> => {
   const network = params.network as Network;
   const wallet = await WalletService.newWallet(network);
   const targetAddress = await wallet.getNewIotaAddressDetails();

@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE,
   BaseProposalAnswerValue,
@@ -17,46 +18,41 @@ import {
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions/v2';
 import { get, set } from 'lodash';
-import { build5Db } from '../firebase/firestore/build5Db';
 import { getStakeForType } from '../services/stake.service';
 import { downloadMediaAndPackCar } from '../utils/car.utils';
 import { dateToTimestamp } from '../utils/dateTime.utils';
 import { spaceToIpfsMetadata } from '../utils/space.utils';
 import { getTokenForSpace } from '../utils/token.utils';
+import { FirestoreDocEvent } from './common';
 
-export const onProposalUpdated = functions.firestore.onDocumentWritten(
-  { document: COL.PROPOSAL + '/{proposalId}' },
-  async (event) => {
-    const prev = <Proposal | undefined>event.data?.before?.data();
-    const curr = <Proposal | undefined>event.data?.after?.data();
-    if (!curr) {
-      return;
-    }
+export const onProposalWrite = async (event: FirestoreDocEvent<Proposal>) => {
+  const { prev, curr } = event;
+  if (!curr) {
+    return;
+  }
 
-    if (
-      isAddRemoveGuardianVote(curr) &&
-      voteThresholdReached(prev, curr, ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE)
-    ) {
-      return await onAddRemoveGuardianProposalApproved(curr);
-    }
+  if (
+    isAddRemoveGuardianVote(curr) &&
+    voteThresholdReached(prev, curr, ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE)
+  ) {
+    return await onAddRemoveGuardianProposalApproved(curr);
+  }
 
-    if (
-      curr.type === ProposalType.EDIT_SPACE &&
-      voteThresholdReached(prev, curr, UPDATE_SPACE_THRESHOLD_PERCENTAGE)
-    ) {
-      return await onEditSpaceProposalApproved(curr);
-    }
+  if (
+    curr.type === ProposalType.EDIT_SPACE &&
+    voteThresholdReached(prev, curr, UPDATE_SPACE_THRESHOLD_PERCENTAGE)
+  ) {
+    return await onEditSpaceProposalApproved(curr);
+  }
 
-    if (
-      curr.type === ProposalType.REMOVE_STAKE_REWARD &&
-      voteThresholdReached(prev, curr, REMOVE_STAKE_REWARDS_THRESHOLD_PERCENTAGE)
-    ) {
-      return await onRemoveStakeRewardApporved(curr);
-    }
-  },
-);
+  if (
+    curr.type === ProposalType.REMOVE_STAKE_REWARD &&
+    voteThresholdReached(prev, curr, REMOVE_STAKE_REWARDS_THRESHOLD_PERCENTAGE)
+  ) {
+    return await onRemoveStakeRewardApporved(curr);
+  }
+};
 
 const isAddRemoveGuardianVote = (curr: Proposal) =>
   [ProposalType.ADD_GUARDIAN, ProposalType.REMOVE_GUARDIAN].includes(curr.type);

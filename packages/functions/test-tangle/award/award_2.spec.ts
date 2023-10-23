@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   Award,
   COL,
@@ -16,7 +17,6 @@ import {
 } from '@build-5/interfaces';
 import { NftOutput, TimelockUnlockCondition, UnlockConditionType } from '@iota/sdk';
 import dayjs from 'dayjs';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import {
   approveAwardParticipant,
   awardParticipate,
@@ -245,7 +245,6 @@ const saveToken = async (space: string, guardian: string) => {
 };
 
 export const VAULT_MNEMONIC =
-  'media income depth opera health hybrid person expect supply kid napkin science maze believe they inspire hockey random escape size below monkey lemon veteran';
-
+  'cruel pass athlete east topple metal glove reward banana lunch sight jelly guess coil labor swim sniff orphan ramp tackle month panel surface real';
 export const MINTED_TOKEN_ID =
-  '0x08f56bb2eefc47c050e67f8ba85d4a08e1de5ac0580fb9e80dc2f62eab97f944350100000000';
+  '0x086d27c57107bd6e4b8e0a5e8827ffb30b4bd6acfc780af7d950e232f1b065f7a00100000000';

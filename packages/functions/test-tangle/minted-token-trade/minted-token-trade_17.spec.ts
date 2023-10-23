@@ -9,7 +9,7 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 
-import { build5Db } from '../../src/firebase/firestore/build5Db';
+import { build5Db } from '@build-5/database';
 import { creditUnrefundable } from '../../src/runtime/firebase/credit/index';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';

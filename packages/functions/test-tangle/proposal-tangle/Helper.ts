@@ -1,3 +1,4 @@
+import { build5Db, IQuery } from '@build-5/database';
 import {
   COL,
   Member,
@@ -14,8 +15,6 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
-import { IQuery } from '../../src/firebase/firestore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
@@ -206,7 +205,6 @@ const proposalRequest = (space: string, type: ProposalType) => ({
 });
 
 export const VAULT_MNEMONIC =
-  'offer kingdom rate never hurt follow wrestle cloud alien admit bird usage avoid cloth soldier evidence crawl harsh electric wheat ten mushroom glare reject';
-
+  'word promote enrich any planet square hurt conduct tongue across trumpet flavor settle bacon hole axis asset blast tennis lift monkey organ evolve mention';
 export const MINTED_TOKEN_ID =
-  '0x085f6308dd034c70ea90b4e2600c4f8fb65d0b53504a0d96e37ce8641a8835d2110100000000';
+  '0x08db01317129a23b7ff618a9f73d4263c8c4c062ea5d987e8b1154b5059a3e5c960100000000';

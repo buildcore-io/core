@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   ApiError,
   AwardApproveParticipantRequest,
@@ -5,13 +6,13 @@ import {
   Transaction,
 } from '@build-5/interfaces';
 import { get } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { approveAwardParticipant } from '../../services/payment/tangle-service/award/award.approve.participant.service';
+import { Context } from '../common';
 
-export const approveAwardParticipantControl = async (
-  owner: string,
-  params: AwardApproveParticipantRequest,
-): Promise<AwardApproveParticipantResponse> => {
+export const approveAwardParticipantControl = async ({
+  owner,
+  params,
+}: Context<AwardApproveParticipantRequest>): Promise<AwardApproveParticipantResponse> => {
   const members = params.members.map((m) => m.toLowerCase());
   const awardId = params.award;
   const badges: { [key: string]: Transaction } = {};

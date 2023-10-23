@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   CancelTokenTradeOrderRequest,
@@ -5,11 +6,11 @@ import {
   TokenTradeOrderStatus,
   WenError,
 } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { invalidArgument } from '../../utils/error.utils';
 import { cancelTradeOrderUtil } from '../../utils/token-trade.utils';
+import { Context } from '../common';
 
-export const cancelTradeOrderControl = (owner: string, params: CancelTokenTradeOrderRequest) =>
+export const cancelTradeOrderControl = ({ owner, params }: Context<CancelTokenTradeOrderRequest>) =>
   build5Db().runTransaction(async (transaction) => {
     const tradeOrderDocRef = build5Db().doc(`${COL.TOKEN_MARKET}/${params.uid}`);
     const tradeOrder = await transaction.get<TokenTradeOrder>(tradeOrderDocRef);

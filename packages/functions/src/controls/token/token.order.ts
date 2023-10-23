@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -14,7 +15,6 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { assertHasAccess } from '../../services/validators/access';
 import { WalletService } from '../../services/wallet/wallet.service';
 import { assertMemberHasValidAddress, getAddress } from '../../utils/address.utils';
@@ -23,12 +23,9 @@ import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIpNotBlocked } from '../../utils/ip.utils';
 import { tokenIsInPublicSalePeriod, tokenOrderTransactionDocId } from '../../utils/token.utils';
+import { Context } from '../common';
 
-export const orderTokenControl = async (
-  owner: string,
-  params: OrderTokenRequest,
-  customParams?: Record<string, unknown>,
-) => {
+export const orderTokenControl = async ({ ip, owner, params }: Context<OrderTokenRequest>) => {
   const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
   const member = await memberDocRef.get<Member>();
   assertMemberHasValidAddress(member, DEFAULT_NETWORK);
@@ -39,7 +36,7 @@ export const orderTokenControl = async (
   }
 
   if (isProdEnv()) {
-    await assertIpNotBlocked((customParams?.ip as string) || '', token.uid, 'token');
+    await assertIpNotBlocked(ip, token.uid, 'token');
   }
 
   if (!tokenIsInPublicSalePeriod(token) || token.status !== TokenStatus.AVAILABLE) {

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { build5Db } from '@build-5/database';
 import { COL, Member, SUB_COL, Token, TokenStatus, TransactionType } from '@build-5/interfaces';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { claimMintedTokenOrder, mintTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { createMember, createSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
@@ -82,7 +82,7 @@ describe('Token minting', () => {
   });
 });
 
-const VAULT_MNEMONIC =
-  'able seek despair task prize rack isolate usual select tooth minor seed empower pulp venture tourist castle south enroll sauce milk surge evolve reflect';
-const MINTED_TOKEN_ID =
-  '0x08251a171a5cf36c755b64ff204f95834fa09b1129992d18bfed817bc8a30a0f410100000000';
+export const VAULT_MNEMONIC =
+  'impose liar slush abandon mean diary neglect rocket gown coast promote leaf artist animal fall gadget tree oak explain guard topic hair rose marble';
+export const MINTED_TOKEN_ID =
+  '0x0896a499f3b8d416197b633a01c45a2bcea60ca82c36f0c571466787612fe983860100000000';

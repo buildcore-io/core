@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Collection,
@@ -16,7 +17,6 @@ import {
   NftOutput,
   UnlockConditionType,
 } from '@iota/sdk';
-import { build5Db } from '../../../firebase/firestore/build5Db';
 import { Bech32AddressHelper } from '../../../utils/bech32-address.helper';
 import { serverTime } from '../../../utils/dateTime.utils';
 import { WalletService } from '../../wallet/wallet.service';

@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   SUB_COL,
@@ -14,7 +15,6 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../../../src/firebase/firestore/build5Db';
 import {
   airdropToken,
   claimAirdroppedToken,

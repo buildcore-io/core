@@ -1,13 +1,14 @@
+import { build5Db } from '@build-5/database';
 import { COL, Collection, RejectCollectionRequest, WenError } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
+import { Context } from '../common';
 
-export const rejectCollectionControl = async (
-  owner: string,
-  params: RejectCollectionRequest,
-): Promise<Collection> => {
+export const rejectCollectionControl = async ({
+  owner,
+  params,
+}: Context<RejectCollectionRequest>): Promise<Collection> => {
   const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${params.uid}`);
   const collection = await collectionDocRef.get<Collection>();
   if (!collection) {

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { build5Db } from '@build-5/database';
 import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build-5/interfaces';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { packBasicOutput } from '../../src/utils/basic-output.utils';
@@ -90,7 +90,7 @@ describe('Transaction trigger spec', () => {
   });
 });
 
-const VAULT_MNEMONIC =
-  'crouch violin broom degree diet primary juice vacuum crouch invite cotton endorse zebra mosquito dawn evil motion turkey apple secret indicate miracle lady husband';
-const MINTED_TOKEN_ID =
-  '0x08a7d756feb7427a5e31b152fb425ede7ee938a8af0b0e2730ea809c8435022ecd0100000000';
+export const VAULT_MNEMONIC =
+  'find adapt flag dentist chicken soldier push all odor vacuum jacket twelve voyage senior into mother fix expose dice risk soup cradle sound isolate';
+export const MINTED_TOKEN_ID =
+  '0x08e3afe829d6cb7ca885d1ad95428e200541f8bb21cecc42054f122d56cd606a370100000000';

@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   IgnoreWalletReason,
@@ -7,7 +8,6 @@ import {
   TransactionType,
   TransactionValidationType,
 } from '@build-5/interfaces';
-import { build5Db } from '../src/firebase/firestore/build5Db';
 import { Wallet } from '../src/services/wallet/wallet';
 import { AddressDetails } from '../src/services/wallet/wallet.service';
 import { generateRandomAmount } from '../src/utils/common.utils';

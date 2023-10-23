@@ -1,3 +1,4 @@
+import { IDocument, ITransaction, build5Db } from '@build-5/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -18,10 +19,7 @@ import {
 } from '@build-5/interfaces';
 import { ExpirationUnlockCondition, UnlockCondition, UnlockConditionType } from '@iota/sdk';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions/v2';
 import { get, isEmpty, set } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
-import { IDocument, ITransaction } from '../../firebase/firestore/interfaces';
 import { MilestoneTransactionAdapter } from '../../triggers/milestone-transactions-triggers/MilestoneTransactionAdapter';
 import { getOutputMetadata } from '../../utils/basic-output.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
@@ -313,7 +311,7 @@ export class TransactionService {
       ? { status: 'error', code: error.code || '', message: error.key || '', ...customErrorParams }
       : {};
     if (!isEmpty(error) && !get(error, 'code')) {
-      functions.logger.error(payment.uid, tran.to.nftOutput?.nftId, error);
+      console.error(payment.uid, tran.to.nftOutput?.nftId, error);
     }
     const transaction = <Transaction>{
       type: TransactionType.CREDIT_NFT,

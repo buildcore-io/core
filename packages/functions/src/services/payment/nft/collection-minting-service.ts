@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Collection,
@@ -7,7 +8,6 @@ import {
   UnsoldMintingOptions,
 } from '@build-5/interfaces';
 import { get } from 'lodash';
-import { build5Db } from '../../../firebase/firestore/build5Db';
 import { TransactionMatch, TransactionService } from '../transaction-service';
 
 export class CollectionMintingService {

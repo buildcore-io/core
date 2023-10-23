@@ -1,4 +1,5 @@
-import { COL, Transaction, WEN_FUNC_TRIGGER } from '@build-5/interfaces';
+import { build5Db } from '@build-5/database';
+import { COL, Transaction } from '@build-5/interfaces';
 import {
   RegularTransactionEssence,
   TaggedDataPayload,
@@ -6,15 +7,7 @@ import {
   hexToUtf8,
 } from '@iota/sdk';
 import dayjs from 'dayjs';
-import { DocumentOptions } from 'firebase-functions/v2/firestore';
 import { isEmpty } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
-import { scale } from '../../scale.settings';
-
-export const milestoneTriggerConfig = {
-  timeoutSeconds: 300,
-  minInstances: scale(WEN_FUNC_TRIGGER.milestoneTransactionWrite),
-} as DocumentOptions<string>;
 
 export const confirmTransaction = async (
   milestoneTransactionPath: string,

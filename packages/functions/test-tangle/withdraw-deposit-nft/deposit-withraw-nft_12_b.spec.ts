@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { build5Db } from '@build-5/database';
 import { COL, MIN_IOTA_AMOUNT, Network } from '@build-5/interfaces';
 import {
   Ed25519Address,
@@ -12,7 +13,6 @@ import {
   Utils,
 } from '@iota/sdk';
 import { cloneDeep } from 'lodash';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { depositNft } from '../../src/runtime/firebase/nft';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
@@ -66,10 +66,7 @@ describe('Collection minting', () => {
       helper.guardianAddress!,
       collectionMetadata,
     );
-    const collectionBlockState = await awaitLedgerInclusionState(
-      collectionMintingBlock,
-      Network.RMS,
-    );
+    const collectionBlockState = await awaitLedgerInclusionState(collectionMintingBlock);
     if (collectionBlockState !== 'included') {
       fail();
     }
@@ -78,7 +75,7 @@ describe('Collection minting', () => {
       collectionId,
       ...nftMetadata,
     });
-    const nftBlockState = await awaitLedgerInclusionState(nftMintingBlock, Network.RMS);
+    const nftBlockState = await awaitLedgerInclusionState(nftMintingBlock);
     if (nftBlockState !== 'included') {
       fail();
     }
@@ -122,6 +119,7 @@ const mintCustomCollection = async (address: AddressDetails, metadata: any) => {
 
   const payload = new TransactionPayload(essence, unlocks);
   const blockId = await submitBlock(wallet, essence, unlocks);
+  await build5Db().doc(`blocks/${blockId}`).create({ blockId });
 
   const collectionOutputId = Utils.computeOutputId(Utils.transactionId(payload), 0);
   const collectionId = Utils.computeNftId(collectionOutputId);
@@ -178,6 +176,7 @@ const mintNft = async (address: AddressDetails, metadata: any) => {
 
   const payload = new TransactionPayload(essence, unlocks);
   const blockId = await submitBlock(wallet, essence, unlocks);
+  await build5Db().doc(`blocks/${blockId}`).create({ blockId });
 
   const nftOutputId = Utils.computeOutputId(Utils.transactionId(payload), 1);
   const nftId = Utils.computeNftId(nftOutputId);

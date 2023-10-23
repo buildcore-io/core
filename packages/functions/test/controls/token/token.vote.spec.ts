@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { COL, Space, SUB_COL, TokenAllocation, TokenStats, WenError } from '@build-5/interfaces';
-import { build5Db } from '../../../src/firebase/firestore/build5Db';
 import { createToken } from '../../../src/runtime/firebase/token/base';
 import { voteController } from '../../../src/runtime/firebase/vote';
 import * as config from '../../../src/utils/config.utils';

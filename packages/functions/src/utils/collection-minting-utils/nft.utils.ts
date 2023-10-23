@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import { COL, Collection, KEY_NAME_TANGLE, Nft } from '@build-5/interfaces';
 import {
   Address,
@@ -13,7 +14,6 @@ import {
 } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { head } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { Wallet } from '../../services/wallet/wallet';
 import { PLACEHOLDER_CID } from '../car.utils';
 import { intToU32 } from '../common.utils';

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { build5Db } from '@build-5/database';
 import {
   Access,
   COL,
@@ -20,7 +21,6 @@ import {
 import { FeatureType, MetadataFeature, NftOutput, hexToUtf8 } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import {
   approveCollection,
   createCollection,

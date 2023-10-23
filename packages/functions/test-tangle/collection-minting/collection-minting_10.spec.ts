@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { COL, Nft } from '@build-5/interfaces';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { CollectionMintHelper } from './Helper';
 
 describe('Collection minting', () => {

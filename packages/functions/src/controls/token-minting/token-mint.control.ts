@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Member,
@@ -14,7 +15,6 @@ import {
 } from '@build-5/interfaces';
 import { Utils } from '@iota/sdk';
 import dayjs from 'dayjs';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { Wallet } from '../../services/wallet/wallet';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet.service';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
@@ -33,8 +33,9 @@ import {
   getUnclaimedAirdropTotalValue,
 } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 
-export const mintTokenControl = (owner: string, params: TokenMintRequest) =>
+export const mintTokenControl = ({ owner, params }: Context<TokenMintRequest>) =>
   build5Db().runTransaction(async (transaction) => {
     const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
     const token = await transaction.get<Token>(tokenDocRef);

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { build5Db } from '@build-5/database';
 import {
   Access,
   COL,
@@ -31,7 +32,6 @@ import {
 } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { cloneDeep } from 'lodash';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import {
   approveCollection,
   createCollection,
@@ -246,7 +246,9 @@ export class Helper {
     );
 
     const unlocks = [await createUnlock(essence, sourceAddress), new ReferenceUnlock(0)];
-    return await submitBlock(this.walletService!, essence, unlocks);
+    const blockId = await submitBlock(this.walletService!, essence, unlocks);
+    await build5Db().doc(`blocks/${blockId}`).create({ blockId });
+    return blockId;
   };
 
   public withdrawNftAndAwait = async (nft: string) => {

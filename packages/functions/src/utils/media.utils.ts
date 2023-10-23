@@ -1,3 +1,4 @@
+import { IBucket } from '@build-5/database';
 import {
   Bucket,
   COL,
@@ -8,12 +9,10 @@ import {
 } from '@build-5/interfaces';
 import axios from 'axios';
 import { randomUUID } from 'crypto';
-import * as functions from 'firebase-functions/v2';
 import fs from 'fs';
 import mime from 'mime-types';
 import os from 'os';
 import path from 'path';
-import { IBucket } from '../firebase/storage/interfaces';
 
 export const migrateUriToSotrage = async (
   col: COL,
@@ -42,7 +41,7 @@ export const migrateUriToSotrage = async (
     return `https://${bucket.getName()}/${owner}/${uid}/${fileName}`;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    functions.logger.error(col, uid, error);
+    console.error(col, uid, error);
     throw error.code && error.key ? error : WenError.ipfs_retrieve;
   } finally {
     fs.rmSync(workdir, { recursive: true, force: true });

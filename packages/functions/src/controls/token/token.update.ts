@@ -1,15 +1,15 @@
+import { build5Db } from '@build-5/database';
 import { COL, Token, TokenStatus, WenError } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
-import { UidSchemaObject } from '../../runtime/firebase/common';
-import {
-  updateTokenSchemaObject,
-  uptdateMintedTokenSchemaObject,
-} from '../../runtime/firebase/token/base/TokenUpdateRequestSchema';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertValidationAsync } from '../../utils/schema.utils';
 import { assertIsGuardian, assertTokenStatus } from '../../utils/token.utils';
+import { Context, UidSchemaObject } from '../common';
+import {
+  updateTokenSchemaObject,
+  uptdateMintedTokenSchemaObject,
+} from './TokenUpdateRequestSchema';
 
-export const updateTokenControl = async (owner: string, params: UidSchemaObject) => {
+export const updateTokenControl = async ({ owner, params }: Context<UidSchemaObject>) => {
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.uid}`);
   await build5Db().runTransaction(async (transaction) => {
     const token = await transaction.get<Token>(tokenDocRef);

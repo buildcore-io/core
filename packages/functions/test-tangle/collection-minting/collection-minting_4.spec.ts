@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Collection,
@@ -13,7 +14,6 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 import { NftOutput } from '@iota/sdk';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { getAddress } from '../../src/utils/address.utils';
 import { EMPTY_NFT_ID } from '../../src/utils/collection-minting-utils/nft.utils';
 import { CollectionMintHelper, getNftMetadata } from './Helper';

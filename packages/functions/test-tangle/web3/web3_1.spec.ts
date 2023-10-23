@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Collection,
@@ -11,7 +12,6 @@ import {
 } from '@build-5/interfaces';
 import { Web3Storage } from 'web3.storage';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { getWeb3Token } from '../../src/utils/config.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';

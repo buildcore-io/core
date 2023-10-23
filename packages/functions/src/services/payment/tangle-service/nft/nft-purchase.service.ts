@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   BaseTangleResponse,
   COL,
@@ -25,7 +26,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { build5Db } from '../../../../firebase/firestore/build5Db';
 import { getAddress } from '../../../../utils/address.utils';
 import { getNftByMintingId } from '../../../../utils/collection-minting-utils/nft.utils';
 import { getRestrictions } from '../../../../utils/common.utils';

@@ -1,3 +1,4 @@
+import { IBatch, build5Db } from '@build-5/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -15,14 +16,9 @@ import {
   Transaction,
   TransactionPayloadType,
   TransactionType,
-  WEN_FUNC_TRIGGER,
 } from '@build-5/interfaces';
-import * as functions from 'firebase-functions/v2';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
-import { build5Db } from '../firebase/firestore/build5Db';
-import { IBatch } from '../firebase/firestore/interfaces';
-import { scale } from '../scale.settings';
 import { WalletService } from '../services/wallet/wallet.service';
 import { getAddress } from '../utils/address.utils';
 import { downloadMediaAndPackCar, tokenToIpfsMetadata } from '../utils/car.utils';
@@ -37,35 +33,27 @@ import {
   orderDocRef,
 } from '../utils/token.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
+import { FirestoreDocEvent } from './common';
 
-export const onTokenStatusUpdate = functions.firestore.onDocumentUpdated(
-  {
-    timeoutSeconds: 540,
-    memory: '4GiB',
-    minInstances: scale(WEN_FUNC_TRIGGER.onTokenStatusUpdate),
-    document: COL.TOKEN + '/{tokenId}',
-  },
-  async (event) => {
-    const prev = <Token | undefined>event.data?.before?.data();
-    const curr = <Token | undefined>event.data?.after?.data();
+export const onTokenStatusUpdated = async (event: FirestoreDocEvent<Token>) => {
+  const { prev, curr } = event;
 
-    if (prev?.status === TokenStatus.AVAILABLE && curr?.status === TokenStatus.PROCESSING) {
-      return await processTokenDistribution(curr!);
-    }
+  if (prev?.status === TokenStatus.AVAILABLE && curr?.status === TokenStatus.PROCESSING) {
+    return await processTokenDistribution(curr!);
+  }
 
-    if (prev?.status !== curr?.status && curr?.status === TokenStatus.CANCEL_SALE) {
-      return await cancelPublicSale(curr!);
-    }
+  if (prev?.status !== curr?.status && curr?.status === TokenStatus.CANCEL_SALE) {
+    return await cancelPublicSale(curr!);
+  }
 
-    if (prev?.status !== curr?.status && curr?.status === TokenStatus.MINTING) {
-      return await mintToken(curr);
-    }
+  if (prev?.status !== curr?.status && curr?.status === TokenStatus.MINTING) {
+    return await mintToken(curr);
+  }
 
-    if (prev?.mintingData?.tokensInVault && curr?.mintingData?.tokensInVault === 0) {
-      await onTokenVaultEmptied(curr);
-    }
-  },
-);
+  if (prev?.mintingData?.tokensInVault && curr?.mintingData?.tokensInVault === 0) {
+    await onTokenVaultEmptied(curr);
+  }
+};
 
 const getTokenCount = (token: Token, amount: number) => Math.floor(amount / token.pricePerToken);
 
@@ -342,7 +330,7 @@ const cancelPublicSale = async (token: Token) => {
   await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ status });
 
   if (status === TokenStatus.ERROR) {
-    functions.logger.error('Token processing error', token.uid, errors);
+    console.error('Token processing error', token.uid, errors);
   }
 };
 
@@ -376,7 +364,7 @@ const processTokenDistribution = async (token: Token) => {
   await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ status });
 
   if (status === TokenStatus.ERROR) {
-    functions.logger.error('Token processing error', token.uid, errors);
+    console.error('Token processing error', token.uid, errors);
   }
 };
 

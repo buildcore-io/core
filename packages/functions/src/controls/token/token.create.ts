@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -8,7 +9,6 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import { merge } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { hasStakedSoonTokens } from '../../services/stake.service';
 import { assertSpaceHasValidAddress } from '../../utils/address.utils';
 import { isProdEnv } from '../../utils/config.utils';
@@ -16,9 +16,10 @@ import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 import { getPublicSaleTimeFrames, shouldSetPublicSaleTimeFrames } from './common';
 
-export const createTokenControl = async (owner: string, params: TokenCreateRequest) => {
+export const createTokenControl = async ({ owner, params }: Context<TokenCreateRequest>) => {
   const hasStakedSoons = await hasStakedSoonTokens(owner);
   if (!hasStakedSoons) {
     throw invalidArgument(WenError.no_staked_soon);

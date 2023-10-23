@@ -1,14 +1,15 @@
+import { build5Db } from '@build-5/database';
 import { AwardFundRequest, COL, Transaction } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import {
   createAwardFundOrder,
   getAwardForFunding,
 } from '../../services/payment/tangle-service/award/award.fund.service';
+import { Context } from '../common';
 
-export const fundAwardControl = async (
-  owner: string,
-  params: AwardFundRequest,
-): Promise<Transaction> => {
+export const fundAwardControl = async ({
+  owner,
+  params,
+}: Context<AwardFundRequest>): Promise<Transaction> => {
   const award = await getAwardForFunding(owner, params.uid);
   const order = await createAwardFundOrder(owner, award);
 

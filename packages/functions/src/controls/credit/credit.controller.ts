@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   CreditUnrefundableRequest,
@@ -11,16 +12,16 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { WalletService } from '../../services/wallet/wallet.service';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 
-export const creditUnrefundableControl = (
-  owner: string,
-  params: CreditUnrefundableRequest,
-): Promise<Transaction> =>
+export const creditUnrefundableControl = ({
+  owner,
+  params,
+}: Context<CreditUnrefundableRequest>): Promise<Transaction> =>
   build5Db().runTransaction(async (transaction) => {
     const transactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${params.transaction}`);
     const creditTransaction = await transaction.get<Transaction>(transactionDocRef);

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Token,
@@ -11,7 +12,6 @@ import {
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { retryWallet } from '../../src/cron/wallet.cron';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -78,7 +78,7 @@ describe('Token minting', () => {
   });
 });
 
-const VAULT_MNEMONIC =
-  'senior orphan field peasant pioneer fox enjoy excite denial lyrics crowd wash peasant chat taxi jungle copper awesome item demand roast spread couple cube';
-const MINTED_TOKEN_ID =
-  '0x08f5bee0f3a87cbf93cd9b5395fb185edb85a09a9548b67b13f578098b77970a330100000000';
+export const VAULT_MNEMONIC =
+  'question lunch output credit rabbit issue leopard property region egg master engage brief boost resist panda long snow inform whisper second faculty honey super';
+export const MINTED_TOKEN_ID =
+  '0x08516cf8ebcf220dbbc3dd5dd9cfc6b8ad9a69d598b3ab951268415a55a03ba7520100000000';

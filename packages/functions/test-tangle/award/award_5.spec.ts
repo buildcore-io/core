@@ -13,9 +13,9 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 
+import { build5Db } from '@build-5/database';
 import dayjs from 'dayjs';
 import { processExpiredAwards } from '../../src/cron/award.cron';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import {
   approveAwardParticipant,
   awardParticipate,
@@ -234,7 +234,6 @@ const saveToken = async (space: string, guardian: string) => {
 };
 
 export const VAULT_MNEMONIC =
-  'media income depth opera health hybrid person expect supply kid napkin science maze believe they inspire hockey random escape size below monkey lemon veteran';
-
+  'lift primary tornado antenna confirm smoke oxygen rescue drift tenant mirror small barrel people predict elevator retreat hold various adjust keep decade valve scheme';
 export const MINTED_TOKEN_ID =
-  '0x08f56bb2eefc47c050e67f8ba85d4a08e1de5ac0580fb9e80dc2f62eab97f944350100000000';
+  '0x08c9c7b7e22a43ed9f14fdcc876bd9fb56e10ccac4b3c2299013d71b363db801a40100000000';

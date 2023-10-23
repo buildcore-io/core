@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Collection,
@@ -10,9 +11,7 @@ import {
 } from '@build-5/interfaces';
 import { TransactionPayload, Utils } from '@iota/sdk';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions/v2';
 import { get } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { getAddress } from '../../utils/address.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -39,7 +38,7 @@ export const onCollectionMintingUpdate = async (transaction: Transaction) => {
       break;
     }
     default: {
-      functions.logger.error('Unsupported executable transaction type', transaction);
+      console.error('Unsupported executable transaction type', transaction);
       throw Error('Unsupported executable transaction type ' + transaction.type);
     }
   }

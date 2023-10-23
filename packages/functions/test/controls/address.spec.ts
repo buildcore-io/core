@@ -1,6 +1,6 @@
+import { build5Db } from '@build-5/database';
 import { COL, Member, Network, Proposal, Space, WenError } from '@build-5/interfaces';
 import { isEmpty } from 'lodash';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { validateAddress } from '../../src/runtime/firebase/address';
 import { getAddress } from '../../src/utils/address.utils';
 import * as wallet from '../../src/utils/wallet.utils';

@@ -1,22 +1,18 @@
-import { COL, CollectionStats, SUB_COL } from '@build-5/interfaces';
-import * as functions from 'firebase-functions/v2';
-import { build5Db } from '../firebase/firestore/build5Db';
+import { build5Db } from '@build-5/database';
+import { COL, CollectionStats } from '@build-5/interfaces';
 import { getRankingThreshold } from '../utils/config.utils';
+import { FirestoreDocEvent } from './common';
 
-export const collectionStatsUpdate = functions.firestore.onDocumentWritten(
-  { document: `${COL.COLLECTION}/{collectionId}/${SUB_COL.STATS}/{subDocId}`, concurrency: 1000 },
-  async (event) => {
-    const prev = <CollectionStats | undefined>event.data?.before?.data();
-    const curr = <CollectionStats | undefined>event.data?.after?.data();
-    if (!curr) {
-      return;
-    }
+export const onCollectionStatsWrite = async (event: FirestoreDocEvent<CollectionStats>) => {
+  const { prev, curr } = event;
+  if (!curr) {
+    return;
+  }
 
-    if (rankingThresholdReached(prev, curr)) {
-      await onRankingThresholdReached(event.params.collectionId);
-    }
-  },
-);
+  if (rankingThresholdReached(prev, curr)) {
+    await onRankingThresholdReached(event.docId);
+  }
+};
 
 const rankingThresholdReached = (
   prev: CollectionStats | undefined,

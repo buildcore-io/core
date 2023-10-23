@@ -1,9 +1,8 @@
+import { build5Db } from '@build-5/database';
 import { COL, Member, Network, WEN_FUNC, WenError } from '@build-5/interfaces';
 import { CoinType, utf8ToHex } from '@iota/sdk';
-import { recoverPersonalSignature } from '@metamask/eth-sig-util';
 import jwt from 'jsonwebtoken';
 import { get } from 'lodash';
-import { build5Db } from '../src/firebase/firestore/build5Db';
 import { generateCustomToken } from '../src/runtime/firebase/auth';
 import * as config from '../src/utils/config.utils';
 import { getJwtSecretKey } from '../src/utils/config.utils';
@@ -12,8 +11,6 @@ import * as wallet from '../src/utils/wallet.utils';
 import { decodeAuth, getRandomNonce } from '../src/utils/wallet.utils';
 import { createMember, expectThrow, mockWalletReturnValue } from './controls/common';
 import { getWallet, testEnv } from './set-up';
-
-jest.mock('@metamask/eth-sig-util');
 
 describe('Auth control test', () => {
   let walletSpy: jest.SpyInstance;
@@ -193,50 +190,5 @@ describe('Pub key test', () => {
     const user = <Member>await userDocRef.get();
     expect(user.validatedAddress![Network.RMS]).toBe(address.bech32);
     expect(user.nonce).not.toBe(nonce);
-  });
-
-  it('Should update nonce when metamask sign in', async () => {
-    const address = wallet.getRandomEthAddress();
-
-    const nonce = getRandomNonce();
-    const userDocRef = build5Db().doc(`${COL.MEMBER}/${address}`);
-    await userDocRef.create({ uid: address, nonce });
-
-    const recoverPersonalSignatureMock = recoverPersonalSignature as jest.Mock;
-    recoverPersonalSignatureMock.mockReturnValue(address);
-
-    const request = {
-      address,
-      signature: 'signature',
-      body: {},
-    };
-
-    const result = await decodeAuth(request, WEN_FUNC.approveProposal);
-    expect(result.address).toBe(address);
-
-    const user = await userDocRef.get<Member>();
-    expect(user?.nonce).not.toBe(nonce);
-
-    recoverPersonalSignatureMock.mockRestore();
-  });
-
-  it('Should throw with metamask sign in, wrong signature', async () => {
-    const address = wallet.getRandomEthAddress();
-
-    const nonce = getRandomNonce();
-    const userDocRef = build5Db().doc(`${COL.MEMBER}/${address}`);
-    await userDocRef.create({ uid: address, nonce });
-
-    const request = {
-      address,
-      signature: 'signature',
-      body: {},
-    };
-    try {
-      await decodeAuth(request, WEN_FUNC.approveProposal);
-      fail();
-    } catch (error: any) {
-      expect(error.details.key).toBe(WenError.invalid_signature.key);
-    }
   });
 });

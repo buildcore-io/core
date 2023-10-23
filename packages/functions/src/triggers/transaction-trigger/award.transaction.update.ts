@@ -1,6 +1,6 @@
+import { build5Db } from '@build-5/database';
 import { COL, Transaction, TransactionPayloadType, TransactionType } from '@build-5/interfaces';
 import { TransactionPayload, Utils } from '@iota/sdk';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const onAwardUpdate = async (transaction: Transaction) => {

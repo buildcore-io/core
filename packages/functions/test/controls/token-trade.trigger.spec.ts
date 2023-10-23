@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   CreditPaymentReason,
@@ -23,7 +24,6 @@ import {
 } from '@build-5/interfaces';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { cancelTradeOrder, tradeToken } from '../../src/runtime/firebase/token/trading';
 import { TOKEN_TRADE_ORDER_FETCH_LIMIT } from '../../src/triggers/token-trading/match-token';
 import { getAddress } from '../../src/utils/address.utils';

@@ -1,6 +1,6 @@
+import { build5Db } from '@build-5/database';
 import { COL, TICKERS } from '@build-5/interfaces';
 import axios from 'axios';
-import { build5Db } from '../firebase/firestore/build5Db';
 
 export const getLatestBitfinexPricesCron = async () => {
   try {

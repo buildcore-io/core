@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { build5Db } from '@build-5/database';
 import {
   Access,
   Categories,
@@ -13,7 +14,6 @@ import {
   Space,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { approveCollection, createCollection } from '../../src/runtime/firebase/collection/index';
 import { createNft, orderNft } from '../../src/runtime/firebase/nft/index';
 import { Wallet } from '../../src/services/wallet/wallet';

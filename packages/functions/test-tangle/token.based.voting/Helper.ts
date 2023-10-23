@@ -13,9 +13,9 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 
+import { build5Db } from '@build-5/database';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import {
   approveProposal,
   createProposal,
@@ -233,7 +233,6 @@ export const dummyProposal = (space: string): Proposal => ({
 });
 
 export const VAULT_MNEMONIC =
-  'offer kingdom rate never hurt follow wrestle cloud alien admit bird usage avoid cloth soldier evidence crawl harsh electric wheat ten mushroom glare reject';
-
+  'spoil combine iron zero junk confirm present erase miracle lazy town rough chapter broken atom scare that mutual step parade always face loan guide';
 export const MINTED_TOKEN_ID =
-  '0x085f6308dd034c70ea90b4e2600c4f8fb65d0b53504a0d96e37ce8641a8835d2110100000000';
+  '0x087c042b2aea020609809189e329fed4a0bbf549a4156bae3c52e07c9b4466975c0100000000';

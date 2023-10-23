@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   CreditTokenRequest,
@@ -13,7 +14,6 @@ import {
   TransactionType,
   WenError,
 } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { getAddress } from '../../utils/address.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import {
@@ -23,11 +23,12 @@ import {
   tokenOrderTransactionDocId,
 } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 
-export const creditTokenControl = async (
-  owner: string,
-  params: CreditTokenRequest,
-): Promise<Transaction> => {
+export const creditTokenControl = async ({
+  owner,
+  params,
+}: Context<CreditTokenRequest>): Promise<Transaction> => {
   const tranId = getRandomEthAddress();
   const creditTranDoc = build5Db().doc(`${COL.TRANSACTION}/${tranId}`);
 

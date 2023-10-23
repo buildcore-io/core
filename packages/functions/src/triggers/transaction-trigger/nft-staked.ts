@@ -1,5 +1,5 @@
+import { build5Db } from '@build-5/database';
 import { COL, Nft, Transaction } from '@build-5/interfaces';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const onNftStaked = async (transaction: Transaction) => {

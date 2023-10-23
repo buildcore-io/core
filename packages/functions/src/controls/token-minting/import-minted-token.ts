@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   ImportMintedTokenRequest,
@@ -11,15 +12,18 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { WalletService } from '../../services/wallet/wallet.service';
 import { generateRandomAmount } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 
-export const importMintedTokenControl = async (owner: string, params: ImportMintedTokenRequest) =>
+export const importMintedTokenControl = async ({
+  owner,
+  params,
+}: Context<ImportMintedTokenRequest>) =>
   build5Db().runTransaction(async (transaction) => {
     await assertIsGuardian(params.space, owner);
 

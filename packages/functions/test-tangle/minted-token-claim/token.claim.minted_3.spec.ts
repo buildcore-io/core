@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { build5Db } from '@build-5/database';
 import { COL, Token, TokenDrop, TokenDropStatus, TransactionType } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -52,7 +52,7 @@ describe('Token minting', () => {
   });
 });
 
-const VAULT_MNEMONIC =
-  'jealous switch narrow pen coil addict gospel rotate episode second acid gift off shock duty weapon profit merry utility snap erode author someone cute';
-const MINTED_TOKEN_ID =
-  '0x08b2bc19206a801a09a57f18f3c8737ac967bb868e04e0f45043ccccce7d2bbea70100000000';
+export const VAULT_MNEMONIC =
+  'put crisp lecture fine axis route tomato impact analyst insane arm exercise surprise pistol angry sing foil plug medal error extra spatial tongue indoor';
+export const MINTED_TOKEN_ID =
+  '0x0810f989d9e3f66d147eb8ae6ec102ccbbb419a1b4202df7363f339d279883866c0100000000';

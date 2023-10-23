@@ -13,8 +13,8 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 
+import { build5Db } from '@build-5/database';
 import dayjs from 'dayjs';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
@@ -149,7 +149,6 @@ const saveToken = async (space: string, guardian: string, network: Network) => {
 };
 
 export const VAULT_MNEMONIC =
-  'media income depth opera health hybrid person expect supply kid napkin science maze believe they inspire hockey random escape size below monkey lemon veteran';
-
+  'wise push option delay harvest reward equal sketch seed mystery cruise exact photo cabbage ill clump pen lab orphan cradle creek march install health';
 export const MINTED_TOKEN_ID =
-  '0x08f56bb2eefc47c050e67f8ba85d4a08e1de5ac0580fb9e80dc2f62eab97f944350100000000';
+  '0x08a7a6e15732dac0262fd0e102dd293acdf1eb5cc9cd45512ab818fb7bae4aebff0100000000';

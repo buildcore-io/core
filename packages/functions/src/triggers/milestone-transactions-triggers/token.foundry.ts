@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import { COL } from '@build-5/interfaces';
 import {
   AddressUnlockCondition,
@@ -10,7 +11,6 @@ import {
   UnlockConditionType,
   Utils,
 } from '@iota/sdk';
-import { build5Db } from '../../firebase/firestore/build5Db';
 import { getTokenByMintId } from '../../utils/token.utils';
 
 export const updateTokenSupplyData = async (data: Record<string, unknown>) => {

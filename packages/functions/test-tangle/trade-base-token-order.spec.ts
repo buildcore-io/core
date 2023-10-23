@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Member,
@@ -13,7 +14,6 @@ import {
   TransactionType,
   WenError,
 } from '@build-5/interfaces';
-import { build5Db } from '../src/firebase/firestore/build5Db';
 import { createMember } from '../src/runtime/firebase/member';
 import { cancelTradeOrder, tradeToken } from '../src/runtime/firebase/token/trading';
 import { AddressDetails } from '../src/services/wallet/wallet.service';

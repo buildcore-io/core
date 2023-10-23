@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   Award,
   COL,
@@ -9,7 +10,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
-import { build5Db } from '../../src/firebase/firestore/build5Db';
 import { createAward, fundAward } from '../../src/runtime/firebase/award';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import * as wallet from '../../src/utils/wallet.utils';
