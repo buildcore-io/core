@@ -53,6 +53,7 @@ jobs:
         uses: 'google-github-actions/setup-gcloud@v1'
       - name: Build and deploy
         run: |
+            npm install ts-node
             npm run create-deploy-script
             chmod 777 ./deploy.sh
             ./deploy.sh
