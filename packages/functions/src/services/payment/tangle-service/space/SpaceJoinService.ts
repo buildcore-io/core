@@ -9,7 +9,6 @@ import {
   TokenDistribution,
   WenError,
 } from '@build-5/interfaces';
-import { getProject, getProjects } from '../../../../utils/common.utils';
 import { serverTime } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
@@ -17,6 +16,7 @@ import { getTokenForSpace } from '../../../../utils/token.utils';
 import { getStakeForType } from '../../../stake.service';
 import { BaseService, HandlerParams } from '../../base';
 import { joinSpaceSchema } from './SpaceJoinTangleRequestSchema';
+import { getProject, getProjects } from '../../../../utils/common.utils';
 
 export class SpaceJoinService extends BaseService {
   public handleRequest = async ({

@@ -15,26 +15,19 @@ import {
   TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
+  getMilestoneCol,
 } from '@build-5/interfaces';
-import {
-  ADDRESS_UNLOCK_CONDITION_TYPE,
-  EXPIRATION_UNLOCK_CONDITION_TYPE,
-  IExpirationUnlockCondition,
-  STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
-  TIMELOCK_UNLOCK_CONDITION_TYPE,
-  UnlockConditionTypes,
-} from '@iota/iota.js-next';
+import { ExpirationUnlockCondition, UnlockCondition, UnlockConditionType } from '@iota/sdk';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions/v2';
 import { get, isEmpty, set } from 'lodash';
-import { SmrMilestoneTransactionAdapter } from '../../triggers/milestone-transactions-triggers/SmrMilestoneTransactionAdapter';
+import { MilestoneTransactionAdapter } from '../../triggers/milestone-transactions-triggers/MilestoneTransactionAdapter';
 import { getOutputMetadata } from '../../utils/basic-output.utils';
 import { getProject, getProjects } from '../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 export interface TransactionMatch {
   msgId: string;
-  from: MilestoneTransactionEntry;
+  from: string;
   to: MilestoneTransactionEntry;
 }
 
@@ -83,7 +76,7 @@ export class TransactionService {
       projects: getProjects([order]),
       type: TransactionType.PAYMENT,
       uid: getRandomEthAddress(),
-      member: order.member || tran.from.address,
+      member: order.member || tran.from,
       space: order.space || '',
       network: order.network || DEFAULT_NETWORK,
       payload: {
@@ -91,9 +84,9 @@ export class TransactionService {
         amount: tran.to.amount,
         nativeTokens: (tran.to.nativeTokens || []).map((nt) => ({
           ...nt,
-          amount: Number(nt.amount).toString(),
+          amount: BigInt(nt.amount),
         })),
-        sourceAddress: tran.from.address,
+        sourceAddress: tran.from,
         targetAddress: order.payload.targetAddress,
         reconciled: true,
         void: false,
@@ -241,10 +234,10 @@ export class TransactionService {
           amount: payment.payload.amount,
           nativeTokens: (tran.to.nativeTokens || []).map((nt) => ({
             ...nt,
-            amount: Number(nt.amount).toString(),
+            amount: BigInt(nt.amount),
           })),
           sourceAddress: tran.to.address,
-          targetAddress: tran.from.address,
+          targetAddress: tran.from,
           sourceTransaction: [payment.uid],
           nft: payment.payload.nft || null,
           reconciled: true,
@@ -299,10 +292,10 @@ export class TransactionService {
           amount: payment.payload.amount,
           nativeTokens: (tran.to.nativeTokens || []).map((nt) => ({
             ...nt,
-            amount: Number(nt.amount).toString(),
+            amount: BigInt(nt.amount),
           })),
           sourceAddress: tran.to.address,
-          targetAddress: tran.from.address,
+          targetAddress: tran.from,
           sourceTransaction: [payment.uid],
           reconciled: true,
           void: false,
@@ -332,7 +325,7 @@ export class TransactionService {
       ? { status: 'error', code: error.code || '', message: error.key || '', ...customErrorParams }
       : {};
     if (!isEmpty(error) && !get(error, 'code')) {
-      functions.logger.error(payment.uid, tran.to.nftOutput?.nftId, error);
+      console.error(payment.uid, tran.to.nftOutput?.nftId, error);
     }
     const transaction: Transaction = {
       project: getProject(payment),
@@ -345,7 +338,7 @@ export class TransactionService {
       payload: {
         amount: payment.payload.amount,
         sourceAddress: tran.to.address,
-        targetAddress: tran.from.address,
+        targetAddress: tran.from,
         sourceTransaction: [payment.uid],
         reconciled: true,
         void: false,
@@ -384,11 +377,11 @@ export class TransactionService {
       const doc = (await build5Db()
         .doc(build5Transaction.payload?.milestoneTransactionPath!)
         .get<Record<string, unknown>>())!;
-      const adapter = new SmrMilestoneTransactionAdapter(order.network!);
+      const adapter = new MilestoneTransactionAdapter(order.network!);
       const milestoneTransaction = await adapter.toMilestoneTransaction(doc);
-      return milestoneTransaction.inputs?.[0];
+      return milestoneTransaction.fromAddresses[0];
     }
-    return tran.inputs?.[0];
+    return tran.fromAddresses[0];
   };
 
   public async isMatch(
@@ -404,19 +397,12 @@ export class TransactionService {
       return;
     }
     let found: TransactionMatch | undefined;
-    const fromAddress: MilestoneTransactionEntry = await this.getFromAddress(
-      tran,
-      order,
-      build5Transaction,
-    );
+    const fromAddress = await this.getFromAddress(tran, order, build5Transaction);
     if (fromAddress && tran.outputs) {
       for (const o of tran.outputs) {
-        // Ignore output that contains input address. Remaining balance.
         if (
           build5Transaction?.type !== TransactionType.UNLOCK &&
-          tran.inputs.find((i) => {
-            return o.address === i.address;
-          })
+          tran.fromAddresses.includes(o.address)
         ) {
           continue;
         }
@@ -443,11 +429,7 @@ export class TransactionService {
     tranOutput: MilestoneTransactionEntry,
     build5Transaction?: Transaction,
   ): Promise<void> {
-    const fromAddress: MilestoneTransactionEntry = await this.getFromAddress(
-      tran,
-      order,
-      build5Transaction,
-    );
+    const fromAddress = await this.getFromAddress(tran, order, build5Transaction);
     if (fromAddress) {
       const match: TransactionMatch = {
         msgId: tran.messageId,
@@ -471,16 +453,14 @@ export class TransactionService {
     }
   }
 
-  private getIngnoreWalletReason = (
-    unlockConditions: UnlockConditionTypes[],
-  ): IgnoreWalletReason => {
+  private getIngnoreWalletReason = (unlockConditions: UnlockCondition[]): IgnoreWalletReason => {
     const hasTimelock =
-      unlockConditions.find((u) => u.type === TIMELOCK_UNLOCK_CONDITION_TYPE) !== undefined;
+      unlockConditions.find((u) => u.type === UnlockConditionType.Timelock) !== undefined;
     if (hasTimelock) {
       return IgnoreWalletReason.UNREFUNDABLE_DUE_TIMELOCK_CONDITION;
     }
     const hasStorageDepositLock =
-      unlockConditions.find((u) => u.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE) !==
+      unlockConditions.find((u) => u.type === UnlockConditionType.StorageDepositReturn) !==
       undefined;
     if (hasStorageDepositLock) {
       return IgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION;
@@ -510,7 +490,7 @@ export class TransactionService {
         amount: tranOutput.amount,
         nativeTokens: (tranOutput.nativeTokens || []).map((nt) => ({
           ...nt,
-          amount: Number(nt.amount).toString(),
+          amount: BigInt(nt.amount),
         })),
         sourceAddress: tranOutput.address,
         targetAddress: [
@@ -521,7 +501,9 @@ export class TransactionService {
           : tranOutput.address,
         sourceTransaction: [order.uid],
         expiresOn: expiresOn || dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
-        milestoneTransactionPath: `${COL.MILESTONE}_${network}/${tran.milestone}/${SUB_COL.TRANSACTIONS}/${tran.uid}`,
+        milestoneTransactionPath: `${getMilestoneCol(network)}/${tran.milestone}/${
+          SUB_COL.TRANSACTIONS
+        }/${tran.uid}`,
         outputToConsume,
         customMetadata: getOutputMetadata(tranOutput.output),
         nftId: tranOutput.nftOutput?.nftId || '',
@@ -534,18 +516,15 @@ export class TransactionService {
     });
   };
 
-  public getExpirationUnlock = (unlockCondiiton: UnlockConditionTypes[] = []) =>
-    unlockCondiiton.find((u) => u.type === EXPIRATION_UNLOCK_CONDITION_TYPE) as
-      | IExpirationUnlockCondition
+  public getExpirationUnlock = (unlockCondiiton: UnlockCondition[] = []) =>
+    unlockCondiiton.find((u) => u.type === UnlockConditionType.Expiration) as
+      | ExpirationUnlockCondition
       | undefined;
 
   private getUnsupportedUnlockCondition = (
-    unlockConditions: UnlockConditionTypes[] = [],
+    unlockConditions: UnlockCondition[] = [],
     supportedUnlockConditions = SUPPORTED_UNLOCK_CONDITION,
   ) => unlockConditions.find((u) => !supportedUnlockConditions.includes(u.type));
 }
 
-const SUPPORTED_UNLOCK_CONDITION = [
-  ADDRESS_UNLOCK_CONDITION_TYPE,
-  EXPIRATION_UNLOCK_CONDITION_TYPE,
-];
+const SUPPORTED_UNLOCK_CONDITION = [UnlockConditionType.Address, UnlockConditionType.Expiration];

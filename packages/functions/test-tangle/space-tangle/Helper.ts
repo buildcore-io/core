@@ -1,10 +1,11 @@
 import { IQuery, build5Db } from '@build-5/database';
 import { COL, Member, Network, Space, Transaction, TransactionType } from '@build-5/interfaces';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace } from '../../test/controls/common';
+import { getWallet } from '../../test/set-up';
 import { getTangleOrder } from '../common';
 
 export class Helper {
@@ -13,7 +14,7 @@ export class Helper {
   public member: string = '';
   public space: Space = {} as any;
   public memberAddress: AddressDetails = {} as any;
-  public walletService: SmrWallet = {} as any;
+  public walletService: Wallet = {} as any;
   public network = Network.RMS;
   public tangleOrder: Transaction = {} as any;
   public memberCreditQuery: IQuery = {} as any;
@@ -21,8 +22,8 @@ export class Helper {
   public guardianAddress: AddressDetails = {} as any;
 
   public beforeAll = async () => {
-    this.walletService = (await WalletService.newWallet(this.network)) as SmrWallet;
-    this.tangleOrder = await getTangleOrder();
+    this.walletService = await getWallet(this.network);
+    this.tangleOrder = await getTangleOrder(Network.RMS);
   };
 
   public beforeEach = async () => {

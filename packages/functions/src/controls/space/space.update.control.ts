@@ -18,7 +18,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get, startCase } from 'lodash';
-import { Context } from '../../runtime/firebase/common';
 import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
@@ -26,11 +25,13 @@ import { cleanupParams } from '../../utils/schema.utils';
 import { hasActiveEditProposal } from '../../utils/space.utils';
 import { assertIsGuardian, getTokenForSpace } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 
-export const updateSpaceControl = async (
-  { project, owner }: Context,
-  params: SpaceUpdateRequest,
-) => {
+export const updateSpaceControl = async ({
+  owner,
+  params,
+  project,
+}: Context<SpaceUpdateRequest>) => {
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
   const space = await spaceDocRef.get<Space>();
 

@@ -154,7 +154,7 @@ const cancelMintedSell = async (transaction: ITransaction, sell: TokenTradeOrder
       reason: CreditPaymentReason.TRADE_CANCELLED,
       type: TransactionPayloadType.TOKEN_BUY,
       amount: order.payload.amount,
-      nativeTokens: [{ amount: tokensLeft.toString(), id: token.mintingData?.tokenId! }],
+      nativeTokens: [{ amount: BigInt(tokensLeft), id: token.mintingData?.tokenId! }],
       sourceAddress: order.payload.targetAddress,
       targetAddress: getAddress(seller, network),
       sourceTransaction: [sell.paymentTransactionId!],

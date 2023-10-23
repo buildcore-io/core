@@ -23,7 +23,6 @@ import {
   createMember,
   createSpace,
   getRandomSymbol,
-  milestoneProcessed,
   mockWalletReturnValue,
   submitMilestoneFunc,
   tokenProcessed,
@@ -97,19 +96,11 @@ describe('Order and claim airdropped token test', () => {
     expect(distribution.totalUnclaimedAirdrop).toBe(5);
 
     const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
-    const nextMilestone = await submitMilestoneFunc(
-      order.payload.targetAddress,
-      5 * token.pricePerToken,
-    );
-    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+    await submitMilestoneFunc(order, 5 * token.pricePerToken);
 
     mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid });
     const claimOrder = await testEnv.wrap(claimAirdroppedToken)({});
-    const milestone = await submitMilestoneFunc(
-      claimOrder.payload.targetAddress,
-      claimOrder.payload.amount,
-    );
-    await milestoneProcessed(milestone.milestone, milestone.tranId);
+    await submitMilestoneFunc(claimOrder);
 
     await wait(async () => {
       const snap = await build5Db()

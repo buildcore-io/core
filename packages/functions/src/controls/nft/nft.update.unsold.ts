@@ -1,13 +1,13 @@
 import { build5Db } from '@build-5/database';
 import { COL, Nft, NftUpdateUnsoldRequest, WenError } from '@build-5/interfaces';
-import { Context } from '../../runtime/firebase/common';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
+import { Context } from '../common';
 
-export const updateUnsoldNftControl = async (
-  { owner }: Context,
-  params: NftUpdateUnsoldRequest,
-): Promise<Nft> =>
+export const updateUnsoldNftControl = async ({
+  owner,
+  params,
+}: Context<NftUpdateUnsoldRequest>): Promise<Nft> =>
   build5Db().runTransaction(async (transaction) => {
     const nftDocRef = build5Db().doc(`${COL.NFT}/${params.uid}`);
     const nft = await transaction.get<Nft>(nftDocRef);

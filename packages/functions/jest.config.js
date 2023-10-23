@@ -5,4 +5,5 @@ module.exports = {
   globalSetup: './test/set-up.ts',
   globalTeardown: './test/teardown.ts',
   reporters: ['default', 'github-actions'],
+  setupFilesAfterEnv: ['./test/teardown.ts'],
 };

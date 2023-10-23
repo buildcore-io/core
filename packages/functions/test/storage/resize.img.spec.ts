@@ -1,8 +1,7 @@
-import { Bucket } from '@build-5/interfaces';
-import { ImageWidth } from '../../src/triggers/storage/resize.img.trigger';
+import { build5Storage } from '@build-5/database';
+import { Bucket, ImageWidth } from '@build-5/interfaces';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { wait } from '../controls/common';
-import { build5Storage } from '@build-5/database';
 
 describe('Resize img test', () => {
   it('Should resize img', async () => {

@@ -9,8 +9,6 @@ import {
   TransactionValidationType,
   WenError,
 } from '@build-5/interfaces';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
 import { packBasicOutput } from '../../../../utils/basic-output.utils';
@@ -20,8 +18,7 @@ import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getTokenBySymbol } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { SmrWallet } from '../../../wallet/SmrWalletService';
-import { WalletService } from '../../../wallet/wallet';
+import { WalletService } from '../../../wallet/wallet.service';
 import { BaseService, HandlerParams } from '../../base';
 import { depositStakeSchemaObject } from './TokenStakeTangleRequestSchema';
 
@@ -74,24 +71,19 @@ export const createStakeOrder = async (
   }
 
   const network = token.mintingData?.network!;
-  const wallet = (await WalletService.newWallet(network)) as SmrWallet;
+  const wallet = await WalletService.newWallet(network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
   const nativeTokens = [
     {
       id: token.mintingData.tokenId,
-      amount: HexHelper.fromBigInt256(bigInt(Number.MAX_SAFE_INTEGER)),
+      amount: BigInt(Number.MAX_SAFE_INTEGER),
     },
   ];
-  const output = packBasicOutput(
-    targetAddress.bech32,
-    0,
+  const output = await packBasicOutput(wallet, targetAddress.bech32, 0, {
     nativeTokens,
-    wallet.info,
-    '',
-    dateToTimestamp(dayjs().add(weeks, 'weeks').toDate()),
-    undefined,
     customMetadata,
-  );
+    vestingAt: dateToTimestamp(dayjs().add(weeks, 'weeks').toDate()),
+  });
   return {
     project,
     projects: getProjects([], project),

@@ -2,6 +2,7 @@
 import { build5Db } from '@build-5/database';
 import {
   COL,
+  CreateAirdropsRequest,
   StakeType,
   TRANSACTION_AUTO_EXPIRY_MS,
   Token,
@@ -14,25 +15,22 @@ import {
   TransactionValidationType,
   WenError,
 } from '@build-5/interfaces';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
-import { Context } from '../../runtime/firebase/common';
-import { CreateAirdropsRequest } from '../../runtime/firebase/token/base/TokenAirdropRequestSchema';
-import { SmrWallet } from '../../services/wallet/SmrWalletService';
-import { WalletService } from '../../services/wallet/wallet';
+import { WalletService } from '../../services/wallet/wallet.service';
 import { packBasicOutput } from '../../utils/basic-output.utils';
+import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-import { getProjects } from '../../utils/common.utils';
+import { Context } from '../common';
 
-export const airdropMintedTokenControl = async (
-  { project, owner }: Context,
-  params: CreateAirdropsRequest,
-) => {
+export const airdropMintedTokenControl = async ({
+  project,
+  owner,
+  params,
+}: Context<CreateAirdropsRequest>) => {
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
   await build5Db().runTransaction(async (transaction) => {
     const token = await transaction.get<Token>(tokenDocRef);
@@ -49,13 +47,15 @@ export const airdropMintedTokenControl = async (
   const drops = params.drops;
 
   const totalDropped = drops.reduce((acc, act) => acc + act.count, 0);
-  const wallet = (await WalletService.newWallet(token.mintingData?.network)) as SmrWallet;
+  const wallet = await WalletService.newWallet(token.mintingData?.network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
   const nativeToken = {
-    amount: HexHelper.fromBigInt256(bigInt(totalDropped)),
+    amount: BigInt(totalDropped),
     id: token.mintingData?.tokenId!,
   };
-  const output = packBasicOutput(targetAddress.bech32, 0, [nativeToken], wallet.info);
+  const output = await packBasicOutput(wallet, targetAddress.bech32, 0, {
+    nativeTokens: [nativeToken],
+  });
   const order: Transaction = {
     project,
     projects: getProjects([], project),
@@ -90,7 +90,7 @@ export const airdropMintedTokenControl = async (
     status: TokenDropStatus.DEPOSIT_NEEDED,
     orderId: order.uid,
     sourceAddress: targetAddress.bech32,
-    stakeType: drop.stakeType || StakeType.DYNAMIC,
+    stakeType: (drop.stakeType as StakeType) || StakeType.DYNAMIC,
   }));
 
   const chunks = chunk(airdrops, 500);

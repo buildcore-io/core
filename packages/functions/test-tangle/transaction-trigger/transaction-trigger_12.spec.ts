@@ -8,19 +8,12 @@ import {
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-import { ITransactionPayload, TRANSACTION_ID_LENGTH } from '@iota/iota.js';
-import {
-  ITransactionPayload as NextITransactionPayload,
-  TransactionHelper,
-} from '@iota/iota.js-next';
-import { Converter, WriteStream } from '@iota/util.js';
+import { RegularTransactionEssence, TransactionPayload, UTXOInput, Utils } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { retryWallet } from '../../src/cron/wallet.cron';
-import { IotaWallet } from '../../src/services/wallet/IotaWalletService';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { AddressDetails } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { wait } from '../../test/controls/common';
@@ -85,26 +78,16 @@ describe('Transaction trigger spec', () => {
       });
 
       consumedOutputIds = [];
-      if (network === Network.ATOI) {
-        const block = await (wallet as IotaWallet).client.message(
-          billPayment.payload.walletReference!.chainReference!,
-        );
-        const inputs = (block.payload as ITransactionPayload).essence.inputs;
-        consumedOutputIds = inputs.map((input) =>
-          outputIdFromTransactionData(input.transactionId, input.transactionOutputIndex),
-        );
-      } else {
-        const block = await (wallet as SmrWallet).client.block(
-          billPayment.payload.walletReference!.chainReference!,
-        );
-        const inputs = (block.payload as NextITransactionPayload).essence.inputs;
-        consumedOutputIds = inputs.map((input) =>
-          TransactionHelper.outputIdFromTransactionData(
-            input.transactionId,
-            input.transactionOutputIndex,
-          ),
-        );
-      }
+
+      const block = await wallet.client.getBlock(
+        billPayment.payload.walletReference!.chainReference!,
+      );
+      const payload = block.payload as TransactionPayload;
+      const inputs = (payload.essence as RegularTransactionEssence).inputs;
+      consumedOutputIds = inputs.map((i) => {
+        const { transactionId, transactionOutputIndex } = i as UTXOInput;
+        return Utils.computeOutputId(transactionId, transactionOutputIndex);
+      });
       expect(outputIds.sort()).toEqual(consumedOutputIds.sort());
     },
   );
@@ -133,19 +116,6 @@ const dummyPayment = (
 
 const getOutputs = async (network: Network, address: AddressDetails) => {
   const wallet = await getWallet(network);
-  if (network === Network.RMS) {
-    const outputs = await (wallet as SmrWallet).getOutputs(address.bech32, [], false);
-    return Object.keys(outputs);
-  }
-  const outputs = await (wallet as IotaWallet).getOutputs(address.hex);
+  const outputs = await wallet.getOutputs(address.bech32, [], false);
   return Object.keys(outputs);
-};
-
-const outputIdFromTransactionData = (transactionId: string, outputIndex: number): string => {
-  const writeStream = new WriteStream();
-  writeStream.writeFixedHex('transactionId', TRANSACTION_ID_LENGTH, transactionId);
-  writeStream.writeUInt16('outputIndex', outputIndex);
-  const outputIdBytes = writeStream.finalBytes();
-
-  return Converter.bytesToHex(outputIdBytes);
 };

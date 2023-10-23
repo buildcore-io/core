@@ -1,6 +1,6 @@
 import { SpaceCreateTangleRequest, TangleRequestType } from '@build-5/interfaces';
 import Joi from 'joi';
-import { createSpaceSchema } from '../../../../runtime/firebase/space/SpaceCreateRequestSchema';
+import { createSpaceSchema } from '../../../../controls/space/SpaceCreateRequestSchema';
 import { toJoiObject } from '../../../joi/common';
 import { baseTangleSchema } from '../common';
 

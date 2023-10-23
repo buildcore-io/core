@@ -1,15 +1,15 @@
+import { build5Db } from '@build-5/database';
 import { COL, SetTokenForSaleRequest, Token, TokenStatus, WenError } from '@build-5/interfaces';
-import { Context } from '../../runtime/firebase/common';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
+import { Context } from '../common';
 import { getPublicSaleTimeFrames, shouldSetPublicSaleTimeFrames } from './common';
-import { build5Db } from '@build-5/database';
 
-export const setTokenAvailableForSaleControl = async (
-  { owner }: Context,
-  params: SetTokenForSaleRequest,
-) => {
+export const setTokenAvailableForSaleControl = async ({
+  owner,
+  params,
+}: Context<SetTokenForSaleRequest>) => {
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
 
   await build5Db().runTransaction(async (transaction) => {

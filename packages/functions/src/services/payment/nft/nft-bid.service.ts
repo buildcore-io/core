@@ -1,7 +1,6 @@
 import { build5Db } from '@build-5/database';
-import { COL, Member, Nft, Transaction } from '@build-5/interfaces';
+import { COL, Member, Nft, NftStatus, Transaction } from '@build-5/interfaces';
 import { last } from 'lodash';
-import { AVAILABLE_NETWORKS } from '../../../controls/common';
 import { NotificationService } from '../../notification/notification';
 import { HandlerParams } from '../base';
 import { BaseNftService } from './common';
@@ -66,7 +65,7 @@ export class NftBidService extends BaseNftService {
 
       const tanglePuchase = order.payload.tanglePuchase;
       const disableWithdraw = order.payload.disableWithdraw;
-      if (!disableWithdraw && tanglePuchase && AVAILABLE_NETWORKS.includes(order.network!)) {
+      if (!disableWithdraw && tanglePuchase && nft.status === NftStatus.MINTED) {
         await this.withdrawNft(order, nft);
       }
     } else {

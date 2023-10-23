@@ -8,15 +8,16 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { Context } from '../../runtime/firebase/common';
 import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
+import { Context } from '../common';
 
-export const awardParticipateControl = async (
-  { project, owner }: Context,
-  params: AwardParticpateRequest,
-): Promise<AwardParticipant> => {
+export const awardParticipateControl = async ({
+  owner,
+  params,
+  project,
+}: Context<AwardParticpateRequest>): Promise<AwardParticipant> => {
   const awardDocRef = build5Db().doc(`${COL.AWARD}/${params.uid}`);
   const award = await awardDocRef.get<Award>();
   if (!award) {

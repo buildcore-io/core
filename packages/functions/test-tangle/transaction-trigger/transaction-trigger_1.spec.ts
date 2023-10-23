@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { build5Db } from '@build-5/database';
 import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build-5/interfaces';
-import { AddressDetails } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { wait } from '../../test/controls/common';
@@ -43,8 +43,8 @@ describe('Transaction trigger spec', () => {
       };
       await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
       await wait(async () => {
-        const balance = await wallet.getBalance(targetAddress.bech32);
-        return balance === MIN_IOTA_AMOUNT;
+        const { amount } = await wallet.getBalance(targetAddress.bech32);
+        return amount === MIN_IOTA_AMOUNT;
       });
 
       await wait(async () => {

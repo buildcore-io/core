@@ -12,10 +12,6 @@ export interface StampTangleRequest {
    */
   aliasId?: string;
   /**
-   * Network to use to fund the stamp order.
-   */
-  network?: 'smr' | 'rms';
-  /**
    * Type of the tangle request.
    */
   requestType: 'STAMP';

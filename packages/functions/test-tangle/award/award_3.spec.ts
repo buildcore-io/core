@@ -40,7 +40,7 @@ describe('Create award, base', () => {
     mockWalletReturnValue(walletSpy, member, { uid: space?.uid });
     await testEnv.wrap(joinSpace)({});
 
-    token = await saveBaseToken(space.uid, guardian);
+    token = await saveBaseToken(space.uid, guardian, network);
 
     mockWalletReturnValue(walletSpy, guardian, awardRequest(space.uid, token.symbol));
     award = await testEnv.wrap(createAward)({});

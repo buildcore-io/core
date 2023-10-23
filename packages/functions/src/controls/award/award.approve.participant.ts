@@ -6,13 +6,14 @@ import {
   Transaction,
 } from '@build-5/interfaces';
 import { get } from 'lodash';
-import { Context } from '../../runtime/firebase/common';
 import { approveAwardParticipant } from '../../services/payment/tangle-service/award/award.approve.participant.service';
+import { Context } from '../common';
 
-export const approveAwardParticipantControl = async (
-  { project, owner }: Context,
-  params: AwardApproveParticipantRequest,
-): Promise<AwardApproveParticipantResponse> => {
+export const approveAwardParticipantControl = async ({
+  owner,
+  params,
+  project,
+}: Context<AwardApproveParticipantRequest>): Promise<AwardApproveParticipantResponse> => {
   const members = params.members.map((m) => m.toLowerCase());
   const awardId = params.award;
   const badges: { [key: string]: Transaction } = {};

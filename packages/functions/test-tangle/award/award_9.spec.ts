@@ -15,8 +15,8 @@ import dayjs from 'dayjs';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -27,7 +27,7 @@ import {
   mockWalletReturnValue,
   wait,
 } from '../../test/controls/common';
-import { MEDIA, testEnv } from '../../test/set-up';
+import { getWallet, MEDIA, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 
 const network = Network.RMS;
@@ -39,12 +39,12 @@ describe('Create award, native', () => {
   let space: Space;
   let award: Award;
   let guardianAddress: AddressDetails;
-  let walletService: SmrWallet;
+  let walletService: Wallet;
   let token: Token;
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    walletService = (await WalletService.newWallet(network)) as SmrWallet;
+    walletService = await getWallet(network);
   });
 
   beforeEach(async () => {
@@ -150,4 +150,4 @@ const saveToken = async (space: string, guardian: string) => {
 };
 
 const MINTED_TOKEN_ID =
-  '0x08f56bb2eefc47c050e67f8ba85d4a08e1de5ac0580fb9e80dc2f62eab97f944350100000000';
+  '0x0833fb03653c5312a4d02b03c1999c4d03f43c532431cc8684f3941a69bd32fbb90100000000';

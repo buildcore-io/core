@@ -2,6 +2,7 @@ export * from './award';
 export * from './badge';
 export * from './base';
 export * from './collection';
+export * from './file';
 export * from './member';
 export * from './milestone';
 export * from './mnemonic';

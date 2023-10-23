@@ -3,30 +3,18 @@ import {
   COL,
   IOTATangleTransaction,
   NativeToken,
-  Network,
   Nft,
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
+import { WalletParams } from '../../services/wallet/wallet';
 import { isProdEnv } from '../../utils/config.utils';
 
-export const getWalletParams = (transaction: Transaction, network: Network) => {
-  switch (network) {
-    case Network.SMR:
-    case Network.RMS:
-      return getShimmerParams(transaction);
-    default:
-      return getParams(transaction);
-  }
-};
-
-const getShimmerParams = async (transaction: Transaction) => ({
+export const getWalletParams = async (transaction: Transaction): Promise<WalletParams> => ({
   ...(await getParams(transaction)),
   nativeTokens: transaction.payload.nativeTokens?.map((nt: NativeToken) => ({
     id: nt.id,
-    amount: HexHelper.fromBigInt256(bigInt(Number(nt.amount))),
+    amount: BigInt(Number(nt.amount)),
   })),
   storageDepositSourceAddress: transaction.payload.storageDepositSourceAddress,
   vestingAt: transaction.payload.vestingAt,

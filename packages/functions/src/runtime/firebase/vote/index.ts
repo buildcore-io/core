@@ -1,6 +1,4 @@
 import { WEN_FUNC } from '@build-5/interfaces';
-import { voteControl } from '../../../controls/vote.control';
-import { voteSchema } from './VoteRequestSchema';
-import { onRequest } from '../common';
+import { https } from '../../..';
 
-export const voteController = onRequest(WEN_FUNC.voteController)(voteSchema, voteControl);
+export const voteController = https[WEN_FUNC.voteController];

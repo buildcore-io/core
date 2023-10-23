@@ -12,27 +12,23 @@
   ],
   "private": "true",
   "scripts": {
-    "build": "rm -rf lib && tsc && node build && cp -r ../database lib/database",
-    "start": "tsc && node lib/index",
-    "deploy:prod": "npm run build && npm run gceploy:prod",
-    "deploy:test": "npm run build && npm run gceploy:test",
-    "gceploy:prod": "gcloud run deploy api --min-instances=3 --memory=1Gi --cpu=1 --concurrency=1000 --allow-unauthenticated --timeout=600 --ingress=internal-and-cloud-load-balancing --region=us-central1 --source=lib",
-    "gceploy:test": "gcloud run deploy api --allow-unauthenticated --timeout=600 --ingress=internal-and-cloud-load-balancing --region=us-central1 --source=lib"
+    "build": "tsc",
+    "start": "tsc && node lib/index"
   },
   "dependencies": {
     "@build-5/database": "*",
     "@build-5/interfaces": "*",
+    "@iota/sdk": "1.1.1",
     "cors": "^2.8.5",
     "dayjs": "^1.11.9",
     "express": "^4.18.2",
-    "joi": "17.10.2",
+    "joi": "17.11.0",
     "lodash": "^4.17.21",
     "rxjs": "^7.8.1",
-    "ws": "^8.13.0",
-    "@iota/iota.js-next": "npm:@iota/iota.js@2.0.0-rc.4",
-    "@iota/util.js-next": "npm:@iota/util.js@2.0.0-rc.2"
+    "ws": "^8.13.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.14",
     "@types/express": "^4.17.17",
     "@types/lodash": "^4.14.197",
     "@types/ws": "^8.5.5",

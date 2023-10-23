@@ -17,7 +17,6 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { getProject, getProjects } from '../../../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
@@ -25,6 +24,7 @@ import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { BaseService, HandlerParams } from '../../base';
 import { editSpaceMemberSchemaObject } from './SpaceEditMemberTangleRequestSchema';
+import { getProject, getProjects } from '../../../../utils/common.utils';
 
 export class SpaceGuardianService extends BaseService {
   public handleRequest = async ({

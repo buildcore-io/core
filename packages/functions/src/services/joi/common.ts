@@ -2,7 +2,9 @@ import { Bucket } from '@build-5/interfaces';
 import Joi, { SchemaMap } from 'joi';
 import { isEmpty } from 'lodash';
 import { isEmulatorEnv, isProdEnv } from '../../utils/config.utils';
-import { maxAddressLength, minAddressLength } from './../../utils/wallet.utils';
+
+const minAddressLength = 42;
+const maxAddressLength = 255;
 
 export class CommonJoi {
   public static uid(required = true): Joi.StringSchema<string> {

@@ -1,67 +1,54 @@
-import { build5Db } from '@build-5/database';
-import { COL, DEFAULT_NETWORK, Network, NetworkAddress } from '@build-5/interfaces';
-import { IotaWallet, getIotaClient } from './IotaWalletService';
-import { SmrWallet, getShimmerClient } from './SmrWalletService';
-
-export interface IKeyPair {
-  publicKey: Uint8Array;
-  privateKey: Uint8Array;
-}
-
-export interface AddressDetails {
-  bech32: string;
-  keyPair: IKeyPair;
-  hex: string;
-  mnemonic: string;
-}
+import { NativeToken, Network, Timestamp, Transaction } from '@build-5/interfaces';
+import { AliasOutput, BasicOutput, Client, FoundryOutput, INodeInfo, NftOutput } from '@iota/sdk';
+import { Expiration } from './IotaWalletService';
+import { AddressDetails, SendToManyTargets } from './wallet.service';
 
 export interface WalletParams {
   readonly data?: string;
+  readonly storageDepositSourceAddress?: string;
+  readonly nativeTokens?: NativeToken[];
+  readonly storageDepositReturnAddress?: string;
+  readonly vestingAt?: Timestamp | null;
+  readonly expiration?: Expiration;
+  readonly customMetadata?: Record<string, unknown>;
+  readonly tag?: string;
 }
 
-export interface SendToManyTargets {
-  toAddress: NetworkAddress;
-  amount: number;
-  customMetadata?: Record<string, unknown>;
-}
-
-export interface Wallet<T> {
-  getBalance: (addressBech32: string) => Promise<number>;
-  getNewIotaAddressDetails: () => Promise<AddressDetails>;
-  getIotaAddressDetails: (mnemonic: string) => Promise<AddressDetails>;
-  getAddressDetails: (bech32: string) => Promise<AddressDetails>;
-  send: (
-    fromAddress: AddressDetails,
-    toAddress: NetworkAddress,
+export abstract class Wallet {
+  public abstract getBalance: (
+    addressBech32: string,
+  ) => Promise<{ amount: number; nativeTokens: { [id: string]: number } }>;
+  public abstract getNewIotaAddressDetails: (saveMnemonic?: boolean) => Promise<AddressDetails>;
+  public abstract getIotaAddressDetails: (mnemonic: string) => Promise<AddressDetails>;
+  public abstract getAddressDetails: (bech32: string) => Promise<AddressDetails>;
+  public abstract send: (
+    from: AddressDetails,
+    toAddress: string,
     amount: number,
-    params: T,
+    params: WalletParams,
+    outputToConsume?: string | undefined,
   ) => Promise<string>;
-  sendToMany: (from: AddressDetails, targets: SendToManyTargets[], params: T) => Promise<string>;
-}
+  public abstract sendToMany: (
+    from: AddressDetails,
+    targets: SendToManyTargets[],
+    params: WalletParams,
+  ) => Promise<string>;
+  public abstract bechAddressFromOutput: (
+    output: BasicOutput | AliasOutput | FoundryOutput | NftOutput,
+  ) => string;
+  public abstract getOutputs: (
+    addressBech32: string,
+    previouslyConsumedOutputIds?: string[],
+    hasStorageDepositReturn?: boolean,
+    hasTimelock?: boolean,
+  ) => Promise<{
+    [key: string]: BasicOutput;
+  }>;
+  public abstract creditLocked: (credit: Transaction, params: WalletParams) => Promise<string>;
 
-export class WalletService {
-  public static newWallet = async (network = DEFAULT_NETWORK) => {
-    switch (network) {
-      case Network.IOTA:
-      case Network.ATOI: {
-        const { client, info } = await getIotaClient(network);
-        return new IotaWallet(client, info, network);
-      }
-      case Network.SMR:
-      case Network.RMS: {
-        const { client, info } = await getShimmerClient(network);
-        return new SmrWallet(client, info, network);
-      }
-    }
-  };
+  constructor(
+    public readonly client: Client,
+    public readonly info: INodeInfo,
+    public readonly network: Network,
+  ) {}
 }
-
-export const setConsumedOutputIds = (
-  address: NetworkAddress,
-  consumedOutputIds: string[] = [],
-  consumedNftOutputIds: string[] = [],
-  consumedAliasOutputIds: string[] = [],
-) =>
-  build5Db()
-    .doc(`${COL.MNEMONIC}/${address}`)
-    .update({ consumedOutputIds, consumedNftOutputIds, consumedAliasOutputIds });

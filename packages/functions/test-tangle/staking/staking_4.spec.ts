@@ -14,7 +14,6 @@ import {
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-import { addressBalance } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { stakeRewardCronTask } from '../../src/cron/stakeReward.cron';
@@ -87,7 +86,7 @@ describe('Stake reward test test', () => {
     await requestMintedTokenFromFaucet(
       helper.walletService!,
       helper.memberAddress!,
-      helper.TOKEN_ID,
+      helper.MINTED_TOKEN_ID,
       helper.VAULT_MNEMONIC,
       1000,
     );
@@ -103,7 +102,7 @@ describe('Stake reward test test', () => {
     await requestMintedTokenFromFaucet(
       helper.walletService!,
       member2Address,
-      helper.TOKEN_ID,
+      helper.MINTED_TOKEN_ID,
       helper.VAULT_MNEMONIC,
       500,
     );
@@ -143,7 +142,7 @@ describe('Stake reward test test', () => {
     await requestMintedTokenFromFaucet(
       helper.walletService!,
       vaultAddress,
-      helper.TOKEN_ID,
+      helper.MINTED_TOKEN_ID,
       helper.VAULT_MNEMONIC,
       149,
     );
@@ -252,17 +251,14 @@ describe('Stake reward test test', () => {
     await requestMintedTokenFromFaucet(
       helper.walletService!,
       vaultAddress,
-      helper.TOKEN_ID,
+      helper.MINTED_TOKEN_ID,
       helper.VAULT_MNEMONIC,
       149,
     );
 
     await wait(async () => {
-      const balance = await addressBalance(
-        helper.walletService!.client,
-        helper.space!.vaultAddress!,
-      );
-      return !isEmpty(balance.nativeTokens);
+      const { nativeTokens } = await helper.walletService!.getBalance(helper.space!.vaultAddress!);
+      return !isEmpty(nativeTokens);
     });
 
     if (failed) {
@@ -293,7 +289,7 @@ describe('Stake reward test test', () => {
     await requestMintedTokenFromFaucet(
       helper.walletService!,
       vaultAddress,
-      helper.TOKEN_ID,
+      helper.MINTED_TOKEN_ID,
       helper.VAULT_MNEMONIC,
       149,
     );
@@ -350,7 +346,7 @@ describe('Stake reward test test', () => {
     await requestMintedTokenFromFaucet(
       helper.walletService!,
       vaultAddress,
-      helper.TOKEN_ID,
+      helper.MINTED_TOKEN_ID,
       helper.VAULT_MNEMONIC,
       149,
     );
@@ -383,7 +379,7 @@ describe('Stake reward test test', () => {
     let distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.extraStakeRewards).toBe(251);
     snap = await billPaymentQuery.get<Transaction>();
-    expect(snap[0]?.payload.nativeTokens![0]?.amount).toBe('149');
+    expect(snap[0]?.payload.nativeTokens![0]?.amount).toBe(149);
 
     // No reward, 149 reduction
     await stakeRewardCronTask();

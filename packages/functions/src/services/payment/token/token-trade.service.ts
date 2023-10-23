@@ -14,7 +14,7 @@ import {
   getNetworkPair,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { get, head } from 'lodash';
+import { get, head, set } from 'lodash';
 import { getProjects } from '../../../utils/common.utils';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
@@ -72,6 +72,9 @@ export class TokenTradeService extends BaseService {
       sourceNetwork: network,
       targetNetwork: token.status === TokenStatus.BASE ? getNetworkPair(network) : network,
     };
+    if (order.payload.tokenTradeOderTargetAddress) {
+      set(data, 'targetAddress', order.payload.tokenTradeOderTargetAddress);
+    }
 
     const ref = build5Db().doc(`${COL.TOKEN_MARKET}/${data.uid}`);
     this.transactionService.push({ ref, data, action: 'set' });

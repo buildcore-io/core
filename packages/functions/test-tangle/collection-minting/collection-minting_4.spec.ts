@@ -13,7 +13,7 @@ import {
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-import { IndexerPluginClient, INftOutput } from '@iota/iota.js-next';
+import { NftOutput } from '@iota/sdk';
 import { getAddress } from '../../src/utils/address.utils';
 import { EMPTY_NFT_ID } from '../../src/utils/collection-minting-utils/nft.utils';
 import { CollectionMintHelper, getNftMetadata } from './Helper';
@@ -49,12 +49,13 @@ describe('Collection minting', () => {
       await helper.mintCollection();
       if (limited) {
         await helper.lockCollectionConfirmed();
-        const indexer = new IndexerPluginClient(helper.walletService?.client!);
         const collection = <Collection>(
           await build5Db().doc(`${COL.COLLECTION}/${helper.collection}`).get()
         );
-        const outputId = (await indexer.nft(collection.mintingData?.nftId!)).items[0];
-        const output = <INftOutput>(await helper.walletService!.client.output(outputId)).output;
+        const outputId = await helper.walletService!.client.nftOutputId(
+          collection.mintingData?.nftId!,
+        );
+        const output = <NftOutput>(await helper.walletService!.client.getOutput(outputId)).output;
         expect((output.unlockConditions[0] as any).address.pubKeyHash).toBe(EMPTY_NFT_ID);
       }
 

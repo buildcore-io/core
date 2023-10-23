@@ -13,9 +13,6 @@ import {
   TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
-import { IndexerPluginClient } from '@iota/iota.js-next';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { processExpiredAwards } from '../../src/cron/award.cron';
 import {
@@ -27,9 +24,9 @@ import {
 } from '../../src/runtime/firebase/award';
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { mergeOutputs } from '../../src/utils/basic-output.utils';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
@@ -41,7 +38,7 @@ import {
   mockWalletReturnValue,
   wait,
 } from '../../test/controls/common';
-import { MEDIA, testEnv } from '../../test/set-up';
+import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 import { awaitAllTransactionsForAward } from './common';
@@ -55,12 +52,12 @@ describe('Create award, native', () => {
   let space: Space;
   let award: Award;
   let guardianAddress: AddressDetails;
-  let walletService: SmrWallet;
+  let walletService: Wallet;
   let token: Token;
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    walletService = (await WalletService.newWallet(network)) as SmrWallet;
+    walletService = await getWallet(network);
   });
 
   beforeEach(async () => {
@@ -95,7 +92,7 @@ describe('Create award, native', () => {
       15,
     );
     await walletService.send(guardianAddress, order.payload.targetAddress, order.payload.amount, {
-      nativeTokens: [{ id: MINTED_TOKEN_ID, amount: HexHelper.fromBigInt256(bigInt(15)) }],
+      nativeTokens: [{ id: MINTED_TOKEN_ID, amount: BigInt(15) }],
     });
     await MnemonicService.store(guardianAddress.bech32, guardianAddress.mnemonic);
 
@@ -139,9 +136,8 @@ describe('Create award, native', () => {
     const memberDocRef = build5Db().doc(`${COL.MEMBER}/${member}`);
     const memberData = <Member>await memberDocRef.get();
     const memberBech32 = getAddress(memberData, network);
-    const indexer = new IndexerPluginClient(walletService.client);
     await wait(async () => {
-      const response = await indexer.nfts({ addressBech32: memberBech32 });
+      const response = await walletService.client.nftOutputIds([{ address: memberBech32 }]);
       return response.items.length === 1;
     });
 
@@ -192,8 +188,8 @@ describe('Create award, native', () => {
       const snap = await burnAliasQuery.get<Transaction>();
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
-    const balance = await walletService.getBalance(guardianAddress.bech32);
-    expect(balance).toBe(award.nativeTokenStorageDeposit + award.aliasStorageDeposit);
+    const { amount } = await walletService.getBalance(guardianAddress.bech32);
+    expect(amount).toBe(award.nativeTokenStorageDeposit + award.aliasStorageDeposit);
   });
 });
 
@@ -237,7 +233,6 @@ const saveToken = async (space: string, guardian: string) => {
 };
 
 export const VAULT_MNEMONIC =
-  'media income depth opera health hybrid person expect supply kid napkin science maze believe they inspire hockey random escape size below monkey lemon veteran';
-
+  'lift primary tornado antenna confirm smoke oxygen rescue drift tenant mirror small barrel people predict elevator retreat hold various adjust keep decade valve scheme';
 export const MINTED_TOKEN_ID =
-  '0x08f56bb2eefc47c050e67f8ba85d4a08e1de5ac0580fb9e80dc2f62eab97f944350100000000';
+  '0x08c9c7b7e22a43ed9f14fdcc876bd9fb56e10ccac4b3c2299013d71b363db801a40100000000';

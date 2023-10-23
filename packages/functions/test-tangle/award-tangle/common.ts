@@ -2,11 +2,13 @@ import { IQuery, build5Db } from '@build-5/database';
 import {
   COL,
   Network,
+  SOON_PROJECT_ID,
   Token,
   TokenStatus,
   TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
+import { getProjects } from '../../src/utils/common.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { getRandomSymbol, wait } from '../../test/controls/common';
@@ -36,8 +38,10 @@ const allConfirmed = (query: IQuery) =>
     return allConfirmed;
   });
 
-export const saveBaseToken = async (space: string, guardian: string) => {
+export const saveBaseToken = async (space: string, guardian: string, network: Network) => {
   const token = {
+    project: SOON_PROJECT_ID,
+    projects: getProjects([], SOON_PROJECT_ID),
     symbol: getRandomSymbol(),
     approved: true,
     updatedOn: serverTime(),
@@ -50,7 +54,7 @@ export const saveBaseToken = async (space: string, guardian: string) => {
     access: 0,
     icon: MEDIA,
     mintingData: {
-      network: Network.RMS,
+      network,
     },
   };
   await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);

@@ -1,4 +1,10 @@
-import { Timestamp, TokenAllocation, WenError } from '@build-5/interfaces';
+import {
+  MAX_IOTA_AMOUNT,
+  MAX_TOTAL_TOKEN_SUPPLY,
+  Timestamp,
+  TokenAllocation,
+  WenError,
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
@@ -28,3 +34,10 @@ export const getPublicSaleTimeFrames = (
   const coolDownEnd = dayjs(saleStartDate.toDate()).add(saleLength + coolDownLength, 'ms');
   return { saleStartDate, saleLength, coolDownEnd: dateToTimestamp(coolDownEnd, true) };
 };
+
+export const MAX_PRICE = MAX_IOTA_AMOUNT;
+
+export const MIN_AIRDROP = 1;
+
+export const MIN_COUNT = 1;
+export const MAX_COUNT = MAX_TOTAL_TOKEN_SUPPLY;

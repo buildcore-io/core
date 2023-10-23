@@ -1,13 +1,11 @@
 import { build5Db } from '@build-5/database';
 import { Award, COL, Member, Network, Space, Token, TokenStatus } from '@build-5/interfaces';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
 import { joinSpace } from '../../src/runtime/firebase/space';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -18,7 +16,7 @@ import {
   mockWalletReturnValue,
   wait,
 } from '../../test/controls/common';
-import { MEDIA, testEnv } from '../../test/set-up';
+import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 
 const network = Network.RMS;
@@ -30,12 +28,12 @@ describe('Create award, native', () => {
   let space: Space;
   let award: Award;
   let guardianAddress: AddressDetails;
-  let walletService: SmrWallet;
+  let walletService: Wallet;
   let token: Token;
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    walletService = (await WalletService.newWallet(network)) as SmrWallet;
+    walletService = await getWallet(network);
   });
 
   beforeEach(async () => {
@@ -70,7 +68,7 @@ describe('Create award, native', () => {
       15,
     );
     await walletService.send(guardianAddress, order.payload.targetAddress, order.payload.amount, {
-      nativeTokens: [{ id: MINTED_TOKEN_ID, amount: HexHelper.fromBigInt256(bigInt(15)) }],
+      nativeTokens: [{ id: MINTED_TOKEN_ID, amount: BigInt(15) }],
     });
     await MnemonicService.store(guardianAddress.bech32, guardianAddress.mnemonic);
 
@@ -131,7 +129,6 @@ const saveToken = async (space: string, guardian: string) => {
 };
 
 export const VAULT_MNEMONIC =
-  'media income depth opera health hybrid person expect supply kid napkin science maze believe they inspire hockey random escape size below monkey lemon veteran';
-
+  'unfair traffic retire voyage timber guide label amateur armed gadget fatigue retreat quiz belt century entire accuse what inner ticket can general giggle latin';
 export const MINTED_TOKEN_ID =
-  '0x08f56bb2eefc47c050e67f8ba85d4a08e1de5ac0580fb9e80dc2f62eab97f944350100000000';
+  '0x08d6fdcd4e3bea675746239a3b411294d4c40774be59081e6bbc61e3424b6590ff0100000000';

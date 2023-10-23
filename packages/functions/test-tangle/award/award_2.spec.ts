@@ -15,12 +15,7 @@ import {
   TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
-import {
-  IndexerPluginClient,
-  INftOutput,
-  ITimelockUnlockCondition,
-  TIMELOCK_UNLOCK_CONDITION_TYPE,
-} from '@iota/iota.js-next';
+import { NftOutput, TimelockUnlockCondition, UnlockConditionType } from '@iota/sdk';
 import dayjs from 'dayjs';
 import {
   approveAwardParticipant,
@@ -31,8 +26,8 @@ import {
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { mergeOutputs } from '../../src/utils/basic-output.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
@@ -44,7 +39,7 @@ import {
   mockWalletReturnValue,
   wait,
 } from '../../test/controls/common';
-import { MEDIA, testEnv } from '../../test/set-up';
+import { getWallet, MEDIA, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 import { awaitAllTransactionsForAward } from './common';
@@ -58,13 +53,13 @@ describe('Create award, native', () => {
   let space: Space;
   let award: Award;
   let guardianAddress: AddressDetails;
-  let walletService: SmrWallet;
+  let walletService: Wallet;
   let token: Token;
   let now: dayjs.Dayjs;
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    walletService = (await WalletService.newWallet(network)) as SmrWallet;
+    walletService = await getWallet(network);
   });
 
   beforeEach(async () => {
@@ -100,7 +95,7 @@ describe('Create award, native', () => {
       10,
     );
     await walletService.send(guardianAddress, order.payload.targetAddress, order.payload.amount, {
-      nativeTokens: [{ id: MINTED_TOKEN_ID, amount: '0xA' }],
+      nativeTokens: [{ id: MINTED_TOKEN_ID, amount: BigInt('0xA') }],
     });
     await MnemonicService.store(guardianAddress.bech32, guardianAddress.mnemonic);
 
@@ -140,21 +135,20 @@ describe('Create award, native', () => {
     const memberDocRef = build5Db().doc(`${COL.MEMBER}/${member}`);
     const memberData = <Member>await memberDocRef.get();
     const memberBech32 = getAddress(memberData, network);
-    const indexer = new IndexerPluginClient(walletService.client);
     await wait(async () => {
-      const response = await indexer.nfts({ addressBech32: memberBech32 });
+      const response = await walletService.client.nftOutputIds([{ address: memberBech32 }]);
       return response.items.length === 2;
     });
 
-    const response = await indexer.nfts({ addressBech32: memberBech32 });
+    const response = await walletService.client.nftOutputIds([{ address: memberBech32 }]);
     const promises = response.items.map(
-      async (outputId) => (await walletService.client.output(outputId)).output as INftOutput,
+      async (outputId) => (await walletService.client.getOutput(outputId)).output as NftOutput,
     );
     const nttOutputs = await Promise.all(promises);
     for (const nttOutput of nttOutputs) {
       const timelock = nttOutput.unlockConditions.find(
-        (uc) => uc.type === TIMELOCK_UNLOCK_CONDITION_TYPE,
-      ) as ITimelockUnlockCondition;
+        (uc) => uc.type === UnlockConditionType.Timelock,
+      ) as TimelockUnlockCondition;
       expect(dayjs.unix(timelock.unixTime).isAfter(now.add(31557600000))).toBe(true);
     }
 
@@ -206,8 +200,8 @@ describe('Create award, native', () => {
       const snap = await burnAliasQuery.get<Transaction>();
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
-    const balance = await walletService.getBalance(guardianAddress.bech32);
-    expect(balance).toBe(award.nativeTokenStorageDeposit + award.aliasStorageDeposit);
+    const { amount } = await walletService.getBalance(guardianAddress.bech32);
+    expect(amount).toBe(award.nativeTokenStorageDeposit + award.aliasStorageDeposit);
   });
 });
 
@@ -251,7 +245,6 @@ const saveToken = async (space: string, guardian: string) => {
 };
 
 export const VAULT_MNEMONIC =
-  'media income depth opera health hybrid person expect supply kid napkin science maze believe they inspire hockey random escape size below monkey lemon veteran';
-
+  'cruel pass athlete east topple metal glove reward banana lunch sight jelly guess coil labor swim sniff orphan ramp tackle month panel surface real';
 export const MINTED_TOKEN_ID =
-  '0x08f56bb2eefc47c050e67f8ba85d4a08e1de5ac0580fb9e80dc2f62eab97f944350100000000';
+  '0x086d27c57107bd6e4b8e0a5e8827ffb30b4bd6acfc780af7d950e232f1b065f7a00100000000';

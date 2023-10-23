@@ -10,40 +10,35 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { WalletService } from '../../src/services/wallet/wallet';
 import { wait } from '../../test/controls/common';
-import { getTangleOrder } from '../common';
+import { getWallet } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
 describe('Minted nft trading', () => {
   const helper = new Helper();
-  let tangleOrder: Transaction;
-
-  beforeAll(async () => {
-    await helper.beforeAll();
-    tangleOrder = await getTangleOrder();
-  });
-
-  beforeEach(async () => {
-    await helper.beforeEach();
-  });
 
   it('Should purchase pre_minted nft with tangle request', async () => {
+    await helper.beforeEach(Network.RMS);
     const address = await helper.walletService!.getNewIotaAddressDetails();
     await requestFundsFromFaucet(Network.RMS, address.bech32, 5 * MIN_IOTA_AMOUNT);
 
     await helper.createAndOrderNft(false);
 
-    await helper.walletService!.send(address, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
-      customMetadata: {
-        request: {
-          requestType: TangleRequestType.NFT_PURCHASE,
-          collection: helper.collection,
-          nft: helper.nft!.uid,
+    await helper.walletService!.send(
+      address,
+      helper.tangleOrder.payload.targetAddress!,
+      MIN_IOTA_AMOUNT,
+      {
+        customMetadata: {
+          request: {
+            requestType: TangleRequestType.NFT_PURCHASE,
+            collection: helper.collection,
+            nft: helper.nft!.uid,
+          },
         },
       },
-    });
+    );
     await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
 
     const creditQuery = build5Db()
@@ -63,7 +58,7 @@ describe('Minted nft trading', () => {
     expect(collection.nftsOnSale).toBe(0);
     expect(collection.nftsOnAuction).toBe(0);
 
-    const atoiWallet = await WalletService.newWallet(Network.ATOI);
+    const atoiWallet = await getWallet(Network.ATOI);
     const atoiAddress = await atoiWallet.getNewIotaAddressDetails();
     await requestFundsFromFaucet(Network.ATOI, atoiAddress.bech32, 5 * MIN_IOTA_AMOUNT);
 

@@ -307,4 +307,5 @@ export const WenError = {
   },
   you_are_not_admin_of_project: { code: 2139, key: 'You are not an admin of the project.' },
   invalid_project_api_key: { code: 2140, key: 'Invalid project api key.' },
+  invalid_target_address: { code: 2141, key: 'Invalid target address.' },
 };

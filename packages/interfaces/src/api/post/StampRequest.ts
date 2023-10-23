@@ -18,5 +18,5 @@ export interface StampRequest {
   /**
    * Network to use to fund the stamp order.
    */
-  network: 'smr' | 'rms';
+  network: 'iota' | 'smr' | 'atoi' | 'rms';
 }

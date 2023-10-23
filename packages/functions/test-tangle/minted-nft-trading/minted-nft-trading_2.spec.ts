@@ -9,7 +9,7 @@ import {
   TransactionType,
   WenError,
 } from '@build-5/interfaces';
-import { INftOutput, IndexerPluginClient, NFT_OUTPUT_TYPE } from '@iota/iota.js-next';
+import { NftOutput } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { orderNft, withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { getAddress } from '../../src/utils/address.utils';
@@ -23,15 +23,8 @@ import { Helper } from './Helper';
 describe('Minted nft trading', () => {
   const helper = new Helper();
 
-  beforeAll(async () => {
-    await helper.beforeAll();
-  });
-
-  beforeEach(async () => {
-    await helper.beforeEach();
-  });
-
   it.each([false, true])('Should order nft and withdraw it', async (hasExpiration: boolean) => {
+    await helper.beforeEach(Network.RMS);
     const expiresAt = hasExpiration ? dateToTimestamp(dayjs().add(2, 'h').toDate()) : undefined;
 
     await helper.createAndOrderNft();
@@ -76,19 +69,12 @@ describe('Minted nft trading', () => {
       return transaction?.payload?.walletReference?.confirmed;
     });
 
-    const indexer = new IndexerPluginClient(helper.walletService?.client!);
     const output = (
-      await helper.walletService!.client.output(
-        (
-          await indexer.nft(nft.mintingData?.nftId!)
-        ).items[0],
+      await helper.walletService!.client.getOutput(
+        await helper.walletService!.client.nftOutputId(nft.mintingData?.nftId!),
       )
     ).output;
-    const ownerAddress = Bech32AddressHelper.addressFromAddressUnlockCondition(
-      (output as INftOutput).unlockConditions,
-      'rms',
-      NFT_OUTPUT_TYPE,
-    );
+    const ownerAddress = Bech32AddressHelper.bech32FromUnlockConditions(output as NftOutput, 'rms');
     const member = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.member}`).get();
     expect(ownerAddress).toBe(getAddress(member, Network.RMS));
   });

@@ -8,7 +8,7 @@ import {
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-import { INftOutput, IndexerPluginClient } from '@iota/iota.js-next';
+import { NftOutput } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
@@ -63,9 +63,8 @@ describe('Stamp tangle test', () => {
       return stamp?.aliasId !== EMPTY_ALIAS_ID && stamp?.nftId !== undefined;
     });
 
-    const indexer = new IndexerPluginClient(helper.wallet.client);
-    const nftOutputId = (await indexer.nft(stamp?.nftId!)).items[0];
-    const nftOutput = (await helper.wallet.client.output(nftOutputId)).output as INftOutput;
+    const nftOutputId = await helper.wallet.client.nftOutputId(stamp?.nftId!);
+    const nftOutput = (await helper.wallet.client.getOutput(nftOutputId)).output as NftOutput;
     const metadata = getNftMetadata(nftOutput);
     expect(metadata.uri).toBe('ipfs://' + stamp!.ipfsMedia);
     expect(metadata.issuerName).toBe(KEY_NAME_TANGLE);

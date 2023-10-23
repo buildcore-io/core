@@ -3,8 +3,8 @@ import {
   COL,
   CreditTokenRequest,
   DEFAULT_NETWORK,
-  Member,
   MIN_IOTA_AMOUNT,
+  Member,
   SUB_COL,
   Token,
   TokenDistribution,
@@ -14,7 +14,6 @@ import {
   TransactionType,
   WenError,
 } from '@build-5/interfaces';
-import { Context } from '../../runtime/firebase/common';
 import { getAddress } from '../../utils/address.utils';
 import { getProjects } from '../../utils/common.utils';
 import { invalidArgument } from '../../utils/error.utils';
@@ -25,18 +24,19 @@ import {
   tokenOrderTransactionDocId,
 } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 
-export const creditTokenControl = async (
-  { project, owner }: Context,
-  params: CreditTokenRequest,
-): Promise<Transaction> => {
+export const creditTokenControl = async ({
+  project,
+  owner,
+  params,
+}: Context<CreditTokenRequest>): Promise<Transaction> => {
   const tranId = getRandomEthAddress();
   const creditTranDoc = build5Db().doc(`${COL.TRANSACTION}/${tranId}`);
 
   await build5Db().runTransaction(async (transaction) => {
     const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
     const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(owner);
-
     const distribution = await transaction.get<TokenDistribution>(distributionDocRef);
     if (!distribution || (distribution.totalDeposit || 0) < params.amount) {
       throw invalidArgument(WenError.not_enough_funds);

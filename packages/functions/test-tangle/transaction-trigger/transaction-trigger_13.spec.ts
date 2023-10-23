@@ -13,9 +13,7 @@ import {
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { retryWallet } from '../../src/cron/wallet.cron';
-import { IotaWallet } from '../../src/services/wallet/IotaWalletService';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { wait } from '../../test/controls/common';
@@ -128,10 +126,6 @@ const dummyPayment = (
 
 const getOutputs = async (network: Network, address: AddressDetails) => {
   const wallet = await getWallet(network);
-  if (network === Network.RMS) {
-    const outputs = await (wallet as SmrWallet).getOutputs(address.bech32, [], false);
-    return Object.keys(outputs);
-  }
-  const outputs = await (wallet as IotaWallet).getOutputs(address.hex);
+  const outputs = await wallet.getOutputs(address.bech32, [], false);
   return Object.keys(outputs);
 };

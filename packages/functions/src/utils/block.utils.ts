@@ -1,63 +1,46 @@
 import { KEY_NAME_TANGLE } from '@build-5/interfaces';
 import {
-  DEFAULT_PROTOCOL_VERSION,
-  IBlock,
-  ITransactionEssence,
-  ITransactionPayload,
-  IUTXOInput,
-  MAX_BLOCK_LENGTH,
-  OutputTypes,
-  TAGGED_DATA_PAYLOAD_TYPE,
-  TRANSACTION_ESSENCE_TYPE,
-  TRANSACTION_PAYLOAD_TYPE,
-  TransactionHelper,
-  UnlockTypes,
-  serializeBlock,
-} from '@iota/iota.js-next';
-import { Converter, WriteStream } from '@iota/util.js-next';
-import { SmrParams, SmrWallet } from '../services/wallet/SmrWalletService';
+  CoinType,
+  Output,
+  RegularTransactionEssence,
+  TaggedDataPayload,
+  TransactionEssence,
+  TransactionPayload,
+  UTXOInput,
+  Unlock,
+  Utils,
+  utf8ToHex,
+} from '@iota/sdk';
+import { Wallet, WalletParams } from '../services/wallet/wallet';
+import { AddressDetails } from '../services/wallet/wallet.service';
+import { getSecretManager } from './secret.manager.utils';
 
 export const submitBlock = async (
-  wallet: SmrWallet,
-  payload: ITransactionPayload,
-): Promise<string> => {
-  const block: IBlock = {
-    protocolVersion: DEFAULT_PROTOCOL_VERSION,
-    parents: [],
-    payload,
-    nonce: '0',
-  };
-  return await wallet.client.blockSubmit(block);
-};
+  wallet: Wallet,
+  essence: TransactionEssence,
+  unlocks: Unlock[],
+): Promise<string> =>
+  (await wallet.client.postBlockPayload(new TransactionPayload(essence, unlocks)))[0];
 
-export const packEssence = (
-  inputs: IUTXOInput[],
+export const packEssence = async (
+  wallet: Wallet,
+  inputs: UTXOInput[],
   inputsCommitment: string,
-  outputs: OutputTypes[],
-  wallet: SmrWallet,
-  params: SmrParams,
+  outputs: Output[],
+  params: WalletParams,
 ) =>
-  <ITransactionEssence>{
-    type: TRANSACTION_ESSENCE_TYPE,
-    networkId: TransactionHelper.networkIdFromNetworkName(wallet.info.protocol.networkName),
+  new RegularTransactionEssence(
+    await wallet.client.getNetworkId(),
+    inputsCommitment,
     inputs,
     outputs,
-    inputsCommitment,
-    payload: {
-      type: TAGGED_DATA_PAYLOAD_TYPE,
-      tag: Converter.utf8ToHex(KEY_NAME_TANGLE, true),
-      data: Converter.utf8ToHex(params.data || '', true),
-    },
-  };
+    new TaggedDataPayload(utf8ToHex(KEY_NAME_TANGLE), utf8ToHex(params.data || '')),
+  );
 
-export const packPayload = (essence: ITransactionEssence, unlocks: UnlockTypes[]) =>
-  <ITransactionPayload>{ type: TRANSACTION_PAYLOAD_TYPE, essence, unlocks };
-
-export const isValidBlockSize = (block: IBlock) => {
-  const writeStream = new WriteStream();
-  serializeBlock(writeStream, block);
-  const blockBytes = writeStream.finalBytes();
-  return blockBytes.length < MAX_BLOCK_LENGTH - 256;
+export const createUnlock = async (essence: TransactionEssence, address: AddressDetails) => {
+  const essenceHash = Utils.hashTransactionEssence(essence);
+  const secretManager = getSecretManager(address.mnemonic);
+  return await secretManager.signatureUnlock(essenceHash, { coinType: CoinType.IOTA });
 };
 
 export const indexToString = (index: number) => {

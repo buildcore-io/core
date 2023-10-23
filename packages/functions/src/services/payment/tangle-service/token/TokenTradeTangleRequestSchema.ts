@@ -39,6 +39,9 @@ export const tradeMintedTokenSchema = toJoiObject<TradeTokenTangleRequest>({
     .equal(TokenTradeOrderType.SELL, TokenTradeOrderType.BUY)
     .required()
     .description('Direction of the trade.'),
+  targetAddress: CommonJoi.uid(false).description(
+    'Funds will be sent here in case of a successfull trade.',
+  ),
 })
   .description('Tangle request object to trade a token.')
   .meta({

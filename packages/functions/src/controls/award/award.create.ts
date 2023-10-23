@@ -1,12 +1,13 @@
 import { build5Db } from '@build-5/database';
 import { Award, AwardCreateRequest, COL, SUB_COL } from '@build-5/interfaces';
-import { Context } from '../../runtime/firebase/common';
 import { createAward } from '../../services/payment/tangle-service/award/award.create.service';
+import { Context } from '../common';
 
-export const createAwardControl = async (
-  { project, owner }: Context,
-  params: AwardCreateRequest,
-) => {
+export const createAwardControl = async ({
+  owner,
+  params,
+  project,
+}: Context<AwardCreateRequest>) => {
   const { owner: awardOwner, award } = await createAward(project, owner, params);
 
   const batch = build5Db().batch();

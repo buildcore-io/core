@@ -110,7 +110,7 @@ function job(outputFile, chunk, files, commandName) {
   files.forEach((file, index) => {
     fs.appendFileSync(
       outputFile,
-      `                npm run ${commandName}:ci -- --findRelatedTests ${file} ${
+      `                npm run ${commandName}:ci -- --forceExit --findRelatedTests ${file} ${
         index < files.length - 1 ? '&&' : ''
       }\n`,
     );

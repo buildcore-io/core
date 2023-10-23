@@ -10,8 +10,7 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import axios from 'axios';
-import crypto, { randomUUID } from 'crypto';
-import * as functions from 'firebase-functions/v2';
+import { createHash, randomUUID } from 'crypto';
 import fs from 'fs';
 import mime from 'mime-types';
 import os from 'os';
@@ -41,7 +40,7 @@ export const migrateUriToSotrage = async (
       bucket.getName() === Bucket.DEV ? response : `https://${bucket.getName()}/${destination}`;
     return build5Url;
   } catch (error: any) {
-    functions.logger.error(col, uid, error);
+    console.error(col, uid, error);
     throw error.code && error.key ? error : WenError.ipfs_retrieve;
   } finally {
     fs.rmSync(workdir, { recursive: true, force: true });
@@ -133,8 +132,7 @@ export const downloadFile = async (url: string, workDir: string, fileName: strin
       resolve({
         extension,
         size,
-        hash: crypto
-          .createHash('sha1')
+        hash: createHash('sha1')
           .update('' + chunks.join())
           .digest('hex'),
       });

@@ -13,19 +13,20 @@ import {
   SUB_COL,
   WenError,
 } from '@build-5/interfaces';
-import { Context } from '../../runtime/firebase/common';
 import { hasStakedTokens } from '../../services/stake.service';
 import { assertSpaceHasValidAddress } from '../../utils/address.utils';
 import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 import { populateTokenUidOnDiscounts } from './common';
 
-export const createCollectionControl = async (
-  { project, owner }: Context,
-  params: CreateCollectionRequest,
-) => {
+export const createCollectionControl = async ({
+  owner,
+  params,
+  project,
+}: Context<CreateCollectionRequest>) => {
   const hasStakedSoons = await hasStakedTokens(project, owner);
   if (!hasStakedSoons) {
     throw invalidArgument(WenError.no_staked_soon);

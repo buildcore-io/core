@@ -9,8 +9,6 @@ import {
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
 import { cancelTradeOrder, tradeToken } from '../../src/runtime/firebase/token/trading';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -42,9 +40,7 @@ describe('Token minting', () => {
       sellOrder.payload.targetAddress!,
       12 * MIN_IOTA_AMOUNT,
       {
-        nativeTokens: [
-          { amount: HexHelper.fromBigInt256(bigInt(1)), id: helper.token!.mintingData?.tokenId! },
-        ],
+        nativeTokens: [{ amount: BigInt(1), id: helper.token!.mintingData?.tokenId! }],
       },
     );
     await wait(async () => {
@@ -99,9 +95,7 @@ describe('Token minting', () => {
       sellOrder.payload.targetAddress!,
       12 * MIN_IOTA_AMOUNT,
       {
-        nativeTokens: [
-          { amount: HexHelper.fromBigInt256(bigInt(1)), id: helper.token!.mintingData?.tokenId! },
-        ],
+        nativeTokens: [{ amount: BigInt(1), id: helper.token!.mintingData?.tokenId! }],
       },
     );
     await wait(async () => {

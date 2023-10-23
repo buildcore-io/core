@@ -38,11 +38,10 @@ describe('Staking test', () => {
     await requestMintedTokenFromFaucet(
       helper.walletService!,
       helper.memberAddress!,
-      helper.TOKEN_ID,
+      helper.MINTED_TOKEN_ID,
       helper.VAULT_MNEMONIC,
       7500 * MIN_IOTA_AMOUNT,
     );
-
     const stake1 = await helper.stakeAmount(
       500 * MIN_IOTA_AMOUNT,
       52,

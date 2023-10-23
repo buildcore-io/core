@@ -1,7 +1,7 @@
-import { COL, Member } from '@build-5/interfaces';
-import { Context } from '../../runtime/firebase/common';
-import { getRandomNonce } from '../../utils/wallet.utils';
 import { build5Db } from '@build-5/database';
+import { COL, Member } from '@build-5/interfaces';
+import { getRandomNonce } from '../../utils/wallet.utils';
+import { Context } from '../common';
 
 export const createMemberControl = async ({ owner }: Context) => {
   const memberDocRef = build5Db().collection(COL.MEMBER).doc(owner);

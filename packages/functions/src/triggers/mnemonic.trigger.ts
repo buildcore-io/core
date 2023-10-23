@@ -1,15 +1,7 @@
 import { build5Db } from '@build-5/database';
-import {
-  COL,
-  MAX_WALLET_RETRY,
-  Mnemonic,
-  NetworkAddress,
-  Transaction,
-  WEN_FUNC_TRIGGER,
-} from '@build-5/interfaces';
-import * as functions from 'firebase-functions/v2';
+import { COL, MAX_WALLET_RETRY, Mnemonic, NetworkAddress, Transaction } from '@build-5/interfaces';
 import { chunk, isEmpty } from 'lodash';
-import { scale } from '../scale.settings';
+import { FirestoreDocEvent } from './common';
 import {
   CREDIT_EXECUTABLE_TRANSACTIONS,
   DEFAULT_EXECUTABLE_TRANSACTIONS,
@@ -21,29 +13,21 @@ enum FieldNameType {
   ALIAS_GOV_ADDRESS = 'payload.aliasGovAddress',
 }
 
-export const mnemonicWrite = functions.firestore.onDocumentUpdated(
-  {
-    document: COL.MNEMONIC + '/{address}',
-    minInstances: scale(WEN_FUNC_TRIGGER.mnemonicWrite),
-    concurrency: 500,
-  },
-  async (event) => {
-    const prev = <Mnemonic | undefined>event.data?.before?.data();
-    const curr = <Mnemonic | undefined>event.data?.after?.data();
-    if (!prev || !curr || isEmpty(prev?.lockedBy) || !isEmpty(curr?.lockedBy)) {
-      return;
-    }
+export const onMnemonicUpdated = async (event: FirestoreDocEvent<Mnemonic>) => {
+  const { prev, curr } = event;
+  if (!prev || !curr || isEmpty(prev?.lockedBy) || !isEmpty(curr?.lockedBy)) {
+    return;
+  }
 
-    const address = event.params.address as string;
-    const tranId = await getUncofirmedTransactionsId(address);
+  const address = event.docId;
+  const tranId = await getUncofirmedTransactionsId(address);
 
-    if (!isEmpty(tranId)) {
-      await build5Db()
-        .doc(`${COL.TRANSACTION}/${tranId}`)
-        .update({ shouldRetry: true, 'payload.walletReference.inProgress': false });
-    }
-  },
-);
+  if (!isEmpty(tranId)) {
+    await build5Db()
+      .doc(`${COL.TRANSACTION}/${tranId}`)
+      .update({ shouldRetry: true, 'payload.walletReference.inProgress': false });
+  }
+};
 
 const TYPE_CHUNKS = chunk(DEFAULT_EXECUTABLE_TRANSACTIONS, 10).concat([
   CREDIT_EXECUTABLE_TRANSACTIONS,

@@ -1,6 +1,7 @@
 import { build5Db } from '@build-5/database';
 import {
   COL,
+  CreateAirdropsRequest,
   StakeType,
   SUB_COL,
   Token,
@@ -10,13 +11,12 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import { chunk } from 'lodash';
-import { Context } from '../../runtime/firebase/common';
-import { CreateAirdropsRequest } from '../../runtime/firebase/token/base/TokenAirdropRequestSchema';
 import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 
 export interface TokenDropRequest {
   readonly vestingAt: Date;
@@ -31,10 +31,11 @@ const hasAvailableTokenToAirdrop = (token: Token, count: number) => {
   return token.totalSupply - totalPublicSupply - token.totalAirdropped >= count;
 };
 
-export const airdropTokenControl = async (
-  { project, owner }: Context,
-  params: CreateAirdropsRequest,
-) => {
+export const airdropTokenControl = async ({
+  owner,
+  params,
+  project,
+}: Context<CreateAirdropsRequest>) => {
   const chunks = chunk(params.drops, 200);
   for (const chunk of chunks) {
     await build5Db().runTransaction(async (transaction) => {

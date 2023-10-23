@@ -2,36 +2,27 @@ import { build5Db } from '@build-5/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
+  Network,
   Nft,
   TangleRequestType,
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-import { INftOutput, IndexerPluginClient } from '@iota/iota.js-next';
+import { NftOutput } from '@iota/sdk';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { getOutputMetadata } from '../../src/utils/basic-output.utils';
 import { wait } from '../../test/controls/common';
-import { getTangleOrder } from '../common';
 import { Helper } from './Helper';
 
 describe('Metadata nft', () => {
   const helper = new Helper();
-  let tangleOrder: Transaction;
-
-  beforeAll(async () => {
-    await helper.berforeAll();
-    tangleOrder = await getTangleOrder();
-  });
-
-  beforeEach(async () => {
-    await helper.beforeEach();
-  });
 
   it('Should mint metada nft then update metadata', async () => {
+    await helper.beforeEach(Network.RMS);
     const metadata = { mytest: 'mytest', asd: 'asdasdasd' };
     await helper.walletService.send(
       helper.memberAddress,
-      tangleOrder.payload.targetAddress!,
+      helper.tangleOrder.payload.targetAddress!,
       MIN_IOTA_AMOUNT,
       {
         customMetadata: {
@@ -71,7 +62,7 @@ describe('Metadata nft', () => {
 
     await helper.walletService.send(
       helper.memberAddress,
-      tangleOrder.payload.targetAddress!,
+      helper.tangleOrder.payload.targetAddress!,
       MIN_IOTA_AMOUNT,
       {
         customMetadata: {
@@ -97,16 +88,14 @@ describe('Metadata nft', () => {
       );
     });
 
-    const indexer = new IndexerPluginClient(helper.walletService.client);
-
-    let nftOutputId = (await indexer.nft(nft.mintingData?.nftId!)).items[0];
-    let nftOutput = (await helper.walletService.client.output(nftOutputId)).output as INftOutput;
+    let nftOutputId = await helper.walletService.client.nftOutputId(nft.mintingData?.nftId!);
+    let nftOutput = (await helper.walletService.client.getOutput(nftOutputId)).output as NftOutput;
     let meta = getOutputMetadata(nftOutput);
     expect(meta).toEqual({ asd: 'hello' });
 
     await helper.walletService.send(
       helper.memberAddress,
-      tangleOrder.payload.targetAddress!,
+      helper.tangleOrder.payload.targetAddress!,
       MIN_IOTA_AMOUNT,
       {
         customMetadata: {
@@ -132,8 +121,8 @@ describe('Metadata nft', () => {
       );
     });
 
-    nftOutputId = (await indexer.nft(nft.mintingData?.nftId!)).items[0];
-    nftOutput = (await helper.walletService.client.output(nftOutputId)).output as INftOutput;
+    nftOutputId = await helper.walletService.client.nftOutputId(nft.mintingData?.nftId!);
+    nftOutput = (await helper.walletService.client.getOutput(nftOutputId)).output as NftOutput;
     meta = getOutputMetadata(nftOutput);
     expect(meta).toEqual({ asd: 'helloasdasd2' });
   });

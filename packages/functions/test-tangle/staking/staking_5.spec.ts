@@ -9,8 +9,6 @@ import {
   TokenDistribution,
   Transaction,
 } from '@build-5/interfaces';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
@@ -22,7 +20,7 @@ describe('Stake reward test test', () => {
 
   beforeAll(async () => {
     await helper.beforeAll();
-    tangleOrder = await getTangleOrder();
+    tangleOrder = await getTangleOrder(Network.RMS);
   });
 
   beforeEach(async () => {
@@ -37,15 +35,13 @@ describe('Stake reward test test', () => {
       await requestMintedTokenFromFaucet(
         helper.walletService!,
         tmp,
-        helper.TOKEN_ID,
+        helper.MINTED_TOKEN_ID,
         helper.VAULT_MNEMONIC,
         100,
       );
 
       await helper.walletService!.send(tmp, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
-        nativeTokens: [
-          { id: helper.token?.mintingData?.tokenId!, amount: HexHelper.fromBigInt256(bigInt(100)) },
-        ],
+        nativeTokens: [{ id: helper.token?.mintingData?.tokenId!, amount: BigInt(100) }],
         customMetadata: {
           request: {
             requestType: TangleRequestType.STAKE,

@@ -11,7 +11,7 @@ import {
   TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
-import { ITransactionPayload, TransactionHelper } from '@iota/iota.js-next';
+import { TransactionPayload, Utils } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { get } from 'lodash';
 import {
@@ -20,12 +20,10 @@ import {
   createMintMetadataCollectionOrder,
   createMintMetadataNftOrder,
 } from '../../services/payment/metadataNft-service';
-import { WalletService } from '../../services/wallet/wallet';
+import { WalletService } from '../../services/wallet/wallet.service';
 import { getAddress } from '../../utils/address.utils';
-import { indexToString } from '../../utils/block.utils';
 import { getProject, getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
-import { getTransactionPayloadHex } from '../../utils/smr.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const onMetadataNftMintUpdate = async (transaction: Transaction) => {
@@ -52,10 +50,11 @@ export const onMetadataNftMintUpdate = async (transaction: Transaction) => {
 const onAliasMinted = async (transaction: Transaction) => {
   const path = transaction.payload.walletReference?.milestoneTransactionPath!;
   const milestoneTransaction = (await build5Db().doc(path).get<Record<string, unknown>>())!;
-  const aliasOutputId =
-    getTransactionPayloadHex(milestoneTransaction.payload as ITransactionPayload) +
-    indexToString(0);
-  const aliasId = TransactionHelper.resolveIdFromOutputId(aliasOutputId);
+  const aliasOutputId = Utils.computeOutputId(
+    Utils.transactionId(milestoneTransaction.payload as TransactionPayload),
+    0,
+  );
+  const aliasId = Utils.computeAliasId(aliasOutputId);
 
   const batch = build5Db().batch();
 
@@ -92,10 +91,11 @@ const onAliasMinted = async (transaction: Transaction) => {
 const onCollectionMinted = async (transaction: Transaction) => {
   const path = transaction.payload.walletReference?.milestoneTransactionPath!;
   const milestoneTransaction = (await build5Db().doc(path).get<Record<string, unknown>>())!;
-  const collectionOutputId =
-    getTransactionPayloadHex(milestoneTransaction.payload as ITransactionPayload) +
-    indexToString(1);
-  const collectionId = TransactionHelper.resolveIdFromOutputId(collectionOutputId);
+  const collectionOutputId = Utils.computeOutputId(
+    Utils.transactionId(milestoneTransaction.payload as TransactionPayload),
+    1,
+  );
+  const collectionId = Utils.computeNftId(collectionOutputId);
 
   const batch = build5Db().batch();
 
@@ -145,10 +145,11 @@ const onCollectionMinted = async (transaction: Transaction) => {
 const onNftMinted = async (transaction: Transaction) => {
   const path = transaction.payload.walletReference?.milestoneTransactionPath!;
   const milestoneTransaction = (await build5Db().doc(path).get<Record<string, unknown>>())!;
-  const nftOutputId =
-    getTransactionPayloadHex(milestoneTransaction.payload as ITransactionPayload) +
-    indexToString(2);
-  const nftId = TransactionHelper.resolveIdFromOutputId(nftOutputId);
+  const nftOutputId = Utils.computeOutputId(
+    Utils.transactionId(milestoneTransaction.payload as TransactionPayload),
+    2,
+  );
+  const nftId = Utils.computeNftId(nftOutputId);
 
   const batch = build5Db().batch();
 
@@ -220,7 +221,7 @@ const onNftUpdated = async (transaction: Transaction) => {
   });
 
   const wallet = await WalletService.newWallet(transaction.network!);
-  const balance = await wallet.getBalance(order.payload.targetAddress);
+  const { amount: balance } = await wallet.getBalance(order.payload.targetAddress!);
 
   const member = await build5Db().doc(`${COL.MEMBER}/${transaction.member}`).get<Member>();
   const collection = await build5Db().doc(`${COL.COLLECTION}/${nft?.collection}`).get<Collection>();
@@ -236,7 +237,7 @@ const onNftUpdated = async (transaction: Transaction) => {
     network: order.network,
     payload: {
       type: TransactionPayloadType.MINT_METADATA_NFT,
-      amount: balance,
+      amount: Number(balance),
       sourceAddress: order.payload.targetAddress,
       targetAddress: getAddress(member, order.network || DEFAULT_NETWORK),
       reconciled: true,

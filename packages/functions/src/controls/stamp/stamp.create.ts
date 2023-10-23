@@ -1,9 +1,9 @@
 import { build5Db } from '@build-5/database';
 import { COL, Network, SUB_COL, StampRequest } from '@build-5/interfaces';
-import { Context } from '../../runtime/firebase/common';
 import { createStampAndStampOrder } from '../../services/payment/tangle-service/stamp/StampTangleService';
+import { Context } from '../common';
 
-export const stampCreateControl = async ({ project, owner }: Context, params: StampRequest) => {
+export const stampCreateControl = async ({ project, owner, params }: Context<StampRequest>) => {
   const { order, stamp, space } = await createStampAndStampOrder(
     project,
     owner,

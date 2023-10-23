@@ -20,14 +20,12 @@
   },
   "dependencies": {
     "@build-5/interfaces": "*",
-    "eventsource": "^2.0.2",
     "lodash": "4.17.21",
     "rxjs": "7.8.1",
     "ws": "^8.13.0"
   },
   "devDependencies": {
     "@babel/preset-typescript": "7.22.5",
-    "@types/eventsource": "^1.1.11",
     "@types/jest": "29.5.2",
     "@types/lodash": "4.14.195",
     "@types/ws": "^8.5.5",

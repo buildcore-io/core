@@ -1,16 +1,16 @@
-import { ITransaction, build5Db } from '@build-5/database';
+import { build5Db, ITransaction } from '@build-5/database';
 import {
   COL,
   Project,
   ProjectBilling,
-  SUB_COL,
   Space,
   Stake,
   StakeType,
+  SUB_COL,
   TokenDistribution,
 } from '@build-5/interfaces';
-import { getProject } from '../utils/common.utils';
 import { getTokenSaleConfig } from '../utils/config.utils';
+import { getProject } from '../utils/common.utils';
 
 export const hasStakedTokens = async (projectId: string, member: string, type?: StakeType) => {
   const project = (await build5Db().get<Project>(COL.PROJECT, projectId))!;

@@ -1,9 +1,4 @@
 import { WEN_FUNC } from '@build-5/interfaces';
-import { creditUnrefundableControl } from '../../../controls/credit/credit.controller';
-import { creditUnrefundableSchema } from './CreditUnrefundableRequestSchema';
-import { onRequest } from '../common';
+import { https } from '../../..';
 
-export const creditUnrefundable = onRequest(WEN_FUNC.creditUnrefundable)(
-  creditUnrefundableSchema,
-  creditUnrefundableControl,
-);
+export const creditUnrefundable = https[WEN_FUNC.creditUnrefundable];

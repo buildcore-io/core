@@ -17,11 +17,10 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions/v2';
 import { isEmpty, last } from 'lodash';
-import { getProject, getProjects } from '../utils/common.utils';
 import { serverTime } from '../utils/dateTime.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
+import { getProject, getProjects } from '../utils/common.utils';
 export const stakeRewardCronTask = async () => {
   const stakeRewards = await getDueStakeRewards();
 
@@ -32,7 +31,7 @@ export const stakeRewardCronTask = async () => {
       const { totalAirdropped, totalStaked } = await executeStakeRewardDistribution(stakeReward);
       await stakeRewardDocRef.update({ totalStaked, totalAirdropped });
     } catch (error) {
-      functions.logger.error('Stake reward error', stakeReward.uid, error);
+      console.error('Stake reward error', stakeReward.uid, error);
       await stakeRewardDocRef.update({ status: StakeRewardStatus.ERROR });
     }
   }
@@ -142,7 +141,7 @@ const createAirdrops = async (
           nativeTokens: [
             {
               id: token.mintingData!.tokenId!,
-              amount: Math.min(distribution.extraStakeRewards, reward.value).toString(),
+              amount: BigInt(Math.min(distribution.extraStakeRewards, reward.value)),
             },
           ],
           ownerEntity: Entity.MEMBER,

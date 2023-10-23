@@ -10,7 +10,7 @@ export interface TokenMintRequest {
   /**
    * Network to use to mint the token.
    */
-  network: 'smr' | 'rms';
+  network: 'iota' | 'smr' | 'atoi' | 'rms';
   /**
    * Build5 id of the token to mint.
    */

@@ -5,6 +5,7 @@ import {
   Member,
   MIN_IOTA_AMOUNT,
   Network,
+  SOON_PROJECT_ID,
   Space,
   Timestamp,
   Token,
@@ -12,13 +13,13 @@ import {
   TokenTradeOrderType,
   Transaction,
 } from '@build-5/interfaces';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
+
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
+import { getProjects } from '../../src/utils/common.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import {
@@ -42,11 +43,11 @@ export class Helper {
   public buyerAddress: AddressDetails | undefined;
 
   public guardian: string | undefined;
-  public walletService: SmrWallet | undefined;
+  public walletService: Wallet | undefined;
   public walletSpy: any;
 
   public berforeAll = async () => {
-    this.walletService = (await getWallet(this.network)) as SmrWallet;
+    this.walletService = await getWallet(this.network);
     await createRoyaltySpaces();
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
   };
@@ -89,9 +90,7 @@ export class Helper {
     });
     const sellOrder: Transaction = await testEnv.wrap(tradeToken)({});
     await this.walletService!.send(this.sellerAddress!, sellOrder.payload.targetAddress!, 0, {
-      nativeTokens: [
-        { amount: HexHelper.fromBigInt256(bigInt(count)), id: this.token!.mintingData?.tokenId! },
-      ],
+      nativeTokens: [{ amount: BigInt(count), id: this.token!.mintingData?.tokenId! }],
       expiration: expiresAt
         ? {
             expiresAt,
@@ -142,12 +141,14 @@ export class Helper {
 export const saveToken = async (
   space: string,
   guardian: string,
-  walletService: SmrWallet,
+  walletService: Wallet,
   tokenId = MINTED_TOKEN_ID,
 ) => {
   const vaultAddress = await walletService.getIotaAddressDetails(VAULT_MNEMONIC);
   await MnemonicService.store(vaultAddress.bech32, vaultAddress.mnemonic);
   const token = {
+    project: SOON_PROJECT_ID,
+    projects: getProjects([], SOON_PROJECT_ID),
     symbol: getRandomSymbol(),
     approved: true,
     updatedOn: serverTime(),
@@ -173,7 +174,6 @@ export const dummyTokenId =
   '0x080c409a8c0ffa795676e55f24e0223e5b48dbe2b1bc4314140333543b5e7e8d360100000000';
 
 export const VAULT_MNEMONIC =
-  'offer kingdom rate never hurt follow wrestle cloud alien admit bird usage avoid cloth soldier evidence crawl harsh electric wheat ten mushroom glare reject';
-
+  'dad core rival blush concert cool aunt drum pupil youth original example issue around absent amused alley parrot blade intact visa noise slam slab';
 export const MINTED_TOKEN_ID =
-  '0x085f6308dd034c70ea90b4e2600c4f8fb65d0b53504a0d96e37ce8641a8835d2110100000000';
+  '0x0808ee67386034f8c76b331745655a3eff500cb7ee0875f89213b2c826a20ddc570100000000';

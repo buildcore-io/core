@@ -11,7 +11,7 @@ import {
   TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
-import { IFoundryOutput, IndexerPluginClient, addressBalance } from '@iota/iota.js-next';
+import { FoundryOutput } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { isEqual } from 'lodash';
 import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
@@ -70,19 +70,17 @@ describe('Token minting', () => {
     expect(helper.token.tradingDisabled).toBe(!hasExpiration);
 
     await wait(async () => {
-      const balance = await addressBalance(
-        helper.walletService.client,
+      const { nativeTokens } = await helper.walletService!.getBalance(
         helper.token.mintingData?.vaultAddress!,
       );
-      return Number(Object.values(balance.nativeTokens)[0]) === 1000;
+      return Number(Object.values(nativeTokens)[0]) === 1000;
     });
     const guardianData = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.guardian.uid}`).get();
     await wait(async () => {
-      const balance = await addressBalance(
-        helper.walletService.client,
+      const { nativeTokens } = await helper.walletService.getBalance(
         getAddress(guardianData, helper.network),
       );
-      return Number(Object.values(balance.nativeTokens)[0]) === 500;
+      return Number(Object.values(nativeTokens)[0]) === 500;
     });
 
     await wait(async () => {
@@ -118,17 +116,18 @@ describe('Token minting', () => {
     );
     expect(aliasTransferTran?.payload?.amount).toBe(helper.token.mintingData?.aliasStorageDeposit);
 
-    const indexer = new IndexerPluginClient(helper.walletService.client);
-    const foundryOutputId = (await indexer.foundry(helper.token.mintingData?.tokenId!)).items[0];
-    const foundryOutput = (await helper.walletService.client.output(foundryOutputId)).output;
-    const metadata = getFoundryMetadata(foundryOutput as IFoundryOutput);
+    const foundryOutputId = await helper.walletService.client.foundryOutputId(
+      helper.token.mintingData?.tokenId!,
+    );
+    const foundryOutput = (await helper.walletService.client.getOutput(foundryOutputId)).output;
+    const metadata = getFoundryMetadata(foundryOutput as FoundryOutput);
     expect(metadata.standard).toBe('IRC30');
     expect(metadata.type).toBe('image/png');
     expect(metadata.name).toBe(helper.token.name);
     expect(metadata.logoUrl).toBeDefined();
     expect(metadata.issuerName).toBe(KEY_NAME_TANGLE);
     expect(metadata.build5Id).toBe(helper.token.uid);
-    expect(metadata.symbol).toBe(helper.token.symbol.toLowerCase());
+    expect(metadata.symbol).toBe(helper.token.symbol.toUpperCase());
     expect(metadata.decimals).toBe(5);
   });
 });

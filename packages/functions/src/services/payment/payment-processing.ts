@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { ITransaction, build5Db } from '@build-5/database';
 import {
   COL,
   MilestoneTransaction,
@@ -40,44 +40,43 @@ import { TransactionService } from './transaction-service';
 import { VotingService } from './voting-service';
 
 export class ProcessingService {
+  private tranService: TransactionService;
+
+  constructor(private readonly transaction: ITransaction) {
+    this.tranService = new TransactionService(this.transaction);
+  }
+
   public markAsVoid = (nftService: NftPurchaseService, transaction: Transaction) =>
     nftService.markAsVoid(transaction);
+
+  public submit = () => this.tranService.submit();
 
   public processMilestoneTransactions = async (tran: MilestoneTransaction): Promise<void> => {
     const build5Transaction = await this.getBuild5Transaction(tran);
 
     for (const tranOutput of tran.outputs) {
-      const isSourceAddress = tran.inputs.find((i) => i.address === tranOutput.address);
-      if (build5Transaction?.type !== TransactionType.UNLOCK && isSourceAddress) {
+      if (
+        build5Transaction?.type !== TransactionType.UNLOCK &&
+        tran.fromAddresses.includes(tranOutput.address)
+      ) {
         continue;
       }
 
       const order = await this.findOrderForAddress(tranOutput.address);
       if (order) {
-        await build5Db().runTransaction(async (transaction) => {
-          const tranService = new TransactionService(transaction);
-          await this.processOrderTransaction(
-            tranService,
-            tran,
-            tranOutput,
-            order.uid,
-            build5Transaction,
-          );
-          tranService.submit();
-        });
+        await this.processOrderTransaction(tran, tranOutput, order.uid, build5Transaction);
       }
     }
   };
 
   private async processOrderTransaction(
-    tranService: TransactionService,
     tran: MilestoneTransaction,
     tranEntry: MilestoneTransactionEntry,
     orderId: string,
     build5Tran: Transaction | undefined,
   ): Promise<void> {
     const orderRef = build5Db().doc(`${COL.TRANSACTION}/${orderId}`);
-    const order = await tranService.transaction.get<Transaction>(orderRef);
+    const order = await this.tranService.transaction.get<Transaction>(orderRef);
 
     if (!order) {
       return;
@@ -86,19 +85,19 @@ export class ProcessingService {
     const expireDate = dayjs(order.payload.expiresOn?.toDate());
     let expired = false;
     if (expireDate.isBefore(dayjs(), 'ms')) {
-      const nftService = new NftPurchaseService(tranService);
+      const nftService = new NftPurchaseService(this.tranService);
       await this.markAsVoid(nftService, order);
       expired = true;
     }
 
-    const match = await tranService.isMatch(tran, tranEntry, order, build5Tran);
+    const match = await this.tranService.isMatch(tran, tranEntry, order, build5Tran);
     if (!expired && !order.payload.reconciled && !order.payload.void && match) {
-      const expirationUnlock = tranService.getExpirationUnlock(tranEntry.unlockConditions);
+      const expirationUnlock = this.tranService.getExpirationUnlock(tranEntry.unlockConditions);
       if (expirationUnlock !== undefined) {
         const type = tranEntry.nftOutput
           ? TransactionPayloadType.UNLOCK_NFT
           : TransactionPayloadType.UNLOCK_FUNDS;
-        await tranService.createUnlockTransaction(
+        await this.tranService.createUnlockTransaction(
           order,
           tran,
           tranEntry,
@@ -120,19 +119,19 @@ export class ProcessingService {
         build5Tran,
         request: {},
       };
-      const service = this.getService(tranService, order.payload.type!);
+      const service = this.getService(this.tranService, order.payload.type!);
       await service.handleRequest(serviceParams);
     } else {
-      await tranService.processAsInvalid(tran, order, tranEntry, build5Tran);
+      await this.tranService.processAsInvalid(tran, order, tranEntry, build5Tran);
     }
 
     // Add linked transaction.
-    tranService.push({
+    this.tranService.push({
       ref: orderRef,
       data: {
         linkedTransactions: [
           ...(order.linkedTransactions || []),
-          ...tranService.linkedTransactions,
+          ...this.tranService.linkedTransactions,
         ],
       },
       action: 'update',

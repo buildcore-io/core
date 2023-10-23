@@ -5,19 +5,6 @@
     "indexes": "firestore.indexes.json"
   },
   "functions": {
-    "predeploy": [
-      "npm run build:functions",
-      "rm -rf packages/functions/interfaces",
-      "rm -rf packages/functions/database",
-      "cp -r packages/interfaces packages/functions/interfaces",
-      "cp -r packages/database packages/functions/database",
-      "node pre.functions.deploy.js"
-    ],
-    "postdeploy": [
-      "node post.functions.deploy.js",
-      "rm -rf packages/functions/interfaces",
-      "rm -rf packages/functions/database"
-    ],
     "source": "packages/functions"
   },
   "emulators": {

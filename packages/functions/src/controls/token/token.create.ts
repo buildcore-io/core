@@ -9,7 +9,6 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import { merge } from 'lodash';
-import { Context } from '../../runtime/firebase/common';
 import { hasStakedTokens } from '../../services/stake.service';
 import { assertSpaceHasValidAddress } from '../../utils/address.utils';
 import { getProjects } from '../../utils/common.utils';
@@ -18,12 +17,14 @@ import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { Context } from '../common';
 import { getPublicSaleTimeFrames, shouldSetPublicSaleTimeFrames } from './common';
 
-export const createTokenControl = async (
-  { project, owner }: Context,
-  params: TokenCreateRequest,
-) => {
+export const createTokenControl = async ({
+  project,
+  owner,
+  params,
+}: Context<TokenCreateRequest>) => {
   const hasStakedSoons = await hasStakedTokens(project, owner);
   if (!hasStakedSoons) {
     throw invalidArgument(WenError.no_staked_soon);

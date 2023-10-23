@@ -58,6 +58,7 @@ describe('Stamp tangle test', () => {
 
     const snap = await build5Db()
       .collection(COL.TRANSACTION)
+      .where('member', '==', helper.address.bech32)
       .where('type', '==', TransactionType.STAMP)
       .get();
     expect(snap.length).toBe(2);
@@ -74,6 +75,7 @@ describe('Stamp tangle test', () => {
     await wait(async () => {
       const creditSnap = await build5Db()
         .collection(COL.TRANSACTION)
+        .where('member', '==', helper.address.bech32)
         .where('type', '==', TransactionType.CREDIT)
         .where('payload.type', '==', TransactionPayloadType.INVALID_PAYMENT)
         .get();

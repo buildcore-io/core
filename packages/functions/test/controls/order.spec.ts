@@ -32,11 +32,9 @@ import {
   createMember,
   createSpace,
   expectThrow,
-  milestoneProcessed,
   mockIpCheck,
   mockWalletReturnValue,
   submitMilestoneFunc,
-  submitMilestoneOutputsFunc,
   wait,
 } from './common';
 
@@ -167,11 +165,7 @@ describe('Ordering flows', () => {
         saleAccess: nft.saleAccess || null,
         saleAccessMembers: nft.saleAccessMembers || [],
       });
-      const milestone = await submitMilestoneFunc(
-        order.payload.targetAddress,
-        order.payload.amount,
-      );
-      await milestoneProcessed(milestone.milestone, milestone.tranId);
+      await submitMilestoneFunc(order);
 
       const nftDocRef = db.collection(COL.NFT).doc(nft.uid);
       nft = <Nft>await nftDocRef.get();
@@ -204,8 +198,7 @@ describe('Ordering flows', () => {
     let nft: Nft = await createNftFunc(member, dummyNft(collection, price));
 
     let order = await submitOrderFunc(member, { collection: collection.uid, nft: nft.uid });
-    let milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
-    await milestoneProcessed(milestone.milestone, milestone.tranId);
+    await submitMilestoneFunc(order);
 
     const nftDocRef = db.collection(COL.NFT).doc(nft.uid);
     nft = <Nft>await nftDocRef.get();
@@ -218,8 +211,7 @@ describe('Ordering flows', () => {
 
     const buyer = await createMember(walletSpy);
     order = await submitOrderFunc(buyer, { collection: collection.uid, nft: nft.uid });
-    milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
-    await milestoneProcessed(milestone.milestone, milestone.tranId);
+    await submitMilestoneFunc(order);
 
     const secondSoldNft = <Nft>await nftDocRef.get();
     expect(secondSoldNft.soldOn).toEqual(nft.soldOn);
@@ -234,8 +226,7 @@ describe('Ordering flows', () => {
     const nft = await createNftFunc(member, dummyNft(collection, price));
 
     const order = await submitOrderFunc(member, { collection: collection.uid, nft: nft.uid });
-    const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
-    await milestoneProcessed(milestone.milestone, milestone.tranId);
+    await submitMilestoneFunc(order);
 
     const nftDbRec: any = await db.collection(COL.NFT).doc(nft.uid).get();
     expect(member).toBe(nftDbRec.owner);
@@ -257,8 +248,7 @@ describe('Ordering flows', () => {
     await createNftFunc(member, dummyNft(collection, price));
 
     const order = await submitOrderFunc(member, { collection: collection.uid });
-    const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
-    await milestoneProcessed(milestone.milestone, milestone.tranId);
+    await submitMilestoneFunc(order);
 
     const nftDbRec: any = await db.collection(COL.NFT).doc(order.payload.nft).get();
     expect(member).toBe(nftDbRec.owner);
@@ -275,8 +265,7 @@ describe('Ordering flows', () => {
     await createNftFunc(member, dummyNft(collection, price));
 
     const order = await submitOrderFunc(member, { collection: collection.uid });
-    const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
-    await milestoneProcessed(milestone.milestone, milestone.tranId);
+    await submitMilestoneFunc(order);
 
     const nftDbRec: any = await db.collection(COL.NFT).doc(order.payload.nft).get();
     expect(member).toBe(nftDbRec.owner);
@@ -347,10 +336,7 @@ describe('Ordering flows', () => {
       }
 
       for (const o of orders) {
-        const milestone = await submitMilestoneOutputsFunc([
-          { amount: o.payload.amount, address: o.payload.targetAddress },
-        ]);
-        await milestoneProcessed(milestone.milestone, milestone.tranId);
+        await submitMilestoneFunc(o);
       }
 
       // Validate each owner has the NFTs.
@@ -388,8 +374,7 @@ describe('Ordering flows', () => {
 
     // Confirm payment.
     const wrongAmount = order.payload.amount * 1.5;
-    const milestone = await submitMilestoneFunc(order.payload.targetAddress, wrongAmount);
-    await milestoneProcessed(milestone.milestone, milestone.tranId);
+    const milestone = await submitMilestoneFunc(order, wrongAmount);
 
     const nftDbRec = await db.collection(COL.NFT).doc(order.payload.nft).get<Nft>();
     expect(nftDbRec?.sold).toBe(false);
@@ -431,9 +416,7 @@ describe('Ordering flows', () => {
       collection: collection.uid,
     });
 
-    // Confirm payment.
-    const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
-    await milestoneProcessed(milestone.milestone, milestone.tranId);
+    await submitMilestoneFunc(order);
 
     const nftDbRec: any = await db.collection(COL.NFT).doc(order.payload.nft).get();
     expect(nftDbRec.sold).toBe(true);

@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { build5Db } from '@build-5/database';
-import { COL, Member, Network, Token, TokenStatus } from '@build-5/interfaces';
+import { COL, Member, Network, SOON_PROJECT_ID, Token, TokenStatus } from '@build-5/interfaces';
 import { createMember } from '../../src/runtime/firebase/member';
 import { IotaWallet } from '../../src/services/wallet/IotaWalletService';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
+import { getProjects } from '../../src/utils/common.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import {
@@ -26,7 +27,7 @@ export class Helper {
   public buyerValidateAddress = {} as { [key: string]: AddressDetails };
   public token: Token | undefined;
   public walletSpy: any | undefined;
-  public rmsWallet: SmrWallet | undefined;
+  public rmsWallet: Wallet | undefined;
   public atoiWallet: IotaWallet | undefined;
 
   public beforeEach = async () => {
@@ -51,11 +52,13 @@ export class Helper {
     this.token = await this.saveToken(space.uid, guardian);
 
     this.atoiWallet = (await getWallet(Network.ATOI)) as IotaWallet;
-    this.rmsWallet = (await getWallet(Network.RMS)) as SmrWallet;
+    this.rmsWallet = await getWallet(Network.RMS);
   };
 
   public saveToken = async (space: string, guardian: string) => {
     const token = {
+      project: SOON_PROJECT_ID,
+      projects: getProjects([], SOON_PROJECT_ID),
       symbol: getRandomSymbol(),
       approved: true,
       updatedOn: serverTime(),

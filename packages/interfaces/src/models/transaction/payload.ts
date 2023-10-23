@@ -152,4 +152,5 @@ export interface TransactionPayload {
   lockCollectionNft?: boolean;
 
   stamp?: string;
+  tokenTradeOderTargetAddress?: string;
 }

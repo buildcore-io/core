@@ -1,85 +1,85 @@
-import { OutputTypes, TREASURY_OUTPUT_TYPE } from '@iota/iota.js-next';
+import { COL, Network, SUB_COL, Transaction, getMilestoneCol } from '@build-5/interfaces';
+import { Client } from '@iota/sdk';
+import dayjs from 'dayjs';
+import * as admin from 'firebase-admin';
 
-import { COL, MilestoneTransaction, Network, SUB_COL } from '@build-5/interfaces';
-
-import * as adminPackage from 'firebase-admin';
-
-import { build5Db } from '@build-5/database';
-import { last } from 'lodash';
-
-import { SmrWallet } from '../src/services/wallet/SmrWalletService';
-
-import { getWallet, projectId } from './set-up';
-
-process.env.FIRESTORE_EMULATOR_HOST = '';
-const config = {
-  credential: adminPackage.credential.cert('./test-service-account-key.json'),
-
-  databaseURL: `https://${projectId}.firebaseio.com`,
-};
-const app = adminPackage.initializeApp(config, 'second');
-const onlineDb = app.firestore();
 process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
 
-const syncMilestones = async (col: COL, network: Network) => {
-  const lastDocQuery = onlineDb.collection(col).orderBy('createdOn', 'desc').limit(1);
-  let lastDoc = (await lastDocQuery.get()).docs[0];
+admin.initializeApp();
 
-  const wallet = (await getWallet(Network.RMS)) as SmrWallet;
+const client = new Client({ nodes: ['https://rms1.svrs.io/'] });
 
-  while (1) {
-    const snap = await onlineDb
-      .collection(col)
-      .orderBy('createdOn')
-      .startAfter(lastDoc)
-      .limit(10)
-      .get();
-    lastDoc = last(snap.docs) || lastDoc;
-
-    const batch = build5Db().batch();
-    snap.docs.forEach((doc) => batch.create(build5Db().doc(doc.ref.path), doc.data()));
-    await batch.commit();
-
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    const promises = snap.docs.map((doc) => syncTransactions(network, wallet, doc.ref.path));
-    await Promise.all(promises);
-  }
+const downloadBlocks = async () => {
+  admin
+    .firestore()
+    .collection('blocks')
+    .orderBy('createdOn', 'desc')
+    .limit(1)
+    .onSnapshot((snap) => {
+      snap.docChanges().forEach((change) => {
+        if (change.type === 'added') {
+          saveBlock(change.doc.data().blockId);
+        }
+      });
+    });
 };
 
-const syncTransactions = async (network: Network, wallet: SmrWallet, parentPath: string) => {
-  const snap = await onlineDb.collection(`${parentPath}/${SUB_COL.TRANSACTIONS}`).get();
-  const promises = snap.docs.map(async (doc) => {
-    const data = doc.data();
-    const addresses = await getAddesses(data, network, wallet);
-    if (await addressInDb(addresses)) {
-      await build5Db()
-        .doc(doc!.ref.path)
-        .create({ ...doc!.data(), processed: false });
+const saveBlock = async (blockId: string) => {
+  const metadata = await getBlockMetadata(blockId);
+  if (metadata?.ledgerInclusionState !== 'included') {
+    return;
+  }
+
+  const block = await client.getBlock(blockId);
+  await admin
+    .firestore()
+    .collection(getMilestoneCol(Network.RMS))
+    .doc(metadata.referencedByMilestoneIndex + '')
+    .collection(SUB_COL.TRANSACTIONS)
+    .doc(blockId)
+    .create({
+      blockId,
+      createdOn: dayjs().toDate(),
+      milestone: metadata.referencedByMilestoneIndex,
+      payload: JSON.parse(JSON.stringify(block.payload)),
+      processed: false,
+    });
+};
+
+const getBlockMetadata = async (blockId: string) => {
+  for (let attempt = 0; attempt < 1200; ++attempt) {
+    const metadata = await client.getBlockMetadata(blockId);
+    if (metadata.ledgerInclusionState) {
+      return metadata;
     }
-  });
-  await Promise.all(promises);
-};
-
-const getAddesses = async (doc: any, network: Network, wallet: SmrWallet) => {
-  if (network === Network.ATOI) {
-    return (doc as MilestoneTransaction).outputs.map((o) => o.address);
+    await new Promise((r) => setTimeout(r, 500));
   }
-  const promises = (doc.payload.essence.outputs as OutputTypes[])
-    .filter((o) => o.type !== TREASURY_OUTPUT_TYPE)
-    .map((o) => wallet.bechAddressFromOutput(o as any));
-  return await Promise.all(promises);
+  return;
 };
 
-const addressInDb = async (addresses: string[]) => {
-  for (const address of addresses) {
-    const doc = await build5Db().collection(COL.MNEMONIC).doc(address).get();
-    if (doc) {
-      return true;
-    }
-  }
-  return false;
+downloadBlocks();
+
+const transactionToBlock = () => {
+  admin
+    .firestore()
+    .collection(COL.TRANSACTION)
+    .orderBy('updatedOn', 'desc')
+    .limit(1)
+    .onSnapshot(async (snap) => {
+      for (const doc of snap.docs) {
+        const transaction = doc.data() as Transaction;
+        const chainReference = transaction.payload.walletReference?.chainReference;
+        if (chainReference && !chainReference.startsWith('payment')) {
+          try {
+            await admin
+              .firestore()
+              .collection('blocks')
+              .doc(chainReference)
+              .create({ blockId: chainReference, createdOn: dayjs().toDate() });
+          } catch {}
+        }
+      }
+    });
 };
 
-syncMilestones(COL.MILESTONE_RMS, Network.RMS);
-syncMilestones(COL.MILESTONE_ATOI, Network.ATOI);
+transactionToBlock();

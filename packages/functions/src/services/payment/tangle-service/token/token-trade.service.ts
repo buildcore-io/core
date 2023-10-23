@@ -19,8 +19,6 @@ import {
   WenError,
   getNetworkPair,
 } from '@build-5/interfaces';
-import { HexHelper } from '@iota/util.js-next';
-import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { set } from 'lodash';
@@ -38,16 +36,13 @@ import {
   getTokenBySymbol,
 } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { SmrWallet } from '../../../wallet/SmrWalletService';
-import { WalletService } from '../../../wallet/wallet';
+import { WalletService } from '../../../wallet/wallet.service';
 import { BaseService, HandlerParams } from '../../base';
 import { tradeMintedTokenSchema } from './TokenTradeTangleRequestSchema';
 
 export class TangleTokenTradeService extends BaseService {
   public handleRequest = async ({
     order,
-    match,
-    payment,
     tran,
     tranEntry,
     owner,
@@ -78,6 +73,7 @@ export class TangleTokenTradeService extends BaseService {
       params.type as TokenTradeOrderType,
       params.count || 0,
       params.price,
+      params.targetAddress,
       '',
       [TokenStatus.BASE, TokenStatus.MINTED],
     );
@@ -94,19 +90,6 @@ export class TangleTokenTradeService extends BaseService {
       data: tradeOrderTransaction,
       action: 'set',
     });
-
-    if (params.type === TokenTradeOrderType.SELL && token?.status === TokenStatus.BASE) {
-      this.transactionService.createTangleCredit(
-        payment!,
-        match,
-        {
-          amount: tradeOrderTransaction.payload.amount,
-          address: tradeOrderTransaction.payload.targetAddress,
-        },
-        tranEntry.outputId!,
-      );
-      return;
-    }
 
     this.transactionService.createUnlockTransaction(
       tradeOrderTransaction,
@@ -134,12 +117,13 @@ export const createTokenTradeOrder = async (
   type: TokenTradeOrderType,
   count: number,
   price: number,
+  targetAddress = '',
   ip = '',
   acceptedTokenStatuses = ACCEPTED_TOKEN_STATUSES,
 ) => {
   const isSell = type === TokenTradeOrderType.SELL;
   if (isProdEnv()) {
-    await assertIpNotBlocked(ip || '', token.uid, 'token');
+    await assertIpNotBlocked(ip, token.uid, 'token');
   }
   assertTokenApproved(token, [TokenStatus.MINTED, TokenStatus.BASE].includes(token.status));
   assertTokenStatus(token, acceptedTokenStatuses);
@@ -147,7 +131,13 @@ export const createTokenTradeOrder = async (
   const [sourceNetwork, targetNetwork] = getSourceAndTargetNetwork(token, isSell);
   const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();
   assertMemberHasValidAddress(member, sourceNetwork);
-  assertMemberHasValidAddress(member, targetNetwork);
+  if (targetAddress) {
+    if (!targetAddress.startsWith(targetNetwork === Network.ATOI ? 'rms' : targetNetwork)) {
+      throw invalidArgument(WenError.invalid_target_address);
+    }
+  } else {
+    assertMemberHasValidAddress(member, targetNetwork);
+  }
 
   if ([TokenStatus.BASE, TokenStatus.MINTED].includes(token.status) || !isSell) {
     const tradeOrderTransaction = await createTradeOrderTransaction(
@@ -158,6 +148,7 @@ export const createTokenTradeOrder = async (
       isSell,
       Number(count),
       Number(price),
+      targetAddress,
     );
 
     return { tradeOrderTransaction, tradeOrder: undefined, distribution: undefined };
@@ -223,11 +214,13 @@ const createTradeOrderTransaction = async (
   isSell: boolean,
   count: number,
   price: number,
+  tokenTradeOderTargetAddress = '',
 ): Promise<Transaction> => {
   const wallet = await WalletService.newWallet(network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
   const isMinted = token.status === TokenStatus.MINTED;
-  return {
+
+  const order: Transaction = {
     project,
     projects: getProjects([token], project),
     type: TransactionType.ORDER,
@@ -239,7 +232,7 @@ const createTradeOrderTransaction = async (
       type: isSell ? TransactionPayloadType.SELL_TOKEN : TransactionPayloadType.BUY_TOKEN,
       amount: await getAmount(token, count, price, isSell),
       nativeTokens:
-        isMinted && isSell ? [{ id: token.mintingData?.tokenId!, amount: count.toString() }] : [],
+        isMinted && isSell ? [{ id: token.mintingData?.tokenId!, amount: BigInt(count) }] : [],
       targetAddress: targetAddress.bech32,
       expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS)),
       validationType: getValidationType(token, isSell),
@@ -252,6 +245,10 @@ const createTradeOrderTransaction = async (
     },
     linkedTransactions: [],
   };
+  if (tokenTradeOderTargetAddress) {
+    set(order, 'payload.tokenTradeOderTargetAddress', tokenTradeOderTargetAddress);
+  }
+  return order;
 };
 
 const getAmount = async (token: Token, count: number, price: number, isSell: boolean) => {
@@ -261,12 +258,10 @@ const getAmount = async (token: Token, count: number, price: number, isSell: boo
   if (token.status !== TokenStatus.MINTED) {
     return count;
   }
-  const wallet = (await WalletService.newWallet(token.mintingData?.network)) as SmrWallet;
+  const wallet = await WalletService.newWallet(token.mintingData?.network);
   const tmpAddress = await wallet.getNewIotaAddressDetails(false);
-  const nativeTokens = [
-    { amount: HexHelper.fromBigInt256(bigInt(count)), id: token.mintingData?.tokenId! },
-  ];
-  const output = packBasicOutput(tmpAddress.bech32, 0, nativeTokens, wallet.info);
+  const nativeTokens = [{ amount: BigInt(count), id: token.mintingData?.tokenId! }];
+  const output = await packBasicOutput(wallet, tmpAddress.bech32, 0, { nativeTokens });
   return Number(output.amount);
 };
 

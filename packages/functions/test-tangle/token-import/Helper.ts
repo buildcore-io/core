@@ -1,8 +1,8 @@
 import { build5Db } from '@build-5/database';
 import { COL, Member, Network, Space, SUB_COL, Token, TokenStatus } from '@build-5/interfaces';
 import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails } from '../../src/services/wallet/wallet';
+import { Wallet } from '../../src/services/wallet/wallet';
+import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -23,7 +23,7 @@ export class Helper {
   public space: Space = {} as any;
   public importSpace: Space = {} as any;
   public token: Token = {} as any;
-  public walletService: SmrWallet = {} as any;
+  public walletService: Wallet = {} as any;
   public member: string = '';
   public walletSpy: any = {} as any;
   public network = Network.RMS;
@@ -38,7 +38,7 @@ export class Helper {
     this.space = await createSpace(this.walletSpy, this.guardian.uid);
     this.importSpace = await createSpace(this.walletSpy, this.guardian.uid);
     this.token = await this.saveToken(this.space.uid, this.guardian.uid, this.member);
-    this.walletService = (await getWallet(this.network)) as SmrWallet;
+    this.walletService = await getWallet(this.network);
     this.address = await this.walletService.getAddressDetails(
       getAddress(this.guardian, this.network),
     );

@@ -6,12 +6,12 @@ import {
   SUB_COL,
   SpaceMemberUpsertRequest,
 } from '@build-5/interfaces';
-import { Context } from '../../runtime/firebase/common';
 import { addRemoveGuardian } from '../../services/payment/tangle-service/space/SpaceGuardianService';
+import { Context } from '../common';
 
 export const editGuardianControl =
   (type: ProposalType) =>
-  async ({ project, owner }: Context, params: SpaceMemberUpsertRequest) => {
+  async ({ owner, params, project }: Context<SpaceMemberUpsertRequest>) => {
     const { proposal, voteTransaction, members } = await addRemoveGuardian(
       project,
       owner,
