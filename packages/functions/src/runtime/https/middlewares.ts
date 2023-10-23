@@ -15,14 +15,21 @@ export const auth = async (
   const decoded = await decodeAuth(req.body.data, func);
   const owner = decoded.address.toLowerCase();
   const params = await assertValidationAsync(schema, decoded.body, options);
-  return { ip: req.ip || '', owner, params, headers: req.headers };
+  return {
+    ip: req.ip || '',
+    owner,
+    params,
+    headers: req.headers,
+    rawBody: req.body,
+  };
 };
 
-export const memberCreate = async (req: express.Request): Promise<Context<any>> => {
+export const noAuth = async (req: express.Request): Promise<Context<any>> => {
   return {
     ip: req.ip || '',
     owner: req.body.data,
     params: {},
     headers: req.headers,
+    rawBody: req.body,
   };
 };

@@ -16,7 +16,7 @@
   },
   "scripts": {
     "lint": "eslint --ext .js,.ts src",
-    "build": "tsc",
+    "build": "tsc && cp .env lib/.env",
     "emulators": "tsc --watch & firebase -c ../../firebase.json emulators:start --only functions,firestore,storage,ui,auth",
     "milestone-sync": "npx ts-node ./test/milestone.sync.ts",
     "serve": "run-p \"milestone-sync\" \"emulators\" ",

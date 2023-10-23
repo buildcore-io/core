@@ -1,3 +1,4 @@
+require('dotenv').config({ path: __dirname + '/.env' });
 import fs from 'fs';
 import { flattenObject } from './src/common';
 import { CloudFunctions } from './src/runtime/common';
@@ -9,16 +10,16 @@ import * as onTriggers from './src/runtime/trigger/index';
 import { TriggeredFunction, TriggeredFunctionType } from './src/runtime/trigger/trigger';
 
 const file = './deploy.sh';
-fs.writeFileSync(file, 'cp packages/functions/Dockerfile ./Dockerfile\n\n');
 
-fs.appendFileSync(file, 'gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/functions\n\n');
-
-fs.appendFileSync(file, `export GOOGLE_CLOUD_PROJECT=$(gcloud config get-value project)\n\n`);
+fs.writeFileSync(file, `export GOOGLE_CLOUD_PROJECT=$(gcloud config get-value project)\n\n`);
 
 fs.appendFileSync(
   file,
   "export PROJECT_NUMBER=$(gcloud projects describe $(gcloud config get-value project) --format='value(projectNumber)')\n\n",
 );
+
+fs.appendFileSync(file, 'cp packages/functions/Dockerfile ./Dockerfile\n\n');
+fs.appendFileSync(file, 'gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/functions\n\n');
 
 Object.entries({
   ...flattenObject(onRequests),

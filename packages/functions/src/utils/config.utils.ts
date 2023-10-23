@@ -11,15 +11,12 @@ import {
   WEN_FUNC,
   WenError,
 } from '@build-5/interfaces';
-import { get, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import { invalidArgument } from './error.utils';
 
-const getProjectId = () =>
-  get(JSON.parse(process.env.FIREBASE_CONFIG || '{}'), 'projectId', 'soonaverse-dev');
-export const isProdEnv = () => getProjectId() === 'soonaverse';
-export const isTestEnv = () => getProjectId() === 'soonaverse-test';
-export const isEmulatorEnv = () => getProjectId() === 'soonaverse-dev';
-export const isProdOrTestEnv = () => isProdEnv() || isTestEnv();
+export const isProdEnv = () => process.env.ENVIRONMENT === 'prod';
+export const isTestEnv = () => process.env.ENVIRONMENT === 'test';
+export const isEmulatorEnv = () => !['prod', 'test'].includes(process.env.ENVIRONMENT!);
 
 export const getTokenSaleConfig = isProdEnv() ? TOKEN_SALE : TOKEN_SALE_TEST;
 
