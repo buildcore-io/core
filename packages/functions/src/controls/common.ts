@@ -17,6 +17,7 @@ export interface Context<T = undefined> {
   params: T;
   project: string;
   headers: any;
+  rawBody: any;
 }
 
 export interface UidSchemaObject {

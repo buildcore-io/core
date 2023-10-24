@@ -8,7 +8,6 @@ import {
   Token,
   TokenStatus,
 } from '@build-5/interfaces';
-
 import { build5Db } from '@build-5/database';
 import {
   AliasOutput,

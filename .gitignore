@@ -61,5 +61,4 @@ dist
 package-lock.json
 packages/functions/scripts/*.json
 
-/Dockerfile
 deploy.sh

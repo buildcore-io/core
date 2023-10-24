@@ -56,7 +56,7 @@ const createCreditOrder = (
   owner: string,
   targetAddress: NetworkAddress,
 ): Transaction => ({
-  project: project,
+  project,
   projects: getProjects([creditTtransaction], project),
   type: TransactionType.ORDER,
   uid: getRandomEthAddress(),
