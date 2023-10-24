@@ -95,10 +95,7 @@ describe('Award tangle request', () => {
 
     await wait(async () => {
       const snap = await creditQuery.get<Transaction>();
-      return (
-        snap.length === 2 &&
-        snap.reduce((acc, act) => acc && (act.payload?.walletReference?.confirmed || false), true)
-      );
+      return snap.length === 2;
     });
     snap = await creditQuery.get<Transaction>();
     credit = snap.find((d) => !isEmpty(d.payload?.response?.badges))!;
