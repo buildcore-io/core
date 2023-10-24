@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable import/namespace */
-
 import * as functions from 'firebase-functions/v2';
 import { flattenObject } from './common';
 import { CloudFunctions, pathToParts } from './runtime/common';

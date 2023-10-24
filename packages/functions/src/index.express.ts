@@ -1,6 +1,9 @@
 /* eslint-disable import/namespace */
-
+/* eslint-disable @typescript-eslint/no-var-requires */
+require('dotenv').config({ path: __dirname + '/.env' });
+import { WEN_FUNC } from '@build-5/interfaces';
 import { HTTP } from 'cloudevents';
+import cors from 'cors';
 import express from 'express';
 import { get } from 'lodash';
 import { loadSync } from 'protobufjs';
@@ -18,9 +21,15 @@ import { TriggeredFunction } from './runtime/trigger/trigger';
 
 const app = express();
 
+app.use(cors());
+
 // HTTPS
+const rawParser = express.raw({ type: '*/*' });
+const jsonParser = express.json();
 Object.entries(flattenObject(onRequests)).forEach(([name, config]) => {
-  app.post(`/${name}`, express.json(), (req, res) => (config as HttpsFunction).func(req, res));
+  app.post(`/${name}`, name === WEN_FUNC.uploadFile ? rawParser : jsonParser, (req, res) =>
+    (config as HttpsFunction).func(req, res),
+  );
 });
 
 // TRIGGERS
