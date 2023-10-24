@@ -1,6 +1,6 @@
 FROM node:18
 
-WORKDIR api
+WORKDIR functions
 
 RUN apt-get -y update
 RUN apt-get -y install libudev-dev
