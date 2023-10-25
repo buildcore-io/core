@@ -34,6 +34,9 @@ Object.entries({
    --allow-unauthenticated \\
    --ingress=internal-and-cloud-load-balancing \\
 `;
+  if (options?.region) {
+    command += `   --region=${options.region} \\\n`;
+  }
   if (options?.timeoutSeconds) {
     command += `   --timeout=${options.timeoutSeconds} \\\n`;
   }

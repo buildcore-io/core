@@ -84,9 +84,9 @@ export enum WEN_FUNC {
 
   uploadFile = 'uploadfile',
 
-  createProject = 'createProject',
-  deactivateProject = 'deactivateProject',
-  createProjetApiKey = 'createProjetApiKey',
+  createProject = 'createproject',
+  deactivateProject = 'deactivateproject',
+  createProjetApiKey = 'createprojetapikey',
 
   stamp = 'stamp',
 }
