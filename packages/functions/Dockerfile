@@ -16,6 +16,7 @@ COPY packages/database packages/database
 COPY packages/interfaces packages/interfaces
 COPY packages/functions packages/functions
 COPY package.json ./
+COPY data.proto ./
 
 RUN npm run build:functions
 
