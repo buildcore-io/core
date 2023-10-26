@@ -34,7 +34,7 @@ Object.entries(flattenObject(onRequests)).forEach(([name, config]) => {
 
 // TRIGGERS
 Object.entries(flattenObject(onTriggers)).forEach(([name, config]) => {
-  app.post(`/${name}`, app.use(express.raw({ type: 'application/protobuf' })), async (req, res) => {
+  app.post(`/${name}`, express.raw({ type: 'application/protobuf' }), async (req, res) => {
     const root = loadSync('./data.proto');
     const type = root.lookupType('DocumentEventData');
     const decoded = type.decode(req.body);
@@ -50,7 +50,7 @@ Object.entries(flattenObject(onTriggers)).forEach(([name, config]) => {
       ...pathToParts(get(cloudEvent, 'document', '')),
     };
     await (config as TriggeredFunction).handler(event);
-    res.send(200);
+    res.sendStatus(200);
   });
 });
 
@@ -58,7 +58,7 @@ Object.entries(flattenObject(onTriggers)).forEach(([name, config]) => {
 Object.entries(flattenObject(onScheduled)).forEach(([name, config]) => {
   app.post(`/${name}`, async (_, res) => {
     await (config as ScheduledFunction).func();
-    res.send(200);
+    res.sendStatus(200);
   });
 });
 
@@ -75,7 +75,7 @@ Object.entries(flattenObject(onStorage)).forEach(([name, config]) => {
       bucket: get(event, 'data.bucket', ''),
       contentType: get(event, 'data.contentType'),
     });
-    res.send(200);
+    res.sendStatus(200);
   });
 });
 

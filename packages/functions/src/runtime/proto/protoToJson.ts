@@ -25,6 +25,8 @@ const protoJsonToJson = (protoJson: { [key: string]: any }) =>
 const valueToJson = (data: { [key: string]: any }): any => {
   const [type, value] = Object.entries(data)[0];
   switch (type) {
+    case 'nullValue':
+      return null;
     case 'booleanValue':
     case 'integerValue':
     case 'doubleValue':
@@ -34,8 +36,8 @@ const valueToJson = (data: { [key: string]: any }): any => {
     case 'referenceValue':
       return value;
     case 'arrayValue':
-      return (value.values as any[]).map(valueToJson);
+      return ((value.values as any[]) || []).map(valueToJson);
     case 'mapValue':
-      return protoJsonToJson(value.fields);
+      return protoJsonToJson(value.fields || {});
   }
 };
