@@ -31,4 +31,7 @@ export enum TangleRequestType {
   MINT_METADATA_NFT = 'MINT_METADATA_NFT',
 
   STAMP = 'STAMP',
+
+  CREATE_AUCTION = 'CREATE_AUCTION',
+  BID_AUCTION = 'BID_AUCTION',
 }

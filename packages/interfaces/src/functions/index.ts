@@ -50,7 +50,7 @@ export enum WEN_FUNC {
 
   // ORDER functions
   orderNft = 'ordernft',
-  openBid = 'openbid',
+  openBid = 'openBid',
   validateAddress = 'validateaddress',
 
   // TOKEN functions
@@ -89,6 +89,8 @@ export enum WEN_FUNC {
   createProjetApiKey = 'createprojetapikey',
 
   stamp = 'stamp',
+  createauction = 'createauction',
+  bidAuction = 'bidauction',
 }
 
 export interface cMemberNotExists {

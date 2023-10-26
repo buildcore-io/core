@@ -16,12 +16,12 @@ import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { MemberAddressService } from './address/address-member.service';
 import { SpaceAddressService } from './address/address.space.service';
+import { AuctionBidService } from './auction/auction-bid.service';
 import { AwardFundService } from './award/award-service';
 import { HandlerParams } from './base';
 import { CreditService } from './credit-service';
 import { MetadataNftService } from './metadataNft-service';
 import { CollectionMintingService } from './nft/collection-minting.service';
-import { NftBidService } from './nft/nft-bid.service';
 import { NftDepositService } from './nft/nft-deposit.service';
 import { NftPurchaseService } from './nft/nft-purchase.service';
 import { NftStakeService } from './nft/nft-stake.service';
@@ -143,7 +143,8 @@ export class ProcessingService {
       case TransactionPayloadType.NFT_PURCHASE:
         return new NftPurchaseService(tranService);
       case TransactionPayloadType.NFT_BID:
-        return new NftBidService(tranService);
+      case TransactionPayloadType.AUCTION_BID:
+        return new AuctionBidService(tranService);
       case TransactionPayloadType.SPACE_ADDRESS_VALIDATION:
         return new SpaceAddressService(tranService);
       case TransactionPayloadType.MEMBER_ADDRESS_VALIDATION:

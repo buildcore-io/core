@@ -7,6 +7,7 @@ import { Context } from '../common';
 export const setForSaleNftControl = async ({
   owner,
   params,
+  project,
 }: Context<NftSetForSaleRequest>): Promise<Nft> => {
   const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
   const member = await memberDocRef.get<Member>();
@@ -14,9 +15,19 @@ export const setForSaleNftControl = async ({
     throw invalidArgument(WenError.member_does_not_exists);
   }
 
-  const updateData = await getNftSetForSaleParams(params, member);
+  const { nft, auction } = await getNftSetForSaleParams(member, project, params);
+
+  const batch = build5Db().batch();
+
   const nftDocRef = build5Db().doc(`${COL.NFT}/${params.nft}`);
-  await nftDocRef.update(updateData);
+  batch.update(nftDocRef, nft);
+
+  if (auction) {
+    const auctionDocRef = build5Db().doc(`${COL.AUCTION}/${auction.uid}`);
+    batch.create(auctionDocRef, auction);
+  }
+
+  await batch.commit();
 
   return (await nftDocRef.get<Nft>())!;
 };

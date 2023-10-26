@@ -1,6 +1,6 @@
 import { build5Db } from '@build-5/database';
-import { COL, NftBidRequest, Transaction, WenError } from '@build-5/interfaces';
-import { createNftBidOrder } from '../../services/payment/tangle-service/nft/nft-bid.service';
+import { COL, Nft, NftBidRequest, Transaction, WenError } from '@build-5/interfaces';
+import { createBidOrder } from '../../services/payment/tangle-service/auction/auction.bid.order';
 import { invalidArgument } from '../../utils/error.utils';
 import { Context } from '../common';
 
@@ -16,7 +16,10 @@ export const nftBidControl = async ({
     throw invalidArgument(WenError.member_does_not_exists);
   }
 
-  const bidTransaction = await createNftBidOrder(project, params.nft, owner, ip || '');
+  const nftDocRef = build5Db().doc(`${COL.NFT}/${params.nft}`);
+  const nft = <Nft>await nftDocRef.get();
+
+  const bidTransaction = await createBidOrder(project, owner, nft.auction || '', ip);
 
   const transactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${bidTransaction.uid}`);
   await transactionDocRef.create(bidTransaction);

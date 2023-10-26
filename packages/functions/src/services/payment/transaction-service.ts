@@ -100,6 +100,9 @@ export class TransactionService {
     if (order.payload.stamp) {
       data.payload.stamp = order.payload.stamp;
     }
+    if (order.payload.auction) {
+      data.payload.auction = order.payload.auction;
+    }
 
     if (order.payload.token) {
       const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${order.payload.token}`);

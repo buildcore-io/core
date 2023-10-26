@@ -4,6 +4,9 @@
  */
 
 export * from './AddressValidationTangleRequest';
+export * from './AuctionBidTangleRequest';
+export * from './AuctionCreateTangleRequest';
+export * from './NftBidTangleRequest';
 export * from './AwardAppParticipantTangleRequest';
 export * from './AwardCreateTangleRequest';
 export * from './AwardFundTangleRequest';

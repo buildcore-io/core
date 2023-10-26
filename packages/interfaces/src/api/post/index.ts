@@ -4,6 +4,8 @@
  */
 
 export * from './AddressValidationRequest';
+export * from './AuctionBidRequest';
+export * from './AuctionCreateRequest';
 export * from './CutomTokenRequest';
 export * from './AwardAddOwnerRequest';
 export * from './AwardApproveParticipantRequest';

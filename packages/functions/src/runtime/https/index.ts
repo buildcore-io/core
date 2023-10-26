@@ -2,6 +2,10 @@ import { NftCreateRequest, ProposalType, WEN_FUNC } from '@build-5/interfaces';
 import Joi from 'joi';
 import { validateAddressSchemaObject } from '../../controls/address/AddressValidationRequestSchema';
 import { validateAddressControl } from '../../controls/address/address.control';
+import { auctionBidSchema } from '../../controls/auction/AuctionBidRequestSchema';
+import { auctionCreateSchemaObject } from '../../controls/auction/AuctionCreateRequestSchema';
+import { auctionBidControl } from '../../controls/auction/auction.control';
+import { auctionCreateControl } from '../../controls/auction/auction.create.control';
 import { customTokenSchema } from '../../controls/auth/CutomTokenRequestSchema';
 import { generateCustomTokenControl } from '../../controls/auth/auth.control';
 import { approveAwardParticipantSchemaObject } from '../../controls/award/AwardApproveParticipantRequestSchema';
@@ -521,4 +525,16 @@ exports[WEN_FUNC.deactivateProject] = onRequest({
   name: WEN_FUNC.deactivateProject,
   schema: toJoiObject({}),
   handler: deactivateProjectControl,
+});
+
+exports[WEN_FUNC.bidAuction] = onRequest({
+  name: WEN_FUNC.bidAuction,
+  schema: auctionBidSchema,
+  handler: auctionBidControl,
+});
+
+exports[WEN_FUNC.createauction] = onRequest({
+  name: WEN_FUNC.createauction,
+  schema: auctionCreateSchemaObject,
+  handler: auctionCreateControl,
 });

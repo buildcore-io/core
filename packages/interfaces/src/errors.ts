@@ -126,7 +126,7 @@ export const WenError = {
     key: 'Collection available from date is after NFT available from date.',
   },
   you_must_be_the_owner_of_nft: { code: 2066, key: 'You must be the owner of NFT.' },
-  nft_auction_already_in_progress: { code: 2067, key: 'NFT already have auction in progress.' },
+  auction_already_in_progress: { code: 2067, key: 'Auction already in progress.' },
   nft_placeholder_cant_be_updated: { code: 2068, key: "Can't update placeholder NFT." },
   you_cant_buy_your_nft: { code: 2069, key: 'You already own this NFT!' },
   you_are_not_allowed_member_to_purchase_this_nft: {
@@ -308,4 +308,6 @@ export const WenError = {
   you_are_not_admin_of_project: { code: 2139, key: 'You are not an admin of the project.' },
   invalid_project_api_key: { code: 2140, key: 'Invalid project api key.' },
   invalid_target_address: { code: 2141, key: 'Invalid target address.' },
+  auction_not_active: { code: 2142, key: 'Auction no longer active.' },
+  auction_does_not_exist: { code: 2143, key: 'Auction does not exist.' },
 };

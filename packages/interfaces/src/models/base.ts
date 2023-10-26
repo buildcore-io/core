@@ -65,6 +65,7 @@ export enum COL {
   AIRDROP = 'airdrop',
   PROJECT = 'project',
   STAMP = 'stamp',
+  AUCTION = 'auction',
 
   MNEMONIC = '_mnemonic',
   SYSTEM = '_system',
