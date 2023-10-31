@@ -6,6 +6,7 @@ import {
   MIN_IOTA_AMOUNT,
   Member,
   Network,
+  Space,
   TangleRequestType,
   Transaction,
   TransactionType,
@@ -16,7 +17,7 @@ import { Wallet } from '../../src/services/wallet/wallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { createMember, wait } from '../../test/controls/common';
+import { createMember, createSpace, wait } from '../../test/controls/common';
 import { getWallet } from '../../test/set-up';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
@@ -25,6 +26,7 @@ let walletSpy: any;
 
 describe('Auction tangle test', () => {
   let member: string;
+  let space: Space;
   let memberAddress: AddressDetails;
   let w: Wallet;
   let tangleOrder: Transaction;
@@ -40,6 +42,7 @@ describe('Auction tangle test', () => {
 
   beforeEach(async () => {
     member = await createMember(walletSpy);
+    space = await createSpace(walletSpy, member);
 
     const memberDocRef = build5Db().doc(`${COL.MEMBER}/${member}`);
     const memberData = <Member>await memberDocRef.get();
@@ -51,7 +54,7 @@ describe('Auction tangle test', () => {
       customMetadata: {
         request: {
           requestType: TangleRequestType.CREATE_AUCTION,
-          ...auctionRequest(now),
+          ...auctionRequest(space.uid, now),
         },
       },
     });
@@ -73,7 +76,7 @@ describe('Auction tangle test', () => {
     auction = <Auction>await auctionDocRef.get();
   });
 
-  it('Should bid on auction', async () => {
+  it('Should create auction', async () => {
     expect(dayjs(auction.auctionFrom.toDate()).isSame(now)).toBe(true);
     expect(dayjs(auction.auctionTo.toDate()).isSame(now.add(60000 * 4)));
     expect(auction.auctionLength).toBe(60000 * 4);
@@ -92,20 +95,14 @@ describe('Auction tangle test', () => {
   });
 
   it('Should bid on auction', async () => {
-    const block = await w.send(
-      memberAddress,
-      tangleOrder.payload.targetAddress!,
-      2 * MIN_IOTA_AMOUNT,
-      {
-        customMetadata: {
-          request: {
-            requestType: TangleRequestType.BID_AUCTION,
-            auction: auction.uid,
-          },
+    await w.send(memberAddress, tangleOrder.payload.targetAddress!, 2 * MIN_IOTA_AMOUNT, {
+      customMetadata: {
+        request: {
+          requestType: TangleRequestType.BID_AUCTION,
+          auction: auction.uid,
         },
       },
-    );
-    console.log(block);
+    });
     await wait(async () => {
       auction = <Auction>await auctionDocRef.get();
       return auction.auctionHighestBidder === member;
@@ -115,7 +112,8 @@ describe('Auction tangle test', () => {
   });
 });
 
-const auctionRequest = (now: dayjs.Dayjs, auctionLength = 60000 * 4) => ({
+const auctionRequest = (space: string, now: dayjs.Dayjs, auctionLength = 60000 * 4) => ({
+  space,
   auctionFrom: now.toDate(),
   auctionFloorPrice: 2 * MIN_IOTA_AMOUNT,
   auctionLength,

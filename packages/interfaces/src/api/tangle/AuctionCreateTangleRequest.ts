@@ -32,6 +32,10 @@ export interface AuctionCreateTangleRequest {
    */
   maxBids: number;
   /**
+   * Defines the minimum increment of a subsequent bid. Minimum 1000000, maximum 1000000000000
+   */
+  minimalBidIncrement?: number;
+  /**
    * Network on which this auction accepts bids.
    */
   network: 'iota' | 'smr' | 'atoi' | 'rms';
@@ -39,6 +43,14 @@ export interface AuctionCreateTangleRequest {
    * Type of the tangle request.
    */
   requestType: 'CREATE_AUCTION';
+  /**
+   * Build5 id of the space
+   */
+  space: string;
+  /**
+   * A valid network address where funds will be sent.
+   */
+  targetAddress?: string;
   /**
    * If set to true, consequent bids from the same user will be treated as topups
    */

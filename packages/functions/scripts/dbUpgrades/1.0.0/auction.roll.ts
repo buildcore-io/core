@@ -53,12 +53,14 @@ export const nftAuctionRoll = async (app: FirebaseApp) => {
 const getAuctionData = async (nft: Nft) => {
   const auction: Auction = {
     uid: getRandomEthAddress(),
+    space: nft.space,
     createdBy: nft.owner,
     project: nft.owner || SOON_PROJECT_ID,
     projects: nft.projects || { [SOON_PROJECT_ID]: true },
     auctionFrom: nft.auctionFrom!,
     auctionTo: nft.auctionTo!,
     auctionFloorPrice: nft.auctionFloorPrice || 0,
+    minimalBidIncrement: 0,
     auctionLength: nft.auctionLength || 0,
 
     bids: [],

@@ -8,7 +8,7 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import Joi from 'joi';
-import { toJoiObject } from '../../services/joi/common';
+import { CommonJoi, toJoiObject } from '../../services/joi/common';
 import { AVAILABLE_NETWORKS } from '../common';
 
 const minAvailableFrom = 10;
@@ -16,6 +16,7 @@ const minBids = 1;
 const maxBids = 10;
 
 export const auctionCreateSchema = {
+  space: CommonJoi.uid().description('Build5 id of the space'),
   auctionFrom: Joi.date()
     .greater(dayjs().subtract(minAvailableFrom, 'minutes').toDate())
     .required()
@@ -28,6 +29,13 @@ export const auctionCreateSchema = {
     .required()
     .description(
       `Floor price of the auction. Minimum ${MIN_IOTA_AMOUNT}, maximum ${MAX_IOTA_AMOUNT}`,
+    ),
+  minimalBidIncrement: Joi.number()
+    .min(MIN_IOTA_AMOUNT)
+    .max(MAX_IOTA_AMOUNT)
+    .optional()
+    .description(
+      `Defines the minimum increment of a subsequent bid. Minimum ${MIN_IOTA_AMOUNT}, maximum ${MAX_IOTA_AMOUNT}`,
     ),
   auctionLength: Joi.number()
     .min(TRANSACTION_AUTO_EXPIRY_MS)
@@ -65,6 +73,7 @@ export const auctionCreateSchema = {
   topUpBased: Joi.boolean().description(
     'If set to true, consequent bids from the same user will be treated as topups',
   ),
+  targetAddress: Joi.string().description('A valid network address where funds will be sent.'),
 };
 
 export const auctionCreateSchemaObject = toJoiObject<AuctionCreateRequest>(auctionCreateSchema)

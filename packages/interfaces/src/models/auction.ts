@@ -13,6 +13,8 @@ export enum AuctionType {
 }
 
 export interface Auction extends BaseRecord {
+  space: string;
+
   auctionFrom: Timestamp;
   auctionTo: Timestamp;
   auctionLength: number;
@@ -22,6 +24,7 @@ export interface Auction extends BaseRecord {
   extendAuctionWithin?: number | null;
 
   auctionFloorPrice: number;
+  minimalBidIncrement: number;
 
   bids: AuctionBid[];
   auctionHighestBidder?: string;
@@ -31,6 +34,8 @@ export interface Auction extends BaseRecord {
   type: AuctionType;
   network: Network;
   nftId?: string;
+
+  targetAddress?: string;
 
   active: boolean;
   topUpBased?: boolean;

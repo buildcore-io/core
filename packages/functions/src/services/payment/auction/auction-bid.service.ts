@@ -10,7 +10,7 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { head, last, set } from 'lodash';
+import { head, set } from 'lodash';
 import { NotificationService } from '../../notification/notification';
 import { HandlerParams } from '../base';
 import { TransactionService } from '../transaction-service';
@@ -35,6 +35,7 @@ export class AuctionBidService {
     }
 
     this.transactionService.markAsReconciled(order, match.msgId);
+
     const payment = await this.transactionService.createPayment(order, match);
     await this.addNewBid(owner, auction, order, payment);
   };
@@ -45,13 +46,12 @@ export class AuctionBidService {
     order: Transaction,
     payment: Transaction,
   ): Promise<void> => {
-    if (paidAmountIsBelowFloor(payment, auction) || newPaymentTooLow(payment, auction)) {
+    if (!isValidBid(payment, auction)) {
       await this.creditAsInvalidPayment(payment);
       return;
     }
 
     const { bids, invalidBid } = placeBid(auction, order.uid, owner, payment.payload.amount!);
-
     const auctionUpdateData = this.getAuctionUpdateData(auction, bids);
 
     if (invalidBid) {
@@ -99,6 +99,7 @@ export class AuctionBidService {
       action: 'update',
     });
     const paymentPayload = payment.payload;
+    set(payment, 'payload.invalidPayment', true);
     await this.transactionService.createCredit(TransactionPayloadType.INVALID_PAYMENT, payment, {
       msgId: paymentPayload.chainReference!,
       to: {
@@ -158,6 +159,26 @@ export class AuctionBidService {
   };
 }
 
+const isValidBid = (payment: Transaction, auction: Auction) => {
+  const amount = payment.payload.amount!;
+  const prevBid = auction.bids.find((b) => b.bidder === payment.member);
+  const prevBidAmount = prevBid?.amount || 0;
+
+  if (auction.topUpBased) {
+    return (
+      prevBidAmount + amount >= auction.auctionFloorPrice &&
+      amount >= auction.minimalBidIncrement &&
+      (prevBid !== undefined || amount > (auction.bids[auction.maxBids - 1]?.amount || 0))
+    );
+  }
+
+  return (
+    amount > (auction.auctionHighestBid || 0) &&
+    amount >= auction.auctionFloorPrice &&
+    amount - prevBidAmount >= auction.minimalBidIncrement
+  );
+};
+
 const placeBid = (auction: Auction, order: string, bidder: string, amount: number) => {
   const bids = [...auction.bids];
   const currentBid = bids.find((b) => b.bidder === bidder);
@@ -169,7 +190,8 @@ const placeBid = (auction: Auction, order: string, bidder: string, amount: numbe
     } else {
       currentBid.amount = Math.max(currentBid.amount, amount);
       bids.sort((a, b) => b.amount - a.amount);
-      bids.push({ bidder, amount: Math.min(currentBid.amount, amount), order });
+      const invalidBid = { bidder, amount: Math.min(currentBid.amount, amount), order };
+      return { bids, invalidBid };
     }
   } else {
     bids.push({ bidder, amount, order });
@@ -181,9 +203,3 @@ const placeBid = (auction: Auction, order: string, bidder: string, amount: numbe
     invalidBid: head(bids.slice(auction.maxBids)),
   };
 };
-
-const paidAmountIsBelowFloor = (payment: Transaction, auction: Auction) =>
-  payment.payload.amount! < auction.auctionFloorPrice;
-
-const newPaymentTooLow = (payment: Transaction, auction: Auction) =>
-  !auction.topUpBased && (last(auction.bids)?.amount || 0) > payment.payload.amount!;

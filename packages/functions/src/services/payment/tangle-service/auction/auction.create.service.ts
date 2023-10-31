@@ -5,9 +5,11 @@ import {
   AuctionCreateTangleRequest,
   AuctionType,
   COL,
+  Member,
   Network,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
+import { assertMemberHasValidAddress, getAddress } from '../../../../utils/address.utils';
 import { getProjects } from '../../../../utils/common.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
@@ -22,7 +24,10 @@ export class TangleAuctionCreateService {
   public handleRequest = async ({ request, project, owner }: HandlerParams) => {
     const params = await assertValidationAsync(auctionCreateTangleSchema, request);
 
-    const auction = getAuctionData(project, owner, params);
+    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
+    const member = <Member>await memberDocRef.get();
+
+    const auction = getAuctionData(project, member, params);
     const auctionDocRef = build5Db().doc(`${COL.AUCTION}/${auction.uid}`);
 
     this.transactionService.push({ ref: auctionDocRef, data: auction, action: 'set' });
@@ -33,19 +38,27 @@ export class TangleAuctionCreateService {
 
 export const getAuctionData = (
   project: string,
-  owner: string,
+  member: Member,
   params: AuctionCreateRequest | AuctionCreateTangleRequest,
 ) => {
+  let targetAddress = params.targetAddress;
+  if (!targetAddress) {
+    assertMemberHasValidAddress(member, params.network as Network);
+    targetAddress = getAddress(member, params.network as Network);
+  }
+
   const auction: Auction = {
     uid: getRandomEthAddress(),
+    space: params.space,
     project,
     projects: getProjects([], project),
-    createdBy: owner,
+    createdBy: member.uid,
     auctionFrom: dateToTimestamp(params.auctionFrom),
     auctionTo: dateToTimestamp(dayjs(params.auctionFrom).add(params.auctionLength)),
     auctionLength: params.auctionLength,
 
     auctionFloorPrice: params.auctionFloorPrice || 0,
+    minimalBidIncrement: params.minimalBidIncrement || 0,
 
     maxBids: params.maxBids,
 
@@ -56,6 +69,8 @@ export const getAuctionData = (
     topUpBased: params.topUpBased || false,
 
     bids: [],
+
+    targetAddress,
   };
 
   if (params.extendedAuctionLength && params.extendAuctionWithin) {

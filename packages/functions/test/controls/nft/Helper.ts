@@ -12,7 +12,7 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { approveCollection, createCollection } from '../../../src/runtime/firebase/collection';
-import { openBid, createNft, orderNft } from '../../../src/runtime/firebase/nft';
+import { createNft, openBid, orderNft } from '../../../src/runtime/firebase/nft';
 import * as wallet from '../../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../../set-up';
 import {
@@ -117,6 +117,7 @@ export const dummyAuctionData = (
   availableFrom: from.toDate(),
   auctionFrom: from.toDate(),
   auctionFloorPrice: MIN_IOTA_AMOUNT,
+  minimalBidIncrement: MIN_IOTA_AMOUNT,
   auctionLength,
   access: NftAccess.OPEN,
 });

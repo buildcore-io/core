@@ -143,13 +143,16 @@ const getAuctionData = (project: string, owner: string, params: NftSetForSaleReq
   }
   const auction: Auction = {
     uid: getRandomEthAddress(),
+    space: nft.space,
     createdBy: owner,
     project,
     projects: getProjects([], project),
     auctionFrom: dateToTimestamp(params.auctionFrom),
     auctionTo: dateToTimestamp(dayjs(params.auctionFrom).add(params.auctionLength || 0)),
-    auctionFloorPrice: params.auctionFloorPrice || 0,
     auctionLength: params.auctionLength!,
+
+    auctionFloorPrice: params.auctionFloorPrice || 0,
+    minimalBidIncrement: params.minimalBidIncrement || 0,
 
     bids: [],
     maxBids: 1,

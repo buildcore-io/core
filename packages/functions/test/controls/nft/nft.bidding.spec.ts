@@ -164,6 +164,25 @@ describe('Nft bidding', () => {
     expect(snap.length).toBe(1);
   });
 
+  it('Should reject bid where min inc is too small', async () => {
+    const nftDocRef = build5Db().doc(`${COL.NFT}/${h.nft.uid}`);
+    await h.bidNft(h.members[0], MIN_IOTA_AMOUNT);
+
+    h.nft = <Nft>await nftDocRef.get();
+    expect(h.nft.auctionHighestBidder).toBe(h.members[0]);
+
+    await h.bidNft(h.members[0], 1.5 * MIN_IOTA_AMOUNT);
+
+    const snap = await build5Db()
+      .collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.CREDIT)
+      .where('member', '==', h.members[0])
+      .where('payload.nft', '==', h.nft.uid)
+      .get<Transaction>();
+    expect(snap.length).toBe(1);
+    expect(snap[0].payload.amount).toBe(1.5 * MIN_IOTA_AMOUNT);
+  });
+
   it('Should bid in parallel', async () => {
     const bidPromises = [
       h.bidNft(h.members[0], 2 * MIN_IOTA_AMOUNT),
