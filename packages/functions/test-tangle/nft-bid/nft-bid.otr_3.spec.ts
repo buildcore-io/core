@@ -10,7 +10,7 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { finalizeAllNftAuctions } from '../../src/cron/nft.cron';
+import { finalizeAuctions } from '../../src/cron/auction.cron';
 import { IotaWallet } from '../../src/services/wallet/IotaWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -53,14 +53,14 @@ describe('Nft otr bid', () => {
     const nftDocRef = build5Db().doc(`${COL.NFT}/${helper.nft!.uid}`);
     await wait(async () => {
       const nft = await nftDocRef.get<Nft>();
-      return !isEmpty(nft?.auctionHighestTransaction);
+      return !isEmpty(nft?.auctionHighestBidder);
     });
 
     await build5Db()
-      .doc(`${COL.NFT}/${helper.nft!.uid}`)
+      .doc(`${COL.AUCTION}/${helper.nft!.auction}`)
       .update({ auctionTo: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
 
-    await finalizeAllNftAuctions();
+    await finalizeAuctions();
 
     await wait(async () => {
       const nft = <Nft>await build5Db().doc(`${COL.NFT}/${helper.nft!.uid}`).get();

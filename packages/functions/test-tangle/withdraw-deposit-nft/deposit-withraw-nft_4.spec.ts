@@ -32,7 +32,6 @@ describe('Collection minting', () => {
       auctionLength: null,
       auctionHighestBid: null,
       auctionHighestBidder: null,
-      auctionHighestTransaction: null,
     });
 
     await helper.setAvailableForAuction();

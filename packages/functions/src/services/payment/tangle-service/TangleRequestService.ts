@@ -14,11 +14,12 @@ import { invalidArgument } from '../../../utils/error.utils';
 import { getRandomNonce } from '../../../utils/wallet.utils';
 import { BaseService, HandlerParams } from '../base';
 import { TangleAddressValidationService } from './address/address-validation.service';
+import { TangleAuctionBidService, TangleNftAuctionBidService } from './auction/auction.bid.service';
+import { TangleAuctionCreateService } from './auction/auction.create.service';
 import { AwardApproveParticipantService } from './award/award.approve.participant.service';
 import { AwardCreateService } from './award/award.create.service';
 import { AwardFundService } from './award/award.fund.service';
 import { MintMetadataNftService } from './metadataNft/mint-metadata-nft.service';
-import { TangleNftBidService } from './nft/nft-bid.service';
 import { NftDepositService } from './nft/nft-deposit.service';
 import { TangleNftPurchaseService } from './nft/nft-purchase.service';
 import { TangleNftSetForSaleService } from './nft/nft-set-for-sale.service';
@@ -95,7 +96,7 @@ export class TangleRequestService extends BaseService {
       case TangleRequestType.NFT_SET_FOR_SALE:
         return new TangleNftSetForSaleService(this.transactionService);
       case TangleRequestType.NFT_BID:
-        return new TangleNftBidService(this.transactionService);
+        return new TangleNftAuctionBidService(this.transactionService);
       case TangleRequestType.CLAIM_MINTED_AIRDROPS:
         return new TangleTokenClaimService(this.transactionService);
       case TangleRequestType.AWARD_CREATE:
@@ -132,6 +133,10 @@ export class TangleRequestService extends BaseService {
         return new MintMetadataNftService(this.transactionService);
       case TangleRequestType.STAMP:
         return new StampTangleService(this.transactionService);
+      case TangleRequestType.CREATE_AUCTION:
+        return new TangleAuctionCreateService(this.transactionService);
+      case TangleRequestType.BID_AUCTION:
+        return new TangleAuctionBidService(this.transactionService);
       default:
         throw invalidArgument(WenError.invalid_tangle_request_type);
     }

@@ -1,24 +1,15 @@
 import { build5Db } from '@build-5/database';
-import {
-  COL,
-  Collection,
-  Member,
-  Nft,
-  NftAccess,
-  Transaction,
-  TransactionPayloadType,
-} from '@build-5/interfaces';
-import dayjs from 'dayjs';
-import { last, set } from 'lodash';
+import { COL, Collection, Member, Nft, NftAccess, Transaction } from '@build-5/interfaces';
 import { getAddress } from '../../../utils/address.utils';
 import { getProject } from '../../../utils/common.utils';
-import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
-import { NotificationService } from '../../notification/notification';
-import { BaseService } from '../base';
+import { serverTime } from '../../../utils/dateTime.utils';
 import { createNftWithdrawOrder } from '../tangle-service/nft/nft-purchase.service';
+import { TransactionService } from '../transaction-service';
 
-export abstract class BaseNftService extends BaseService {
-  protected setTradingStats = (nft: Nft) => {
+export class BaseNftService {
+  constructor(private readonly transactionService: TransactionService) {}
+
+  public setTradingStats = (nft: Nft) => {
     const data = { lastTradedOn: serverTime(), totalTrades: build5Db().inc(1) };
     const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nft.collection}`);
     this.transactionService.push({ ref: collectionDocRef, data, action: 'update' });
@@ -27,7 +18,7 @@ export abstract class BaseNftService extends BaseService {
     this.transactionService.push({ ref: nftDocRef, data, action: 'update' });
   };
 
-  protected withdrawNft = async (order: Transaction, nft: Nft) => {
+  public withdrawNft = async (order: Transaction, nft: Nft) => {
     const membderDocRef = build5Db().doc(`${COL.MEMBER}/${order.member}`);
     const member = <Member>await membderDocRef.get();
     const { order: withdrawOrder, nftUpdateData } = createNftWithdrawOrder(
@@ -48,14 +39,14 @@ export abstract class BaseNftService extends BaseService {
     });
   };
 
-  protected async setNftOwner(order: Transaction, payment: Transaction): Promise<void> {
-    const nftDocRef = build5Db().collection(COL.NFT).doc(payment.payload.nft!);
+  public setNftOwner = async (order: Transaction, amount: number) => {
+    const nftDocRef = build5Db().collection(COL.NFT).doc(order.payload.nft!);
     const nft = <Nft>await this.transactionService.get(nftDocRef);
 
     const nftUpdateData = {
-      owner: payment.member,
+      owner: order.member,
       isOwned: true,
-      price: nft.saleAccess === NftAccess.MEMBERS ? nft.price : payment.payload.amount,
+      price: nft.saleAccess === NftAccess.MEMBERS ? nft.price : amount,
       sold: true,
       locked: false,
       lockedBy: null,
@@ -71,9 +62,9 @@ export abstract class BaseNftService extends BaseService {
       extendedAuctionLength: null,
       auctionHighestBid: null,
       auctionHighestBidder: null,
-      auctionHighestTransaction: null,
       saleAccess: null,
       saleAccessMembers: [],
+      auction: null,
     };
     this.transactionService.push({
       ref: nftDocRef,
@@ -81,51 +72,8 @@ export abstract class BaseNftService extends BaseService {
       action: 'update',
     });
 
-    if (
-      nft.auctionHighestTransaction &&
-      order.payload.type === TransactionPayloadType.NFT_PURCHASE
-    ) {
-      const highestTranDocRef = build5Db().doc(
-        `${COL.TRANSACTION}/${nft.auctionHighestTransaction}`,
-      );
-      const highestPay = (await highestTranDocRef.get<Transaction>())!;
-      this.transactionService.push({
-        ref: highestTranDocRef,
-        data: { invalidPayment: true },
-        action: 'update',
-      });
-
-      const sameOwner = highestPay.member === order.member;
-      const credit = await this.transactionService.createCredit(
-        TransactionPayloadType.NONE,
-        highestPay,
-        {
-          msgId: highestPay.payload.chainReference || '',
-          to: {
-            address: highestPay.payload.targetAddress!,
-            amount: highestPay.payload.amount!,
-          },
-          from: highestPay.payload.sourceAddress!,
-        },
-        serverTime(),
-        sameOwner,
-      );
-
-      if (!sameOwner) {
-        const orderId = Array.isArray(highestPay.payload.sourceTransaction)
-          ? last(highestPay.payload.sourceTransaction)!
-          : highestPay.payload.sourceTransaction!;
-        const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${orderId}`);
-        this.transactionService.push({
-          ref: orderDocRef,
-          data: { linkedTransactions: build5Db().arrayUnion(credit?.uid) },
-          action: 'update',
-        });
-      }
-    }
-
     if (order.payload.beneficiary === 'space') {
-      const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${payment.payload.collection}`);
+      const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${order.payload.collection}`);
       this.transactionService.push({
         ref: collectionDocRef,
         data: { sold: build5Db().inc(1) },
@@ -149,143 +97,5 @@ export abstract class BaseNftService extends BaseService {
         });
       }
     }
-  }
-
-  protected async addNewBid(transaction: Transaction, payment: Transaction): Promise<void> {
-    const nftDocRef = build5Db().collection(COL.NFT).doc(transaction.payload.nft!);
-    const paymentDocRef = build5Db().doc(`${COL.TRANSACTION}/${payment.uid}`);
-    const nft = await this.transactionService.get<Nft>(nftDocRef);
-    let newValidPayment = false;
-    let previousHighestPay: Transaction | undefined;
-    const paymentPayload = payment.payload;
-    if (nft?.auctionHighestTransaction) {
-      const previousHighestPayRef = build5Db().doc(
-        `${COL.TRANSACTION}/${nft?.auctionHighestTransaction}`,
-      );
-      previousHighestPay = (await this.transactionService.get<Transaction>(previousHighestPayRef))!;
-
-      if (
-        previousHighestPay!.payload.amount! < paymentPayload.amount! &&
-        paymentPayload.amount! >= (nft?.auctionFloorPrice || 0)
-      ) {
-        newValidPayment = true;
-      }
-    } else {
-      if (paymentPayload.amount! >= (nft?.auctionFloorPrice || 0)) {
-        newValidPayment = true;
-      }
-    }
-
-    // We need to credit the old payment.
-    if (newValidPayment && previousHighestPay) {
-      const refPrevPayment = build5Db().doc(`${COL.TRANSACTION}/${previousHighestPay.uid}`);
-      previousHighestPay.payload.invalidPayment = true;
-      this.transactionService.push({
-        ref: refPrevPayment,
-        data: previousHighestPay,
-        action: 'update',
-      });
-
-      // Mark as invalid and create credit.
-      const sameOwner = previousHighestPay.member === transaction.member;
-      const credit = await this.transactionService.createCredit(
-        TransactionPayloadType.DATA_NO_LONGER_VALID,
-        previousHighestPay,
-        {
-          msgId: previousHighestPay.payload.chainReference!,
-          to: {
-            address: previousHighestPay.payload.targetAddress!,
-            amount: previousHighestPay.payload.amount!,
-          },
-          from: previousHighestPay.payload.sourceAddress!,
-        },
-        dateToTimestamp(dayjs(payment.createdOn?.toDate()).subtract(1, 's')),
-        sameOwner,
-      );
-
-      // We have to set link on the past order.
-      if (!sameOwner) {
-        const sourcTran: string = Array.isArray(previousHighestPay.payload.sourceTransaction)
-          ? last(previousHighestPay.payload.sourceTransaction)!
-          : previousHighestPay.payload.sourceTransaction!;
-        const refHighTranOrderDocRef = build5Db().doc(`${COL.TRANSACTION}/${sourcTran}`);
-        const refHighTranOrder = await this.transactionService.get<Transaction>(
-          refHighTranOrderDocRef,
-        );
-        if (refHighTranOrder) {
-          this.transactionService.push({
-            ref: refHighTranOrderDocRef,
-            data: {
-              linkedTransactions: [
-                ...(refHighTranOrder?.linkedTransactions || []),
-                ...[credit?.uid],
-              ],
-            },
-            action: 'update',
-          });
-
-          // Notify them.
-          const refMember = build5Db().collection(COL.MEMBER).doc(refHighTranOrder?.member!);
-          const sfDocMember = await this.transactionService.get<Member>(refMember);
-          const bidNotification = NotificationService.prepareLostBid(
-            sfDocMember!,
-            nft!,
-            previousHighestPay,
-          );
-          const refNotification = build5Db().collection(COL.NOTIFICATION).doc(bidNotification.uid);
-          this.transactionService.push({
-            ref: refNotification,
-            data: bidNotification,
-            action: 'set',
-          });
-        }
-      }
-    }
-
-    // Update NFT with highest bid.
-    if (newValidPayment) {
-      const nftUpdateData = {
-        auctionHighestBid: payment.payload.amount,
-        auctionHighestBidder: payment.member,
-        auctionHighestTransaction: payment.uid,
-      };
-      const auctionTTL = dayjs(nft?.auctionTo!.toDate()).diff(dayjs());
-      if (
-        (nft?.auctionLength || 0) < (nft?.extendedAuctionLength || 0) &&
-        auctionTTL < (nft?.extendAuctionWithin || 0)
-      ) {
-        set(nftUpdateData, 'auctionTo', nft?.extendedAuctionTo || null);
-        set(nftUpdateData, 'auctionLength', nft?.extendedAuctionLength || null);
-      }
-      this.transactionService.push({
-        ref: nftDocRef,
-        data: nftUpdateData,
-        action: 'update',
-      });
-
-      const refMember = build5Db().collection(COL.MEMBER).doc(transaction.member!);
-      const sfDocMember = await this.transactionService.get<Member>(refMember);
-      const bidNotification = NotificationService.prepareBid(sfDocMember!, nft!, payment);
-      const refNotification = build5Db().collection(COL.NOTIFICATION).doc(bidNotification.uid);
-      this.transactionService.push({
-        ref: refNotification,
-        data: bidNotification,
-        action: 'set',
-      });
-    } else {
-      // Invalidate payment.
-      paymentPayload.invalidPayment = true;
-      this.transactionService.push({ ref: paymentDocRef, data: payment, action: 'update' });
-
-      // No valid payment so we credit anyways.
-      await this.transactionService.createCredit(TransactionPayloadType.INVALID_PAYMENT, payment, {
-        msgId: paymentPayload.chainReference!,
-        to: {
-          address: paymentPayload.targetAddress!,
-          amount: paymentPayload.amount!,
-        },
-        from: paymentPayload.sourceAddress!,
-      });
-    }
-  }
+  };
 }

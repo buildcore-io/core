@@ -153,4 +153,6 @@ export interface TransactionPayload {
 
   stamp?: string;
   tokenTradeOderTargetAddress?: string;
+
+  auction?: string;
 }

@@ -33,6 +33,13 @@ export const baseNftSetForSaleSchema = {
     .min(MIN_IOTA_AMOUNT)
     .max(MAX_IOTA_AMOUNT)
     .description(`Floor price of the nft. Minimum ${MIN_IOTA_AMOUNT}, maximum ${MAX_IOTA_AMOUNT}`),
+  minimalBidIncrement: Joi.number()
+    .min(MIN_IOTA_AMOUNT)
+    .max(MAX_IOTA_AMOUNT)
+    .optional()
+    .description(
+      `Defines the minimum increment of a subsequent bid. Minimum ${MIN_IOTA_AMOUNT}, maximum ${MAX_IOTA_AMOUNT}`,
+    ),
   auctionLength: Joi.number()
     .min(TRANSACTION_AUTO_EXPIRY_MS)
     .max(TRANSACTION_MAX_EXPIRY_MS)

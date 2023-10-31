@@ -1,3 +1,4 @@
+import { FirebaseApp, Firestore } from '@build-5/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -7,8 +8,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import jwt from 'jsonwebtoken';
-import { FirebaseApp } from '../../../src/app/app';
-import { Firestore } from '../../../src/firestore/firestore';
 import serviceAccount from '../../serviceAccountKey.json';
 
 const ADMIN_ID = '0x551fd2c7c7bf356bac194587dab2fcd46420054b';
