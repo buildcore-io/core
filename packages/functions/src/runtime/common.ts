@@ -23,7 +23,7 @@ export enum WEN_SCHEDULED {
   retryWallet = 'retrywallet',
   processExpiredAwards = 'processexpiredawards',
   voidExpiredOrders = 'voidexpiredorders',
-  finalizeAuctionNft = 'finalizeauctionnft',
+  finalizeAuctions = 'finalizeauctions',
   hidePlaceholderAfterSoldOut = 'hideplaceholderaftersoldout',
   tokenCoolDownOver = 'tokencooldownover',
   cancelExpiredSale = 'cancelexpiredsale',

@@ -1,3 +1,4 @@
+export * from './auction';
 export * from './award';
 export * from './badge';
 export * from './base';

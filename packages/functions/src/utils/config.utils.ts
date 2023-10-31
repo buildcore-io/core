@@ -70,3 +70,5 @@ export const xpTokenUid = () => process.env.XPTOKEN_UID!;
 export const xpTokenGuardianId = () => process.env.XPTOKEN_GUARDIANID!;
 
 export const getStampRoyaltyAddress = (network: Network) => STAMP_ROYALTY_ADDRESS[network];
+
+export const getDefaultNetwork = () => (isProdEnv() ? Network.IOTA : Network.ATOI);

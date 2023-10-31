@@ -18,7 +18,7 @@ import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
-describe('Nft set for acution OTR', () => {
+describe('Nft set for auction OTR', () => {
   const helper = new Helper();
   let tangleOrder: Transaction;
 
@@ -112,7 +112,7 @@ describe('Nft set for acution OTR', () => {
     });
     const snap = await credit.get<Transaction>();
     const creditTransction = snap.find(
-      (t) => t.payload.response?.code === WenError.nft_auction_already_in_progress.code,
+      (t) => t.payload.response?.code === WenError.auction_already_in_progress.code,
     );
     expect(creditTransction).toBeDefined();
   });

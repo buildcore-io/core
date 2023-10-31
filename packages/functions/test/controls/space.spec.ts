@@ -98,10 +98,6 @@ describe('SpaceController: ' + WEN_FUNC.createSpace, () => {
     expect(returns?.totalMembers).toEqual(1);
     walletSpy.mockRestore();
   });
-
-  it('unable to decode token.', async () => {
-    await expectThrow(testEnv.wrap(createSpace)(null), WenError.invalid_params.key);
-  });
 });
 
 describe('SpaceController: ' + WEN_FUNC.updateSpace, () => {

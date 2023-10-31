@@ -1,5 +1,7 @@
 import { build5Db } from '@build-5/database';
 import {
+  Auction,
+  AuctionType,
   COL,
   Collection,
   CollectionStatus,
@@ -13,27 +15,39 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { assertMemberHasValidAddress } from '../../../../utils/address.utils';
+import { getProjects } from '../../../../utils/common.utils';
+import { getDefaultNetwork } from '../../../../utils/config.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
+import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { BaseService, HandlerParams } from '../../base';
 import { setNftForSaleTangleSchema } from './NftSetForSaleTangleRequestSchema';
 
 export class TangleNftSetForSaleService extends BaseService {
-  public handleRequest = async ({ owner, request }: HandlerParams) => {
+  public handleRequest = async ({ owner, request, project }: HandlerParams) => {
     const params = await assertValidationAsync(setNftForSaleTangleSchema, request);
     const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
     const member = await memberDocRef.get<Member>();
 
-    const updateData = await getNftSetForSaleParams(params, member!);
+    const { nft, auction } = await getNftSetForSaleParams(member!, project, params);
     const nftDocRef = build5Db().doc(`${COL.NFT}/${params.nft}`);
-    this.transactionService.push({ ref: nftDocRef, data: updateData, action: 'update' });
+    this.transactionService.push({ ref: nftDocRef, data: nft, action: 'update' });
+
+    if (auction) {
+      const auctionDocRef = build5Db().doc(`${COL.AUCTION}/${auction.uid}`);
+      this.transactionService.push({ ref: auctionDocRef, data: auction, action: 'set' });
+    }
 
     return { status: 'success' };
   };
 }
 
-export const getNftSetForSaleParams = async (params: NftSetForSaleRequest, owner: Member) => {
+export const getNftSetForSaleParams = async (
+  owner: Member,
+  project: string,
+  params: NftSetForSaleRequest,
+) => {
   const nftDocRef = build5Db().doc(`${COL.NFT}/${params.nft}`);
   const nft = await nftDocRef.get<Nft>();
   if (!nft) {
@@ -41,7 +55,7 @@ export const getNftSetForSaleParams = async (params: NftSetForSaleRequest, owner
   }
 
   if (nft.auctionFrom && dayjs(nft.auctionFrom.toDate()).isBefore(dayjs())) {
-    throw invalidArgument(WenError.nft_auction_already_in_progress);
+    throw invalidArgument(WenError.auction_already_in_progress);
   }
 
   if (nft.setAsAvatar) {
@@ -76,7 +90,8 @@ export const getNftSetForSaleParams = async (params: NftSetForSaleRequest, owner
     throw invalidArgument(WenError.invalid_collection_status);
   }
 
-  return getNftUpdateData(params);
+  const auction = getAuctionData(project, owner.uid, params, nft);
+  return { nft: { ...getNftUpdateData(params), auction: auction?.uid || '' }, auction };
 };
 
 const getNftUpdateData = (params: NftSetForSaleRequest) => {
@@ -94,7 +109,6 @@ const getNftUpdateData = (params: NftSetForSaleRequest) => {
     update.auctionLength = params.auctionLength;
     update.auctionHighestBid = 0;
     update.auctionHighestBidder = null;
-    update.auctionHighestTransaction = null;
     if (params.extendedAuctionLength) {
       update.extendedAuctionTo = dayjs(params.auctionFrom)
         .add(params.extendedAuctionLength)
@@ -111,7 +125,6 @@ const getNftUpdateData = (params: NftSetForSaleRequest) => {
     update.extendedAuctionLength = null;
     update.auctionHighestBid = null;
     update.auctionHighestBidder = null;
-    update.auctionHighestTransaction = null;
   }
 
   if (params.availableFrom) {
@@ -122,4 +135,42 @@ const getNftUpdateData = (params: NftSetForSaleRequest) => {
     update.availablePrice = null;
   }
   return update;
+};
+
+const getAuctionData = (project: string, owner: string, params: NftSetForSaleRequest, nft: Nft) => {
+  if (!params.auctionFrom) {
+    return;
+  }
+  const auction: Auction = {
+    uid: getRandomEthAddress(),
+    space: nft.space,
+    createdBy: owner,
+    project,
+    projects: getProjects([], project),
+    auctionFrom: dateToTimestamp(params.auctionFrom),
+    auctionTo: dateToTimestamp(dayjs(params.auctionFrom).add(params.auctionLength || 0)),
+    auctionLength: params.auctionLength!,
+
+    auctionFloorPrice: params.auctionFloorPrice || 0,
+    minimalBidIncrement: params.minimalBidIncrement || 0,
+
+    bids: [],
+    maxBids: 1,
+    type: AuctionType.NFT,
+    network: nft.mintingData?.network || getDefaultNetwork(),
+    nftId: nft.uid,
+
+    active: true,
+  };
+
+  if (params.extendedAuctionLength) {
+    return {
+      ...auction,
+      extendedAuctionTo: dayjs(params.auctionFrom).add(params.extendedAuctionLength).toDate(),
+      extendedAuctionLength: params.extendedAuctionLength || 0,
+      extendAuctionWithin: params.extendAuctionWithin || EXTEND_AUCTION_WITHIN,
+    };
+  }
+
+  return auction;
 };

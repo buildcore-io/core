@@ -70,7 +70,7 @@ jobs:
     needs: [deploy_functions]
     defaults:
       run:
-        working-directory: packages/database
+        working-directory: packages/functions
     steps:
       - uses: actions/checkout@v3
         with:
@@ -81,7 +81,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm i -g ts-node
-          cd ../../ && npm run build:database
+          cd ../../ && npm run build:functions
       - name: Set env vars
         run: echo "$FUNCTIONS_ENV_VARS" >> .env
         env:

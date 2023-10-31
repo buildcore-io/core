@@ -5,38 +5,18 @@ export enum NotificationType {
   WIN_BID = 'WIN_BID',
 }
 
-export interface NotificationBidParams {
+interface NotificationParams {
   member: {
     name: string;
   };
   amount: number;
-  nft: {
-    uid: string;
-    name: string;
-  };
+  auction: string;
 }
+export interface NotificationBidParams extends NotificationParams {}
 
-export interface NotificationWinBidParams {
-  member: {
-    name: string;
-  };
-  amount: number;
-  nft: {
-    uid: string;
-    name: string;
-  };
-}
+export interface NotificationWinBidParams extends NotificationParams {}
 
-export interface NotificationLostBidParams {
-  member: {
-    name: string;
-  };
-  amount: number;
-  nft: {
-    uid: string;
-    name: string;
-  };
-}
+export interface NotificationLostBidParams extends NotificationParams {}
 
 /**
  * Notification record.

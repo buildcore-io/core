@@ -126,10 +126,6 @@ export interface Nft extends BaseRecord {
    */
   auctionHighestBidder?: string | null;
   /**
-   * NFT Auction highest transaction {@link Transaction}
-   */
-  auctionHighestTransaction?: string | null;
-  /**
    * NFT current price based on previous sales
    */
   price: number;
@@ -241,4 +237,8 @@ export interface Nft extends BaseRecord {
    * NFT is set as avatar.
    */
   setAsAvatar?: boolean;
+  /**
+   * The build5 id of the auction this nft belongs to
+   */
+  auction?: string | null;
 }
