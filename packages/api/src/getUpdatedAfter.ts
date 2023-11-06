@@ -24,7 +24,7 @@ const getUpdatedAfterSchema = Joi.object({
   startAfter: CommonJoi.uid(false),
 });
 
-export const getUpdatedAfter = async (url: string) => {
+export const getUpdatedAfter = async (project: string, url: string) => {
   const body = getQueryParams<GetUpdatedAfterRequest>(url, getUpdatedAfterSchema);
 
   const isSubCollectionQuery = body.subCollection && body.uid;
@@ -38,6 +38,7 @@ export const getUpdatedAfter = async (url: string) => {
     .collection(baseCollectionPath as COL)
     .where('updatedOn', '>=', updatedAfter.toDate())
     .orderBy('updatedOn')
+    .where(`projects.${project}`, '==', true)
     .limit(getQueryLimit(body.collection));
 
   if (body.collection === PublicCollections.NFT) {

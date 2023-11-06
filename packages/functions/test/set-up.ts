@@ -43,10 +43,17 @@ export const getConfig = () => {
   };
 };
 
+export const PROJECT_API_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9qZWN0IjoiMHg0NjIyM2VkZDQxNTc2MzVkZmM2Mzk5MTU1NjA5ZjMwMWRlY2JmZDg4IiwiaWF0IjoxNjk5MjgyMTQxfQ.Bd0IZNdtc3ne--CC1Bk5qDgWl4NojAsX64K1rCj-5Co';
+
 export const sendOnRequest =
   (func: (req: functions.https.Request, response: express.Response<any>) => void | Promise<void>) =>
   async (data: any) => {
-    const req = { ip: '127.0.0.1', body: { data }, headers: { origin: true } } as any;
+    const req = {
+      ip: '127.0.0.1',
+      body: { data: { projectApiKey: PROJECT_API_KEY, data } },
+      headers: { origin: true },
+    } as any;
     let error = false;
     let response: any = undefined;
     const res = {

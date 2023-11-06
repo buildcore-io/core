@@ -32,7 +32,7 @@ export class Timestamp {
 export interface WenRequest {
   address: NetworkAddress;
   signature?: string;
-  projectApiKey?: string;
+  projectApiKey: string;
   customToken?: string;
   publicKey?: {
     hex: string;

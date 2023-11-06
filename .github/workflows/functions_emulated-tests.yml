@@ -262,8 +262,8 @@ jobs:
                 npm run test:ci -- --forceExit --findRelatedTests ./test/cron/proposal.cron.spec.ts &&
                 npm run test:ci -- --forceExit --findRelatedTests ./test/db.roll.spec.ts &&
                 npm run test:ci -- --forceExit --findRelatedTests ./test/dbroll/nft.auction.roll.spec.ts &&
-                npm run test:ci -- --forceExit --findRelatedTests ./test/stake/delete.stake.reward.spec.ts &&
-                npm run test:ci -- --forceExit --findRelatedTests ./test/stake/stake.reward.cron.spec.ts 
+                npm run test:ci -- --forceExit --findRelatedTests ./test/dbroll/set.project.spec.ts &&
+                npm run test:ci -- --forceExit --findRelatedTests ./test/stake/delete.stake.reward.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -298,6 +298,7 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test:ci -- --forceExit --findRelatedTests ./test/stake/stake.reward.cron.spec.ts &&
                 npm run test:ci -- --forceExit --findRelatedTests ./test/storage/resize.img.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data

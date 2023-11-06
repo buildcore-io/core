@@ -123,7 +123,7 @@ import { onRequest } from './https';
 import { noAuth } from './middlewares';
 
 exports[WEN_FUNC.createMember] = onRequest({
-  name: WEN_FUNC.updateMember,
+  name: WEN_FUNC.createMember,
   schema: Joi.object({}),
   middleware: noAuth,
   handler: createMemberControl,

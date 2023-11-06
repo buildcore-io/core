@@ -1,4 +1,4 @@
-import { FirebaseApp, Firestore, build5Db } from '@build-5/database';
+import { FirebaseApp, Firestore } from '@build-5/database';
 import {
   Auction,
   AuctionType,
@@ -12,7 +12,7 @@ import {
 import { randomBytes } from 'crypto';
 import dayjs from 'dayjs';
 import { Wallet } from 'ethers';
-import { get, head } from 'lodash';
+import { get, head, last } from 'lodash';
 
 export const nftAuctionRoll = async (app: FirebaseApp) => {
   const db = new Firestore(app);
@@ -28,18 +28,19 @@ export const nftAuctionRoll = async (app: FirebaseApp) => {
       .startAfter(lastDoc)
       .limit(500)
       .get<Nft>();
+    lastDocId = last(nfts)?.uid || '';
 
     const promises = nfts.map((n) =>
-      build5Db().runTransaction(async (transaction) => {
-        const nftDocRef = build5Db().doc(`${COL.NFT}/${n.uid}`);
+      db.runTransaction(async (transaction) => {
+        const nftDocRef = db.doc(`${COL.NFT}/${n.uid}`);
         const nft = <Nft>await transaction.get(nftDocRef);
 
         if (nft.auction || !nft.auctionTo || dayjs(nft.auctionTo.toDate()).isBefore(dayjs())) {
           return;
         }
 
-        const auction = await getAuctionData(nft);
-        const auctionDocRef = build5Db().doc(`${COL.AUCTION}/${auction.uid}`);
+        const auction = await getAuctionData(db, nft);
+        const auctionDocRef = db.doc(`${COL.AUCTION}/${auction.uid}`);
         transaction.create(auctionDocRef, auction);
 
         transaction.update(nftDocRef, { auction: auction.uid });
@@ -50,7 +51,7 @@ export const nftAuctionRoll = async (app: FirebaseApp) => {
   } while (lastDocId);
 };
 
-const getAuctionData = async (nft: Nft) => {
+const getAuctionData = async (db: Firestore, nft: Nft) => {
   const auction: Auction = {
     uid: getRandomEthAddress(),
     space: nft.space,
@@ -77,9 +78,7 @@ const getAuctionData = async (nft: Nft) => {
     auction.auctionHighestBidder = nft.auctionHighestBidder;
     auction.auctionHighestBid = nft.auctionHighestBid || 0;
 
-    const paymentDocRef = build5Db().doc(
-      `${COL.TRANSACTION}/${get(nft, 'auctionHighestTransaction', '')}`,
-    );
+    const paymentDocRef = db.doc(`${COL.TRANSACTION}/${get(nft, 'auctionHighestTransaction', '')}`);
     const payment = <Transaction>await paymentDocRef.get();
     auction.bids.push({
       bidder: nft.auctionHighestBidder,
