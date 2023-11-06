@@ -1,6 +1,9 @@
 import { ApiRoutes } from '@build-5/interfaces';
 import cors from 'cors';
 import express from 'express';
+import http from 'http';
+import jwt from 'jsonwebtoken';
+import { get } from 'lodash';
 import { Observable, first } from 'rxjs';
 import ws from 'ws';
 import { getAddresses } from './getAddresses';
@@ -23,12 +26,12 @@ const app = express();
 
 app.use(cors());
 
-app.get('/*', (req, res) => onConnection(req.url, res));
+app.get('/*', (req, res) => onConnection(req, res));
 
 const wsServer = new ws.Server({ noServer: true });
 
 wsServer.on('connection', async (socket, request) => {
-  onConnection(request.url || '', socket);
+  onConnection(request, socket);
 });
 
 const server = app.listen(port);
@@ -41,9 +44,13 @@ server.on('upgrade', (request, socket, head) => {
   });
 });
 
-const onConnection = async (url: string, res: express.Response | ws.WebSocket) => {
+const onConnection = async (
+  req: express.Request | http.IncomingMessage,
+  res: express.Response | ws.WebSocket,
+) => {
   try {
-    const observable = await getObservable(url);
+    const project = getProjectId(req);
+    const observable = await getObservable(project, req.url || '');
     if (res instanceof ws.WebSocket) {
       sendLiveUpdates(res, observable);
       return;
@@ -61,7 +68,7 @@ const onConnection = async (url: string, res: express.Response | ws.WebSocket) =
   }
 };
 
-const getObservable = (url: string): Promise<Observable<unknown>> => {
+const getObservable = (project: string, url: string): Promise<Observable<unknown>> => {
   const route = url.replace('/api', '').split('?')[0];
   switch (route) {
     case ApiRoutes.GET_BY_ID:
@@ -69,11 +76,11 @@ const getObservable = (url: string): Promise<Observable<unknown>> => {
     case ApiRoutes.GET_MANY_BY_ID:
       return getManyById(url);
     case ApiRoutes.GET_MANY:
-      return getMany(url);
+      return getMany(project, url);
     case ApiRoutes.GET_MANY_ADVANCED:
-      return getManyAdvanced(url);
+      return getManyAdvanced(project, url);
     case ApiRoutes.GET_UPDATED_AFTER:
-      return getUpdatedAfter(url);
+      return getUpdatedAfter(project, url);
     case ApiRoutes.GET_TOKEN_PRICE:
       return getTokenPrice(url);
     case ApiRoutes.GET_AVG_PRICE:
@@ -92,5 +99,19 @@ const getObservable = (url: string): Promise<Observable<unknown>> => {
       return getNftMutableMetadataHistory(url);
     default:
       throw { code: 400, message: 'Invalid route' };
+  }
+};
+
+const getProjectId = (req: express.Request | http.IncomingMessage) => {
+  try {
+    const jwtToken = req.headers.authorization?.split(' ')[1];
+    const payload = jwt.verify(jwtToken || '', 'asdas#@#@xdas31sad');
+    const project = get(payload, 'project', '');
+    if (!project) {
+      throw { code: 401, message: 'Unauthorized' };
+    }
+    return project;
+  } catch {
+    throw { code: 401, message: 'Unauthorized' };
   }
 };

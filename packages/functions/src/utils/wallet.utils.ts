@@ -4,7 +4,6 @@ import {
   DecodedToken,
   Member,
   NetworkAddress,
-  SOON_PROJECT_ID,
   WEN_FUNC,
   WenError,
   WenRequest,
@@ -26,26 +25,12 @@ const toHex = (stringToConvert: string) =>
     .map((c) => c.charCodeAt(0).toString(16).padStart(2, '0'))
     .join('');
 
-export const decodeAuth = async (
-  req: WenRequest,
-  func: WEN_FUNC,
-  projectIsRequired: boolean,
-): Promise<DecodedToken> => {
+export const decodeAuth = async (req: WenRequest, func: WEN_FUNC): Promise<DecodedToken> => {
   if (!req) {
     throw unAuthenticated(WenError.invalid_params);
   }
 
-  if (projectIsRequired && !req.projectApiKey) {
-    throw invalidArgument(WenError.invalid_project_api_key);
-  }
-
-  const decoded = req.projectApiKey
-    ? jwt.verify(req.projectApiKey, getJwtSecretKey())
-    : { project: SOON_PROJECT_ID };
-  const project = get(decoded, 'project', '');
-  if (!project) {
-    throw invalidArgument(WenError.invalid_project_api_key);
-  }
+  const project = getProject(req);
 
   if (req.signature && req.publicKey) {
     const address = await validateWithPublicKey(req);
@@ -157,3 +142,16 @@ export function getRandomEthAddress() {
 }
 
 export const getRandomNonce = () => Math.floor(Math.random() * 1000000).toString();
+
+export const getProject = (req: WenRequest) => {
+  try {
+    const decoded = jwt.verify(req.projectApiKey, getJwtSecretKey());
+    const project = get(decoded, 'project', '');
+    if (!project) {
+      throw invalidArgument(WenError.invalid_project_api_key);
+    }
+    return project;
+  } catch {
+    throw invalidArgument(WenError.invalid_project_api_key);
+  }
+};

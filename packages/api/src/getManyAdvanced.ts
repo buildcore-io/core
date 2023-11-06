@@ -46,11 +46,13 @@ const getManyAdvancedSchema = Joi.object({
   startAfter: CommonJoi.uid(false),
 });
 
-export const getManyAdvanced = async (url: string) => {
+export const getManyAdvanced = async (project: string, url: string) => {
   const body = getQueryParams<GetManyAdvancedRequest>(url, getManyAdvancedSchema);
 
   const { collection, subCollection, uid } = body;
   let query = getBaseQuery(collection, uid, subCollection).limit(getQueryLimit(body.collection));
+
+  query = query.where(`projects.${project}`, '==', true);
 
   const { filters, operators } = getFilters(body.fieldName, body.fieldValue, body.operator);
   try {

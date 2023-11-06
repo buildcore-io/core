@@ -41,7 +41,7 @@ const getManySchema = Joi.object({
   startAfter: CommonJoi.uid(false),
 });
 
-export const getMany = async (url: string) => {
+export const getMany = async (project: string, url: string) => {
   const body = getQueryParams<GetManyRequest>(url, getManySchema);
 
   const baseCollectionPath =
@@ -51,6 +51,8 @@ export const getMany = async (url: string) => {
   let query = build5Db()
     .collection(baseCollectionPath as COL)
     .limit(getQueryLimit(body.collection));
+
+  query = query.where(`projects.${project}`, '==', true);
 
   if (body.fieldName && body.fieldValue != null) {
     try {
