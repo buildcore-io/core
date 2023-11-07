@@ -11,7 +11,7 @@ describe('Expired nft stake cron', () => {
     const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${collection}`);
     await collectionDocRef.create({
       project: SOON_PROJECT_ID,
-      projects: { [SOON_PROJECT_ID]: true },
+      projects: [SOON_PROJECT_ID],
       uid: collection,
       name: 'asd',
       stakedNft: 2,
@@ -19,7 +19,7 @@ describe('Expired nft stake cron', () => {
 
     let nftStake: NftStake = {
       project: SOON_PROJECT_ID,
-      projects: { [SOON_PROJECT_ID]: true },
+      projects: [SOON_PROJECT_ID],
       uid: getRandomEthAddress(),
       member: getRandomEthAddress(),
       space: getRandomEthAddress(),

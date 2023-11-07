@@ -109,7 +109,7 @@ const getClaimableDrops = async (token: string, member: string) => {
   }
   const drop: TokenDrop = {
     project: '',
-    projects: {},
+    projects: [],
     uid: getRandomEthAddress(),
     member,
     token,

@@ -45,7 +45,7 @@ describe('Delete stake reward', () => {
       .doc(`${COL.TOKEN}/${token}`)
       .create({
         project: SOON_PROJECT_ID,
-        projects: { [SOON_PROJECT_ID]: true },
+        projects: [SOON_PROJECT_ID],
         uid: token,
         space: space.uid,
       });
@@ -56,7 +56,7 @@ describe('Delete stake reward', () => {
     const stakeRewards = [
       {
         project: SOON_PROJECT_ID,
-        projects: { [SOON_PROJECT_ID]: true },
+        projects: [SOON_PROJECT_ID],
         uid: wallet.getRandomEthAddress(),
         startDate: dateToTimestamp(now.add(2, 'd')),
         endDate: dateToTimestamp(now.add(3, 'd')),
@@ -67,7 +67,7 @@ describe('Delete stake reward', () => {
       },
       {
         project: SOON_PROJECT_ID,
-        projects: { [SOON_PROJECT_ID]: true },
+        projects: [SOON_PROJECT_ID],
         uid: wallet.getRandomEthAddress(),
         startDate: dateToTimestamp(now.add(1, 'd')),
         endDate: dateToTimestamp(now.add(2, 'd')),

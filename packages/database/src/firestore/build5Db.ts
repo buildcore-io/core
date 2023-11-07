@@ -3,7 +3,7 @@ import { build5App } from '../app/build5App';
 import { Firestore } from './firestore';
 import { IDatabase } from './interfaces';
 
-export const build5Db = (): IDatabase => new Firestore(build5App());
+export const build5Db = (): IDatabase => new Firestore(build5App);
 
 export const getSnapshot = (
   col: COL | PublicCollections,

@@ -52,8 +52,6 @@ export const getManyAdvanced = async (project: string, url: string) => {
   const { collection, subCollection, uid } = body;
   let query = getBaseQuery(collection, uid, subCollection).limit(getQueryLimit(body.collection));
 
-  query = query.where(`projects.${project}`, '==', true);
-
   const { filters, operators } = getFilters(body.fieldName, body.fieldValue, body.operator);
   try {
     for (const [key, values] of Object.entries(filters)) {
@@ -72,6 +70,8 @@ export const getManyAdvanced = async (project: string, url: string) => {
   if (body.collection === PublicCollections.NFT && !isEqual(filters['hidden'], [false])) {
     query = query.where('hidden', '==', false);
   }
+
+  query = query.where('projects', 'array-contains', project);
 
   const typeFilters = filters['type'];
   if (

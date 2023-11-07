@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - packages/lib/**
+      - packages/api/**
 
 jobs:
   soon_lib:

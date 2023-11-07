@@ -32,7 +32,7 @@ db.collection(COL.MEMBER)
         .doc(tranId)
         .set(<Transaction>{
           project: '',
-          projects: {},
+          projects: [],
           type: TransactionType.CREDIT,
           uid: tranId,
           space: '',

@@ -82,7 +82,7 @@ describe('ProposalController: ' + WEN_FUNC.rejectProposal + ' NATIVE', () => {
       .doc(`${COL.TOKEN}/${tokenId}`)
       .create({
         project: SOON_PROJECT_ID,
-        projects: { [SOON_PROJECT_ID]: true },
+        projects: [SOON_PROJECT_ID],
         uid: tokenId,
         space: space.uid,
         status: TokenStatus.MINTED,

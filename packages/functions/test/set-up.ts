@@ -102,7 +102,7 @@ const setup = async () => {
     .doc(`${COL.TOKEN}/${soonTokenId}`)
     .set({
       project: SOON_PROJECT_ID,
-      projects: { [SOON_PROJECT_ID]: true },
+      projects: [SOON_PROJECT_ID],
       uid: soonTokenId,
       symbol: 'SOON',
     });

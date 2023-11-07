@@ -31,7 +31,7 @@ export const creditHighestPayment = async (app: FirebaseApp) => {
   const adminDocRef = projectDocRef.collection(SUB_COL.ADMINS).doc(ADMIN_ID);
   const admin = {
     project: SOON_PROJECT_ID,
-    projects: { [SOON_PROJECT_ID]: true },
+    projects: [SOON_PROJECT_ID],
     uid: ADMIN_ID,
     createdOn: dayjs().toDate(),
     parentCol: COL.PROJECT,

@@ -90,7 +90,7 @@ describe('Trade trigger', () => {
   const saveSellToDb = async (count: number, price: number) => {
     const data = <TokenTradeOrder>{
       project: SOON_PROJECT_ID,
-      projects: { [SOON_PROJECT_ID]: true },
+      projects: [SOON_PROJECT_ID],
       createdOn: serverTime(),
       uid: wallet.getRandomEthAddress(),
       owner: seller,
@@ -478,7 +478,7 @@ describe('Trade trigger', () => {
       const sellDocId = wallet.getRandomEthAddress();
       const data = <TokenTradeOrder>{
         project: SOON_PROJECT_ID,
-        projects: { [SOON_PROJECT_ID]: true },
+        projects: [SOON_PROJECT_ID],
         uid: sellDocId,
         owner: seller,
         token: token.uid,

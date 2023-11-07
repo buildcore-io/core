@@ -38,7 +38,6 @@ export const getUpdatedAfter = async (project: string, url: string) => {
     .collection(baseCollectionPath as COL)
     .where('updatedOn', '>=', updatedAfter.toDate())
     .orderBy('updatedOn')
-    .where(`projects.${project}`, '==', true)
     .limit(getQueryLimit(body.collection));
 
   if (body.collection === PublicCollections.NFT) {
@@ -48,6 +47,8 @@ export const getUpdatedAfter = async (project: string, url: string) => {
   if (body.collection === PublicCollections.TRANSACTION) {
     query = query.where('isOrderType', '==', false);
   }
+
+  query = query.where('projects', 'array-contains', project);
 
   if (body.startAfter) {
     const startAfter = await getSnapshot(baseCollectionPath as COL, body.startAfter);

@@ -81,7 +81,7 @@ describe('MemberController: ' + WEN_FUNC.updateMember, () => {
   it('Should set nft as avatar, then unset', async () => {
     const nft = {
       project: SOON_PROJECT_ID,
-      projects: { [SOON_PROJECT_ID]: true },
+      projects: [SOON_PROJECT_ID],
       uid: wallet.getRandomEthAddress(),
       media: MEDIA,
       owner: dummyAddress,
@@ -111,7 +111,7 @@ describe('MemberController: ' + WEN_FUNC.updateMember, () => {
   it('Should set nft as avatar, when available field is missing', async () => {
     const nft = {
       project: SOON_PROJECT_ID,
-      projects: { [SOON_PROJECT_ID]: true },
+      projects: [SOON_PROJECT_ID],
       uid: wallet.getRandomEthAddress(),
       media: MEDIA,
       owner: dummyAddress,
@@ -132,7 +132,7 @@ describe('MemberController: ' + WEN_FUNC.updateMember, () => {
 
     const nft = {
       project: SOON_PROJECT_ID,
-      projects: { [SOON_PROJECT_ID]: true },
+      projects: [SOON_PROJECT_ID],
       uid: wallet.getRandomEthAddress(),
       media: MEDIA,
     };
