@@ -6,7 +6,7 @@ import {
   TokenTradeOrderType,
 } from '@build-5/interfaces';
 import { from, map, switchMap } from 'rxjs';
-import { Build5Env, getTokenPriceUrl } from '../../Config';
+import { Build5Env, TOKENS, getTokenPriceUrl } from '../../Config';
 import { wrappedFetch } from '../../fetch.utils';
 import { CrudRepository } from '../CrudRepository';
 import { GetTokenPriceGrouped } from '../groupGet/GetTokenPriceGrouped';
@@ -52,7 +52,7 @@ export class TokenMarketRepository extends CrudRepository<TokenTradeOrder> {
    * @returns
    */
   public getTokenPriceInUsd = async (token: string) => {
-    const response = await wrappedFetch(getTokenPriceUrl(this.env), { token });
+    const response = await wrappedFetch(TOKENS[this.env], getTokenPriceUrl(this.env), { token });
     return (response as Record<string, unknown>).usdPrice;
   };
 

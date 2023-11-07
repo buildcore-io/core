@@ -105,7 +105,7 @@ export interface Base {
 
 export interface BaseSubCollection {
   project?: string;
-  projects?: { [key: string]: boolean };
+  projects?: string[];
   parentId: string;
   parentCol: string;
 }
@@ -117,7 +117,7 @@ export interface BaseSubCollection {
  */
 export interface BaseRecord extends Base {
   project?: string;
-  projects?: { [key: string]: boolean };
+  projects?: string[];
   /**
    * Date/time it was created on.
    */

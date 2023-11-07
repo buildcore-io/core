@@ -52,8 +52,6 @@ export const getMany = async (project: string, url: string) => {
     .collection(baseCollectionPath as COL)
     .limit(getQueryLimit(body.collection));
 
-  query = query.where(`projects.${project}`, '==', true);
-
   if (body.fieldName && body.fieldValue != null) {
     try {
       const filters = getFilters(body.fieldName, body.fieldValue);
@@ -73,6 +71,8 @@ export const getMany = async (project: string, url: string) => {
   if (body.collection === PublicCollections.TRANSACTION) {
     query = query.where('isOrderType', '==', false);
   }
+
+  query = query.where('projects', 'array-contains', project);
 
   if (body.startAfter) {
     const startAfter = getSnapshot(

@@ -386,7 +386,7 @@ describe('Collection trigger test', () => {
     const collection = {
       ...dummyCollection('', 0.1),
       project: SOON_PROJECT_ID,
-      projects: { [SOON_PROJECT_ID]: true },
+      projects: [SOON_PROJECT_ID],
       uid: wallet.getRandomEthAddress(),
     };
     await build5Db().doc(`${COL.COLLECTION}/${collection.uid}`).create(collection);
@@ -400,7 +400,7 @@ describe('Collection trigger test', () => {
         batch.create(build5Db().doc(`${COL.NFT}/${id}`), {
           ...dummyNft(chunkIndex * 500 + index, id, collection.uid),
           project: SOON_PROJECT_ID,
-          projects: { [SOON_PROJECT_ID]: true },
+          projects: [SOON_PROJECT_ID],
         });
       });
       await batch.commit();

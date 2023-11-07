@@ -23,7 +23,7 @@ describe('Stake reward controller', () => {
       .doc(`${COL.TOKEN}/${token}`)
       .create({
         project: SOON_PROJECT_ID,
-        projects: { [SOON_PROJECT_ID]: true },
+        projects: [SOON_PROJECT_ID],
         uid: token,
         space: space.uid,
       });

@@ -1,7 +1,7 @@
+require('dotenv').config({ path: __dirname + '/.env' });
 import { ApiRoutes } from '@build-5/interfaces';
 import cors from 'cors';
 import express from 'express';
-import http from 'http';
 import jwt from 'jsonwebtoken';
 import { get } from 'lodash';
 import { Observable, first } from 'rxjs';
@@ -26,12 +26,17 @@ const app = express();
 
 app.use(cors());
 
-app.get('/*', (req, res) => onConnection(req, res));
+app.get('/*', async (req, res) => {
+  const jwtToken = req.headers.authorization?.split(' ')[1];
+  const url = new URL(req.protocol + '://' + req.get('host') + req.originalUrl);
+  url.searchParams.append('token', jwtToken || '');
+  await onConnection(url, res);
+});
 
 const wsServer = new ws.Server({ noServer: true });
 
-wsServer.on('connection', async (socket, request) => {
-  onConnection(request, socket);
+wsServer.on('connection', async (socket, req) => {
+  onConnection(new URL(`ws://${req.headers.host}${req.url}`), socket);
 });
 
 const server = app.listen(port);
@@ -44,13 +49,12 @@ server.on('upgrade', (request, socket, head) => {
   });
 });
 
-const onConnection = async (
-  req: express.Request | http.IncomingMessage,
-  res: express.Response | ws.WebSocket,
-) => {
+const onConnection = async (url: URL, res: express.Response | ws.WebSocket) => {
   try {
-    const project = getProjectId(req);
-    const observable = await getObservable(project, req.url || '');
+    const project = getProjectId(url);
+    url.searchParams.delete('token');
+
+    const observable = await getObservable(project, url.href);
     if (res instanceof ws.WebSocket) {
       sendLiveUpdates(res, observable);
       return;
@@ -69,43 +73,52 @@ const onConnection = async (
 };
 
 const getObservable = (project: string, url: string): Promise<Observable<unknown>> => {
-  const route = url.replace('/api', '').split('?')[0];
-  switch (route) {
-    case ApiRoutes.GET_BY_ID:
-      return getById(url);
-    case ApiRoutes.GET_MANY_BY_ID:
-      return getManyById(url);
-    case ApiRoutes.GET_MANY:
-      return getMany(project, url);
-    case ApiRoutes.GET_MANY_ADVANCED:
-      return getManyAdvanced(project, url);
-    case ApiRoutes.GET_UPDATED_AFTER:
-      return getUpdatedAfter(project, url);
-    case ApiRoutes.GET_TOKEN_PRICE:
-      return getTokenPrice(url);
-    case ApiRoutes.GET_AVG_PRICE:
-      return getAvgPrice(url);
-    case ApiRoutes.GET_PRICE_CHANGE:
-      return getPriceChange(url);
-    case ApiRoutes.GET_ADDRESSES:
-      return getAddresses(url);
-    case ApiRoutes.GET_TOP_MILESTONES:
-      return getTopMilestones(url);
-    case ApiRoutes.GET_NFT_MUTABLE_METADATA:
-      return getNftMutableMetadata(url);
-    case ApiRoutes.GET_NFT_IDS:
-      return getNftIds(url);
-    case ApiRoutes.GET_NFT_MUTABLE_METADATA_HISTORY:
-      return getNftMutableMetadataHistory(url);
-    default:
-      throw { code: 400, message: 'Invalid route' };
+  if (url.includes(ApiRoutes.GET_BY_ID)) {
+    return getById(url);
   }
+  if (url.includes(ApiRoutes.GET_MANY_BY_ID)) {
+    return getManyById(url);
+  }
+  if (url.includes(ApiRoutes.GET_MANY)) {
+    return getMany(project, url);
+  }
+  if (url.includes(ApiRoutes.GET_MANY_ADVANCED)) {
+    return getManyAdvanced(project, url);
+  }
+  if (url.includes(ApiRoutes.GET_UPDATED_AFTER)) {
+    return getUpdatedAfter(project, url);
+  }
+  if (url.includes(ApiRoutes.GET_TOKEN_PRICE)) {
+    return getTokenPrice(url);
+  }
+  if (url.includes(ApiRoutes.GET_AVG_PRICE)) {
+    return getAvgPrice(url);
+  }
+  if (url.includes(ApiRoutes.GET_PRICE_CHANGE)) {
+    return getPriceChange(url);
+  }
+  if (url.includes(ApiRoutes.GET_ADDRESSES)) {
+    return getAddresses(url);
+  }
+  if (url.includes(ApiRoutes.GET_TOP_MILESTONES)) {
+    return getTopMilestones(url);
+  }
+  if (url.includes(ApiRoutes.GET_NFT_MUTABLE_METADATA)) {
+    return getNftMutableMetadata(url);
+  }
+  if (url.includes(ApiRoutes.GET_NFT_IDS)) {
+    return getNftIds(url);
+  }
+  if (url.includes(ApiRoutes.GET_NFT_MUTABLE_METADATA_HISTORY)) {
+    return getNftMutableMetadataHistory(url);
+  }
+  throw { code: 400, message: 'Invalid route' };
 };
 
-const getProjectId = (req: express.Request | http.IncomingMessage) => {
+const getProjectId = (url: URL) => {
   try {
-    const jwtToken = req.headers.authorization?.split(' ')[1];
-    const payload = jwt.verify(jwtToken || '', 'asdas#@#@xdas31sad');
+    const jwtToken = url.searchParams.get('token');
+    const payload = jwt.verify(jwtToken || '', process.env.JWT_SECRET!);
     const project = get(payload, 'project', '');
     if (!project) {
       throw { code: 401, message: 'Unauthorized' };

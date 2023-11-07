@@ -37,7 +37,7 @@ const subCollections = [
 type DocType = admin.firestore.QueryDocumentSnapshot<admin.firestore.DocumentData> | undefined;
 type QuerySnap = admin.firestore.QuerySnapshot<admin.firestore.DocumentData>;
 
-const dataToSet = { project: SOON_PROJECT_ID, projects: { [SOON_PROJECT_ID]: true } };
+const dataToSet = { project: SOON_PROJECT_ID, projects: [SOON_PROJECT_ID] };
 
 export const setProjectRoll = async (app: FirebaseApp) => {
   const adminApp = app.getInstance() as admin.app.App;
@@ -56,10 +56,7 @@ export const setProjectRoll = async (app: FirebaseApp) => {
       lastDoc = last(snap.docs);
 
       snap.docs.forEach((d) => {
-        const data = d.data() as BaseRecord;
-        if (!data.project) {
-          batch.update(d.ref, dataToSet);
-        }
+        batch.update(d.ref, dataToSet);
       });
 
       await batch.commit();

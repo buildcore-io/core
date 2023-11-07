@@ -7,6 +7,7 @@ import {
 import { Observable, from, switchMap } from 'rxjs';
 import {
   Build5Env,
+  TOKENS,
   getManyAdvancedUrl,
   getManyByIdUrl,
   getManyUrl,
@@ -45,7 +46,7 @@ export abstract class SubCrudRepository<T> {
       subCollection: this.subCol,
       uids,
     };
-    return await wrappedFetch<T[]>(getManyByIdUrl(this.env), params);
+    return await wrappedFetch<T[]>(TOKENS[this.env], getManyByIdUrl(this.env), params);
   };
 
   /**
@@ -76,7 +77,7 @@ export abstract class SubCrudRepository<T> {
    */
   public getAll = async (parent: string, startAfter?: string) => {
     const params = { collection: this.col, uid: parent, subCollection: this.subCol, startAfter };
-    return await wrappedFetch<T[]>(getManyUrl(this.env), params);
+    return await wrappedFetch<T[]>(TOKENS[this.env], getManyUrl(this.env), params);
   };
 
   public getAllLive = (parent: string, startAfter?: string) => {
@@ -116,7 +117,7 @@ export abstract class SubCrudRepository<T> {
       fieldValue,
       startAfter,
     };
-    return await wrappedFetch<T[]>(getManyUrl(this.env), params);
+    return await wrappedFetch<T[]>(TOKENS[this.env], getManyUrl(this.env), params);
   };
 
   /**
@@ -126,7 +127,7 @@ export abstract class SubCrudRepository<T> {
    */
   public getAllUpdatedAfter = async (parent: string, updatedAfter: number) => {
     const params = { collection: this.col, uid: parent, subCollection: this.subCol, updatedAfter };
-    return await wrappedFetch<T[]>(getUpdatedAfterUrl(this.env), params);
+    return await wrappedFetch<T[]>(TOKENS[this.env], getUpdatedAfterUrl(this.env), params);
   };
 
   public getTopBySubColIdLive = (
