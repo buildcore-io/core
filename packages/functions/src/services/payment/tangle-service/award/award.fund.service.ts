@@ -13,7 +13,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
-import { getProjects } from '../../../../utils/common.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
@@ -67,7 +66,6 @@ export const createAwardFundOrder = async (
   const nativeTokens = [{ id: award.badge.tokenId!, amount: BigInt(totalReward) }];
   return {
     project,
-    projects: getProjects([], project),
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,

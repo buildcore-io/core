@@ -21,7 +21,7 @@ import {
 } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { cloneDeep, get } from 'lodash';
-import { getProjects, intToU32 } from '../../../utils/common.utils';
+import { intToU32 } from '../../../utils/common.utils';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { WalletService } from '../../wallet/wallet.service';
@@ -111,7 +111,6 @@ export const createNftStakeOrder = async (
   const targetAddress = await wallet.getNewIotaAddressDetails();
   return {
     project,
-    projects: getProjects([], project),
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member,

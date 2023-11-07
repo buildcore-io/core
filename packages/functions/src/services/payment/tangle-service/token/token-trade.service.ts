@@ -24,7 +24,7 @@ import bigDecimal from 'js-big-decimal';
 import { set } from 'lodash';
 import { assertMemberHasValidAddress } from '../../../../utils/address.utils';
 import { packBasicOutput } from '../../../../utils/basic-output.utils';
-import { getProject, getProjects } from '../../../../utils/common.utils';
+import { getProject } from '../../../../utils/common.utils';
 import { isProdEnv } from '../../../../utils/config.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
@@ -166,7 +166,6 @@ export const createTokenTradeOrder = async (
   }
   const tradeOrder: TokenTradeOrder = {
     project,
-    projects: getProjects([token], project),
     uid: getRandomEthAddress(),
     owner,
     token: token.uid,
@@ -222,7 +221,6 @@ const createTradeOrderTransaction = async (
 
   const order: Transaction = {
     project,
-    projects: getProjects([token], project),
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member,

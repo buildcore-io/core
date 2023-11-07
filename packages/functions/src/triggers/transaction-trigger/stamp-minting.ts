@@ -2,7 +2,7 @@ import { build5Db } from '@build-5/database';
 import { COL, Transaction, TransactionPayloadType, TransactionType } from '@build-5/interfaces';
 import { TransactionPayload, Utils } from '@iota/sdk';
 import dayjs from 'dayjs';
-import { getProject, getProjects } from '../../utils/common.utils';
+import { getProject } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -47,7 +47,6 @@ const onAliasMinted = async (transaction: Transaction) => {
 
   const mintNftOrder: Transaction = {
     project: getProject(transaction),
-    projects: getProjects([transaction]),
     type: TransactionType.STAMP,
     uid: getRandomEthAddress(),
     member: transaction.member,

@@ -11,7 +11,6 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import { createProject } from '../../../src/runtime/firebase/project/index';
-import { getProjects } from '../../../src/utils/common.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
 import { testEnv } from '../../set-up';
 import { createMember, expectThrow, getRandomSymbol, mockWalletReturnValue } from '../common';
@@ -30,7 +29,6 @@ describe('Project create', () => {
     const tokenId = wallet.getRandomEthAddress();
     token = <Token>{
       project: SOON_PROJECT_ID,
-      projects: getProjects([], SOON_PROJECT_ID),
       uid: tokenId,
       symbol: getRandomSymbol(),
       name: 'MyToken',

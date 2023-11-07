@@ -37,7 +37,7 @@ const subCollections = [
 type DocType = admin.firestore.QueryDocumentSnapshot<admin.firestore.DocumentData> | undefined;
 type QuerySnap = admin.firestore.QuerySnapshot<admin.firestore.DocumentData>;
 
-const dataToSet = { project: SOON_PROJECT_ID, projects: [SOON_PROJECT_ID] };
+const dataToSet = { project: SOON_PROJECT_ID, projects: admin.firestore.FieldValue.delete() };
 
 export const setProjectRoll = async (app: FirebaseApp) => {
   const adminApp = app.getInstance() as admin.app.App;

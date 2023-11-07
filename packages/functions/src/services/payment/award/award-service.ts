@@ -17,7 +17,7 @@ import { set } from 'lodash';
 import { packBasicOutput } from '../../../utils/basic-output.utils';
 import { PLACEHOLDER_CID } from '../../../utils/car.utils';
 import { createNftOutput } from '../../../utils/collection-minting-utils/nft.utils';
-import { getProject, getProjects } from '../../../utils/common.utils';
+import { getProject } from '../../../utils/common.utils';
 import { getContentType } from '../../../utils/storage.utils';
 import { createAliasOutput } from '../../../utils/token-minting-utils/alias.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
@@ -70,7 +70,6 @@ export class AwardFundService extends BaseService {
 
     const mintAliasOrder: Transaction = {
       project: getProject(order),
-      projects: getProjects([order]),
       type: TransactionType.AWARD,
       uid: getRandomEthAddress(),
       member: order.member,

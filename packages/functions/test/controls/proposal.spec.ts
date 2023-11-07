@@ -15,7 +15,6 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { getProjects } from '../../src/utils/common.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -78,16 +77,13 @@ describe('ProposalController: ' + WEN_FUNC.rejectProposal + ' NATIVE', () => {
     body = dummyBody(space.uid);
 
     const tokenId = wallet.getRandomEthAddress();
-    await build5Db()
-      .doc(`${COL.TOKEN}/${tokenId}`)
-      .create({
-        project: SOON_PROJECT_ID,
-        projects: [SOON_PROJECT_ID],
-        uid: tokenId,
-        space: space.uid,
-        status: TokenStatus.MINTED,
-        approved: true,
-      });
+    await build5Db().doc(`${COL.TOKEN}/${tokenId}`).create({
+      project: SOON_PROJECT_ID,
+      uid: tokenId,
+      space: space.uid,
+      status: TokenStatus.MINTED,
+      approved: true,
+    });
   });
 
   it('successfully create proposal with name', async () => {
@@ -472,7 +468,6 @@ describe('ProposalController: ' + WEN_FUNC.createProposal + ' MEMBERS', () => {
 export const saveBaseToken = async (space: string, guardian: string) => {
   const token = {
     project: SOON_PROJECT_ID,
-    projects: getProjects([], SOON_PROJECT_ID),
     symbol: getRandomSymbol(),
     approved: true,
     updatedOn: serverTime(),

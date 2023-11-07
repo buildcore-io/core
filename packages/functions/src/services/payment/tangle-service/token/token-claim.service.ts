@@ -18,7 +18,6 @@ import {
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { assertMemberHasValidAddress } from '../../../../utils/address.utils';
-import { getProjects } from '../../../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
@@ -78,7 +77,6 @@ export const createMintedTokenAirdropCalimOrder = async (
 
   return {
     project,
-    projects: getProjects([], project),
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,
@@ -109,7 +107,6 @@ const getClaimableDrops = async (token: string, member: string) => {
   }
   const drop: TokenDrop = {
     project: '',
-    projects: [],
     uid: getRandomEthAddress(),
     member,
     token,

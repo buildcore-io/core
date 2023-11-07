@@ -11,7 +11,6 @@ import {
 import { merge } from 'lodash';
 import { hasStakedTokens } from '../../services/stake.service';
 import { assertSpaceHasValidAddress } from '../../utils/address.utils';
-import { getProjects } from '../../utils/common.utils';
 import { isProdEnv } from '../../utils/config.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
@@ -67,7 +66,6 @@ export const createTokenControl = async ({
   const tokenUid = getRandomEthAddress();
   const extraData = {
     project,
-    projects: getProjects([], project),
     uid: tokenUid,
     createdBy: owner,
     approved: !isProdEnv(),

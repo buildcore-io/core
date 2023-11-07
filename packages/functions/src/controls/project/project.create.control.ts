@@ -47,7 +47,6 @@ export const createProjectControl = async ({ owner, params }: Context<ProjectCre
   const adminDocRef = projectDocRef.collection(SUB_COL.ADMINS).doc(owner);
   const admin: ProjectAdmin = {
     project: projectData.uid,
-    projects: [projectData.uid],
     uid: owner,
     createdOn: dateToTimestamp(dayjs()),
     parentCol: COL.PROJECT,

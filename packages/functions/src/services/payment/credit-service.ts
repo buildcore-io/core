@@ -1,7 +1,7 @@
 import { build5Db } from '@build-5/database';
 import { COL, Transaction, TransactionPayloadType, TransactionType } from '@build-5/interfaces';
 import { get, isEmpty } from 'lodash';
-import { getProject, getProjects } from '../../utils/common.utils';
+import { getProject } from '../../utils/common.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { BaseService, HandlerParams } from './base';
 
@@ -26,7 +26,6 @@ export class CreditService extends BaseService {
     this.transactionService.markAsReconciled(order, match.msgId);
     const credit: Transaction = {
       project: getProject(order),
-      projects: getProjects([order]),
       type: TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED,
       uid: getRandomEthAddress(),
       space: order.space,

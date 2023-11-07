@@ -22,7 +22,7 @@ import {
 } from '../../services/payment/metadataNft-service';
 import { WalletService } from '../../services/wallet/wallet.service';
 import { getAddress } from '../../utils/address.utils';
-import { getProject, getProjects } from '../../utils/common.utils';
+import { getProject } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -181,7 +181,6 @@ const onNftMinted = async (transaction: Transaction) => {
 
   const creditTransaction: Transaction = {
     project: getProject(order),
-    projects: getProjects([order]),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: transaction.space,
@@ -229,7 +228,6 @@ const onNftUpdated = async (transaction: Transaction) => {
 
   const creditTransaction: Transaction = {
     project: getProject(order),
-    projects: getProjects([order]),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: transaction.space,

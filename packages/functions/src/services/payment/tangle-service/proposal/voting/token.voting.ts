@@ -10,7 +10,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { packBasicOutput } from '../../../../../utils/basic-output.utils';
-import { getProjects } from '../../../../../utils/common.utils';
 import { isProdEnv } from '../../../../../utils/config.utils';
 import { dateToTimestamp } from '../../../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../../../utils/wallet.utils';
@@ -38,7 +37,6 @@ export const createVoteTransactionOrder = async (
 
   return {
     project,
-    projects: getProjects([], project),
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,

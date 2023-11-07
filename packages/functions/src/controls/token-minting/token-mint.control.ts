@@ -18,7 +18,6 @@ import dayjs from 'dayjs';
 import { Wallet } from '../../services/wallet/wallet';
 import { AddressDetails, WalletService } from '../../services/wallet/wallet.service';
 import { assertMemberHasValidAddress } from '../../utils/address.utils';
-import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { createAliasOutput } from '../../utils/token-minting-utils/alias.utils';
@@ -68,7 +67,6 @@ export const mintTokenControl = ({ owner, params, project }: Context<TokenMintRe
 
     const order: Transaction = {
       project,
-      projects: getProjects([token], project),
       type: TransactionType.ORDER,
       uid: getRandomEthAddress(),
       member: owner,

@@ -71,7 +71,7 @@ export const getManyAdvanced = async (project: string, url: string) => {
     query = query.where('hidden', '==', false);
   }
 
-  query = query.where('projects', 'array-contains', project);
+  query = query.where('project', '==', project);
 
   const typeFilters = filters['type'];
   if (

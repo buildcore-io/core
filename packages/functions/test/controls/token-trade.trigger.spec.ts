@@ -29,7 +29,6 @@ import { isEmpty } from 'lodash';
 import { cancelTradeOrder, tradeToken } from '../../src/runtime/firebase/token/trading';
 import { TOKEN_TRADE_ORDER_FETCH_LIMIT } from '../../src/triggers/token-trading/match-token';
 import { getAddress } from '../../src/utils/address.utils';
-import { getProjects } from '../../src/utils/common.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { soonTokenId, testEnv } from '../set-up';
@@ -90,7 +89,6 @@ describe('Trade trigger', () => {
   const saveSellToDb = async (count: number, price: number) => {
     const data = <TokenTradeOrder>{
       project: SOON_PROJECT_ID,
-      projects: [SOON_PROJECT_ID],
       createdOn: serverTime(),
       uid: wallet.getRandomEthAddress(),
       owner: seller,
@@ -119,7 +117,6 @@ describe('Trade trigger', () => {
     const tokenId = wallet.getRandomEthAddress();
     token = <Token>{
       project: SOON_PROJECT_ID,
-      projects: getProjects([], SOON_PROJECT_ID),
       uid: tokenId,
       symbol: getRandomSymbol(),
       name: 'MyToken',
@@ -478,7 +475,6 @@ describe('Trade trigger', () => {
       const sellDocId = wallet.getRandomEthAddress();
       const data = <TokenTradeOrder>{
         project: SOON_PROJECT_ID,
-        projects: [SOON_PROJECT_ID],
         uid: sellDocId,
         owner: seller,
         token: token.uid,

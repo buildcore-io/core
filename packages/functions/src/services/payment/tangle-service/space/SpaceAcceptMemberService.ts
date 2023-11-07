@@ -7,7 +7,7 @@ import {
   SUB_COL,
   WenError,
 } from '@build-5/interfaces';
-import { getProject, getProjects } from '../../../../utils/common.utils';
+import { getProject } from '../../../../utils/common.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
@@ -71,7 +71,6 @@ export const acceptSpaceMember = async (
   const space = await spaceDocRef.get<Space>();
   const spaceMember = {
     project,
-    projects: getProjects([space], project),
     uid: member,
     parentId: space,
     parentCol: COL.SPACE,

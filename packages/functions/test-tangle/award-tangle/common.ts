@@ -8,7 +8,6 @@ import {
   TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
-import { getProjects } from '../../src/utils/common.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { getRandomSymbol, wait } from '../../test/controls/common';
@@ -41,7 +40,6 @@ const allConfirmed = (query: IQuery) =>
 export const saveBaseToken = async (space: string, guardian: string, network: Network) => {
   const token = {
     project: SOON_PROJECT_ID,
-    projects: getProjects([], SOON_PROJECT_ID),
     symbol: getRandomSymbol(),
     approved: true,
     updatedOn: serverTime(),

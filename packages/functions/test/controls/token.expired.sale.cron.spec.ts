@@ -51,7 +51,6 @@ describe('Expired sales cron', () => {
       type: TokenTradeOrderType,
     ): TokenTradeOrder => ({
       project: SOON_PROJECT_ID,
-      projects: [SOON_PROJECT_ID],
       uid: wallet.getRandomEthAddress(),
       owner: seller,
       token: token.uid,

@@ -16,7 +16,7 @@ import { Wallet } from '../../services/wallet/wallet';
 import { WalletService } from '../../services/wallet/wallet.service';
 import { getAddress } from '../../utils/address.utils';
 import { packBasicOutput } from '../../utils/basic-output.utils';
-import { getProject, getProjects } from '../../utils/common.utils';
+import { getProject } from '../../utils/common.utils';
 import { getRoyaltyFees } from '../../utils/royalty.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Match } from './match-token';
@@ -47,7 +47,6 @@ const createRoyaltyBillPayments = async (
       });
       return <Transaction>{
         project: getProject(buy),
-        projects: getProjects([sell, buy]),
         type: TransactionType.BILL_PAYMENT,
         uid: getRandomEthAddress(),
         space: spaceId,
@@ -93,7 +92,6 @@ const createBillPaymentToSeller = async (
   const output = await packBasicOutput(wallet, sellerAddress, salePrice, {});
   return <Transaction>{
     project: getProject(sell),
-    projects: getProjects([sell, buy]),
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
     space: token.space,
@@ -137,7 +135,6 @@ const createBillPaymentWithNativeTokens = async (
   });
   return {
     project: getProject(sell),
-    projects: getProjects([sell, buy]),
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
     space: token.space,
@@ -176,7 +173,6 @@ const createCreditToSeller = (
 ) =>
   <Transaction>{
     project: getProject(sell),
-    projects: getProjects([sell, buy]),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: token.space,
@@ -210,7 +206,6 @@ const createCreditToBuyer = (
 ) =>
   <Transaction>{
     project: getProject(buy),
-    projects: getProjects([sell, buy]),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: token.space,
@@ -345,7 +340,6 @@ export const matchMintedToken = async (
   return {
     purchase: {
       project: getProject(triggeredBy === TokenTradeOrderType.SELL ? sell : buy),
-      projects: getProjects([sell, buy]),
       uid: getRandomEthAddress(),
       token: buy.token,
       tokenStatus: token.status,

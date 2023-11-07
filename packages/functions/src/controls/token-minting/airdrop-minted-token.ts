@@ -19,7 +19,6 @@ import dayjs from 'dayjs';
 import { chunk } from 'lodash';
 import { WalletService } from '../../services/wallet/wallet.service';
 import { packBasicOutput } from '../../utils/basic-output.utils';
-import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
@@ -58,7 +57,6 @@ export const airdropMintedTokenControl = async ({
   });
   const order: Transaction = {
     project,
-    projects: getProjects([], project),
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,
@@ -80,7 +78,6 @@ export const airdropMintedTokenControl = async ({
 
   const airdrops: TokenDrop[] = drops.map((drop) => ({
     project,
-    projects: getProjects([], project),
     createdBy: owner,
     uid: getRandomEthAddress(),
     member: drop.recipient.toLowerCase(),

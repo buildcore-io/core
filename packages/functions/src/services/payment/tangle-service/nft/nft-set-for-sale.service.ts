@@ -15,7 +15,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { assertMemberHasValidAddress } from '../../../../utils/address.utils';
-import { getProjects } from '../../../../utils/common.utils';
 import { getDefaultNetwork } from '../../../../utils/config.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
@@ -146,7 +145,6 @@ const getAuctionData = (project: string, owner: string, params: NftSetForSaleReq
     space: nft.space,
     createdBy: owner,
     project,
-    projects: getProjects([], project),
     auctionFrom: dateToTimestamp(params.auctionFrom),
     auctionTo: dateToTimestamp(dayjs(params.auctionFrom).add(params.auctionLength || 0)),
     auctionLength: params.auctionLength!,

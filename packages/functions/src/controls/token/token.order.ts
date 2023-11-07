@@ -18,7 +18,6 @@ import dayjs from 'dayjs';
 import { assertHasAccess } from '../../services/validators/access';
 import { WalletService } from '../../services/wallet/wallet.service';
 import { assertMemberHasValidAddress, getAddress } from '../../utils/address.utils';
-import { getProjects } from '../../utils/common.utils';
 import { isProdEnv } from '../../utils/config.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
@@ -69,7 +68,6 @@ export const orderTokenControl = async ({
     if (!order) {
       const data: Transaction = {
         project,
-        projects: getProjects([token], project),
         type: TransactionType.ORDER,
         uid: tranId,
         member: owner,

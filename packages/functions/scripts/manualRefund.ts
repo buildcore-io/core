@@ -1,6 +1,7 @@
 import {
   COL,
   Network,
+  SOON_PROJECT_ID,
   Transaction,
   TransactionPayloadType,
   TransactionType,
@@ -31,8 +32,7 @@ db.collection(COL.MEMBER)
         .collection(COL.TRANSACTION)
         .doc(tranId)
         .set(<Transaction>{
-          project: '',
-          projects: [],
+          project: SOON_PROJECT_ID,
           type: TransactionType.CREDIT,
           uid: tranId,
           space: '',

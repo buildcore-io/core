@@ -13,7 +13,7 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { WalletService } from '../../services/wallet/wallet.service';
-import { generateRandomAmount, getProjects } from '../../utils/common.utils';
+import { generateRandomAmount } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -38,7 +38,6 @@ export const claimSpaceControl = async ({ owner, params, project }: Context<Spac
   const targetAddress = await wallet.getNewIotaAddressDetails();
   const order: Transaction = {
     project,
-    projects: getProjects([space], project),
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,

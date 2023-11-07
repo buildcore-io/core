@@ -10,7 +10,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { assertMemberHasValidAddress, getAddress } from '../../../../utils/address.utils';
-import { getProjects } from '../../../../utils/common.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
@@ -51,7 +50,6 @@ export const getAuctionData = (
     uid: getRandomEthAddress(),
     space: params.space,
     project,
-    projects: getProjects([], project),
     createdBy: member.uid,
     auctionFrom: dateToTimestamp(params.auctionFrom),
     auctionTo: dateToTimestamp(dayjs(params.auctionFrom).add(params.auctionLength)),

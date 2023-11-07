@@ -1,6 +1,6 @@
 import { build5Db } from '@build-5/database';
 import { BaseTangleResponse, COL, Space, SUB_COL, WenError } from '@build-5/interfaces';
-import { getProject, getProjects } from '../../../../utils/common.utils';
+import { getProject } from '../../../../utils/common.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
@@ -87,7 +87,6 @@ export const getBlockMemberUpdateData = async (
 
   const blockedMember = {
     project,
-    projects: getProjects([space]),
     uid: member,
     parentId: spaceId,
     parentCol: COL.SPACE,

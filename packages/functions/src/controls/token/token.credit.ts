@@ -15,7 +15,6 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import { getAddress } from '../../utils/address.utils';
-import { getProjects } from '../../utils/common.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import {
   getBoughtByMemberDiff,
@@ -71,7 +70,6 @@ export const creditTokenControl = async ({
 
     const creditTransaction: Transaction = {
       project,
-      projects: getProjects([], project),
       type: TransactionType.CREDIT,
       uid: tranId,
       space: token.space,

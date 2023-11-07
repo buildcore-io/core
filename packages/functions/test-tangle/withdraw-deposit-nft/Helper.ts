@@ -52,7 +52,6 @@ import { Wallet } from '../../src/services/wallet/wallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { createUnlock, packEssence, submitBlock } from '../../src/utils/block.utils';
-import { getProjects } from '../../src/utils/common.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -186,7 +185,6 @@ export class Helper {
     if (!expiresOn) {
       const order: Transaction = {
         project: SOON_PROJECT_ID,
-        projects: getProjects([], SOON_PROJECT_ID),
         type: TransactionType.WITHDRAW_NFT,
         uid: getRandomEthAddress(),
         member: this.guardian,

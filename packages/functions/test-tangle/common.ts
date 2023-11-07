@@ -18,7 +18,7 @@ import {
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { Wallet } from '../src/services/wallet/wallet';
-import { generateRandomAmount, getProjects } from '../src/utils/common.utils';
+import { generateRandomAmount } from '../src/utils/common.utils';
 import { dateToTimestamp, serverTime } from '../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../src/utils/wallet.utils';
 import { wait } from '../test/controls/common';
@@ -72,7 +72,6 @@ export const getTangleOrder = async (network: Network) => {
   const targetAddress = await wallet.getNewIotaAddressDetails();
   const order = {
     project: SOON_PROJECT_ID,
-    projects: getProjects([], SOON_PROJECT_ID),
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     network: network,

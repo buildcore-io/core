@@ -72,7 +72,7 @@ export const getMany = async (project: string, url: string) => {
     query = query.where('isOrderType', '==', false);
   }
 
-  query = query.where('projects', 'array-contains', project);
+  query = query.where('project', '==', project);
 
   if (body.startAfter) {
     const startAfter = getSnapshot(
