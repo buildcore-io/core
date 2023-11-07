@@ -108,7 +108,7 @@ describe('Nft auction roll', () => {
       mintingData: { network: Network.ATOI },
     });
 
-    await nftAuctionRoll(build5App());
+    await nftAuctionRoll(build5App);
 
     nft = <Nft>await nftDocRef.get();
 

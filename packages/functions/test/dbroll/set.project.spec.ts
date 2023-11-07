@@ -13,6 +13,6 @@ describe('Set project', () => {
     const memberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(memberId);
     await memberDocRef.create({ uid: memberId });
 
-    await setProjectRoll(build5App());
+    await setProjectRoll(build5App);
   });
 });
