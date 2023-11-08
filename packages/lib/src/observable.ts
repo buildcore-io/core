@@ -37,7 +37,7 @@ class Observable<T> extends RxjsObservable<T> {
 
   private onError = () => {
     this.closeConnection();
-    this.observer?.error();
+    this.observer?.error(new Error(this.url.replace('http', 'ws')));
   };
 
   private onClose = (closeEvent: CloseEvent) => {
@@ -45,7 +45,7 @@ class Observable<T> extends RxjsObservable<T> {
     if (closeEvent.code === 1000) {
       this.init();
     } else {
-      this.observer?.error();
+      this.observer?.error(new Error(this.url.replace('http', 'ws')));
     }
   };
 
