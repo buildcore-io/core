@@ -29,7 +29,6 @@ import {
   createNftOutput,
   nftToMetadata,
 } from '../../utils/collection-minting-utils/nft.utils';
-import { getProjects } from '../../utils/common.utils';
 import { isProdEnv } from '../../utils/config.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
@@ -110,7 +109,6 @@ export const mintCollectionOrderControl = async ({
 
     const order: Transaction = {
       project,
-      projects: getProjects([collection], project),
       type: TransactionType.ORDER,
       uid: getRandomEthAddress(),
       member: owner,

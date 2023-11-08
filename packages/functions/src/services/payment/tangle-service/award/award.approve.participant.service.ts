@@ -21,7 +21,6 @@ import {
 import dayjs from 'dayjs';
 import { get, head, isEmpty, set } from 'lodash';
 import { getAddress } from '../../../../utils/address.utils';
-import { getProjects } from '../../../../utils/common.utils';
 import { serverTime } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
@@ -104,13 +103,11 @@ export const approveAwardParticipant =
     };
     if (!participant) {
       set(participantUpdateData, 'project', project);
-      set(participantUpdateData, 'projects', { [project]: true });
     }
     transaction.set(participantDocRef, participantUpdateData, true);
 
     const badgeTransaction: Transaction = {
       project,
-      projects: getProjects([], project),
       type: TransactionType.AWARD,
       uid: getRandomEthAddress(),
       member: memberId,
@@ -166,7 +163,6 @@ export const approveAwardParticipant =
     if (award.badge.tokenReward) {
       const airdrop: TokenDrop = {
         project,
-        projects: getProjects([], project),
         createdBy: owner,
         uid: getRandomEthAddress(),
         member: memberId,

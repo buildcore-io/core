@@ -16,7 +16,6 @@ import {
 } from '@build-5/interfaces';
 import { isEmpty, set } from 'lodash';
 import { downloadMediaAndPackCar } from '../../../../utils/car.utils';
-import { getProjects } from '../../../../utils/common.utils';
 import { getBucket } from '../../../../utils/config.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
@@ -118,7 +117,6 @@ export const createAward = async (
   }
   const award: Award = {
     project,
-    projects: getProjects([], project),
     createdBy: owner,
     uid: awardUid,
     name: params.name as string,
@@ -144,7 +142,6 @@ export const createAward = async (
   const awardOwner: AwardOwner = {
     uid: owner,
     project,
-    projects: getProjects([], project),
     parentId: award.uid,
     parentCol: COL.AWARD,
   };

@@ -22,7 +22,7 @@ import { isEmpty } from 'lodash';
 import { WalletService } from '../services/wallet/wallet.service';
 import { getAddress } from '../utils/address.utils';
 import { downloadMediaAndPackCar, tokenToIpfsMetadata } from '../utils/car.utils';
-import { getProject, getProjects, guardedRerun } from '../utils/common.utils';
+import { getProject, guardedRerun } from '../utils/common.utils';
 import { getRoyaltyFees } from '../utils/royalty.utils';
 import { cancelTradeOrderUtil } from '../utils/token-trade.utils';
 import {
@@ -137,7 +137,6 @@ const createBillAndRoyaltyPayment = async (
     const network = order.network || DEFAULT_NETWORK;
     royaltyPayment = {
       project: getProject(order),
-      projects: getProjects([order, token]),
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       space: token.space,
@@ -167,7 +166,6 @@ const createBillAndRoyaltyPayment = async (
   const network = order.network || DEFAULT_NETWORK;
   const billPayment: Transaction = {
     project: getProject(order),
-    projects: getProjects([order, token]),
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
     space: token.space,
@@ -212,7 +210,6 @@ const createCredit = async (
   const network = order.network || DEFAULT_NETWORK;
   const data: Transaction = {
     project: getProject(order),
-    projects: getProjects([order, token]),
     type: TransactionType.CREDIT,
     uid: tranId,
     space: token.space,
@@ -380,7 +377,6 @@ const mintToken = async (token: Token) => {
 
   const order: Transaction = {
     project: getProject(token),
-    projects: getProjects([token]),
     type: TransactionType.MINT_TOKEN,
     uid: getRandomEthAddress(),
     member: token.mintingData?.mintedBy,
@@ -439,7 +435,6 @@ const onTokenVaultEmptied = async (token: Token) => {
     .get<Transaction>();
   const credit: Transaction = {
     project: getProject(token),
-    projects: getProjects([token]),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: token.space,

@@ -8,7 +8,6 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
@@ -29,7 +28,6 @@ export const stakeRewardControl = async ({
 
   const stakeRewards = (params.items || []).map<StakeReward>((item) => ({
     project,
-    projects: getProjects([], project),
     uid: getRandomEthAddress(),
     startDate: dateToTimestamp(dayjs(item.startDate)),
     endDate: dateToTimestamp(dayjs(item.endDate)),

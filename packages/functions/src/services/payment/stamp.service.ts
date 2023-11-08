@@ -10,7 +10,7 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
-import { getProject, getProjects } from '../../utils/common.utils';
+import { getProject } from '../../utils/common.utils';
 import { getBucket, getStampRoyaltyAddress } from '../../utils/config.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { migrateUriToSotrage, uriToUrl } from '../../utils/media.utils';
@@ -73,7 +73,6 @@ export class StampService extends BaseService {
 
     const royaltyPayment: Transaction = {
       project: getProject(stamp),
-      projects: getProjects([stamp]),
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       space: order.space,
@@ -105,7 +104,6 @@ export class StampService extends BaseService {
     if (!aliasId) {
       const mintAlias: Transaction = {
         project: getProject(stamp),
-        projects: getProjects([stamp]),
         type: TransactionType.STAMP,
         uid: getRandomEthAddress(),
         space: order.space,
@@ -135,7 +133,6 @@ export class StampService extends BaseService {
 
     const mintNftOrder: Transaction = {
       project: getProject(stamp),
-      projects: getProjects([stamp]),
       type: TransactionType.STAMP,
       uid: getRandomEthAddress(),
       space: order.space,

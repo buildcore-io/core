@@ -12,7 +12,6 @@ import {
   SUB_COL,
   WenError,
 } from '@build-5/interfaces';
-import { uniq } from 'lodash';
 import { invalidArgument } from './error.utils';
 
 const MAX_RERUNS = 10;
@@ -69,8 +68,5 @@ export const assertIsProjectAdmin = async (project: string, member: string) => {
 };
 
 export const getProject = (data: BaseRecord | undefined) => data?.project || SOON_PROJECT_ID;
-
-export const getProjects = (data: (BaseRecord | undefined)[], project?: string) =>
-  data.reduce((acc, act) => uniq({ ...acc, ...(act?.projects || []) }), project ? [project] : []);
 
 export const intToU32 = (value: number) => value & 0xffffffff;

@@ -11,7 +11,6 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import { chunk } from 'lodash';
-import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
@@ -61,7 +60,6 @@ export const airdropTokenControl = async ({
       for (const drop of chunk) {
         const airdrop: TokenDrop = {
           project,
-          projects: getProjects([], project),
           createdBy: owner,
           uid: getRandomEthAddress(),
           member: drop.recipient.toLowerCase(),

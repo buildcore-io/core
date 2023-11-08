@@ -19,7 +19,7 @@ import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
 import { downloadMediaAndPackCar } from '../../../../utils/car.utils';
 import { createNftOutput } from '../../../../utils/collection-minting-utils/nft.utils';
-import { generateRandomAmount, getProject, getProjects } from '../../../../utils/common.utils';
+import { generateRandomAmount, getProject } from '../../../../utils/common.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { getRandomBuild5Url, uriToUrl } from '../../../../utils/media.utils';
@@ -90,7 +90,6 @@ export const createStampAndStampOrder = async (
   const space = await getSpace(project, owner, aliasId);
   const stamp: Stamp = {
     project: project,
-    projects: getProjects([], project),
     uid: getRandomEthAddress(),
     space: space.uid,
     createdBy: owner,
@@ -129,7 +128,6 @@ const createStampOrder = async (stamp: Stamp, space: Space, aliasId: string) => 
 
   return {
     project: getProject(stamp),
-    projects: getProjects([stamp]),
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: stamp.createdBy,
@@ -157,7 +155,6 @@ const getSpace = async (project: string, owner: string, aliasId: string) => {
   if (aliasId === EMPTY_ALIAS_ID) {
     return {
       project,
-      projects: getProjects([], project),
       uid: getRandomEthAddress(),
       name: `Space of alias: ${aliasId}`,
       open: false,

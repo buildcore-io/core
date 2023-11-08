@@ -22,7 +22,7 @@ import {
 } from '@iota/sdk';
 import Joi from 'joi';
 import { get, isEmpty } from 'lodash';
-import { getProject, getProjects } from '../../../utils/common.utils';
+import { getProject } from '../../../utils/common.utils';
 import { getBucket } from '../../../utils/config.utils';
 import { migrateUriToSotrage, uriToUrl } from '../../../utils/media.utils';
 import { isAliasGovernor } from '../../../utils/token-minting-utils/alias.utils';
@@ -62,7 +62,6 @@ export class ImportMintedTokenService extends BaseService {
       const totalSupply = Number(tokenScheme.maximumSupply);
       const token: Token = {
         project: getProject(order),
-        projects: getProjects([order]),
         createdBy: order.member || '',
         uid: tokenId,
         name: metadata.name,

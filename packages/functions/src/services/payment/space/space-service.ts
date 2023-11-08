@@ -17,7 +17,7 @@ import {
   UnlockConditionType,
 } from '@iota/sdk';
 import { Bech32AddressHelper } from '../../../utils/bech32-address.helper';
-import { getProject, getProjects } from '../../../utils/common.utils';
+import { getProject } from '../../../utils/common.utils';
 import { serverTime } from '../../../utils/dateTime.utils';
 import { WalletService } from '../../wallet/wallet.service';
 import { BaseService, HandlerParams } from '../base';
@@ -47,7 +47,6 @@ export class SpaceClaimService extends BaseService {
 
     const spaceMember: SpaceMember = {
       project: getProject(order),
-      projects: getProjects([space, order]),
       uid: order.member!,
       parentId: space.uid,
       parentCol: COL.SPACE,

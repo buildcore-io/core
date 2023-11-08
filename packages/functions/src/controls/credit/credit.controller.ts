@@ -14,7 +14,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { WalletService } from '../../services/wallet/wallet.service';
-import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -57,7 +56,6 @@ const createCreditOrder = (
   targetAddress: NetworkAddress,
 ): Transaction => ({
   project,
-  projects: getProjects([creditTtransaction], project),
   type: TransactionType.ORDER,
   uid: getRandomEthAddress(),
   member: owner,

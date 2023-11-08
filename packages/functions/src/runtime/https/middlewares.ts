@@ -25,12 +25,23 @@ export const auth = async (
   };
 };
 
-export const noAuth = async (req: express.Request): Promise<Context<any>> => {
+export const createMember = async (req: express.Request): Promise<Context<any>> => {
   return {
     ip: req.ip || '',
     owner: req.body.data.data,
     params: {},
     project: getProject(req.body.data),
+    headers: req.headers,
+    rawBody: req.body,
+  };
+};
+
+export const uploadFile = async (req: express.Request): Promise<Context<any>> => {
+  return {
+    ip: req.ip || '',
+    owner: '',
+    params: {},
+    project: '',
     headers: req.headers,
     rawBody: req.body,
   };

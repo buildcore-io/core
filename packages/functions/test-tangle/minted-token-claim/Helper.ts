@@ -2,7 +2,6 @@ import { build5Db } from '@build-5/database';
 import { COL, Member, Network, SOON_PROJECT_ID, Space, TokenStatus } from '@build-5/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
-import { getProjects } from '../../src/utils/common.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as walletUtil from '../../src/utils/wallet.utils';
 import { createMember, createSpace, getRandomSymbol } from '../../test/controls/common';
@@ -45,7 +44,6 @@ export class Helper {
     const tokenId = walletUtil.getRandomEthAddress();
     const token = {
       project: SOON_PROJECT_ID,
-      projects: getProjects([], SOON_PROJECT_ID),
       symbol: getRandomSymbol(),
       approved: true,
       updatedOn: serverTime(),

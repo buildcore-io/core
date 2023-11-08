@@ -18,7 +18,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get, startCase } from 'lodash';
-import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { cleanupParams } from '../../utils/schema.utils';
@@ -71,7 +70,6 @@ export const updateSpaceControl = async ({
 
   const voteTransaction: Transaction = {
     project,
-    projects: getProjects([space], project),
     type: TransactionType.VOTE,
     uid: getRandomEthAddress(),
     member: owner,
@@ -124,7 +122,6 @@ const createUpdateSpaceProposal = (
     `${UPDATE_SPACE_THRESHOLD_PERCENTAGE} % must agree for this action to proceed`;
   return {
     project,
-    projects: getProjects([prevSpace], project),
     createdBy: owner.uid,
     uid: getRandomEthAddress(),
     name: 'Edit space',

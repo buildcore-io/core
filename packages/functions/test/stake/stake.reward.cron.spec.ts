@@ -131,7 +131,6 @@ describe('Stake reward cron: getStakedPerMember', () => {
   const createStake = async (createdOn: dayjs.Dayjs, expiresAt: dayjs.Dayjs) => {
     const stake: Stake = {
       project: SOON_PROJECT_ID,
-      projects: [SOON_PROJECT_ID],
       uid: getRandomEthAddress(),
       member,
       space,
@@ -153,7 +152,6 @@ describe('Stake reward cron: getStakedPerMember', () => {
   const createReward = async (start: dayjs.Dayjs, end: dayjs.Dayjs) => {
     const stakeReward = {
       project: SOON_PROJECT_ID,
-      projects: [SOON_PROJECT_ID],
       uid: getRandomEthAddress(),
       startDate: dateToTimestamp(start.toDate()),
       endDate: dateToTimestamp(end.toDate()),

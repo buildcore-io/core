@@ -15,7 +15,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get, head, set } from 'lodash';
-import { getProjects } from '../../../utils/common.utils';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { BaseService, HandlerParams } from '../base';
@@ -49,7 +48,6 @@ export class TokenTradeService extends BaseService {
     const network = order.network || DEFAULT_NETWORK;
     const data: TokenTradeOrder = {
       project,
-      projects: getProjects([order], project),
       uid: getRandomEthAddress(),
       owner: order.member!,
       token: token.uid,

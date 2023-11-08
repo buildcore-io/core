@@ -18,7 +18,7 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { getProject, getProjects } from '../../../../../utils/common.utils';
+import { getProject } from '../../../../../utils/common.utils';
 import { invalidArgument } from '../../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../../utils/schema.utils';
 import { getTokenForSpace } from '../../../../../utils/token.utils';
@@ -204,7 +204,6 @@ export const createVoteTransaction = (
   stakes: string[] = [],
 ): Transaction => ({
   project,
-  projects: getProjects([proposal], project),
   type: TransactionType.VOTE,
   uid: getRandomEthAddress(),
   member: owner,

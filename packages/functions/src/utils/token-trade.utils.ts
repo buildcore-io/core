@@ -16,7 +16,7 @@ import {
 } from '@build-5/interfaces';
 import bigDecimal from 'js-big-decimal';
 import { getAddress } from './address.utils';
-import { getProject, getProjects } from './common.utils';
+import { getProject } from './common.utils';
 import { getRandomEthAddress } from './wallet.utils';
 
 export const creditBuyer = async (transaction: ITransaction, buy: TokenTradeOrder) => {
@@ -32,7 +32,6 @@ export const creditBuyer = async (transaction: ITransaction, buy: TokenTradeOrde
   const network = order.network || DEFAULT_NETWORK;
   const credit: Transaction = {
     project: getProject(buy),
-    projects: getProjects([buy]),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: token.space,
@@ -71,7 +70,6 @@ const creditBaseTokenSale = async (
   const network = order.network || DEFAULT_NETWORK;
   const data: Transaction = {
     project: getProject(sale),
-    projects: getProjects([sale]),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: '',
@@ -144,7 +142,6 @@ const cancelMintedSell = async (transaction: ITransaction, sell: TokenTradeOrder
   const network = order.network || DEFAULT_NETWORK;
   const data: Transaction = {
     project: getProject(sell),
-    projects: getProjects([sell]),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: token.space,

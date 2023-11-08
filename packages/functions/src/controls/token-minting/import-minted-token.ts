@@ -13,7 +13,7 @@ import {
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { WalletService } from '../../services/wallet/wallet.service';
-import { generateRandomAmount, getProjects } from '../../utils/common.utils';
+import { generateRandomAmount } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
@@ -44,7 +44,6 @@ export const importMintedTokenControl = async ({
     const targetAddress = await wallet.getNewIotaAddressDetails();
     const order: Transaction = {
       project,
-      projects: getProjects([], project),
       type: TransactionType.ORDER,
       uid: getRandomEthAddress(),
       member: owner,

@@ -11,7 +11,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { WalletService } from '../../services/wallet/wallet.service';
-import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Context } from '../common';
@@ -27,7 +26,6 @@ export const depositNftControl = async ({
 
   const order: Transaction = {
     project,
-    projects: getProjects([], project),
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,

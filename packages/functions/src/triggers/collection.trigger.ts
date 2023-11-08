@@ -15,7 +15,7 @@ import {
 import { last } from 'lodash';
 import { getAddress } from '../utils/address.utils';
 import { collectionToIpfsMetadata, downloadMediaAndPackCar } from '../utils/car.utils';
-import { getProject, getProjects } from '../utils/common.utils';
+import { getProject } from '../utils/common.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 import { FirestoreDocEvent } from './common';
 
@@ -88,7 +88,6 @@ const onCollectionMinted = async (collection: Collection) => {
   if (collection.limitedEdition) {
     const order: Transaction = {
       project: getProject(collection),
-      projects: getProjects([collection]),
       type: TransactionType.MINT_COLLECTION,
       uid: getRandomEthAddress(),
       member: collection.mintingData?.mintedBy,
@@ -109,7 +108,6 @@ const onCollectionMinted = async (collection: Collection) => {
   const member = (await memberDocRef.get<Member>())!;
   const order: Transaction = {
     project: getProject(collection),
-    projects: getProjects([collection]),
     type: TransactionType.MINT_COLLECTION,
     uid: getRandomEthAddress(),
     member: collection.mintingData?.mintedBy,
@@ -149,7 +147,6 @@ const onCollectionMinting = async (collection: Collection) => {
 const onNftMediaPrepared = async (collection: Collection) => {
   const order: Transaction = {
     project: getProject(collection),
-    projects: getProjects([collection]),
     type: TransactionType.MINT_COLLECTION,
     uid: getRandomEthAddress(),
     member: collection.mintingData?.mintedBy!,
@@ -301,7 +298,6 @@ const setNftForMinting = async (nftId: string, collection: Collection): Promise<
       for (const payment of payments) {
         const credit: Transaction = {
           project: getProject(payment),
-          projects: getProjects([payment]),
           type: TransactionType.CREDIT,
           uid: getRandomEthAddress(),
           space: payment.space,

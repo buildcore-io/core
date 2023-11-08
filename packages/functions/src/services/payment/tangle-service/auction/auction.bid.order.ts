@@ -18,7 +18,7 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import { assertMemberHasValidAddress, getAddress } from '../../../../utils/address.utils';
-import { generateRandomAmount, getProjects, getRestrictions } from '../../../../utils/common.utils';
+import { generateRandomAmount, getRestrictions } from '../../../../utils/common.utils';
 import { isProdEnv } from '../../../../utils/config.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
@@ -51,7 +51,6 @@ export const createBidOrder = async (
 
   const order = {
     project,
-    projects: getProjects([], project),
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,

@@ -17,7 +17,7 @@ import {
 import bigDecimal from 'js-big-decimal';
 import { isEmpty, tail } from 'lodash';
 import { getAddress } from '../../utils/address.utils';
-import { getProject, getProjects } from '../../utils/common.utils';
+import { getProject } from '../../utils/common.utils';
 import { getRoyaltyFees } from '../../utils/royalty.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Match } from './match-token';
@@ -59,7 +59,6 @@ const createBuyPayments = async (
       const spaceData = await build5Db().doc(`${COL.SPACE}/${space}`).get<Space>();
       return {
         project: getProject(buy),
-        projects: getProjects([sell, buy]),
         type: TransactionType.BILL_PAYMENT,
         uid: getRandomEthAddress(),
         space: token.space,
@@ -93,7 +92,6 @@ const createBuyPayments = async (
   }
   const billPayment: Transaction = {
     project: getProject(buy),
-    projects: getProjects([sell, buy]),
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
     space: token.space,
@@ -121,7 +119,6 @@ const createBuyPayments = async (
   }
   const credit: Transaction = {
     project: getProject(buy),
-    projects: getProjects([sell, buy]),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: token.space,
@@ -209,7 +206,6 @@ export const matchSimpleToken = async (
   return {
     purchase: {
       project: getProject(triggeredBy === TokenTradeOrderType.SELL ? sell : buy),
-      projects: getProjects([sell, buy]),
       uid: getRandomEthAddress(),
       token: buy.token,
       tokenStatus: token.status,

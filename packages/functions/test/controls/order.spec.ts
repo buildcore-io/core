@@ -479,7 +479,6 @@ describe('Ordering flows', () => {
 
     let badge = {
       project: SOON_PROJECT_ID,
-      projects: [SOON_PROJECT_ID],
       member,
       type: TransactionType.AWARD,
       uid: wallet.getRandomEthAddress(),
@@ -493,7 +492,6 @@ describe('Ordering flows', () => {
 
     badge = {
       project: SOON_PROJECT_ID,
-      projects: [SOON_PROJECT_ID],
       member,
       type: TransactionType.AWARD,
       uid: wallet.getRandomEthAddress(),

@@ -27,7 +27,7 @@ import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { getAddress } from '../../../../utils/address.utils';
 import { getNftByMintingId } from '../../../../utils/collection-minting-utils/nft.utils';
-import { getProject, getProjects, getRestrictions } from '../../../../utils/common.utils';
+import { getProject, getRestrictions } from '../../../../utils/common.utils';
 import { isProdEnv } from '../../../../utils/config.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
@@ -126,7 +126,6 @@ export const createNftPuchaseOrder = async (
 
   return {
     project,
-    projects: getProjects([], project),
     type: TransactionType.ORDER,
     uid: nftPurchaseOrderId,
     member: owner,
@@ -373,7 +372,6 @@ export const createNftWithdrawOrder = (
 ) => {
   const order: Transaction = {
     project,
-    projects: getProjects([], project),
     type: TransactionType.WITHDRAW_NFT,
     uid: getRandomEthAddress(),
     member,

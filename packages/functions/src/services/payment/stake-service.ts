@@ -12,7 +12,7 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { get } from 'lodash';
-import { getProject, getProjects } from '../../utils/common.utils';
+import { getProject } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { BaseService, HandlerParams } from './base';
@@ -46,7 +46,6 @@ export class StakeService extends BaseService {
 
     const billPayment: Transaction = {
       project: getProject(order),
-      projects: getProjects([order]),
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       member: order.member,
@@ -74,7 +73,6 @@ export class StakeService extends BaseService {
 
     const stake: Stake = {
       project,
-      projects: getProjects([order]),
       uid: getRandomEthAddress(),
       member: order.member!,
       token: order.payload.token!,

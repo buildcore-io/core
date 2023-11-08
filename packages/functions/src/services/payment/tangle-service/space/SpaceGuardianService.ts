@@ -17,6 +17,7 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
+import { getProject } from '../../../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
@@ -24,7 +25,6 @@ import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { BaseService, HandlerParams } from '../../base';
 import { editSpaceMemberSchemaObject } from './SpaceEditMemberTangleRequestSchema';
-import { getProject, getProjects } from '../../../../utils/common.utils';
 
 export class SpaceGuardianService extends BaseService {
   public handleRequest = async ({
@@ -133,7 +133,6 @@ export const addRemoveGuardian = async (
 
   const voteTransaction: Transaction = {
     project,
-    projects: getProjects([space], project),
     type: TransactionType.VOTE,
     uid: getRandomEthAddress(),
     member: owner,
@@ -177,7 +176,6 @@ const getProposalData = (
     `${ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE} % must agree for this action to proceed`;
   return {
     project,
-    projects: getProjects([space], project),
     createdBy: owner.uid,
     uid: getRandomEthAddress(),
     name: `${isAddGuardian ? 'Add' : 'Remove'} guardian`,

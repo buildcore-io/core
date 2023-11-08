@@ -15,7 +15,6 @@ import {
 } from '@build-5/interfaces';
 import { hasStakedTokens } from '../../services/stake.service';
 import { assertSpaceHasValidAddress } from '../../utils/address.utils';
-import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -60,7 +59,6 @@ export const createCollectionControl = async ({
   const collection = {
     ...params,
     project,
-    projects: getProjects([], project),
     discounts: await populateTokenUidOnDiscounts(discounts),
     uid: getRandomEthAddress(),
     total: 0,
@@ -80,7 +78,6 @@ export const createCollectionControl = async ({
   if (placeholderNftId) {
     const placeholderNft = {
       project,
-      projects: getProjects([collection], project),
       uid: placeholderNftId,
       name: params.name,
       description: params.description,

@@ -94,7 +94,6 @@ const dummyToken = (
   guardian: string,
 ) => ({
   project: SOON_PROJECT_ID,
-  projects: [SOON_PROJECT_ID],
   symbol: getRandomSymbol(),
   totalSupply,
   updatedOn: serverTime(),

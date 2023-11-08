@@ -57,7 +57,6 @@ const getAuctionData = async (db: Firestore, nft: Nft) => {
     space: nft.space,
     createdBy: nft.owner,
     project: nft.owner || SOON_PROJECT_ID,
-    projects: nft.projects || [SOON_PROJECT_ID],
     auctionFrom: nft.auctionFrom!,
     auctionTo: nft.auctionTo!,
     auctionFloorPrice: nft.auctionFloorPrice || 0,

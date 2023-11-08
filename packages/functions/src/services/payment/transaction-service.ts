@@ -22,7 +22,7 @@ import dayjs from 'dayjs';
 import { get, isEmpty, set } from 'lodash';
 import { MilestoneTransactionAdapter } from '../../triggers/milestone-transactions-triggers/MilestoneTransactionAdapter';
 import { getOutputMetadata } from '../../utils/basic-output.utils';
-import { getProject, getProjects } from '../../utils/common.utils';
+import { getProject } from '../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 export interface TransactionMatch {
@@ -73,7 +73,6 @@ export class TransactionService {
     }
     const data: Transaction = {
       project: getProject(order),
-      projects: getProjects([order]),
       type: TransactionType.PAYMENT,
       uid: getRandomEthAddress(),
       member: order.member || tran.from,
@@ -141,7 +140,6 @@ export class TransactionService {
     if (finalAmt > 0) {
       const data: Transaction = {
         project: getProject(payment),
-        projects: getProjects([payment]),
         type: TransactionType.BILL_PAYMENT,
         uid: getRandomEthAddress(),
         space: (order.payload.beneficiary !== 'member' ? order.space : null) as string,
@@ -177,7 +175,6 @@ export class TransactionService {
     if (royaltyAmt > 0) {
       const data: Transaction = {
         project: getProject(payment),
-        projects: getProjects([payment]),
         type: TransactionType.BILL_PAYMENT,
         uid: getRandomEthAddress(),
         member: order.member,
@@ -225,7 +222,6 @@ export class TransactionService {
     if (payment.payload.amount! > 0) {
       const data: Transaction = {
         project: getProject(payment),
-        projects: getProjects([payment]),
         type: TransactionType.CREDIT,
         uid: getRandomEthAddress(),
         space: payment.space,
@@ -285,7 +281,6 @@ export class TransactionService {
     if (payment.payload.amount! > 0) {
       const data: Transaction = {
         project: getProject(payment),
-        projects: getProjects([payment]),
         type: TransactionType.CREDIT_TANGLE_REQUEST,
         uid: getRandomEthAddress(),
         space: payment.space,
@@ -332,7 +327,6 @@ export class TransactionService {
     }
     const transaction: Transaction = {
       project: getProject(payment),
-      projects: getProjects([payment]),
       type: TransactionType.CREDIT_NFT,
       uid: getRandomEthAddress(),
       space: payment.space || '',
@@ -482,7 +476,6 @@ export class TransactionService {
     const network = order.network || DEFAULT_NETWORK;
     const data: Transaction = {
       project: getProject(order),
-      projects: getProjects([order]),
       type: TransactionType.UNLOCK,
       uid: getRandomEthAddress(),
       space: order.space || '',

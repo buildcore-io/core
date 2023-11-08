@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { build5Storage } from '@build-5/database';
 import { Bucket, FileUploadRequest, WenError, generateRandomFileName } from '@build-5/interfaces';
 import busboy from 'busboy';
 import fs from 'fs';
+import jwt from 'jsonwebtoken';
+import { get } from 'lodash';
 import mime from 'mime-types';
 import os from 'os';
 import path from 'path';
-import { build5Storage } from '@build-5/database';
-import { getBucket } from '../../utils/config.utils';
+import { getBucket, getJwtSecretKey } from '../../utils/config.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertValidationAsync } from '../../utils/schema.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -66,9 +68,22 @@ const getParams = (headers: any, rawBody: any, workdir: string) =>
         rej(invalidArgument(WenError.invalid_params));
         return;
       }
-
+      const project = validateApiKey(params);
+      if (!project) {
+        rej(invalidArgument(WenError.invalid_project_api_key));
+      }
       res(params);
     });
 
     bb.end(rawBody);
   });
+
+const validateApiKey = (params: Record<string, unknown>) => {
+  try {
+    const projectApiKey = get(params, 'projectApiKey', '') as string;
+    const payload = jwt.verify(projectApiKey, getJwtSecretKey());
+    return get(payload, 'project', '');
+  } catch {
+    return undefined;
+  }
+};

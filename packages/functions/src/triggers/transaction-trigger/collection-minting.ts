@@ -13,7 +13,7 @@ import { TransactionPayload, Utils } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { get } from 'lodash';
 import { getAddress } from '../../utils/address.utils';
-import { getProject, getProjects } from '../../utils/common.utils';
+import { getProject } from '../../utils/common.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const onCollectionMintingUpdate = async (transaction: Transaction) => {
@@ -63,7 +63,6 @@ const onCollectionAliasMinted = async (transaction: Transaction) => {
 
   const order: Transaction = {
     project: getProject(transaction),
-    projects: getProjects([transaction]),
     type: TransactionType.MINT_COLLECTION,
     uid: getRandomEthAddress(),
     member: transaction.member,
@@ -148,7 +147,6 @@ const onNftMintSuccess = async (transaction: Transaction) => {
 
 const createMintNftsTransaction = (transaction: Transaction): Transaction => ({
   project: getProject(transaction),
-  projects: getProjects([transaction]),
   type: TransactionType.MINT_COLLECTION,
   uid: getRandomEthAddress(),
   member: transaction.member,
@@ -165,7 +163,6 @@ const onCollectionLocked = async (transaction: Transaction) => {
   const member = (await build5Db().doc(`${COL.MEMBER}/${transaction.member}`).get<Member>())!;
   const order: Transaction = {
     project: getProject(transaction),
-    projects: getProjects([transaction]),
     type: TransactionType.MINT_COLLECTION,
     uid: getRandomEthAddress(),
     member: transaction.member,

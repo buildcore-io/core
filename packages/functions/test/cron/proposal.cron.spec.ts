@@ -15,7 +15,6 @@ describe('Set proposal completed', () => {
     for (let i = 0; i < count; ++i) {
       const proposal = {
         project: SOON_PROJECT_ID,
-        projects: [SOON_PROJECT_ID],
         uid: ids[i],
         settings: {
           startDate: dateToTimestamp(dayjs().subtract(10, 'd')),

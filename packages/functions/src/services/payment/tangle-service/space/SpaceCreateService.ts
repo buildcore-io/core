@@ -2,7 +2,6 @@ import { build5Db, build5Storage } from '@build-5/database';
 import { COL, MediaStatus, Network, SUB_COL } from '@build-5/interfaces';
 import { get, set } from 'lodash';
 import { downloadMediaAndPackCar } from '../../../../utils/car.utils';
-import { getProjects } from '../../../../utils/common.utils';
 import { getBucket, isProdEnv } from '../../../../utils/config.utils';
 import { migrateUriToSotrage, uriToUrl } from '../../../../utils/media.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
@@ -58,7 +57,6 @@ export const getCreateSpaceData = async (
   const space = {
     uid: getRandomEthAddress(),
     project,
-    projects: getProjects([], project),
     ...params,
     createdBy: owner,
     open: params.open === false ? false : true,
@@ -95,7 +93,6 @@ export const getCreateSpaceData = async (
 
   const guardian = {
     project,
-    projects: getProjects([], project),
     uid: owner,
     parentId: space.uid,
     parentCol: COL.SPACE,

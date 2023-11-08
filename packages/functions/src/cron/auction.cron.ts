@@ -11,7 +11,7 @@ import dayjs from 'dayjs';
 import { AuctionFinalizeService } from '../services/payment/auction/auction.finalize.service';
 import { TransactionService } from '../services/payment/transaction-service';
 import { getAddress } from '../utils/address.utils';
-import { getProject, getProjects } from '../utils/common.utils';
+import { getProject } from '../utils/common.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 
 export const finalizeAuctions = async () => {
@@ -59,7 +59,6 @@ const finalizeOpenAuction = async (auction: Auction) => {
   for (const payment of payments) {
     const billPayment: Transaction = {
       project: getProject(payment),
-      projects: getProjects([payment]),
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       space: auction.space,

@@ -8,7 +8,7 @@ import {
   TransactionValidationType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { getProject, getProjects } from '../../../../utils/common.utils';
+import { getProject } from '../../../../utils/common.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet.service';
@@ -21,7 +21,6 @@ export class NftDepositService extends BaseService {
 
     const order: Transaction = {
       project: getProject(params.order),
-      projects: getProjects([params.order]),
       type: TransactionType.ORDER,
       uid: getRandomEthAddress(),
       member: owner,

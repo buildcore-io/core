@@ -9,7 +9,6 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 import { isEmpty } from 'lodash';
-import { getProjects } from '../../src/utils/common.utils';
 import { CollectionMintHelper } from './Helper';
 
 describe('Collection minting', () => {
@@ -30,7 +29,7 @@ describe('Collection minting', () => {
       const nft = helper.createDummyNft(helper.collection!, helper.getRandomDescrptiron());
       return build5Db()
         .doc(`${COL.NFT}/${nft.uid}`)
-        .create({ ...nft, project: SOON_PROJECT_ID, projects: getProjects([], SOON_PROJECT_ID) });
+        .create({ ...nft, project: SOON_PROJECT_ID });
     });
     await Promise.all(promises);
     await helper.mintCollection();

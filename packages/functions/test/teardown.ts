@@ -1,7 +1,5 @@
 import { build5Db } from '@build-5/database';
 import { BaseRecord, COL, SOON_PROJECT_ID } from '@build-5/interfaces';
-import { isEqual } from 'lodash';
-import { getProjects } from '../src/utils/common.utils';
 
 const collections = [
   COL.AWARD,
@@ -27,10 +25,6 @@ const teardown = async () => {
       if (data.project !== SOON_PROJECT_ID) {
         console.log(collection, data);
         throw Error('Project not defined');
-      }
-      if (!isEqual(data.projects, getProjects([], SOON_PROJECT_ID))) {
-        console.log(collection, data);
-        throw Error('Projects not set');
       }
     }
   }

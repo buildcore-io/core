@@ -13,7 +13,7 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
-import { generateRandomAmount, getProjects } from '../../../../utils/common.utils';
+import { generateRandomAmount } from '../../../../utils/common.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
@@ -81,7 +81,6 @@ export const createAddressValidationOrder = async (
 
   const order: Transaction = {
     project,
-    projects: getProjects([], project),
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,

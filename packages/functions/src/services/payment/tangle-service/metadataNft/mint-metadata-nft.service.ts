@@ -22,7 +22,7 @@ import {
   createNftOutput,
   getNftByMintingId,
 } from '../../../../utils/collection-minting-utils/nft.utils';
-import { getProject, getProjects } from '../../../../utils/common.utils';
+import { getProject } from '../../../../utils/common.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { getAliasId, getIssuerNftId } from '../../../../utils/nft.output.utils';
@@ -91,7 +91,6 @@ export class MintMetadataNftService extends BaseService {
 
     const order: Transaction = {
       project: getProject(tangleOrder),
-      projects: getProjects([tangleOrder]),
       type: TransactionType.ORDER,
       uid: getRandomEthAddress(),
       member: owner,
@@ -177,7 +176,6 @@ const getSpace = async (project: string, owner: string, aliasId: string) => {
   if (aliasId === EMPTY_ALIAS_ID) {
     return {
       project,
-      projects: getProjects([], project),
       uid: getRandomEthAddress(),
       name: `Space of alias: ${aliasId}`,
       open: false,

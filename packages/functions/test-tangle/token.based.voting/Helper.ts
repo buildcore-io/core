@@ -27,7 +27,6 @@ import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
-import { getProjects } from '../../src/utils/common.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -70,7 +69,6 @@ export class Helper {
       .doc(`${COL.TOKEN}/${this.tokenId}`)
       .create({
         project: SOON_PROJECT_ID,
-        projects: getProjects([], SOON_PROJECT_ID),
         uid: this.tokenId,
         space: this.space.uid,
         mintingData: { tokenId: MINTED_TOKEN_ID },

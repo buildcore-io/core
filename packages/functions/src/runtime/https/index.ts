@@ -120,12 +120,12 @@ import { voteSchema } from '../../controls/vote/VoteRequestSchema';
 import { voteControl } from '../../controls/vote/vote.control';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 import { onRequest } from './https';
-import { noAuth } from './middlewares';
+import { createMember, uploadFile } from './middlewares';
 
 exports[WEN_FUNC.createMember] = onRequest({
   name: WEN_FUNC.createMember,
   schema: Joi.object({}),
-  middleware: noAuth,
+  middleware: createMember,
   handler: createMemberControl,
 });
 
@@ -505,7 +505,7 @@ exports[WEN_FUNC.generateCustomToken] = onRequest({
 exports[WEN_FUNC.uploadFile] = onRequest({
   name: WEN_FUNC.uploadFile,
   schema: Joi.object({}),
-  middleware: noAuth,
+  middleware: uploadFile,
   handler: uploadFileControl,
 });
 

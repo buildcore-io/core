@@ -21,7 +21,7 @@ import { NftWallet } from '../../services/wallet/NftWallet';
 import { Wallet, WalletParams } from '../../services/wallet/wallet';
 import { WalletService } from '../../services/wallet/wallet.service';
 import { getAddress } from '../../utils/address.utils';
-import { getProject, getProjects } from '../../utils/common.utils';
+import { getProject } from '../../utils/common.utils';
 import { isEmulatorEnv } from '../../utils/config.utils';
 import { serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -539,7 +539,6 @@ const onMintedAirdropCleared = async (curr: Transaction) => {
   const member = <Member>await build5Db().doc(`${COL.MEMBER}/${curr.member}`).get();
   const credit: Transaction = {
     project: getProject(curr),
-    projects: getProjects([curr]),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: curr.space,

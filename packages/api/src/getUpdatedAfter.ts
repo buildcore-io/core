@@ -48,7 +48,7 @@ export const getUpdatedAfter = async (project: string, url: string) => {
     query = query.where('isOrderType', '==', false);
   }
 
-  query = query.where('projects', 'array-contains', project);
+  query = query.where('project', '==', project);
 
   if (body.startAfter) {
     const startAfter = await getSnapshot(baseCollectionPath as COL, body.startAfter);

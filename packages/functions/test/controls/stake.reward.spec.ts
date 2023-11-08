@@ -19,14 +19,11 @@ describe('Stake reward controller', () => {
     space = await createSpace(walletSpy, guardian);
 
     token = wallet.getRandomEthAddress();
-    await build5Db()
-      .doc(`${COL.TOKEN}/${token}`)
-      .create({
-        project: SOON_PROJECT_ID,
-        projects: [SOON_PROJECT_ID],
-        uid: token,
-        space: space.uid,
-      });
+    await build5Db().doc(`${COL.TOKEN}/${token}`).create({
+      project: SOON_PROJECT_ID,
+      uid: token,
+      space: space.uid,
+    });
   });
 
   it('Should throw, token does not exist', async () => {

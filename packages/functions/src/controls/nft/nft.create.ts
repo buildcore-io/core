@@ -12,7 +12,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -105,7 +104,6 @@ const processOneCreateNft = async (
   const nft = {
     ...params,
     project,
-    projects: getProjects([], project),
     uid: getRandomEthAddress(),
     locked: false,
     price,

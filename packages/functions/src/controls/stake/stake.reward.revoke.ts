@@ -20,7 +20,6 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { uniq } from 'lodash';
-import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
@@ -89,7 +88,6 @@ export const removeStakeRewardControl = async ({
 
   const voteTransaction: Transaction = {
     project,
-    projects: getProjects([proposal], project),
     type: TransactionType.VOTE,
     uid: getRandomEthAddress(),
     member: owner,
@@ -111,7 +109,6 @@ export const removeStakeRewardControl = async ({
       .doc(guardian.uid)
       .set({
         project,
-        projects: getProjects([proposal], project),
         uid: guardian.uid,
         weight: 1,
         voted: guardian.uid === owner,
@@ -144,7 +141,6 @@ const createUpdateSpaceProposal = (
     `${REMOVE_STAKE_REWARDS_THRESHOLD_PERCENTAGE} % must agree for this action to proceed <br /><br />`;
   return {
     project,
-    projects: getProjects([space], project),
     createdBy: owner.uid,
     description: '',
     uid: getRandomEthAddress(),

@@ -10,7 +10,6 @@ import {
   TokenStatus,
   WenError,
 } from '@build-5/interfaces';
-import { getProjects } from '../../../../utils/common.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
@@ -72,7 +71,6 @@ export const createProposal = async (
       endDate: dateToTimestamp(settings.endDate as Date, true),
     },
     project,
-    projects: getProjects([], project),
     uid: getRandomEthAddress(),
     rank: 1,
     createdBy: owner,
@@ -91,7 +89,6 @@ export const createProposal = async (
     proposal: { ...proposal, totalWeight, results },
     proposalOwner: {
       project,
-      projects: getProjects([], project),
       uid: owner,
       parentId: proposal.uid,
       parentCol: COL.PROPOSAL,
@@ -126,7 +123,6 @@ const createProposalMember = (
   spaceMember: SpaceMember,
 ): ProposalMember => ({
   project,
-  projects: getProjects([proposal], project),
   uid: spaceMember.uid,
   weight: proposal.type === ProposalType.NATIVE ? 0 : 1,
   voted: false,

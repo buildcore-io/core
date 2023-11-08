@@ -21,7 +21,7 @@ import {
 import { NftOutput } from '@iota/sdk';
 import { head, isEmpty, set } from 'lodash';
 import { getNftByMintingId } from '../../../utils/collection-minting-utils/nft.utils';
-import { getProject, getProjects } from '../../../utils/common.utils';
+import { getProject } from '../../../utils/common.utils';
 import { getBucket } from '../../../utils/config.utils';
 import { serverTime } from '../../../utils/dateTime.utils';
 import { migrateUriToSotrage, uriToUrl } from '../../../utils/media.utils';
@@ -147,7 +147,6 @@ export class NftDepositService extends BaseService {
 
     const nft: Nft = {
       project: getProject(order),
-      projects: getProjects([order]),
       uid: nftOutput.nftId,
       ipfsMedia: '',
       name: metadata.nft.name,
@@ -327,7 +326,6 @@ const getSpace = async (
 
   const space = {
     project: getProject(collection),
-    projects: getProjects([collection]),
     uid: getRandomEthAddress(),
     name: collectionName,
     about:
@@ -356,7 +354,6 @@ const getMigratedCollection = (
 
   const mintedCollection: Collection = {
     project: getProject(order),
-    projects: getProjects([order]),
     space: space.uid,
     uid: nftMetadata.collectionId as string,
     name: collectionMetadata.name as string,

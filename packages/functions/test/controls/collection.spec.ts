@@ -26,7 +26,6 @@ import { chunk } from 'lodash';
 import { createNft } from '../../src/runtime/firebase/nft';
 import { rankController } from '../../src/runtime/firebase/rank';
 import { voteController } from '../../src/runtime/firebase/vote';
-import { getProjects } from '../../src/utils/common.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { soonTokenId, testEnv } from '../set-up';
 import {
@@ -386,7 +385,6 @@ describe('Collection trigger test', () => {
     const collection = {
       ...dummyCollection('', 0.1),
       project: SOON_PROJECT_ID,
-      projects: [SOON_PROJECT_ID],
       uid: wallet.getRandomEthAddress(),
     };
     await build5Db().doc(`${COL.COLLECTION}/${collection.uid}`).create(collection);
@@ -400,7 +398,6 @@ describe('Collection trigger test', () => {
         batch.create(build5Db().doc(`${COL.NFT}/${id}`), {
           ...dummyNft(chunkIndex * 500 + index, id, collection.uid),
           project: SOON_PROJECT_ID,
-          projects: [SOON_PROJECT_ID],
         });
       });
       await batch.commit();
@@ -677,7 +674,6 @@ describe('Collection rank test', () => {
 const saveToken = async (space: string) => {
   const token = {
     project: SOON_PROJECT_ID,
-    projects: getProjects([], SOON_PROJECT_ID),
     uid: wallet.getRandomEthAddress(),
     symbol: getRandomSymbol(),
     approved: true,

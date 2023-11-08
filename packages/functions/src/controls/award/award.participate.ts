@@ -8,7 +8,6 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { getProjects } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { Context } from '../common';
@@ -44,7 +43,6 @@ export const awardParticipateControl = async ({
   const participant: AwardParticipant = {
     uid: owner,
     project,
-    projects: getProjects([award], project),
     comment: params.comment || null,
     parentId: award.uid,
     completed: false,

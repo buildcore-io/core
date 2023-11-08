@@ -105,7 +105,6 @@ export interface Base {
 
 export interface BaseSubCollection {
   project?: string;
-  projects?: string[];
   parentId: string;
   parentCol: string;
 }
@@ -117,7 +116,6 @@ export interface BaseSubCollection {
  */
 export interface BaseRecord extends Base {
   project?: string;
-  projects?: string[];
   /**
    * Date/time it was created on.
    */

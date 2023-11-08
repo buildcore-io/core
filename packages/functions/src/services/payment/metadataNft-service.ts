@@ -18,7 +18,7 @@ import {
   getCollectionByMintingId,
   getNftByMintingId,
 } from '../../utils/collection-minting-utils/nft.utils';
-import { getProject, getProjects } from '../../utils/common.utils';
+import { getProject } from '../../utils/common.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { BaseService, HandlerParams } from './base';
 
@@ -34,7 +34,6 @@ export class MetadataNftService extends BaseService {
     if (!aliasId) {
       const mintAlias: Transaction = {
         project,
-        projects: getProjects([], project),
         type: TransactionType.METADATA_NFT,
         uid: getRandomEthAddress(),
         space: order.space,
@@ -158,7 +157,6 @@ export const createMintMetadataCollectionOrder = (
   aliasBlockId = '',
 ): Transaction => ({
   project: getProject(transaction),
-  projects: getProjects([transaction]),
   type: TransactionType.METADATA_NFT,
   uid: getRandomEthAddress(),
   member: transaction.member,
@@ -184,7 +182,6 @@ export const createMintMetadataNftOrder = (
   baseOrderId: string,
 ): Transaction => ({
   project: getProject(transaction),
-  projects: getProjects([transaction]),
   type: TransactionType.METADATA_NFT,
   uid: getRandomEthAddress(),
   member: nft.owner,
