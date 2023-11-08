@@ -13,7 +13,7 @@ const file = './deploy.sh';
 
 fs.writeFileSync(file, `export GOOGLE_CLOUD_PROJECT=$(gcloud config get-value project)\n\n`);
 
-fs.appendFileSync(file);
+fs.appendFileSync(file, `\n`);
 
 const buildImage = () => {
   fs.appendFileSync(file, 'cp packages/functions/Dockerfile ./Dockerfile\n\n');
