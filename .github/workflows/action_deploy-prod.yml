@@ -117,3 +117,27 @@ jobs:
           SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE }}
       - name: Roll firestore
         run: cd scripts && ts-node db.upgrade.ts
+
+  stamp_project:
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Create serviceAccountKey.json
+        run: echo "$SERVICE_ACCOUNT" >> ./packages/functions/scripts/serviceAccountKey.json
+        env:
+          SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE_PROD }}
+      - name: Set env vars
+        run: echo "$FUNCTIONS_ENV_VARS" >> ./packages/functions/scripts/.env
+        env:
+          FUNCTIONS_ENV_VARS: ${{ secrets.FUNCTIONS_ENV_VARS_PROD }}
+      - name: Build project
+        run: |
+          npm run build:functions
+          npm i -g ts-node
+      - name: Stamp project
+        run: npm run stamp-project 
+

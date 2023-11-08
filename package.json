@@ -33,7 +33,8 @@
     "prettier": "npm run prettier:functions; npm run prettier:interfaces; npm run prettier:indexes; npm run prettier:lib; npm run prettier:database; npm run prettier:api",
     "joi-to-types": "ts-node ./scripts/joi-generator-post.ts && ts-node ./scripts/joi-generator-tangle.ts && npm run prettier",
     "rebuild": "npm run clean; npm run build",
-    "create-deploy-script": "ts-node packages/functions/deploy.script.ts"
+    "create-deploy-script": "ts-node packages/functions/deploy.script.ts",
+    "stamp-project": "cp packages/functions/.env packages/functions/scripts/.env && ts-node packages/functions/scripts/stamp.project.ts"
   },
   "devDependencies": {
     "joi-to-typescript": "4.7.0"
