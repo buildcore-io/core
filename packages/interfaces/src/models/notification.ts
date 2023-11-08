@@ -11,6 +11,13 @@ interface NotificationParams {
   };
   amount: number;
   auction: string;
+  /**
+   * @deprecated The is not used anymore
+   */
+  nft: {
+    uid: string;
+    name: string;
+  };
 }
 export interface NotificationBidParams extends NotificationParams {}
 

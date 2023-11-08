@@ -13,6 +13,10 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "space",
           "order": "ASCENDING"
         },
@@ -32,6 +36,10 @@
         },
         {
           "fieldPath": "rejected",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "project",
           "order": "ASCENDING"
         },
         {

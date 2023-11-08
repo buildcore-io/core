@@ -1,5 +1,10 @@
 import { IDocument, IQuery } from '@build-5/database';
-import { PublicCollections, QUERY_MAX_LENGTH, TokenPurchase } from '@build-5/interfaces';
+import {
+  PublicCollections,
+  PublicSubCollections,
+  QUERY_MAX_LENGTH,
+  TokenPurchase,
+} from '@build-5/interfaces';
 import Joi from 'joi';
 import { head } from 'lodash';
 import { Observable, map } from 'rxjs';
@@ -76,3 +81,14 @@ export const getQueryLimit = (collection: PublicCollections) => {
       return QUERY_MAX_LENGTH;
   }
 };
+
+export const shouldSetProjectFilter = (
+  col: PublicCollections,
+  subCol?: PublicSubCollections,
+): boolean =>
+  ![
+    PublicCollections.MILESTONE,
+    PublicCollections.MILESTONE_RMS,
+    PublicCollections.MILESTONE_SMR,
+    PublicCollections.TICKER,
+  ].includes(col) && !subCol;

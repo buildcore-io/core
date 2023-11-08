@@ -54,7 +54,7 @@ const onConnection = async (url: URL, res: express.Response | ws.WebSocket) => {
     const project = getProjectId(url);
     url.searchParams.delete('token');
 
-    const observable = await getObservable(project, url.href);
+    const observable = await getObservable(project, url);
     if (res instanceof ws.WebSocket) {
       sendLiveUpdates(res, observable);
       return;
@@ -72,47 +72,38 @@ const onConnection = async (url: URL, res: express.Response | ws.WebSocket) => {
   }
 };
 
-const getObservable = (project: string, url: string): Promise<Observable<unknown>> => {
-  if (url.includes(ApiRoutes.GET_BY_ID)) {
-    return getById(url);
+const getObservable = (project: string, url: URL): Promise<Observable<unknown>> => {
+  const endpoint = url.pathname.replace('/api', '');
+  switch (endpoint) {
+    case ApiRoutes.GET_BY_ID:
+      return getById(url.href);
+    case ApiRoutes.GET_MANY_BY_ID:
+      return getManyById(url.href);
+    case ApiRoutes.GET_MANY:
+      return getMany(project, url.href);
+    case ApiRoutes.GET_MANY_ADVANCED:
+      return getManyAdvanced(project, url.href);
+    case ApiRoutes.GET_UPDATED_AFTER:
+      return getUpdatedAfter(project, url.href);
+    case ApiRoutes.GET_TOKEN_PRICE:
+      return getTokenPrice(url.href);
+    case ApiRoutes.GET_AVG_PRICE:
+      return getAvgPrice(url.href);
+    case ApiRoutes.GET_PRICE_CHANGE:
+      return getPriceChange(url.href);
+    case ApiRoutes.GET_ADDRESSES:
+      return getAddresses(url.href);
+    case ApiRoutes.GET_TOP_MILESTONES:
+      return getTopMilestones(url.href);
+    case ApiRoutes.GET_NFT_MUTABLE_METADATA:
+      return getNftMutableMetadata(url.href);
+    case ApiRoutes.GET_NFT_IDS:
+      return getNftIds(url.href);
+    case ApiRoutes.GET_NFT_MUTABLE_METADATA_HISTORY:
+      return getNftMutableMetadataHistory(url.href);
+    default:
+      throw { code: 400, message: 'Invalid route' };
   }
-  if (url.includes(ApiRoutes.GET_MANY_BY_ID)) {
-    return getManyById(url);
-  }
-  if (url.includes(ApiRoutes.GET_MANY)) {
-    return getMany(project, url);
-  }
-  if (url.includes(ApiRoutes.GET_MANY_ADVANCED)) {
-    return getManyAdvanced(project, url);
-  }
-  if (url.includes(ApiRoutes.GET_UPDATED_AFTER)) {
-    return getUpdatedAfter(project, url);
-  }
-  if (url.includes(ApiRoutes.GET_TOKEN_PRICE)) {
-    return getTokenPrice(url);
-  }
-  if (url.includes(ApiRoutes.GET_AVG_PRICE)) {
-    return getAvgPrice(url);
-  }
-  if (url.includes(ApiRoutes.GET_PRICE_CHANGE)) {
-    return getPriceChange(url);
-  }
-  if (url.includes(ApiRoutes.GET_ADDRESSES)) {
-    return getAddresses(url);
-  }
-  if (url.includes(ApiRoutes.GET_TOP_MILESTONES)) {
-    return getTopMilestones(url);
-  }
-  if (url.includes(ApiRoutes.GET_NFT_MUTABLE_METADATA)) {
-    return getNftMutableMetadata(url);
-  }
-  if (url.includes(ApiRoutes.GET_NFT_IDS)) {
-    return getNftIds(url);
-  }
-  if (url.includes(ApiRoutes.GET_NFT_MUTABLE_METADATA_HISTORY)) {
-    return getNftMutableMetadataHistory(url);
-  }
-  throw { code: 400, message: 'Invalid route' };
 };
 
 const getProjectId = (url: URL) => {

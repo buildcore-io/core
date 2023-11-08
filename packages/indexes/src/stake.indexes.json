@@ -9,6 +9,10 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "expiresAt",
           "order": "ASCENDING"
         }
@@ -20,6 +24,10 @@
       "fields": [
         {
           "fieldPath": "member",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "project",
           "order": "ASCENDING"
         },
         {
@@ -37,6 +45,10 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "token",
           "order": "ASCENDING"
         },
@@ -52,6 +64,10 @@
       "fields": [
         {
           "fieldPath": "token",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "project",
           "order": "ASCENDING"
         },
         {

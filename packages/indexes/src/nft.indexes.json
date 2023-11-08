@@ -337,6 +337,10 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "position",
           "order": "ASCENDING"
         }

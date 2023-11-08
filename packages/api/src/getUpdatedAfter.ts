@@ -10,7 +10,13 @@ import dayjs from 'dayjs';
 import Joi from 'joi';
 import { isEmpty } from 'lodash';
 import { map } from 'rxjs';
-import { CommonJoi, getQueryLimit, getQueryParams, queryToObservable } from './common';
+import {
+  CommonJoi,
+  getQueryLimit,
+  getQueryParams,
+  queryToObservable,
+  shouldSetProjectFilter,
+} from './common';
 
 const getUpdatedAfterSchema = Joi.object({
   collection: Joi.string()
@@ -48,7 +54,9 @@ export const getUpdatedAfter = async (project: string, url: string) => {
     query = query.where('isOrderType', '==', false);
   }
 
-  query = query.where('project', '==', project);
+  if (shouldSetProjectFilter(body.collection, body.subCollection)) {
+    query = query.where('project', '==', project);
+  }
 
   if (body.startAfter) {
     const startAfter = await getSnapshot(baseCollectionPath as COL, body.startAfter);

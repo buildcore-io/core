@@ -3,6 +3,7 @@ import {
   COL,
   MIN_IOTA_AMOUNT,
   NetworkAddress,
+  SOON_PROJECT_ID,
   Space,
   SUB_COL,
   Token,
@@ -50,6 +51,7 @@ describe('Order and claim airdropped token test', () => {
 
     const tokenId = wallet.getRandomEthAddress();
     token = {
+      project: SOON_PROJECT_ID,
       symbol: getRandomSymbol(),
       totalSupply: 10,
       approved: true,
