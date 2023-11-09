@@ -1,5 +1,8 @@
 import { BaseRecord, BaseSubCollection, Timestamp } from './base';
 
+/**
+ * Project Model
+ */
 export interface Project extends BaseRecord {
   /**
    * Name of the project
