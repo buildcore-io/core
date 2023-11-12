@@ -23,18 +23,20 @@ const app = express();
 
 app.use(cors());
 
-// HTTPS
-const rawParser = express.raw({ type: '*/*' });
+const httpRawParser = express.raw({ type: '*/*', limit: '100mb' });
+const protoRawParser = express.raw({ type: 'application/protobuf', limit: '2mb' });
 const jsonParser = express.json();
+
+// HTTPS
 Object.entries(flattenObject(onRequests)).forEach(([name, config]) => {
-  app.post(`/${name}`, name === WEN_FUNC.uploadFile ? rawParser : jsonParser, (req, res) =>
+  app.post(`/${name}`, name === WEN_FUNC.uploadFile ? httpRawParser : jsonParser, (req, res) =>
     (config as HttpsFunction).func(req, res),
   );
 });
 
 // TRIGGERS
 Object.entries(flattenObject(onTriggers)).forEach(([name, config]) => {
-  app.post(`/${name}`, express.raw({ type: 'application/protobuf' }), async (req, res) => {
+  app.post(`/${name}`, protoRawParser, async (req, res) => {
     const root = loadSync('./data.proto');
     const type = root.lookupType('DocumentEventData');
     const decoded = type.decode(req.body);
