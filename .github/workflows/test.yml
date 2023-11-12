@@ -1,0 +1,13 @@
+name: Test stamp
+
+on: pull_request:
+
+jobs:
+  my_job:
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run custom action
+        uses: build-5/stamp-action@master
+        with:
+          mnemonic: health attract search scrub man age festival boat gravity install limit luxury day release table castle glimpse high resource swim denial member ski season
