@@ -40,9 +40,10 @@ class Observable<T> extends RxjsObservable<T> {
     this.observer?.error(new Error(this.url.replace('http', 'ws')));
   };
 
-  private onClose = (closeEvent: CloseEvent) => {
+  private onClose = async (closeEvent: CloseEvent) => {
     this.closeConnection();
     if (closeEvent.code === 1000) {
+      await new Promise((resolve) => setTimeout(resolve, API_RETRY_TIMEOUT));
       this.init();
     } else {
       this.observer?.error(new Error(this.url.replace('http', 'ws')));

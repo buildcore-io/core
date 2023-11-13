@@ -20,10 +20,10 @@ export const ageRoll = async (app: FirebaseApp) => {
     const batch = db.batch();
 
     purchases.forEach((purchase) => {
-      if (Array.isArray(purchase.age)) {
+      if (purchase.age && Array.isArray(purchase.age)) {
         return;
       }
-      const prevAge = purchase.age as Record<string, TokenPurchaseAge>;
+      const prevAge = (purchase.age || {}) as Record<string, TokenPurchaseAge>;
       const age = Object.values(TokenPurchaseAge).reduce(
         (acc, act) => (prevAge[act] ? [...acc, act] : acc),
         [] as TokenPurchaseAge[],
