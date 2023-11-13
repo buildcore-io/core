@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { COL, PublicCollections, PublicSubCollections, SUB_COL } from '@build-5/interfaces';
 import admin from 'firebase-admin';
+import { Filter } from 'firebase-admin/firestore';
 import { isEmpty } from 'lodash';
 import { FirebaseApp } from '../app/app';
 import { cOn, uOn } from './common';
@@ -146,7 +147,16 @@ class FirestoreCollectionGroup implements ICollectionGroup {
   public where = (fieldPath: string, operator: admin.firestore.WhereFilterOp, value: any) =>
     new FirestoreQuery(this.collection.where(fieldPath, operator, value));
 
+  public or = (filters: { fieldPath: string; value: any }[]) => {
+    const compositFilter = Filter.or(
+      ...filters.map((f) => Filter.where(f.fieldPath, '==', f.value)),
+    );
+    return new FirestoreQuery(this.collection.where(compositFilter));
+  };
+
   public limit = (value: number) => new FirestoreQuery(this.collection.limit(value));
+
+  public limitToLast = (value: number) => new FirestoreQuery(this.collection.limitToLast(value));
 
   public startAfter = (value?: IDocumentSnapshot | string | number | Date) => {
     if (!value) {
@@ -245,6 +255,11 @@ export class FirestoreQuery implements IQuery {
 
   public limit = (value: number) => {
     this.query = this.query.limit(value);
+    return this;
+  };
+
+  public limitToLast = (value: number) => {
+    this.query = this.query.limitToLast(value);
     return this;
   };
 

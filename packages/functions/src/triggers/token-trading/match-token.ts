@@ -178,13 +178,11 @@ const getPostMatchActions = (token: Token) => {
 
 const getSimpleTokenQuery = async (trade: TokenTradeOrder, startAfter = '') => {
   const lastDoc = await getSnapshot(COL.TOKEN_MARKET, startAfter);
+  const type =
+    trade.type === TokenTradeOrderType.BUY ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY;
   return build5Db()
     .collection(COL.TOKEN_MARKET)
-    .where(
-      'type',
-      '==',
-      trade.type === TokenTradeOrderType.BUY ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY,
-    )
+    .where('type', '==', type)
     .where('token', '==', trade.token)
     .where('price', trade.type === TokenTradeOrderType.BUY ? '<=' : '>=', trade.price)
     .where('status', '==', TokenTradeOrderStatus.ACTIVE)

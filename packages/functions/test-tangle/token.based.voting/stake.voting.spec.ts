@@ -59,7 +59,7 @@ describe('Staked oken based voting', () => {
   it('Should vote on 2 proposals', async () => {
     await helper.createStake(dayjs().subtract(2, 'd'), dayjs().add(1, 'y'));
 
-    const { uid, ...requestData } = dummyProposal(helper.space!.uid);
+    const { uid, completed, ...requestData } = dummyProposal(helper.space!.uid);
     set(requestData, 'settings.startDate', requestData.settings.startDate.toDate());
     set(requestData, 'settings.endDate', requestData.settings.endDate.toDate());
     mockWalletReturnValue(helper.walletSpy, helper.guardian, requestData);

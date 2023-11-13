@@ -531,28 +531,6 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "available",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "collection",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "saleAccess",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "availablePrice",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "nft",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
           "fieldPath": "status",
           "order": "ASCENDING"
         },

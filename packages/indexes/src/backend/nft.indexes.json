@@ -1,45 +1,49 @@
 {
   "indexes": [
     {
-      "collectionGroup": "stake_reward",
+      "collectionGroup": "nft",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "project",
+          "fieldPath": "available",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "project",
+          "fieldPath": "collection",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "status",
+          "fieldPath": "saleAccess",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "endDate",
+          "fieldPath": "availablePrice",
           "order": "ASCENDING"
         }
       ]
     },
     {
-      "collectionGroup": "stake_reward",
+      "collectionGroup": "nft",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "project",
+          "fieldPath": "collection",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "project",
+          "fieldPath": "locked",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "token",
+          "fieldPath": "placeholderNft",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "endDate",
+          "fieldPath": "sold",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "position",
           "order": "ASCENDING"
         }
       ]

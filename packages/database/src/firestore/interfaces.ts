@@ -20,7 +20,9 @@ export interface IDatabase {
 export interface ICollectionGroup {
   get: <T>() => Promise<T[]>;
   where: (fieldPath: string, operator: WhereFilterOp, value: any) => IQuery;
+  or: (filters: { fieldPath: string; value: any }[]) => IQuery;
   limit: (value: number) => IQuery;
+  limitToLast: (value: number) => IQuery;
   startAfter: (value?: IDocumentSnapshot | string | number | Date) => IQuery;
   orderBy: (field: string, dir?: 'asc' | 'desc') => IQuery;
   count: () => Promise<number>;
@@ -59,6 +61,7 @@ export interface IQuery {
   where: (fieldPath: string, operator: WhereFilterOp, value: any) => IQuery;
 
   limit: (value: number) => IQuery;
+  limitToLast: (value: number) => IQuery;
   startAfter: (value?: IDocumentSnapshot | string | number | Date) => IQuery;
   onSnapshot: <T>(callback: (data: T[]) => void, error?: (error: Error) => void) => () => void;
 

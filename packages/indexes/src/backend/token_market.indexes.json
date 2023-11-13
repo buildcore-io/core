@@ -5,11 +5,25 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "owner",
+          "fieldPath": "status",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "project",
+          "fieldPath": "expiresAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "token_market",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sourceNetwork",
           "order": "ASCENDING"
         },
         {
@@ -17,33 +31,11 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "type",
+          "fieldPath": "price",
           "order": "ASCENDING"
         },
         {
           "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "token_market",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "token",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "type",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "price",
           "order": "ASCENDING"
         }
       ]
@@ -66,7 +58,64 @@
         },
         {
           "fieldPath": "price",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "token_market",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sourceNetwork",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "token",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "price",
           "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+
+    {
+      "collectionGroup": "token_market",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "token",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "price",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "ASCENDING"
         }
       ]
     }

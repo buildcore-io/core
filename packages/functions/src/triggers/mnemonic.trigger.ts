@@ -1,11 +1,7 @@
 import { build5Db } from '@build-5/database';
-import { COL, MAX_WALLET_RETRY, Mnemonic, NetworkAddress, Transaction } from '@build-5/interfaces';
-import { chunk, isEmpty } from 'lodash';
+import { COL, Mnemonic, NetworkAddress, Transaction } from '@build-5/interfaces';
+import { isEmpty } from 'lodash';
 import { FirestoreDocEvent } from './common';
-import {
-  CREDIT_EXECUTABLE_TRANSACTIONS,
-  DEFAULT_EXECUTABLE_TRANSACTIONS,
-} from './transaction-trigger/transaction.trigger';
 
 enum FieldNameType {
   SOURCE_ADDRESS = 'payload.sourceAddress',
@@ -29,25 +25,18 @@ export const onMnemonicUpdated = async (event: FirestoreDocEvent<Mnemonic>) => {
   }
 };
 
-const TYPE_CHUNKS = chunk(DEFAULT_EXECUTABLE_TRANSACTIONS, 10).concat([
-  CREDIT_EXECUTABLE_TRANSACTIONS,
-]);
+const MAX_COUNT = [0, 1, 2, 3, 4, 5];
 
 const getUncofirmedTransactionsId = async (address: NetworkAddress) => {
-  for (const fieldName of Object.values(FieldNameType)) {
-    for (const chunk of TYPE_CHUNKS) {
-      const transactions = await build5Db()
-        .collection(COL.TRANSACTION)
-        .where(fieldName, '==', address)
-        .where('type', 'in', chunk)
-        .where('payload.walletReference.chainReference', '==', null)
-        .where('payload.walletReference.count', '<', MAX_WALLET_RETRY)
-        .limit(1)
-        .get<Transaction>();
-      if (transactions.length) {
-        return transactions[0].uid;
-      }
-    }
+  const transactions = await build5Db()
+    .collection(COL.TRANSACTION)
+    .or(Object.values(FieldNameType).map((fieldPath) => ({ fieldPath, value: address })))
+    .where('payload.walletReference.confirmed', '==', false)
+    .where('payload.walletReference.count', 'in', MAX_COUNT)
+    .limit(1)
+    .get<Transaction>();
+  if (transactions.length) {
+    return transactions[0].uid;
   }
   return undefined;
 };

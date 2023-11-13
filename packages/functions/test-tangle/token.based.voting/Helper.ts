@@ -58,6 +58,7 @@ export class Helper {
     await testEnv.wrap(joinSpace)({});
 
     this.proposal = dummyProposal(this.space.uid);
+    delete (this.proposal as any).completed;
 
     const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${this.guardian}`);
     const guardianData = await guardianDocRef.get<Member>();
@@ -189,6 +190,8 @@ export class Helper {
 
   public createStake = async (createdOn: dayjs.Dayjs, expiresAt: dayjs.Dayjs, amount = 100) => {
     const stake = {
+      expirationProcessed: false,
+      project: SOON_PROJECT_ID,
       createdOn: dateToTimestamp(createdOn),
       expiresAt: dateToTimestamp(expiresAt),
       amount,
@@ -232,6 +235,7 @@ export const dummyProposal = (space: string): Proposal => ({
       additionalInfo: 'This would fund the development of HORNET indefinitely',
     },
   ],
+  completed: false,
 });
 
 export const VAULT_MNEMONIC =

@@ -518,7 +518,7 @@ export interface TokenPurchase extends BaseRecord {
   /**
    * TODODOC
    */
-  readonly age: { [key: string]: boolean };
+  readonly age: TokenPurchaseAge[];
 }
 
 /**

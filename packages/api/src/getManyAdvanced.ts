@@ -14,7 +14,13 @@ import {
 import Joi from 'joi';
 import { get, isEmpty, isEqual } from 'lodash';
 import { map } from 'rxjs';
-import { CommonJoi, getQueryLimit, getQueryParams, queryToObservable, shouldSetProjectFilter } from './common';
+import {
+  CommonJoi,
+  getQueryLimit,
+  getQueryParams,
+  queryToObservable,
+  shouldSetProjectFilter,
+} from './common';
 
 const fieldNameSchema = Joi.string().max(MAX_FIELD_NAME_LENGTH);
 const fieldValueSchema = Joi.alternatives().try(

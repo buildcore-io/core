@@ -5,16 +5,12 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "member",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "project",
+          "fieldPath": "expirationProcessed",
           "order": "ASCENDING"
         },
         {
           "fieldPath": "expiresAt",
-          "order": "DESCENDING"
+          "order": "ASCENDING"
         }
       ]
     },
@@ -23,15 +19,11 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "member",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "project",
-          "order": "ASCENDING"
-        },
-        {
           "fieldPath": "token",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
           "order": "ASCENDING"
         },
         {

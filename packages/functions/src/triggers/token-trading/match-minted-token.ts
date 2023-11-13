@@ -5,6 +5,7 @@ import {
   Member,
   Space,
   Token,
+  TokenPurchaseAge,
   TokenTradeOrder,
   TokenTradeOrderType,
   Transaction,
@@ -354,7 +355,7 @@ export const matchMintedToken = async (
 
       sellerTier: await getMemberTier(getProject(sell), seller),
       sellerTokenTradingFeePercentage: getTokenTradingFee(seller) as number,
-      age: {},
+      age: Object.values(TokenPurchaseAge),
     },
     sellerCreditId: creditToSeller?.uid,
     buyerCreditId: creditToBuyer?.uid,

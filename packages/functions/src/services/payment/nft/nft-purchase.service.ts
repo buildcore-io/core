@@ -97,7 +97,7 @@ export class NftPurchaseService extends BaseService {
           .collection(COL.TRANSACTION)
           .where('payload.invalidPayment', '==', false)
           .where('payload.sourceTransaction', 'array-contains', transaction.uid)
-          .orderBy('payload.amount', 'desc')
+          .limit(1)
           .get();
         if (payments.length === 0) {
           const payload = data.payload;

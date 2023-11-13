@@ -18,7 +18,7 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { getProject } from '../../../../utils/common.utils';
-import { dateToTimestamp, serverTime } from '../../../../utils/dateTime.utils';
+import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
@@ -99,7 +99,7 @@ export const addRemoveGuardian = async (
   const ongoingProposalSnap = await build5Db()
     .collection(COL.PROPOSAL)
     .where('settings.addRemoveGuardian', '==', params.member)
-    .where('settings.endDate', '>=', serverTime())
+    .where('completed', '==', false)
     .get();
 
   if (ongoingProposalSnap.length) {
@@ -215,5 +215,6 @@ const getProposalData = (
       voted: 1,
       answers: { [1]: 1 },
     },
+    completed: false,
   };
 };

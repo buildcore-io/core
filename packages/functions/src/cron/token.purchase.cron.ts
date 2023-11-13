@@ -16,7 +16,7 @@ const removeExiredPurchaseFromStats = async (age: TokenPurchaseAge) => {
     const batch = build5Db().batch();
     for (const purchase of purchases) {
       const docRef = build5Db().doc(`${COL.TOKEN_PURCHASE}/${purchase.uid}`);
-      batch.set(docRef, { age: { [age]: false } }, true);
+      batch.set(docRef, { age: build5Db().arrayRemove(age) }, true);
 
       const token = purchase.token;
       const statsDocRef = build5Db().doc(`${COL.TOKEN}/${token}/${SUB_COL.STATS}/${token}`);
@@ -31,7 +31,7 @@ const getExpiredPurchases = (age: TokenPurchaseAge) => {
   const createdBefore = dayjs().subtract(days, 'd').toDate();
   return build5Db()
     .collection(COL.TOKEN_PURCHASE)
-    .where(`age.${age}`, '==', true)
+    .where('age', 'array-contains', age)
     .where('createdOn', '<=', createdBefore)
     .get<TokenPurchase>();
 };

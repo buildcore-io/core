@@ -57,20 +57,6 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "completed",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "endDate",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "award",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
           "fieldPath": "name",
           "order": "ASCENDING"
         },

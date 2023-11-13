@@ -7,7 +7,6 @@ export const onTokenPurchaseCreated = async (event: FirestoreDocEvent<TokenPurch
   if (!curr || !curr.token) {
     return;
   }
-  const batch = build5Db().batch();
 
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${curr.token}`);
   const statsDocRef = tokenDocRef.collection(SUB_COL.STATS).doc(curr.token);
@@ -21,11 +20,5 @@ export const onTokenPurchaseCreated = async (event: FirestoreDocEvent<TokenPurch
     volumeTotal: build5Db().inc(curr.count),
     volume,
   };
-  batch.set(statsDocRef, statsData, true);
-
-  const purchaseDocRef = build5Db().doc(`${COL.TOKEN_PURCHASE}/${curr.uid}`);
-  const age = Object.values(TokenPurchaseAge).reduce((acc, act) => ({ ...acc, [act]: true }), {});
-  batch.update(purchaseDocRef, { age });
-
-  await batch.commit();
+  statsDocRef.set(statsData, true);
 };

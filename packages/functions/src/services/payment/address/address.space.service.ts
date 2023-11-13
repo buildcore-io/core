@@ -152,5 +152,6 @@ const createUpdateSpaceValidatedAddressProposal = (
       voted: 1,
       answers: { [1]: 1 },
     },
+    completed: false,
   };
 };

@@ -37,6 +37,42 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "token_purchase",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "token",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "token_purchase",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "token",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "createdOn",
           "order": "DESCENDING"
         }
@@ -65,11 +101,15 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "age.in24h",
+          "fieldPath": "token",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "createdOn",
+          "fieldPath": "age",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "price",
           "order": "ASCENDING"
         }
       ]
@@ -78,41 +118,13 @@
       "collectionGroup": "token_purchase",
       "queryScope": "COLLECTION",
       "fields": [
-        {
-          "fieldPath": "age.in48h",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "token_purchase",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "age.in7d",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "token_purchase",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "age.in7d",
-          "order": "ASCENDING"
-        },
         {
           "fieldPath": "token",
           "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "age",
+          "arrayConfig": "CONTAINS"
         },
         {
           "fieldPath": "price",
@@ -125,11 +137,11 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "age.in7d",
+          "fieldPath": "token",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "token",
+          "fieldPath": "age",
           "order": "ASCENDING"
         },
         {
@@ -143,73 +155,11 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "age.in24h",
-          "order": "ASCENDING"
-        },
-        {
           "fieldPath": "token",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "price",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "token_purchase",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "age.in24h",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "token",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "price",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "token_purchase",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "age.in24h",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "age.in48h",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "token",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "price",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "token_purchase",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "age.in24h",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "age.in48h",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "token",
+          "fieldPath": "age",
           "order": "ASCENDING"
         },
         {
