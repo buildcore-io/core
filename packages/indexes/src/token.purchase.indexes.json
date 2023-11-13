@@ -55,6 +55,24 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "token_purchase",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "token",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "createdOn",
           "order": "DESCENDING"
         }
@@ -129,6 +147,24 @@
         {
           "fieldPath": "price",
           "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "token_purchase",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "token",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "age",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "price",
+          "order": "DESCENDING"
         }
       ]
     }
