@@ -13,6 +13,11 @@ const file = './deploy.sh';
 
 fs.writeFileSync(file, `export GOOGLE_CLOUD_PROJECT=$(gcloud config get-value project)\n\n`);
 
+fs.appendFileSync(
+  file,
+  "export PROJECT_NUMBER=$(gcloud projects describe $(gcloud config get-value project) --format='value(projectNumber)')\n",
+);
+
 fs.appendFileSync(file, `\n`);
 
 const buildImage = () => {

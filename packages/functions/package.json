@@ -20,10 +20,13 @@
     "emulators": "tsc --watch & firebase -c ../../firebase.json emulators:start --only functions,firestore,storage,ui,auth",
     "milestone-sync": "npx ts-node ./test/milestone.sync.ts",
     "serve": "run-p \"milestone-sync\" \"emulators\" ",
-    "test": "export LOCAL_TEST=true && jest --runInBand",
+    "test": "export LOCAL_TEST=true && jest test/ --runInBand",
     "test-tangle": "export LOCAL_TEST=true && jest test-tangle/ --runInBand ",
     "test:ci": "export LOCAL_TEST=true && jest test/ --runInBand --ci --config=jest.config.ci.js",
-    "test-tangle:ci": "export LOCAL_TEST=true && jest test-tangle/ --runInBand --ci --config=jest.config.ci.js"
+    "test-tangle:ci": "export LOCAL_TEST=true && jest test-tangle/ --runInBand --ci --config=jest.config.ci.js",
+    "export-online-test-credentials": "export GOOGLE_APPLICATION_CREDENTIALS=\"./test-service-account-key.json\"",
+    "test-online:ci": "npm run export-online-test-credentials && jest test/ --runInBand --ci --config=jest.config.ci.js",
+    "test-tangle-online:ci": "npm run export-online-test-credentials && jest test-tangle/ --runInBand --ci --config=jest.config.ci.js"
   },
   "devDependencies": {
     "@types/busboy": "1.5.0",

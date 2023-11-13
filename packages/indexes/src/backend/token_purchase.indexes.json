@@ -1,0 +1,18 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "token_purchase",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "age",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ]
+}

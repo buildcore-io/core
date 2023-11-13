@@ -1,0 +1,18 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "stamp",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "expired",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "expiresAt",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ]
+}

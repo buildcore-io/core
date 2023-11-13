@@ -1,133 +1,120 @@
 {
   "indexes": [
     {
-      "collectionGroup": "token_purchase",
+      "collectionGroup": "token_market",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "buy",
+          "fieldPath": "status",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
+          "fieldPath": "expiresAt",
+          "order": "ASCENDING"
         }
       ]
     },
     {
-      "collectionGroup": "token_purchase",
+      "collectionGroup": "token_market",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "sell",
+          "fieldPath": "status",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "token_purchase",
-      "queryScope": "COLLECTION",
-      "fields": [
+          "fieldPath": "sourceNetwork",
+          "order": "ASCENDING"
+        },
         {
           "fieldPath": "token",
           "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "project",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "token_purchase",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "token",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "token_purchase",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "token",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "tokenStatus",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "token_purchase",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "token",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "age",
-          "arrayConfig": "CONTAINS"
         },
         {
           "fieldPath": "price",
           "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "ASCENDING"
         }
       ]
     },
     {
-      "collectionGroup": "token_purchase",
+      "collectionGroup": "token_market",
       "queryScope": "COLLECTION",
       "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
         {
           "fieldPath": "token",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "age",
-          "arrayConfig": "CONTAINS"
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "price",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "token_market",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sourceNetwork",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "token",
+          "order": "ASCENDING"
         },
         {
           "fieldPath": "price",
           "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "ASCENDING"
         }
       ]
     },
+
     {
-      "collectionGroup": "token_purchase",
+      "collectionGroup": "token_market",
       "queryScope": "COLLECTION",
       "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
         {
           "fieldPath": "token",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "age",
+          "fieldPath": "type",
           "order": "ASCENDING"
         },
         {
           "fieldPath": "price",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
           "order": "ASCENDING"
         }
       ]

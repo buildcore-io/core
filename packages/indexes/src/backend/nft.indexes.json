@@ -1,45 +1,49 @@
 {
   "indexes": [
     {
-      "collectionGroup": "token_market",
+      "collectionGroup": "nft",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "owner",
+          "fieldPath": "available",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "token",
+          "fieldPath": "collection",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "type",
+          "fieldPath": "saleAccess",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
+          "fieldPath": "availablePrice",
+          "order": "ASCENDING"
         }
       ]
     },
     {
-      "collectionGroup": "token_market",
+      "collectionGroup": "nft",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "status",
+          "fieldPath": "collection",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "token",
+          "fieldPath": "locked",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "type",
+          "fieldPath": "placeholderNft",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "price",
+          "fieldPath": "sold",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "position",
           "order": "ASCENDING"
         }
       ]

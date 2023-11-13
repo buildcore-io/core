@@ -1,35 +1,23 @@
 {
   "indexes": [
     {
-      "collectionGroup": "token_market",
+      "collectionGroup": "stake",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "owner",
+          "fieldPath": "expirationProcessed",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "token",
+          "fieldPath": "expiresAt",
           "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "type",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
         }
       ]
     },
     {
-      "collectionGroup": "token_market",
+      "collectionGroup": "stake",
       "queryScope": "COLLECTION",
       "fields": [
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        },
         {
           "fieldPath": "token",
           "order": "ASCENDING"
@@ -39,7 +27,7 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "price",
+          "fieldPath": "expiresAt",
           "order": "ASCENDING"
         }
       ]

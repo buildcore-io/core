@@ -225,8 +225,8 @@ const getNftBelow = (collection: Collection, position: number) =>
     .where('placeholderNft', '==', false)
     .where('collection', '==', collection.uid)
     .where('position', '<=', position)
-    .orderBy('position', 'desc')
-    .limit(1)
+    .orderBy('position', 'asc')
+    .limitToLast(1)
     .get<Nft>();
 
 const assertNftCanBePurchased = async (

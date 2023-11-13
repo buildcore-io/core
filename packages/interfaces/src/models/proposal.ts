@@ -198,7 +198,7 @@ export interface Proposal extends BaseRecord {
   /**
    * Proposal completed (used for filtering)
    */
-  completed?: boolean;
+  completed: boolean;
   /**
    * TODODOC
    */

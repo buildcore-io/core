@@ -60,15 +60,18 @@ const purchaseQueryToday = (token: string, lowest?: boolean) => {
       .collection(PublicCollections.TOKEN_PURCHASE)
       .where('token', '==', token)
       .where('createdOn', '>=', dayjs().subtract(1, 'd').toDate())
-      .orderBy('createdOn', 'desc')
-      .limit(1);
+      .orderBy('createdOn')
+      .limitToLast(1);
   }
-  return build5Db()
+  const query = build5Db()
     .collection(PublicCollections.TOKEN_PURCHASE)
     .where('token', '==', token)
-    .where(`age.${TokenPurchaseAge.IN_24_H}`, '==', true)
-    .orderBy('price', lowest ? 'asc' : 'desc')
-    .limit(1);
+    .where('age', 'array-contains', TokenPurchaseAge.IN_24_H)
+    .orderBy('price', 'asc');
+  if (lowest) {
+    return query.limit(1);
+  }
+  return query.limitToLast(1);
 };
 
 const purchaseQueryYesterday = (token: string, lowest?: boolean) => {
@@ -78,14 +81,16 @@ const purchaseQueryYesterday = (token: string, lowest?: boolean) => {
       .where('token', '==', token)
       .where('createdOn', '<', dayjs().subtract(1, 'd').toDate())
       .where('createdOn', '>=', dayjs().subtract(2, 'd').toDate())
-      .orderBy('createdOn', 'desc')
-      .limit(1);
+      .orderBy('createdOn')
+      .limitToLast(1);
   }
-  return build5Db()
+  const query = build5Db()
     .collection(PublicCollections.TOKEN_PURCHASE)
     .where('token', '==', token)
-    .where(`age.${TokenPurchaseAge.IN_24_H}`, '==', false)
-    .where(`age.${TokenPurchaseAge.IN_48_H}`, '==', true)
-    .orderBy('price', lowest ? 'asc' : 'desc')
-    .limit(1);
+    .where('age', '==', [TokenPurchaseAge.IN_48_H, TokenPurchaseAge.IN_7_D])
+    .orderBy('price', 'asc');
+  if (lowest) {
+    return query.limit(1);
+  }
+  return query.limitToLast(1);
 };

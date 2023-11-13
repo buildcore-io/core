@@ -19,12 +19,12 @@ export const updateMemberControl = async ({ owner, params }: Context<MemberUpdat
     throw invalidArgument(WenError.member_does_not_exists);
   }
 
-  if (params.name) {
+  if (params.name && params.name !== member.name) {
     const members = await build5Db()
       .collection(COL.MEMBER)
       .where('name', '==', params.name)
-      .where('uid', '!=', owner)
-      .get();
+      .limit(1)
+      .get<Member>();
     if (members.length > 0) {
       throw invalidArgument(WenError.member_username_exists);
     }

@@ -175,10 +175,12 @@ const getWeightForStakes = (
     return sum + stake.amount * multiplier;
   }, 0);
 
-const getActiveStakes = (member: string, token: string) =>
-  build5Db()
+const getActiveStakes = async (member: string, token: string) => {
+  const stakes = await build5Db()
     .collection(COL.STAKE)
     .where('member', '==', member)
     .where('token', '==', token)
-    .where('expiresAt', '>=', dayjs().toDate())
+    .where('expirationProcessed', '==', false)
     .get<Stake>();
+  return stakes.filter((s) => dayjs(s.expiresAt.toDate()).isAfter(dayjs()));
+};

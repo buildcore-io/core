@@ -20,7 +20,7 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { uniq } from 'lodash';
-import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
+import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -61,7 +61,7 @@ export const removeStakeRewardControl = async ({
   const ongoingProposalSnap = await build5Db()
     .collection(COL.PROPOSAL)
     .where('space', '==', token.space)
-    .where('settings.endDate', '>=', serverTime())
+    .where('completed', '==', false)
     .get();
   if (ongoingProposalSnap.length) {
     throw invalidArgument(WenError.ongoing_proposal);
@@ -180,6 +180,7 @@ const createUpdateSpaceProposal = (
       voted: 1,
       answers: { [1]: 1 },
     },
+    completed: false,
   };
 };
 

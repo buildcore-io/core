@@ -41,24 +41,6 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "project",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "coolDownEnd",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "token",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
           "fieldPath": "uid",
           "order": "ASCENDING"
         },

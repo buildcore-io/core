@@ -9,6 +9,10 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "status",
           "order": "ASCENDING"
         },
@@ -22,6 +26,10 @@
       "collectionGroup": "stake_reward",
       "queryScope": "COLLECTION",
       "fields": [
+        {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
         {
           "fieldPath": "project",
           "order": "ASCENDING"

@@ -1,0 +1,18 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "award",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "completed",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "endDate",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ]
+}

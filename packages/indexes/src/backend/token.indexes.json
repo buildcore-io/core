@@ -1,0 +1,18 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "token",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "coolDownEnd",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ]
+}
