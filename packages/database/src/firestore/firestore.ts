@@ -241,7 +241,7 @@ export class FirestoreQuery implements IQuery {
 
   public get = async <T>(): Promise<T[]> => {
     const snap = await this.query.get();
-    return snap.docs.map((d) => ({ ...d.data(), uid: d.id } as T));
+    return snap.docs.map((d) => ({ ...d.data(), uid: d.id }) as T);
   };
 
   public where = (
@@ -283,7 +283,7 @@ export class FirestoreQuery implements IQuery {
   public onSnapshot = <T>(callback: (data: T[]) => void, onError?: (error: Error) => void) =>
     this.query.onSnapshot(
       (snap) => {
-        callback(snap.docs.map((d) => ({ ...d.data(), uid: d.id } as T)));
+        callback(snap.docs.map((d) => ({ ...d.data(), uid: d.id }) as T));
       },
       (error) => {
         onError && onError(error);

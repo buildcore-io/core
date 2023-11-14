@@ -83,7 +83,9 @@ describe('Stake nft', () => {
       return snap.length === 1;
     });
 
-    const nftQuery = build5Db().collection(COL.NFT).where('space', '==', helper.space?.uid);
+    const nftQuery = build5Db()
+      .collection(COL.NFT)
+      .where('space', '==', helper.space?.uid);
     const nftSnap = await nftQuery.get<Nft>();
     expect(nftSnap.length).toBe(1);
     expect(nftSnap[0]?.space).toBe(award.space);

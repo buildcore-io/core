@@ -133,7 +133,7 @@ export const createMetadataNft = (
     sold: true,
     status: NftStatus.PRE_MINTED,
     hidden: true,
-  } as Nft);
+  }) as Nft;
 
 export const createMetadataCollection = (space: string) => ({
   uid: getRandomEthAddress(),

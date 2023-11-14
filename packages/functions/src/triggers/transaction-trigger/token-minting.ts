@@ -107,7 +107,9 @@ const onFoundryMinted = async (transaction: Transaction) => {
     });
 
   const token = <Token>await build5Db().doc(`${COL.TOKEN}/${transaction.payload.token}`).get();
-  const member = <Member>await build5Db().doc(`${COL.MEMBER}/${token.mintingData?.mintedBy}`).get();
+  const member = <Member>await build5Db()
+    .doc(`${COL.MEMBER}/${token.mintingData?.mintedBy}`)
+    .get();
   const order: Transaction = {
     project: getProject(transaction),
     type: TransactionType.MINT_TOKEN,

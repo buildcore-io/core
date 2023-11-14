@@ -22,7 +22,10 @@ export class CrudRepository<T> {
   private readonly getByIdGroupedLive: GetByIdGroupedLive<T>;
   private readonly getByIdGrouped: GetByIdGrouped<T>;
 
-  constructor(protected readonly env: Build5Env, protected readonly col: PublicCollections) {
+  constructor(
+    protected readonly env: Build5Env,
+    protected readonly col: PublicCollections,
+  ) {
     this.getByIdGroupedLive = new GetByIdGroupedLive<T>(env, col);
     this.getByIdGrouped = new GetByIdGrouped<T>(env, col);
   }

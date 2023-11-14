@@ -25,9 +25,12 @@ export const sendLiveUpdates = <T>(socket: ws.WebSocket, observable: Observable<
     closeConnection(1002);
   });
 
-  const timeout = setTimeout(() => {
-    closeConnection();
-  }, API_TIMEOUT_SECONDS * 1000 * 0.95);
+  const timeout = setTimeout(
+    () => {
+      closeConnection();
+    },
+    API_TIMEOUT_SECONDS * 1000 * 0.95,
+  );
 
   const subscription = observable.subscribe({
     next: (data) => {

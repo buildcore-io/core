@@ -6,7 +6,10 @@ import { Network } from './transaction';
  * Timestamp object.
  */
 export class Timestamp {
-  constructor(public readonly seconds: number, public readonly nanoseconds: number) {}
+  constructor(
+    public readonly seconds: number,
+    public readonly nanoseconds: number,
+  ) {}
 
   public static now = () => this.fromMillis(Date.now());
 

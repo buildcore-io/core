@@ -17,7 +17,10 @@ export class FirebaseStorage implements IStorage {
 export class FirebaseBucket implements IBucket {
   private readonly bucket: FBucket;
 
-  constructor(private readonly storage: Storage, private readonly name: Bucket) {
+  constructor(
+    private readonly storage: Storage,
+    private readonly name: Bucket,
+  ) {
     this.bucket = this.storage.bucket(this.name);
   }
 

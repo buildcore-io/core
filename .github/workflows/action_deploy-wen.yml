@@ -13,18 +13,18 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
       - id: 'auth'
         uses: 'google-github-actions/auth@v1'
         with:
-          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE_TEST }}'
+          credentials_json: '${{ secrets.SERVICE_ACCOUNT }}'
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
       - name: Set env vars
         working-directory: packages/api
-        run: echo "$FUNCTIONS_ENV_VARS" >> .env
+        run: echo "$ENV_VARS" >> .env
         env:
-          FUNCTIONS_ENV_VARS: ${{ secrets.FUNCTIONS_ENV_VARS_TEST }}
+          ENV_VARS: ${{ secrets.ENV_VARS }}
       - name: Build image
         run: |
             cp packages/api/Dockerfile .
@@ -49,24 +49,40 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
       - id: 'auth'
         uses: 'google-github-actions/auth@v1'
         with:
-          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE_TEST }}'
+          credentials_json: '${{ secrets.SERVICE_ACCOUNT }}'
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
       - name: Set env vars
         working-directory: packages/functions
-        run: echo "$FUNCTIONS_ENV_VARS" >> .env
+        run: echo "$ENV_VARS" >> .env
         env:
-          FUNCTIONS_ENV_VARS: ${{ secrets.FUNCTIONS_ENV_VARS_TEST }}
+          ENV_VARS: ${{ secrets.ENV_VARS }}
       - name: Build and deploy
         run: |
             npm run build:functions
             npm run create-deploy-script
             chmod 777 ./deploy.sh
             ./deploy.sh
+
+  deploy-firestore-indexes:
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Deploy indexes
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only firestore:indexes -f
+        env:
+          GCP_SA_KEY: ${{ secrets.SERVICE_ACCOUNT }}
+          PROJECT_ID: preview
 
   roll-firestore:
     runs-on: ubuntu-latest
@@ -82,18 +98,18 @@ jobs:
           fetch-depth: '10'
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
       - name: Install dependencies
         run: |
           npm i -g ts-node
           cd ../../ && npm run build:functions
       - name: Set env vars
-        run: echo "$FUNCTIONS_ENV_VARS" >> .env
+        run: echo "$ENV_VARS" >> .env
         env:
-          FUNCTIONS_ENV_VARS: ${{ secrets.FUNCTIONS_ENV_VARS_TEST }}
+          ENV_VARS: ${{ secrets.ENV_VARS }}
       - name: Create serviceAccountKey.json
         run: echo "$SERVICE_ACCOUNT" >> scripts/serviceAccountKey.json
         env:
-          SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE_TEST }}
+          SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
       - name: Roll firestore
         run: cd scripts && ts-node db.upgrade.ts
