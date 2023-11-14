@@ -1,10 +1,7 @@
 import { build5Db } from '@build-5/database';
 import {
   COL,
-  MilestoneTransaction,
-  MilestoneTransactionEntry,
   MintMetadataNftTangleRequest,
-  Network,
   NftStatus,
   SUB_COL,
   Space,
@@ -25,6 +22,7 @@ import {
   createNftOutput,
   getNftByMintingId,
 } from '../../../../utils/collection-minting-utils/nft.utils';
+import { getProject } from '../../../../utils/common.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { getAliasId, getIssuerNftId } from '../../../../utils/nft.output.utils';
@@ -37,28 +35,27 @@ import {
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { Wallet } from '../../../wallet/wallet';
 import { WalletService } from '../../../wallet/wallet.service';
-import { TransactionMatch, TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { metadataNftSchema } from './MetadataNftTangleRequestSchema';
 
-export class MintMetadataNftService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleMetadataNftMintRequest = async (
-    network: Network,
-    owner: string,
-    request: Record<string, unknown>,
-    match: TransactionMatch,
-    tran: MilestoneTransaction,
-    tranEntry: MilestoneTransactionEntry,
-  ) => {
+export class MintMetadataNftService extends BaseService {
+  public handleRequest = async ({
+    project,
+    owner,
+    request,
+    match,
+    tran,
+    tranEntry,
+    order: tangleOrder,
+  }: HandlerParams) => {
     const params = await assertValidationAsync(metadataNftSchema, request);
 
-    const wallet = await WalletService.newWallet(network);
+    const wallet = await WalletService.newWallet(tangleOrder.network);
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
     const { nftId, collectionId, aliasId } = await getIds(params, wallet);
 
-    const space = await getSpace(owner, aliasId);
+    const space = await getSpace(project, owner, aliasId);
     const aliasOutputAmount = await getAliasOutputAmount(owner, space, wallet);
     const collectionOutputAmount = await getCollectionOutputAmount(aliasId, collectionId, wallet);
     const nftOutputAmount = await getNftOutputAmount(collectionId, nftId, params.metadata, wallet);
@@ -92,12 +89,13 @@ export class MintMetadataNftService {
       this.transactionService.push({ ref: memberDocRef, data: guardian, action: 'set' });
     }
 
-    const order = <Transaction>{
+    const order: Transaction = {
+      project: getProject(tangleOrder),
       type: TransactionType.ORDER,
       uid: getRandomEthAddress(),
       member: owner,
       space: space.uid,
-      network,
+      network: tangleOrder.network,
       payload: {
         type: TransactionPayloadType.MINT_METADATA_NFT,
         amount: match.to.amount,
@@ -112,7 +110,7 @@ export class MintMetadataNftService {
         collectionOutputAmount,
         nftId: nftId === EMPTY_NFT_ID ? '' : nftId,
         nftOutputAmount,
-        metadata: request.metadata,
+        metadata: request.metadata as { [key: string]: unknown },
         tag: match.msgId,
       },
     };
@@ -174,9 +172,10 @@ const createMetadataNftOutput = async (wallet: Wallet, collectionId: string, met
   );
 };
 
-const getSpace = async (owner: string, aliasId: string) => {
+const getSpace = async (project: string, owner: string, aliasId: string) => {
   if (aliasId === EMPTY_ALIAS_ID) {
     return {
+      project,
       uid: getRandomEthAddress(),
       name: `Space of alias: ${aliasId}`,
       open: false,
@@ -186,7 +185,7 @@ const getSpace = async (owner: string, aliasId: string) => {
       totalPendingMembers: 0,
       guardians: {},
       members: {},
-    } as Space;
+    };
   }
 
   const space = await getSpaceByAliasId(aliasId);

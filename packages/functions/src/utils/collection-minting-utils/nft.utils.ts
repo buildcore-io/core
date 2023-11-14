@@ -1,5 +1,5 @@
 import { build5Db } from '@build-5/database';
-import { COL, Collection, KEY_NAME_TANGLE, Nft } from '@build-5/interfaces';
+import { COL, Collection, KEY_NAME_TANGLE, NetworkAddress, Nft } from '@build-5/interfaces';
 import {
   Address,
   AddressUnlockCondition,
@@ -57,7 +57,7 @@ export const createNftOutput = async (
 export const nftToMetadata = async (
   nft: Nft,
   collection: Collection,
-  royaltySpaceAddress: string,
+  royaltySpaceAddress: NetworkAddress,
   collectionId: string,
 ) => {
   const props = propsToAttributes(nft.properties);
@@ -85,7 +85,10 @@ export const nftToMetadata = async (
   };
 };
 
-export const collectionToMetadata = async (collection: Collection, royaltySpaceAddress: string) => {
+export const collectionToMetadata = async (
+  collection: Collection,
+  royaltySpaceAddress: NetworkAddress,
+) => {
   return {
     standard: 'IRC27',
     version: 'v1.0',

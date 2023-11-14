@@ -13,7 +13,7 @@ import {
   SUB_COL,
   WenError,
 } from '@build-5/interfaces';
-import { hasStakedSoonTokens } from '../../services/stake.service';
+import { hasStakedTokens } from '../../services/stake.service';
 import { assertSpaceHasValidAddress } from '../../utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
@@ -24,8 +24,9 @@ import { populateTokenUidOnDiscounts } from './common';
 export const createCollectionControl = async ({
   owner,
   params,
+  project,
 }: Context<CreateCollectionRequest>) => {
-  const hasStakedSoons = await hasStakedSoonTokens(owner);
+  const hasStakedSoons = await hasStakedTokens(project, owner);
   if (!hasStakedSoons) {
     throw invalidArgument(WenError.no_staked_soon);
   }
@@ -57,6 +58,7 @@ export const createCollectionControl = async ({
   const placeholderNftId = params.type !== CollectionType.CLASSIC ? getRandomEthAddress() : null;
   const collection = {
     ...params,
+    project,
     discounts: await populateTokenUidOnDiscounts(discounts),
     uid: getRandomEthAddress(),
     total: 0,
@@ -75,6 +77,7 @@ export const createCollectionControl = async ({
 
   if (placeholderNftId) {
     const placeholderNft = {
+      project,
       uid: placeholderNftId,
       name: params.name,
       description: params.description,

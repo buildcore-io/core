@@ -7,6 +7,7 @@ import {
   Proposal,
   ProposalMember,
   ProposalType,
+  SOON_PROJECT_ID,
   Space,
   SUB_COL,
   TangleRequestType,
@@ -59,6 +60,7 @@ export class Helper {
     await build5Db()
       .doc(`${COL.TOKEN}/${this.tokenId}`)
       .create({
+        project: SOON_PROJECT_ID,
         uid: this.tokenId,
         space: this.space.uid,
         status: TokenStatus.MINTED,
@@ -125,12 +127,14 @@ export class Helper {
 
   public createStake = async (createdOn: dayjs.Dayjs, expiresAt: dayjs.Dayjs, amount = 100) => {
     const stake = {
+      project: SOON_PROJECT_ID,
       createdOn: dateToTimestamp(createdOn),
       expiresAt: dateToTimestamp(expiresAt),
       amount,
       member: this.guardian,
       uid: wallet.getRandomEthAddress(),
       token: this.tokenId,
+      expirationProcessed: false,
     };
     const docRef = build5Db().doc(`${COL.STAKE}/${stake.uid}`);
     await docRef.create(stake);

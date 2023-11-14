@@ -4,6 +4,7 @@ import {
   CreditUnrefundableRequest,
   DEFAULT_NETWORK,
   IgnoreWalletReason,
+  NetworkAddress,
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
   TransactionPayloadType,
@@ -21,6 +22,7 @@ import { Context } from '../common';
 export const creditUnrefundableControl = ({
   owner,
   params,
+  project,
 }: Context<CreditUnrefundableRequest>): Promise<Transaction> =>
   build5Db().runTransaction(async (transaction) => {
     const transactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${params.transaction}`);
@@ -40,7 +42,7 @@ export const creditUnrefundableControl = ({
     const wallet = await WalletService.newWallet(creditTransaction.network);
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
-    const creditOrder = createCreditOrder(creditTransaction, owner, targetAddress.bech32);
+    const creditOrder = createCreditOrder(project, creditTransaction, owner, targetAddress.bech32);
     const creditDocRef = build5Db().doc(`${COL.TRANSACTION}/${creditOrder.uid}`);
     transaction.create(creditDocRef, creditOrder);
 
@@ -48,10 +50,12 @@ export const creditUnrefundableControl = ({
   });
 
 const createCreditOrder = (
+  project: string,
   creditTtransaction: Transaction,
   owner: string,
-  targetAddress: string,
+  targetAddress: NetworkAddress,
 ): Transaction => ({
+  project,
   type: TransactionType.ORDER,
   uid: getRandomEthAddress(),
   member: owner,

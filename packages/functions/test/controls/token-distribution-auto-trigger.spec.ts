@@ -4,6 +4,8 @@ import {
   Member,
   MIN_IOTA_AMOUNT,
   Network,
+  NetworkAddress,
+  SOON_PROJECT_ID,
   Space,
   SUB_COL,
   Token,
@@ -77,7 +79,7 @@ const scenarios = [
   },
 ];
 
-const submitTokenOrderFunc = async <T>(spy: string, address: string, params: T) => {
+const submitTokenOrderFunc = async <T>(spy: string, address: NetworkAddress, params: T) => {
   mockWalletReturnValue(spy, address, params);
   const order = await testEnv.wrap(orderToken)({});
   expect(order?.createdOn).toBeDefined();
@@ -91,6 +93,7 @@ const dummyToken = (
   publicPercentageSale: number,
   guardian: string,
 ) => ({
+  project: SOON_PROJECT_ID,
   symbol: getRandomSymbol(),
   totalSupply,
   updatedOn: serverTime(),

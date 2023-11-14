@@ -1,5 +1,6 @@
 import { API_RETRY_TIMEOUT } from '@build-5/interfaces';
 import { get } from 'lodash';
+import { TOKENS } from '../../Config';
 import { wrappedFetch } from '../../fetch.utils';
 import { AbstractGetByIdGrouped, BATCH_MAX_SIZE } from './common';
 
@@ -24,7 +25,7 @@ export class GetByIdGrouped<T> extends AbstractGetByIdGrouped {
       return;
     }
     try {
-      const response = await wrappedFetch<T[]>(url, params);
+      const response = await wrappedFetch<T[]>(TOKENS[this.env], url, params);
       const source = Array.isArray(response) ? response : [response];
       for (const r of requests) {
         this.result[r.parent + r.uid] = source.find((d) =>

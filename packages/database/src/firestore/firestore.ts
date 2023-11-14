@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { COL, PublicCollections, PublicSubCollections, SUB_COL } from '@build-5/interfaces';
 import admin from 'firebase-admin';
+import { Filter } from 'firebase-admin/firestore';
 import { isEmpty } from 'lodash';
 import { FirebaseApp } from '../app/app';
 import { cOn, uOn } from './common';
@@ -44,6 +45,11 @@ export class Firestore implements IDatabase {
   public arrayRemove = <T>(...value: T[]) => admin.firestore.FieldValue.arrayRemove(...value);
 
   public deleteField = () => admin.firestore.FieldValue.delete();
+
+  public get = async <T>(col: COL, uid: string) => {
+    const docRef = this.db.doc(`${col}/${uid}`);
+    return (await docRef.get()).data() as T;
+  };
 }
 
 export class FirestoreBatch implements IBatch {
@@ -141,7 +147,16 @@ class FirestoreCollectionGroup implements ICollectionGroup {
   public where = (fieldPath: string, operator: admin.firestore.WhereFilterOp, value: any) =>
     new FirestoreQuery(this.collection.where(fieldPath, operator, value));
 
+  public or = (filters: { fieldPath: string; value: any }[]) => {
+    const compositFilter = Filter.or(
+      ...filters.map((f) => Filter.where(f.fieldPath, '==', f.value)),
+    );
+    return new FirestoreQuery(this.collection.where(compositFilter));
+  };
+
   public limit = (value: number) => new FirestoreQuery(this.collection.limit(value));
+
+  public limitToLast = (value: number) => new FirestoreQuery(this.collection.limitToLast(value));
 
   public startAfter = (value?: IDocumentSnapshot | string | number | Date) => {
     if (!value) {
@@ -226,7 +241,7 @@ export class FirestoreQuery implements IQuery {
 
   public get = async <T>(): Promise<T[]> => {
     const snap = await this.query.get();
-    return snap.docs.map((d) => ({ ...d.data(), uid: d.id } as T));
+    return snap.docs.map((d) => ({ ...d.data(), uid: d.id }) as T);
   };
 
   public where = (
@@ -240,6 +255,11 @@ export class FirestoreQuery implements IQuery {
 
   public limit = (value: number) => {
     this.query = this.query.limit(value);
+    return this;
+  };
+
+  public limitToLast = (value: number) => {
+    this.query = this.query.limitToLast(value);
     return this;
   };
 
@@ -263,7 +283,7 @@ export class FirestoreQuery implements IQuery {
   public onSnapshot = <T>(callback: (data: T[]) => void, onError?: (error: Error) => void) =>
     this.query.onSnapshot(
       (snap) => {
-        callback(snap.docs.map((d) => ({ ...d.data(), uid: d.id } as T)));
+        callback(snap.docs.map((d) => ({ ...d.data(), uid: d.id }) as T));
       },
       (error) => {
         onError && onError(error);

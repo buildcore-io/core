@@ -50,7 +50,9 @@ describe('Collection minting', () => {
         await build5Db().doc(`${COL.COLLECTION}/${helper.collection}`).get()
       );
       expect(collectionData.total).toBe(1);
-      nft = <Nft>await build5Db().doc(`${COL.NFT}/${nft?.uid}`).get();
+      nft = <Nft>await build5Db()
+        .doc(`${COL.NFT}/${nft?.uid}`)
+        .get();
       expect(nft.availablePrice).toBe(2 * MIN_IOTA_AMOUNT);
       expect(nft.price).toBe(2 * MIN_IOTA_AMOUNT);
     },

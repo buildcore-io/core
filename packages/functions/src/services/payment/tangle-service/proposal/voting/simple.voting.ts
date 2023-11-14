@@ -4,12 +4,13 @@ import { head } from 'lodash';
 import { createVoteTransaction } from './ProposalVoteService';
 
 export const executeSimpleVoting = async (
+  project: string,
   member: ProposalMember,
   proposal: Proposal,
   values: number[],
 ) => {
   const weight = member.weight || 0;
-  const voteTransaction = createVoteTransaction(proposal, member.uid, weight, values);
+  const voteTransaction = createVoteTransaction(project, proposal, member.uid, weight, values);
   const proposalUpdateData = getProposalUpdateDataAfterVote(member, weight, values);
   const proposalMember = {
     uid: member.uid,

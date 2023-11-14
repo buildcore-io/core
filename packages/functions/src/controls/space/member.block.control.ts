@@ -3,9 +3,18 @@ import { COL, SpaceMember, SpaceMemberUpsertRequest, SUB_COL } from '@build-5/in
 import { getBlockMemberUpdateData } from '../../services/payment/tangle-service/space/SpaceBlockMemberService';
 import { Context } from '../common';
 
-export const blockMemberControl = async ({ owner, params }: Context<SpaceMemberUpsertRequest>) => {
+export const blockMemberControl = async ({
+  owner,
+  params,
+  project,
+}: Context<SpaceMemberUpsertRequest>) => {
   const member = params.member;
-  const { space, blockedMember } = await getBlockMemberUpdateData(owner, params.uid, member);
+  const { space, blockedMember } = await getBlockMemberUpdateData(
+    project,
+    owner,
+    params.uid,
+    member,
+  );
 
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
   const blockedMemberDocRef = spaceDocRef.collection(SUB_COL.BLOCKED_MEMBERS).doc(member);

@@ -22,6 +22,7 @@ import { head } from 'lodash';
 import { Wallet } from '../../services/wallet/wallet';
 import { WalletService } from '../../services/wallet/wallet.service';
 import { getAddress } from '../../utils/address.utils';
+import { getProject } from '../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { dropToOutput } from '../../utils/token-minting-utils/member.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -50,6 +51,7 @@ const onPreMintedAirdropClaim = async (order: Transaction, token: Token) => {
     const airdropDocRef = build5Db().doc(`${COL.AIRDROP}/${airdrop.uid}`);
 
     const billPayment: Transaction = {
+      project: getProject(order),
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       space: order.space,
@@ -166,7 +168,8 @@ const onMintedAirdropClaim = async (order: Transaction, token: Token) => {
   });
 
   if (storageDepositUsed < order.payload.amount!) {
-    const credit = <Transaction>{
+    const credit: Transaction = {
+      project: getProject(order),
       type: TransactionType.CREDIT,
       uid: getRandomEthAddress(),
       space: token.space,
@@ -202,6 +205,7 @@ const claimOwnedMintedTokens = (
     }
 
     const airdrop: TokenDrop = {
+      project: getProject(order),
       uid: getRandomEthAddress(),
       member: member.uid,
       token: token.uid,
@@ -246,6 +250,7 @@ const mintedDropToBillPayment = async (
   const output = await dropToOutput(wallet, token, drop, memberAddress);
   const nativeTokens = [{ id: head(output.nativeTokens)?.id!, amount: BigInt(drop.count) }];
   return {
+    project: getProject(order),
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
     space: token.space,
@@ -281,6 +286,7 @@ const mintedDropToStake = (order: Transaction, drop: TokenDrop, billPayment: Tra
     return undefined;
   }
   const stake: Stake = {
+    project: getProject(order),
     uid: getRandomEthAddress(),
     member: order.member!,
     token: order.payload.token!,

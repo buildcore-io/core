@@ -6,6 +6,8 @@ import {
   MIN_IOTA_AMOUNT,
   Member,
   Network,
+  NetworkAddress,
+  SOON_PROJECT_ID,
   SUB_COL,
   SYSTEM_CONFIG_DOC_ID,
   StakeType,
@@ -29,20 +31,19 @@ import { TOKEN_TRADE_ORDER_FETCH_LIMIT } from '../../src/triggers/token-trading/
 import { getAddress } from '../../src/utils/address.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { testEnv } from '../set-up';
+import { soonTokenId, testEnv } from '../set-up';
 import {
   createMember,
   createRoyaltySpaces,
   getRandomSymbol,
   mockWalletReturnValue,
-  saveSoon,
   submitMilestoneFunc,
   wait,
 } from './common';
 
 let walletSpy: any;
 
-const buyTokenFunc = async (memberAddress: string, request: any) => {
+const buyTokenFunc = async (memberAddress: NetworkAddress, request: any) => {
   mockWalletReturnValue(walletSpy, memberAddress, { ...request, type: TokenTradeOrderType.BUY });
   const order = await testEnv.wrap(tradeToken)({});
   await submitMilestoneFunc(
@@ -81,13 +82,13 @@ const getRoyaltyDistribution = (amount: number) => {
 describe('Trade trigger', () => {
   let seller: string;
   let buyer: string;
-  let soonTokenId: string;
 
   let token: Token;
   const tokenCount = 400;
 
   const saveSellToDb = async (count: number, price: number) => {
     const data = <TokenTradeOrder>{
+      project: SOON_PROJECT_ID,
       createdOn: serverTime(),
       uid: wallet.getRandomEthAddress(),
       owner: seller,
@@ -106,7 +107,6 @@ describe('Trade trigger', () => {
 
   beforeAll(async () => {
     await createRoyaltySpaces();
-    soonTokenId = await saveSoon();
   });
 
   beforeEach(async () => {
@@ -116,6 +116,7 @@ describe('Trade trigger', () => {
 
     const tokenId = wallet.getRandomEthAddress();
     token = <Token>{
+      project: SOON_PROJECT_ID,
       uid: tokenId,
       symbol: getRandomSymbol(),
       name: 'MyToken',
@@ -473,6 +474,7 @@ describe('Trade trigger', () => {
     const sellTokenFunc = async (count: number, price: number) => {
       const sellDocId = wallet.getRandomEthAddress();
       const data = <TokenTradeOrder>{
+        project: SOON_PROJECT_ID,
         uid: sellDocId,
         owner: seller,
         token: token.uid,

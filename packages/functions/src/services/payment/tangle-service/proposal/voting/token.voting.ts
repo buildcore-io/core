@@ -16,6 +16,7 @@ import { getRandomEthAddress } from '../../../../../utils/wallet.utils';
 import { WalletService } from '../../../../wallet/wallet.service';
 
 export const createVoteTransactionOrder = async (
+  project: string,
   owner: string,
   proposal: Proposal,
   voteValues: number[],
@@ -35,6 +36,7 @@ export const createVoteTransactionOrder = async (
   });
 
   return {
+    project,
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,

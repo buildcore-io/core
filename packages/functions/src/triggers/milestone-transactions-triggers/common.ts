@@ -1,5 +1,5 @@
 import { build5Db } from '@build-5/database';
-import { COL, Transaction } from '@build-5/interfaces';
+import { COL, NetworkAddress, Transaction } from '@build-5/interfaces';
 import {
   RegularTransactionEssence,
   TaggedDataPayload,
@@ -35,7 +35,7 @@ export const confirmTransaction = async (
   await unclockMnemonic(transaction.payload.aliasGovAddress);
 };
 
-export const unclockMnemonic = async (address: string | undefined) => {
+export const unclockMnemonic = async (address: NetworkAddress | undefined) => {
   if (isEmpty(address)) {
     return;
   }

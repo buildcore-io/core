@@ -14,16 +14,12 @@ module.exports = {
     'prettier',
   ],
   parser: '@typescript-eslint/parser',
-  parserOptions: {
-    project: ['tsconfig.*?.json'],
-    createDefaultProgram: true,
-    sourceType: 'module',
-  },
   ignorePatterns: [
-    '/lib/**/*', // Ignore built files.
+    '/lib/**/*',
+    '/scripts/**/*',
+    '/node_modules/**/*',
     '/test/**/*',
-    '/test-online/**/*',
-    '/test-load/**/*',
+    '/test-tangle/**/*',
     '/**/workflow.build.js',
   ],
   plugins: ['@typescript-eslint', 'import'],
@@ -36,7 +32,6 @@ module.exports = {
     indent: 0,
     'no-invalid-this': 2,
     'use-isnan': 2,
-    '@typescript-eslint/await-thenable': 2,
     '@typescript-eslint/no-misused-new': 2,
     'space-before-blocks': 2,
     '@typescript-eslint/type-annotation-spacing': 2,

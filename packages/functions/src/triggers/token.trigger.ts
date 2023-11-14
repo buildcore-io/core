@@ -22,7 +22,7 @@ import { isEmpty } from 'lodash';
 import { WalletService } from '../services/wallet/wallet.service';
 import { getAddress } from '../utils/address.utils';
 import { downloadMediaAndPackCar, tokenToIpfsMetadata } from '../utils/car.utils';
-import { guardedRerun } from '../utils/common.utils';
+import { getProject, guardedRerun } from '../utils/common.utils';
 import { getRoyaltyFees } from '../utils/royalty.utils';
 import { cancelTradeOrderUtil } from '../utils/token-trade.utils';
 import {
@@ -135,7 +135,8 @@ const createBillAndRoyaltyPayment = async (
   if (fee >= MIN_IOTA_AMOUNT && balance - fee >= MIN_IOTA_AMOUNT) {
     const royaltySpace = await build5Db().doc(`${COL.SPACE}/${royaltySpaceId}`).get<Space>();
     const network = order.network || DEFAULT_NETWORK;
-    royaltyPayment = <Transaction>{
+    royaltyPayment = {
+      project: getProject(order),
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       space: token.space,
@@ -163,7 +164,8 @@ const createBillAndRoyaltyPayment = async (
     balance -= fee;
   }
   const network = order.network || DEFAULT_NETWORK;
-  const billPayment = <Transaction>{
+  const billPayment: Transaction = {
+    project: getProject(order),
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
     space: token.space,
@@ -206,7 +208,8 @@ const createCredit = async (
   const tranId = getRandomEthAddress();
   const docRef = build5Db().doc(`${COL.TRANSACTION}/${tranId}`);
   const network = order.network || DEFAULT_NETWORK;
-  const data = <Transaction>{
+  const data: Transaction = {
+    project: getProject(order),
     type: TransactionType.CREDIT,
     uid: tranId,
     space: token.space,
@@ -372,12 +375,13 @@ const mintToken = async (token: Token) => {
   await cancelAllActiveSales(token!.uid);
   await setIpfsData(token);
 
-  const order = <Transaction>{
+  const order: Transaction = {
+    project: getProject(token),
     type: TransactionType.MINT_TOKEN,
     uid: getRandomEthAddress(),
     member: token.mintingData?.mintedBy,
     space: token!.space,
-    network: token.mintingData?.network,
+    network: token.mintingData?.network!,
     payload: {
       type: TransactionPayloadType.MINT_ALIAS,
       amount: token.mintingData?.aliasStorageDeposit,
@@ -423,18 +427,21 @@ const setIpfsData = async (token: Token) => {
 const onTokenVaultEmptied = async (token: Token) => {
   const wallet = await WalletService.newWallet(token.mintingData?.network);
   const { amount: vaultBalance } = await wallet.getBalance(token.mintingData?.vaultAddress!);
-  const minter = await build5Db().doc(`${COL.MEMBER}/${token.mintingData?.mintedBy}`).get<Member>();
+  const minter = await build5Db()
+    .doc(`${COL.MEMBER}/${token.mintingData?.mintedBy}`)
+    .get<Member>();
   const paymentsSnap = await build5Db()
     .collection(COL.TRANSACTION)
     .where('type', '==', TransactionType.PAYMENT)
     .where('payload.sourceTransaction', 'array-contains', token.mintingData?.vaultAddress!)
     .get<Transaction>();
-  const credit = <Transaction>{
+  const credit: Transaction = {
+    project: getProject(token),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: token.space,
     member: minter!.uid,
-    network: token.mintingData?.network,
+    network: token.mintingData?.network!,
     payload: {
       type: TransactionPayloadType.TOKEN_VAULT_EMPTIED,
       dependsOnBillPayment: true,

@@ -12,7 +12,12 @@ import { invalidArgument } from '../../utils/error.utils';
 import { getTokenBySymbol } from '../../utils/token.utils';
 import { Context } from '../common';
 
-export const tradeTokenControl = async ({ ip, owner, params }: Context<TradeTokenRequest>) => {
+export const tradeTokenControl = async ({
+  ip,
+  owner,
+  params,
+  project,
+}: Context<TradeTokenRequest>) => {
   let token = await getTokenBySymbol(params.symbol);
 
   return await build5Db().runTransaction(async (transaction) => {
@@ -26,6 +31,7 @@ export const tradeTokenControl = async ({ ip, owner, params }: Context<TradeToke
     }
 
     const { tradeOrderTransaction, tradeOrder, distribution } = await createTokenTradeOrder(
+      project,
       transaction,
       owner,
       token,

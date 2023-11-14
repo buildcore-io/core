@@ -10,7 +10,7 @@ import { getSecretManager } from '../src/utils/secret.manager.utils';
 import * as wallet from '../src/utils/wallet.utils';
 import { decodeAuth, getRandomNonce } from '../src/utils/wallet.utils';
 import { createMember, expectThrow, mockWalletReturnValue } from './controls/common';
-import { getWallet, testEnv } from './set-up';
+import { PROJECT_API_KEY, getWallet, testEnv } from './set-up';
 
 describe('Auth control test', () => {
   let walletSpy: jest.SpyInstance;
@@ -26,7 +26,6 @@ describe('Auth control test', () => {
     mockWalletReturnValue(walletSpy, member, {});
     const token = await testEnv.wrap(generateCustomToken)({});
     walletSpy.mockRestore();
-
     const tokenGeneratedWithToken = await testEnv.wrap(generateCustomToken)({
       address: member,
       customToken: token,
@@ -61,7 +60,7 @@ describe('Auth control test', () => {
   });
 });
 
-describe('Pub key test', () => {
+describe.only('Pub key test', () => {
   it.each([Network.RMS, Network.SMR])('Should validate SMR pub key', async (network: Network) => {
     const wallet = await getWallet(network);
     const address = await wallet.getNewIotaAddressDetails();
@@ -76,6 +75,7 @@ describe('Pub key test', () => {
     });
     const request = {
       address: 'address',
+      projectApiKey: PROJECT_API_KEY,
       signature: signature.signature,
       publicKey: {
         hex: signature.publicKey,
@@ -109,6 +109,7 @@ describe('Pub key test', () => {
       const request = {
         address: address.bech32,
         signature: signature.signature,
+        projectApiKey: PROJECT_API_KEY,
         publicKey: {
           hex: signature.publicKey,
           network,
@@ -146,6 +147,7 @@ describe('Pub key test', () => {
     });
     const request = {
       address: 'address',
+      projectApiKey: PROJECT_API_KEY,
       signature: signature.signature,
       publicKey: {
         hex: signatureSecond.publicKey,
@@ -176,6 +178,7 @@ describe('Pub key test', () => {
     const request = {
       address: 'address',
       signature: signature.signature,
+      projectApiKey: PROJECT_API_KEY,
       publicKey: {
         hex: signature.publicKey,
         network: Network.RMS,

@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Member,
   MIN_IOTA_AMOUNT,
   Network,
+  SOON_PROJECT_ID,
   Space,
   Timestamp,
   Token,
@@ -12,7 +14,6 @@ import {
   Transaction,
 } from '@build-5/interfaces';
 
-import { build5Db } from '@build-5/database';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
@@ -26,7 +27,6 @@ import {
   createSpace,
   getRandomSymbol,
   mockWalletReturnValue,
-  saveSoon,
   wait,
 } from '../../test/controls/common';
 import { getWallet, MEDIA, testEnv } from '../../test/set-up';
@@ -45,12 +45,9 @@ export class Helper {
   public walletService: Wallet | undefined;
   public walletSpy: any;
 
-  public soonTokenId = '';
-
   public berforeAll = async () => {
     this.walletService = await getWallet(this.network);
     await createRoyaltySpaces();
-    this.soonTokenId = await saveSoon();
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
   };
 
@@ -149,6 +146,7 @@ export const saveToken = async (
   const vaultAddress = await walletService.getIotaAddressDetails(VAULT_MNEMONIC);
   await MnemonicService.store(vaultAddress.bech32, vaultAddress.mnemonic);
   const token = {
+    project: SOON_PROJECT_ID,
     symbol: getRandomSymbol(),
     approved: true,
     updatedOn: serverTime(),

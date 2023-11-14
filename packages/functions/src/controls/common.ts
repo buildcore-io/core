@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-  EthAddress,
+  NetworkAddress,
   PROD_AVAILABLE_MINTABLE_NETWORKS,
   TEST_AVAILABLE_MINTABLE_NETWORKS,
 } from '@build-5/interfaces';
@@ -15,11 +15,12 @@ export interface Context<T = undefined> {
   ip: string;
   owner: string;
   params: T;
+  project: string;
   headers: any;
   rawBody: any;
 }
 
 export interface UidSchemaObject {
-  uid: EthAddress;
+  uid: NetworkAddress;
 }
 export const uidSchema = { uid: CommonJoi.uid() };

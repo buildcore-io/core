@@ -1,7 +1,11 @@
 import { build5Db } from '@build-5/database';
 import {
   COL,
+  DecodedToken,
+  MIN_IOTA_AMOUNT,
   Network,
+  NetworkAddress,
+  SOON_PROJECT_ID,
   SUB_COL,
   Space,
   TOKEN_SALE_TEST,
@@ -25,8 +29,15 @@ import * as ipUtils from '../../src/utils/ip.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { MEDIA, getWallet, testEnv } from '../set-up';
 
-export const mockWalletReturnValue = <T>(walletSpy: any, address: string, body: T) =>
-  walletSpy.mockReturnValue(Promise.resolve({ address, body }));
+export const mockWalletReturnValue = <T>(
+  walletSpy: any,
+  address: NetworkAddress,
+  body: T,
+  noProject = false,
+) => {
+  const decodedToken: DecodedToken = { address, body, project: noProject ? '' : SOON_PROJECT_ID };
+  return walletSpy.mockReturnValue(Promise.resolve(decodedToken));
+};
 
 export const expectThrow = async <C, E>(call: C | Promise<C>, error: E, message?: string) => {
   try {
@@ -245,8 +256,24 @@ export const removeGuardianFromSpace = async (space: string, member: string) => 
   });
 };
 
-export const saveSoon = async () => {
-  const soonTokenId = '0xa381bfccaf121e38e31362d85b5ad30cd7fc0d06';
-  await build5Db().doc(`${COL.TOKEN}/${soonTokenId}`).set({ uid: soonTokenId, symbol: 'SOON' });
-  return soonTokenId;
+export const setProdTiers = async () => {
+  const soonProjDocRef = build5Db().doc(`${COL.PROJECT}/${SOON_PROJECT_ID}`);
+  const soonProject = {
+    config: {
+      tiers: [0, 10, 4000, 6000, 15000].map((v) => v * MIN_IOTA_AMOUNT),
+      tokenTradingFeeDiscountPercentage: [0, 25, 50, 75, 100],
+    },
+  };
+  await soonProjDocRef.set(soonProject, true);
+};
+
+export const setTestTiers = async () => {
+  const soonProjDocRef = build5Db().doc(`${COL.PROJECT}/${SOON_PROJECT_ID}`);
+  const soonProject = {
+    config: {
+      tiers: [0, 0, 0, 0, 0].map((v) => v * MIN_IOTA_AMOUNT),
+      tokenTradingFeeDiscountPercentage: [0, 0, 0, 0, 0],
+    },
+  };
+  await soonProjDocRef.set(soonProject, true);
 };

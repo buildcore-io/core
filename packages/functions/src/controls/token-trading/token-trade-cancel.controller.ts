@@ -14,11 +14,7 @@ export const cancelTradeOrderControl = ({ owner, params }: Context<CancelTokenTr
   build5Db().runTransaction(async (transaction) => {
     const tradeOrderDocRef = build5Db().doc(`${COL.TOKEN_MARKET}/${params.uid}`);
     const tradeOrder = await transaction.get<TokenTradeOrder>(tradeOrderDocRef);
-    if (
-      !tradeOrder ||
-      tradeOrder.owner !== owner ||
-      tradeOrder.status !== TokenTradeOrderStatus.ACTIVE
-    ) {
+    if (tradeOrder?.owner !== owner || tradeOrder.status !== TokenTradeOrderStatus.ACTIVE) {
       throw invalidArgument(WenError.invalid_params);
     }
     return await cancelTradeOrderUtil(transaction, tradeOrder);

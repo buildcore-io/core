@@ -10,4 +10,5 @@ export interface IBucket {
   download: (fileName: string, destination: string) => Promise<void>;
   exists: (fileName: string) => Promise<boolean>;
   getFilesCount: (directory: string) => Promise<number>;
+  deleteDirectory: (directory: string) => Promise<void>;
 }

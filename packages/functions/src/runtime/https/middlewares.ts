@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { WEN_FUNC } from '@build-5/interfaces';
+import { WEN_FUNC, WenRequest } from '@build-5/interfaces';
 import express from 'express';
 import { AnySchema, ValidationOptions } from 'joi';
 import { Context } from '../../controls/common';
 import { assertValidationAsync } from '../../utils/schema.utils';
-import { decodeAuth } from '../../utils/wallet.utils';
+import { decodeAuth, getProject } from '../../utils/wallet.utils';
 
 export const auth = async (
   req: express.Request,
@@ -19,16 +19,29 @@ export const auth = async (
     ip: req.ip || '',
     owner,
     params,
+    project: decoded.project,
     headers: req.headers,
     rawBody: req.body,
   };
 };
 
-export const noAuth = async (req: express.Request): Promise<Context<any>> => {
+export const createMember = async (req: express.Request): Promise<Context<any>> => {
   return {
     ip: req.ip || '',
-    owner: req.body.data,
+    owner: (req.body.data as WenRequest).body,
     params: {},
+    project: getProject(req.body.data as WenRequest),
+    headers: req.headers,
+    rawBody: req.body,
+  };
+};
+
+export const uploadFile = async (req: express.Request): Promise<Context<any>> => {
+  return {
+    ip: req.ip || '',
+    owner: '',
+    params: {},
+    project: '',
     headers: req.headers,
     rawBody: req.body,
   };

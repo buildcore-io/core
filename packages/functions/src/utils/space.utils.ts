@@ -1,7 +1,6 @@
 import { build5Db } from '@build-5/database';
 import { COL, Space, SUB_COL, WenError } from '@build-5/interfaces';
 import { head } from 'lodash';
-import { serverTime } from './dateTime.utils';
 import { invalidArgument } from './error.utils';
 
 export const assertSpaceExists = async (spaceId: string) => {
@@ -38,7 +37,7 @@ export const hasActiveEditProposal = async (space: string) => {
   const ongoingProposalSnap = await build5Db()
     .collection(COL.PROPOSAL)
     .where('settings.spaceUpdateData.uid', '==', space)
-    .where('settings.endDate', '>=', serverTime())
+    .where('completed', '==', false)
     .get();
   return ongoingProposalSnap.length > 0;
 };

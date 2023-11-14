@@ -1,6 +1,6 @@
 import { API_RETRY_TIMEOUT } from '@build-5/interfaces';
 import { Observable as RxjsObservable, Subscriber, shareReplay } from 'rxjs';
-import { Build5Env } from './Config';
+import { Build5Env, TOKENS } from './Config';
 import { processObject, processObjectArray } from './utils';
 const WebSocket = global.WebSocket || require('ws');
 
@@ -8,7 +8,10 @@ class Observable<T> extends RxjsObservable<T> {
   private observer: Subscriber<T> | undefined;
   private ws: WebSocket | undefined;
 
-  constructor(protected readonly env: Build5Env, private readonly url: string) {
+  constructor(
+    protected readonly env: Build5Env,
+    private readonly url: string,
+  ) {
     super((observer) => {
       this.observer = observer;
       this.init();
@@ -18,7 +21,9 @@ class Observable<T> extends RxjsObservable<T> {
 
   private init = async () => {
     try {
-      this.ws = new WebSocket(this.url.replace('https', 'wss').replace('http', 'ws'));
+      const url = new URL(this.url.replace('http', 'ws'));
+      url.searchParams.append('token', TOKENS[this.env]);
+      this.ws = new WebSocket(url);
       this.ws?.addEventListener('message', this.onMessage);
       this.ws?.addEventListener('error', this.onError);
       this.ws?.addEventListener('close', this.onClose);
@@ -35,12 +40,17 @@ class Observable<T> extends RxjsObservable<T> {
 
   private onError = () => {
     this.closeConnection();
-    this.observer?.error();
+    this.observer?.error(new Error(this.url.replace('http', 'ws')));
   };
 
-  private onClose = () => {
+  private onClose = async (closeEvent: CloseEvent) => {
     this.closeConnection();
-    this.init();
+    if (closeEvent.code === 1000) {
+      await new Promise((resolve) => setTimeout(resolve, API_RETRY_TIMEOUT));
+      this.init();
+    } else {
+      this.observer?.error(new Error(this.url.replace('http', 'ws')));
+    }
   };
 
   private onThrow = async () => {

@@ -23,6 +23,8 @@ export enum PublicCollections {
   STAKE_REWARD = 'stake_reward',
   NFT_STAKE = 'nft_stake',
   AIRDROP = 'airdrop',
+  STAMP = 'stamp',
+  PROJECT = 'project',
 }
 
 /**

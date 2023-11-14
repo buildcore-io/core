@@ -1,19 +1,20 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Member,
   MIN_IOTA_AMOUNT,
   Network,
+  NetworkAddress,
   Proposal,
   ProposalMember,
   ProposalType,
+  SOON_PROJECT_ID,
   Space,
   SUB_COL,
   TokenStatus,
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-
-import { build5Db } from '@build-5/database';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
 import {
@@ -57,6 +58,7 @@ export class Helper {
     await testEnv.wrap(joinSpace)({});
 
     this.proposal = dummyProposal(this.space.uid);
+    delete (this.proposal as any).completed;
 
     const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${this.guardian}`);
     const guardianData = await guardianDocRef.get<Member>();
@@ -67,6 +69,7 @@ export class Helper {
     await build5Db()
       .doc(`${COL.TOKEN}/${this.tokenId}`)
       .create({
+        project: SOON_PROJECT_ID,
         uid: this.tokenId,
         space: this.space.uid,
         mintingData: { tokenId: MINTED_TOKEN_ID },
@@ -95,7 +98,7 @@ export class Helper {
   };
 
   public sendTokensToVote = async (
-    targetAddress: string,
+    targetAddress: NetworkAddress,
     tokenAmount = 10,
     sourceAddress: AddressDetails = this.guardianAddress!,
     baseTokenAmount = 0,
@@ -107,7 +110,7 @@ export class Helper {
   };
 
   public awaitVoteTransactionCreditIsConfirmed = async (
-    voteTransactionOrderTargetAddress: string,
+    voteTransactionOrderTargetAddress: NetworkAddress,
   ) => {
     const query = build5Db()
       .collection(COL.TRANSACTION)
@@ -187,6 +190,8 @@ export class Helper {
 
   public createStake = async (createdOn: dayjs.Dayjs, expiresAt: dayjs.Dayjs, amount = 100) => {
     const stake = {
+      expirationProcessed: false,
+      project: SOON_PROJECT_ID,
       createdOn: dateToTimestamp(createdOn),
       expiresAt: dateToTimestamp(expiresAt),
       amount,
@@ -230,6 +235,7 @@ export const dummyProposal = (space: string): Proposal => ({
       additionalInfo: 'This would fund the development of HORNET indefinitely',
     },
   ],
+  completed: false,
 });
 
 export const VAULT_MNEMONIC =

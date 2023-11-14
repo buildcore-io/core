@@ -15,6 +15,7 @@ import {
 import { last } from 'lodash';
 import { getAddress } from '../utils/address.utils';
 import { collectionToIpfsMetadata, downloadMediaAndPackCar } from '../utils/car.utils';
+import { getProject } from '../utils/common.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 import { FirestoreDocEvent } from './common';
 
@@ -85,12 +86,13 @@ const hidePlaceholderNft = async (collection: Collection) => {
 
 const onCollectionMinted = async (collection: Collection) => {
   if (collection.limitedEdition) {
-    const order = <Transaction>{
+    const order: Transaction = {
+      project: getProject(collection),
       type: TransactionType.MINT_COLLECTION,
       uid: getRandomEthAddress(),
       member: collection.mintingData?.mintedBy,
       space: collection.space,
-      network: collection.mintingData?.network,
+      network: collection.mintingData?.network!,
       payload: {
         type: TransactionPayloadType.LOCK_COLLECTION,
         amount: 0,
@@ -104,12 +106,13 @@ const onCollectionMinted = async (collection: Collection) => {
   }
   const memberDocRef = build5Db().doc(`${COL.MEMBER}/${collection.mintingData?.mintedBy}`);
   const member = (await memberDocRef.get<Member>())!;
-  const order = <Transaction>{
+  const order: Transaction = {
+    project: getProject(collection),
     type: TransactionType.MINT_COLLECTION,
     uid: getRandomEthAddress(),
     member: collection.mintingData?.mintedBy,
     space: collection.space,
-    network: collection.mintingData?.network,
+    network: collection.mintingData?.network!,
     payload: {
       type: TransactionPayloadType.SEND_ALIAS_TO_GUARDIAN,
       amount: collection.mintingData?.aliasStorageDeposit,
@@ -142,12 +145,13 @@ const onCollectionMinting = async (collection: Collection) => {
 };
 
 const onNftMediaPrepared = async (collection: Collection) => {
-  const order = <Transaction>{
+  const order: Transaction = {
+    project: getProject(collection),
     type: TransactionType.MINT_COLLECTION,
     uid: getRandomEthAddress(),
     member: collection.mintingData?.mintedBy!,
     space: collection.space,
-    network: collection.mintingData?.network,
+    network: collection.mintingData?.network!,
     payload: {
       type: TransactionPayloadType.MINT_ALIAS,
       amount: collection.mintingData?.aliasStorageDeposit || 0,
@@ -274,36 +278,43 @@ const setNftForMinting = async (nftId: string, collection: Collection): Promise<
       extendedAuctionLength: null,
       auctionHighestBid: null,
       auctionHighestBidder: null,
-      auctionHighestTransaction: null,
+      auction: null,
       mediaStatus:
         nft.mediaStatus === MediaStatus.PREPARE_IPFS
           ? MediaStatus.ERROR
           : nft.mediaStatus || MediaStatus.PREPARE_IPFS,
     };
 
-    if (nft.auctionHighestTransaction) {
-      const highestTransaction = <Transaction>(
-        await build5Db().doc(`${COL.TRANSACTION}/${nft.auctionHighestTransaction}`).get()
-      );
-      const member = <Member>(
-        await build5Db().doc(`${COL.MEMBER}/${nft.auctionHighestBidder}`).get()
-      );
-      const credit = <Transaction>{
-        type: TransactionType.CREDIT,
-        uid: getRandomEthAddress(),
-        space: highestTransaction.space,
-        member: highestTransaction.member,
-        network: highestTransaction.network || DEFAULT_NETWORK,
-        payload: {
-          amount: highestTransaction.payload.amount,
-          sourceAddress: highestTransaction.payload.targetAddress,
-          targetAddress: getAddress(member, highestTransaction.network || DEFAULT_NETWORK),
-          sourceTransaction: [highestTransaction.uid],
-          nft: nft.uid,
-          collection: nft.collection,
-        },
-      };
-      transaction.create(build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`), credit);
+    if (nft.auction) {
+      const auctionDocRef = build5Db().doc(`${COL.AUCTION}/${nft.auction}`);
+      transaction.update(auctionDocRef, { active: false });
+
+      const payments = await build5Db()
+        .collection(COL.TRANSACTION)
+        .where('type', '==', TransactionType.PAYMENT)
+        .where('payload.invalidPayment', '==', false)
+        .where('payload.auction', '==', nft.auction)
+        .get<Transaction>();
+      for (const payment of payments) {
+        const credit: Transaction = {
+          project: getProject(payment),
+          type: TransactionType.CREDIT,
+          uid: getRandomEthAddress(),
+          space: payment.space,
+          member: payment.member,
+          network: payment.network || DEFAULT_NETWORK,
+          payload: {
+            amount: payment.payload.amount,
+            sourceAddress: payment.payload.targetAddress,
+            targetAddress: payment.payload.sourceAddress,
+            sourceTransaction: [payment.uid],
+            nft: nft.uid,
+            collection: nft.collection,
+          },
+        };
+        const creditDocRef = build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`);
+        transaction.create(creditDocRef, credit);
+      }
     }
 
     if (nft.locked) {

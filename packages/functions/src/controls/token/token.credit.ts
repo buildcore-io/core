@@ -26,6 +26,7 @@ import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Context } from '../common';
 
 export const creditTokenControl = async ({
+  project,
   owner,
   params,
 }: Context<CreditTokenRequest>): Promise<Transaction> => {
@@ -68,6 +69,7 @@ export const creditTokenControl = async ({
     });
 
     const creditTransaction: Transaction = {
+      project,
       type: TransactionType.CREDIT,
       uid: tranId,
       space: token.space,

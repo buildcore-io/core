@@ -15,8 +15,10 @@ fs.writeFileSync(file, `export GOOGLE_CLOUD_PROJECT=$(gcloud config get-value pr
 
 fs.appendFileSync(
   file,
-  "export PROJECT_NUMBER=$(gcloud projects describe $(gcloud config get-value project) --format='value(projectNumber)')\n\n",
+  "export PROJECT_NUMBER=$(gcloud projects describe $(gcloud config get-value project) --format='value(projectNumber)')\n",
 );
+
+fs.appendFileSync(file, `\n`);
 
 const buildImage = () => {
   fs.appendFileSync(file, 'cp packages/functions/Dockerfile ./Dockerfile\n\n');
@@ -37,6 +39,9 @@ const deployServices = () => {
    --allow-unauthenticated \\
    --ingress=internal-and-cloud-load-balancing \\
 `;
+    if (options?.region) {
+      command += `   --region=${options.region} \\\n`;
+    }
     if (options?.timeoutSeconds) {
       command += `   --timeout=${options.timeoutSeconds} \\\n`;
     }

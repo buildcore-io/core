@@ -9,6 +9,10 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "space",
           "order": "ASCENDING"
         },
@@ -66,20 +70,6 @@
       "fields": [
         {
           "fieldPath": "settings.spaceUpdateData.uid",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "settings.endDate",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "proposal",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "completed",
           "order": "ASCENDING"
         },
         {

@@ -3,9 +3,14 @@ import { ApiRoutes } from '@build-5/interfaces';
 export enum Build5Env {
   PROD = 'https://api.build5.com/api',
   TEST = 'https://api-test.build5.com/api',
-  DEV = 'https://soonaverse-dev.web.app/api',
   LOCAL = 'http://127.0.0.1:5001/soonaverse-dev/us-central1/api',
 }
+
+export const TOKENS: { [key: string]: string } = {
+  [Build5Env.PROD]: '',
+  [Build5Env.TEST]:
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIweDU1MWZkMmM3YzdiZjM1NmJhYzE5NDU4N2RhYjJmY2Q0NjQyMDA1NGIiLCJwcm9qZWN0IjoiMHg0NjIyM2VkZDQxNTc2MzVkZmM2Mzk5MTU1NjA5ZjMwMWRlY2JmZDg4IiwiaWF0IjoxNjk1ODUyNTk2fQ.WT9L4H9eDdFfJZMrfxTKhEq4PojNWSGNv_CbmlG9sJg',
+};
 
 export const getByIdUrl = (baseUrl: Build5Env) => baseUrl + ApiRoutes.GET_BY_ID;
 

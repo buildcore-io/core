@@ -9,6 +9,10 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "token",
           "order": "ASCENDING"
         },
@@ -31,72 +35,6 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "expiresAt",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "token_market",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "sourceNetwork",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "token",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "price",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "token_market",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "sourceNetwork",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "token",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "price",
-          "order": "DESCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "token_market",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        },
-        {
           "fieldPath": "token",
           "order": "ASCENDING"
         },
@@ -106,36 +44,6 @@
         },
         {
           "fieldPath": "price",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "token_market",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "token",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "type",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "price",
-          "order": "DESCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
           "order": "ASCENDING"
         }
       ]
@@ -167,6 +75,10 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "status",
           "order": "ASCENDING"
         },
@@ -181,6 +93,32 @@
         {
           "fieldPath": "price",
           "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "token_market",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "token",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "price",
+          "order": "DESCENDING"
         }
       ]
     }

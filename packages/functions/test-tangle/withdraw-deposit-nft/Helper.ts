@@ -11,8 +11,10 @@ import {
   MediaStatus,
   Member,
   Network,
+  NetworkAddress,
   Nft,
   NftAccess,
+  SOON_PROJECT_ID,
   SUB_COL,
   Space,
   Timestamp,
@@ -168,7 +170,7 @@ export class Helper {
     expect(ownerChangeTran[0].payload?.walletReference?.confirmed).toBe(true);
   };
 
-  public updateGuardianAddress = (address: string) =>
+  public updateGuardianAddress = (address: NetworkAddress) =>
     build5Db()
       .doc(`${COL.MEMBER}/${this.guardian}`)
       .update({ [`validatedAddress.${this.network}`]: address });
@@ -182,6 +184,7 @@ export class Helper {
   ) => {
     if (!expiresOn) {
       const order: Transaction = {
+        project: SOON_PROJECT_ID,
         type: TransactionType.WITHDRAW_NFT,
         uid: getRandomEthAddress(),
         member: this.guardian,

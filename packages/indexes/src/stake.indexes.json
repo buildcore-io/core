@@ -5,21 +5,11 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "expirationProcessed",
+          "fieldPath": "member",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "expiresAt",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "stake",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "member",
+          "fieldPath": "project",
           "order": "ASCENDING"
         },
         {
@@ -37,25 +27,11 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "token",
+          "fieldPath": "project",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "expiresAt",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "stake",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
           "fieldPath": "token",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "type",
           "order": "ASCENDING"
         },
         {

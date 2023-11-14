@@ -6,6 +6,7 @@ import {
   AwardCreateRequest,
   AwardCreateTangleRequest,
   AwardCreateTangleResponse,
+  AwardOwner,
   COL,
   Network,
   SUB_COL,
@@ -26,19 +27,18 @@ import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { isStorageUrl } from '../../../joi/common';
 import { WalletService } from '../../../wallet/wallet.service';
 import { getAwardgStorageDeposits as getAwardStorageDeposits } from '../../award/award-service';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { awardCreateSchema } from './AwardCreateTangleRequestSchema';
 import { createAwardFundOrder } from './award.fund.service';
 
-export class AwardCreateService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleCreateRequest = async (
-    owner: string,
-    request: Record<string, unknown>,
-  ): Promise<AwardCreateTangleResponse> => {
+export class AwardCreateService extends BaseService {
+  public handleRequest = async ({
+    project,
+    owner,
+    request,
+  }: HandlerParams): Promise<AwardCreateTangleResponse> => {
     const params = await assertValidationAsync(awardCreateSchema, request);
-    const { award, owner: awardOwner } = await createAward(owner, { ...params });
+    const { award, owner: awardOwner } = await createAward(project, owner, { ...params });
 
     const awardDocRef = build5Db().doc(`${COL.AWARD}/${award.uid}`);
     this.transactionService.push({
@@ -53,7 +53,7 @@ export class AwardCreateService {
       action: 'set',
     });
 
-    const order = await createAwardFundOrder(owner, award);
+    const order = await createAwardFundOrder(project, owner, award);
     const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
     this.transactionService.push({ ref: orderDocRef, data: order, action: 'set' });
 
@@ -71,9 +71,13 @@ export class AwardCreateService {
 }
 
 export const createAward = async (
+  project: string,
   owner: string,
   params: AwardCreateRequest | AwardCreateTangleRequest,
-) => {
+): Promise<{
+  owner: AwardOwner;
+  award: Award;
+}> => {
   await assertIsSpaceMember(params.space as string, owner);
 
   const awardId = getRandomEthAddress();
@@ -96,7 +100,7 @@ export const createAward = async (
       imageUrl = await migrateUriToSotrage(COL.AWARD, owner, awardUid, uriToUrl(imageUrl), bucket);
       set(badge, 'image', imageUrl);
     }
-    const ipfs = await downloadMediaAndPackCar(awardId, imageUrl, {});
+    const ipfs = await downloadMediaAndPackCar(awardId, imageUrl);
     set(badge, 'ipfsMedia', ipfs.ipfsMedia);
     set(badge, 'ipfsMetadata', ipfs.ipfsMetadata);
     set(badge, 'ipfsRoot', ipfs.ipfsRoot);
@@ -112,6 +116,7 @@ export const createAward = async (
     set(awardBadge, 'tokenId', token.mintingData?.tokenId);
   }
   const award: Award = {
+    project,
     createdBy: owner,
     uid: awardUid,
     name: params.name as string,
@@ -134,7 +139,12 @@ export const createAward = async (
   const wallet = await WalletService.newWallet(award.network);
   const storageDeposits = await getAwardStorageDeposits(award, token, wallet);
 
-  const awardOwner = { uid: owner, parentId: award.uid, parentCol: COL.AWARD };
+  const awardOwner: AwardOwner = {
+    uid: owner,
+    project,
+    parentId: award.uid,
+    parentCol: COL.AWARD,
+  };
 
   return { owner: awardOwner, award: { ...award, ...storageDeposits } };
 };

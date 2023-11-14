@@ -1,5 +1,5 @@
 import { build5Db } from '@build-5/database';
-import { COL, Member, Network, Space, TokenStatus } from '@build-5/interfaces';
+import { COL, Member, Network, SOON_PROJECT_ID, Space, TokenStatus } from '@build-5/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
@@ -43,6 +43,7 @@ export class Helper {
     await MnemonicService.store(vaultAddress.bech32, vaultAddress.mnemonic);
     const tokenId = walletUtil.getRandomEthAddress();
     const token = {
+      project: SOON_PROJECT_ID,
       symbol: getRandomSymbol(),
       approved: true,
       updatedOn: serverTime(),

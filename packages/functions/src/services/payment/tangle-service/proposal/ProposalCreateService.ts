@@ -15,19 +15,18 @@ import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getTokenForSpace } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { proposalCreateSchemaObject } from './ProposalCreateTangleRequestSchema';
 
-export class ProposalCreateService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleProposalCreateRequest = async (
-    owner: string,
-    request: Record<string, unknown>,
-  ): Promise<ProposalCreateTangleResponse> => {
+export class ProposalCreateService extends BaseService {
+  public handleRequest = async ({
+    project,
+    owner,
+    request,
+  }: HandlerParams): Promise<ProposalCreateTangleResponse> => {
     const params = await assertValidationAsync(proposalCreateSchemaObject, request);
 
-    const { proposal, proposalOwner } = await createProposal(owner, { ...params });
+    const { proposal, proposalOwner } = await createProposal(project, owner, { ...params });
 
     const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
     this.transactionService.push({ ref: proposalDocRef, data: proposal, action: 'set' });
@@ -43,7 +42,11 @@ export class ProposalCreateService {
   };
 }
 
-export const createProposal = async (owner: string, params: Record<string, unknown>) => {
+export const createProposal = async (
+  project: string,
+  owner: string,
+  params: Record<string, unknown>,
+) => {
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.space}`);
   const spaceMemberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner);
   const spaceMember = await spaceMemberDocRef.get<SpaceMember>();
@@ -60,22 +63,23 @@ export const createProposal = async (owner: string, params: Record<string, unkno
   }
 
   const settings = params.settings as Record<string, unknown>;
-  const proposal = <Proposal>{
+  const proposal = {
     ...params,
     settings: {
       ...settings,
       startDate: dateToTimestamp(settings.startDate as Date, true),
       endDate: dateToTimestamp(settings.endDate as Date, true),
     },
+    project,
     uid: getRandomEthAddress(),
     rank: 1,
     createdBy: owner,
     approved: false,
     rejected: false,
     completed: false,
-  };
+  } as Proposal;
 
-  const totalWeight = await createProposalMembersAndGetTotalWeight(proposal);
+  const totalWeight = await createProposalMembersAndGetTotalWeight(project, proposal);
   const results = {
     total: totalWeight * proposal.questions.length,
     voted: 0,
@@ -84,6 +88,7 @@ export const createProposal = async (owner: string, params: Record<string, unkno
   return {
     proposal: { ...proposal, totalWeight, results },
     proposalOwner: {
+      project,
       uid: owner,
       parentId: proposal.uid,
       parentCol: COL.PROPOSAL,
@@ -91,13 +96,13 @@ export const createProposal = async (owner: string, params: Record<string, unkno
   };
 };
 
-const createProposalMembersAndGetTotalWeight = async (proposal: Proposal) => {
+const createProposalMembersAndGetTotalWeight = async (project: string, proposal: Proposal) => {
   const subCol = proposal.settings.onlyGuardians ? SUB_COL.GUARDIANS : SUB_COL.MEMBERS;
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${proposal.space}`);
   const spaceMembers = await spaceDocRef.collection(subCol).get<SpaceMember>();
 
   const promises = spaceMembers.map(async (spaceMember) => {
-    const proposalMember = await createProposalMember(proposal, spaceMember);
+    const proposalMember = createProposalMember(project, proposal, spaceMember);
     if (proposalMember.weight || proposal.type === ProposalType.NATIVE) {
       const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
       await proposalDocRef
@@ -112,12 +117,15 @@ const createProposalMembersAndGetTotalWeight = async (proposal: Proposal) => {
   return proposalMemberWeights.reduce((acc, act) => acc + act, 0);
 };
 
-const createProposalMember = async (proposal: Proposal, spaceMember: SpaceMember) => {
-  return <ProposalMember>{
-    uid: spaceMember.uid,
-    weight: proposal.type === ProposalType.NATIVE ? 0 : 1,
-    voted: false,
-    parentId: proposal.uid,
-    parentCol: COL.PROPOSAL,
-  };
-};
+const createProposalMember = (
+  project: string,
+  proposal: Proposal,
+  spaceMember: SpaceMember,
+): ProposalMember => ({
+  project,
+  uid: spaceMember.uid,
+  weight: proposal.type === ProposalType.NATIVE ? 0 : 1,
+  voted: false,
+  parentId: proposal.uid,
+  parentCol: COL.PROPOSAL,
+});

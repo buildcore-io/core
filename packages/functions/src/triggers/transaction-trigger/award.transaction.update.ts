@@ -1,6 +1,7 @@
 import { build5Db } from '@build-5/database';
 import { COL, Transaction, TransactionPayloadType, TransactionType } from '@build-5/interfaces';
 import { TransactionPayload, Utils } from '@iota/sdk';
+import { getProject } from '../../utils/common.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const onAwardUpdate = async (transaction: Transaction) => {
@@ -34,7 +35,8 @@ const onAliasMinted = async (transaction: Transaction) => {
     aliasId: Utils.computeAliasId(aliasOutputId),
   });
 
-  const order = <Transaction>{
+  const order: Transaction = {
+    project: getProject(transaction),
     type: TransactionType.AWARD,
     uid: getRandomEthAddress(),
     member: transaction.member,

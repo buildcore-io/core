@@ -1,5 +1,12 @@
 import { build5Db } from '@build-5/database';
-import { COL, Collection, MIN_IOTA_AMOUNT, NftAccess, NftAvailable } from '@build-5/interfaces';
+import {
+  COL,
+  Collection,
+  MIN_IOTA_AMOUNT,
+  NftAccess,
+  NftAvailable,
+  SOON_PROJECT_ID,
+} from '@build-5/interfaces';
 import { updateFloorPriceOnCollections } from '../../src/cron/collection.floor.price.cron';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 
@@ -7,7 +14,11 @@ describe('Collection floor price', () => {
   it('Should set collection floor price', async () => {
     const collection = getRandomEthAddress();
     const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${collection}`);
-    await collectionDocRef.create({ uid: collection, name: 'asd' });
+    await collectionDocRef.create({
+      project: SOON_PROJECT_ID,
+      uid: collection,
+      name: 'asd',
+    });
 
     const promises = [
       NftAvailable.AUCTION,

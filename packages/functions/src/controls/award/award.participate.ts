@@ -15,6 +15,7 @@ import { Context } from '../common';
 export const awardParticipateControl = async ({
   owner,
   params,
+  project,
 }: Context<AwardParticpateRequest>): Promise<AwardParticipant> => {
   const awardDocRef = build5Db().doc(`${COL.AWARD}/${params.uid}`);
   const award = await awardDocRef.get<Award>();
@@ -41,6 +42,7 @@ export const awardParticipateControl = async ({
 
   const participant: AwardParticipant = {
     uid: owner,
+    project,
     comment: params.comment || null,
     parentId: award.uid,
     completed: false,

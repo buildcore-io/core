@@ -1,5 +1,13 @@
-import { COL, Member, Network, SUB_COL, Space, Token, TokenStatus } from '@build-5/interfaces';
-
+import {
+  COL,
+  Member,
+  Network,
+  NetworkAddress,
+  SUB_COL,
+  Space,
+  Token,
+  TokenStatus,
+} from '@build-5/interfaces';
 import { build5Db } from '@build-5/database';
 import {
   AliasOutput,
@@ -96,7 +104,7 @@ export class Helper {
     wallet: Wallet,
     token: Token,
     amount: number,
-    fromAddress: string,
+    fromAddress: NetworkAddress,
   ) => {
     const outputs = await wallet.getOutputs(fromAddress, [], false);
     const nativeTokens = Object.values(outputs)

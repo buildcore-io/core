@@ -1,5 +1,10 @@
 import { IDocument, IQuery } from '@build-5/database';
-import { PublicCollections, QUERY_MAX_LENGTH, TokenPurchase } from '@build-5/interfaces';
+import {
+  PublicCollections,
+  PublicSubCollections,
+  QUERY_MAX_LENGTH,
+  TokenPurchase,
+} from '@build-5/interfaces';
 import Joi from 'joi';
 import { head } from 'lodash';
 import { Observable, map } from 'rxjs';
@@ -15,11 +20,14 @@ export const getQueryParams = <T>(url: string, schema: Joi.ObjectSchema): T => {
 
 const queryStrToParams = (url: string) => {
   const strParams = new URLSearchParams(url);
-  return [...strParams.entries()].reduce((acc, [key, value]) => {
-    const k = key.replace('[]', '');
-    const v = key.endsWith('[]') ? [...(acc[k] || []), value] : value;
-    return { ...acc, [k]: v };
-  }, {} as { [k: string]: any });
+  return [...strParams.entries()].reduce(
+    (acc, [key, value]) => {
+      const k = key.replace('[]', '');
+      const v = key.endsWith('[]') ? [...(acc[k] || []), value] : value;
+      return { ...acc, [k]: v };
+    },
+    {} as { [k: string]: any },
+  );
 };
 
 export const isHiddenNft = (collection: PublicCollections, data?: Record<string, unknown>) =>
@@ -76,3 +84,14 @@ export const getQueryLimit = (collection: PublicCollections) => {
       return QUERY_MAX_LENGTH;
   }
 };
+
+export const shouldSetProjectFilter = (
+  col: PublicCollections,
+  subCol?: PublicSubCollections,
+): boolean =>
+  ![
+    PublicCollections.MILESTONE,
+    PublicCollections.MILESTONE_RMS,
+    PublicCollections.MILESTONE_SMR,
+    PublicCollections.TICKER,
+  ].includes(col) && !subCol;

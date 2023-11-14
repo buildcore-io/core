@@ -3,6 +3,7 @@ import {
   Access,
   COL,
   MIN_IOTA_AMOUNT,
+  NetworkAddress,
   SUB_COL,
   Space,
   Token,
@@ -29,14 +30,14 @@ import {
 
 let walletSpy: any;
 
-const submitTokenOrderFunc = async <T>(spy: string, address: string, params: T) => {
+const submitTokenOrderFunc = async <T>(spy: string, address: NetworkAddress, params: T) => {
   mockWalletReturnValue(spy, address, params);
   const order = await testEnv.wrap(orderToken)({});
   expect(order?.createdOn).toBeDefined();
   return order;
 };
 
-const submitCreditTokenFunc = async <T>(spy: string, address: string, params: T) => {
+const submitCreditTokenFunc = async <T>(spy: string, address: NetworkAddress, params: T) => {
   mockWalletReturnValue(spy, address, params);
   const order = await testEnv.wrap(creditToken)({});
   expect(order?.createdOn).toBeDefined();
@@ -49,7 +50,7 @@ const assertOrderedTokensCount = async (tokenId: string, expected: number) => {
 };
 
 describe('Token controller: ' + WEN_FUNC.orderToken, () => {
-  let memberAddress: string;
+  let memberAddress: NetworkAddress;
   let space: Space;
   let token: Token;
 

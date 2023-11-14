@@ -34,17 +34,22 @@ describe('Base token trading', () => {
     await Promise.all(faucetPromises);
 
     const sellerTargetAddress = await helper.rmsWallet!.getNewIotaAddressDetails();
-    helper.rmsWallet!.send(atoiAddress, atoiTangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
-      customMetadata: {
-        request: {
-          requestType: TangleRequestType.SELL_TOKEN,
-          symbol: helper.token?.symbol!,
-          count: MIN_IOTA_AMOUNT,
-          price: 1,
-          targetAddress: sellerTargetAddress.bech32,
+    await helper.rmsWallet!.send(
+      atoiAddress,
+      atoiTangleOrder.payload.targetAddress!,
+      MIN_IOTA_AMOUNT,
+      {
+        customMetadata: {
+          request: {
+            requestType: TangleRequestType.SELL_TOKEN,
+            symbol: helper.token?.symbol!,
+            count: MIN_IOTA_AMOUNT,
+            price: 1,
+            targetAddress: sellerTargetAddress.bech32,
+          },
         },
       },
-    });
+    );
 
     const buyerTargetAddress = await helper.atoiWallet!.getNewIotaAddressDetails();
     helper.rmsWallet!.send(rmsAddress, rmsTangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {

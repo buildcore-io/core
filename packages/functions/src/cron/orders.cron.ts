@@ -1,10 +1,11 @@
 import { build5Db } from '@build-5/database';
 import { COL, Transaction, TransactionType } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { ProcessingService } from '../services/payment/payment-processing';
+import { NftPurchaseService } from '../services/payment/nft/nft-purchase.service';
+import { TransactionService } from '../services/payment/transaction-service';
 
 export const voidExpiredOrdersCron = async () => {
-  const snap = await build5Db()
+  const transactions = await build5Db()
     .collection(COL.TRANSACTION)
     .where('type', '==', TransactionType.ORDER)
     .where('payload.void', '==', false)
@@ -12,13 +13,15 @@ export const voidExpiredOrdersCron = async () => {
     .where('payload.expiresOn', '<=', dayjs().toDate())
     .get<Transaction>();
 
-  for (const tran of snap) {
+  for (const tran of transactions) {
     await build5Db().runTransaction(async (transaction) => {
       const tranDocRef = build5Db().doc(`${COL.TRANSACTION}/${tran.uid}`);
       const tranData = (await transaction.get<Transaction>(tranDocRef))!;
-      const service: ProcessingService = new ProcessingService(transaction);
+
+      const tranService = new TransactionService(transaction);
+      const service = new NftPurchaseService(tranService);
       await service.markAsVoid(tranData);
-      service.submit();
+      tranService.submit();
     });
   }
 

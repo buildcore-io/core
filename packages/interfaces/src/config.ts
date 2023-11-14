@@ -143,9 +143,6 @@ export const MAX_FIELD_VALUE_LENGTH = 100;
 export const MIN_WEEKS_TO_STAKE = 1;
 export const MAX_WEEKS_TO_STAKE = 52;
 
-export const tiers = [0, 10, 4000, 6000, 15000].map((v) => v * MIN_IOTA_AMOUNT);
-export const tokenTradingFeeDicountPercentage = [0, 25, 50, 75, 100];
-
 export const RANKING = {
   MIN_RANK: -100,
   MAX_RANK: 100,
@@ -201,3 +198,15 @@ export const API_TIMEOUT_SECONDS = 600;
 export const API_RETRY_TIMEOUT = 2500;
 
 export const EXTEND_AUCTION_WITHIN = 5 * 60000;
+
+export const SOON_PROJECT_ID = '0x46223edd4157635dfc6399155609f301decbfd88';
+
+export const MAX_FILE_SIZE_BYTES = 104857600; // 100 MB
+
+export const STAMP_COST_PER_MB = MIN_IOTA_AMOUNT;
+export const STAMP_ROYALTY_ADDRESS = {
+  [Network.SMR]: 'smr1qq7h0mjhx72eny9wwpe03fwz5rwgcvxclgk5rhv4q9zm25tlv5zmvmujtnu',
+  [Network.RMS]: 'rms1qpxwqusxk66mcsggmrpauyxu4tg767zlqz9pg3ym7stmhxnj7rvl29lzg5w',
+  [Network.IOTA]: 'iota1qr5ped7rfdkh8j9acj6qyyxz4mmhfsrqage37y7l0m09snclk07gsyup5dp',
+  [Network.ATOI]: 'atoi1qr9f2a43rw3me665vzda3fq4wdtv69v38pvrkvx9rqu0pm57lyk4vc0mf9j',
+};

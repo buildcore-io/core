@@ -1,5 +1,5 @@
-import { Bucket, ImageWidth } from '@build-5/interfaces';
 import { build5Storage } from '@build-5/database';
+import { Bucket, ImageWidth } from '@build-5/interfaces';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { wait } from '../controls/common';
 

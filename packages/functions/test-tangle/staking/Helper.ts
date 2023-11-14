@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { build5Db } from '@build-5/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -17,8 +18,6 @@ import {
   TransactionPayloadType,
   calcStakedMultiplier,
 } from '@build-5/interfaces';
-
-import { build5Db } from '@build-5/database';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { depositStake } from '../../src/runtime/firebase/stake';
@@ -147,11 +146,9 @@ export class Helper {
     expect(stake.token).toBe(this.token?.uid!);
 
     await wait(async () => {
-      const currTokenStats = <TokenStats | undefined>(
-        await build5Db()
-          .doc(`${COL.TOKEN}/${this.token?.uid}/${SUB_COL.STATS}/${this.token?.uid}`)
-          .get()
-      );
+      const currTokenStats = <TokenStats | undefined>await build5Db()
+        .doc(`${COL.TOKEN}/${this.token?.uid}/${SUB_COL.STATS}/${this.token?.uid}`)
+        .get();
       return (
         (currTokenStats?.stakes || {})[type || StakeType.DYNAMIC]?.totalAmount !==
         (this.tokenStats?.stakes || {})[type || StakeType.DYNAMIC]?.totalAmount
@@ -181,11 +178,9 @@ export class Helper {
     type: StakeType,
     membersCount: number,
   ) => {
-    this.tokenStats = <TokenStats>(
-      await build5Db()
-        .doc(`${COL.TOKEN}/${this.token!.uid}/${SUB_COL.STATS}/${this.token?.uid}`)
-        .get()
-    );
+    this.tokenStats = <TokenStats>await build5Db()
+      .doc(`${COL.TOKEN}/${this.token!.uid}/${SUB_COL.STATS}/${this.token?.uid}`)
+      .get();
     expect(this.tokenStats.stakes![type].amount).toBe(stakeAmount);
     expect(this.tokenStats.stakes![type].totalAmount).toBe(stakeTotalAmount);
     expect(this.tokenStats.stakes![type].value).toBe(stakeValue);

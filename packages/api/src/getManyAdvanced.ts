@@ -14,7 +14,13 @@ import {
 import Joi from 'joi';
 import { get, isEmpty, isEqual } from 'lodash';
 import { map } from 'rxjs';
-import { CommonJoi, getQueryLimit, getQueryParams, queryToObservable } from './common';
+import {
+  CommonJoi,
+  getQueryLimit,
+  getQueryParams,
+  queryToObservable,
+  shouldSetProjectFilter,
+} from './common';
 
 const fieldNameSchema = Joi.string().max(MAX_FIELD_NAME_LENGTH);
 const fieldValueSchema = Joi.alternatives().try(
@@ -46,7 +52,7 @@ const getManyAdvancedSchema = Joi.object({
   startAfter: CommonJoi.uid(false),
 });
 
-export const getManyAdvanced = async (url: string) => {
+export const getManyAdvanced = async (project: string, url: string) => {
   const body = getQueryParams<GetManyAdvancedRequest>(url, getManyAdvancedSchema);
 
   const { collection, subCollection, uid } = body;
@@ -69,6 +75,10 @@ export const getManyAdvanced = async (url: string) => {
 
   if (body.collection === PublicCollections.NFT && !isEqual(filters['hidden'], [false])) {
     query = query.where('hidden', '==', false);
+  }
+
+  if (shouldSetProjectFilter(body.collection, body.subCollection)) {
+    query = query.where('project', '==', project);
   }
 
   const typeFilters = filters['type'];

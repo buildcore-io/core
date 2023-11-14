@@ -26,6 +26,7 @@ import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Context } from '../common';
 
 export const airdropMintedTokenControl = async ({
+  project,
   owner,
   params,
 }: Context<CreateAirdropsRequest>) => {
@@ -55,6 +56,7 @@ export const airdropMintedTokenControl = async ({
     nativeTokens: [nativeToken],
   });
   const order: Transaction = {
+    project,
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,
@@ -75,6 +77,7 @@ export const airdropMintedTokenControl = async ({
   };
 
   const airdrops: TokenDrop[] = drops.map((drop) => ({
+    project,
     createdBy: owner,
     uid: getRandomEthAddress(),
     member: drop.recipient.toLowerCase(),

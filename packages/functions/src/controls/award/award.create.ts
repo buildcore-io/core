@@ -3,8 +3,12 @@ import { Award, AwardCreateRequest, COL, SUB_COL } from '@build-5/interfaces';
 import { createAward } from '../../services/payment/tangle-service/award/award.create.service';
 import { Context } from '../common';
 
-export const createAwardControl = async ({ owner, params }: Context<AwardCreateRequest>) => {
-  const { owner: awardOwner, award } = await createAward(owner, params);
+export const createAwardControl = async ({
+  owner,
+  params,
+  project,
+}: Context<AwardCreateRequest>) => {
+  const { owner: awardOwner, award } = await createAward(project, owner, params);
 
   const batch = build5Db().batch();
 

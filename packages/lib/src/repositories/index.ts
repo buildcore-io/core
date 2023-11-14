@@ -1,4 +1,5 @@
 export * from './BadgesRepository';
+export * from './CrudRepository';
 export * from './MemberRepository';
 export * from './MilestoneRepository';
 export * from './NftRepository';

@@ -12,10 +12,6 @@ export interface FileUploadRequest {
    */
   member: string;
   /**
-   * Mime type of the file
-   */
-  mimeType: string;
-  /**
    * Id for the file.
    */
   uid: string;

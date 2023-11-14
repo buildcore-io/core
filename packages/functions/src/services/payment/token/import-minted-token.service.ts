@@ -22,17 +22,17 @@ import {
 } from '@iota/sdk';
 import Joi from 'joi';
 import { get, isEmpty } from 'lodash';
+import { getProject } from '../../../utils/common.utils';
 import { getBucket } from '../../../utils/config.utils';
 import { migrateUriToSotrage, uriToUrl } from '../../../utils/media.utils';
 import { isAliasGovernor } from '../../../utils/token-minting-utils/alias.utils';
 import { Wallet } from '../../wallet/wallet';
 import { WalletService } from '../../wallet/wallet.service';
-import { TransactionMatch, TransactionService } from '../transaction-service';
+import { BaseService, HandlerParams } from '../base';
+import { TransactionMatch } from '../transaction-service';
 
-export class ImportMintedTokenService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleMintedTokenImport = async (order: Transaction, match: TransactionMatch) => {
+export class ImportMintedTokenService extends BaseService {
+  public handleRequest = async ({ order, match }: HandlerParams) => {
     let error: { [key: string]: unknown } = {};
     try {
       const tokenId = order.payload.tokenId!;
@@ -61,6 +61,7 @@ export class ImportMintedTokenService {
       const tokenScheme = foundry.tokenScheme as SimpleTokenScheme;
       const totalSupply = Number(tokenScheme.maximumSupply);
       const token: Token = {
+        project: getProject(order),
         createdBy: order.member || '',
         uid: tokenId,
         name: metadata.name,

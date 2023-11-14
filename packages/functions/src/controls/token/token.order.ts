@@ -25,7 +25,12 @@ import { assertIpNotBlocked } from '../../utils/ip.utils';
 import { tokenIsInPublicSalePeriod, tokenOrderTransactionDocId } from '../../utils/token.utils';
 import { Context } from '../common';
 
-export const orderTokenControl = async ({ ip, owner, params }: Context<OrderTokenRequest>) => {
+export const orderTokenControl = async ({
+  ip,
+  owner,
+  params,
+  project,
+}: Context<OrderTokenRequest>) => {
   const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
   const member = await memberDocRef.get<Member>();
   assertMemberHasValidAddress(member, DEFAULT_NETWORK);
@@ -62,6 +67,7 @@ export const orderTokenControl = async ({ ip, owner, params }: Context<OrderToke
     const order = await transaction.get<Transaction>(orderDoc);
     if (!order) {
       const data: Transaction = {
+        project,
         type: TransactionType.ORDER,
         uid: tranId,
         member: owner,

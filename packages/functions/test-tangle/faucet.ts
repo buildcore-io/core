@@ -1,4 +1,4 @@
-import { Network, Timestamp } from '@build-5/interfaces';
+import { Network, NetworkAddress, Timestamp } from '@build-5/interfaces';
 
 import { Client } from '@iota/sdk';
 import { MnemonicService } from '../src/services/wallet/mnemonic';
@@ -47,7 +47,7 @@ export const requestFundsFromFaucet = async (
 
 export const requestFundsForManyFromFaucet = async (
   network: Network,
-  targets: { toAddress: string; amount: number; customMetadata?: any }[],
+  targets: { toAddress: NetworkAddress; amount: number; customMetadata?: any }[],
 ) => {
   const wallet = await getWallet(network);
   for (let i = 0; i < 600; ++i) {

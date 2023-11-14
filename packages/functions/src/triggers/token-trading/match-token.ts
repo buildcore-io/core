@@ -106,8 +106,8 @@ const runTradeOrderMatching = async (
           ? prevBuy.price
           : prevSell.price
         : isSell
-        ? prevSell.price
-        : prevBuy.price;
+          ? prevSell.price
+          : prevBuy.price;
       const triggeredBy = isSell ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY;
       const { purchase, buyerCreditId } = await matcher(
         transaction,
@@ -129,7 +129,8 @@ const runTradeOrderMatching = async (
         postMatchActions(transaction, prevBuy, buy, prevSell, sell);
       }
 
-      transaction.create(build5Db().doc(`${COL.TOKEN_PURCHASE}/${purchase.uid}`), purchase);
+      const purchaseDocRef = build5Db().doc(`${COL.TOKEN_PURCHASE}/${purchase.uid}`);
+      transaction.create(purchaseDocRef, purchase);
       update = isSell ? sell : buy;
     }
     transaction.update(build5Db().doc(`${COL.TOKEN_MARKET}/${tradeOrder.uid}`), update);
@@ -177,13 +178,11 @@ const getPostMatchActions = (token: Token) => {
 
 const getSimpleTokenQuery = async (trade: TokenTradeOrder, startAfter = '') => {
   const lastDoc = await getSnapshot(COL.TOKEN_MARKET, startAfter);
+  const type =
+    trade.type === TokenTradeOrderType.BUY ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY;
   return build5Db()
     .collection(COL.TOKEN_MARKET)
-    .where(
-      'type',
-      '==',
-      trade.type === TokenTradeOrderType.BUY ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY,
-    )
+    .where('type', '==', type)
     .where('token', '==', trade.token)
     .where('price', trade.type === TokenTradeOrderType.BUY ? '<=' : '>=', trade.price)
     .where('status', '==', TokenTradeOrderStatus.ACTIVE)

@@ -14,7 +14,7 @@ import { assertMemberHasValidAddress, getAddress } from '../../utils/address.uti
 import { invalidArgument } from '../../utils/error.utils';
 import { Context } from '../common';
 
-export const withdrawNftControl = async ({ owner, params }: Context<NftWithdrawRequest>) =>
+export const withdrawNftControl = async ({ owner, params, project }: Context<NftWithdrawRequest>) =>
   build5Db().runTransaction(async (transaction) => {
     const nftDocRef = build5Db().doc(`${COL.NFT}/${params.nft}`);
     const nft = await transaction.get<Nft>(nftDocRef);
@@ -49,6 +49,7 @@ export const withdrawNftControl = async ({ owner, params }: Context<NftWithdrawR
     assertMemberHasValidAddress(member, nft.mintingData?.network!);
 
     const { order, nftUpdateData } = createNftWithdrawOrder(
+      project,
       nft,
       member!.uid,
       getAddress(member, nft.mintingData?.network!),

@@ -6,7 +6,10 @@ import { Network } from './transaction';
  * Timestamp object.
  */
 export class Timestamp {
-  constructor(public readonly seconds: number, public readonly nanoseconds: number) {}
+  constructor(
+    public readonly seconds: number,
+    public readonly nanoseconds: number,
+  ) {}
 
   public static now = () => this.fromMillis(Date.now());
 
@@ -30,8 +33,9 @@ export class Timestamp {
 }
 
 export interface WenRequest {
-  address: string;
+  address: NetworkAddress;
   signature?: string;
+  projectApiKey: string;
   customToken?: string;
   publicKey?: {
     hex: string;
@@ -62,6 +66,9 @@ export enum COL {
   STAKE_REWARD = 'stake_reward',
   NFT_STAKE = 'nft_stake',
   AIRDROP = 'airdrop',
+  PROJECT = 'project',
+  STAMP = 'stamp',
+  AUCTION = 'auction',
 
   MNEMONIC = '_mnemonic',
   SYSTEM = '_system',
@@ -73,6 +80,7 @@ export const enum SUB_COL {
   PARTICIPANTS = 'participants',
   MEMBERS = 'members',
   GUARDIANS = 'guardians',
+  ADMINS = 'ADMINS',
   BLOCKED_MEMBERS = 'blockedMembers',
   KNOCKING_MEMBERS = 'knockingMembers',
   TRANSACTIONS = 'transactions',
@@ -80,14 +88,18 @@ export const enum SUB_COL {
   STATS = 'stats',
   VOTES = 'votes',
   RANKS = 'ranks',
+  _API_KEY = '_api_key',
 }
 
 export const enum AWARD_COL {
   OWNERS = 'owners',
 }
 
-export type EthAddress = string;
-export type IotaAddress = string;
+/**
+ * Accepted networks: Ethereum, Shimmer and IOTA.
+ */
+export type NetworkAddress = string;
+
 export type IpfsCid = string;
 
 export interface Base {
@@ -95,6 +107,7 @@ export interface Base {
 }
 
 export interface BaseSubCollection {
+  project?: string;
   parentId: string;
   parentCol: string;
 }
@@ -105,6 +118,7 @@ export interface BaseSubCollection {
  * Every object will have these basic fields.
  */
 export interface BaseRecord extends Base {
+  project?: string;
   /**
    * Date/time it was created on.
    */
@@ -192,7 +206,7 @@ export interface NftMintingData {
   readonly nftsStorageDeposit?: number;
 }
 
-export interface Vote extends BaseSubCollection, BaseRecord {
+export interface Vote extends BaseSubCollection {
   readonly direction: -1 | 1;
 }
 
@@ -202,7 +216,7 @@ export interface VoteStats {
   readonly voteDiff: number;
 }
 
-export interface Rank extends BaseSubCollection, BaseRecord {
+export interface Rank extends BaseSubCollection {
   readonly rank: number;
 }
 

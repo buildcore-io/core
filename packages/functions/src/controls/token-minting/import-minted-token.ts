@@ -23,6 +23,7 @@ import { Context } from '../common';
 export const importMintedTokenControl = async ({
   owner,
   params,
+  project,
 }: Context<ImportMintedTokenRequest>) =>
   build5Db().runTransaction(async (transaction) => {
     await assertIsGuardian(params.space, owner);
@@ -42,6 +43,7 @@ export const importMintedTokenControl = async ({
 
     const targetAddress = await wallet.getNewIotaAddressDetails();
     const order: Transaction = {
+      project,
       type: TransactionType.ORDER,
       uid: getRandomEthAddress(),
       member: owner,

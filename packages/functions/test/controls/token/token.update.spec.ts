@@ -2,6 +2,7 @@ import { build5Db } from '@build-5/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
+  NetworkAddress,
   Space,
   TokenAllocation,
   TokenStatus,
@@ -33,10 +34,10 @@ const dummyToken = (space: string) =>
     termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
     access: 0,
     decimals: 6,
-  } as any);
+  }) as any;
 
 describe('Token controller: ' + WEN_FUNC.updateToken, () => {
-  let memberAddress: string;
+  let memberAddress: NetworkAddress;
   let space: Space;
   let token: any;
 

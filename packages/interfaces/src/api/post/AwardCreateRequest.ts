@@ -16,7 +16,7 @@ export interface AwardCreateBadgeRequest {
    */
   image: string;
   /**
-   * The time for wich the reward nft will be locked.
+   * The time for which the reward nft will be locked.
    */
   lockTime: number;
   /**
@@ -58,7 +58,7 @@ export interface AwardCreateRequest {
    */
   name: string;
   /**
-   * Network on wich the award will be minted and issued
+   * Network on which the award will be minted and issued
    */
   network: 'iota' | 'smr' | 'atoi' | 'rms';
   /**

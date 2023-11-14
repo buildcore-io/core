@@ -7,6 +7,7 @@ import {
   Member,
   Mnemonic,
   Network,
+  NetworkAddress,
   Transaction,
   TransactionPayloadType,
   TransactionType,
@@ -20,6 +21,7 @@ import { NftWallet } from '../../services/wallet/NftWallet';
 import { Wallet, WalletParams } from '../../services/wallet/wallet';
 import { WalletService } from '../../services/wallet/wallet.service';
 import { getAddress } from '../../utils/address.utils';
+import { getProject } from '../../utils/common.utils';
 import { isEmulatorEnv } from '../../utils/config.utils';
 import { serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -32,6 +34,7 @@ import { onMetadataNftMintUpdate } from './matadatNft-minting';
 import { onNftStaked } from './nft-staked';
 import { onProposalVoteCreditConfirmed } from './proposal.vote';
 import { onStakingConfirmed } from './staking';
+import { onStampMintUpdate } from './stamp-minting';
 import { onTokenMintingUpdate } from './token-minting';
 import { getWalletParams } from './wallet-params';
 
@@ -44,6 +47,7 @@ export const DEFAULT_EXECUTABLE_TRANSACTIONS = [
   TransactionType.UNLOCK,
   TransactionType.AWARD,
   TransactionType.METADATA_NFT,
+  TransactionType.STAMP,
 ];
 
 export const CREDIT_EXECUTABLE_TRANSACTIONS = [
@@ -155,6 +159,16 @@ export const onTransactionWrite = async (event: FirestoreDocEvent<Transaction>) 
     return;
   }
 
+  if (isConfirmed(prev, curr) && curr.type === TransactionType.METADATA_NFT) {
+    await onMetadataNftMintUpdate(curr);
+    return;
+  }
+
+  if (isConfirmed(prev, curr) && curr.type === TransactionType.STAMP) {
+    await onStampMintUpdate(curr);
+    return;
+  }
+
   if (
     isConfirmed(prev, curr) &&
     curr.payload.award &&
@@ -172,7 +186,7 @@ const executeTransaction = async (transactionId: string) => {
   }
 
   const docRef = build5Db().doc(`${COL.TRANSACTION}/${transactionId}`);
-  const transaction = <Transaction>await docRef.get();
+  const transaction = (await docRef.get<Transaction>())!;
   const payload = transaction.payload;
 
   const params = await getWalletParams(transaction);
@@ -206,6 +220,9 @@ const executeTransaction = async (transactionId: string) => {
 
         case TransactionType.METADATA_NFT:
           return submitMintMetadataTransaction(transaction, wallet, params);
+
+        case TransactionType.STAMP:
+          return submitMintStampTransaction(transaction, wallet, params);
 
         case TransactionType.CREDIT_NFT:
         case TransactionType.WITHDRAW_NFT: {
@@ -355,6 +372,30 @@ const submitMintMetadataTransaction = async (
     }
     default: {
       console.error(
+        'Unsupported executable transaction type in submitMintMetadataTransaction',
+        transaction,
+      );
+      throw Error('Unsupported executable transaction type ' + transaction.payload.type);
+    }
+  }
+};
+
+const submitMintStampTransaction = async (
+  transaction: Transaction,
+  wallet: Wallet,
+  params: WalletParams,
+) => {
+  switch (transaction.payload.type) {
+    case TransactionPayloadType.MINT_ALIAS: {
+      const aliasWallet = new AliasWallet(wallet);
+      return aliasWallet.mintAlias(transaction, params);
+    }
+    case TransactionPayloadType.MINT_NFT: {
+      const nftWallet = new NftWallet(wallet);
+      return nftWallet.mintStampNft(transaction, params);
+    }
+    default: {
+      console.error(
         'Unsupported executable transaction type in submitCreateAwardTransaction',
         transaction,
       );
@@ -451,7 +492,7 @@ const emptyWalletResult = (): WalletResult => ({
 
 const getMnemonic = async (
   transaction: ITransaction,
-  address: string | undefined,
+  address: NetworkAddress | undefined,
 ): Promise<Mnemonic> => {
   if (isEmpty(address)) {
     return {};
@@ -460,7 +501,11 @@ const getMnemonic = async (
   return (await transaction.get(docRef)) || {};
 };
 
-const lockMnemonic = (transaction: ITransaction, lockedBy: string, address: string | undefined) => {
+const lockMnemonic = (
+  transaction: ITransaction,
+  lockedBy: string,
+  address: NetworkAddress | undefined,
+) => {
   if (isEmpty(address)) {
     return;
   }
@@ -492,7 +537,8 @@ const isConfirmed = (prev: Transaction | undefined, curr: Transaction | undefine
 
 const onMintedAirdropCleared = async (curr: Transaction) => {
   const member = <Member>await build5Db().doc(`${COL.MEMBER}/${curr.member}`).get();
-  const credit = <Transaction>{
+  const credit: Transaction = {
+    project: getProject(curr),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: curr.space,

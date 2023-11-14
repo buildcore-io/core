@@ -1,8 +1,9 @@
+import { finalizeAuctions } from '../../cron/auction.cron';
 import { processExpiredAwards } from '../../cron/award.cron';
 import { getLatestBitfinexPricesCron } from '../../cron/bitfinex.cron';
 import { updateFloorPriceOnCollections } from '../../cron/collection.floor.price.cron';
 import { uploadMediaToWeb3 } from '../../cron/media.cron';
-import { finalizeAllNftAuctions, hidePlaceholderAfterSoldOutCron } from '../../cron/nft.cron';
+import { hidePlaceholderAfterSoldOutCron } from '../../cron/nft.cron';
 import { voidExpiredOrdersCron } from '../../cron/orders.cron';
 import { markExpiredProposalCompleted } from '../../cron/proposal.cron';
 import { removeExpiredStakesFromSpace } from '../../cron/stake.cron';
@@ -29,9 +30,9 @@ exports[WEN_SCHEDULED.voidExpiredOrders] = onSchedule({
   handler: voidExpiredOrdersCron,
 });
 
-exports[WEN_SCHEDULED.finalizeAuctionNft] = onSchedule({
+exports[WEN_SCHEDULED.finalizeAuctions] = onSchedule({
   schedule: 'every 1 minutes',
-  handler: finalizeAllNftAuctions,
+  handler: finalizeAuctions,
 });
 
 exports[WEN_SCHEDULED.hidePlaceholderAfterSoldOut] = onSchedule({

@@ -9,7 +9,7 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import { merge } from 'lodash';
-import { hasStakedSoonTokens } from '../../services/stake.service';
+import { hasStakedTokens } from '../../services/stake.service';
 import { assertSpaceHasValidAddress } from '../../utils/address.utils';
 import { isProdEnv } from '../../utils/config.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
@@ -19,8 +19,12 @@ import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Context } from '../common';
 import { getPublicSaleTimeFrames, shouldSetPublicSaleTimeFrames } from './common';
 
-export const createTokenControl = async ({ owner, params }: Context<TokenCreateRequest>) => {
-  const hasStakedSoons = await hasStakedSoonTokens(owner);
+export const createTokenControl = async ({
+  project,
+  owner,
+  params,
+}: Context<TokenCreateRequest>) => {
+  const hasStakedSoons = await hasStakedTokens(project, owner);
   if (!hasStakedSoons) {
     throw invalidArgument(WenError.no_staked_soon);
   }
@@ -61,6 +65,7 @@ export const createTokenControl = async ({ owner, params }: Context<TokenCreateR
 
   const tokenUid = getRandomEthAddress();
   const extraData = {
+    project,
     uid: tokenUid,
     createdBy: owner,
     approved: !isProdEnv(),

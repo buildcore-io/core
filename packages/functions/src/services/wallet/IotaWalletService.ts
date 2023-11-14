@@ -1,4 +1,4 @@
-import { NativeToken, Timestamp, Transaction } from '@build-5/interfaces';
+import { NativeToken, NetworkAddress, Timestamp, Transaction } from '@build-5/interfaces';
 import {
   AddressUnlockCondition,
   AliasOutput,
@@ -96,17 +96,20 @@ export class IotaWallet extends Wallet {
       : previouslyConsumedOutputIds;
 
     const outputs = await this.client.getOutputs(outputIds);
-    return outputs.reduce((acc, act, i) => {
-      if (act.output.type === OutputType.Basic) {
-        return { ...acc, [outputIds[i]]: act.output as BasicOutput };
-      }
-      return acc;
-    }, {} as { [key: string]: BasicOutput });
+    return outputs.reduce(
+      (acc, act, i) => {
+        if (act.output.type === OutputType.Basic) {
+          return { ...acc, [outputIds[i]]: act.output as BasicOutput };
+        }
+        return acc;
+      },
+      {} as { [key: string]: BasicOutput },
+    );
   };
 
   public send = async (
     from: AddressDetails,
-    toAddress: string,
+    toAddress: NetworkAddress,
     amount: number,
     params: WalletParams,
     outputToConsume?: string | undefined,

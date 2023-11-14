@@ -32,7 +32,7 @@ export const handleMilestoneTransactionWrite =
         await service.processMilestoneTransactions(milestoneTransaction);
         service.submit();
 
-        await processConsumedVoteOutputs(transaction, milestoneTransaction.consumedOutputIds);
+        await processConsumedVoteOutputs(milestoneTransaction.consumedOutputIds);
 
         return transaction.update(docRef, { processed: true, processedOn: dayjs().toDate() });
       });

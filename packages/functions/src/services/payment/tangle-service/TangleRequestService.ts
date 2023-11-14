@@ -2,9 +2,8 @@ import { build5Db } from '@build-5/database';
 import {
   COL,
   Member,
-  MilestoneTransaction,
-  MilestoneTransactionEntry,
   Network,
+  NetworkAddress,
   TangleRequestType,
   Transaction,
   WenError,
@@ -13,13 +12,14 @@ import { get } from 'lodash';
 import { getOutputMetadata } from '../../../utils/basic-output.utils';
 import { invalidArgument } from '../../../utils/error.utils';
 import { getRandomNonce } from '../../../utils/wallet.utils';
-import { TransactionMatch, TransactionService } from '../transaction-service';
+import { BaseService, HandlerParams } from '../base';
 import { TangleAddressValidationService } from './address/address-validation.service';
+import { TangleAuctionBidService, TangleNftAuctionBidService } from './auction/auction.bid.service';
+import { TangleAuctionCreateService } from './auction/auction.create.service';
 import { AwardApproveParticipantService } from './award/award.approve.participant.service';
 import { AwardCreateService } from './award/award.create.service';
 import { AwardFundService } from './award/award.fund.service';
 import { MintMetadataNftService } from './metadataNft/mint-metadata-nft.service';
-import { TangleNftBidService } from './nft/nft-bid.service';
 import { NftDepositService } from './nft/nft-deposit.service';
 import { TangleNftPurchaseService } from './nft/nft-purchase.service';
 import { TangleNftSetForSaleService } from './nft/nft-set-for-sale.service';
@@ -33,19 +33,14 @@ import { SpaceDeclineMemberService } from './space/SpaceDeclineMemberService';
 import { SpaceGuardianService } from './space/SpaceGuardianService';
 import { SpaceJoinService } from './space/SpaceJoinService';
 import { SpaceLeaveService } from './space/SpaceLeaveService';
+import { StampTangleService } from './stamp/StampTangleService';
 import { TangleStakeService } from './token/stake.service';
 import { TangleTokenClaimService } from './token/token-claim.service';
 import { TangleTokenTradeService } from './token/token-trade.service';
-export class TangleRequestService {
-  constructor(readonly transactionService: TransactionService) {}
 
-  public onTangleRequest = async (
-    order: Transaction,
-    tran: MilestoneTransaction,
-    tranEntry: MilestoneTransactionEntry,
-    match: TransactionMatch,
-    build5Transaction?: Transaction,
-  ) => {
+export class TangleRequestService extends BaseService {
+  public handleRequest = async (params: HandlerParams) => {
+    const { match, order, tranEntry } = params;
     let owner = match.from;
     let payment: Transaction | undefined;
 
@@ -53,16 +48,11 @@ export class TangleRequestService {
       owner = await this.getOwner(match.from, order.network!);
       payment = await this.transactionService.createPayment({ ...order, member: owner }, match);
       const request = getOutputMetadata(tranEntry.output).request;
-      const response = await this.handleTangleRequest(
-        order,
-        match,
-        payment,
-        tran,
-        tranEntry,
-        owner,
-        request,
-        build5Transaction,
-      );
+
+      const serviceParams = { ...params, request, payment, owner };
+      const service = this.getService(serviceParams);
+      const response = await service.handleRequest(serviceParams);
+
       if (response) {
         this.transactionService.createTangleCredit(
           payment,
@@ -89,130 +79,70 @@ export class TangleRequestService {
     }
   };
 
-  public handleTangleRequest = async (
-    order: Transaction,
-    match: TransactionMatch,
-    payment: Transaction,
-    tran: MilestoneTransaction,
-    tranEntry: MilestoneTransactionEntry,
-    owner: string,
-    request: Record<string, unknown>,
-    build5Transaction?: Transaction,
-  ) => {
-    if (tranEntry.nftOutput) {
-      const service = new NftDepositService(this.transactionService);
-      return await service.handleNftDeposit(order.network!, owner, tran, tranEntry);
+  private getService = (params: HandlerParams) => {
+    if (params.tranEntry.nftOutput) {
+      return new NftDepositService(this.transactionService);
     }
-    switch (request.requestType) {
-      case TangleRequestType.ADDRESS_VALIDATION: {
-        const service = new TangleAddressValidationService(this.transactionService);
-        return await service.handeAddressValidation(order, tran, tranEntry, owner, request);
-      }
+    switch (params.request.requestType) {
+      case TangleRequestType.ADDRESS_VALIDATION:
+        return new TangleAddressValidationService(this.transactionService);
       case TangleRequestType.BUY_TOKEN:
-      case TangleRequestType.SELL_TOKEN: {
-        const service = new TangleTokenTradeService(this.transactionService);
-        return await service.handleTokenTradeTangleRequest(
-          match,
-          payment,
-          tran,
-          tranEntry,
-          owner,
-          request,
-          build5Transaction,
-        );
-      }
-      case TangleRequestType.STAKE: {
-        const service = new TangleStakeService(this.transactionService);
-        return await service.handleStaking(tran, tranEntry, owner, request);
-      }
-      case TangleRequestType.NFT_PURCHASE: {
-        const service = new TangleNftPurchaseService(this.transactionService);
-        return await service.handleNftPurchase(tran, tranEntry, owner, order, request);
-      }
-      case TangleRequestType.NFT_SET_FOR_SALE: {
-        const service = new TangleNftSetForSaleService(this.transactionService);
-        return await service.handleNftSetForSale(owner, request);
-      }
-      case TangleRequestType.NFT_BID: {
-        const service = new TangleNftBidService(this.transactionService);
-        return await service.handleNftBid(tran, tranEntry, owner, order, request);
-      }
-      case TangleRequestType.CLAIM_MINTED_AIRDROPS: {
-        const service = new TangleTokenClaimService(this.transactionService);
-        return await service.handleMintedTokenAirdropRequest(owner, request);
-      }
-      case TangleRequestType.AWARD_CREATE: {
-        const service = new AwardCreateService(this.transactionService);
-        return await service.handleCreateRequest(owner, request);
-      }
-      case TangleRequestType.AWARD_FUND: {
-        const service = new AwardFundService(this.transactionService);
-        return await service.handleFundRequest(owner, request);
-      }
-      case TangleRequestType.AWARD_APPROVE_PARTICIPANT: {
-        const service = new AwardApproveParticipantService(this.transactionService);
-        return await service.handleApproveParticipantRequest(owner, request);
-      }
-      case TangleRequestType.PROPOSAL_CREATE: {
-        const service = new ProposalCreateService(this.transactionService);
-        return await service.handleProposalCreateRequest(owner, request);
-      }
+      case TangleRequestType.SELL_TOKEN:
+        return new TangleTokenTradeService(this.transactionService);
+      case TangleRequestType.STAKE:
+        return new TangleStakeService(this.transactionService);
+      case TangleRequestType.NFT_PURCHASE:
+        return new TangleNftPurchaseService(this.transactionService);
+      case TangleRequestType.NFT_SET_FOR_SALE:
+        return new TangleNftSetForSaleService(this.transactionService);
+      case TangleRequestType.NFT_BID:
+        return new TangleNftAuctionBidService(this.transactionService);
+      case TangleRequestType.CLAIM_MINTED_AIRDROPS:
+        return new TangleTokenClaimService(this.transactionService);
+      case TangleRequestType.AWARD_CREATE:
+        return new AwardCreateService(this.transactionService);
+      case TangleRequestType.AWARD_FUND:
+        return new AwardFundService(this.transactionService);
+      case TangleRequestType.AWARD_APPROVE_PARTICIPANT:
+        return new AwardApproveParticipantService(this.transactionService);
+      case TangleRequestType.PROPOSAL_CREATE:
+        return new ProposalCreateService(this.transactionService);
       case TangleRequestType.PROPOSAL_APPROVE:
-      case TangleRequestType.PROPOSAL_REJECT: {
-        const service = new ProposalApprovalService(this.transactionService);
-        return await service.handleProposalApproval(owner, request);
-      }
-      case TangleRequestType.PROPOSAL_VOTE: {
-        const service = new ProposalVoteService(this.transactionService);
-        return await service.handleVoteOnProposal(owner, request, tran, tranEntry);
-      }
-      case TangleRequestType.SPACE_JOIN: {
-        const service = new SpaceJoinService(this.transactionService);
-        return await service.handleSpaceJoinRequest(owner, request);
-      }
+        return new ProposalApprovalService(this.transactionService);
+      case TangleRequestType.PROPOSAL_REJECT:
+        return new ProposalApprovalService(this.transactionService);
+      case TangleRequestType.PROPOSAL_VOTE:
+        return new ProposalVoteService(this.transactionService);
+      case TangleRequestType.SPACE_JOIN:
+        return new SpaceJoinService(this.transactionService);
       case TangleRequestType.SPACE_ADD_GUARDIAN:
-      case TangleRequestType.SPACE_REMOVE_GUARDIAN: {
-        const service = new SpaceGuardianService(this.transactionService);
-        return await service.handleEditGuardianRequest(owner, request);
-      }
-      case TangleRequestType.SPACE_ACCEPT_MEMBER: {
-        const service = new SpaceAcceptMemberService(this.transactionService);
-        return await service.handleAcceptMemberRequest(owner, request);
-      }
-      case TangleRequestType.SPACE_BLOCK_MEMBER: {
-        const service = new SpaceBlockMemberService(this.transactionService);
-        return await service.handleBlockMemberRequest(owner, request);
-      }
-      case TangleRequestType.SPACE_DECLINE_MEMBER: {
-        const service = new SpaceDeclineMemberService(this.transactionService);
-        return await service.handleDeclineMemberRequest(owner, request);
-      }
-      case TangleRequestType.SPACE_LEAVE: {
-        const service = new SpaceLeaveService(this.transactionService);
-        return await service.handleLeaveSpaceRequest(owner, request);
-      }
-      case TangleRequestType.SPACE_CREATE: {
-        const service = new SpaceCreateService(this.transactionService);
-        return await service.handleSpaceCreateRequest(owner, request);
-      }
-      case TangleRequestType.MINT_METADATA_NFT: {
-        const service = new MintMetadataNftService(this.transactionService);
-        return await service.handleMetadataNftMintRequest(
-          order.network!,
-          owner,
-          request,
-          match,
-          tran,
-          tranEntry,
-        );
-      }
-
+        return new SpaceGuardianService(this.transactionService);
+      case TangleRequestType.SPACE_REMOVE_GUARDIAN:
+        return new SpaceGuardianService(this.transactionService);
+      case TangleRequestType.SPACE_ACCEPT_MEMBER:
+        return new SpaceAcceptMemberService(this.transactionService);
+      case TangleRequestType.SPACE_BLOCK_MEMBER:
+        return new SpaceBlockMemberService(this.transactionService);
+      case TangleRequestType.SPACE_DECLINE_MEMBER:
+        return new SpaceDeclineMemberService(this.transactionService);
+      case TangleRequestType.SPACE_LEAVE:
+        return new SpaceLeaveService(this.transactionService);
+      case TangleRequestType.SPACE_CREATE:
+        return new SpaceCreateService(this.transactionService);
+      case TangleRequestType.MINT_METADATA_NFT:
+        return new MintMetadataNftService(this.transactionService);
+      case TangleRequestType.STAMP:
+        return new StampTangleService(this.transactionService);
+      case TangleRequestType.CREATE_AUCTION:
+        return new TangleAuctionCreateService(this.transactionService);
+      case TangleRequestType.BID_AUCTION:
+        return new TangleAuctionBidService(this.transactionService);
       default:
         throw invalidArgument(WenError.invalid_tangle_request_type);
     }
   };
 
-  private getOwner = async (senderAddress: string, network: Network) => {
+  private getOwner = async (senderAddress: NetworkAddress, network: Network) => {
     const snap = await build5Db()
       .collection(COL.MEMBER)
       .where(`validatedAddress.${network}`, '==', senderAddress)

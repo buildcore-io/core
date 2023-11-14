@@ -6,6 +6,7 @@ import {
   Proposal,
   ProposalMember,
   ProposalType,
+  SOON_PROJECT_ID,
   SUB_COL,
   Space,
   StakeType,
@@ -97,10 +98,6 @@ describe('SpaceController: ' + WEN_FUNC.createSpace, () => {
     expect(returns?.totalGuardians).toEqual(1);
     expect(returns?.totalMembers).toEqual(1);
     walletSpy.mockRestore();
-  });
-
-  it('unable to decode token.', async () => {
-    await expectThrow(testEnv.wrap(createSpace)(null), WenError.invalid_params.key);
   });
 });
 
@@ -678,9 +675,13 @@ describe('Token based space', () => {
     await addGuardianToSpace(space.uid, guardian2);
 
     token = wallet.getRandomEthAddress();
-    await build5Db()
-      .doc(`${COL.TOKEN}/${token}`)
-      .set({ status: TokenStatus.MINTED, space: space.uid, uid: token, approved: true });
+    await build5Db().doc(`${COL.TOKEN}/${token}`).set({
+      project: SOON_PROJECT_ID,
+      status: TokenStatus.MINTED,
+      space: space.uid,
+      uid: token,
+      approved: true,
+    });
 
     mockWalletReturnValue(walletSpy, member, { uid: space?.uid });
     await testEnv.wrap(joinSpace)({});

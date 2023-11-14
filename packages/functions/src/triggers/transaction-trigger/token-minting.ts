@@ -19,6 +19,7 @@ import {
 } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { getAddress } from '../../utils/address.utils';
+import { getProject } from '../../utils/common.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const onTokenMintingUpdate = async (transaction: Transaction) => {
@@ -58,7 +59,8 @@ const onAliasMinted = async (transaction: Transaction) => {
     });
 
   const token = <Token>await build5Db().doc(`${COL.TOKEN}/${transaction.payload.token}`).get();
-  const order = <Transaction>{
+  const order: Transaction = {
+    project: getProject(transaction),
     type: TransactionType.MINT_TOKEN,
     uid: getRandomEthAddress(),
     member: transaction.member,
@@ -105,8 +107,11 @@ const onFoundryMinted = async (transaction: Transaction) => {
     });
 
   const token = <Token>await build5Db().doc(`${COL.TOKEN}/${transaction.payload.token}`).get();
-  const member = <Member>await build5Db().doc(`${COL.MEMBER}/${token.mintingData?.mintedBy}`).get();
-  const order = <Transaction>{
+  const member = <Member>await build5Db()
+    .doc(`${COL.MEMBER}/${token.mintingData?.mintedBy}`)
+    .get();
+  const order: Transaction = {
+    project: getProject(transaction),
     type: TransactionType.MINT_TOKEN,
     uid: getRandomEthAddress(),
     member: transaction.member,

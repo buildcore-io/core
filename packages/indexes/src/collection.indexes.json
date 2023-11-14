@@ -13,21 +13,7 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "space",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "collection",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "approved",
+          "fieldPath": "project",
           "order": "ASCENDING"
         },
         {
@@ -46,6 +32,32 @@
       "fields": [
         {
           "fieldPath": "approved",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "space",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "collection",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "approved",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "project",
           "order": "ASCENDING"
         },
         {
@@ -67,6 +79,10 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "createdOn",
           "order": "DESCENDING"
         }
@@ -78,6 +94,10 @@
       "fields": [
         {
           "fieldPath": "uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "project",
           "order": "ASCENDING"
         },
         {
@@ -95,6 +115,10 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "rejected",
           "order": "ASCENDING"
         }
@@ -106,6 +130,10 @@
       "fields": [
         {
           "fieldPath": "approved",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "project",
           "order": "ASCENDING"
         },
         {

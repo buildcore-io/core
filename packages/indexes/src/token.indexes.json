@@ -9,6 +9,10 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "createdOn",
           "order": "DESCENDING"
         }
@@ -23,6 +27,10 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "createdOn",
           "order": "DESCENDING"
         }
@@ -33,21 +41,11 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "status",
+          "fieldPath": "uid",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "coolDownEnd",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "token",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "uid",
+          "fieldPath": "project",
           "order": "ASCENDING"
         },
         {
@@ -62,6 +60,10 @@
       "fields": [
         {
           "fieldPath": "ipfsMedia",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "project",
           "order": "ASCENDING"
         },
         {

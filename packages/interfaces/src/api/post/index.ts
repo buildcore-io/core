@@ -4,6 +4,8 @@
  */
 
 export * from './AddressValidationRequest';
+export * from './AuctionBidRequest';
+export * from './AuctionCreateRequest';
 export * from './CutomTokenRequest';
 export * from './AwardAddOwnerRequest';
 export * from './AwardApproveParticipantRequest';
@@ -30,6 +32,8 @@ export * from './NftSetForSaleRequest';
 export * from './NftStakeRequest';
 export * from './NftUpdateUnsoldRequest';
 export * from './NftWithdrawRequest';
+export * from './ProjectCreateRequest';
+export * from './ProjectDeactivateRequest';
 export * from './ProposalApproveRequest';
 export * from './ProposalCreateRequest';
 export * from './ProposalRejectRequest';
@@ -44,6 +48,7 @@ export * from './SpaceUpdateRequest';
 export * from './StakeRewardRemoveRequest';
 export * from './StakeRewardRequest';
 export * from './StakeTokenRequest';
+export * from './StampRequest';
 export * from './TokenAirdropRequest';
 export * from './TokenCancelPubSaleRequest';
 export * from './TokenClaimAirdroppedRequest';

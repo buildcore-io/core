@@ -9,7 +9,7 @@ export const depositNftSchema = toJoiObject<NftDepositRequest>({
   network: Joi.string()
     .equal(...availaibleNetworks)
     .required()
-    .description('Network on wich the nft was minted.'),
+    .description('Network on which the nft was minted.'),
 })
   .description('Request object to create an NFT deposit order')
   .meta({

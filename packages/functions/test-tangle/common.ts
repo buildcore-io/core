@@ -3,6 +3,7 @@ import {
   COL,
   MAX_WALLET_RETRY,
   Network,
+  SOON_PROJECT_ID,
   Transaction,
   TransactionPayloadType,
   TransactionType,
@@ -70,6 +71,7 @@ export const getTangleOrder = async (network: Network) => {
   const wallet = await getWallet(network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
   const order = {
+    project: SOON_PROJECT_ID,
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     network: network,

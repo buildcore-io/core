@@ -3,8 +3,6 @@ import {
   COL,
   DEFAULT_NETWORK,
   Member,
-  MilestoneTransaction,
-  MilestoneTransactionEntry,
   Network,
   SUB_COL,
   TRANSACTION_MAX_EXPIRY_MS,
@@ -26,6 +24,7 @@ import bigDecimal from 'js-big-decimal';
 import { set } from 'lodash';
 import { assertMemberHasValidAddress } from '../../../../utils/address.utils';
 import { packBasicOutput } from '../../../../utils/basic-output.utils';
+import { getProject } from '../../../../utils/common.utils';
 import { isProdEnv } from '../../../../utils/config.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
@@ -38,21 +37,18 @@ import {
 } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet.service';
-import { TransactionMatch, TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { tradeMintedTokenSchema } from './TokenTradeTangleRequestSchema';
 
-export class TangleTokenTradeService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleTokenTradeTangleRequest = async (
-    match: TransactionMatch,
-    payment: Transaction,
-    tran: MilestoneTransaction,
-    tranEntry: MilestoneTransactionEntry,
-    owner: string,
-    request: Record<string, unknown>,
-    build5Transaction?: Transaction,
-  ) => {
+export class TangleTokenTradeService extends BaseService {
+  public handleRequest = async ({
+    order,
+    tran,
+    tranEntry,
+    owner,
+    request,
+    build5Tran,
+  }: HandlerParams) => {
     const type =
       request.requestType === TransactionPayloadType.BUY_TOKEN
         ? TokenTradeOrderType.BUY
@@ -70,6 +66,7 @@ export class TangleTokenTradeService {
     }
 
     const { tradeOrderTransaction } = await createTokenTradeOrder(
+      getProject(order),
       this.transactionService.transaction,
       owner,
       token,
@@ -100,8 +97,7 @@ export class TangleTokenTradeService {
       tranEntry,
       TransactionPayloadType.TANGLE_TRANSFER,
       tranEntry.outputId,
-      build5Transaction?.payload?.expiresOn ||
-        dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms')),
+      build5Tran?.payload?.expiresOn || dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS)),
     );
     return;
   };
@@ -114,6 +110,7 @@ const ACCEPTED_TOKEN_STATUSES = [
   TokenStatus.BASE,
 ];
 export const createTokenTradeOrder = async (
+  project: string,
   transaction: ITransaction,
   owner: string,
   token: Token,
@@ -126,7 +123,7 @@ export const createTokenTradeOrder = async (
 ) => {
   const isSell = type === TokenTradeOrderType.SELL;
   if (isProdEnv()) {
-    await assertIpNotBlocked(ip || '', token.uid, 'token');
+    await assertIpNotBlocked(ip, token.uid, 'token');
   }
   assertTokenApproved(token, [TokenStatus.MINTED, TokenStatus.BASE].includes(token.status));
   assertTokenStatus(token, acceptedTokenStatuses);
@@ -144,6 +141,7 @@ export const createTokenTradeOrder = async (
 
   if ([TokenStatus.BASE, TokenStatus.MINTED].includes(token.status) || !isSell) {
     const tradeOrderTransaction = await createTradeOrderTransaction(
+      project,
       token,
       owner,
       sourceNetwork,
@@ -166,7 +164,8 @@ export const createTokenTradeOrder = async (
   if (Number(count) > tokensLeftForSale) {
     throw invalidArgument(WenError.no_available_tokens_for_sale);
   }
-  const tradeOrder = <TokenTradeOrder>{
+  const tradeOrder: TokenTradeOrder = {
+    project,
     uid: getRandomEthAddress(),
     owner,
     token: token.uid,
@@ -207,6 +206,7 @@ const getSourceAndTargetNetwork = (token: Token, isSell: boolean) => {
 };
 
 const createTradeOrderTransaction = async (
+  project: string,
   token: Token,
   member: string,
   network: Network,
@@ -218,7 +218,9 @@ const createTradeOrderTransaction = async (
   const wallet = await WalletService.newWallet(network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
   const isMinted = token.status === TokenStatus.MINTED;
+
   const order: Transaction = {
+    project,
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member,

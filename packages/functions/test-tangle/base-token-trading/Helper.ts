@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { build5Db } from '@build-5/database';
-import { COL, Member, Network, Token, TokenStatus } from '@build-5/interfaces';
+import { COL, Member, Network, SOON_PROJECT_ID, Token, TokenStatus } from '@build-5/interfaces';
 import { createMember } from '../../src/runtime/firebase/member';
 import { IotaWallet } from '../../src/services/wallet/IotaWalletService';
 import { Wallet } from '../../src/services/wallet/wallet';
@@ -13,7 +13,6 @@ import {
   createSpace,
   getRandomSymbol,
   mockWalletReturnValue,
-  saveSoon,
 } from '../../test/controls/common';
 import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 import { addValidatedAddress } from '../common';
@@ -29,10 +28,8 @@ export class Helper {
   public walletSpy: any | undefined;
   public rmsWallet: Wallet | undefined;
   public atoiWallet: IotaWallet | undefined;
-  public soonTokenId = '';
 
   public beforeEach = async () => {
-    this.soonTokenId = await saveSoon();
     await createRoyaltySpaces();
     this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
     const guardian = await createMemberTest(this.walletSpy);
@@ -59,6 +56,7 @@ export class Helper {
 
   public saveToken = async (space: string, guardian: string) => {
     const token = {
+      project: SOON_PROJECT_ID,
       symbol: getRandomSymbol(),
       approved: true,
       updatedOn: serverTime(),

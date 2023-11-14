@@ -17,7 +17,10 @@ export class FirebaseStorage implements IStorage {
 export class FirebaseBucket implements IBucket {
   private readonly bucket: FBucket;
 
-  constructor(private readonly storage: Storage, private readonly name: Bucket) {
+  constructor(
+    private readonly storage: Storage,
+    private readonly name: Bucket,
+  ) {
     this.bucket = this.storage.bucket(this.name);
   }
 
@@ -37,5 +40,11 @@ export class FirebaseBucket implements IBucket {
   public getFilesCount = async (directory: string) => {
     const files = await this.bucket.getFiles({ prefix: directory });
     return files[0].length;
+  };
+
+  public deleteDirectory = async (directory: string) => {
+    const files = await this.bucket.getFiles({ prefix: directory });
+    const promise = files[0].map((f) => f.delete());
+    await Promise.all(promise);
   };
 }

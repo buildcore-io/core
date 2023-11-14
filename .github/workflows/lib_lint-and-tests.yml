@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - packages/lib/**
+      - packages/api/**
 
 jobs:
   soon_lib:
@@ -15,10 +16,10 @@ jobs:
       #   if: ${{ always() }}
       #   with:
       #     api_key: ${{ secrets.FORESIGHT_KEY }}
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Install Dependencies
         run: npm run build:lib
       - name: Prettier

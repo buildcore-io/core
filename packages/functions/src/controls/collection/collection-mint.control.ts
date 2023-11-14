@@ -38,6 +38,7 @@ import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Context } from '../common';
 
 export const mintCollectionOrderControl = async ({
+  project,
   owner,
   params,
 }: Context<CollectionMintRequest>) => {
@@ -107,6 +108,7 @@ export const mintCollectionOrderControl = async ({
     const aliasStorageDeposit = Number(aliasOutput.amount);
 
     const order: Transaction = {
+      project,
       type: TransactionType.ORDER,
       uid: getRandomEthAddress(),
       member: owner,

@@ -5,9 +5,11 @@ import {
   Collection,
   CollectionType,
   Network,
+  NetworkAddress,
   Nft,
   NftStatus,
   Space,
+  Stamp,
   Transaction,
 } from '@build-5/interfaces';
 import {
@@ -49,6 +51,7 @@ import {
 import { intToU32 } from '../../utils/common.utils';
 import { EMPTY_ALIAS_ID } from '../../utils/token-minting-utils/alias.utils';
 import { awardBadgeToNttMetadata, awardToCollectionMetadata } from '../payment/award/award-service';
+import { stampToNftMetadata } from '../payment/tangle-service/stamp/StampTangleService';
 import { AliasWallet } from './AliasWallet';
 import { MnemonicService } from './mnemonic';
 import { Wallet, WalletParams } from './wallet';
@@ -480,6 +483,82 @@ export class NftWallet {
     return await submitBlock(this.wallet, essence, unlocks);
   };
 
+  public mintStampNft = async (transaction: Transaction, params: WalletParams) => {
+    const sourceIsGov =
+      !transaction.payload.aliasGovAddress ||
+      transaction.payload.aliasGovAddress === transaction.payload.sourceAddress;
+
+    const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress!);
+    const sourceMnemonic = await MnemonicService.getData(sourceAddress.bech32);
+
+    const outputsMap = await this.wallet.getOutputs(
+      sourceAddress.bech32,
+      sourceMnemonic.consumedOutputIds,
+      false,
+    );
+    const remainder = mergeOutputs(Object.values(outputsMap));
+
+    const aliasGovAddress = await this.wallet.getAddressDetails(
+      transaction.payload.aliasGovAddress || sourceAddress.bech32,
+    );
+
+    const aliasGovMnemonic = sourceIsGov
+      ? sourceMnemonic
+      : await MnemonicService.getData(aliasGovAddress.bech32);
+    const aliasWallet = new AliasWallet(this.wallet);
+    const aliasOutputs = await aliasWallet.getAliasOutputs(
+      aliasGovAddress.bech32,
+      aliasGovMnemonic.consumedAliasOutputIds,
+    );
+    const [aliasOutputId, aliasOutput] = Object.entries(aliasOutputs)[0];
+    const nextAliasOutput: AliasOutputBuilderParams = cloneDeep(aliasOutput);
+    if (nextAliasOutput.aliasId === EMPTY_ALIAS_ID) {
+      nextAliasOutput.aliasId = Utils.computeAliasId(aliasOutputId);
+    }
+    nextAliasOutput.stateIndex!++;
+
+    const stampDocRef = build5Db().doc(`${COL.STAMP}/${transaction.payload.stamp}`);
+    const stamp = <Stamp>await stampDocRef.get();
+
+    const issuerAddress = new AliasAddress(nextAliasOutput.aliasId);
+    const collectionOutput = await createNftOutput(
+      this.wallet,
+      issuerAddress,
+      issuerAddress,
+      JSON.stringify(stampToNftMetadata(stamp)),
+    );
+    remainder.amount = (Number(remainder.amount) - Number(collectionOutput.amount)).toString();
+
+    const inputs = [aliasOutputId, ...Object.keys(outputsMap)].map(UTXOInput.fromOutputId);
+    const inputsCommitment = Utils.computeInputsCommitment([
+      aliasOutput,
+      ...Object.values(outputsMap),
+    ]);
+    const outputs: Output[] = [
+      await this.client.buildAliasOutput(nextAliasOutput),
+      collectionOutput,
+    ];
+    if (Number(remainder.amount)) {
+      outputs.push(await this.client.buildBasicOutput(remainder));
+    }
+    const essence = await packEssence(this.wallet, inputs, inputsCommitment, outputs, params);
+    const unlocks: Unlock[] = [
+      await createUnlock(essence, aliasGovAddress),
+      sourceIsGov ? new ReferenceUnlock(0) : await createUnlock(essence, sourceAddress),
+    ];
+
+    await setConsumedOutputIds(
+      sourceAddress.bech32,
+      Object.keys(outputsMap),
+      [],
+      sourceIsGov ? [aliasOutputId] : [],
+    );
+    if (!sourceIsGov) {
+      await setConsumedOutputIds(aliasGovAddress.bech32, [], [], [aliasOutputId]);
+    }
+    return await submitBlock(this.wallet, essence, unlocks);
+  };
+
   public updateMetadataNft = async (transaction: Transaction, params: WalletParams) => {
     const sourceIsGov =
       !transaction.payload.aliasGovAddress ||
@@ -630,7 +709,7 @@ export class NftWallet {
   public packNft = async (
     nft: Nft,
     collection: Collection,
-    royaltySpaceAddress: string,
+    royaltySpaceAddress: NetworkAddress,
     address: AddressDetails,
     collectionNftId: string,
   ) => {
@@ -723,7 +802,7 @@ export class NftWallet {
 
   public getNftOutputs = async (
     nftId: string | undefined,
-    sourceAddress: string | undefined,
+    sourceAddress: NetworkAddress | undefined,
     prevConsumedNftOutputId: string[] = [],
   ) => {
     const outputIds = await this.getNftOutputIds(nftId, sourceAddress, prevConsumedNftOutputId);
@@ -743,7 +822,7 @@ export class NftWallet {
 
   private getNftOutputIds = async (
     nftId: string | undefined,
-    sourceAddress: string | undefined,
+    sourceAddress: NetworkAddress | undefined,
     prevConsumedNftOutputId: string[] = [],
   ) => {
     if (!isEmpty(prevConsumedNftOutputId)) {

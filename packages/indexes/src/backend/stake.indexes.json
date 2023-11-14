@@ -1,0 +1,36 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "stake",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "expirationProcessed",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "expiresAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "stake",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "token",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "expiresAt",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ]
+}

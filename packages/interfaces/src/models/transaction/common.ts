@@ -1,4 +1,4 @@
-import { BaseRecord, EthAddress, Timestamp } from '../base';
+import { BaseRecord, NetworkAddress, Timestamp } from '../base';
 import { TransactionPayload } from './payload';
 
 export const TRANSACTION_AUTO_EXPIRY_MS = 4 * 60 * 1000;
@@ -36,6 +36,8 @@ export enum TransactionType {
   UNLOCK = 'UNLOCK',
 
   METADATA_NFT = 'METADATA_NFT',
+
+  STAMP = 'STAMP',
 }
 
 /**
@@ -53,6 +55,7 @@ export enum Network {
 export enum TransactionPayloadType {
   NFT_PURCHASE = 'NFT_PURCHASE',
   NFT_BID = 'NFT_BID',
+  AUCTION_BID = 'AUCTION_BID',
   SPACE_ADDRESS_VALIDATION = 'SPACE_ADDRESS_VALIDATION',
   MEMBER_ADDRESS_VALIDATION = 'MEMBER_ADDRESS_VALIDATION',
   TOKEN_PURCHASE = 'TOKEN_PURCHASE',
@@ -113,6 +116,8 @@ export enum TransactionPayloadType {
   MINTED_TOKEN_TRADE = 'MINTED_TOKEN_TRADE',
   BASE_TOKEN_TRADE = 'BASE_TOKEN_TRADE',
   BASE_AIRDROP_CLAIM = 'BASE_AIRDROP_CLAIM',
+
+  STAMP = 'STAMP',
 }
 
 export enum TransactionValidationType {
@@ -124,11 +129,11 @@ export interface Transaction extends BaseRecord {
   network: Network;
   type: TransactionType;
   isOrderType?: boolean;
-  member?: EthAddress;
-  space?: EthAddress;
+  member?: NetworkAddress;
+  space?: NetworkAddress;
   shouldRetry?: boolean;
   ignoreWallet?: boolean;
-  linkedTransactions?: EthAddress[];
+  linkedTransactions?: NetworkAddress[];
   ignoreWalletReason?: IgnoreWalletReason | null;
   payload: TransactionPayload;
 }
@@ -148,7 +153,7 @@ export interface WalletResult {
 
 export interface StorageReturn {
   readonly amount: number;
-  readonly address: string;
+  readonly address: NetworkAddress;
 }
 
 export enum Entity {
@@ -163,18 +168,18 @@ export interface IOTATangleTransaction {
   ipfsMedia: string;
   ipfsMetadata: string;
   refund: boolean;
-  member?: EthAddress;
-  space?: EthAddress;
+  member?: NetworkAddress;
+  space?: NetworkAddress;
   previousOwnerEntity?: Entity | null;
-  previousOwner?: EthAddress | null;
+  previousOwner?: NetworkAddress | null;
   ownerEntity?: Entity | null;
-  owner?: EthAddress | null;
-  nft?: EthAddress;
-  token?: EthAddress;
+  owner?: NetworkAddress | null;
+  nft?: NetworkAddress;
+  token?: NetworkAddress;
   tokenSymbol?: string;
   quantity?: number;
   royalty: boolean;
-  collection?: EthAddress;
+  collection?: NetworkAddress;
   response?: any;
   invalidPayment?: boolean;
 }

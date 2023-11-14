@@ -35,7 +35,7 @@ import {
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Context } from '../common';
 
-export const mintTokenControl = ({ owner, params }: Context<TokenMintRequest>) =>
+export const mintTokenControl = ({ owner, params, project }: Context<TokenMintRequest>) =>
   build5Db().runTransaction(async (transaction) => {
     const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
     const token = await transaction.get<Token>(tokenDocRef);
@@ -66,6 +66,7 @@ export const mintTokenControl = ({ owner, params }: Context<TokenMintRequest>) =
     );
 
     const order: Transaction = {
+      project,
       type: TransactionType.ORDER,
       uid: getRandomEthAddress(),
       member: owner,
@@ -84,7 +85,8 @@ export const mintTokenControl = ({ owner, params }: Context<TokenMintRequest>) =
         tokensInVault: totalDistributed,
       },
     };
-    transaction.create(build5Db().doc(`${COL.TRANSACTION}/${order.uid}`), order);
+    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
+    transaction.create(orderDocRef, order);
     return order;
   });
 

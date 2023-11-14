@@ -18,7 +18,10 @@ type MiddlewareType = (
 ) => Promise<Context<any>>;
 
 export class HttpsFunction extends CloudFunctions {
-  constructor(public readonly func: HandlerType, options: RuntimeOptions) {
+  constructor(
+    public readonly func: HandlerType,
+    options: RuntimeOptions,
+  ) {
     super(options);
   }
 }

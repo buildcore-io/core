@@ -13,6 +13,7 @@ import { TransactionPayload, Utils } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { get } from 'lodash';
 import { getAddress } from '../../utils/address.utils';
+import { getProject } from '../../utils/common.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const onCollectionMintingUpdate = async (transaction: Transaction) => {
@@ -60,7 +61,8 @@ const onCollectionAliasMinted = async (transaction: Transaction) => {
       'mintingData.aliasStorageDeposit': transaction.payload.amount,
     });
 
-  const order = <Transaction>{
+  const order: Transaction = {
+    project: getProject(transaction),
     type: TransactionType.MINT_COLLECTION,
     uid: getRandomEthAddress(),
     member: transaction.member,
@@ -143,23 +145,24 @@ const onNftMintSuccess = async (transaction: Transaction) => {
   }
 };
 
-const createMintNftsTransaction = (transaction: Transaction) =>
-  <Transaction>{
-    type: TransactionType.MINT_COLLECTION,
-    uid: getRandomEthAddress(),
-    member: transaction.member,
-    space: transaction.space,
-    network: transaction.network,
-    payload: {
-      type: TransactionPayloadType.MINT_NFTS,
-      sourceAddress: transaction.payload.sourceAddress,
-      collection: transaction.payload.collection,
-    },
-  };
+const createMintNftsTransaction = (transaction: Transaction): Transaction => ({
+  project: getProject(transaction),
+  type: TransactionType.MINT_COLLECTION,
+  uid: getRandomEthAddress(),
+  member: transaction.member,
+  space: transaction.space,
+  network: transaction.network,
+  payload: {
+    type: TransactionPayloadType.MINT_NFTS,
+    sourceAddress: transaction.payload.sourceAddress,
+    collection: transaction.payload.collection,
+  },
+});
 
 const onCollectionLocked = async (transaction: Transaction) => {
   const member = (await build5Db().doc(`${COL.MEMBER}/${transaction.member}`).get<Member>())!;
-  const order = <Transaction>{
+  const order: Transaction = {
+    project: getProject(transaction),
     type: TransactionType.MINT_COLLECTION,
     uid: getRandomEthAddress(),
     member: transaction.member,

@@ -1,4 +1,4 @@
-import { EthAddress, NativeToken } from '../../models';
+import { NativeToken, NetworkAddress } from '../../models';
 
 /**
  * A common Tangle response object returned various tangle requests
@@ -15,7 +15,7 @@ export interface BaseTangleResponse {
   /**
    * Target address that needs to be funded to perform the request
    */
-  readonly address?: EthAddress;
+  readonly address?: NetworkAddress;
   /**
    * Error code, in case of failure.
    */

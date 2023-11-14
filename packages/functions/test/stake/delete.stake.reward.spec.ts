@@ -3,6 +3,7 @@ import {
   COL,
   Proposal,
   ProposalType,
+  SOON_PROJECT_ID,
   Space,
   StakeReward,
   StakeRewardStatus,
@@ -40,13 +41,18 @@ describe('Delete stake reward', () => {
     await addGuardianToSpace(space.uid, member);
 
     token = wallet.getRandomEthAddress();
-    await build5Db().doc(`${COL.TOKEN}/${token}`).create({ uid: token, space: space.uid });
+    await build5Db().doc(`${COL.TOKEN}/${token}`).create({
+      project: SOON_PROJECT_ID,
+      uid: token,
+      space: space.uid,
+    });
   });
 
   const createStakeRewards = async () => {
     const now = dayjs();
     const stakeRewards = [
       {
+        project: SOON_PROJECT_ID,
         uid: wallet.getRandomEthAddress(),
         startDate: dateToTimestamp(now.add(2, 'd')),
         endDate: dateToTimestamp(now.add(3, 'd')),
@@ -56,6 +62,7 @@ describe('Delete stake reward', () => {
         status: StakeRewardStatus.UNPROCESSED,
       },
       {
+        project: SOON_PROJECT_ID,
         uid: wallet.getRandomEthAddress(),
         startDate: dateToTimestamp(now.add(1, 'd')),
         endDate: dateToTimestamp(now.add(2, 'd')),

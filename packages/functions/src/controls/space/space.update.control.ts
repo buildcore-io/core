@@ -26,7 +26,11 @@ import { assertIsGuardian, getTokenForSpace } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Context } from '../common';
 
-export const updateSpaceControl = async ({ owner, params }: Context<SpaceUpdateRequest>) => {
+export const updateSpaceControl = async ({
+  owner,
+  params,
+  project,
+}: Context<SpaceUpdateRequest>) => {
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
   const space = await spaceDocRef.get<Space>();
 
@@ -56,6 +60,7 @@ export const updateSpaceControl = async ({ owner, params }: Context<SpaceUpdateR
   const guardians = await spaceDocRef.collection(SUB_COL.GUARDIANS).get<SpaceGuardian>();
 
   const proposal = createUpdateSpaceProposal(
+    project,
     space,
     guardian!,
     space.uid,
@@ -64,6 +69,7 @@ export const updateSpaceControl = async ({ owner, params }: Context<SpaceUpdateR
   );
 
   const voteTransaction: Transaction = {
+    project,
     type: TransactionType.VOTE,
     uid: getRandomEthAddress(),
     member: owner,
@@ -103,17 +109,19 @@ export const updateSpaceControl = async ({ owner, params }: Context<SpaceUpdateR
 };
 
 const createUpdateSpaceProposal = (
+  project: string,
   prevSpace: Space,
   owner: Member,
   space: string,
   guardiansCount: number,
   spaceUpdateData: Space,
-) => {
+): Proposal => {
   const additionalInfo =
     `${owner.name || owner.uid} wants to edit the space. ` +
     `Request created on ${dayjs().format('MM/DD/YYYY')}. ` +
     `${UPDATE_SPACE_THRESHOLD_PERCENTAGE} % must agree for this action to proceed`;
-  return <Proposal>{
+  return {
+    project,
     createdBy: owner.uid,
     uid: getRandomEthAddress(),
     name: 'Edit space',
@@ -153,6 +161,7 @@ const createUpdateSpaceProposal = (
       voted: 1,
       answers: { [1]: 1 },
     },
+    completed: false,
   };
 };
 

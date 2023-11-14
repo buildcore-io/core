@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   calcStakedMultiplier,
   COL,
@@ -9,8 +10,6 @@ import {
   TransactionType,
   WenError,
 } from '@build-5/interfaces';
-
-import { build5Db } from '@build-5/database';
 import { UnlockConditionType } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';

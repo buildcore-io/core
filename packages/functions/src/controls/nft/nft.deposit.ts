@@ -18,12 +18,14 @@ import { Context } from '../common';
 export const depositNftControl = async ({
   owner,
   params,
+  project,
 }: Context<NftDepositRequest>): Promise<Transaction> => {
   const network = params.network as Network;
   const wallet = await WalletService.newWallet(network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
 
   const order: Transaction = {
+    project,
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,

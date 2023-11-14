@@ -9,6 +9,10 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "type",
           "order": "ASCENDING"
         },
@@ -22,6 +26,32 @@
       "collectionGroup": "transaction",
       "queryScope": "COLLECTION",
       "fields": [
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "transaction",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "member",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
         {
           "fieldPath": "type",
           "order": "ASCENDING"
@@ -41,21 +71,7 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "type",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "transaction",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "member",
+          "fieldPath": "project",
           "order": "ASCENDING"
         },
         {
@@ -78,6 +94,10 @@
       "fields": [
         {
           "fieldPath": "member",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "project",
           "order": "ASCENDING"
         },
         {
@@ -103,6 +123,10 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "updatedOn",
           "order": "ASCENDING"
         }
@@ -114,6 +138,32 @@
       "fields": [
         {
           "fieldPath": "payload.nft",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "transaction",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "payload.previousOwner",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "project",
           "order": "ASCENDING"
         },
         {

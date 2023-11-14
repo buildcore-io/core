@@ -1,6 +1,9 @@
+require('dotenv').config({ path: __dirname + '/.env' });
 import { ApiRoutes } from '@build-5/interfaces';
 import cors from 'cors';
 import express from 'express';
+import jwt from 'jsonwebtoken';
+import { get } from 'lodash';
 import { Observable, first } from 'rxjs';
 import ws from 'ws';
 import { getAddresses } from './getAddresses';
@@ -23,12 +26,17 @@ const app = express();
 
 app.use(cors());
 
-app.get('/*', (req, res) => onConnection(req.url, res));
+app.get('/*', async (req, res) => {
+  const jwtToken = req.headers.authorization?.split(' ')[1];
+  const url = new URL(req.protocol + '://' + req.get('host') + req.originalUrl);
+  url.searchParams.append('token', jwtToken || '');
+  await onConnection(url, res);
+});
 
 const wsServer = new ws.Server({ noServer: true });
 
-wsServer.on('connection', async (socket, request) => {
-  onConnection(request.url || '', socket);
+wsServer.on('connection', async (socket, req) => {
+  onConnection(new URL(`ws://${req.headers.host}${req.url}`), socket);
 });
 
 const server = app.listen(port);
@@ -41,9 +49,12 @@ server.on('upgrade', (request, socket, head) => {
   });
 });
 
-const onConnection = async (url: string, res: express.Response | ws.WebSocket) => {
+const onConnection = async (url: URL, res: express.Response | ws.WebSocket) => {
   try {
-    const observable = await getObservable(url);
+    const project = getProjectId(url);
+    url.searchParams.delete('token');
+
+    const observable = await getObservable(project, url);
     if (res instanceof ws.WebSocket) {
       sendLiveUpdates(res, observable);
       return;
@@ -61,36 +72,50 @@ const onConnection = async (url: string, res: express.Response | ws.WebSocket) =
   }
 };
 
-const getObservable = (url: string): Promise<Observable<unknown>> => {
-  const route = url.replace('/api', '').split('?')[0];
-  switch (route) {
+const getObservable = (project: string, url: URL): Promise<Observable<unknown>> => {
+  const endpoint = url.pathname.replace('/api', '');
+  switch (endpoint) {
     case ApiRoutes.GET_BY_ID:
-      return getById(url);
+      return getById(url.href);
     case ApiRoutes.GET_MANY_BY_ID:
-      return getManyById(url);
+      return getManyById(url.href);
     case ApiRoutes.GET_MANY:
-      return getMany(url);
+      return getMany(project, url.href);
     case ApiRoutes.GET_MANY_ADVANCED:
-      return getManyAdvanced(url);
+      return getManyAdvanced(project, url.href);
     case ApiRoutes.GET_UPDATED_AFTER:
-      return getUpdatedAfter(url);
+      return getUpdatedAfter(project, url.href);
     case ApiRoutes.GET_TOKEN_PRICE:
-      return getTokenPrice(url);
+      return getTokenPrice(url.href);
     case ApiRoutes.GET_AVG_PRICE:
-      return getAvgPrice(url);
+      return getAvgPrice(url.href);
     case ApiRoutes.GET_PRICE_CHANGE:
-      return getPriceChange(url);
+      return getPriceChange(url.href);
     case ApiRoutes.GET_ADDRESSES:
-      return getAddresses(url);
+      return getAddresses(url.href);
     case ApiRoutes.GET_TOP_MILESTONES:
-      return getTopMilestones(url);
+      return getTopMilestones(url.href);
     case ApiRoutes.GET_NFT_MUTABLE_METADATA:
-      return getNftMutableMetadata(url);
+      return getNftMutableMetadata(url.href);
     case ApiRoutes.GET_NFT_IDS:
-      return getNftIds(url);
+      return getNftIds(url.href);
     case ApiRoutes.GET_NFT_MUTABLE_METADATA_HISTORY:
-      return getNftMutableMetadataHistory(url);
+      return getNftMutableMetadataHistory(url.href);
     default:
       throw { code: 400, message: 'Invalid route' };
+  }
+};
+
+const getProjectId = (url: URL) => {
+  try {
+    const jwtToken = url.searchParams.get('token');
+    const payload = jwt.verify(jwtToken || '', process.env.JWT_SECRET!);
+    const project = get(payload, 'project', '');
+    if (!project) {
+      throw { code: 401, message: 'Unauthorized' };
+    }
+    return project;
+  } catch {
+    throw { code: 401, message: 'Unauthorized' };
   }
 };

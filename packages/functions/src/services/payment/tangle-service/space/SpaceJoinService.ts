@@ -9,21 +9,21 @@ import {
   TokenDistribution,
   WenError,
 } from '@build-5/interfaces';
+import { getProject } from '../../../../utils/common.utils';
 import { serverTime } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getTokenForSpace } from '../../../../utils/token.utils';
 import { getStakeForType } from '../../../stake.service';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { joinSpaceSchema } from './SpaceJoinTangleRequestSchema';
 
-export class SpaceJoinService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleSpaceJoinRequest = async (
-    owner: string,
-    request: Record<string, unknown>,
-  ): Promise<BaseTangleResponse> => {
+export class SpaceJoinService extends BaseService {
+  public handleRequest = async ({
+    order,
+    owner,
+    request,
+  }: HandlerParams): Promise<BaseTangleResponse> => {
     const params = await assertValidationAsync(joinSpaceSchema, request);
 
     const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
@@ -32,7 +32,11 @@ export class SpaceJoinService {
       throw invalidArgument(WenError.space_does_not_exists);
     }
 
-    const { space: spaceUpdateData, spaceMember, member } = await getJoinSpaceData(owner, space);
+    const {
+      space: spaceUpdateData,
+      spaceMember,
+      member,
+    } = await getJoinSpaceData(getProject(order), owner, space);
 
     const joiningMemberDocRef = spaceDocRef
       .collection(space.open || space.tokenBased ? SUB_COL.MEMBERS : SUB_COL.KNOCKING_MEMBERS)
@@ -61,7 +65,7 @@ export class SpaceJoinService {
   };
 }
 
-export const getJoinSpaceData = async (owner: string, space: Space) => {
+export const getJoinSpaceData = async (project: string, owner: string, space: Space) => {
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
 
   const joinedMemberSnap = await spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner).get();
@@ -87,6 +91,7 @@ export const getJoinSpaceData = async (owner: string, space: Space) => {
   }
 
   const spaceMember: SpaceMember = {
+    project,
     uid: owner,
     parentId: space.uid,
     parentCol: COL.SPACE,
@@ -104,9 +109,8 @@ export const getJoinSpaceData = async (owner: string, space: Space) => {
 
 const assertMemberHasEnoughStakedTokens = async (space: Space, member: string) => {
   const token = await getTokenForSpace(space.uid);
-  const distributionDocRef = build5Db().doc(
-    `${COL.TOKEN}/${token?.uid}/${SUB_COL.DISTRIBUTION}/${member}`,
-  );
+  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token?.uid}`);
+  const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member);
   const distribution = await distributionDocRef.get<TokenDistribution>();
   const stakeValue = getStakeForType(distribution, StakeType.DYNAMIC);
   if (stakeValue < (space.minStakedValue || 0)) {

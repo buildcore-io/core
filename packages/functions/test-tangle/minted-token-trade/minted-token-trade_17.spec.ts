@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { build5Db } from '@build-5/database';
 import {
   COL,
   IgnoreWalletReason,
@@ -8,8 +9,6 @@ import {
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-
-import { build5Db } from '@build-5/database';
 import { creditUnrefundable } from '../../src/runtime/firebase/credit/index';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';

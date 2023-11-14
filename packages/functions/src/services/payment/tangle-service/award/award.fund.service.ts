@@ -19,20 +19,19 @@ import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet.service';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { awardFundSchema } from './AwardFundTangleRequestSchema';
 
-export class AwardFundService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleFundRequest = async (
-    owner: string,
-    request: Record<string, unknown>,
-  ): Promise<BaseTangleResponse> => {
+export class AwardFundService extends BaseService {
+  public handleRequest = async ({
+    project,
+    owner,
+    request,
+  }: HandlerParams): Promise<BaseTangleResponse> => {
     const params = await assertValidationAsync(awardFundSchema, request);
 
     const award = await getAwardForFunding(owner, params.uid);
-    const order = await createAwardFundOrder(owner, award);
+    const order = await createAwardFundOrder(project, owner, award);
     const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
     this.transactionService.push({ ref: orderDocRef, data: order, action: 'set' });
 
@@ -48,7 +47,11 @@ export class AwardFundService {
   };
 }
 
-export const createAwardFundOrder = async (owner: string, award: Award): Promise<Transaction> => {
+export const createAwardFundOrder = async (
+  project: string,
+  owner: string,
+  award: Award,
+): Promise<Transaction> => {
   const isNativeBadge = award.badge.type === AwardBadgeType.NATIVE;
   const amount =
     award.aliasStorageDeposit +
@@ -62,6 +65,7 @@ export const createAwardFundOrder = async (owner: string, award: Award): Promise
 
   const nativeTokens = [{ id: award.badge.tokenId!, amount: BigInt(totalReward) }];
   return {
+    project,
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,

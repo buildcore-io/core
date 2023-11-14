@@ -1,6 +1,5 @@
-import { Award, COL, Member, Network, Space, Token, TokenStatus } from '@build-5/interfaces';
-
 import { build5Db } from '@build-5/database';
+import { Award, COL, Member, Network, Space, Token, TokenStatus } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
 import { joinSpace } from '../../src/runtime/firebase/space';

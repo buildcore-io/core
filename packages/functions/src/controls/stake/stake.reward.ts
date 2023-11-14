@@ -14,7 +14,11 @@ import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Context } from '../common';
 
-export const stakeRewardControl = async ({ owner, params }: Context<TokenStakeRewardsRequest>) => {
+export const stakeRewardControl = async ({
+  owner,
+  params,
+  project,
+}: Context<TokenStakeRewardsRequest>) => {
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
   const token = await tokenDocRef.get<Token>();
   if (!token) {
@@ -23,6 +27,7 @@ export const stakeRewardControl = async ({ owner, params }: Context<TokenStakeRe
   await assertIsGuardian(token.space, owner);
 
   const stakeRewards = (params.items || []).map<StakeReward>((item) => ({
+    project,
     uid: getRandomEthAddress(),
     startDate: dateToTimestamp(dayjs(item.startDate)),
     endDate: dateToTimestamp(dayjs(item.endDate)),

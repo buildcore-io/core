@@ -1,14 +1,14 @@
 import { build5Db } from '@build-5/database';
 import { COL, Collection, Rank, RankRequest, SUB_COL, Token, WenError } from '@build-5/interfaces';
 import { set } from 'lodash';
-import { hasStakedSoonTokens } from '../../services/stake.service';
+import { hasStakedTokens } from '../../services/stake.service';
 import { getRankingSpace } from '../../utils/config.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { Context } from '../common';
 
-export const rankControl = async ({ owner, params }: Context<RankRequest>) => {
-  const hasStakedSoons = await hasStakedSoonTokens(owner);
+export const rankControl = async ({ owner, params, project }: Context<RankRequest>) => {
+  const hasStakedSoons = await hasStakedTokens(project, owner);
   if (!hasStakedSoons) {
     throw invalidArgument(WenError.no_staked_soon);
   }

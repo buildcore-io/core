@@ -12,6 +12,7 @@ import { Context } from '../common';
 export const approveAwardParticipantControl = async ({
   owner,
   params,
+  project,
 }: Context<AwardApproveParticipantRequest>): Promise<AwardApproveParticipantResponse> => {
   const members = params.members.map((m) => m.toLowerCase());
   const awardId = params.award;
@@ -21,7 +22,7 @@ export const approveAwardParticipantControl = async ({
   for (const member of members) {
     try {
       const badge = await build5Db().runTransaction(
-        approveAwardParticipant(owner, awardId, member),
+        approveAwardParticipant(project, owner, awardId, member),
       );
       badges[badge.uid] = badge;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

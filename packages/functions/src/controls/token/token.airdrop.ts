@@ -30,7 +30,11 @@ const hasAvailableTokenToAirdrop = (token: Token, count: number) => {
   return token.totalSupply - totalPublicSupply - token.totalAirdropped >= count;
 };
 
-export const airdropTokenControl = async ({ owner, params }: Context<CreateAirdropsRequest>) => {
+export const airdropTokenControl = async ({
+  owner,
+  params,
+  project,
+}: Context<CreateAirdropsRequest>) => {
   const chunks = chunk(params.drops, 200);
   for (const chunk of chunks) {
     await build5Db().runTransaction(async (transaction) => {
@@ -55,6 +59,7 @@ export const airdropTokenControl = async ({ owner, params }: Context<CreateAirdr
 
       for (const drop of chunk) {
         const airdrop: TokenDrop = {
+          project,
           createdBy: owner,
           uid: getRandomEthAddress(),
           member: drop.recipient.toLowerCase(),

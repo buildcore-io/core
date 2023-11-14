@@ -5,6 +5,7 @@ import {
   COL,
   MAX_TOTAL_TOKEN_SUPPLY,
   MIN_IOTA_AMOUNT,
+  NetworkAddress,
   SUB_COL,
   Space,
   StakeType,
@@ -14,21 +15,20 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { createToken } from '../../../src/runtime/firebase/token/base';
-import * as config from '../../../src/utils/config.utils';
 import { dateToTimestamp } from '../../../src/utils/dateTime.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
-import { MEDIA, testEnv } from '../../set-up';
+import { MEDIA, soonTokenId, testEnv } from '../../set-up';
 import {
   createMember,
   createSpace,
   expectThrow,
   getRandomSymbol,
   mockWalletReturnValue,
-  saveSoon,
+  setProdTiers,
+  setTestTiers,
 } from '../common';
 
 let walletSpy: any;
-let isProdSpy: jest.SpyInstance<boolean, []>;
 
 const dummyToken = (space: string) =>
   ({
@@ -42,21 +42,18 @@ const dummyToken = (space: string) =>
     termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
     access: 0,
     decimals: 5,
-  } as any);
+  }) as any;
 
 describe('Token controller: ' + WEN_FUNC.createToken, () => {
-  let memberAddress: string;
+  let memberAddress: NetworkAddress;
   let space: Space;
   let token: any;
-  let soonTokenId: string;
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    isProdSpy = jest.spyOn(config, 'isProdEnv');
     memberAddress = await createMember(walletSpy);
     space = await createSpace(walletSpy, memberAddress);
     token = dummyToken(space.uid);
-    soonTokenId = await saveSoon();
   });
 
   it('Should create token', async () => {
@@ -98,10 +95,10 @@ describe('Token controller: ' + WEN_FUNC.createToken, () => {
       });
 
     mockWalletReturnValue(walletSpy, memberAddress, token);
-    isProdSpy.mockReturnValue(true);
+    await setProdTiers();
     const result = await testEnv.wrap(createToken)({});
     expect(result?.uid).toBeDefined();
-    isProdSpy.mockRestore();
+    await setTestTiers();
   });
 
   it('Should create token with max token supply', async () => {
@@ -351,8 +348,8 @@ describe('Token controller: ' + WEN_FUNC.createToken, () => {
 
   it('Should throw, no tokens staked', async () => {
     mockWalletReturnValue(walletSpy, memberAddress, token);
-    isProdSpy.mockReturnValue(true);
+    await setProdTiers();
     await expectThrow(testEnv.wrap(createToken)({}), WenError.no_staked_soon.key);
-    isProdSpy.mockRestore();
+    await setTestTiers();
   });
 });

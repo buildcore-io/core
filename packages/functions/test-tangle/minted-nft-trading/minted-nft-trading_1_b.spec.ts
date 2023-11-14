@@ -13,9 +13,8 @@ import {
 import { NftOutput } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { finalizeAllNftAuctions } from '../../src/cron/nft.cron';
-import { openBid } from '../../src/runtime/firebase/nft';
-import { withdrawNft } from '../../src/runtime/firebase/nft/index';
+import { finalizeAuctions } from '../../src/cron/auction.cron';
+import { openBid, withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { getAddress } from '../../src/utils/address.utils';
 import { Bech32AddressHelper } from '../../src/utils/bech32-address.helper';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -27,91 +26,78 @@ import { Helper } from './Helper';
 describe('Minted nft trading', () => {
   const helper = new Helper();
 
-  it.each([false])(
-    'Should bid twice on minted nft and withdraw it',
-    async (hasExpiration: boolean) => {
-      await helper.beforeEach(Network.ATOI);
-      await helper.createAndOrderNft();
-      await helper.mintCollection();
+  it('Should bid twice on minted nft and withdraw it', async () => {
+    await helper.beforeEach(Network.ATOI);
+    await helper.createAndOrderNft();
+    await helper.mintCollection();
 
-      await helper.setAvailableForAuction();
+    await helper.setAvailableForAuction();
 
-      mockWalletReturnValue(helper.walletSpy, helper.member!, { nft: helper.nft!.uid });
-      await expectThrow(testEnv.wrap(withdrawNft)({}), WenError.you_must_be_the_owner_of_nft.key);
+    const nftDocRef = build5Db().doc(`${COL.NFT}/${helper.nft!.uid}`);
 
-      const expiresAt = hasExpiration ? dateToTimestamp(dayjs().add(2, 'h').toDate()) : undefined;
+    mockWalletReturnValue(helper.walletSpy, helper.member!, { nft: helper.nft!.uid });
+    await expectThrow(testEnv.wrap(withdrawNft)({}), WenError.you_must_be_the_owner_of_nft.key);
 
-      mockWalletReturnValue(helper.walletSpy, helper.member!, { nft: helper.nft!.uid });
-      const bidOrder = await testEnv.wrap(openBid)({});
-      await requestFundsFromFaucet(
-        Network.RMS,
-        bidOrder.payload.targetAddress,
-        MIN_IOTA_AMOUNT,
-        expiresAt,
-      );
+    mockWalletReturnValue(helper.walletSpy, helper.member!, { nft: helper.nft!.uid });
+    const bidOrder = await testEnv.wrap(openBid)({});
+    await requestFundsFromFaucet(Network.RMS, bidOrder.payload.targetAddress, MIN_IOTA_AMOUNT);
 
-      await wait(async () => {
-        const nft = <Nft>await build5Db().doc(`${COL.NFT}/${helper.nft!.uid}`).get();
-        return !isEmpty(nft.auctionHighestTransaction);
-      });
+    await wait(async () => {
+      helper.nft = <Nft>await nftDocRef.get();
+      return !isEmpty(helper.nft.auctionHighestBidder);
+    });
 
-      const bidOrder2 = await testEnv.wrap(openBid)({});
-      await requestFundsFromFaucet(
-        Network.RMS,
-        bidOrder2.payload.targetAddress,
-        2 * MIN_IOTA_AMOUNT,
-        expiresAt,
-      );
+    const bidOrder2 = await testEnv.wrap(openBid)({});
+    await requestFundsFromFaucet(Network.RMS, bidOrder2.payload.targetAddress, 2 * MIN_IOTA_AMOUNT);
 
-      await wait(async () => {
-        const nft = <Nft>await build5Db().doc(`${COL.NFT}/${helper.nft!.uid}`).get();
+    await wait(async () => {
+      helper.nft = <Nft>await nftDocRef.get();
 
-        const payment = (
-          await build5Db()
-            .collection(COL.TRANSACTION)
-            .where('type', '==', TransactionType.PAYMENT)
-            .where('payload.sourceTransaction', 'array-contains', bidOrder2.uid)
-            .get<Transaction>()
-        )[0];
-        return nft.auctionHighestTransaction === payment?.uid;
-      });
+      const payment = (
+        await build5Db()
+          .collection(COL.TRANSACTION)
+          .where('type', '==', TransactionType.PAYMENT)
+          .where('payload.sourceTransaction', 'array-contains', bidOrder2.uid)
+          .get<Transaction>()
+      )[0];
+      return helper.nft.auctionHighestBidder === payment?.member;
+    });
 
-      await build5Db()
-        .doc(`${COL.NFT}/${helper.nft!.uid}`)
-        .update({ auctionTo: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
+    await build5Db()
+      .doc(`${COL.AUCTION}/${helper.nft!.auction}`)
+      .update({ auctionTo: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
 
-      await finalizeAllNftAuctions();
+    await finalizeAuctions();
 
-      await wait(async () => {
-        const nft = <Nft>await build5Db().doc(`${COL.NFT}/${helper.nft!.uid}`).get();
-        return nft.owner === helper.member;
-      });
+    await wait(async () => {
+      const nft = <Nft>await nftDocRef.get();
+      return nft.owner === helper.member;
+    });
 
-      mockWalletReturnValue(helper.walletSpy, helper.member!, { nft: helper.nft!.uid });
-      await testEnv.wrap(withdrawNft)({});
+    mockWalletReturnValue(helper.walletSpy, helper.member!, { nft: helper.nft!.uid });
+    await testEnv.wrap(withdrawNft)({});
 
-      const nft = <Nft>await build5Db().doc(`${COL.NFT}/${helper.nft!.uid}`).get();
-      expect(nft.status).toBe(NftStatus.WITHDRAWN);
+    helper.nft = <Nft>await nftDocRef.get();
+    expect(helper.nft.status).toBe(NftStatus.WITHDRAWN);
 
-      await wait(async () => {
-        const transaction = (
-          await build5Db()
-            .collection(COL.TRANSACTION)
-            .where('type', '==', TransactionType.WITHDRAW_NFT)
-            .where('payload.nft', '==', helper.nft!.uid)
-            .get<Transaction>()
-        )[0];
-        return transaction?.payload?.walletReference?.confirmed;
-      });
+    await wait(async () => {
+      const transaction = (
+        await build5Db()
+          .collection(COL.TRANSACTION)
+          .where('type', '==', TransactionType.WITHDRAW_NFT)
+          .where('payload.nft', '==', helper.nft!.uid)
+          .get<Transaction>()
+      )[0];
+      return transaction?.payload?.walletReference?.confirmed;
+    });
 
-      const output = (
-        await helper.walletService!.client.getOutput(
-          await helper.walletService!.client.nftOutputId(nft.mintingData?.nftId!),
-        )
-      ).output as NftOutput;
-      const ownerAddress = Bech32AddressHelper.bech32FromUnlockConditions(output, 'rms');
-      const member = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.member}`).get();
-      expect(ownerAddress).toBe(getAddress(member, Network.ATOI));
-    },
-  );
+    const output = (
+      await helper.walletService!.client.getOutput(
+        await helper.walletService!.client.nftOutputId(helper.nft.mintingData?.nftId!),
+      )
+    ).output as NftOutput;
+    const ownerAddress = Bech32AddressHelper.bech32FromUnlockConditions(output, 'rms');
+    const member = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.member}`).get();
+    expect(ownerAddress).toBe(getAddress(member, Network.ATOI));
+  });
 });

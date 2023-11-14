@@ -11,7 +11,13 @@ import {
 import Joi from 'joi';
 import { get, isEmpty } from 'lodash';
 import { map } from 'rxjs';
-import { CommonJoi, getQueryLimit, getQueryParams, queryToObservable } from './common';
+import {
+  CommonJoi,
+  getQueryLimit,
+  getQueryParams,
+  queryToObservable,
+  shouldSetProjectFilter,
+} from './common';
 
 const fieldNameSchema = Joi.string().max(MAX_FIELD_NAME_LENGTH);
 const fieldValueSchema = Joi.alternatives().try(
@@ -41,7 +47,7 @@ const getManySchema = Joi.object({
   startAfter: CommonJoi.uid(false),
 });
 
-export const getMany = async (url: string) => {
+export const getMany = async (project: string, url: string) => {
   const body = getQueryParams<GetManyRequest>(url, getManySchema);
 
   const baseCollectionPath =
@@ -70,6 +76,10 @@ export const getMany = async (url: string) => {
 
   if (body.collection === PublicCollections.TRANSACTION) {
     query = query.where('isOrderType', '==', false);
+  }
+
+  if (shouldSetProjectFilter(body.collection, body.subCollection)) {
+    query = query.where('project', '==', project);
   }
 
   if (body.startAfter) {

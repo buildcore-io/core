@@ -1,4 +1,4 @@
-import { BaseRecord, EthAddress, MediaStatus, NftMintingData, Timestamp } from './base';
+import { BaseRecord, MediaStatus, NetworkAddress, NftMintingData, Timestamp } from './base';
 import { CollectionType } from './collection';
 
 /**
@@ -64,11 +64,11 @@ export interface Nft extends BaseRecord {
   /**
    * NFT Collection {@link Collection}
    */
-  collection: EthAddress;
+  collection: NetworkAddress;
   /**
    * NFT current owner {@link Member}
    */
-  owner?: EthAddress;
+  owner?: NetworkAddress;
   /**
    * NFT Is NFT owned. This field is used to simplify filtering.
    */
@@ -125,10 +125,6 @@ export interface Nft extends BaseRecord {
    * NFT Auction current highest bidder {@link Member}
    */
   auctionHighestBidder?: string | null;
-  /**
-   * NFT Auction highest transaction {@link Transaction}
-   */
-  auctionHighestTransaction?: string | null;
   /**
    * NFT current price based on previous sales
    */
@@ -241,4 +237,8 @@ export interface Nft extends BaseRecord {
    * NFT is set as avatar.
    */
   setAsAvatar?: boolean;
+  /**
+   * The build5 id of the auction this nft belongs to
+   */
+  auction?: string | null;
 }

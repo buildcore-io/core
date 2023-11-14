@@ -197,9 +197,8 @@ export class TokenService {
       return;
     }
 
-    const distribution = await this.transactionService.transaction.get<TokenDistribution>(
-      distributionRef,
-    );
+    const distribution =
+      await this.transactionService.transaction.get<TokenDistribution>(distributionRef);
     const currentTotalDeposit = Number(
       bigDecimal.add(distribution?.totalDeposit || 0, tran.to.amount),
     );

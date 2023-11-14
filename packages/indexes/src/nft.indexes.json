@@ -231,6 +231,28 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "nft",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "collection",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "hidden",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "createdOn",
           "order": "DESCENDING"
         }
@@ -334,6 +356,10 @@
         },
         {
           "fieldPath": "hidden",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "project",
           "order": "ASCENDING"
         },
         {
@@ -518,28 +544,6 @@
         },
         {
           "fieldPath": "updatedOn",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "nft",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "available",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "collection",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "saleAccess",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "availablePrice",
           "order": "ASCENDING"
         }
       ]

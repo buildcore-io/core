@@ -22,6 +22,7 @@ import { Context } from '../common';
 export const voteOnProposalControl = async ({
   owner,
   params,
+  project,
 }: Context<ProposalVoteRequest>): Promise<Transaction> => {
   const proposal = await getProposal(params.uid);
   const proposalMember = await getProposalMember(owner, proposal, params.value);
@@ -34,19 +35,19 @@ export const voteOnProposalControl = async ({
 
     if (params.voteWithStakedTokes) {
       const voteTransaction = await build5Db().runTransaction(async (transaction) =>
-        voteWithStakedTokens(transaction, owner, proposal, [params.value]),
+        voteWithStakedTokens(project, transaction, owner, proposal, [params.value]),
       );
       return voteTransaction;
     }
 
-    const order = await createVoteTransactionOrder(owner, proposal, [params.value], token);
+    const order = await createVoteTransactionOrder(project, owner, proposal, [params.value], token);
     const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
     await orderDocRef.create(order);
 
     return (await orderDocRef.get<Transaction>())!;
   }
 
-  const voteData = await executeSimpleVoting(proposalMember, proposal, [params.value]);
+  const voteData = await executeSimpleVoting(project, proposalMember, proposal, [params.value]);
   const batch = build5Db().batch();
 
   const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);

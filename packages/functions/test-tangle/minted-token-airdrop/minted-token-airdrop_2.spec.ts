@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Member,
@@ -13,8 +14,6 @@ import {
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-
-import { build5Db } from '@build-5/database';
 import dayjs from 'dayjs';
 import {
   airdropMintedToken,

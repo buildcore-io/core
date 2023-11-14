@@ -1,20 +1,11 @@
-FROM node:18
+FROM node:20
 
-WORKDIR functions
-
-RUN apt-get -y update
-RUN apt-get -y install libudev-dev
-RUN apt-get -y install cmake
-RUN apt-get -y install clang
-RUN apt-get -y install openssl
-RUN apt-get -y install build-essential
-
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-ENV PATH="/root/.cargo/bin:${PATH}"
+WORKDIR /functions
 
 COPY packages/database packages/database
 COPY packages/interfaces packages/interfaces
 COPY packages/functions packages/functions
+COPY package-lock.json ./
 COPY package.json ./
 COPY data.proto ./
 

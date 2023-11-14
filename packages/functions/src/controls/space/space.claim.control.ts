@@ -19,7 +19,7 @@ import { invalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Context } from '../common';
 
-export const claimSpaceControl = async ({ owner, params }: Context<SpaceClaimRequest>) => {
+export const claimSpaceControl = async ({ owner, params, project }: Context<SpaceClaimRequest>) => {
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
   const space = await spaceDocRef.get<Space>();
   if (!space) {
@@ -37,6 +37,7 @@ export const claimSpaceControl = async ({ owner, params }: Context<SpaceClaimReq
   const wallet = await WalletService.newWallet(collection?.mintingData?.network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
   const order: Transaction = {
+    project,
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,

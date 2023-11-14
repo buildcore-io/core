@@ -1,3 +1,4 @@
+export * from './auction';
 export * from './award';
 export * from './badge';
 export * from './base';
@@ -9,9 +10,11 @@ export * from './mnemonic';
 export * from './nft';
 export * from './nftStake';
 export * from './notification';
+export * from './project';
 export * from './proposal';
 export * from './space';
 export * from './stake';
+export * from './stamp';
 export * from './system.config';
 export * from './ticker';
 export * from './token';

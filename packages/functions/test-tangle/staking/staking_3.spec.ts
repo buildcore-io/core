@@ -3,7 +3,7 @@ import { COL, Member, MIN_IOTA_AMOUNT, Stake, StakeType } from '@build-5/interfa
 import dayjs from 'dayjs';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
-import { wait } from '../../test/controls/common';
+import { setProdTiers, setTestTiers, wait } from '../../test/controls/common';
 import { requestMintedTokenFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
@@ -15,12 +15,15 @@ describe('Staking test', () => {
   });
 
   beforeEach(async () => {
+    await setProdTiers();
     await helper.beforeEach();
   });
 
   const validateMemberTradingFee = async (expected: number) => {
     await wait(async () => {
-      helper.member = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.member?.uid}`).get();
+      helper.member = <Member>await build5Db()
+        .doc(`${COL.MEMBER}/${helper.member?.uid}`)
+        .get();
       return helper.member.tokenTradingFeePercentage === expected;
     });
   };
@@ -81,5 +84,9 @@ describe('Staking test', () => {
     await expireStakeAndValidateFee(stake3, 2.5 * (1 - 0.5));
     await expireStakeAndValidateFee(stake2, 2.5 * (1 - 0.25));
     await expireStakeAndValidateFee(stake1, 2.5);
+  });
+
+  afterEach(async () => {
+    await setTestTiers();
   });
 });

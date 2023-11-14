@@ -1,3 +1,4 @@
+import { build5Db } from '@build-5/database';
 import {
   Award,
   COL,
@@ -12,8 +13,6 @@ import {
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-
-import { build5Db } from '@build-5/database';
 import dayjs from 'dayjs';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';

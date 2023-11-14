@@ -21,8 +21,12 @@ export const https = Object.entries(flattenObject(onRequests)).reduce(
 
 // Trigger functions
 const getFirestoreHandler = (config: TriggeredFunction) => {
+  const triggerConfig = {
+    document: config.document,
+    timeoutSeconds: config.runtimeOptions.timeoutSeconds,
+  };
   if (config.type === TriggeredFunctionType.ON_CREATE) {
-    return functions.firestore.onDocumentCreated(config.document, async (event) => {
+    return functions.firestore.onDocumentCreated(triggerConfig, async (event) => {
       const data = {
         curr: event.data?.data(),
         path: event.document,
@@ -35,7 +39,7 @@ const getFirestoreHandler = (config: TriggeredFunction) => {
     config.type === TriggeredFunctionType.ON_UPDATE
       ? functions.firestore.onDocumentUpdated
       : functions.firestore.onDocumentWritten;
-  return firestoreFunc(config.document, async (event) => {
+  return firestoreFunc(triggerConfig, async (event) => {
     const data = {
       prev: event.data?.before?.data(),
       curr: event.data?.after?.data(),

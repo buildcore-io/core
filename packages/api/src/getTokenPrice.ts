@@ -68,8 +68,8 @@ const highestBuyQuery = (token: string) =>
     .where('status', '==', TokenTradeOrderStatus.ACTIVE)
     .where('token', '==', token)
     .where('type', '==', TokenTradeOrderType.BUY)
-    .orderBy('price', 'desc')
-    .limit(1);
+    .orderBy('price')
+    .limitToLast(1);
 
 const calculatePrice = (
   lowestSellOrders: TokenTradeOrder[],

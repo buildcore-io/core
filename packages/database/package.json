@@ -16,14 +16,15 @@
   },
   "dependencies": {
     "@build-5/interfaces": "*",
-    "dayjs": "^1.11.9",
-    "firebase-admin": "^11.10.1",
-    "lodash": "^4.17.21"
+    "dayjs": "1.11.10",
+    "firebase-admin": "11.11.0",
+    "jsonwebtoken": "9.0.2",
+    "lodash": "4.17.21"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.197",
-    "dotenv": "^16.3.1",
+    "@types/lodash": "4.14.201",
+    "dotenv": "16.3.1",
     "glob": "8.0.3",
-    "typescript": "4.9.5"
+    "typescript": "5.2.2"
   }
 }

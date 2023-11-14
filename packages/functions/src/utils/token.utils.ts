@@ -85,11 +85,6 @@ export const tokenIsInCoolDownPeriod = (token: Token) =>
   dayjs().isAfter(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms')) &&
   dayjs().isBefore(dayjs(token.coolDownEnd.toDate()));
 
-export const getSoonToken = async () => {
-  const snap = await build5Db().collection(COL.TOKEN).where('symbol', '==', 'SOON').limit(1).get();
-  return <Token>snap[0];
-};
-
 export const getTokenForSpace = async (space: string) => {
   let snap = await build5Db()
     .collection(COL.TOKEN)

@@ -2,8 +2,8 @@ import {
   Access,
   BaseRecord,
   BaseSubCollection,
-  EthAddress,
   MediaStatus,
+  NetworkAddress,
   NftMintingData,
   RankStats,
   Timestamp,
@@ -92,7 +92,7 @@ export interface CollectionBase extends BaseRecord {
   /**
    * Roaylty space {@link Space}
    */
-  royaltiesSpace: EthAddress;
+  royaltiesSpace: NetworkAddress;
   /**
    * Discount lines
    */
@@ -198,7 +198,7 @@ export interface Collection extends CollectionBase {
   /**
    * Link to placeholder NFT {@link Nft}
    */
-  placeholderNft: EthAddress;
+  placeholderNft: NetworkAddress;
   /**
    * Place holder URL to the image. This is used to reduce queries on NFT collection.
    */

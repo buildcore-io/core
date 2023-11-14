@@ -13,6 +13,10 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "space",
           "order": "ASCENDING"
         },
@@ -35,21 +39,11 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "space",
+          "fieldPath": "project",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "endDate",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "award",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "completed",
+          "fieldPath": "space",
           "order": "ASCENDING"
         },
         {

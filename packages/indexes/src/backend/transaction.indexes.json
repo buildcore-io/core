@@ -1,0 +1,26 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "transaction",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "payload.reconciled",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "payload.void",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "payload.expiresOn",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ]
+}

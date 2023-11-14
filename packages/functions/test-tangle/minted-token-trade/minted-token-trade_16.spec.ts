@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { build5Db } from '@build-5/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -8,8 +9,6 @@ import {
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
-
-import { build5Db } from '@build-5/database';
 import { cancelTradeOrder, tradeToken } from '../../src/runtime/firebase/token/trading';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';

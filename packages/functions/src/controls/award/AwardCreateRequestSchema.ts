@@ -29,7 +29,7 @@ export const awardBageSchema = {
     .min(0)
     .integer()
     .required()
-    .description('The time for wich the reward nft will be locked.'),
+    .description('The time for which the reward nft will be locked.'),
 };
 
 export const awardBageSchemaObject = toJoiObject<AwardCreateBadgeRequest>(awardBageSchema)
@@ -47,7 +47,7 @@ export const awardCreateSchema = {
   network: Joi.string()
     .equal(...AVAILABLE_NETWORKS)
     .required()
-    .description('Network on wich the award will be minted and issued'),
+    .description('Network on which the award will be minted and issued'),
 };
 
 export const awardCreateSchemaObject = toJoiObject<AwardCreateRequest>(awardCreateSchema)

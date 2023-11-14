@@ -1,4 +1,11 @@
-import { BaseRecord, BaseSubCollection, MediaStatus, Timestamp, ValidatedAddress } from './base';
+import {
+  BaseRecord,
+  BaseSubCollection,
+  MediaStatus,
+  NetworkAddress,
+  Timestamp,
+  ValidatedAddress,
+} from './base';
 
 /**
  * Space Guardian subcollection.
@@ -35,7 +42,7 @@ export interface Alias {
   /**
    * Address of the alias
    */
-  readonly address: string;
+  readonly address: NetworkAddress;
   /**
    * Alias ID on the network.
    */

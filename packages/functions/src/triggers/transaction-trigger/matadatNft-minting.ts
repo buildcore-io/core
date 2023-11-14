@@ -22,6 +22,7 @@ import {
 } from '../../services/payment/metadataNft-service';
 import { WalletService } from '../../services/wallet/wallet.service';
 import { getAddress } from '../../utils/address.utils';
+import { getProject } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -59,6 +60,7 @@ const onAliasMinted = async (transaction: Transaction) => {
 
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${transaction.space}`);
   batch.update(spaceDocRef, {
+    name: `Space of alias: ${aliasId}`,
     alias: {
       address: transaction.payload.targetAddress,
       aliasId,
@@ -128,12 +130,9 @@ const onCollectionMinted = async (transaction: Transaction) => {
   const space = await build5Db().doc(`${COL.SPACE}/${transaction.space}`).get<Space>();
 
   const nftMintOrder = createMintMetadataNftOrder(
+    transaction,
     nft,
-    transaction.network!,
-    transaction.payload.targetAddress!,
     space?.alias?.address!,
-    transaction.payload.targetAddress!,
-    get(transaction, 'payload.aliasId', ''),
     collectionId,
     get(transaction, 'payload.orderId', ''),
   );
@@ -177,10 +176,15 @@ const onNftMinted = async (transaction: Transaction) => {
     get(order, 'payload.nftOutputAmount', 0);
 
   const member = await build5Db().doc(`${COL.MEMBER}/${transaction.member}`).get<Member>();
-  const collection = await build5Db().doc(`${COL.COLLECTION}/${nft?.collection}`).get<Collection>();
-  const space = await build5Db().doc(`${COL.SPACE}/${collection?.space}`).get<Space>();
+  const collection = await build5Db()
+    .doc(`${COL.COLLECTION}/${nft?.collection}`)
+    .get<Collection>();
+  const space = await build5Db()
+    .doc(`${COL.SPACE}/${collection?.space}`)
+    .get<Space>();
 
-  const creditTransaction = <Transaction>{
+  const creditTransaction: Transaction = {
+    project: getProject(order),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: transaction.space,
@@ -223,10 +227,15 @@ const onNftUpdated = async (transaction: Transaction) => {
   const { amount: balance } = await wallet.getBalance(order.payload.targetAddress!);
 
   const member = await build5Db().doc(`${COL.MEMBER}/${transaction.member}`).get<Member>();
-  const collection = await build5Db().doc(`${COL.COLLECTION}/${nft?.collection}`).get<Collection>();
-  const space = await build5Db().doc(`${COL.SPACE}/${collection?.space}`).get<Space>();
+  const collection = await build5Db()
+    .doc(`${COL.COLLECTION}/${nft?.collection}`)
+    .get<Collection>();
+  const space = await build5Db()
+    .doc(`${COL.SPACE}/${collection?.space}`)
+    .get<Space>();
 
-  const creditTransaction = <Transaction>{
+  const creditTransaction: Transaction = {
+    project: getProject(order),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: transaction.space,

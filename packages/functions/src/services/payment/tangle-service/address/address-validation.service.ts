@@ -2,8 +2,6 @@ import { build5Db } from '@build-5/database';
 import {
   BaseTangleResponse,
   COL,
-  MilestoneTransaction,
-  MilestoneTransactionEntry,
   Network,
   Space,
   TRANSACTION_AUTO_EXPIRY_MS,
@@ -22,22 +20,21 @@ import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet.service';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { validateAddressSchemaObject } from './AddressValidationTangleRequestSchema';
 
-export class TangleAddressValidationService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handeAddressValidation = async (
-    tangleOrder: Transaction,
-    tran: MilestoneTransaction,
-    tranEntry: MilestoneTransactionEntry,
-    owner: string,
-    request: Record<string, unknown>,
-  ): Promise<BaseTangleResponse | undefined> => {
+export class TangleAddressValidationService extends BaseService {
+  public handleRequest = async ({
+    project,
+    tran,
+    order: tangleOrder,
+    tranEntry,
+    owner,
+    request,
+  }: HandlerParams): Promise<BaseTangleResponse | undefined> => {
     const params = await assertValidationAsync(validateAddressSchemaObject, request);
-
     const order = await createAddressValidationOrder(
+      project,
       owner,
       (params.network as Network) || tangleOrder.network,
       params.space,
@@ -62,6 +59,7 @@ export class TangleAddressValidationService {
 }
 
 export const createAddressValidationOrder = async (
+  project: string,
   owner: string,
   network: Network,
   spaceId?: string,
@@ -82,6 +80,7 @@ export const createAddressValidationOrder = async (
   const targetAddress = await wallet.getNewIotaAddressDetails();
 
   const order: Transaction = {
+    project,
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,

@@ -22,6 +22,7 @@ import dayjs from 'dayjs';
 import { get, isEmpty, set } from 'lodash';
 import { MilestoneTransactionAdapter } from '../../triggers/milestone-transactions-triggers/MilestoneTransactionAdapter';
 import { getOutputMetadata } from '../../utils/basic-output.utils';
+import { getProject } from '../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 export interface TransactionMatch {
@@ -71,6 +72,7 @@ export class TransactionService {
       throw new Error('Order was not provided as transaction.');
     }
     const data: Transaction = {
+      project: getProject(order),
       type: TransactionType.PAYMENT,
       uid: getRandomEthAddress(),
       member: order.member || tran.from,
@@ -94,6 +96,12 @@ export class TransactionService {
         invalidPayment,
       },
     };
+    if (order.payload.stamp) {
+      data.payload.stamp = order.payload.stamp;
+    }
+    if (order.payload.auction) {
+      data.payload.auction = order.payload.auction;
+    }
 
     if (order.payload.token) {
       const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${order.payload.token}`);
@@ -130,10 +138,11 @@ export class TransactionService {
     }
 
     if (finalAmt > 0) {
-      const data = <Transaction>{
+      const data: Transaction = {
+        project: getProject(payment),
         type: TransactionType.BILL_PAYMENT,
         uid: getRandomEthAddress(),
-        space: order.payload.beneficiary !== 'member' ? order.space : null,
+        space: (order.payload.beneficiary !== 'member' ? order.space : null) as string,
         member: order.member || payment.member || '',
         network: order.network || DEFAULT_NETWORK,
         payload: {
@@ -150,7 +159,7 @@ export class TransactionService {
           royalty: false,
           void: false,
           collection: order.payload.collection || null,
-          quantity: order.payload.quantity || null,
+          quantity: (order.payload.quantity || null) as number,
           restrictions: get(order, 'payload.restrictions', {}),
         },
       };
@@ -164,7 +173,8 @@ export class TransactionService {
     }
 
     if (royaltyAmt > 0) {
-      const data = <Transaction>{
+      const data: Transaction = {
+        project: getProject(payment),
         type: TransactionType.BILL_PAYMENT,
         uid: getRandomEthAddress(),
         member: order.member,
@@ -182,7 +192,7 @@ export class TransactionService {
           void: false,
           nft: order.payload.nft || null,
           collection: order.payload.collection || null,
-          quantity: order.payload.quantity || null,
+          quantity: (order.payload.quantity || null) as number,
           restrictions: get(order, 'payload.restrictions', {}),
         },
       };
@@ -211,6 +221,7 @@ export class TransactionService {
   ): Promise<Transaction | undefined> {
     if (payment.payload.amount! > 0) {
       const data: Transaction = {
+        project: getProject(payment),
         type: TransactionType.CREDIT,
         uid: getRandomEthAddress(),
         space: payment.space,
@@ -269,6 +280,7 @@ export class TransactionService {
   ) {
     if (payment.payload.amount! > 0) {
       const data: Transaction = {
+        project: getProject(payment),
         type: TransactionType.CREDIT_TANGLE_REQUEST,
         uid: getRandomEthAddress(),
         space: payment.space,
@@ -313,7 +325,8 @@ export class TransactionService {
     if (!isEmpty(error) && !get(error, 'code')) {
       console.error(payment.uid, tran.to.nftOutput?.nftId, error);
     }
-    const transaction = <Transaction>{
+    const transaction: Transaction = {
+      project: getProject(payment),
       type: TransactionType.CREDIT_NFT,
       uid: getRandomEthAddress(),
       space: payment.space || '',
@@ -462,6 +475,7 @@ export class TransactionService {
   ) => {
     const network = order.network || DEFAULT_NETWORK;
     const data: Transaction = {
+      project: getProject(order),
       type: TransactionType.UNLOCK,
       uid: getRandomEthAddress(),
       space: order.space || '',

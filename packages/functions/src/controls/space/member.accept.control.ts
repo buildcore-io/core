@@ -6,8 +6,9 @@ import { Context } from '../common';
 export const acceptSpaceMemberControl = async ({
   owner,
   params,
+  project,
 }: Context<SpaceMemberUpsertRequest>) => {
-  const { spaceMember, space } = await acceptSpaceMember(owner, params.uid, params.member);
+  const { spaceMember, space } = await acceptSpaceMember(project, owner, params.uid, params.member);
 
   const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
   const memberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(spaceMember.uid);

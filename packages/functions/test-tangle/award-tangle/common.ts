@@ -2,6 +2,7 @@ import { IQuery, build5Db } from '@build-5/database';
 import {
   COL,
   Network,
+  SOON_PROJECT_ID,
   Token,
   TokenStatus,
   TransactionPayloadType,
@@ -38,6 +39,7 @@ const allConfirmed = (query: IQuery) =>
 
 export const saveBaseToken = async (space: string, guardian: string, network: Network) => {
   const token = {
+    project: SOON_PROJECT_ID,
     symbol: getRandomSymbol(),
     approved: true,
     updatedOn: serverTime(),

@@ -28,25 +28,21 @@ export const isOnline = () => {
   });
 };
 
-export const wrappedFetch = async <T>(url: string, params: Record<string, unknown>) => {
+export const wrappedFetch = async <T>(
+  token: string,
+  url: string,
+  params: Record<string, unknown>,
+) => {
   try {
     await isOnline();
-    const r = await fetch(url + toQueryParams(params));
+    const r = await fetch(url + toQueryParams(params), {
+      headers: { Authorization: 'Bearer ' + token },
+    });
     const json = await r.json();
     if (Array.isArray(json)) {
       return processObjectArray(json) as T;
     }
     return processObject(json) as T;
-  } catch (error) {
-    isAppOnline = false;
-    throw error;
-  }
-};
-
-export const wrappedFetchRaw = async (url: string, config: RequestInit) => {
-  try {
-    await isOnline();
-    return fetch(url, config);
   } catch (error) {
     isAppOnline = false;
     throw error;

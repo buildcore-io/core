@@ -1,5 +1,13 @@
 import { build5Db } from '@build-5/database';
-import { COL, Nft, NftAvailable, NftStatus, WEN_FUNC, WenError } from '@build-5/interfaces';
+import {
+  COL,
+  Nft,
+  NftAvailable,
+  NftStatus,
+  SOON_PROJECT_ID,
+  WEN_FUNC,
+  WenError,
+} from '@build-5/interfaces';
 import { createMember, updateMember } from '../../src/runtime/firebase/member';
 import * as wallet from '../../src/utils/wallet.utils';
 import { MEDIA, testEnv } from '../../test/set-up';
@@ -72,6 +80,7 @@ describe('MemberController: ' + WEN_FUNC.updateMember, () => {
 
   it('Should set nft as avatar, then unset', async () => {
     const nft = {
+      project: SOON_PROJECT_ID,
       uid: wallet.getRandomEthAddress(),
       media: MEDIA,
       owner: dummyAddress,
@@ -100,6 +109,7 @@ describe('MemberController: ' + WEN_FUNC.updateMember, () => {
 
   it('Should set nft as avatar, when available field is missing', async () => {
     const nft = {
+      project: SOON_PROJECT_ID,
       uid: wallet.getRandomEthAddress(),
       media: MEDIA,
       owner: dummyAddress,
@@ -118,7 +128,11 @@ describe('MemberController: ' + WEN_FUNC.updateMember, () => {
     mockWalletReturnValue(walletSpy, dummyAddress, { avatarNft: wallet.getRandomEthAddress() });
     await expectThrow(testEnv.wrap(updateMember)({}), WenError.nft_does_not_exists.key);
 
-    const nft = { uid: wallet.getRandomEthAddress(), media: MEDIA };
+    const nft = {
+      project: SOON_PROJECT_ID,
+      uid: wallet.getRandomEthAddress(),
+      media: MEDIA,
+    };
     const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
 
     await nftDocRef.create(nft);

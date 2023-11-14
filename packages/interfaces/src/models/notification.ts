@@ -1,42 +1,29 @@
-import { BaseRecord, EthAddress } from './base';
+import { BaseRecord, NetworkAddress } from './base';
 export enum NotificationType {
   NEW_BID = 'NEW_BID',
   LOST_BID = 'LOST_BID',
   WIN_BID = 'WIN_BID',
 }
 
-export interface NotificationBidParams {
+interface NotificationParams {
   member: {
     name: string;
   };
   amount: number;
+  auction: string;
+  /**
+   * @deprecated The is not used anymore
+   */
   nft: {
     uid: string;
     name: string;
   };
 }
+export interface NotificationBidParams extends NotificationParams {}
 
-export interface NotificationWinBidParams {
-  member: {
-    name: string;
-  };
-  amount: number;
-  nft: {
-    uid: string;
-    name: string;
-  };
-}
+export interface NotificationWinBidParams extends NotificationParams {}
 
-export interface NotificationLostBidParams {
-  member: {
-    name: string;
-  };
-  amount: number;
-  nft: {
-    uid: string;
-    name: string;
-  };
-}
+export interface NotificationLostBidParams extends NotificationParams {}
 
 /**
  * Notification record.
@@ -44,9 +31,9 @@ export interface NotificationLostBidParams {
  * @deprecated
  */
 export interface Notification extends BaseRecord {
-  uid: EthAddress;
-  space?: EthAddress;
-  member?: EthAddress;
+  uid: NetworkAddress;
+  space?: NetworkAddress;
+  member?: NetworkAddress;
   type: NotificationType;
   params: NotificationBidParams | NotificationWinBidParams | NotificationLostBidParams;
 }

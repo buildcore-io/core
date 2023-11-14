@@ -6,8 +6,9 @@ import { Context } from '../common';
 export const createSpaceControl = async ({
   owner,
   params,
+  project,
 }: Context<SpaceCreateRequest>): Promise<Space> => {
-  const { space, guardian, member } = await getCreateSpaceData(owner, { ...params });
+  const { space, guardian, member } = await getCreateSpaceData(project, owner, { ...params });
 
   const batch = build5Db().batch();
 

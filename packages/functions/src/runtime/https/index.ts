@@ -2,6 +2,10 @@ import { NftCreateRequest, ProposalType, WEN_FUNC } from '@build-5/interfaces';
 import Joi from 'joi';
 import { validateAddressSchemaObject } from '../../controls/address/AddressValidationRequestSchema';
 import { validateAddressControl } from '../../controls/address/address.control';
+import { auctionBidSchema } from '../../controls/auction/AuctionBidRequestSchema';
+import { auctionCreateSchemaObject } from '../../controls/auction/AuctionCreateRequestSchema';
+import { auctionBidControl } from '../../controls/auction/auction.control';
+import { auctionCreateControl } from '../../controls/auction/auction.create.control';
 import { customTokenSchema } from '../../controls/auth/CutomTokenRequestSchema';
 import { generateCustomTokenControl } from '../../controls/auth/auth.control';
 import { approveAwardParticipantSchemaObject } from '../../controls/award/AwardApproveParticipantRequestSchema';
@@ -48,6 +52,9 @@ import { setForSaleNftControl } from '../../controls/nft/nft.set.for.sale';
 import { nftStakeControl } from '../../controls/nft/nft.stake';
 import { updateUnsoldNftControl } from '../../controls/nft/nft.update.unsold';
 import { withdrawNftControl } from '../../controls/nft/nft.withdraw';
+import { projectCreateSchema } from '../../controls/project/ProjectCreateRequestSchema';
+import { createProjectControl } from '../../controls/project/project.create.control';
+import { deactivateProjectControl } from '../../controls/project/project.deactivate.control';
 import { approveProposaSchema } from '../../controls/proposal/ProposalApproveRequestSchema';
 import { proposalCreateSchemaObject } from '../../controls/proposal/ProposalCreateRequestSchema';
 import { rejectProposaSchema } from '../../controls/proposal/ProposalRejectRequestSchema';
@@ -79,6 +86,8 @@ import { depositStakeSchemaObject } from '../../controls/stake/StakeTokenRequest
 import { depositStakeControl } from '../../controls/stake/stake.deposit';
 import { stakeRewardControl } from '../../controls/stake/stake.reward';
 import { removeStakeRewardControl } from '../../controls/stake/stake.reward.revoke';
+import { stampSchema } from '../../controls/stamp/StampRequestSchema';
+import { stampCreateControl } from '../../controls/stamp/stamp.create';
 import { symbolSchema } from '../../controls/token-minting/TokenClaimMintedRequestSchema';
 import { importMintedTokenSchema } from '../../controls/token-minting/TokenImportRequestSchema';
 import { mintTokenSchema } from '../../controls/token-minting/TokenMintRequestSchema';
@@ -111,12 +120,12 @@ import { voteSchema } from '../../controls/vote/VoteRequestSchema';
 import { voteControl } from '../../controls/vote/vote.control';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 import { onRequest } from './https';
-import { noAuth } from './middlewares';
+import { createMember, uploadFile } from './middlewares';
 
 exports[WEN_FUNC.createMember] = onRequest({
-  name: WEN_FUNC.updateMember,
+  name: WEN_FUNC.createMember,
   schema: Joi.object({}),
-  middleware: noAuth,
+  middleware: createMember,
   handler: createMemberControl,
 });
 
@@ -496,7 +505,36 @@ exports[WEN_FUNC.generateCustomToken] = onRequest({
 exports[WEN_FUNC.uploadFile] = onRequest({
   name: WEN_FUNC.uploadFile,
   schema: Joi.object({}),
-  schemaOptions: { allowUnknown: true },
-  middleware: noAuth,
+  middleware: uploadFile,
   handler: uploadFileControl,
+});
+
+exports[WEN_FUNC.stamp] = onRequest({
+  name: WEN_FUNC.stamp,
+  schema: stampSchema,
+  handler: stampCreateControl,
+});
+
+exports[WEN_FUNC.createProject] = onRequest({
+  name: WEN_FUNC.createProject,
+  schema: projectCreateSchema,
+  handler: createProjectControl,
+});
+
+exports[WEN_FUNC.deactivateProject] = onRequest({
+  name: WEN_FUNC.deactivateProject,
+  schema: toJoiObject({}),
+  handler: deactivateProjectControl,
+});
+
+exports[WEN_FUNC.bidAuction] = onRequest({
+  name: WEN_FUNC.bidAuction,
+  schema: auctionBidSchema,
+  handler: auctionBidControl,
+});
+
+exports[WEN_FUNC.createauction] = onRequest({
+  name: WEN_FUNC.createauction,
+  schema: auctionCreateSchemaObject,
+  handler: auctionCreateControl,
 });

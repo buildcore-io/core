@@ -4,6 +4,7 @@ import {
   PublicCollections,
   QUERY_MAX_LENGTH,
   QUERY_MIN_LENGTH,
+  TokenPurchaseAge,
 } from '@build-5/interfaces';
 import Joi from 'joi';
 import { combineLatest, map } from 'rxjs';
@@ -43,13 +44,16 @@ const purchaseQuery = (token: string, lowest?: boolean) => {
     return build5Db()
       .collection(PublicCollections.TOKEN_PURCHASE)
       .where('token', '==', token)
-      .orderBy('createdOn', 'desc')
-      .limit(1);
+      .orderBy('createdOn')
+      .limitToLast(1);
   }
-  return build5Db()
+  const query = build5Db()
     .collection(PublicCollections.TOKEN_PURCHASE)
     .where('token', '==', token)
-    .where('age.in7d', '==', true)
-    .orderBy('price', lowest ? 'asc' : 'desc')
-    .limit(1);
+    .where('age', 'array-contains', TokenPurchaseAge.IN_7_D)
+    .orderBy('price', 'asc');
+  if (lowest) {
+    return query.limit(1);
+  }
+  return query.limitToLast(1);
 };

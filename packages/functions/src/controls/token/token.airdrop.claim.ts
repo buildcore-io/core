@@ -25,6 +25,7 @@ import { Context } from '../common';
 export const claimAirdroppedTokenControl = async ({
   owner,
   params,
+  project,
 }: Context<ClaimPreMintedAirdroppedTokensRequest>): Promise<Transaction> => {
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
   const token = await tokenDocRef.get<Token>();
@@ -48,6 +49,7 @@ export const claimAirdroppedTokenControl = async ({
     const quantity = claimableDrops.reduce((sum, act) => sum + act.count, 0);
 
     const order: Transaction = {
+      project,
       type: TransactionType.ORDER,
       uid: tranId,
       member: owner,

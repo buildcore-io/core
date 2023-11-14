@@ -1,5 +1,5 @@
 import { build5Db } from '@build-5/database';
-import { COL, Collection, NftStake, StakeType } from '@build-5/interfaces';
+import { COL, Collection, NftStake, SOON_PROJECT_ID, StakeType } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { processExpiredNftStakes } from '../../src/cron/nftStake.cron';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -9,9 +9,15 @@ describe('Expired nft stake cron', () => {
   it('Should process expired nft stake', async () => {
     const collection = getRandomEthAddress();
     const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${collection}`);
-    await collectionDocRef.create({ uid: collection, name: 'asd', stakedNft: 2 });
+    await collectionDocRef.create({
+      project: SOON_PROJECT_ID,
+      uid: collection,
+      name: 'asd',
+      stakedNft: 2,
+    });
 
-    let nftStake = {
+    let nftStake: NftStake = {
+      project: SOON_PROJECT_ID,
       uid: getRandomEthAddress(),
       member: getRandomEthAddress(),
       space: getRandomEthAddress(),

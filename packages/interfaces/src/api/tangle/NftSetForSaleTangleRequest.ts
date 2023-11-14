@@ -40,6 +40,10 @@ export interface NftSetForSaleTangleRequest {
    */
   extendedAuctionLength?: number;
   /**
+   * Defines the minimum increment of a subsequent bid. Minimum 1000000, maximum 1000000000000
+   */
+  minimalBidIncrement?: number;
+  /**
    * Build5 id of the nft.
    */
   nft: string;

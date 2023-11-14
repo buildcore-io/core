@@ -1,13 +1,12 @@
 import { build5Db } from '@build-5/database';
 import { COL, Transaction, TransactionPayloadType, TransactionType } from '@build-5/interfaces';
 import { get, isEmpty } from 'lodash';
+import { getProject } from '../../utils/common.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-import { TransactionMatch, TransactionService } from './transaction-service';
+import { BaseService, HandlerParams } from './base';
 
-export class CreditService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleCreditUnrefundableOrder = async (order: Transaction, match: TransactionMatch) => {
+export class CreditService extends BaseService {
+  public handleRequest = async ({ order, match }: HandlerParams) => {
     const payment = await this.transactionService.createPayment(order, match);
 
     const transactionDocRef = build5Db().doc(
@@ -25,7 +24,8 @@ export class CreditService {
     }
 
     this.transactionService.markAsReconciled(order, match.msgId);
-    const credit = <Transaction>{
+    const credit: Transaction = {
+      project: getProject(order),
       type: TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED,
       uid: getRandomEthAddress(),
       space: order.space,

@@ -1,5 +1,13 @@
 import { build5Db } from '@build-5/database';
-import { COL, DecodedToken, Member, WEN_FUNC, WenError, WenRequest } from '@build-5/interfaces';
+import {
+  COL,
+  DecodedToken,
+  Member,
+  NetworkAddress,
+  WEN_FUNC,
+  WenError,
+  WenRequest,
+} from '@build-5/interfaces';
 import { Ed25519Signature, INodeInfo, Utils } from '@iota/sdk';
 import { recoverPersonalSignature } from '@metamask/eth-sig-util';
 import { randomBytes } from 'crypto';
@@ -9,10 +17,7 @@ import jwt from 'jsonwebtoken';
 import { get } from 'lodash';
 import { WalletService } from '../services/wallet/wallet.service';
 import { getCustomTokenLifetime, getJwtSecretKey } from './config.utils';
-import { unAuthenticated } from './error.utils';
-
-export const minAddressLength = 42;
-export const maxAddressLength = 255;
+import { invalidArgument, unAuthenticated } from './error.utils';
 
 const toHex = (stringToConvert: string) =>
   stringToConvert
@@ -20,28 +25,30 @@ const toHex = (stringToConvert: string) =>
     .map((c) => c.charCodeAt(0).toString(16).padStart(2, '0'))
     .join('');
 
-export async function decodeAuth(req: WenRequest, func: WEN_FUNC): Promise<DecodedToken> {
+export const decodeAuth = async (req: WenRequest, func: WEN_FUNC): Promise<DecodedToken> => {
   if (!req) {
     throw unAuthenticated(WenError.invalid_params);
   }
 
+  const project = getProject(req);
+
   if (req.signature && req.publicKey) {
     const address = await validateWithPublicKey(req);
-    return { address, body: req.body };
+    return { address, project, body: req.body };
   }
 
   if (req.signature) {
     await validateWithSignature(req);
-    return { address: req.address, body: req.body };
+    return { address: req.address, project, body: req.body };
   }
 
   if (req.customToken) {
     await validateWithIdToken(req, func);
-    return { address: req.address, body: req.body };
+    return { address: req.address, project, body: req.body };
   }
 
   throw unAuthenticated(WenError.signature_or_custom_token_must_be_provided);
-}
+};
 
 const validateWithSignature = async (req: WenRequest) => {
   const member = await getMember(req.address);
@@ -98,7 +105,7 @@ const validatePubKey = async (info: INodeInfo, req: WenRequest) => {
   return { member, address: bech32Address };
 };
 
-const getMember = async (address: string) => {
+const getMember = async (address: NetworkAddress) => {
   const memberDocRef = build5Db().doc(`${COL.MEMBER}/${address}`);
   const member = await memberDocRef.get<Member>();
   if (!member) {
@@ -135,3 +142,16 @@ export function getRandomEthAddress() {
 }
 
 export const getRandomNonce = () => Math.floor(Math.random() * 1000000).toString();
+
+export const getProject = (req: WenRequest) => {
+  try {
+    const decoded = jwt.verify(req.projectApiKey, getJwtSecretKey());
+    const project = get(decoded, 'project', '');
+    if (!project) {
+      throw invalidArgument(WenError.invalid_project_api_key);
+    }
+    return project;
+  } catch {
+    throw invalidArgument(WenError.invalid_project_api_key);
+  }
+};

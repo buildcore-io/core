@@ -15,6 +15,7 @@ import { Context } from '../common';
 export const addOwnerControl = async ({
   owner,
   params,
+  project,
 }: Context<AwardAddOwnerRequest>): Promise<AwardOwner> => {
   const awardDocRef = build5Db().doc(`${COL.AWARD}/${params.uid}`);
   const award = await awardDocRef.get<Award>();
@@ -33,6 +34,7 @@ export const addOwnerControl = async ({
   }
 
   const newOwner: AwardOwner = {
+    project,
     uid: params.member,
     parentId: award.uid,
     parentCol: COL.AWARD,

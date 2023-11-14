@@ -44,10 +44,10 @@ function init(outputFile) {
   // fs.appendFileSync(outputFile, '        with:\n');
   // fs.appendFileSync(outputFile, '          api_key: ${{ secrets.FORESIGHT_KEY }}\n');
   // end
-  fs.appendFileSync(outputFile, '      - uses: actions/checkout@v3\n');
-  fs.appendFileSync(outputFile, '      - uses: actions/setup-node@v3\n');
+  fs.appendFileSync(outputFile, '      - uses: actions/checkout@v4\n');
+  fs.appendFileSync(outputFile, '      - uses: actions/setup-node@v4\n');
   fs.appendFileSync(outputFile, '        with:\n');
-  fs.appendFileSync(outputFile, '          node-version: 16.x\n');
+  fs.appendFileSync(outputFile, '          node-version: 20.x\n');
   fs.appendFileSync(outputFile, '      - uses: actions/cache@v3\n');
   fs.appendFileSync(outputFile, '        id: cache\n');
   fs.appendFileSync(outputFile, '        with:\n');
@@ -77,10 +77,10 @@ function job(outputFile, chunk, files, commandName) {
   // fs.appendFileSync(outputFile, '        with:\n');
   // fs.appendFileSync(outputFile, '          api_key: ${{ secrets.FORESIGHT_KEY }}\n');
   // end
-  fs.appendFileSync(outputFile, `      - uses: actions/checkout@v3\n`);
-  fs.appendFileSync(outputFile, `      - uses: actions/setup-node@v3\n`);
+  fs.appendFileSync(outputFile, `      - uses: actions/checkout@v4\n`);
+  fs.appendFileSync(outputFile, `      - uses: actions/setup-node@v4\n`);
   fs.appendFileSync(outputFile, `        with:\n`);
-  fs.appendFileSync(outputFile, `          node-version: 16.x\n`);
+  fs.appendFileSync(outputFile, `          node-version: 20.x\n`);
   fs.appendFileSync(outputFile, `      - uses: actions/cache@v3\n`);
   fs.appendFileSync(outputFile, `        with:\n`);
   fs.appendFileSync(outputFile, `          path: |\n`);
@@ -134,7 +134,7 @@ function job(outputFile, chunk, files, commandName) {
 
   // Coverage & test results via foresight
   fs.appendFileSync(outputFile, `      - name: Archive firestore data\n`);
-  fs.appendFileSync(outputFile, `        uses: actions/upload-artifact@v3\n`);
+  fs.appendFileSync(outputFile, `        uses: actions/upload-artifact@v4\n`);
   fs.appendFileSync(outputFile, '        if: ${{ failure() }}\n');
   fs.appendFileSync(outputFile, `        with:\n`);
   fs.appendFileSync(outputFile, `           name: firestore-data-${commandName}-chunk_${chunk}\n`);
@@ -194,6 +194,7 @@ function createEmulatedOnlineTest() {
   init(emulatedOnlineTestFile);
   const files = glob
     .sync(`./test/**/*.spec.ts`)
+    .filter((f) => !f.includes('exclude'))
     .filter((f) => !f.includes('only.spec.ts'))
     .filter((f) => !f.includes('dbRoll'));
   chunk(files, emulatorChunkSize).forEach((chunk, i) =>

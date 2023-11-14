@@ -132,12 +132,11 @@ export class Helper {
     await wait(async () => (await build5Db().doc(`${COL.NFT}/${uid}`).get<Nft>())?.available === 3);
   };
 
-  public setAvailableForSale = async () => {
-    mockWalletReturnValue(this.walletSpy, this.guardian!, this.dummySaleData(this.nft!.uid));
+  public setAvailableForSale = async (nftId?: string) => {
+    const uid = nftId || this.nft!.uid;
+    mockWalletReturnValue(this.walletSpy, this.guardian!, this.dummySaleData(uid));
     await testEnv.wrap(setForSaleNft)({});
-    await wait(
-      async () => (await build5Db().doc(`${COL.NFT}/${this.nft!.uid}`).get<Nft>())?.available === 1,
-    );
+    await wait(async () => (await build5Db().doc(`${COL.NFT}/${uid}`).get<Nft>())?.available === 1);
   };
 
   public createDummyCollection = (space: string, royaltiesSpace: string, type: CollectionType) => ({

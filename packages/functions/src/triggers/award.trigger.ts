@@ -10,6 +10,7 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 import { getAddress } from '../utils/address.utils';
+import { getProject } from '../utils/common.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 import { FirestoreDocEvent } from './common';
 
@@ -29,6 +30,7 @@ export const onAwardUpdated = async (event: FirestoreDocEvent<Award>) => {
     const targetAddress = getAddress(member, curr.network);
 
     const burnAlias = <Transaction>{
+      project: getProject(curr),
       type: TransactionType.AWARD,
       uid: getRandomEthAddress(),
       space: curr.space,

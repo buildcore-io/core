@@ -6,8 +6,10 @@ import {
   Collection,
   CollectionType,
   MIN_IOTA_AMOUNT,
+  NetworkAddress,
   Nft,
   NftAccess,
+  SOON_PROJECT_ID,
   Space,
   Transaction,
   TransactionPayloadType,
@@ -72,7 +74,7 @@ const dummyNft = (
   price: priceMi * 1000 * 1000,
 });
 
-const createCollectionFunc = async <T>(address: string, params: T) => {
+const createCollectionFunc = async <T>(address: NetworkAddress, params: T) => {
   mockWalletReturnValue(walletSpy, address, params);
   const cCollection = await testEnv.wrap(createCollection)({});
   expect(cCollection?.uid).toBeDefined();
@@ -83,14 +85,14 @@ const createCollectionFunc = async <T>(address: string, params: T) => {
   return <Collection>cCollection;
 };
 
-const createNftFunc = async <T>(address: string, params: T) => {
+const createNftFunc = async <T>(address: NetworkAddress, params: T) => {
   mockWalletReturnValue(walletSpy, address, params);
   const nft = await testEnv.wrap(createNft)({});
   expect(nft?.createdOn).toBeDefined();
   return <Nft>nft;
 };
 
-const submitOrderFunc = async <T>(address: string, params: T) => {
+const submitOrderFunc = async <T>(address: NetworkAddress, params: T) => {
   mockWalletReturnValue(walletSpy, address, params);
   const order = await testEnv.wrap(orderNft)({});
   expect(order?.createdOn).toBeDefined();
@@ -476,6 +478,7 @@ describe('Ordering flows', () => {
     );
 
     let badge = {
+      project: SOON_PROJECT_ID,
       member,
       type: TransactionType.AWARD,
       uid: wallet.getRandomEthAddress(),
@@ -488,6 +491,7 @@ describe('Ordering flows', () => {
     );
 
     badge = {
+      project: SOON_PROJECT_ID,
       member,
       type: TransactionType.AWARD,
       uid: wallet.getRandomEthAddress(),

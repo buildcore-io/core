@@ -18,6 +18,7 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty, last } from 'lodash';
+import { getProject } from '../utils/common.utils';
 import { serverTime } from '../utils/dateTime.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 export const stakeRewardCronTask = async () => {
@@ -126,6 +127,7 @@ const createAirdrops = async (
       await distributionDocRef.update({ extraStakeRewards: build5Db().inc(-reward.value) });
 
       const billPayment: Transaction = {
+        project: getProject(stakeReward),
         type: TransactionType.BILL_PAYMENT,
         uid: getRandomEthAddress(),
         member: reward.member,
@@ -157,6 +159,7 @@ const createAirdrops = async (
 
     const batch = build5Db().batch();
     const airdrop: TokenDrop = {
+      project: getProject(stakeReward),
       uid: getRandomEthAddress(),
       createdBy: 'system',
       member: reward.member,

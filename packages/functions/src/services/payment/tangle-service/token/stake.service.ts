@@ -1,8 +1,6 @@
 import { build5Db } from '@build-5/database';
 import {
   COL,
-  MilestoneTransaction,
-  MilestoneTransactionEntry,
   StakeType,
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
@@ -20,21 +18,15 @@ import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getTokenBySymbol } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet.service';
-import { TransactionService } from '../../transaction-service';
+import { BaseService, HandlerParams } from '../../base';
 import { depositStakeSchemaObject } from './TokenStakeTangleRequestSchema';
 
-export class TangleStakeService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleStaking = async (
-    tran: MilestoneTransaction,
-    tranEntry: MilestoneTransactionEntry,
-    owner: string,
-    request: Record<string, unknown>,
-  ) => {
+export class TangleStakeService extends BaseService {
+  public handleRequest = async ({ owner, request, tran, tranEntry, project }: HandlerParams) => {
     const params = await assertValidationAsync(depositStakeSchemaObject, request);
 
     const order = await createStakeOrder(
+      project,
       owner,
       params.symbol,
       params.weeks,
@@ -61,6 +53,7 @@ export class TangleStakeService {
 }
 
 export const createStakeOrder = async (
+  project: string,
   owner: string,
   symbol: string,
   weeks: number,
@@ -91,6 +84,7 @@ export const createStakeOrder = async (
     vestingAt: dateToTimestamp(dayjs().add(weeks, 'weeks').toDate()),
   });
   return {
+    project,
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
     member: owner,

@@ -1,0 +1,18 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "auction",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "active",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "auctionTo",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ]
+}

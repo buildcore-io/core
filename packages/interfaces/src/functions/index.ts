@@ -1,4 +1,4 @@
-import { EthAddress } from '../models/base';
+import { NetworkAddress } from '../models/base';
 
 export enum WEN_FUNC {
   // Member functions
@@ -83,14 +83,23 @@ export enum WEN_FUNC {
   generateCustomToken = 'generatecustomtoken',
 
   uploadFile = 'uploadfile',
+
+  createProject = 'createproject',
+  deactivateProject = 'deactivateproject',
+  createProjetApiKey = 'createprojetapikey',
+
+  stamp = 'stamp',
+  createauction = 'createauction',
+  bidAuction = 'bidauction',
 }
 
 export interface cMemberNotExists {
-  address: EthAddress;
+  address: NetworkAddress;
 }
 
 export interface DecodedToken {
-  address: string;
+  address: NetworkAddress;
+  project: string;
   body: any;
 }
 

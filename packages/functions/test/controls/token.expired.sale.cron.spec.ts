@@ -2,6 +2,7 @@ import { build5Db } from '@build-5/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
+  SOON_PROJECT_ID,
   SUB_COL,
   Token,
   TokenDistribution,
@@ -49,6 +50,7 @@ describe('Expired sales cron', () => {
       status: TokenTradeOrderStatus,
       type: TokenTradeOrderType,
     ): TokenTradeOrder => ({
+      project: SOON_PROJECT_ID,
       uid: wallet.getRandomEthAddress(),
       owner: seller,
       token: token.uid,
