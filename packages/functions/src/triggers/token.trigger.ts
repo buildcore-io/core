@@ -427,7 +427,9 @@ const setIpfsData = async (token: Token) => {
 const onTokenVaultEmptied = async (token: Token) => {
   const wallet = await WalletService.newWallet(token.mintingData?.network);
   const { amount: vaultBalance } = await wallet.getBalance(token.mintingData?.vaultAddress!);
-  const minter = await build5Db().doc(`${COL.MEMBER}/${token.mintingData?.mintedBy}`).get<Member>();
+  const minter = await build5Db()
+    .doc(`${COL.MEMBER}/${token.mintingData?.mintedBy}`)
+    .get<Member>();
   const paymentsSnap = await build5Db()
     .collection(COL.TRANSACTION)
     .where('type', '==', TransactionType.PAYMENT)

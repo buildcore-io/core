@@ -8,7 +8,10 @@ class Observable<T> extends RxjsObservable<T> {
   private observer: Subscriber<T> | undefined;
   private ws: WebSocket | undefined;
 
-  constructor(protected readonly env: Build5Env, private readonly url: string) {
+  constructor(
+    protected readonly env: Build5Env,
+    private readonly url: string,
+  ) {
     super((observer) => {
       this.observer = observer;
       this.init();

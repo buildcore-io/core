@@ -106,8 +106,8 @@ const runTradeOrderMatching = async (
           ? prevBuy.price
           : prevSell.price
         : isSell
-        ? prevSell.price
-        : prevBuy.price;
+          ? prevSell.price
+          : prevBuy.price;
       const triggeredBy = isSell ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY;
       const { purchase, buyerCreditId } = await matcher(
         transaction,

@@ -37,7 +37,7 @@ const dummyToken = (space: string) =>
     termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
     access: 0,
     decimals: 6,
-  } as any);
+  }) as any;
 
 describe('Token vote test', () => {
   let memberAddress: NetworkAddress;

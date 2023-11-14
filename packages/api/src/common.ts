@@ -20,11 +20,14 @@ export const getQueryParams = <T>(url: string, schema: Joi.ObjectSchema): T => {
 
 const queryStrToParams = (url: string) => {
   const strParams = new URLSearchParams(url);
-  return [...strParams.entries()].reduce((acc, [key, value]) => {
-    const k = key.replace('[]', '');
-    const v = key.endsWith('[]') ? [...(acc[k] || []), value] : value;
-    return { ...acc, [k]: v };
-  }, {} as { [k: string]: any });
+  return [...strParams.entries()].reduce(
+    (acc, [key, value]) => {
+      const k = key.replace('[]', '');
+      const v = key.endsWith('[]') ? [...(acc[k] || []), value] : value;
+      return { ...acc, [k]: v };
+    },
+    {} as { [k: string]: any },
+  );
 };
 
 export const isHiddenNft = (collection: PublicCollections, data?: Record<string, unknown>) =>

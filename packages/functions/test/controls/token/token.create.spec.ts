@@ -42,7 +42,7 @@ const dummyToken = (space: string) =>
     termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
     access: 0,
     decimals: 5,
-  } as any);
+  }) as any;
 
 describe('Token controller: ' + WEN_FUNC.createToken, () => {
   let memberAddress: NetworkAddress;
