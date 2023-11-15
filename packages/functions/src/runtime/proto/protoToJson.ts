@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Timestamp } from '@build-5/interfaces';
 import { set } from 'lodash';
 import { Message } from 'protobufjs';
 
@@ -28,10 +29,14 @@ const valueToJson = (data: { [key: string]: any }): any => {
     case 'nullValue':
       return null;
     case 'booleanValue':
+      return Boolean(value);
     case 'integerValue':
     case 'doubleValue':
+      return Number(value);
     case 'timestampValue':
+      return new Timestamp(Number(value.seconds), Number(value._nanoseconds || 0));
     case 'stringValue':
+      return String(value);
     case 'bytes':
     case 'referenceValue':
       return value;
