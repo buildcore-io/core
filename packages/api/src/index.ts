@@ -1,5 +1,5 @@
 require('dotenv').config({ path: __dirname + '/.env' });
-import { ApiRoutes } from '@build-5/interfaces';
+import { ApiRoutes, WenError } from '@build-5/interfaces';
 import cors from 'cors';
 import express from 'express';
 import jwt from 'jsonwebtoken';
@@ -59,16 +59,16 @@ const onConnection = async (url: URL, res: express.Response | ws.WebSocket) => {
       sendLiveUpdates(res, observable);
       return;
     }
-    observable.pipe(first()).subscribe((r) => {
-      res.send(r);
+    observable.pipe(first()).subscribe({
+      next: (r) => {
+        res.send(r);
+      },
+      error: (error) => {
+        onError(url, res, error);
+      },
     });
   } catch (error: any) {
-    if (res instanceof ws.WebSocket) {
-      res.close(1003, error.message || 'Unknown');
-      return;
-    }
-    res.status(error.code || 500);
-    res.send(error.message || 'Unknown');
+    onError(url, res, error);
   }
 };
 
@@ -102,7 +102,7 @@ const getObservable = (project: string, url: URL): Promise<Observable<unknown>> 
     case ApiRoutes.GET_NFT_MUTABLE_METADATA_HISTORY:
       return getNftMutableMetadataHistory(url.href);
     default:
-      throw { code: 400, message: 'Invalid route' };
+      throw { code: 400, message: WenError.invalid_route };
   }
 };
 
@@ -112,10 +112,28 @@ const getProjectId = (url: URL) => {
     const payload = jwt.verify(jwtToken || '', process.env.JWT_SECRET!);
     const project = get(payload, 'project', '');
     if (!project) {
-      throw { code: 401, message: 'Unauthorized' };
+      throw { code: 401, message: WenError.invalid_project_api_key };
     }
     return project;
   } catch {
-    throw { code: 401, message: 'Unauthorized' };
+    throw { code: 401, message: WenError.invalid_project_api_key };
   }
+};
+
+const onError = (url: URL, res: express.Response | ws.WebSocket, error: any) => {
+  console.error(url.href, error);
+  if (res instanceof ws.WebSocket) {
+    res.close(1003, error.message || 'Unknown');
+    return;
+  }
+  res.status(error.code || 500);
+  res.send(getMessage(error));
+};
+
+const getMessage = (error: any) => {
+  const publicMessages = Object.values(WenError).map((e) => e.key);
+  if (error.code === 400 || publicMessages.includes(error.message || '')) {
+    return error.message;
+  }
+  return 'Unknown';
 };

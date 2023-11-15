@@ -1,5 +1,5 @@
 import { build5Db } from '@build-5/database';
-import { COL, Mnemonic, NetworkAddress, Transaction } from '@build-5/interfaces';
+import { COL, MAX_WALLET_RETRY, Mnemonic, NetworkAddress, Transaction } from '@build-5/interfaces';
 import { isEmpty } from 'lodash';
 import { FirestoreDocEvent } from './common';
 
@@ -25,14 +25,12 @@ export const onMnemonicUpdated = async (event: FirestoreDocEvent<Mnemonic>) => {
   }
 };
 
-const MAX_COUNT = [0, 1, 2, 3, 4, 5];
-
 const getUncofirmedTransactionsId = async (address: NetworkAddress) => {
   const transactions = await build5Db()
     .collection(COL.TRANSACTION)
     .or(Object.values(FieldNameType).map((fieldPath) => ({ fieldPath, value: address })))
     .where('payload.walletReference.confirmed', '==', false)
-    .where('payload.walletReference.count', 'in', MAX_COUNT)
+    .where('payload.walletReference.count', '<', MAX_WALLET_RETRY)
     .limit(1)
     .get<Transaction>();
   if (transactions.length) {
