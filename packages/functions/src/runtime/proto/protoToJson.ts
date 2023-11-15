@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Timestamp } from '@build-5/interfaces';
+import { Timestamp } from 'firebase-admin/firestore';
 import { set } from 'lodash';
 import { Message } from 'protobufjs';
 
@@ -34,7 +34,7 @@ const valueToJson = (data: { [key: string]: any }): any => {
     case 'doubleValue':
       return Number(value);
     case 'timestampValue':
-      return new Timestamp(Number(value.seconds), Number(value._nanoseconds || 0));
+      return new Timestamp(Number(value.seconds), Number(value.nanos || 0));
     case 'stringValue':
       return String(value);
     case 'bytes':
