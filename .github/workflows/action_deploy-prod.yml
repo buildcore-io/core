@@ -76,7 +76,7 @@ jobs:
         with:
           node-version: 20
       - name: Deploy indexes
-        uses: w9jds/firebase-action@master
+        uses: w9jds/firebase-action@v12.8.0
         with:
           args: deploy --only firestore:indexes -f
         env:
