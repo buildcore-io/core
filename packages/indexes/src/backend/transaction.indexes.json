@@ -21,6 +21,25 @@
           "order": "ASCENDING"
         }
       ]
+    },
+
+    {
+      "collectionGroup": "transaction",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "payload.reconciled",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "payload.type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ]
 }
