@@ -63,7 +63,7 @@ jobs:
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/nft/nft.bidding.extends.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-online-chunk_0
@@ -104,7 +104,7 @@ jobs:
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/proposal.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-online-chunk_1
@@ -145,7 +145,7 @@ jobs:
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/token-trade.sell.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-online-chunk_2
@@ -186,7 +186,7 @@ jobs:
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/token/token.create.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-online-chunk_3
@@ -227,7 +227,7 @@ jobs:
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/workflow.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-online-chunk_4
@@ -267,7 +267,7 @@ jobs:
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/storage/resize.img.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-online-chunk_5
