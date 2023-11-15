@@ -59,7 +59,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/award-tangle/award-tangle_1.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_0
@@ -96,7 +96,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/award-tangle/award-tangle_4.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_1
@@ -133,7 +133,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/award-tangle/award-tangle_7.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_2
@@ -170,7 +170,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/award/award_2.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_3
@@ -207,7 +207,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/award/award_5.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_4
@@ -244,7 +244,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/award/award_8.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_5
@@ -281,7 +281,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_10.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_6
@@ -318,7 +318,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_11_c.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_7
@@ -355,7 +355,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_13.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_8
@@ -392,7 +392,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_4.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_9
@@ -429,7 +429,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_7.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_10
@@ -466,7 +466,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_1.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_11
@@ -503,7 +503,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_12.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_12
@@ -540,7 +540,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_4_b.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_13
@@ -577,7 +577,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_6.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_14
@@ -614,7 +614,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_9.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_15
@@ -651,7 +651,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_2.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_16
@@ -688,7 +688,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_4.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_17
@@ -725,7 +725,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_6.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_18
@@ -762,7 +762,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_1.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_19
@@ -799,7 +799,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_3.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_20
@@ -836,7 +836,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_6.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_21
@@ -873,7 +873,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_1_a.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_22
@@ -910,7 +910,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_2.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_23
@@ -947,7 +947,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-claim/token.claim.minted_1.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_24
@@ -984,7 +984,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-claim/token.claim.minted_4.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_25
@@ -1021,7 +1021,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-claim/token.claim.minted_7.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_26
@@ -1058,7 +1058,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_11.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_27
@@ -1095,7 +1095,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_13.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_28
@@ -1132,7 +1132,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_16.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_29
@@ -1169,7 +1169,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_19.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_30
@@ -1206,7 +1206,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_3.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_31
@@ -1243,7 +1243,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_6.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_32
@@ -1280,7 +1280,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_9.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_33
@@ -1317,7 +1317,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/nft-bid/nft-bid.otr_3.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_34
@@ -1354,7 +1354,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/nft-set-for-sale/nft-set-for-sale_2.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_35
@@ -1391,7 +1391,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/nft-staking/nft-staking_2_b.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_36
@@ -1428,7 +1428,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/nft-staking/nft-staking_4.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_37
@@ -1465,7 +1465,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/nft-staking/nft-staking_7.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_38
@@ -1502,7 +1502,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/proposal-tangle/proposal.create.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_39
@@ -1539,7 +1539,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/proposal-tangle/proposal.token.voting.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_40
@@ -1576,7 +1576,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/space-tangle/space.create.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_41
@@ -1613,7 +1613,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/space-tangle/space.join.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_42
@@ -1650,7 +1650,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/staking/staking_2.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_43
@@ -1687,7 +1687,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/staking/staking_5.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_44
@@ -1724,7 +1724,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/stamp-tangle/stamp-tangle_3.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_45
@@ -1761,7 +1761,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/stamp-tangle/stamp-tangle_6.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_46
@@ -1798,7 +1798,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/token-import/token.import_1.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_47
@@ -1835,7 +1835,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/token.based.voting/token.based.voting_1.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_48
@@ -1872,7 +1872,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/token.based.voting/token.based.voting_4.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_49
@@ -1909,7 +1909,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/token.mint/token.mint_2.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_50
@@ -1946,7 +1946,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/trade-base-token-order.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_51
@@ -1983,7 +1983,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_10.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_52
@@ -2020,7 +2020,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_13.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_53
@@ -2057,7 +2057,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_4.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_54
@@ -2094,7 +2094,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_7.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_55
@@ -2131,7 +2131,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/web3/web3_2.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_56
@@ -2168,7 +2168,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1_b.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_57
@@ -2205,7 +2205,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_10_2.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_58
@@ -2242,7 +2242,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_12_a.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_59
@@ -2279,7 +2279,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_14.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_60
@@ -2316,7 +2316,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_4.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_61
@@ -2353,7 +2353,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_7.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_62
@@ -2390,7 +2390,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/workflow-online.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_63
@@ -2425,7 +2425,7 @@ jobs:
                 npm run test-tangle-online:ci -- --forceExit --findRelatedTests ./test-tangle/workflow.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-online-chunk_64
