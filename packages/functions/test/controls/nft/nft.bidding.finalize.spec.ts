@@ -27,10 +27,6 @@ describe('Should finalize bidding', () => {
 
   beforeEach(async () => {
     await h.beforeEach();
-  });
-
-  beforeEach(async () => {
-    await h.beforeEach();
     mockWalletReturnValue(h.spy, h.member, dummyAuctionData(h.nft.uid));
     await testEnv.wrap(setForSaleNft)({});
     await wait(async () => {
@@ -106,5 +102,21 @@ describe('Should finalize bidding', () => {
 
     const auction = <Auction>await auctionDocRef.get();
     expect(auction.active).toBe(false);
+  });
+
+  it('Should finalize it, no bids', async () => {
+    const auctionDocRef = build5Db().doc(`${COL.AUCTION}/${h.nft.auction}`);
+    await auctionDocRef.update({ auctionTo: dateToTimestamp(dayjs().subtract(1, 'minute')) });
+    await finalizeAuctions();
+
+    const nftDocRef = build5Db().doc(`${COL.NFT}/${h.nft.uid}`);
+    await wait(async () => {
+      h.nft = <Nft>await nftDocRef.get();
+      return h.nft.available === NftAvailable.SALE;
+    });
+    expect(h.nft.owner).toBe(h.member);
+    expect(h.nft.auctionFrom).toBeNull();
+    expect(h.nft.auctionTo).toBeNull();
+    expect(h.nft.auction).toBeNull();
   });
 });

@@ -137,6 +137,12 @@ describe('Open auction bid', () => {
     expect(billPayments[1].payload.targetAddress).toBe(targetAddress.bech32);
   });
 
+  it('Should finalize open auction, no bids', async () => {
+    const auctionDocRef = build5Db().doc(`${COL.AUCTION}/${h.auction.uid}`);
+    await auctionDocRef.update({ auctionTo: dateToTimestamp(dayjs().subtract(1, 'minute')) });
+    await finalizeAuctions();
+  });
+
   const awaitPayments = (query: IQuery, count: number) =>
     wait(async () => {
       const snap = await query.get();

@@ -67,6 +67,7 @@ export class AuctionFinalizeService {
         },
         action: 'update',
       });
+      return;
     }
 
     const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${auction.bids[0].order}`);
