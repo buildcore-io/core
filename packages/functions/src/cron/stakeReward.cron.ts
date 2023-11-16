@@ -122,9 +122,9 @@ const createAirdrops = async (
     const distributionDocRef = build5Db().doc(
       `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${reward.member}`,
     );
-    const distribution = <TokenDistribution>await distributionDocRef.get();
+    const distribution = await distributionDocRef.get<TokenDistribution>();
 
-    if (distribution.extraStakeRewards && distribution.extraStakeRewards > 0) {
+    if (distribution?.extraStakeRewards && distribution.extraStakeRewards > 0) {
       await distributionDocRef.update({ extraStakeRewards: build5Db().inc(-reward.value) });
 
       const billPayment: Transaction = {
@@ -175,7 +175,16 @@ const createAirdrops = async (
     const airdropDocRef = build5Db().doc(`${COL.AIRDROP}/${airdrop.uid}`);
     batch.create(airdropDocRef, airdrop);
 
-    batch.set(distributionDocRef, { stakeRewards: build5Db().inc(reward.value) }, true);
+    batch.set(
+      distributionDocRef,
+      {
+        parentId: token.uid,
+        parentCol: COL.TOKEN,
+        uid: reward.member,
+        stakeRewards: build5Db().inc(reward.value),
+      },
+      true,
+    );
     await batch.commit();
 
     return reward.value;

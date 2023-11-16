@@ -1,8 +1,9 @@
 name: Action | Deploy to Production
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - stake_reward_cron
 
 jobs:
   deploy_api:
