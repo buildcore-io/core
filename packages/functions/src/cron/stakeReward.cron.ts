@@ -21,7 +21,8 @@ import { isEmpty, last } from 'lodash';
 import { getProject } from '../utils/common.utils';
 import { serverTime } from '../utils/dateTime.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
-export const stakeRewardCronTask = async () => {
+
+export const onStakeRewardExpired = async () => {
   const stakeRewards = await getDueStakeRewards();
 
   for (const stakeReward of stakeRewards) {

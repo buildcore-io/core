@@ -115,7 +115,7 @@ export const STORAGE_TRIGGER_SCALE: { [key: string]: RuntimeOptions } = {
 };
 
 export const CRON_TRIGGER_SCALE: { [key: string]: RuntimeOptions } = {
-  [WEN_SCHEDULED.stakeReward]: { timeoutSeconds: 540, memory: '1GiB' },
+  [WEN_SCHEDULED.onStakeRewardExpired]: { timeoutSeconds: 540, memory: '1GiB' },
   [WEN_SCHEDULED.mediaUpload]: { memory: '4GiB' },
   [WEN_SCHEDULED.updateFloorPriceOnCollections]: { timeoutSeconds: 1800 },
 };

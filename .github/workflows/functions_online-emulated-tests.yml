@@ -262,6 +262,7 @@ jobs:
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/cron/nft-stake.cron.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/cron/proposal.cron.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/db.roll.spec.ts &&
+                npm run test-online:ci -- --forceExit --findRelatedTests ./test/naming.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/stake/delete.stake.reward.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/stake/stake.reward.cron.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/storage/resize.img.spec.ts 
