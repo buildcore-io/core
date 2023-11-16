@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { API_RETRY_TIMEOUT } from '@build-5/interfaces';
 import { Observable as RxjsObservable, Subscriber, shareReplay } from 'rxjs';
 import { Build5Env, TOKENS } from './Config';
@@ -22,14 +23,18 @@ class Observable<T> extends RxjsObservable<T> {
   private init = async () => {
     try {
       const url = new URL(this.url.replace('http', 'ws'));
-      url.searchParams.append('token', TOKENS[this.env]);
       this.ws = new WebSocket(url);
+      this.ws?.addEventListener('open', this.onOpen);
       this.ws?.addEventListener('message', this.onMessage);
       this.ws?.addEventListener('error', this.onError);
       this.ws?.addEventListener('close', this.onClose);
     } catch {
       await this.onThrow();
     }
+  };
+
+  private onOpen = () => {
+    this.ws!.send(TOKENS[this.env]);
   };
 
   private onMessage = (message: MessageEvent) => {

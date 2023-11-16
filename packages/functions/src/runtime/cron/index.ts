@@ -79,7 +79,7 @@ exports[WEN_SCHEDULED.removeExpiredNftStakes] = onSchedule({
 
 exports[WEN_SCHEDULED.updateFloorPriceOnCollections] = onSchedule({
   runtimeOptions: CRON_TRIGGER_SCALE[WEN_SCHEDULED.updateFloorPriceOnCollections],
-  schedule: 'every 5 minutes',
+  schedule: 'every 1 hours',
   handler: updateFloorPriceOnCollections,
 });
 
