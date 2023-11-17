@@ -51,7 +51,7 @@ Object.entries(flattenObject(onTriggers)).forEach(([name, config]) => {
       path: get(cloudEvent, 'document', ''),
       ...pathToParts(get(cloudEvent, 'document', '')),
     };
-    (config as TriggeredFunction).handler(event);
+    await (config as TriggeredFunction).handler(event);
     res.sendStatus(200);
   });
 });
@@ -59,7 +59,7 @@ Object.entries(flattenObject(onTriggers)).forEach(([name, config]) => {
 // CRON
 Object.entries(flattenObject(onScheduled)).forEach(([name, config]) => {
   app.post(`/${name}`, async (_, res) => {
-    (config as ScheduledFunction).func();
+    await (config as ScheduledFunction).func();
     res.sendStatus(200);
   });
 });
@@ -71,7 +71,7 @@ Object.entries(flattenObject(onStorage)).forEach(([name, config]) => {
       headers: req.headers,
       body: req.body,
     });
-    (config as StorageFunction).func({
+    await (config as StorageFunction).func({
       metadata: get(event, 'data.metadata'),
       name: get(event, 'data.name', ''),
       bucket: get(event, 'data.bucket', ''),
