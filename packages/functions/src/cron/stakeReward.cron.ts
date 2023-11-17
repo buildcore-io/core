@@ -83,7 +83,7 @@ export const getStakedPerMember = async (stakeReward: StakeReward) => {
       stakedPerMember[stake.member] = (stakedPerMember[stake.member] || 0) + stake.value;
     });
     stakeCount += snap.length;
-    console.log('Stakes read', stakeCount, Object.keys(stakedPerMember));
+    console.log('Stakes read', stakeCount, Object.keys(stakedPerMember).length);
   } while (lastDocId);
 
   return stakedPerMember;
