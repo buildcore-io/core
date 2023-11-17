@@ -21,7 +21,8 @@ import { isEmpty, last } from 'lodash';
 import { getProject } from '../utils/common.utils';
 import { serverTime } from '../utils/dateTime.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
-export const stakeRewardCronTask = async () => {
+
+export const onStakeRewardExpired = async () => {
   const stakeRewards = await getDueStakeRewards();
 
   for (const stakeReward of stakeRewards) {
@@ -121,10 +122,15 @@ const createAirdrops = async (
     const distributionDocRef = build5Db().doc(
       `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${reward.member}`,
     );
-    const distribution = <TokenDistribution>await distributionDocRef.get();
+    const distribution = await distributionDocRef.get<TokenDistribution>();
 
-    if (distribution.extraStakeRewards && distribution.extraStakeRewards > 0) {
-      await distributionDocRef.update({ extraStakeRewards: build5Db().inc(-reward.value) });
+    if (distribution?.extraStakeRewards && distribution.extraStakeRewards > 0) {
+      await distributionDocRef.update({
+        parentId: token.uid,
+        parentCol: COL.TOKEN,
+        uid: reward.member,
+        extraStakeRewards: build5Db().inc(-reward.value),
+      });
 
       const billPayment: Transaction = {
         project: getProject(stakeReward),
@@ -171,10 +177,20 @@ const createAirdrops = async (
       stakeRewardId: stakeReward.uid,
       stakeType: StakeType.DYNAMIC,
     };
+
     const airdropDocRef = build5Db().doc(`${COL.AIRDROP}/${airdrop.uid}`);
     batch.create(airdropDocRef, airdrop);
 
-    batch.set(distributionDocRef, { stakeRewards: build5Db().inc(reward.value) }, true);
+    batch.set(
+      distributionDocRef,
+      {
+        parentId: token.uid,
+        parentCol: COL.TOKEN,
+        uid: reward.member,
+        stakeRewards: build5Db().inc(reward.value),
+      },
+      true,
+    );
     await batch.commit();
 
     return reward.value;

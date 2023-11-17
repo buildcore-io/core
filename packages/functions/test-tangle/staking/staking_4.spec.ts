@@ -16,7 +16,7 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { stakeRewardCronTask } from '../../src/cron/stakeReward.cron';
+import { onStakeRewardExpired } from '../../src/cron/stakeReward.cron';
 import { retryWallet } from '../../src/cron/wallet.cron';
 import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { getAddress } from '../../src/utils/address.utils';
@@ -74,7 +74,7 @@ describe('Stake reward test test', () => {
     };
     const stakeRewardDocRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     await stakeRewardDocRef.create(stakeReward);
-    await stakeRewardCronTask();
+    await onStakeRewardExpired();
 
     stakeReward = (await stakeRewardDocRef.get()) as StakeReward;
     expect(stakeReward.status).toBe(StakeRewardStatus.PROCESSED_NO_STAKES);
@@ -121,7 +121,7 @@ describe('Stake reward test test', () => {
     };
     const stakeRewardDocRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     await stakeRewardDocRef.create(stakeReward);
-    await stakeRewardCronTask();
+    await onStakeRewardExpired();
 
     await verifyMemberAirdrop(helper.member!.uid, 2980);
     await verifyMemberAirdrop(member2Uid, 1490);
@@ -160,7 +160,7 @@ describe('Stake reward test test', () => {
     };
     const stakeRewardDocRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     await stakeRewardDocRef.create(stakeReward);
-    await stakeRewardCronTask();
+    await onStakeRewardExpired();
 
     await verifyMemberAirdrop(helper.member!.uid, 149);
 
@@ -224,7 +224,7 @@ describe('Stake reward test test', () => {
     };
     const stakeRewardDocRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     await stakeRewardDocRef.create(stakeReward);
-    await stakeRewardCronTask();
+    await onStakeRewardExpired();
 
     await verifyMemberAirdrop(helper.member!.uid, 149);
 
@@ -327,7 +327,7 @@ describe('Stake reward test test', () => {
     };
     const stakeRewardDocRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     await stakeRewardDocRef.create(stakeReward);
-    await stakeRewardCronTask();
+    await onStakeRewardExpired();
 
     await wait(async () => {
       const stakeReward = (await stakeRewardDocRef.get()) as StakeReward;
@@ -376,7 +376,7 @@ describe('Stake reward test test', () => {
       .where('ignoreWalletReason', '==', IgnoreWalletReason.EXTRA_STAKE_REWARD);
 
     // No reward, 149 reduction
-    await stakeRewardCronTask();
+    await onStakeRewardExpired();
     let snap = await billPaymentQuery.get<Transaction>();
     expect(snap.length).toBe(1);
     await stakeRewardDocRef.update({ status: StakeRewardStatus.UNPROCESSED });
@@ -386,21 +386,21 @@ describe('Stake reward test test', () => {
     expect(snap[0]?.payload.nativeTokens![0]?.amount).toBe(149);
 
     // No reward, 149 reduction
-    await stakeRewardCronTask();
+    await onStakeRewardExpired();
     snap = await billPaymentQuery.get();
     expect(snap.length).toBe(2);
     await stakeRewardDocRef.update({ status: StakeRewardStatus.UNPROCESSED });
     distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.extraStakeRewards).toBe(102);
 
-    await stakeRewardCronTask();
+    await onStakeRewardExpired();
     snap = await billPaymentQuery.get();
     expect(snap.length).toBe(3);
     await stakeRewardDocRef.update({ status: StakeRewardStatus.UNPROCESSED });
     distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.extraStakeRewards).toBe(-47);
 
-    await stakeRewardCronTask();
+    await onStakeRewardExpired();
     snap = await billPaymentQuery.get();
     expect(snap.length).toBe(3);
     distribution = <TokenDistribution>await distributionDocRef.get();

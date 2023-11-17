@@ -21,7 +21,7 @@ jobs:
         uses: 'google-github-actions/setup-gcloud@v1'
       - name: Set env vars
         working-directory: packages/api
-        run: echo "$ENV_VARS" >> .env
+        run: echo "$ENV_VARS" > .env
         env:
           ENV_VARS: ${{ secrets.ENV_VARS }}
       - name: Build image
@@ -57,7 +57,7 @@ jobs:
         uses: 'google-github-actions/setup-gcloud@v1'
       - name: Set env vars
         working-directory: packages/functions
-        run: echo "$ENV_VARS" >> .env
+        run: echo "$ENV_VARS" > .env
         env:
           ENV_VARS: ${{ secrets.ENV_VARS }}
       - name: Build and deploy
@@ -76,7 +76,7 @@ jobs:
         with:
           node-version: 20
       - name: Deploy indexes
-        uses: w9jds/firebase-action@master
+        uses: w9jds/firebase-action@v12.8.0
         with:
           args: deploy --only firestore:indexes -f
         env:
@@ -119,17 +119,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Set env vars
+        run: echo "$ENV_VARS" > .env
+        env:
+          ENV_VARS: ${{ secrets.ENV_VARS }}
+      - name: Create serviceAccountKey.json
+        run: echo "$SERVICE_ACCOUNT" > scripts/serviceAccountKey.json
+        env:
+          SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
       - name: Install dependencies
         run: |
           npm i -g ts-node
           cd ../../ && npm run build:functions
-      - name: Set env vars
-        run: echo "$ENV_VARS" >> .env
-        env:
-          ENV_VARS: ${{ secrets.ENV_VARS }}
-      - name: Create serviceAccountKey.json
-        run: echo "$SERVICE_ACCOUNT" >> scripts/serviceAccountKey.json
-        env:
-          SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
       - name: Roll firestore
         run: cd scripts && ts-node db.upgrade.ts

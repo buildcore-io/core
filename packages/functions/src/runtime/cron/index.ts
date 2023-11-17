@@ -7,7 +7,7 @@ import { hidePlaceholderAfterSoldOutCron } from '../../cron/nft.cron';
 import { voidExpiredOrdersCron } from '../../cron/orders.cron';
 import { markExpiredProposalCompleted } from '../../cron/proposal.cron';
 import { removeExpiredStakesFromSpace } from '../../cron/stake.cron';
-import { stakeRewardCronTask } from '../../cron/stakeReward.cron';
+import { onStakeRewardExpired } from '../../cron/stakeReward.cron';
 import { cancelExpiredSale, tokenCoolDownOver } from '../../cron/token.cron';
 import { removePurchasesFromVolumeStats } from '../../cron/token.purchase.cron';
 import { retryWallet } from '../../cron/wallet.cron';
@@ -60,10 +60,10 @@ exports[WEN_SCHEDULED.getLatestBitfinexPrices] = onSchedule({
   handler: getLatestBitfinexPricesCron,
 });
 
-exports[WEN_SCHEDULED.stakeReward] = onSchedule({
-  runtimeOptions: CRON_TRIGGER_SCALE[WEN_SCHEDULED.stakeReward],
+exports[WEN_SCHEDULED.onStakeRewardExpired] = onSchedule({
+  runtimeOptions: CRON_TRIGGER_SCALE[WEN_SCHEDULED.onStakeRewardExpired],
   schedule: 'every 1 hours',
-  handler: stakeRewardCronTask,
+  handler: onStakeRewardExpired,
 });
 
 exports[WEN_SCHEDULED.mediaUpload] = onSchedule({
@@ -79,7 +79,7 @@ exports[WEN_SCHEDULED.removeExpiredNftStakes] = onSchedule({
 
 exports[WEN_SCHEDULED.updateFloorPriceOnCollections] = onSchedule({
   runtimeOptions: CRON_TRIGGER_SCALE[WEN_SCHEDULED.updateFloorPriceOnCollections],
-  schedule: 'every 5 minutes',
+  schedule: 'every 1 hours',
   handler: updateFloorPriceOnCollections,
 });
 

@@ -1,5 +1,5 @@
 require('dotenv').config({ path: __dirname + '/.env' });
-import { ApiRoutes } from '@build-5/interfaces';
+import { ApiRoutes, WenError } from '@build-5/interfaces';
 import cors from 'cors';
 import express from 'express';
 import jwt from 'jsonwebtoken';
@@ -27,16 +27,25 @@ const app = express();
 app.use(cors());
 
 app.get('/*', async (req, res) => {
-  const jwtToken = req.headers.authorization?.split(' ')[1];
+  const jwtToken = req.headers.authorization?.split(' ')[1] || '';
   const url = new URL(req.protocol + '://' + req.get('host') + req.originalUrl);
-  url.searchParams.append('token', jwtToken || '');
-  await onConnection(url, res);
+  await onConnection(jwtToken, url, res);
 });
 
 const wsServer = new ws.Server({ noServer: true });
 
 wsServer.on('connection', async (socket, req) => {
-  onConnection(new URL(`ws://${req.headers.host}${req.url}`), socket);
+  const timeout = setTimeout(() => {
+    socket.close(1002, 'Project api key not provided');
+  }, 5000);
+  let jwtToken = '';
+
+  socket.on('message', async (message) => {
+    clearTimeout(timeout);
+    if (!jwtToken) {
+      await onConnection(message.toString(), new URL(`ws://${req.headers.host}${req.url}`), socket);
+    }
+  });
 });
 
 const server = app.listen(port);
@@ -49,26 +58,25 @@ server.on('upgrade', (request, socket, head) => {
   });
 });
 
-const onConnection = async (url: URL, res: express.Response | ws.WebSocket) => {
+const onConnection = async (jwtToken: string, url: URL, res: express.Response | ws.WebSocket) => {
   try {
-    const project = getProjectId(url);
-    url.searchParams.delete('token');
+    const project = getProjectId(jwtToken);
 
     const observable = await getObservable(project, url);
     if (res instanceof ws.WebSocket) {
       sendLiveUpdates(res, observable);
       return;
     }
-    observable.pipe(first()).subscribe((r) => {
-      res.send(r);
+    observable.pipe(first()).subscribe({
+      next: (r) => {
+        res.send(r);
+      },
+      error: (error) => {
+        onError(url, res, error);
+      },
     });
   } catch (error: any) {
-    if (res instanceof ws.WebSocket) {
-      res.close(1003, error.message || 'Unknown');
-      return;
-    }
-    res.status(error.code || 500);
-    res.send(error.message || 'Unknown');
+    onError(url, res, error);
   }
 };
 
@@ -102,20 +110,37 @@ const getObservable = (project: string, url: URL): Promise<Observable<unknown>> 
     case ApiRoutes.GET_NFT_MUTABLE_METADATA_HISTORY:
       return getNftMutableMetadataHistory(url.href);
     default:
-      throw { code: 400, message: 'Invalid route' };
+      throw { code: 400, message: WenError.invalid_route };
   }
 };
 
-const getProjectId = (url: URL) => {
+const getProjectId = (jwtToken: string) => {
   try {
-    const jwtToken = url.searchParams.get('token');
     const payload = jwt.verify(jwtToken || '', process.env.JWT_SECRET!);
     const project = get(payload, 'project', '');
     if (!project) {
-      throw { code: 401, message: 'Unauthorized' };
+      throw { code: 401, message: WenError.invalid_project_api_key };
     }
     return project;
   } catch {
-    throw { code: 401, message: 'Unauthorized' };
+    throw { code: 401, message: WenError.invalid_project_api_key };
   }
+};
+
+const onError = (url: URL, res: express.Response | ws.WebSocket, error: any) => {
+  console.error(url.href, error);
+  if (res instanceof ws.WebSocket) {
+    res.close(1003, error.message || 'Unknown');
+    return;
+  }
+  res.status(error.code || 500);
+  res.send(getMessage(error));
+};
+
+const getMessage = (error: any) => {
+  const publicMessages = Object.values(WenError).map((e) => e.key);
+  if (error.code === 400 || publicMessages.includes(error.message || '')) {
+    return error.message;
+  }
+  return 'Unknown';
 };

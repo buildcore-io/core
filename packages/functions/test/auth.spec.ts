@@ -26,11 +26,7 @@ describe('Auth control test', () => {
     mockWalletReturnValue(walletSpy, member, {});
     const token = await testEnv.wrap(generateCustomToken)({});
     walletSpy.mockRestore();
-    const tokenGeneratedWithToken = await testEnv.wrap(generateCustomToken)({
-      address: member,
-      customToken: token,
-      body: {},
-    });
+    const tokenGeneratedWithToken = await testEnv.wrap(generateCustomToken)({}, member, token);
     expect(tokenGeneratedWithToken).toBeDefined();
     const decoded = jwt.verify(tokenGeneratedWithToken, getJwtSecretKey());
     expect(get(decoded, 'uid')).toBe(member);
@@ -48,11 +44,7 @@ describe('Auth control test', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 2000));
     await expectThrow(
-      testEnv.wrap(generateCustomToken)({
-        address: member,
-        customToken: token,
-        body: {},
-      }),
+      testEnv.wrap(generateCustomToken)({}, member, token),
       WenError.invalid_custom_token.key,
     );
 
@@ -60,7 +52,7 @@ describe('Auth control test', () => {
   });
 });
 
-describe.only('Pub key test', () => {
+describe('Pub key test', () => {
   it.each([Network.RMS, Network.SMR])('Should validate SMR pub key', async (network: Network) => {
     const wallet = await getWallet(network);
     const address = await wallet.getNewIotaAddressDetails();

@@ -25,6 +25,7 @@ export enum PublicCollections {
   AIRDROP = 'airdrop',
   STAMP = 'stamp',
   PROJECT = 'project',
+  AUCTION = 'auction',
 }
 
 /**

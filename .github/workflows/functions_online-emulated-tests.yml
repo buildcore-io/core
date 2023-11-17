@@ -55,15 +55,15 @@ jobs:
           npm run milestone-sync &
           firebase emulators:exec "
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/auth.spec.ts &&
+                npm run test-online:ci -- --forceExit --findRelatedTests ./test/auth/legacy.auth.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/address.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/auction/auction.bid.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/collection.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/member.spec.ts &&
-                npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/nft.spec.ts &&
-                npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/nft/nft.bidding.extends.spec.ts 
+                npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/nft.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-online-chunk_0
@@ -95,16 +95,16 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/nft/nft.bidding.extends.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/nft/nft.bidding.finalize.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/nft/nft.bidding.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/nft/nft.set.for.sale.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/order.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/project/project.create.spec.ts &&
-                npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/project/project.deactivate.spec.ts &&
-                npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/proposal.spec.ts 
+                npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/project/project.deactivate.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-online-chunk_1
@@ -136,16 +136,16 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/proposal.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/space.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/stake.reward.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/stamp.control.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/token-distribution-auto-trigger.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/token-distribution.spec.ts &&
-                npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/token-trade.buy.spec.ts &&
-                npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/token-trade.sell.spec.ts 
+                npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/token-trade.buy.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-online-chunk_2
@@ -177,16 +177,16 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/token-trade.sell.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/token-trade.trigger.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/token.expired.sale.cron.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/token.order.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/token/token.airdrop.claim.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/token/token.airdrop.spec.ts &&
-                npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/token/token.cancel.pub.sale.spec.ts &&
-                npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/token/token.create.spec.ts 
+                npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/token/token.cancel.pub.sale.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-online-chunk_3
@@ -218,16 +218,16 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/token/token.create.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/token/token.order.and.claim.air.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/token/token.rank.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/token/token.set.to.sale.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/token/token.update.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/token/token.vote.spec.ts &&
-                npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/workflow-online.spec.ts &&
-                npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/workflow.spec.ts 
+                npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/workflow-online.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-online-chunk_4
@@ -259,16 +259,16 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-online:ci -- --forceExit --findRelatedTests ./test/controls/workflow.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/cron/nft-stake.cron.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/cron/proposal.cron.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/db.roll.spec.ts &&
-                npm run test-online:ci -- --forceExit --findRelatedTests ./test/dbroll/age.roll.spec.ts &&
-                npm run test-online:ci -- --forceExit --findRelatedTests ./test/dbroll/nft.auction.roll.spec.ts &&
-                npm run test-online:ci -- --forceExit --findRelatedTests ./test/dbroll/proposal.roll.spec.ts &&
-                npm run test-online:ci -- --forceExit --findRelatedTests ./test/dbroll/set.project.spec.ts 
+                npm run test-online:ci -- --forceExit --findRelatedTests ./test/naming.spec.ts &&
+                npm run test-online:ci -- --forceExit --findRelatedTests ./test/stake/delete.stake.reward.spec.ts &&
+                npm run test-online:ci -- --forceExit --findRelatedTests ./test/stake/stake.reward.cron.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-online-chunk_5
@@ -300,12 +300,10 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
-                npm run test-online:ci -- --forceExit --findRelatedTests ./test/stake/delete.stake.reward.spec.ts &&
-                npm run test-online:ci -- --forceExit --findRelatedTests ./test/stake/stake.reward.cron.spec.ts &&
                 npm run test-online:ci -- --forceExit --findRelatedTests ./test/storage/resize.img.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
            name: firestore-data-test-online-chunk_6

@@ -21,6 +21,60 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "transaction",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "payload.sourceAddress",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "payload.walletReference.confirmed",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "payload.walletReference.count",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "transaction",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "payload.storageDepositSourceAddress",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "payload.walletReference.confirmed",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "payload.walletReference.count",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "transaction",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "payload.aliasGovAddress",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "payload.walletReference.confirmed",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "payload.walletReference.count",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ]
 }

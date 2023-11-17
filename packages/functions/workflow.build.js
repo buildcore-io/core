@@ -134,7 +134,7 @@ function job(outputFile, chunk, files, commandName) {
 
   // Coverage & test results via foresight
   fs.appendFileSync(outputFile, `      - name: Archive firestore data\n`);
-  fs.appendFileSync(outputFile, `        uses: actions/upload-artifact@v4\n`);
+  fs.appendFileSync(outputFile, `        uses: actions/upload-artifact@v3\n`);
   fs.appendFileSync(outputFile, '        if: ${{ failure() }}\n');
   fs.appendFileSync(outputFile, `        with:\n`);
   fs.appendFileSync(outputFile, `           name: firestore-data-${commandName}-chunk_${chunk}\n`);
