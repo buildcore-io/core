@@ -201,6 +201,8 @@ const createAirdrops = async (
     );
     await batch.commit();
 
+    console.log('Airdrop submited', airdrop.uid);
+
     return reward.value;
   });
 
