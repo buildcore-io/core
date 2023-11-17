@@ -41,6 +41,10 @@ export interface WenRequest {
     hex: string;
     network: Network;
   };
+  legacyPublicKey?: {
+    hex: string;
+    network: Network;
+  };
   body: any;
 }
 

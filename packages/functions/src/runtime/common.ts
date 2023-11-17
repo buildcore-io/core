@@ -29,7 +29,7 @@ export enum WEN_SCHEDULED {
   cancelExpiredSale = 'cancelexpiredsale',
   removeExpiredStakesFromSpace = 'removeexpiredstakesfromspace',
   getLatestBitfinexPrices = 'getlatestbitfinexprices',
-  stakeReward = 'stakereward',
+  onStakeRewardExpired = 'onstakerewardexpired',
   mediaUpload = 'mediaupload',
   removeExpiredNftStakes = 'removeexpirednftstakes',
   updateFloorPriceOnCollections = 'updatefloorpriceoncollections',

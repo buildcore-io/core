@@ -37,7 +37,6 @@ Object.entries(flattenObject(onRequests)).forEach(([name, config]) => {
 // TRIGGERS
 Object.entries(flattenObject(onTriggers)).forEach(([name, config]) => {
   app.post(`/${name}`, protoRawParser, async (req, res) => {
-    res.sendStatus(200);
     const root = loadSync('./data.proto');
     const type = root.lookupType('DocumentEventData');
     const decoded = type.decode(req.body);
@@ -53,21 +52,21 @@ Object.entries(flattenObject(onTriggers)).forEach(([name, config]) => {
       ...pathToParts(get(cloudEvent, 'document', '')),
     };
     await (config as TriggeredFunction).handler(event);
+    res.sendStatus(200);
   });
 });
 
 // CRON
 Object.entries(flattenObject(onScheduled)).forEach(([name, config]) => {
   app.post(`/${name}`, async (_, res) => {
-    res.sendStatus(200);
     await (config as ScheduledFunction).func();
+    res.sendStatus(200);
   });
 });
 
 // Storage
 Object.entries(flattenObject(onStorage)).forEach(([name, config]) => {
   app.post(`/${name}`, express.json(), async (req, res) => {
-    res.sendStatus(200);
     const event = HTTP.toEvent({
       headers: req.headers,
       body: req.body,
@@ -78,6 +77,7 @@ Object.entries(flattenObject(onStorage)).forEach(([name, config]) => {
       bucket: get(event, 'data.bucket', ''),
       contentType: get(event, 'data.contentType'),
     });
+    res.sendStatus(200);
   });
 });
 

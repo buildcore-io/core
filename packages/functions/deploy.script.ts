@@ -101,6 +101,10 @@ const deployStorageTriggers = () => {
    --event-filters="bucket=${options.bucket}" \\
    --service-account=$PROJECT_NUMBER-compute@developer.gserviceaccount.com\nfi &\n\n`;
     fs.appendFileSync(file, command);
+
+    const asyncUpdate = `gcloud eventarc triggers update ${name} \\
+      --location=us --async --destination-run-region=${options.region}\n\n`;
+    fs.appendFileSync(file, asyncUpdate);
   });
 };
 
@@ -133,6 +137,10 @@ const deployFirestoreTriggers = () => {
      --event-filters="type=${getTriggerType(type)}" \\
      --event-data-content-type="application/protobuf"\nfi  &\n\n`;
     fs.appendFileSync(file, command + '');
+
+    const asyncUpdate = `gcloud eventarc triggers update ${name} \\
+      --location=nam5 --async --destination-run-region=${options.region}\n\n`;
+    fs.appendFileSync(file, asyncUpdate);
   });
 };
 
@@ -155,6 +163,10 @@ const deployCronTriggers = () => {
    --destination-run-path="/${name}" \\
    --event-filters="type=google.cloud.pubsub.topic.v1.messagePublished"\nfi &\n\n`;
     fs.appendFileSync(file, command);
+
+    const asyncUpdate = `gcloud eventarc triggers update ${name} \\
+      --location=us-central1 --async --destination-run-region=${options.region}\n\n`;
+    fs.appendFileSync(file, asyncUpdate);
   });
 
   fs.appendFileSync(file, 'wait\n\n');
