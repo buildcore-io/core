@@ -62,6 +62,7 @@ export const getStakedPerMember = async (stakeReward: StakeReward) => {
   const stakedPerMember: { [key: string]: number } = {};
   let lastDocId = '';
   const rewardEndDate = stakeReward.endDate.toDate();
+  let stakeCount = 0;
   do {
     const lastDoc = await getSnapshot(COL.STAKE, lastDocId);
     const snap = await build5Db()
@@ -81,6 +82,8 @@ export const getStakedPerMember = async (stakeReward: StakeReward) => {
       }
       stakedPerMember[stake.member] = (stakedPerMember[stake.member] || 0) + stake.value;
     });
+    stakeCount += snap.length;
+    console.log('Stakes read', stakeCount, Object.keys(stakedPerMember));
   } while (lastDocId);
 
   return stakedPerMember;
