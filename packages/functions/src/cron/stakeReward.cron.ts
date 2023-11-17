@@ -26,10 +26,12 @@ export const onStakeRewardExpired = async () => {
   const stakeRewards = await getDueStakeRewards();
 
   for (const stakeReward of stakeRewards) {
+    console.log('processing', stakeReward.uid);
     const stakeRewardDocRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
     await stakeRewardDocRef.update({ status: StakeRewardStatus.PROCESSED });
     try {
       const { totalAirdropped, totalStaked } = await executeStakeRewardDistribution(stakeReward);
+      console.log('totalAirdropped', totalAirdropped, totalStaked);
       await stakeRewardDocRef.update({ totalStaked, totalAirdropped });
     } catch (error) {
       console.error('Stake reward error', stakeReward.uid, error);
@@ -40,6 +42,7 @@ export const onStakeRewardExpired = async () => {
 
 const executeStakeRewardDistribution = async (stakeReward: StakeReward) => {
   const stakedPerMember = await getStakedPerMember(stakeReward);
+  console.log('Staking members count', Object.keys(stakedPerMember).length);
   if (isEmpty(stakedPerMember)) {
     await build5Db()
       .doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`)
@@ -48,6 +51,7 @@ const executeStakeRewardDistribution = async (stakeReward: StakeReward) => {
   }
 
   const totalStaked = Object.values(stakedPerMember).reduce((acc, act) => acc + act, 0);
+  console.log('Total staked', totalStaked);
 
   const token = <Token>await build5Db().doc(`${COL.TOKEN}/${stakeReward.token}`).get();
   const totalAirdropped = await createAirdrops(token, stakeReward, totalStaked, stakedPerMember);
@@ -105,6 +109,7 @@ const createAirdrops = async (
     }))
     .sort((a, b) => b.staked - a.staked);
   const totalReward = rewards.reduce((acc, act) => acc + act.value, 0);
+  console.log('totalReward', totalReward);
 
   let tokensLeftToDistribute = stakeReward.tokensToDistribute - totalReward;
   let i = 0;
@@ -119,13 +124,20 @@ const createAirdrops = async (
       return 0;
     }
 
+    console.log('Checkking distribution for', reward.member);
     const distributionDocRef = build5Db().doc(
       `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${reward.member}`,
     );
     const distribution = await distributionDocRef.get<TokenDistribution>();
 
     if (distribution?.extraStakeRewards && distribution.extraStakeRewards > 0) {
-      await distributionDocRef.update({ extraStakeRewards: build5Db().inc(-reward.value) });
+      console.log('processing extra stake reward', reward.member);
+      await distributionDocRef.update({
+        parentId: token.uid,
+        parentCol: COL.TOKEN,
+        uid: reward.member,
+        extraStakeRewards: build5Db().inc(-reward.value),
+      });
 
       const billPayment: Transaction = {
         project: getProject(stakeReward),
@@ -172,6 +184,8 @@ const createAirdrops = async (
       stakeRewardId: stakeReward.uid,
       stakeType: StakeType.DYNAMIC,
     };
+    console.log('Creating airdrop', airdrop.uid);
+
     const airdropDocRef = build5Db().doc(`${COL.AIRDROP}/${airdrop.uid}`);
     batch.create(airdropDocRef, airdrop);
 
