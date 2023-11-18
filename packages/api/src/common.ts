@@ -91,6 +91,8 @@ export const shouldSetProjectFilter = (
 ): boolean =>
   ![
     PublicCollections.MILESTONE,
+    PublicCollections.MEMBER,
+    PublicCollections.PROJECT,
     PublicCollections.MILESTONE_RMS,
     PublicCollections.MILESTONE_SMR,
     PublicCollections.TICKER,
