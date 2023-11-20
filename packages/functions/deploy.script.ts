@@ -184,9 +184,24 @@ const deployCronTriggers = () => {
   fs.appendFileSync(file, 'wait\n\n');
 };
 
+const setMaxAckDeadline = () => {
+  fs.appendFileSync(
+    file,
+    `for SUBSCRIPTION_NAME in $(gcloud pubsub subscriptions list  --format="value(name)")\n`,
+  );
+  fs.appendFileSync(file, `do\n`);
+  fs.appendFileSync(
+    file,
+    `   gcloud pubsub subscriptions update $SUBSCRIPTION_NAME --ack-deadline=600 &\n`,
+  );
+  fs.appendFileSync(file, `done\n`);
+  fs.appendFileSync(file, `wait\n`);
+};
+
 buildImage();
 indexCheck();
 deployServices();
 deployStorageTriggers();
 deployFirestoreTriggers();
 deployCronTriggers();
+setMaxAckDeadline();
