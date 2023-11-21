@@ -110,7 +110,7 @@ const getObservable = (project: string, url: URL): Promise<Observable<unknown>> 
     case ApiRoutes.GET_NFT_MUTABLE_METADATA_HISTORY:
       return getNftMutableMetadataHistory(url.href);
     default:
-      throw { code: 400, message: WenError.invalid_route };
+      throw { code: 400, message: WenError.invalid_route.key };
   }
 };
 
@@ -119,11 +119,11 @@ const getProjectId = (jwtToken: string) => {
     const payload = jwt.verify(jwtToken || '', process.env.JWT_SECRET!);
     const project = get(payload, 'project', '');
     if (!project) {
-      throw { code: 401, message: WenError.invalid_project_api_key };
+      throw { code: 401, message: WenError.invalid_project_api_key.key };
     }
     return project;
   } catch {
-    throw { code: 401, message: WenError.invalid_project_api_key };
+    throw { code: 401, message: WenError.invalid_project_api_key.key };
   }
 };
 

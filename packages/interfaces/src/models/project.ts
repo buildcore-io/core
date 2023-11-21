@@ -1,4 +1,5 @@
 import { BaseRecord, BaseSubCollection, Timestamp } from './base';
+import { Network } from './transaction';
 
 /**
  * Project Model
@@ -20,6 +21,8 @@ export interface Project extends BaseRecord {
    * The config object of the project
    */
   config: ProjectConfig;
+
+  otr: { [key: string]: ProjectOtr };
 }
 
 export enum ProjectBilling {
@@ -56,4 +59,9 @@ export interface ProjectAdmin extends BaseSubCollection {
 export interface ProjectApiKey extends BaseSubCollection {
   uid: string;
   createdOn: Timestamp;
+}
+
+export interface ProjectOtr {
+  network: Network;
+  targetAddress: string;
 }
