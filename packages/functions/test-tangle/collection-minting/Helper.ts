@@ -21,11 +21,7 @@ import {
 import { FeatureType, MetadataFeature, NftOutput, hexToUtf8 } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
-import {
-  approveCollection,
-  createCollection,
-  mintCollection,
-} from '../../src/runtime/firebase/collection/index';
+import { createCollection, mintCollection } from '../../src/runtime/firebase/collection/index';
 import { openBid } from '../../src/runtime/firebase/nft';
 import { createNft, orderNft, setForSaleNft } from '../../src/runtime/firebase/nft/index';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
@@ -71,9 +67,6 @@ export class CollectionMintHelper {
       this.createDummyCollection(this.space.uid, this.royaltySpace.uid),
     );
     this.collection = (await testEnv.wrap(createCollection)({})).uid;
-
-    mockWalletReturnValue(this.walletSpy, this.guardian, { uid: this.collection });
-    await testEnv.wrap(approveCollection)({});
   };
 
   public createLockedNft = async () => {

@@ -22,10 +22,7 @@ import {
   orderNft,
   setForSaleNft,
 } from '../../../functions/src/runtime/firebase//nft/index';
-import {
-  approveCollection,
-  createCollection,
-} from '../../../functions/src/runtime/firebase/collection/index';
+import { createCollection } from '../../../functions/src/runtime/firebase/collection/index';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import {
@@ -79,9 +76,9 @@ const createCollectionFunc = async <T>(address: NetworkAddress, params: T) => {
   const cCollection = await testEnv.wrap(createCollection)({});
   expect(cCollection?.uid).toBeDefined();
 
-  mockWalletReturnValue(walletSpy, address, { uid: cCollection.uid });
-  const apprCollection = await testEnv.wrap(approveCollection)({});
-  expect(apprCollection?.uid).toBeDefined();
+  await build5Db()
+    .doc(`${COL.COLLECTION}/${cCollection?.uid}`)
+    .update({ approved: true });
   return <Collection>cCollection;
 };
 

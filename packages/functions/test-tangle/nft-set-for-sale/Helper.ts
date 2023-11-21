@@ -14,7 +14,7 @@ import {
   Space,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { approveCollection, createCollection } from '../../src/runtime/firebase/collection/index';
+import { createCollection } from '../../src/runtime/firebase/collection/index';
 import { createNft, orderNft } from '../../src/runtime/firebase/nft/index';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
@@ -61,8 +61,7 @@ export class Helper {
     );
     this.collection = (await testEnv.wrap(createCollection)({})).uid;
 
-    mockWalletReturnValue(this.walletSpy, this.guardian, { uid: this.collection });
-    await testEnv.wrap(approveCollection)({});
+    await build5Db().doc(`${COL.COLLECTION}/${this.collection}`).update({ approved: true });
   };
 
   public createAndOrderNft = async (shouldOrder = true) => {

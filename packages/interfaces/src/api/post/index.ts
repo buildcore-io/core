@@ -14,7 +14,6 @@ export * from './AwardCreateRequest';
 export * from './AwardFundRequest';
 export * from './AwardParticipateRequest';
 export * from './AwardRejectRequest';
-export * from './CollectionApproveRequest';
 export * from './CollectionCreateRequest';
 export * from './CollectionMintRequest';
 export * from './CollectionRejectRequest';

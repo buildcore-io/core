@@ -46,7 +46,6 @@ export const WEN_FUNC_SCALE: { [key: string]: RuntimeOptions } = {
   // Collections
   [WEN_FUNC.createCollection]: { minInstances: lowCold },
   [WEN_FUNC.updateCollection]: { minInstances: lowWarm },
-  [WEN_FUNC.approveCollection]: { minInstances: lowCold },
   [WEN_FUNC.rejectCollection]: { minInstances: lowCold },
 
   [WEN_FUNC.createNft]: { minInstances: lowCold },
