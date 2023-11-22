@@ -327,7 +327,7 @@ const assertCurrentOwnerAddress = (currentOwner: Space | Member, nft: Nft) => {
 };
 
 const getDiscount = (collection: Collection, member: Member) => {
-  const spaceRewards = (member.spaces || {})[collection.space] || {};
+  const spaceRewards = (member.spaces || {})[collection.space || ''] || {};
   const descDiscounts = [...(collection.discounts || [])].sort((a, b) => b.amount - a.amount);
   for (const discount of descDiscounts) {
     const awardStat = (spaceRewards.awardStat || {})[discount.tokenUid!];

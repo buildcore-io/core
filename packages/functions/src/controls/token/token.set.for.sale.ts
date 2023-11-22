@@ -2,7 +2,11 @@ import { build5Db } from '@build-5/database';
 import { COL, SetTokenForSaleRequest, Token, TokenStatus, WenError } from '@build-5/interfaces';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
-import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
+import {
+  assertIsTokenGuardian,
+  assertTokenApproved,
+  assertTokenStatus,
+} from '../../utils/token.utils';
 import { Context } from '../common';
 import { getPublicSaleTimeFrames, shouldSetPublicSaleTimeFrames } from './common';
 
@@ -15,7 +19,11 @@ export const setTokenAvailableForSaleControl = async ({
   await build5Db().runTransaction(async (transaction) => {
     const token = await transaction.get<Token>(tokenDocRef);
     if (!token) {
-      throw invalidArgument(WenError.invalid_params);
+      throw invalidArgument(WenError.token_does_not_exist);
+    }
+
+    if (!token.space) {
+      throw invalidArgument(WenError.token_must_have_space);
     }
 
     assertTokenApproved(token);
@@ -29,7 +37,7 @@ export const setTokenAvailableForSaleControl = async ({
 
     assertTokenStatus(token, [TokenStatus.AVAILABLE]);
 
-    await assertIsGuardian(token.space, owner);
+    await assertIsTokenGuardian(token, owner);
 
     shouldSetPublicSaleTimeFrames({ ...params }, token.allocations);
     const timeFrames = getPublicSaleTimeFrames(

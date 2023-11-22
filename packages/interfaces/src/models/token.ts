@@ -154,7 +154,7 @@ export interface Token extends BaseRecord {
   /**
    * Space UID {@link Space}
    */
-  readonly space: string;
+  readonly space?: string;
   /**
    * Price per token for launchpad
    */

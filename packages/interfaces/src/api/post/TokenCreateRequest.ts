@@ -93,7 +93,7 @@ The total percentage has to be 100
   /**
    * Build5 id of the space.
    */
-  space: string;
+  space?: string;
   /**
    * Unique symbol of the token.
    */

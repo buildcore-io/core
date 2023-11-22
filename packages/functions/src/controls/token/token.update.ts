@@ -2,7 +2,7 @@ import { build5Db } from '@build-5/database';
 import { COL, Token, TokenStatus, WenError } from '@build-5/interfaces';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertValidationAsync } from '../../utils/schema.utils';
-import { assertIsGuardian, assertTokenStatus } from '../../utils/token.utils';
+import { assertIsTokenGuardian, assertTokenStatus } from '../../utils/token.utils';
 import { Context, UidSchemaObject } from '../common';
 import {
   updateTokenSchemaObject,
@@ -24,7 +24,7 @@ export const updateTokenControl = async ({ owner, params }: Context<UidSchemaObj
     await assertValidationAsync(schema, params);
 
     assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED, TokenStatus.MINTED]);
-    await assertIsGuardian(token.space, owner);
+    await assertIsTokenGuardian(token, owner);
 
     transaction.update(tokenDocRef, params);
   });
