@@ -34,8 +34,8 @@ describe('Transaction trigger spec', () => {
     }
   };
 
-  it('Should rerun transaction only after RETRY_UNCOFIRMED_PAYMENT_DELAY', async () => {
-    const network = Network.ATOI;
+  it('Should rerun transaction on different node', async () => {
+    const network = Network.RMS;
     await setup(network);
     let billPayment = <Transaction>{
       project: SOON_PROJECT_ID,
@@ -58,6 +58,10 @@ describe('Transaction trigger spec', () => {
       return !isEmpty(data?.payload?.walletReference?.chainReferences);
     });
 
+    const data = <Transaction>await docRef.get();
+    const nodeIndex = data?.payload?.walletReference?.nodeIndex;
+    expect(nodeIndex).toBeDefined();
+
     let retryWalletResult = await retryWallet();
     expect(retryWalletResult.find((r) => r == billPayment.uid)).toBeUndefined();
     docRef.update({
@@ -75,11 +79,13 @@ describe('Transaction trigger spec', () => {
       return data?.payload?.walletReference?.confirmed;
     });
 
+    const billPaymentDocRef = build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
     await wait(async () => {
-      billPayment = <Transaction>(
-        await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()
-      );
+      billPayment = <Transaction>await billPaymentDocRef.get();
       return billPayment.payload?.walletReference?.confirmed;
     });
+
+    billPayment = <Transaction>await billPaymentDocRef.get();
+    expect(billPayment.payload.walletReference?.nodeIndex).not.toBe(nodeIndex);
   });
 });
