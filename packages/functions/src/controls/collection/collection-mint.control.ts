@@ -32,7 +32,7 @@ import {
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { createAliasOutput } from '../../utils/token-minting-utils/alias.utils';
-import { assertIsGuardian } from '../../utils/token.utils';
+import { assertIsCollectionGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Context } from '../common';
 
@@ -72,7 +72,7 @@ export const mintCollectionOrderControl = async ({
       throw invalidArgument(WenError.invalid_collection_status);
     }
 
-    assertIsGuardian(collection.space, owner);
+    await assertIsCollectionGuardian(collection, owner);
 
     const space = await build5Db().doc(`${COL.SPACE}/${collection.space}`).get<Space>();
     assertSpaceHasValidAddress(space, network);

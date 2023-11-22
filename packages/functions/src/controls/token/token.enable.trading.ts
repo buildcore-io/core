@@ -1,7 +1,7 @@
 import { build5Db } from '@build-5/database';
 import { COL, EnableTokenTradingRequest, Token, WenError } from '@build-5/interfaces';
 import { invalidArgument } from '../../utils/error.utils';
-import { assertIsGuardian } from '../../utils/token.utils';
+import { assertIsTokenGuardian } from '../../utils/token.utils';
 import { Context } from '../common';
 
 export const enableTokenTradingControl = async ({
@@ -18,7 +18,7 @@ export const enableTokenTradingControl = async ({
     throw invalidArgument(WenError.token_must_be_public);
   }
 
-  await assertIsGuardian(token.space, owner);
+  await assertIsTokenGuardian(token, owner);
 
   await tokenDocRef.update({ tradingDisabled: build5Db().deleteField() });
 

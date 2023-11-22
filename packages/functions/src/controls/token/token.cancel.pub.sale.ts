@@ -2,7 +2,7 @@ import { build5Db } from '@build-5/database';
 import { COL, CanelPublicSaleRequest, Token, TokenStatus, WenError } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { invalidArgument } from '../../utils/error.utils';
-import { assertIsGuardian } from '../../utils/token.utils';
+import { assertIsTokenGuardian } from '../../utils/token.utils';
 import { Context } from '../common';
 
 export const cancelPublicSaleControl = async ({
@@ -22,7 +22,7 @@ export const cancelPublicSaleControl = async ({
       throw invalidArgument(WenError.no_token_public_sale);
     }
 
-    await assertIsGuardian(token.space, owner);
+    await assertIsTokenGuardian(token, owner);
 
     transaction.update(tokenDocRef, {
       saleStartDate: build5Db().deleteField(),

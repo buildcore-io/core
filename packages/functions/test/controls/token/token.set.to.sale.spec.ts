@@ -88,25 +88,18 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
     );
   });
 
-  it('Should set public availability', async () => {
-    await build5Db()
-      .doc(`${COL.TOKEN}/${token.uid}`)
-      .update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] });
+  it('Should throw, no space', async () => {
+    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
+    await tokenDocRef.update({
+      space: '',
+      allocations: [{ title: 'public', percentage: 100, isPublicSale: true }],
+    });
     const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };
     mockWalletReturnValue(walletSpy, memberAddress, updateData);
-    const result = await testEnv.wrap(setTokenAvailableForSale)({});
-    expect(result?.uid).toBeDefined();
-    expect(result?.saleStartDate.toDate()).toEqual(
-      dateToTimestamp(dayjs(publicTime.saleStartDate), true).toDate(),
+    await expectThrow(
+      testEnv.wrap(setTokenAvailableForSale)({}),
+      WenError.token_must_have_space.key,
     );
-    expect(result?.saleLength).toBe(2 * 86400000);
-    expect(result?.coolDownEnd.toDate()).toEqual(
-      dateToTimestamp(
-        dayjs(publicTime.saleStartDate).add(86400000 * 2 + 86400000, 'ms'),
-        true,
-      ).toDate(),
-    );
-    expect(result?.autoProcessAt100Percent).toBe(false);
   });
 
   it('Should set public availability', async () => {

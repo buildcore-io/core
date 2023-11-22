@@ -30,16 +30,20 @@ export const createCollectionControl = async ({
   if (!hasStakedSoons) {
     throw invalidArgument(WenError.no_staked_soon);
   }
-  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.space}`);
-  const space = await spaceDocRef.get<Space>();
-  if (!space) {
-    throw invalidArgument(WenError.space_does_not_exists);
-  }
-  assertSpaceHasValidAddress(space, DEFAULT_NETWORK);
 
-  const spaceMember = await spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner).get<Member>();
-  if (!spaceMember) {
-    throw invalidArgument(WenError.you_are_not_part_of_space);
+  const spaceUid = params.space || '';
+  if (spaceUid) {
+    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${spaceUid}`);
+    const space = await spaceDocRef.get<Space>();
+    if (!space) {
+      throw invalidArgument(WenError.space_does_not_exists);
+    }
+    assertSpaceHasValidAddress(space, DEFAULT_NETWORK);
+
+    const spaceMember = await spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner).get<Member>();
+    if (!spaceMember) {
+      throw invalidArgument(WenError.you_are_not_part_of_space);
+    }
   }
 
   const royaltySpace = await build5Db().doc(`${COL.SPACE}/${params.royaltiesSpace}`).get<Space>();
@@ -58,6 +62,7 @@ export const createCollectionControl = async ({
   const placeholderNftId = params.type !== CollectionType.CLASSIC ? getRandomEthAddress() : null;
   const collection = {
     ...params,
+    space: spaceUid,
     project,
     discounts: await populateTokenUidOnDiscounts(discounts),
     uid: getRandomEthAddress(),
@@ -95,7 +100,7 @@ export const createCollectionControl = async ({
       sold: true,
       soldOn: serverTime(),
       owner: null,
-      space: params.space,
+      space: spaceUid,
       type: params.type,
       hidden: true,
       placeholderNft: true,

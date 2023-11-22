@@ -10,7 +10,7 @@ import {
 import dayjs from 'dayjs';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
-import { assertIsGuardian } from '../../utils/token.utils';
+import { assertIsTokenGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Context } from '../common';
 
@@ -24,7 +24,7 @@ export const stakeRewardControl = async ({
   if (!token) {
     throw invalidArgument(WenError.token_does_not_exist);
   }
-  await assertIsGuardian(token.space, owner);
+  await assertIsTokenGuardian(token, owner);
 
   const stakeRewards = (params.items || []).map<StakeReward>((item) => ({
     project,

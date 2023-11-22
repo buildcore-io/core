@@ -21,7 +21,11 @@ import { WalletService } from '../../services/wallet/wallet.service';
 import { packBasicOutput } from '../../utils/basic-output.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
-import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
+import {
+  assertIsTokenGuardian,
+  assertTokenApproved,
+  assertTokenStatus,
+} from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Context } from '../common';
 
@@ -37,7 +41,7 @@ export const airdropMintedTokenControl = async ({
     if (!token) {
       throw invalidArgument(WenError.invalid_params);
     }
-    await assertIsGuardian(token.space, owner);
+    await assertIsTokenGuardian(token, owner);
     assertTokenStatus(token, [TokenStatus.MINTED]);
     assertTokenApproved(token);
   });
