@@ -29,7 +29,6 @@ import {
   createNftOutput,
   nftToMetadata,
 } from '../../utils/collection-minting-utils/nft.utils';
-import { isProdEnv } from '../../utils/config.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { createAliasOutput } from '../../utils/token-minting-utils/alias.utils';
@@ -53,10 +52,6 @@ export const mintCollectionOrderControl = async ({
 
     if (!collection) {
       throw invalidArgument(WenError.collection_does_not_exists);
-    }
-
-    if (isProdEnv() && !collection.approved) {
-      throw invalidArgument(WenError.collection_must_be_approved);
     }
 
     if (collection.status !== CollectionStatus.PRE_MINTED) {

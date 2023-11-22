@@ -182,4 +182,4 @@ const onCollectionLocked = async (transaction: Transaction) => {
 const onCollectionAliasTransfered = async (transaction: Transaction) =>
   build5Db()
     .doc(`${COL.COLLECTION}/${transaction.payload.collection}`)
-    .update({ status: CollectionStatus.MINTED });
+    .update({ status: CollectionStatus.MINTED, approved: true });

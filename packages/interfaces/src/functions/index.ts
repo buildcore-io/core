@@ -35,7 +35,6 @@ export enum WEN_FUNC {
   // Collection functions
   createCollection = 'ccollection',
   updateCollection = 'ucollection',
-  approveCollection = 'approvecollection',
   rejectCollection = 'rejectcollection',
   mintCollection = 'mintcollection',
 

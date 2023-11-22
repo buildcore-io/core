@@ -139,10 +139,6 @@ const assertNftAuction = async (owner: string, ip: string, auction: Auction) => 
   const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nft.collection}`);
   const collection = (await collectionDocRef.get<Collection>())!;
 
-  if (!collection.approved) {
-    throw invalidArgument(WenError.collection_must_be_approved);
-  }
-
   if (![CollectionStatus.PRE_MINTED, CollectionStatus.MINTED].includes(collection.status!)) {
     throw invalidArgument(WenError.invalid_collection_status);
   }

@@ -29,7 +29,6 @@ import { voteController } from '../../src/runtime/firebase/vote';
 import * as wallet from '../../src/utils/wallet.utils';
 import { soonTokenId, testEnv } from '../set-up';
 import {
-  approveCollection,
   createCollection,
   rejectCollection,
   updateCollection,
@@ -181,8 +180,7 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
     mockWalletReturnValue(walletSpy, dummyAddress, collection);
     collection = await testEnv.wrap(createCollection)({});
 
-    mockWalletReturnValue(walletSpy, dummyAddress, { uid: collection?.uid });
-    await testEnv.wrap(approveCollection)({});
+    await build5Db().doc(`${COL.COLLECTION}/${collection.uid}`).update({ approved: true });
 
     const dummyNft = () => ({
       name: 'Collection A',
@@ -323,13 +321,6 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
     const cCollection = await testEnv.wrap(createCollection)({});
     expect(cCollection?.uid).toBeDefined();
     expect(cCollection?.description).toBe('babba');
-
-    mockWalletReturnValue(walletSpy, dummyAddress, { uid: cCollection?.uid });
-    const uCollection = await testEnv.wrap(approveCollection)({});
-    expect(uCollection?.uid).toBeDefined();
-    expect(uCollection?.approved).toBe(true);
-    expect(uCollection?.rejected).toBe(false);
-    walletSpy.mockRestore();
   });
 
   it('successfully create collection & reject', async () => {
@@ -366,10 +357,9 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
       WenError.you_must_be_the_creator_of_this_collection.key,
     );
 
-    mockWalletReturnValue(walletSpy, dummyAddress, { uid: cCollection?.uid });
-    const approvedCollection = await testEnv.wrap(approveCollection)({});
-    expect(approvedCollection?.approved).toBe(true);
-    expect(approvedCollection?.rejected).toBe(false);
+    await build5Db()
+      .doc(`${COL.COLLECTION}/${cCollection?.uid}`)
+      .update({ approved: true });
 
     mockWalletReturnValue(walletSpy, secondGuardian, updateData);
     const uCollection = await testEnv.wrap(updateCollection)({});

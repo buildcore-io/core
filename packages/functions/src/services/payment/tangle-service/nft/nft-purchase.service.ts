@@ -161,10 +161,6 @@ const getCollection = async (id: string) => {
     throw invalidArgument(WenError.collection_does_not_exists);
   }
 
-  if (!collection.approved) {
-    throw invalidArgument(WenError.collection_must_be_approved);
-  }
-
   if (![CollectionStatus.PRE_MINTED, CollectionStatus.MINTED].includes(collection.status!)) {
     throw invalidArgument(WenError.invalid_collection_status);
   }
