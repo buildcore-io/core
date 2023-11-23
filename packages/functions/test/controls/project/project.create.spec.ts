@@ -8,8 +8,10 @@ import {
   SUB_COL,
   Token,
   TokenStatus,
+  Transaction,
   WenError,
 } from '@build-5/interfaces';
+import { AVAILABLE_NETWORKS } from '../../../src/controls/common';
 import { createProject } from '../../../src/runtime/firebase/project/index';
 import * as wallet from '../../../src/utils/wallet.utils';
 import { testEnv } from '../../set-up';
@@ -60,6 +62,18 @@ describe('Project create', () => {
     expect(projectAdmin?.uid).toBe(guardian);
     expect(projectAdmin?.parentCol).toBe(COL.PROJECT);
     expect(projectAdmin?.parentId).toBe(project?.uid);
+
+    const networks = Object.values(project!.otr!).map((o) => o.network);
+    expect(networks.sort()).toEqual(AVAILABLE_NETWORKS.sort());
+
+    for (const [uid, otr] of Object.entries(project?.otr!)) {
+      const docRef = build5Db().doc(`${COL.TRANSACTION}/${uid}`);
+      const otrOrder = <Transaction>await docRef.get();
+      expect(otrOrder.uid).toBe(uid);
+      expect(otrOrder.network).toBe(otr.network);
+      expect(otrOrder.payload.targetAddress).toBe(otr.targetAddress);
+      await docRef.delete();
+    }
   });
 
   it('Should throw, volume based project with token based data', async () => {
@@ -104,5 +118,18 @@ describe('Project create', () => {
     expect(adminGuardian?.uid).toBe(guardian);
     expect(adminGuardian?.parentCol).toBe(COL.PROJECT);
     expect(adminGuardian?.parentId).toBe(project?.uid);
+
+    const networks = Object.values(project!.otr!).map((o) => o.network);
+    expect(networks.sort()).toEqual(AVAILABLE_NETWORKS.sort());
+
+    for (const [uid, otr] of Object.entries(project?.otr!)) {
+      const docRef = build5Db().doc(`${COL.TRANSACTION}/${uid}`);
+      const otrOrder = <Transaction>await docRef.get();
+      expect(otrOrder.uid).toBe(uid);
+      expect(otrOrder.network).toBe(otr.network);
+      expect(otrOrder.payload.targetAddress).toBe(otr.targetAddress);
+      expect(otrOrder.project).toBe(project?.uid);
+      await docRef.delete();
+    }
   });
 });

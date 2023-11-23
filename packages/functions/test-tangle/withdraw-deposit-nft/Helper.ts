@@ -34,11 +34,7 @@ import {
 } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { cloneDeep } from 'lodash';
-import {
-  approveCollection,
-  createCollection,
-  mintCollection,
-} from '../../src/runtime/firebase/collection/index';
+import { createCollection, mintCollection } from '../../src/runtime/firebase/collection/index';
 import {
   createNft,
   orderNft,
@@ -93,8 +89,7 @@ export class Helper {
     );
     this.collection = (await testEnv.wrap(createCollection)({})).uid;
 
-    mockWalletReturnValue(this.walletSpy, this.guardian, { uid: this.collection });
-    await testEnv.wrap(approveCollection)({});
+    await build5Db().doc(`${COL.COLLECTION}/${this.collection}`).update({ approved: true });
 
     const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${this.guardian}`);
     const guardianData = <Member>await guardianDocRef.get();

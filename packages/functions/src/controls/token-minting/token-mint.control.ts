@@ -28,7 +28,7 @@ import {
 } from '../../utils/token-minting-utils/foundry.utils';
 import { getOwnedTokenTotal } from '../../utils/token-minting-utils/member.utils';
 import {
-  assertIsGuardian,
+  assertIsTokenGuardian,
   assertTokenStatus,
   getUnclaimedAirdropTotalValue,
 } from '../../utils/token.utils';
@@ -49,7 +49,7 @@ export const mintTokenControl = ({ owner, params, project }: Context<TokenMintRe
 
     assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED]);
 
-    await assertIsGuardian(token.space, owner);
+    await assertIsTokenGuardian(token, owner);
     const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();
     assertMemberHasValidAddress(member, params.network as Network);
 

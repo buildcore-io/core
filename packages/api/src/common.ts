@@ -69,8 +69,8 @@ export const getHeadPriceObs = (query: IQuery) =>
 export const minAddressLength = 42;
 export const maxAddressLength = 255;
 export class CommonJoi {
-  public static uid(required = true): Joi.StringSchema<string> {
-    const base = Joi.string().alphanum().min(minAddressLength).max(maxAddressLength).lowercase();
+  public static uid(required = true, minLength = minAddressLength): Joi.StringSchema<string> {
+    const base = Joi.string().alphanum().min(minLength).max(maxAddressLength).lowercase();
     return required ? base.required() : base;
   }
 }
@@ -91,6 +91,8 @@ export const shouldSetProjectFilter = (
 ): boolean =>
   ![
     PublicCollections.MILESTONE,
+    PublicCollections.MEMBER,
+    PublicCollections.PROJECT,
     PublicCollections.MILESTONE_RMS,
     PublicCollections.MILESTONE_SMR,
     PublicCollections.TICKER,

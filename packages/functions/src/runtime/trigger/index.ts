@@ -12,7 +12,7 @@ import { onTokenPurchaseCreated } from '../../triggers/token-trading/token-purch
 import { onTokenTradeOrderWrite } from '../../triggers/token-trading/token-trade-order.trigger';
 import { onTokenStatusUpdated } from '../../triggers/token.trigger';
 import { onTransactionWrite } from '../../triggers/transaction-trigger/transaction.trigger';
-import { isProdEnv } from '../../utils/config.utils';
+import { isEmulatorEnv, isProdEnv } from '../../utils/config.utils';
 import { WEN_FUNC_TRIGGER } from '../common';
 import { onCreate, onUpdate, onWrite } from './trigger';
 
@@ -75,7 +75,7 @@ exports[WEN_FUNC_TRIGGER.onCollectionStatsWrite] = onWrite({
   handler: onCollectionStatsWrite,
 });
 
-export const algolia = ALGOLIA_COLLECTIONS.reduce(
+export const algolia = (isEmulatorEnv() ? [] : ALGOLIA_COLLECTIONS).reduce(
   (acc, act) => ({
     ...acc,
     [`${WEN_FUNC_TRIGGER.algolia}${act}`]: onWrite({

@@ -29,11 +29,10 @@ import {
   createNftOutput,
   nftToMetadata,
 } from '../../utils/collection-minting-utils/nft.utils';
-import { isProdEnv } from '../../utils/config.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { createAliasOutput } from '../../utils/token-minting-utils/alias.utils';
-import { assertIsGuardian } from '../../utils/token.utils';
+import { assertIsCollectionGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Context } from '../common';
 
@@ -55,10 +54,6 @@ export const mintCollectionOrderControl = async ({
       throw invalidArgument(WenError.collection_does_not_exists);
     }
 
-    if (isProdEnv() && !collection.approved) {
-      throw invalidArgument(WenError.collection_must_be_approved);
-    }
-
     if (collection.status !== CollectionStatus.PRE_MINTED) {
       throw invalidArgument(WenError.invalid_collection_status);
     }
@@ -77,7 +72,7 @@ export const mintCollectionOrderControl = async ({
       throw invalidArgument(WenError.invalid_collection_status);
     }
 
-    assertIsGuardian(collection.space, owner);
+    await assertIsCollectionGuardian(collection, owner);
 
     const space = await build5Db().doc(`${COL.SPACE}/${collection.space}`).get<Space>();
     assertSpaceHasValidAddress(space, network);

@@ -22,7 +22,7 @@ import dayjs from 'dayjs';
 import { uniq } from 'lodash';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
-import { assertIsGuardian } from '../../utils/token.utils';
+import { assertIsTokenGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Context } from '../common';
 
@@ -56,7 +56,7 @@ export const removeStakeRewardControl = async ({
   const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${tokenIds[0]}`);
   const token = (await tokenDocRef.get<Token>())!;
 
-  await assertIsGuardian(token.space, owner);
+  await assertIsTokenGuardian(token, owner);
 
   const ongoingProposalSnap = await build5Db()
     .collection(COL.PROPOSAL)

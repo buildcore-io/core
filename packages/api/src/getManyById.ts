@@ -21,7 +21,7 @@ const getManyByIdSchema = Joi.object({
   collection: Joi.string()
     .equal(...Object.values(PublicCollections))
     .required(),
-  parentUids: Joi.array().items(CommonJoi.uid(false)).max(QUERY_MAX_LENGTH),
+  parentUids: Joi.array().items(CommonJoi.uid(false, 7)).max(QUERY_MAX_LENGTH),
   subCollection: Joi.string()
     .equal(...Object.values(PublicSubCollections))
     .optional(),

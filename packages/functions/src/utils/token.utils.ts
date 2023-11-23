@@ -1,6 +1,7 @@
 import { build5Db, getSnapshot } from '@build-5/database';
 import {
   COL,
+  Collection,
   SUB_COL,
   Token,
   TokenDrop,
@@ -35,6 +36,22 @@ export const assertIsGuardian = async (space: string, member: string) => {
     .get();
   if (!guardianDoc) {
     throw invalidArgument(WenError.you_are_not_guardian_of_space);
+  }
+};
+
+export const assertIsTokenGuardian = async (token: Token, member: string) => {
+  if (token.space) {
+    await assertIsGuardian(token.space, member);
+  } else if (token.createdBy !== member) {
+    throw invalidArgument(WenError.you_must_be_the_creator_of_this_token);
+  }
+};
+
+export const assertIsCollectionGuardian = async (collection: Collection, member: string) => {
+  if (collection.space) {
+    await assertIsGuardian(collection.space, member);
+  } else if (collection.createdBy !== member) {
+    throw invalidArgument(WenError.you_must_be_the_creator_of_this_collection);
   }
 };
 

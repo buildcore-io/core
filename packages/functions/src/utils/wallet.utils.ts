@@ -115,7 +115,9 @@ const getValidateFuncForNetwork = (network: Network) => {
 };
 const validateSmrPubKey = async (req: WenRequest) => {
   const signedData = ConverterNext.hexToBytes(HexHelper.stripPrefix(req.signature!));
-  const legacyPublicKey = ConverterNext.hexToBytes(HexHelper.stripPrefix(req.legacyPublicKey?.hex!));
+  const legacyPublicKey = ConverterNext.hexToBytes(
+    HexHelper.stripPrefix(req.legacyPublicKey?.hex!),
+  );
 
   const bech32Address = Bech32HelperNext.toBech32(
     ED25519_ADDRESS_TYPE,

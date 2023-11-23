@@ -69,10 +69,12 @@ describe('Collection minting', () => {
     await Promise.all(promises);
 
     const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${helper.collection}`);
+    let collection = <Collection>await collectionDocRef.get();
     await wait(async () => {
-      const data = <Collection>await collectionDocRef.get();
-      return data.status === CollectionStatus.MINTED;
+      collection = <Collection>await collectionDocRef.get();
+      return collection.status === CollectionStatus.MINTED;
     });
+    expect(collection.approved).toBe(true);
 
     const creditQuery = build5Db()
       .collection(COL.TRANSACTION)

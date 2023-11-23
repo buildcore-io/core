@@ -75,6 +75,30 @@ describe('Token controller: ' + WEN_FUNC.updateToken, () => {
     expect(result.pricePerToken).toBe(updateData.pricePerToken);
   });
 
+  it('Should update token, no space', async () => {
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ space: '' });
+    const updateData = {
+      ...data,
+      name: 'TokenName2',
+      uid: token.uid,
+      title: 'title',
+      description: 'description',
+      pricePerToken: 2 * MIN_IOTA_AMOUNT,
+    };
+    mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), updateData);
+    await expectThrow(
+      testEnv.wrap(updateToken)({}),
+      WenError.you_must_be_the_creator_of_this_token.key,
+    );
+
+    mockWalletReturnValue(walletSpy, memberAddress, updateData);
+    const result = await testEnv.wrap(updateToken)({});
+    expect(result.name).toBe(updateData.name);
+    expect(result.title).toBe(updateData.title);
+    expect(result.description).toBe(updateData.description);
+    expect(result.pricePerToken).toBe(updateData.pricePerToken);
+  });
+
   it('Should update token - remove description', async () => {
     const updateData = { ...data, name: token.name, uid: token.uid, title: 'title2' };
     mockWalletReturnValue(walletSpy, memberAddress, updateData);

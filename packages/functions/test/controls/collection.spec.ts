@@ -22,14 +22,13 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { chunk } from 'lodash';
+import { chunk, set } from 'lodash';
 import { createNft } from '../../src/runtime/firebase/nft';
 import { rankController } from '../../src/runtime/firebase/rank';
 import { voteController } from '../../src/runtime/firebase/vote';
 import * as wallet from '../../src/utils/wallet.utils';
 import { soonTokenId, testEnv } from '../set-up';
 import {
-  approveCollection,
   createCollection,
   rejectCollection,
   updateCollection,
@@ -50,19 +49,24 @@ import {
 
 let walletSpy: any;
 
-const dummyCollection: any = (spaceId: string, royaltiesFee: number) => ({
-  name: 'Collection A',
-  description: 'babba',
-  type: CollectionType.CLASSIC,
-  category: Categories.ART,
-  access: Access.OPEN,
-  royaltiesFee,
-  space: spaceId,
-  royaltiesSpace: spaceId,
-  onePerMemberOnly: false,
-  availableFrom: dayjs().add(1, 'hour').toDate(),
-  price: 10 * 1000 * 1000,
-});
+const dummyCollection: any = (spaceId: string, royaltiesFee: number, noSpace = false) => {
+  const data = {
+    name: 'Collection A',
+    description: 'babba',
+    type: CollectionType.CLASSIC,
+    category: Categories.ART,
+    access: Access.OPEN,
+    royaltiesFee,
+    royaltiesSpace: spaceId,
+    onePerMemberOnly: false,
+    availableFrom: dayjs().add(1, 'hour').toDate(),
+    price: 10 * 1000 * 1000,
+  };
+  if (!noSpace) {
+    set(data, 'space', spaceId);
+  }
+  return data;
+};
 
 describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
   let dummyAddress: NetworkAddress;
@@ -87,6 +91,20 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
     expect(collection?.updatedOn).toBeDefined();
     expect(collection?.total).toBe(0);
     expect(collection?.sold).toBe(0);
+    walletSpy.mockRestore();
+  });
+
+  it('successfully create collection, no space', async () => {
+    mockWalletReturnValue(walletSpy, dummyAddress, dummyCollection(space.uid, 0.6, true));
+    const collection = await testEnv.wrap(createCollection)({});
+    expect(collection?.uid).toBeDefined();
+    expect(collection?.createdOn).toBeDefined();
+    expect(collection?.approved).toBe(false);
+    expect(collection?.rejected).toBe(false);
+    expect(collection?.updatedOn).toBeDefined();
+    expect(collection?.total).toBe(0);
+    expect(collection?.sold).toBe(0);
+    expect(collection.space).toBe('');
     walletSpy.mockRestore();
   });
 
@@ -176,13 +194,39 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
     walletSpy.mockRestore();
   });
 
+  it('successfully create collection & update, no space', async () => {
+    mockWalletReturnValue(walletSpy, dummyAddress, dummyCollection(space.uid, 0.6, true));
+
+    const cCollection = await testEnv.wrap(createCollection)({});
+
+    const updateData = {
+      uid: cCollection?.uid,
+      name: 'Collection A',
+      description: '123',
+      royaltiesFee: 0.6,
+      royaltiesSpace: space.uid,
+    };
+
+    const randomMember = await createMemberFunc(walletSpy);
+    mockWalletReturnValue(walletSpy, randomMember, updateData);
+    await expectThrow(
+      testEnv.wrap(updateCollection)({}),
+      WenError.you_must_be_the_creator_of_this_collection.key,
+    );
+
+    mockWalletReturnValue(walletSpy, dummyAddress, updateData);
+    const uCollection = await testEnv.wrap(updateCollection)({});
+    expect(uCollection?.name).toBe(updateData.name);
+    expect(uCollection?.description).toBe(updateData.description);
+    walletSpy.mockRestore();
+  });
+
   it('successfully create collection & update price', async () => {
     let collection = dummyCollection(space.uid, 0.6);
     mockWalletReturnValue(walletSpy, dummyAddress, collection);
     collection = await testEnv.wrap(createCollection)({});
 
-    mockWalletReturnValue(walletSpy, dummyAddress, { uid: collection?.uid });
-    await testEnv.wrap(approveCollection)({});
+    await build5Db().doc(`${COL.COLLECTION}/${collection.uid}`).update({ approved: true });
 
     const dummyNft = () => ({
       name: 'Collection A',
@@ -323,13 +367,6 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
     const cCollection = await testEnv.wrap(createCollection)({});
     expect(cCollection?.uid).toBeDefined();
     expect(cCollection?.description).toBe('babba');
-
-    mockWalletReturnValue(walletSpy, dummyAddress, { uid: cCollection?.uid });
-    const uCollection = await testEnv.wrap(approveCollection)({});
-    expect(uCollection?.uid).toBeDefined();
-    expect(uCollection?.approved).toBe(true);
-    expect(uCollection?.rejected).toBe(false);
-    walletSpy.mockRestore();
   });
 
   it('successfully create collection & reject', async () => {
@@ -337,6 +374,24 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
     const returns = await testEnv.wrap(createCollection)({});
     expect(returns?.uid).toBeDefined();
     expect(returns?.description).toBe('babba');
+
+    mockWalletReturnValue(walletSpy, dummyAddress, { uid: returns?.uid });
+    const returns2 = await testEnv.wrap(rejectCollection)({});
+    expect(returns2?.uid).toBeDefined();
+    expect(returns2?.approved).toBe(false);
+    expect(returns2?.rejected).toBe(true);
+    walletSpy.mockRestore();
+  });
+
+  it('successfully create collection & reject, no space', async () => {
+    mockWalletReturnValue(walletSpy, dummyAddress, dummyCollection(space.uid, 0.6, true));
+    const returns = await testEnv.wrap(createCollection)({});
+
+    mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), { uid: returns?.uid });
+    await expectThrow(
+      testEnv.wrap(rejectCollection)({}),
+      WenError.you_must_be_the_creator_of_this_collection.key,
+    );
 
     mockWalletReturnValue(walletSpy, dummyAddress, { uid: returns?.uid });
     const returns2 = await testEnv.wrap(rejectCollection)({});
@@ -366,10 +421,9 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
       WenError.you_must_be_the_creator_of_this_collection.key,
     );
 
-    mockWalletReturnValue(walletSpy, dummyAddress, { uid: cCollection?.uid });
-    const approvedCollection = await testEnv.wrap(approveCollection)({});
-    expect(approvedCollection?.approved).toBe(true);
-    expect(approvedCollection?.rejected).toBe(false);
+    await build5Db()
+      .doc(`${COL.COLLECTION}/${cCollection?.uid}`)
+      .update({ approved: true });
 
     mockWalletReturnValue(walletSpy, secondGuardian, updateData);
     const uCollection = await testEnv.wrap(updateCollection)({});

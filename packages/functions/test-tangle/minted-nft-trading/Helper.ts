@@ -19,11 +19,7 @@ import {
   UnsoldMintingOptions,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import {
-  approveCollection,
-  createCollection,
-  mintCollection,
-} from '../../src/runtime/firebase/collection/index';
+import { createCollection, mintCollection } from '../../src/runtime/firebase/collection/index';
 import { createNft, orderNft, setForSaleNft } from '../../src/runtime/firebase/nft/index';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { Wallet } from '../../src/services/wallet/wallet';
@@ -74,8 +70,7 @@ export class Helper {
     );
     this.collection = (await testEnv.wrap(createCollection)({})).uid;
 
-    mockWalletReturnValue(this.walletSpy, this.guardian, { uid: this.collection });
-    await testEnv.wrap(approveCollection)({});
+    await build5Db().doc(`${COL.COLLECTION}/${this.collection}`).update({ approved: true });
   };
 
   public mintCollection = async (expiresAt?: Timestamp) => {

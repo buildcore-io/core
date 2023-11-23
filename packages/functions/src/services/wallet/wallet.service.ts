@@ -1,7 +1,7 @@
 import { build5Db } from '@build-5/database';
 import { COL, DEFAULT_NETWORK, NativeToken, Network } from '@build-5/interfaces';
 import { Client } from '@iota/sdk';
-import { getRandomElement } from '../../utils/common.utils';
+import { getRandomIndex } from '../../utils/common.utils';
 import { IotaWallet } from './IotaWalletService';
 import { SmrWallet } from './SmrWalletService';
 import { Wallet } from './wallet';
@@ -21,7 +21,7 @@ export interface SendToManyTargets {
 
 const NODES = {
   [Network.SMR]: ['https://smr1.svrs.io/', 'https://smr3.svrs.io/'],
-  [Network.RMS]: ['https://rms1.svrs.io/'],
+  [Network.RMS]: ['https://rms1.svrs.io/', 'https://rms1.svrs.io/'], // Second ulr is for testing purposes,
   [Network.IOTA]: [
     'https://us3.svrs.io/',
     'https://us4.svrs.io/',
@@ -31,15 +31,16 @@ const NODES = {
   [Network.ATOI]: ['https://rms1.svrs.io/'],
 };
 
-const getClient = async (network: Network) => {
+const getClient = async (network: Network, nodeIndexToExclude?: number) => {
   let nodeUrl = '';
   for (let i = 0; i < 5; ++i) {
-    nodeUrl = getRandomElement(NODES[network]);
+    const nodeIndex = getRandomIndex(NODES[network], nodeIndexToExclude);
+    nodeUrl = NODES[network][nodeIndex];
     try {
       const client = new Client({ nodes: [nodeUrl] });
       const info = await client.getInfo();
       if (info.nodeInfo.status.isHealthy) {
-        return { client, info: info.nodeInfo };
+        return { client, info: info.nodeInfo, nodeIndex, nodeUrl };
       }
     } catch (error) {
       console.warn(`Could not connect to client ${network}`, nodeUrl, error);
@@ -50,20 +51,16 @@ const getClient = async (network: Network) => {
   throw Error(`Could not connect to any client ${network}`);
 };
 
-const wallets: { [network: string]: Wallet } = {};
-
 export class WalletService {
-  public static newWallet = async (network = DEFAULT_NETWORK): Promise<Wallet> => {
-    const { client, info } = await getClient(network);
-    if (wallets[network]) {
-      return wallets[network];
-    }
+  public static newWallet = async (
+    network = DEFAULT_NETWORK,
+    nodeIndexToExclude?: number,
+  ): Promise<Wallet> => {
+    const { client, info, nodeIndex, nodeUrl } = await getClient(network, nodeIndexToExclude);
     if ([Network.ATOI, Network.IOTA].includes(network)) {
-      wallets[network] = new IotaWallet(client, info, network);
-    } else if ([Network.RMS, Network.SMR].includes(network)) {
-      wallets[network] = new SmrWallet(client, info, network);
+      return new IotaWallet(client, info, nodeIndex, nodeUrl, network);
     }
-    return wallets[network];
+    return new SmrWallet(client, info, nodeIndex, nodeUrl, network);
   };
 }
 

@@ -2,7 +2,7 @@ import { build5Db } from '@build-5/database';
 import { COL, Collection, RejectCollectionRequest, WenError } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { invalidArgument } from '../../utils/error.utils';
-import { assertIsGuardian } from '../../utils/token.utils';
+import { assertIsCollectionGuardian } from '../../utils/token.utils';
 import { Context } from '../common';
 
 export const rejectCollectionControl = async ({
@@ -23,7 +23,7 @@ export const rejectCollectionControl = async ({
     throw invalidArgument(WenError.collection_is_already_rejected);
   }
 
-  await assertIsGuardian(collection.space, owner);
+  await assertIsCollectionGuardian(collection, owner);
 
   await collectionDocRef.update({ approved: false, rejected: true });
   return { ...collection, approved: false, rejected: true };

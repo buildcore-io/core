@@ -310,4 +310,12 @@ export const WenError = {
   invalid_target_address: { code: 2141, key: 'Invalid target address.' },
   auction_not_active: { code: 2142, key: 'Auction no longer active.' },
   auction_does_not_exist: { code: 2143, key: 'Auction does not exist.' },
+  you_must_be_the_creator_of_this_token: {
+    code: 2144,
+    key: 'You must be the creator of this token.',
+  },
+  token_must_have_space: {
+    code: 2145,
+    key: 'Token must have a space.',
+  },
 };

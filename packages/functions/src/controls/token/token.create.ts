@@ -2,6 +2,7 @@ import { build5Db } from '@build-5/database';
 import {
   COL,
   DEFAULT_NETWORK,
+  SOON_PROJECT_ID,
   Space,
   Token,
   TokenCreateRequest,
@@ -29,16 +30,20 @@ export const createTokenControl = async ({
     throw invalidArgument(WenError.no_staked_soon);
   }
 
-  const tokens = await build5Db()
-    .collection(COL.TOKEN)
-    .where('space', '==', params.space)
-    .get<Token>();
-  const nonOrAllRejected = tokens.reduce(
-    (acc, token) => acc && !token.approved && token.rejected,
-    true,
-  );
-  if (!nonOrAllRejected) {
-    throw invalidArgument(WenError.token_already_exists_for_space);
+  const space = params.space || '';
+  if (space) {
+    const tokens = await build5Db().collection(COL.TOKEN).where('space', '==', space).get<Token>();
+    const nonOrAllRejected = tokens.reduce(
+      (acc, token) => acc && !token.approved && token.rejected,
+      true,
+    );
+    if (!nonOrAllRejected) {
+      throw invalidArgument(WenError.token_already_exists_for_space);
+    }
+    await assertIsGuardian(space, owner);
+
+    const spaceData = await build5Db().doc(`${COL.SPACE}/${space}`).get<Space>();
+    assertSpaceHasValidAddress(spaceData, DEFAULT_NETWORK);
   }
 
   const symbolSnapshot = await build5Db()
@@ -50,11 +55,6 @@ export const createTokenControl = async ({
     throw invalidArgument(WenError.token_symbol_must_be_globally_unique);
   }
 
-  await assertIsGuardian(params.space, owner);
-
-  const space = await build5Db().doc(`${COL.SPACE}/${params.space}`).get<Space>();
-  assertSpaceHasValidAddress(space, DEFAULT_NETWORK);
-
   const publicSaleTimeFrames = shouldSetPublicSaleTimeFrames({ ...params }, params.allocations)
     ? getPublicSaleTimeFrames(
         dateToTimestamp(params.saleStartDate, true),
@@ -65,12 +65,13 @@ export const createTokenControl = async ({
 
   const tokenUid = getRandomEthAddress();
   const extraData = {
+    space,
     project,
     uid: tokenUid,
     createdBy: owner,
     approved: !isProdEnv(),
     rejected: false,
-    public: !isProdEnv(),
+    public: project !== SOON_PROJECT_ID || !isProdEnv(),
     status: TokenStatus.AVAILABLE,
     ipfsMedia: null,
     ipfsMetadata: null,
