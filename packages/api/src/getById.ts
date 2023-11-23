@@ -14,7 +14,7 @@ const getByIdSchema = Joi.object({
   collection: Joi.string()
     .equal(...Object.values(PublicCollections))
     .required(),
-  parentUid: CommonJoi.uid(false),
+  parentUid: CommonJoi.uid(false, 7),
   subCollection: Joi.string()
     .equal(...Object.values(PublicSubCollections))
     .optional(),

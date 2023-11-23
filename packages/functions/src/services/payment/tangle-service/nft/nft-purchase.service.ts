@@ -161,10 +161,6 @@ const getCollection = async (id: string) => {
     throw invalidArgument(WenError.collection_does_not_exists);
   }
 
-  if (!collection.approved) {
-    throw invalidArgument(WenError.collection_must_be_approved);
-  }
-
   if (![CollectionStatus.PRE_MINTED, CollectionStatus.MINTED].includes(collection.status!)) {
     throw invalidArgument(WenError.invalid_collection_status);
   }
@@ -331,7 +327,7 @@ const assertCurrentOwnerAddress = (currentOwner: Space | Member, nft: Nft) => {
 };
 
 const getDiscount = (collection: Collection, member: Member) => {
-  const spaceRewards = (member.spaces || {})[collection.space] || {};
+  const spaceRewards = (member.spaces || {})[collection.space || ''] || {};
   const descDiscounts = [...(collection.discounts || [])].sort((a, b) => b.amount - a.amount);
   for (const discount of descDiscounts) {
     const awardStat = (spaceRewards.awardStat || {})[discount.tokenUid!];

@@ -33,7 +33,16 @@ export const generateRandomAmount = () => {
   return Math.floor(Math.random() * (min * 1.5 - min + 1) + min) * 1000 * 10;
 };
 
-export const getRandomElement = <T>(array: T[]) => array[Math.floor(Math.random() * array.length)];
+export const getRandomIndex = <T>(array: T[], indexToExclude?: number) => {
+  let index = 0;
+  if (array.length === 1) {
+    return index;
+  }
+  do {
+    index = Math.floor(Math.random() * array.length);
+  } while (index === indexToExclude);
+  return index;
+};
 
 export const getRestrictions = (collection?: Collection, nft?: Nft): Restrictions => {
   let restrictions = {};

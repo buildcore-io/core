@@ -4,7 +4,7 @@ import { Client } from '@iota/sdk';
 import { MnemonicService } from '../src/services/wallet/mnemonic';
 import { Wallet } from '../src/services/wallet/wallet';
 import { AddressDetails } from '../src/services/wallet/wallet.service';
-import { getRandomElement } from '../src/utils/common.utils';
+import { getRandomIndex } from '../src/utils/common.utils';
 import { wait } from '../test/controls/common';
 import { getWallet } from '../test/set-up';
 
@@ -114,8 +114,10 @@ export const awaitLedgerInclusionState = async (blockId: string) => {
 const getLedgerInclusionState = async (client: Client, blockId: string) =>
   (await client.getBlockMetadata(blockId)).ledgerInclusionState;
 
-export const getFaucetMnemonic = (network: Network) =>
-  getRandomElement(network === Network.ATOI ? ATOI_FAUCET_MNEMONIC : RMS_FAUCET_MNEMONIC);
+export const getFaucetMnemonic = (network: Network) => {
+  const urls = network === Network.ATOI ? ATOI_FAUCET_MNEMONIC : RMS_FAUCET_MNEMONIC;
+  return urls[getRandomIndex(urls)];
+};
 
 export const RMS_FAUCET_MNEMONIC = [
   'elevator eternal dumb mobile gesture valve cage ice sponsor ankle broken almost dilemma dish tissue shuffle purity phone baby palace turn tenant spy lonely',

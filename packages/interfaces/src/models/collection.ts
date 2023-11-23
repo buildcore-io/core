@@ -178,7 +178,7 @@ export interface Collection extends CollectionBase {
   /**
    * Space UID
    */
-  space: string;
+  space?: string;
   /**
    * Date this collection will be available for sale from.
    */

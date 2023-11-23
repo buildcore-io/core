@@ -49,6 +49,8 @@ export abstract class Wallet {
   constructor(
     public readonly client: Client,
     public readonly info: INodeInfo,
+    public readonly nodeIndex: number,
+    public readonly nodeUrl: string,
     public readonly network: Network,
   ) {}
 }

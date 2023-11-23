@@ -21,7 +21,7 @@ export const createCollectionSchema = toJoiObject<CreateCollectionRequest>({
     .equal(CollectionType.CLASSIC, CollectionType.GENERATED, CollectionType.SFT)
     .required()
     .description('Type of the collection.'),
-  space: CommonJoi.uid().description('Build5 id of the space for this collection.'),
+  space: CommonJoi.uid(false).description('Build5 id of the space for this collection.'),
   price: Joi.number()
     .min(MIN_IOTA_AMOUNT)
     .max(MAX_IOTA_AMOUNT)

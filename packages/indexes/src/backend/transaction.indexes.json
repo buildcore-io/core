@@ -31,6 +31,10 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "payload.walletReference.confirmed",
           "order": "ASCENDING"
         },
@@ -49,6 +53,10 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "payload.walletReference.confirmed",
           "order": "ASCENDING"
         },
@@ -64,6 +72,10 @@
       "fields": [
         {
           "fieldPath": "payload.aliasGovAddress",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
           "order": "ASCENDING"
         },
         {

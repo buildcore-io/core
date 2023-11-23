@@ -62,6 +62,6 @@ describe('Collection minting', () => {
 
     const migratedCollectionDocRef = build5Db().doc(`${COL.COLLECTION}/${migratedNft.collection}`);
     const migratedCollection = <Collection>await migratedCollectionDocRef.get();
-    await validateStorageFileCount(migratedCollection.space, migratedCollection.uid);
+    await validateStorageFileCount(migratedCollection.space!, migratedCollection.uid);
   });
 });

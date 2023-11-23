@@ -99,7 +99,7 @@ export interface CreateCollectionRequest {
   /**
    * Build5 id of the space for this collection.
    */
-  space: string;
+  space?: string;
   /**
    * Twitter url of the collection.
    */

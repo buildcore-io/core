@@ -32,7 +32,7 @@ export const createTokenSchema = toJoiObject<TokenCreateRequest>({
     .optional()
     .description('Short description title of the token.'),
   shortDescription: Joi.string().optional().description('Short description of the token.'),
-  space: CommonJoi.uid().description('Build5 id of the space.'),
+  space: CommonJoi.uid(false).description('Build5 id of the space.'),
   pricePerToken: Joi.number()
     .min(MIN_PRICE_PER_TOKEN)
     .max(MAX_PRICE)

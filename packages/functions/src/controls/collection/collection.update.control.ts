@@ -15,7 +15,7 @@ import { isEmpty, last, set } from 'lodash';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertValidationAsync } from '../../utils/schema.utils';
-import { assertIsGuardian } from '../../utils/token.utils';
+import { assertIsCollectionGuardian } from '../../utils/token.utils';
 import { Context, UidSchemaObject } from '../common';
 import { updateMintedCollectionSchemaObject } from './CollectionUpdateMintedRequestSchema';
 import { updateCollectionSchemaObject } from './CollectionUpdateRequestSchema';
@@ -55,7 +55,7 @@ export const updateCollectionControl = async ({
     throw invalidArgument(WenError.royalty_fees_can_only_be_reduced);
   }
 
-  await assertIsGuardian(collection.space, owner);
+  await assertIsCollectionGuardian(collection, owner);
 
   const batch = build5Db().batch();
 

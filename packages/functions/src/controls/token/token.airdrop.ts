@@ -13,7 +13,11 @@ import {
 import { chunk } from 'lodash';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
-import { assertIsGuardian, assertTokenApproved, assertTokenStatus } from '../../utils/token.utils';
+import {
+  assertIsTokenGuardian,
+  assertTokenApproved,
+  assertTokenStatus,
+} from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Context } from '../common';
 
@@ -48,7 +52,7 @@ export const airdropTokenControl = async ({
       assertTokenApproved(token);
       assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED]);
 
-      await assertIsGuardian(token.space, owner);
+      await assertIsTokenGuardian(token, owner);
 
       const totalDropped = chunk.reduce((sum, { count }) => sum + count, 0);
       if (!hasAvailableTokenToAirdrop(token, totalDropped)) {

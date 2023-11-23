@@ -138,7 +138,7 @@ export const wallets: { [key: string]: Wallet } = {};
 
 class TestWallet extends Wallet {
   constructor(private readonly wallet: Wallet) {
-    super(wallet.client, wallet.info, wallet.network);
+    super(wallet.client, wallet.info, wallet.nodeIndex, wallet.nodeUrl, wallet.network);
   }
 
   public getBalance = this.wallet.getBalance;

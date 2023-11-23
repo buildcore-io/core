@@ -20,12 +20,10 @@ import { createAwardControl } from '../../controls/award/award.create';
 import { fundAwardControl } from '../../controls/award/award.fund';
 import { awardParticipateControl } from '../../controls/award/award.participate';
 import { rejectAwardControl } from '../../controls/award/award.reject';
-import { approveCollectionSchema } from '../../controls/collection/CollectionApproveRequestSchema';
 import { createCollectionSchema } from '../../controls/collection/CollectionCreateRequestSchema';
 import { mintCollectionSchema } from '../../controls/collection/CollectionMintRequestSchema';
 import { rejectCollectionSchema } from '../../controls/collection/CollectionRejectRequestSchema';
 import { mintCollectionOrderControl } from '../../controls/collection/collection-mint.control';
-import { approveCollectionControl } from '../../controls/collection/collection.approve.control';
 import { createCollectionControl } from '../../controls/collection/collection.create.control';
 import { rejectCollectionControl } from '../../controls/collection/collection.reject.control';
 import { updateCollectionControl } from '../../controls/collection/collection.update.control';
@@ -282,12 +280,6 @@ exports[WEN_FUNC.updateCollection] = onRequest({
   schema: toJoiObject<UidSchemaObject>({ uid: CommonJoi.uid() }),
   schemaOptions: { allowUnknown: true },
   handler: updateCollectionControl,
-});
-
-exports[WEN_FUNC.approveCollection] = onRequest({
-  name: WEN_FUNC.approveCollection,
-  schema: approveCollectionSchema,
-  handler: approveCollectionControl,
 });
 
 exports[WEN_FUNC.rejectCollection] = onRequest({

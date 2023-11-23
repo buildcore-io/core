@@ -190,8 +190,12 @@ const executeTransaction = async (transactionId: string) => {
   const payload = transaction.payload;
 
   const params = await getWalletParams(transaction);
+
+  const wallet = await WalletService.newWallet(
+    transaction.network,
+    transaction.payload.walletReference?.nodeIndex,
+  );
   try {
-    const wallet = await WalletService.newWallet(transaction.network || DEFAULT_NETWORK);
     const sourceAddress = await wallet.getAddressDetails(payload.sourceAddress!);
 
     const submit = () => {
@@ -246,13 +250,15 @@ const executeTransaction = async (transactionId: string) => {
       'payload.walletReference.processedOn': dayjs().toDate(),
       'payload.walletReference.chainReference': chainReference,
       'payload.walletReference.chainReferences': build5Db().arrayUnion(chainReference),
+      'payload.walletReference.nodeIndex': wallet.nodeIndex,
     });
   } catch (error) {
-    console.error(transaction.uid, error);
+    console.error(transaction.uid, wallet.nodeUrl, error);
     await docRef.update({
       'payload.walletReference.chainReference': null,
       'payload.walletReference.processedOn': dayjs().toDate(),
       'payload.walletReference.error': JSON.stringify(error),
+      'payload.walletReference.nodeIndex': wallet.nodeIndex,
     });
     await unclockMnemonic(payload.sourceAddress!);
   }

@@ -64,6 +64,16 @@ describe('Token controller: ' + WEN_FUNC.createToken, () => {
     expect(result.decimals).toBe(5);
   });
 
+  it('Should create token without space', async () => {
+    delete token.space;
+    mockWalletReturnValue(walletSpy, memberAddress, token);
+    const result = await testEnv.wrap(createToken)({});
+    expect(result?.uid).toBeDefined();
+    expect(result.tradingDisabled).toBe(true);
+    expect(result.decimals).toBe(5);
+    expect(result.space).toBe('');
+  });
+
   it('Should create token with $ prefix', async () => {
     mockWalletReturnValue(walletSpy, memberAddress, { ...token, symbol: '$' + token.symbol });
     const result = await testEnv.wrap(createToken)({});
@@ -181,12 +191,6 @@ describe('Token controller: ' + WEN_FUNC.createToken, () => {
 
   it('Should throw, no symbol', async () => {
     delete token.symbol;
-    mockWalletReturnValue(walletSpy, memberAddress, token);
-    await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key);
-  });
-
-  it('Should throw, no space', async () => {
-    delete token.space;
     mockWalletReturnValue(walletSpy, memberAddress, token);
     await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key);
   });

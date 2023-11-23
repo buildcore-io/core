@@ -7,6 +7,7 @@ import {
   Mnemonic,
   Network,
   NetworkAddress,
+  SOON_PROJECT_ID,
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
@@ -63,9 +64,7 @@ describe('Transaction trigger spec', () => {
           'payload.walletReference.confirmed': false,
           'payload.walletReference.inProgress': true,
           'payload.walletReference.count': MAX_WALLET_RETRY,
-          'payload.walletReference.processedOn': dateToTimestamp(
-            dayjs().subtract(4, 'minute').toDate(),
-          ),
+          'payload.walletReference.processedOn': dateToTimestamp(dayjs().subtract(4, 'd').toDate()),
         });
 
       let billPayment2 = dummyPayment(
@@ -115,6 +114,7 @@ const dummyPayment = (
     uid: getRandomEthAddress(),
     createdOn: serverTime(),
     network,
+    project: SOON_PROJECT_ID,
     payload: {
       amount,
       sourceAddress,

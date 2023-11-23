@@ -90,6 +90,33 @@ describe('Token airdrop test', () => {
     expect(airdrops[0].status).toBe(TokenDropStatus.UNCLAIMED);
   });
 
+  it('Should airdrop token with no space', async () => {
+    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ space: '' });
+    const vestingAt = dayjs().toDate();
+    const airdropRequest = {
+      token: token.uid,
+      drops: [{ count: 900, recipient: guardian, vestingAt }],
+    };
+
+    mockWalletReturnValue(walletSpy, member, airdropRequest);
+    await expectThrow(
+      testEnv.wrap(airdropToken)({}),
+      WenError.you_must_be_the_creator_of_this_token.key,
+    );
+
+    mockWalletReturnValue(walletSpy, guardian, airdropRequest);
+    await testEnv.wrap(airdropToken)({});
+
+    const airdrops = await getAirdropsForMember(guardian);
+    expect(airdrops.length).toBe(1);
+    expect(airdrops[0].count).toBe(900);
+    expect(airdrops[0].vestingAt).toEqual(dateToTimestamp(vestingAt));
+    expect(airdrops[0].member).toBe(guardian);
+    expect(airdrops[0].token).toBe(token.uid);
+    expect(airdrops[0].createdBy).toBe(guardian);
+    expect(airdrops[0].status).toBe(TokenDropStatus.UNCLAIMED);
+  });
+
   it('Should create 900 airdrops', async () => {
     const vestingAt = dayjs().toDate();
     const airdropRequest = {
