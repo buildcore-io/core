@@ -23,12 +23,12 @@ const rerunTransaction = async (transaction: ITransaction, data: Transaction) =>
   const docRef = build5Db().doc(`${COL.TRANSACTION}/${data.uid}`);
   const walletReference = data.payload.walletReference!;
   const processedOn = dayjs(walletReference.processedOn.toDate());
-  if (
-    walletReference.confirmed ||
-    processedOn.add(RETRY_UNCOFIRMED_PAYMENT_DELAY).isAfter(dayjs())
-  ) {
+  const delay = RETRY_UNCOFIRMED_PAYMENT_DELAY[(walletReference.count || 1) - 1];
+
+  if (walletReference.confirmed || processedOn.add(delay).isAfter(dayjs())) {
     return;
   }
+
   if (walletReference.count === MAX_WALLET_RETRY) {
     const sourceMnemonicDocRef = build5Db().doc(`${COL.MNEMONIC}/${data.payload.sourceAddress}`);
     transaction.update(sourceMnemonicDocRef, {

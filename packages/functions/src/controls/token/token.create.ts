@@ -71,7 +71,7 @@ export const createTokenControl = async ({
     createdBy: owner,
     approved: !isProdEnv(),
     rejected: false,
-    public: project === SOON_PROJECT_ID || !isProdEnv(),
+    public: project !== SOON_PROJECT_ID || !isProdEnv(),
     status: TokenStatus.AVAILABLE,
     ipfsMedia: null,
     ipfsMetadata: null,

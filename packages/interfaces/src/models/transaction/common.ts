@@ -149,6 +149,7 @@ export interface WalletResult {
   milestoneTransactionPath?: string;
   count: number;
   inProgress?: boolean;
+  nodeIndex?: number;
 }
 
 export interface StorageReturn {
