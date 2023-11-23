@@ -21,7 +21,6 @@ import bigInt from 'big-integer';
 import dayjs from 'dayjs';
 import { cloneDeep, isEmpty } from 'lodash';
 import { Wallet, WalletParams } from '../services/wallet/wallet';
-import { intToU32 } from './common.utils';
 
 export const hasNoTimeLock = (output: BasicOutput) => {
   const locks = output.unlockConditions.filter(
@@ -93,7 +92,7 @@ export const packBasicOutput = async (
     unlockConditions.push(new StorageDepositReturnUnlockCondition(returnAddress, BigInt(10)));
   }
   if (vestingAt) {
-    unlockConditions.push(new TimelockUnlockCondition(intToU32(dayjs(vestingAt.toDate()).unix())));
+    unlockConditions.push(new TimelockUnlockCondition(dayjs(vestingAt.toDate()).unix()));
   }
   if (expiration) {
     unlockConditions.push(

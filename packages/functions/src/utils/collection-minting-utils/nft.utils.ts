@@ -16,7 +16,6 @@ import dayjs from 'dayjs';
 import { head } from 'lodash';
 import { Wallet } from '../../services/wallet/wallet';
 import { PLACEHOLDER_CID } from '../car.utils';
-import { intToU32 } from '../common.utils';
 import { getContentType } from '../storage.utils';
 import { propsToAttributes } from './nft.prop.utils';
 
@@ -46,7 +45,7 @@ export const createNftOutput = async (
     params.features = [new MetadataFeature(utf8ToHex(mutableMetadata))];
   }
   if (vestingAt && vestingAt.isAfter(dayjs())) {
-    params.unlockConditions.push(new TimelockUnlockCondition(intToU32(vestingAt.unix())));
+    params.unlockConditions.push(new TimelockUnlockCondition(vestingAt.unix()));
   }
   const output = await wallet.client.buildNftOutput(params);
   const rent = wallet.info.protocol.rentStructure;

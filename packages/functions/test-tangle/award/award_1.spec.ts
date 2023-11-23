@@ -149,7 +149,7 @@ describe('Create award, base', () => {
         const timelock = nttOutput.unlockConditions.find(
           (uc) => uc.type === UnlockConditionType.Timelock,
         ) as TimelockUnlockCondition;
-        expect(dayjs.unix(timelock.unixTime).isAfter(now.add(31557600000))).toBe(true);
+        expect(dayjs.unix(timelock.unixTime).isAfter(now.add(50 * 31557600000))).toBe(true);
       }
 
       const burnAliasQuery = build5Db()
@@ -180,7 +180,7 @@ const awardRequest = (network: Network, space: string, tokenSymbol: string) => (
     total: 2,
     image: MEDIA,
     tokenReward: MIN_IOTA_AMOUNT,
-    lockTime: 31557600000,
+    lockTime: 50 * 31557600000,
     tokenSymbol,
   },
   network,

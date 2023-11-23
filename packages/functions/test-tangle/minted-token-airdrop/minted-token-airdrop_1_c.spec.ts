@@ -41,7 +41,7 @@ describe('Minted token airdrop', () => {
       {
         count: 1,
         recipient: helper.member!,
-        vestingAt: dayjs().add(6000, 'y').toDate(),
+        vestingAt: dayjs().add(80, 'y').toDate(),
         stakeType,
       },
     ];
