@@ -6,6 +6,7 @@ import {
   Member,
   Network,
   Nft,
+  SOON_PROJECT_ID,
   SUB_COL,
   Token,
   TokenStatus,
@@ -34,6 +35,7 @@ const totalSupply = 1500;
 const saveToken = async (space: string, guardian: string, member: string) => {
   const tokenId = wallet.getRandomEthAddress();
   const token = {
+    project: SOON_PROJECT_ID,
     symbol: getRandomSymbol(),
     totalSupply,
     approved: true,
@@ -75,7 +77,9 @@ describe('Web3 cron test', () => {
         collectionHelper.collection!,
         collectionHelper.getRandomDescrptiron(),
       );
-      return build5Db().doc(`${COL.NFT}/${nft.uid}`).create(nft);
+      return build5Db()
+        .doc(`${COL.NFT}/${nft.uid}`)
+        .create({ ...nft, project: SOON_PROJECT_ID });
     });
     await Promise.all(promises);
     await collectionHelper.mintCollection();

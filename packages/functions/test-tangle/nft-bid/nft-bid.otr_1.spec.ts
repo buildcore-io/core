@@ -35,7 +35,7 @@ describe('Nft otr bid', () => {
 
   it('Should bid on minted nft with OTR', async () => {
     const address = await helper.walletService!.getNewIotaAddressDetails();
-    requestFundsFromFaucet(Network.RMS, address.bech32, 5 * MIN_IOTA_AMOUNT);
+    await requestFundsFromFaucet(Network.RMS, address.bech32, 5 * MIN_IOTA_AMOUNT);
 
     await helper.createAndOrderNft();
     await helper.mintCollection();

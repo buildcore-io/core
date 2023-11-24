@@ -70,7 +70,7 @@ const onAliasMinted = async (transaction: Transaction) => {
     },
   });
 
-  const collection = createMetadataCollection(transaction.space!);
+  const collection = createMetadataCollection(getProject(transaction), transaction.space!);
   const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${collection.uid}`);
   batch.create(collectionDocRef, collection);
 
@@ -119,6 +119,7 @@ const onCollectionMinted = async (transaction: Transaction) => {
     .get<Transaction>();
 
   const nft = createMetadataNft(
+    getProject(transaction),
     transaction.member!,
     transaction.space!,
     transaction.payload.collection!,

@@ -5,6 +5,7 @@ import {
   MIN_IOTA_AMOUNT,
   Network,
   NetworkAddress,
+  SOON_PROJECT_ID,
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
@@ -74,6 +75,7 @@ const dummyPayment = (
   amount = MIN_IOTA_AMOUNT,
 ) =>
   <Transaction>{
+    project: SOON_PROJECT_ID,
     type,
     uid: getRandomEthAddress(),
     createdOn: serverTime(),

@@ -5,6 +5,7 @@ import {
   COL,
   Member,
   MIN_IOTA_AMOUNT,
+  SOON_PROJECT_ID,
   SUB_COL,
   Token,
   TokenDistribution,
@@ -51,6 +52,7 @@ describe('Minted token airdrop', () => {
       .set({ tokenOwned: 1 });
 
     const airdrop: TokenDrop = {
+      project: SOON_PROJECT_ID,
       createdOn: serverTime(),
       createdBy: helper.guardian!,
       uid: getRandomEthAddress(),

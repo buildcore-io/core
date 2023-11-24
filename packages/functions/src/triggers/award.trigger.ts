@@ -52,6 +52,7 @@ export const onAwardUpdated = async (event: FirestoreDocEvent<Award>) => {
       const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${curr.badge.tokenUid}`);
       const token = (await tokenDocRef.get<Token>())!;
       const baseTokenCredit = <Transaction>{
+        project: getProject(curr),
         type: TransactionType.CREDIT,
         uid: getRandomEthAddress(),
         space: curr.space,
@@ -89,6 +90,7 @@ export const onAwardUpdated = async (event: FirestoreDocEvent<Award>) => {
     const token = (await tokenDocRef.get<Token>())!;
 
     const nativeTokensCredit: Transaction = {
+      project: getProject(curr),
       type: TransactionType.CREDIT,
       uid: getRandomEthAddress(),
       space: curr.space,

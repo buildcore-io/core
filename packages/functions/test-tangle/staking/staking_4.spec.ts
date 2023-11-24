@@ -5,6 +5,7 @@ import {
   MIN_IOTA_AMOUNT,
   Member,
   Network,
+  SOON_PROJECT_ID,
   SUB_COL,
   StakeReward,
   StakeRewardStatus,
@@ -63,6 +64,7 @@ describe('Stake reward test test', () => {
 
   it('Should set status to processed_no_stakes', async () => {
     let stakeReward: StakeReward = {
+      project: SOON_PROJECT_ID,
       uid: getRandomEthAddress(),
       startDate: dateToTimestamp(dayjs().subtract(1, 'h')),
       endDate: serverTime(),
@@ -110,6 +112,7 @@ describe('Stake reward test test', () => {
     await helper.validateStatsStakeAmount(1500, 1500, 2235, 2235, StakeType.DYNAMIC, 2);
 
     let stakeReward: StakeReward = {
+      project: SOON_PROJECT_ID,
       uid: getRandomEthAddress(),
       startDate: serverTime(),
       endDate: serverTime(),
@@ -149,6 +152,7 @@ describe('Stake reward test test', () => {
 
     await helper.stakeAmount(100, 26);
     const stakeReward: StakeReward = {
+      project: SOON_PROJECT_ID,
       uid: getRandomEthAddress(),
       startDate: dateToTimestamp(dayjs().subtract(1, 'h')),
       endDate: serverTime(),
@@ -213,6 +217,7 @@ describe('Stake reward test test', () => {
     await helper.stakeAmount(100, 26);
 
     const stakeReward: StakeReward = {
+      project: SOON_PROJECT_ID,
       uid: getRandomEthAddress(),
       startDate: dateToTimestamp(dayjs().subtract(1, 'h')),
       endDate: serverTime(),
@@ -316,6 +321,7 @@ describe('Stake reward test test', () => {
       });
 
     let stakeReward: StakeReward = {
+      project: SOON_PROJECT_ID,
       uid: getRandomEthAddress(),
       startDate: serverTime(),
       endDate: serverTime(),
@@ -358,6 +364,7 @@ describe('Stake reward test test', () => {
     await helper.stakeAmount(100, 26);
 
     const stakeReward: StakeReward = {
+      project: SOON_PROJECT_ID,
       uid: getRandomEthAddress(),
       startDate: dateToTimestamp(dayjs().subtract(1, 'h')),
       endDate: serverTime(),
