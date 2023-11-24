@@ -21,7 +21,6 @@ import {
 } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { cloneDeep, get } from 'lodash';
-import { intToU32 } from '../../../utils/common.utils';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { WalletService } from '../../wallet/wallet.service';
@@ -92,9 +91,7 @@ export class NftStakeService extends BaseService {
     params.unlockConditions = params.unlockConditions.filter(
       (uc) => uc.type !== UnlockConditionType.Timelock,
     );
-    params.unlockConditions.push(
-      new TimelockUnlockCondition(intToU32(dayjs().add(weeks, 'weeks').unix())),
-    );
+    params.unlockConditions.push(new TimelockUnlockCondition(dayjs().add(weeks, 'weeks').unix()));
     const output = await wallet.client.buildNftOutput(params);
     return Utils.computeStorageDeposit(output, wallet.info.protocol.rentStructure!);
   };

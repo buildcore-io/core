@@ -1,4 +1,5 @@
 import { AwardCreateBadgeRequest, AwardCreateRequest, MAX_IOTA_AMOUNT } from '@build-5/interfaces';
+import dayjs from 'dayjs';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 import { AVAILABLE_NETWORKS } from '../common';
@@ -27,6 +28,7 @@ export const awardBageSchema = {
   tokenSymbol: CommonJoi.tokenSymbol().description('The symbol of the reward token.'),
   lockTime: Joi.number()
     .min(0)
+    .max((Math.pow(2, 32) - dayjs().unix() - 1) * 1000)
     .integer()
     .required()
     .description('The time for which the reward nft will be locked.'),

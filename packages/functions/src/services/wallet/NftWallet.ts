@@ -48,7 +48,6 @@ import {
   createNftOutput,
   nftToMetadata,
 } from '../../utils/collection-minting-utils/nft.utils';
-import { intToU32 } from '../../utils/common.utils';
 import { EMPTY_ALIAS_ID } from '../../utils/token-minting-utils/alias.utils';
 import { awardBadgeToNttMetadata, awardToCollectionMetadata } from '../payment/award/award-service';
 import { stampToNftMetadata } from '../payment/tangle-service/stamp/StampTangleService';
@@ -739,7 +738,7 @@ export class NftWallet {
 
     const vestingAt = dayjs(transaction.payload.vestingAt?.toDate());
     if (vestingAt.isAfter(dayjs())) {
-      output.unlockConditions.push(new TimelockUnlockCondition(intToU32(vestingAt.unix())));
+      output.unlockConditions.push(new TimelockUnlockCondition(vestingAt.unix()));
     }
 
     if (output.nftId === EMPTY_NFT_ID) {

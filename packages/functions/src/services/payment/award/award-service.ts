@@ -201,7 +201,7 @@ export const getAwardgStorageDeposits = async (award: Award, token: Token, walle
     ownerAddress,
     issuerAddress,
     JSON.stringify(nttMetadata),
-    dayjs().add(100, 'y'),
+    dayjs.unix(Math.pow(2, 32) - 1),
   );
 
   const storageDeposit = {

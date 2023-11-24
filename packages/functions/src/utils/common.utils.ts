@@ -77,5 +77,3 @@ export const assertIsProjectAdmin = async (project: string, member: string) => {
 };
 
 export const getProject = (data: BaseRecord | undefined) => data?.project || SOON_PROJECT_ID;
-
-export const intToU32 = (value: number) => value & 0xffffffff;
