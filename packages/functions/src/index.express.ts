@@ -37,47 +37,64 @@ Object.entries(flattenObject(onRequests)).forEach(([name, config]) => {
 // TRIGGERS
 Object.entries(flattenObject(onTriggers)).forEach(([name, config]) => {
   app.post(`/${name}`, protoRawParser, async (req, res) => {
-    const root = loadSync('./data.proto');
-    const type = root.lookupType('DocumentEventData');
-    const decoded = type.decode(req.body);
-    const json = protoToJson(decoded);
-    const cloudEvent = HTTP.toEvent({
-      headers: req.headers,
-      body: {},
-    });
-    const event = {
-      prev: json.oldValue?.fields,
-      curr: json.value?.fields,
-      path: get(cloudEvent, 'document', ''),
-      ...pathToParts(get(cloudEvent, 'document', '')),
-    };
-    await (config as TriggeredFunction).handler(event);
-    res.sendStatus(200);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let json: { [key: string]: any } = {};
+    try {
+      const root = loadSync('./data.proto');
+      const type = root.lookupType('DocumentEventData');
+      const decoded = type.decode(req.body);
+      json = protoToJson(decoded);
+      const cloudEvent = HTTP.toEvent({
+        headers: req.headers,
+        body: {},
+      });
+      const event = {
+        prev: json.oldValue?.fields,
+        curr: json.value?.fields,
+        path: get(cloudEvent, 'document', ''),
+        ...pathToParts(get(cloudEvent, 'document', '')),
+      };
+      await (config as TriggeredFunction).handler(event);
+    } catch (error) {
+      console.error(name, json, error);
+    } finally {
+      res.sendStatus(200);
+    }
   });
 });
 
 // CRON
 Object.entries(flattenObject(onScheduled)).forEach(([name, config]) => {
   app.post(`/${name}`, async (_, res) => {
-    await (config as ScheduledFunction).func();
-    res.sendStatus(200);
+    try {
+      await (config as ScheduledFunction).func();
+    } catch (error) {
+      console.error(name, error);
+    } finally {
+      res.sendStatus(200);
+    }
   });
 });
 
 // Storage
 Object.entries(flattenObject(onStorage)).forEach(([name, config]) => {
   app.post(`/${name}`, express.json(), async (req, res) => {
-    const event = HTTP.toEvent({
-      headers: req.headers,
-      body: req.body,
-    });
-    await (config as StorageFunction).func({
-      metadata: get(event, 'data.metadata'),
-      name: get(event, 'data.name', ''),
-      bucket: get(event, 'data.bucket', ''),
-      contentType: get(event, 'data.contentType'),
-    });
-    res.sendStatus(200);
+    try {
+      const event = HTTP.toEvent({
+        headers: req.headers,
+        body: req.body,
+      });
+      await (config as StorageFunction).func({
+        metadata: get(event, 'data.metadata'),
+        name: get(event, 'data.name', ''),
+        bucket: get(event, 'data.bucket', ''),
+        contentType: get(event, 'data.contentType'),
+      });
+    } catch (error) {
+      console.error(name, error);
+    } finally {
+      res.sendStatus(200);
+    }
   });
 });
 
