@@ -218,6 +218,7 @@ export class TransactionService {
     storageReturn?: StorageReturn,
     customPayload?: { [key: string]: unknown },
     response: { [key: string]: unknown } = {},
+    expiresOn?: Timestamp,
   ): Promise<Transaction | undefined> {
     if (payment.payload.amount! > 0) {
       const data: Transaction = {
@@ -251,6 +252,9 @@ export class TransactionService {
       };
       if (storageReturn) {
         set(data, 'payload.storageReturn', storageReturn);
+      }
+      if (expiresOn) {
+        set(data, 'payload.expiresOn', expiresOn);
       }
 
       if (payment.payload.token) {
@@ -318,6 +322,7 @@ export class TransactionService {
     error?: Record<string, unknown>,
     customErrorParams: Record<string, unknown> = {},
     ignoreWalletReason = IgnoreWalletReason.NONE,
+    expiresOn?: Timestamp,
   ) {
     const response = error
       ? { status: 'error', code: error.code || '', message: error.key || '', ...customErrorParams }
@@ -346,6 +351,9 @@ export class TransactionService {
       ignoreWallet: !isEmpty(ignoreWalletReason),
       ignoreWalletReason,
     };
+    if (expiresOn) {
+      set(transaction, 'payload.expiresOn', expiresOn);
+    }
     this.updates.push({
       ref: build5Db().doc(`${COL.TRANSACTION}/${transaction.uid}`),
       data: transaction,
@@ -434,9 +442,10 @@ export class TransactionService {
         to: tranOutput,
       };
       const payment = await this.createPayment(order, match, true);
-      const ignoreWalletReason = this.getIngnoreWalletReason(tranOutput.unlockConditions || []);
+      const ignoreWalletReason = this.getIngnoreWalletReason(tranOutput.unlockConditions);
+      const expiresOn = this.expiresOn(tranOutput.unlockConditions);
       if (match.to.nftOutput?.nftId) {
-        this.createNftCredit(payment, match, undefined, undefined, ignoreWalletReason);
+        this.createNftCredit(payment, match, undefined, undefined, ignoreWalletReason, expiresOn);
         return;
       }
       await this.createCredit(
@@ -446,11 +455,17 @@ export class TransactionService {
         serverTime(),
         true,
         ignoreWalletReason,
+        undefined,
+        undefined,
+        {},
+        expiresOn,
       );
     }
   }
 
-  private getIngnoreWalletReason = (unlockConditions: UnlockCondition[]): IgnoreWalletReason => {
+  private getIngnoreWalletReason = (
+    unlockConditions: UnlockCondition[] = [],
+  ): IgnoreWalletReason => {
     const hasTimelock =
       unlockConditions.find((u) => u.type === UnlockConditionType.Timelock) !== undefined;
     if (hasTimelock) {
@@ -463,6 +478,14 @@ export class TransactionService {
       return IgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION;
     }
     return IgnoreWalletReason.NONE;
+  };
+
+  private expiresOn = (unlockConditions: UnlockCondition[] = []) => {
+    const expirationUc = unlockConditions.find((uc) => uc.type === UnlockConditionType.Expiration);
+    if (!expirationUc) {
+      return;
+    }
+    return dateToTimestamp(dayjs.unix((expirationUc as ExpirationUnlockCondition).unixTime));
   };
 
   public createUnlockTransaction = async (

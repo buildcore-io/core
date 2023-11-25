@@ -35,8 +35,14 @@ export const creditUnrefundableControl = ({
     ) {
       throw invalidArgument(WenError.can_not_credit_transaction);
     }
+
     if (creditTransaction.payload.unlockedBy) {
       throw invalidArgument(WenError.transaction_already_confirmed);
+    }
+
+    const expiresOn = creditTransaction.payload.expiresOn;
+    if (expiresOn && dayjs(expiresOn.toDate()).isBefore(dayjs())) {
+      throw invalidArgument(WenError.credit_has_expired);
     }
 
     const wallet = await WalletService.newWallet(creditTransaction.network);
@@ -54,21 +60,27 @@ const createCreditOrder = (
   creditTtransaction: Transaction,
   owner: string,
   targetAddress: NetworkAddress,
-): Transaction => ({
-  project,
-  type: TransactionType.ORDER,
-  uid: getRandomEthAddress(),
-  member: owner,
-  space: creditTtransaction.space,
-  network: creditTtransaction.network || DEFAULT_NETWORK,
-  payload: {
-    type: TransactionPayloadType.CREDIT_LOCKED_FUNDS,
-    amount: creditTtransaction.payload.amount,
-    targetAddress,
-    expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
-    validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
-    reconciled: false,
-    void: false,
-    transaction: creditTtransaction.uid,
-  },
-});
+): Transaction => {
+  const defaultExpiresOn = dayjs().add(TRANSACTION_AUTO_EXPIRY_MS);
+  const creditExpiresOn = dayjs(creditTtransaction.payload.expiresOn?.toDate() || defaultExpiresOn);
+  return {
+    project,
+    type: TransactionType.ORDER,
+    uid: getRandomEthAddress(),
+    member: owner,
+    space: creditTtransaction.space,
+    network: creditTtransaction.network || DEFAULT_NETWORK,
+    payload: {
+      type: TransactionPayloadType.CREDIT_LOCKED_FUNDS,
+      amount: creditTtransaction.payload.amount,
+      targetAddress,
+      expiresOn: creditExpiresOn.isBefore(defaultExpiresOn)
+        ? dateToTimestamp(creditExpiresOn)
+        : dateToTimestamp(defaultExpiresOn),
+      validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
+      reconciled: false,
+      void: false,
+      transaction: creditTtransaction.uid,
+    },
+  };
+};
