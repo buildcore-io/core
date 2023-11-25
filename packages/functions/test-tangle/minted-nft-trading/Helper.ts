@@ -12,6 +12,7 @@ import {
   Nft,
   NftAccess,
   NftStatus,
+  SOON_PROJECT_ID,
   Space,
   Timestamp,
   Transaction,
@@ -184,6 +185,7 @@ export class Helper {
     nftId: string,
   ) => {
     const order: Transaction = {
+      project: SOON_PROJECT_ID,
       type: TransactionType.WITHDRAW_NFT,
       uid: wallet.getRandomEthAddress(),
       member: this.guardian,

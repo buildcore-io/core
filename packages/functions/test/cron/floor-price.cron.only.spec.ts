@@ -27,6 +27,7 @@ describe('Collection floor price', () => {
       NftAvailable.AUCTION_AND_SALE,
     ].map(async (available, i) => {
       const nft = {
+        project: SOON_PROJECT_ID,
         uid: getRandomEthAddress(),
         collection,
         available,

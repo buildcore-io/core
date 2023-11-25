@@ -3,6 +3,7 @@
 import { build5Db } from '@build-5/database';
 import {
   COL,
+  SOON_PROJECT_ID,
   SUB_COL,
   Token,
   TokenDrop,
@@ -35,6 +36,7 @@ describe('Token minting', () => {
     await distributionDocRef.set({ tokenOwned: 1 });
 
     const airdrop: TokenDrop = {
+      project: SOON_PROJECT_ID,
       createdOn: serverTime(),
       createdBy: helper.guardian.uid!,
       uid: getRandomEthAddress(),

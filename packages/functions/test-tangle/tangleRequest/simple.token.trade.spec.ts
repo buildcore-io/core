@@ -5,6 +5,7 @@ import {
   Member,
   MIN_IOTA_AMOUNT,
   Network,
+  SOON_PROJECT_ID,
   SUB_COL,
   TangleRequestType,
   Token,
@@ -38,6 +39,7 @@ describe('Simple token trading', () => {
     member = await createMember(walletSpy);
 
     token = <Token>{
+      project: SOON_PROJECT_ID,
       uid: wallet.getRandomEthAddress(),
       symbol: getRandomSymbol(),
       name: 'MyToken',

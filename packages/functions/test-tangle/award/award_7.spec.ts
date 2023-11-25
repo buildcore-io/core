@@ -4,6 +4,7 @@ import {
   COL,
   Member,
   Network,
+  SOON_PROJECT_ID,
   Space,
   Token,
   TokenStatus,
@@ -181,6 +182,7 @@ const awardRequest = (space: string, tokenSymbol: string) => ({
 
 const saveToken = async (space: string, guardian: string) => {
   const token = {
+    project: SOON_PROJECT_ID,
     symbol: getRandomSymbol(),
     approved: true,
     updatedOn: serverTime(),

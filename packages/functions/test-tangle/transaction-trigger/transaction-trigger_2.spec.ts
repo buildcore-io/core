@@ -1,6 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { build5Db } from '@build-5/database';
-import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build-5/interfaces';
+import {
+  COL,
+  MIN_IOTA_AMOUNT,
+  Network,
+  SOON_PROJECT_ID,
+  Transaction,
+  TransactionType,
+} from '@build-5/interfaces';
 import { UnlockConditionType } from '@iota/sdk';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { serverTime } from '../../src/utils/dateTime.utils';
@@ -30,6 +37,7 @@ describe('Transaction trigger spec', () => {
     await setup(network);
     const wallet = await getWallet(network);
     const billPayment = <Transaction>{
+      project: SOON_PROJECT_ID,
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       createdOn: serverTime(),

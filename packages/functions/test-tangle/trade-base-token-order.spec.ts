@@ -5,6 +5,7 @@ import {
   Member,
   MIN_IOTA_AMOUNT,
   Network,
+  SOON_PROJECT_ID,
   Token,
   TokenStatus,
   TokenTradeOrder,
@@ -142,6 +143,7 @@ describe('Trade base token controller', () => {
 
 const saveToken = async (space: string, guardian: string) => {
   const token = {
+    project: SOON_PROJECT_ID,
     symbol: getRandomSymbol(),
     approved: true,
     updatedOn: serverTime(),

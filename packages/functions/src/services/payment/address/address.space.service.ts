@@ -47,6 +47,7 @@ export class SpaceAddressService extends BaseService {
     );
 
     const voteTransaction = {
+      project,
       type: TransactionType.VOTE,
       uid: getRandomEthAddress(),
       member: owner!.uid,

@@ -30,6 +30,7 @@ describe('Expired sales cron', () => {
 
     const tokenId = wallet.getRandomEthAddress();
     token = <Token>{
+      project: SOON_PROJECT_ID,
       uid: tokenId,
       symbol: getRandomSymbol(),
       name: 'MyToken',

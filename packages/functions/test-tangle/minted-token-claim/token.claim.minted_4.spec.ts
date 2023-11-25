@@ -3,6 +3,7 @@
 import { build5Db } from '@build-5/database';
 import {
   COL,
+  SOON_PROJECT_ID,
   Token,
   TokenDrop,
   TokenDropStatus,
@@ -31,6 +32,7 @@ describe('Token minting', () => {
   it('Claim multiple airdropped', async () => {
     for (let i = 0; i < 3; ++i) {
       const airdrop: TokenDrop = {
+        project: SOON_PROJECT_ID,
         createdOn: serverTime(),
         createdBy: helper.guardian.uid!,
         uid: getRandomEthAddress(),

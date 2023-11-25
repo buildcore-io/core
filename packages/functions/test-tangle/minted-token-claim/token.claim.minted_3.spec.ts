@@ -1,7 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { build5Db } from '@build-5/database';
-import { COL, Token, TokenDrop, TokenDropStatus, TransactionType } from '@build-5/interfaces';
+import {
+  COL,
+  SOON_PROJECT_ID,
+  Token,
+  TokenDrop,
+  TokenDropStatus,
+  TransactionType,
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
@@ -21,6 +28,7 @@ describe('Token minting', () => {
 
   it('Claim when only airdropped', async () => {
     const airdrop: TokenDrop = {
+      project: SOON_PROJECT_ID,
       createdOn: serverTime(),
       createdBy: helper.guardian.uid!,
       uid: getRandomEthAddress(),

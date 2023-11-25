@@ -1,5 +1,14 @@
 import { build5Db } from '@build-5/database';
-import { Award, COL, Member, Network, Space, Token, TokenStatus } from '@build-5/interfaces';
+import {
+  Award,
+  COL,
+  Member,
+  Network,
+  SOON_PROJECT_ID,
+  Space,
+  Token,
+  TokenStatus,
+} from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
 import { joinSpace } from '../../src/runtime/firebase/space';
@@ -108,6 +117,7 @@ const awardRequest = (space: string, tokenSymbol: string) => ({
 
 const saveToken = async (space: string, guardian: string) => {
   const token = {
+    project: SOON_PROJECT_ID,
     symbol: getRandomSymbol(),
     approved: true,
     updatedOn: serverTime(),

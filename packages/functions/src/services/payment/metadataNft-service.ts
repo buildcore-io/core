@@ -60,7 +60,7 @@ export class MetadataNftService extends BaseService {
     }
 
     if (!collectionId) {
-      const collection = createMetadataCollection(order.space!);
+      const collection = createMetadataCollection(getProject(order), order.space!);
       const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${collection.uid}`);
       this.transactionService.push({ ref: collectionDocRef, data: collection, action: 'set' });
 
@@ -81,6 +81,7 @@ export class MetadataNftService extends BaseService {
     const nft = nftId
       ? (await getNftByMintingId(nftId))!
       : createMetadataNft(
+          getProject(order),
           order.member || '',
           order.space || '',
           collection!.uid,
@@ -107,12 +108,14 @@ export class MetadataNftService extends BaseService {
 }
 
 export const createMetadataNft = (
+  project: string,
   member: string,
   space: string,
   collection: string,
   metadata: Record<string, unknown>,
 ) =>
   ({
+    project,
     uid: getRandomEthAddress(),
     name: 'Metadata NFT',
     collection,
@@ -135,7 +138,8 @@ export const createMetadataNft = (
     hidden: true,
   }) as Nft;
 
-export const createMetadataCollection = (space: string) => ({
+export const createMetadataCollection = (project: string, space: string) => ({
+  project,
   uid: getRandomEthAddress(),
   name: `Collection for ${space}`,
   total: 1,
