@@ -39,13 +39,15 @@ export const nftAddressFix = async (app: FirebaseApp) => {
       .limit(1)
       .get<Transaction>();
 
-    const withdrawOrderDocRef = db.doc(`${COL.TRANSACTION}/${withdrawOrder[0].uid}`);
-    await withdrawOrderDocRef.update({
-      'payload.walletReference.count': 4,
-      'payload.walletReference.chainReference': null,
-      'payload.sourceAddress': address,
-      shouldRetry: true,
-    });
+    if (withdrawOrder.length) {
+      const withdrawOrderDocRef = db.doc(`${COL.TRANSACTION}/${withdrawOrder[0].uid}`);
+      await withdrawOrderDocRef.update({
+        'payload.walletReference.count': 4,
+        'payload.walletReference.chainReference': null,
+        'payload.sourceAddress': address,
+        shouldRetry: true,
+      });
+    }
   }
 };
 
