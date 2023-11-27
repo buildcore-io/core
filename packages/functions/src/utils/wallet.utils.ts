@@ -36,12 +36,16 @@ const toHex = (stringToConvert: string) =>
     .map((c) => c.charCodeAt(0).toString(16).padStart(2, '0'))
     .join('');
 
-export const decodeAuth = async (req: WenRequest, func: WEN_FUNC): Promise<DecodedToken> => {
+export const decodeAuth = async (
+  req: WenRequest,
+  func: WEN_FUNC,
+  requireProjectApiKey = true,
+): Promise<DecodedToken> => {
   if (!req) {
     throw unAuthenticated(WenError.invalid_params);
   }
 
-  const project = getProject(req);
+  const project = requireProjectApiKey ? getProject(req) : '';
 
   if (req.signature && req.legacyPublicKey) {
     const address = await validateLegacyPubKey(req);

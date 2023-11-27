@@ -511,6 +511,7 @@ exports[WEN_FUNC.createProject] = onRequest({
   name: WEN_FUNC.createProject,
   schema: projectCreateSchema,
   handler: createProjectControl,
+  requireProjectApiKey: false,
 });
 
 exports[WEN_FUNC.deactivateProject] = onRequest({
