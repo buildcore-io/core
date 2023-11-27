@@ -15,6 +15,7 @@ type MiddlewareType = (
   func: WEN_FUNC,
   schema: AnySchema<any>,
   options?: ValidationOptions,
+  requireProjectApiKey?: boolean,
 ) => Promise<Context<any>>;
 
 export class HttpsFunction extends CloudFunctions {
@@ -26,23 +27,26 @@ export class HttpsFunction extends CloudFunctions {
   }
 }
 
-export const onRequest = ({
-  name,
-  schema,
-  schemaOptions,
-  middleware,
-  handler,
-}: {
+interface OnRequest {
   name: WEN_FUNC;
   schema: AnySchema<any>;
   schemaOptions?: ValidationOptions;
   middleware?: MiddlewareType;
   handler: (context: Context<any>) => Promise<any>;
-}) => {
+  requireProjectApiKey?: boolean;
+}
+
+export const onRequest = (params: OnRequest) => {
   const func = async (req: express.Request, res: express.Response): Promise<void> => {
     try {
-      const context = await (middleware || auth)(req, name, schema, schemaOptions);
-      const result = await handler(context);
+      const context = await (params.middleware || auth)(
+        req,
+        params.name,
+        params.schema,
+        params.schemaOptions,
+        params.requireProjectApiKey,
+      );
+      const result = await params.handler(context);
       res.send({ data: result || {} });
     } catch (error) {
       res.status(get(error, 'httpErrorCode.status', 400));
@@ -55,5 +59,5 @@ export const onRequest = ({
       });
     }
   };
-  return new HttpsFunction(func, { region: 'us-central1', ...WEN_FUNC_SCALE[name] });
+  return new HttpsFunction(func, { region: 'us-central1', ...WEN_FUNC_SCALE[params.name] });
 };

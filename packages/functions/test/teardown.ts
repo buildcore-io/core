@@ -1,5 +1,6 @@
 import { build5Db } from '@build-5/database';
-import { BaseRecord, COL, SOON_PROJECT_ID } from '@build-5/interfaces';
+import { BaseRecord, COL } from '@build-5/interfaces';
+import { isEmpty } from 'lodash';
 
 const collections = [
   COL.AWARD,
@@ -22,7 +23,7 @@ const teardown = async () => {
   for (const collection of collections) {
     const snap = await build5Db().collection(collection).get<BaseRecord>();
     for (const data of snap) {
-      if (data.project !== SOON_PROJECT_ID) {
+      if (isEmpty(data.project)) {
         console.log(collection, data);
         throw Error('Project not defined');
       }
