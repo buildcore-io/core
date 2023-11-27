@@ -1,6 +1,7 @@
 import { build5Db } from '@build-5/database';
 import {
   COL,
+  Network,
   Project,
   ProjectAdmin,
   ProjectBilling,
@@ -11,10 +12,14 @@ import {
   Transaction,
   WenError,
 } from '@build-5/interfaces';
+import { CoinType, utf8ToHex } from '@iota/sdk';
+import axios from 'axios';
 import { AVAILABLE_NETWORKS } from '../../../src/controls/common';
 import { createProject } from '../../../src/runtime/firebase/project/index';
+import { getSecretManager } from '../../../src/utils/secret.manager.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
-import { testEnv } from '../../set-up';
+import { getRandomNonce } from '../../../src/utils/wallet.utils';
+import { getWallet, testEnv } from '../../set-up';
 import { createMember, expectThrow, getRandomSymbol, mockWalletReturnValue } from '../common';
 
 describe('Project create', () => {
@@ -131,5 +136,38 @@ describe('Project create', () => {
       expect(otrOrder.project).toBe(project?.uid);
       await docRef.delete();
     }
+  });
+
+  it('Should create project without project id', async () => {
+    const wallet = await getWallet(Network.RMS);
+    const address = await wallet.getNewIotaAddressDetails();
+
+    const nonce = getRandomNonce();
+    const userDocRef = build5Db().doc(`${COL.MEMBER}/${address.bech32}`);
+    await userDocRef.create({ uid: address.bech32, nonce });
+
+    const secretManager = getSecretManager(address.mnemonic);
+    const signature = await secretManager.signEd25519(utf8ToHex(nonce), {
+      coinType: CoinType.IOTA,
+    });
+    const request = {
+      data: {
+        address: address.bech32,
+        projectApiKey: '',
+        signature: signature.signature,
+        publicKey: {
+          hex: signature.publicKey,
+          network: Network.RMS,
+        },
+        body: {
+          name: 'My project',
+          contactEmail: 'myemail@gmail.com',
+          config: { billing: ProjectBilling.VOLUME_BASED },
+        },
+      },
+    };
+    const url = 'http://127.0.0.1:5001/soonaverse-dev/us-central1/https-createproject';
+    const response = await axios.post(url, request);
+    expect(response.data.data.token).toBeDefined();
   });
 });
