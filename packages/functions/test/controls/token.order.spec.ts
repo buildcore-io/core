@@ -4,6 +4,7 @@ import {
   COL,
   MIN_IOTA_AMOUNT,
   NetworkAddress,
+  SOON_PROJECT_ID,
   SUB_COL,
   Space,
   Token,
@@ -61,6 +62,7 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
 
     const tokenId = wallet.getRandomEthAddress();
     token = {
+      project: SOON_PROJECT_ID,
       symbol: getRandomSymbol(),
       totalSupply: 1000,
       approved: true,

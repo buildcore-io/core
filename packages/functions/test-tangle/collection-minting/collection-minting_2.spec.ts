@@ -5,6 +5,7 @@ import {
   CollectionStatus,
   MediaStatus,
   Nft,
+  SOON_PROJECT_ID,
   UnsoldMintingOptions,
 } from '@build-5/interfaces';
 import { mintCollection } from '../../src/runtime/firebase/collection';
@@ -31,7 +32,9 @@ describe('Collection minting', () => {
 
     const promises = Array.from(Array(count)).map(async () => {
       const nft = helper.createDummyNft(helper.collection!);
-      await build5Db().doc(`${COL.NFT}/${nft.uid}`).create(nft);
+      await build5Db()
+        .doc(`${COL.NFT}/${nft.uid}`)
+        .create({ ...nft, project: SOON_PROJECT_ID });
       return nft;
     });
     const nfts = await Promise.all(promises);

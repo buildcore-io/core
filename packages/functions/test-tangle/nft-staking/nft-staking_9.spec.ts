@@ -6,14 +6,16 @@ import {
   Network,
   Nft,
   StakeType,
+  TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
+import dayjs from 'dayjs';
 import { creditUnrefundable } from '../../src/runtime/firebase/credit';
 import { stakeNft } from '../../src/runtime/firebase/nft';
+import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
-import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
 describe('Stake nft', () => {
@@ -27,7 +29,7 @@ describe('Stake nft', () => {
     await helper.beforeEach();
   });
 
-  it('Should not stake with storage dep', async () => {
+  it('Should not stake with storage dep and timelock, also should not credit', async () => {
     let nft = await helper.createAndOrderNft();
     let nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
     await helper.mintCollection();
@@ -43,7 +45,7 @@ describe('Stake nft', () => {
     await helper.sendNftToAddress(
       helper.guardianAddress!,
       stakeNftOrder.payload.targetAddress,
-      undefined,
+      dateToTimestamp(dayjs().add(1, 'm')),
       nft.mintingData?.nftId,
       MIN_IOTA_AMOUNT,
       undefined,
@@ -67,21 +69,9 @@ describe('Stake nft', () => {
     const snap = await creditQuery.get<Transaction>();
     mockWalletReturnValue(helper.walletSpy, helper.guardian!, { transaction: snap[0].uid });
     const order = await testEnv.wrap(creditUnrefundable)({});
-    await requestFundsFromFaucet(Network.RMS, order.payload.targetAddress, order.payload.amount);
 
-    creditQuery = build5Db()
-      .collection(COL.TRANSACTION)
-      .where('type', '==', TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED)
-      .where('member', '==', helper.guardian);
-    await wait(async () => {
-      const snap = await creditQuery.get<Transaction>();
-      return snap.length === 1 && snap[0].payload.walletReference?.confirmed;
-    });
-
-    const nftStakes = await build5Db()
-      .collection(COL.NFT_STAKE)
-      .where('member', '==', helper.guardian)
-      .get();
-    expect(nftStakes.length).toBe(0);
+    const expiresOn = order.payload.expiresOn!;
+    const isEarlier = dayjs(expiresOn.toDate()).isBefore(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS));
+    expect(isEarlier).toBe(true);
   });
 });

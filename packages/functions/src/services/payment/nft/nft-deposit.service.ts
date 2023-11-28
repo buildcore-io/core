@@ -242,6 +242,7 @@ export class NftDepositService extends BaseService {
     if (!existingCollection && !isEmpty(metadata.collection.royalties)) {
       const royaltyAddress = Object.keys(metadata.collection.royalties || {})[0];
       const royaltySpace = {
+        project: getProject(order),
         uid: royaltyAddress,
         name: 'Royalty space for ' + migratedCollection.name,
         collectionId: migratedCollection.uid,

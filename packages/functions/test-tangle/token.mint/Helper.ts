@@ -1,14 +1,15 @@
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Member,
   Network,
   NetworkAddress,
+  SOON_PROJECT_ID,
   SUB_COL,
   Space,
   Token,
   TokenStatus,
 } from '@build-5/interfaces';
-import { build5Db } from '@build-5/database';
 import {
   AliasOutput,
   AliasOutputBuilderParams,
@@ -78,6 +79,7 @@ export class Helper {
   ) => {
     const tokenId = getRandomEthAddress();
     const token = {
+      project: SOON_PROJECT_ID,
       symbol: getRandomSymbol(),
       totalSupply: this.totalSupply,
       updatedOn: serverTime(),

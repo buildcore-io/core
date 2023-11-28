@@ -1,5 +1,6 @@
 import { build5Db } from '@build-5/database';
 import { COL, Nft, Transaction } from '@build-5/interfaces';
+import { getProject } from '../../utils/common.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export const onNftStaked = async (transaction: Transaction) => {
@@ -7,6 +8,7 @@ export const onNftStaked = async (transaction: Transaction) => {
   const nft = (await nftDocRef.get<Nft>())!;
 
   const nftStake = {
+    project: getProject(transaction),
     uid: getRandomEthAddress(),
     member: transaction.member,
     space: nft.space,

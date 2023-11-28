@@ -3,6 +3,7 @@ import {
   COL,
   MIN_IOTA_AMOUNT,
   NetworkAddress,
+  SOON_PROJECT_ID,
   Token,
   TokenStatus,
   TokenTradeOrder,
@@ -37,6 +38,7 @@ describe('Trade controller, buy token', () => {
 
     const tokenId = wallet.getRandomEthAddress();
     token = <Token>{
+      project: SOON_PROJECT_ID,
       uid: tokenId,
       symbol: getRandomSymbol(),
       name: 'MyToken',

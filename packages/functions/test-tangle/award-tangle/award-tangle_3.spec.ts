@@ -6,6 +6,7 @@ import {
   MIN_IOTA_AMOUNT,
   NativeToken,
   Network,
+  SOON_PROJECT_ID,
   Space,
   TangleRequestType,
   Token,
@@ -127,6 +128,7 @@ const awardRequest = (space: string, tokenSymbol: string, network: Network) => (
 
 const saveToken = async (space: string, guardian: string, network: Network) => {
   const token = {
+    project: SOON_PROJECT_ID,
     symbol: getRandomSymbol(),
     approved: true,
     updatedOn: serverTime(),

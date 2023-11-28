@@ -4,6 +4,7 @@ import {
   Member,
   MIN_IOTA_AMOUNT,
   Network,
+  SOON_PROJECT_ID,
   TangleRequestType,
   Token,
   TokenStatus,
@@ -126,6 +127,7 @@ describe('Tangle request spec', () => {
 
 const saveToken = async (space: string, guardian: string) => {
   const token = {
+    project: SOON_PROJECT_ID,
     symbol: getRandomSymbol(),
     approved: true,
     updatedOn: serverTime(),

@@ -318,4 +318,8 @@ export const WenError = {
     code: 2145,
     key: 'Token must have a space.',
   },
+  credit_has_expired: {
+    code: 2146,
+    key: 'Credit has expired.',
+  },
 };

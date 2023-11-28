@@ -3,6 +3,7 @@ import {
   COL,
   IgnoreWalletReason,
   Network,
+  SOON_PROJECT_ID,
   Transaction,
   TransactionPayloadType,
   TransactionType,
@@ -73,6 +74,7 @@ const saveOrder = async (wallet: Wallet) => {
   const targetAddress = await wallet.getNewIotaAddressDetails();
   const data = <Transaction>{
     type: TransactionType.ORDER,
+    project: SOON_PROJECT_ID,
     uid: getRandomEthAddress(),
     member: getRandomEthAddress(),
     space: getRandomEthAddress(),

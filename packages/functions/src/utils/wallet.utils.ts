@@ -36,12 +36,16 @@ const toHex = (stringToConvert: string) =>
     .map((c) => c.charCodeAt(0).toString(16).padStart(2, '0'))
     .join('');
 
-export const decodeAuth = async (req: WenRequest, func: WEN_FUNC): Promise<DecodedToken> => {
+export const decodeAuth = async (
+  req: WenRequest,
+  func: WEN_FUNC,
+  requireProjectApiKey?: boolean,
+): Promise<DecodedToken> => {
   if (!req) {
     throw unAuthenticated(WenError.invalid_params);
   }
 
-  const project = getProject(req);
+  const project = getProject(req, requireProjectApiKey);
 
   if (req.signature && req.legacyPublicKey) {
     const address = await validateLegacyPubKey(req);
@@ -234,15 +238,18 @@ export function getRandomEthAddress() {
 
 export const getRandomNonce = () => Math.floor(Math.random() * 1000000).toString();
 
-export const getProject = (req: WenRequest) => {
+export const getProject = (req: WenRequest, requireProjectApiKey = true) => {
   try {
     const decoded = jwt.verify(req.projectApiKey, getJwtSecretKey());
     const project = get(decoded, 'project', '');
-    if (!project) {
+    if (requireProjectApiKey && !project) {
       throw invalidArgument(WenError.invalid_project_api_key);
     }
     return project;
   } catch {
-    throw invalidArgument(WenError.invalid_project_api_key);
+    if (requireProjectApiKey) {
+      throw invalidArgument(WenError.invalid_project_api_key);
+    }
+    return '';
   }
 };

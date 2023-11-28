@@ -11,8 +11,9 @@ export const auth = async (
   func: WEN_FUNC,
   schema: AnySchema<any>,
   options?: ValidationOptions,
+  requireProjectApiKey?: boolean,
 ): Promise<Context<any>> => {
-  const decoded = await decodeAuth(req.body.data, func);
+  const decoded = await decodeAuth(req.body.data, func, requireProjectApiKey);
   const owner = decoded.address.toLowerCase();
   const params = await assertValidationAsync(schema, decoded.body, options);
   return {
