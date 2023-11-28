@@ -168,6 +168,7 @@ const onMintedAirdropClaim = async (order: Transaction, token: Token) => {
   });
 
   if (storageDepositUsed < order.payload.amount!) {
+    console.log('onMintedAirdropClaim', order.uid, storageDepositUsed, order.payload.amount);
     const credit: Transaction = {
       project: getProject(order),
       type: TransactionType.CREDIT,

@@ -135,6 +135,7 @@ export const onTransactionWrite = async (event: FirestoreDocEvent<Transaction>) 
     !prev?.payload.reconciled &&
     curr.payload.reconciled
   ) {
+    console.log('onAirdropClaim', prev, curr);
     await onAirdropClaim(curr);
     return;
   }
