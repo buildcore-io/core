@@ -1,13 +1,13 @@
 import { build5Db, getSnapshot } from '@build-5/database';
 import {
   COL,
+  Dataset,
   GetManyAdvancedRequest,
   MAX_FIELD_NAME_LENGTH,
   MAX_FIELD_VALUE_LENGTH,
   Opr,
-  PublicCollections,
-  PublicSubCollections,
   QUERY_MAX_LENGTH,
+  Subset,
   TransactionType,
   WenError,
 } from '@build-5/interfaces';
@@ -33,12 +33,12 @@ const fieldValueSchema = Joi.alternatives().try(
 const operatorSchema = Joi.string().equal(...Object.values(Opr));
 
 const getManyAdvancedSchema = Joi.object({
-  collection: Joi.string()
-    .equal(...Object.values(PublicCollections))
+  dataset: Joi.string()
+    .equal(...Object.values(Dataset))
     .required(),
-  uid: CommonJoi.uid(false),
-  subCollection: Joi.string()
-    .equal(...Object.values(PublicSubCollections))
+  setId: CommonJoi.uid(false),
+  subset: Joi.string()
+    .equal(...Object.values(Subset))
     .optional(),
   fieldName: Joi.array().items(fieldNameSchema).optional(),
   fieldValue: Joi.array().length(Joi.ref('fieldName.length')).items(fieldValueSchema).optional(),
@@ -55,8 +55,8 @@ const getManyAdvancedSchema = Joi.object({
 export const getManyAdvanced = async (project: string, url: string) => {
   const body = getQueryParams<GetManyAdvancedRequest>(url, getManyAdvancedSchema);
 
-  const { collection, subCollection, uid } = body;
-  let query = getBaseQuery(collection, uid, subCollection).limit(getQueryLimit(body.collection));
+  const { dataset, subset, setId } = body;
+  let query = getBaseQuery(dataset, setId, subset).limit(getQueryLimit(dataset));
 
   const { filters, operators } = getFilters(body.fieldName, body.fieldValue, body.operator);
   try {
@@ -73,17 +73,17 @@ export const getManyAdvanced = async (project: string, url: string) => {
     throw { code: 400, message: get(error, 'details.key', 'unknown') };
   }
 
-  if (body.collection === PublicCollections.NFT && !isEqual(filters['hidden'], [false])) {
+  if (body.dataset === Dataset.NFT && !isEqual(filters['hidden'], [false])) {
     query = query.where('hidden', '==', false);
   }
 
-  if (shouldSetProjectFilter(body.collection, body.subCollection)) {
+  if (shouldSetProjectFilter(body.dataset, body.subset)) {
     query = query.where('project', '==', project);
   }
 
   const typeFilters = filters['type'];
   if (
-    body.collection === PublicCollections.TRANSACTION &&
+    body.dataset === Dataset.TRANSACTION &&
     (!typeFilters || typeFilters.includes(TransactionType.ORDER))
   ) {
     query = query.where('isOrderType', '==', false);
@@ -100,9 +100,9 @@ export const getManyAdvanced = async (project: string, url: string) => {
 
   if (body.startAfter) {
     const startAfter = await getSnapshot(
-      body.collection,
-      body.uid || body.startAfter,
-      body.subCollection,
+      body.dataset,
+      body.setId || body.startAfter,
+      body.subset,
       body.startAfter,
     );
     query = query.startAfter(startAfter);
@@ -139,10 +139,10 @@ const getFilters = (fieldNames?: string[], fieldValues?: unknown[], fieldOperato
   return { filters: nameAndValues, operators: nameAndOperators };
 };
 
-const getBaseQuery = (col: PublicCollections, uid?: string, subCol?: PublicSubCollections) => {
-  if (!uid && subCol) {
-    return build5Db().collectionGroup(subCol);
+const getBaseQuery = (dataset: Dataset, setId?: string, subset?: Subset) => {
+  if (!setId && subset) {
+    return build5Db().collectionGroup(subset);
   }
-  const path = subCol && uid ? `${col}/${uid}/${subCol}` : col;
+  const path = subset && setId ? `${dataset}/${setId}/${subset}` : dataset;
   return build5Db().collection(path as COL);
 };

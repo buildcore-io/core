@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { WEN_FUNC, WenRequest } from '@build-5/interfaces';
+import { CreateMemberRequest, WEN_FUNC, WenRequest } from '@build-5/interfaces';
 import express from 'express';
 import { AnySchema, ValidationOptions } from 'joi';
 import { Context } from '../../controls/common';
@@ -29,9 +29,9 @@ export const auth = async (
 export const createMember = async (req: express.Request): Promise<Context<any>> => {
   return {
     ip: req.ip || '',
-    owner: (req.body.data as WenRequest).body,
+    owner: (req.body.data as WenRequest<CreateMemberRequest>).body.address,
     params: {},
-    project: getProject(req.body.data as WenRequest),
+    project: getProject(req.body.data as WenRequest<unknown>),
     headers: req.headers,
     rawBody: req.body,
   };

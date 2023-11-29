@@ -1,7 +1,7 @@
 import { IQuery, build5Db } from '@build-5/database';
 import {
+  Dataset,
   GetPriceChangeRequest,
-  PublicCollections,
   QUERY_MAX_LENGTH,
   QUERY_MIN_LENGTH,
   TokenPurchaseAge,
@@ -57,14 +57,14 @@ const getVWAPForDates = (
 const purchaseQueryToday = (token: string, lowest?: boolean) => {
   if (lowest === undefined) {
     return build5Db()
-      .collection(PublicCollections.TOKEN_PURCHASE)
+      .collection(Dataset.TOKEN_PURCHASE)
       .where('token', '==', token)
       .where('createdOn', '>=', dayjs().subtract(1, 'd').toDate())
       .orderBy('createdOn')
       .limitToLast(1);
   }
   const query = build5Db()
-    .collection(PublicCollections.TOKEN_PURCHASE)
+    .collection(Dataset.TOKEN_PURCHASE)
     .where('token', '==', token)
     .where('age', 'array-contains', TokenPurchaseAge.IN_24_H)
     .orderBy('price', 'asc');
@@ -77,7 +77,7 @@ const purchaseQueryToday = (token: string, lowest?: boolean) => {
 const purchaseQueryYesterday = (token: string, lowest?: boolean) => {
   if (lowest === undefined) {
     return build5Db()
-      .collection(PublicCollections.TOKEN_PURCHASE)
+      .collection(Dataset.TOKEN_PURCHASE)
       .where('token', '==', token)
       .where('createdOn', '<', dayjs().subtract(1, 'd').toDate())
       .where('createdOn', '>=', dayjs().subtract(2, 'd').toDate())
@@ -85,7 +85,7 @@ const purchaseQueryYesterday = (token: string, lowest?: boolean) => {
       .limitToLast(1);
   }
   const query = build5Db()
-    .collection(PublicCollections.TOKEN_PURCHASE)
+    .collection(Dataset.TOKEN_PURCHASE)
     .where('token', '==', token)
     .where('age', '==', [TokenPurchaseAge.IN_48_H, TokenPurchaseAge.IN_7_D])
     .orderBy('price', 'asc');

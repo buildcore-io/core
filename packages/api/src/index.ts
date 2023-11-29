@@ -81,8 +81,7 @@ const onConnection = async (jwtToken: string, url: URL, res: express.Response | 
 };
 
 const getObservable = (project: string, url: URL): Promise<Observable<unknown>> => {
-  const endpoint = url.pathname.replace('/api', '');
-  switch (endpoint) {
+  switch (url.pathname) {
     case ApiRoutes.GET_BY_ID:
       return getById(url.href);
     case ApiRoutes.GET_MANY_BY_ID:

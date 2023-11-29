@@ -1,5 +1,5 @@
 import { build5Db } from '@build-5/database';
-import { GetByIdRequest, PublicCollections, PublicSubCollections } from '@build-5/interfaces';
+import { Dataset, GetByIdRequest, Subset } from '@build-5/interfaces';
 import Joi from 'joi';
 import { map } from 'rxjs';
 import {
@@ -11,28 +11,28 @@ import {
 } from './common';
 
 const getByIdSchema = Joi.object({
-  collection: Joi.string()
-    .equal(...Object.values(PublicCollections))
+  dataset: Joi.string()
+    .equal(...Object.values(Dataset))
     .required(),
-  parentUid: CommonJoi.uid(false, 7),
-  subCollection: Joi.string()
-    .equal(...Object.values(PublicSubCollections))
+  setId: Joi.string().alphanum().min(5).max(maxAddressLength).required(),
+  subset: Joi.string()
+    .equal(...Object.values(Subset))
     .optional(),
-  uid: Joi.string().alphanum().min(5).max(maxAddressLength).required(),
+  subsetId: CommonJoi.uid(false, 7),
 });
 
 export const getById = async (url: string) => {
   const body = getQueryParams<GetByIdRequest>(url, getByIdSchema);
 
   const docPath =
-    body.parentUid && body.subCollection
-      ? `${body.collection}/${body.parentUid}/${body.subCollection}/${body.uid}`
-      : `${body.collection}/${body.uid}`;
+    body.subset && body.subsetId
+      ? `${body.dataset}/${body.setId}/${body.subset}/${body.subsetId}`
+      : `${body.dataset}/${body.setId}`;
   const docRef = build5Db().doc(docPath);
 
   const observable = documentToObservable<Record<string, unknown>>(docRef).pipe(
     map((data) => {
-      if (!data || isHiddenNft(body.collection, data)) {
+      if (!data || isHiddenNft(body.dataset, data)) {
         return {};
       }
       return data;

@@ -1,11 +1,11 @@
 import { build5Db, getSnapshot } from '@build-5/database';
 import {
   COL,
+  Dataset,
   GetManyRequest,
   MAX_FIELD_NAME_LENGTH,
   MAX_FIELD_VALUE_LENGTH,
-  PublicCollections,
-  PublicSubCollections,
+  Subset,
   WenError,
 } from '@build-5/interfaces';
 import Joi from 'joi';
@@ -27,12 +27,12 @@ const fieldValueSchema = Joi.alternatives().try(
 );
 
 const getManySchema = Joi.object({
-  collection: Joi.string()
-    .equal(...Object.values(PublicCollections))
+  dataset: Joi.string()
+    .equal(...Object.values(Dataset))
     .required(),
-  uid: CommonJoi.uid(false),
-  subCollection: Joi.string()
-    .equal(...Object.values(PublicSubCollections))
+  setId: CommonJoi.uid(false),
+  subSet: Joi.string()
+    .equal(...Object.values(Subset))
     .optional(),
   fieldName: Joi.alternatives()
     .try(fieldNameSchema, Joi.array().min(1).items(fieldNameSchema))
@@ -51,12 +51,10 @@ export const getMany = async (project: string, url: string) => {
   const body = getQueryParams<GetManyRequest>(url, getManySchema);
 
   const baseCollectionPath =
-    body.subCollection && body.uid
-      ? `${body.collection}/${body.uid}/${body.subCollection}`
-      : body.collection;
+    body.subset && body.setId ? `${body.dataset}/${body.setId}/${body.subset}` : body.dataset;
   let query = build5Db()
     .collection(baseCollectionPath as COL)
-    .limit(getQueryLimit(body.collection));
+    .limit(getQueryLimit(body.dataset));
 
   if (body.fieldName && body.fieldValue != null) {
     try {
@@ -70,23 +68,23 @@ export const getMany = async (project: string, url: string) => {
     }
   }
 
-  if (body.collection === PublicCollections.NFT) {
+  if (body.dataset === Dataset.NFT) {
     query = query.where('hidden', '==', false);
   }
 
-  if (body.collection === PublicCollections.TRANSACTION) {
+  if (body.dataset === Dataset.TRANSACTION) {
     query = query.where('isOrderType', '==', false);
   }
 
-  if (shouldSetProjectFilter(body.collection, body.subCollection)) {
+  if (shouldSetProjectFilter(body.dataset, body.subset)) {
     query = query.where('project', '==', project);
   }
 
   if (body.startAfter) {
     const startAfter = getSnapshot(
-      body.collection,
-      body.uid || body.startAfter,
-      body.subCollection,
+      body.dataset,
+      body.setId || body.startAfter,
+      body.subset,
       body.startAfter,
     );
     query = query.startAfter(await startAfter);

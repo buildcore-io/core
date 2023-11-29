@@ -50,7 +50,7 @@ export const PROJECT_API_KEY =
 export const sendOnRequest =
   (func: (req: functions.https.Request, response: express.Response<any>) => void | Promise<void>) =>
   async (body: any, address = '', customToken = '') => {
-    const wenReq: WenRequest = { address, customToken, projectApiKey: PROJECT_API_KEY, body };
+    const wenReq: WenRequest<any> = { address, customToken, projectApiKey: PROJECT_API_KEY, body };
     const req = {
       ip: '127.0.0.1',
       body: { data: wenReq },

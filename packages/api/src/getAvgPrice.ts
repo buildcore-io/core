@@ -1,7 +1,7 @@
 import { build5Db } from '@build-5/database';
 import {
+  Dataset,
   GetAvgPriceRequest,
-  PublicCollections,
   QUERY_MAX_LENGTH,
   QUERY_MIN_LENGTH,
   TokenPurchaseAge,
@@ -42,13 +42,13 @@ const getAvgLive = (token: string) => {
 const purchaseQuery = (token: string, lowest?: boolean) => {
   if (lowest === undefined) {
     return build5Db()
-      .collection(PublicCollections.TOKEN_PURCHASE)
+      .collection(Dataset.TOKEN_PURCHASE)
       .where('token', '==', token)
       .orderBy('createdOn')
       .limitToLast(1);
   }
   const query = build5Db()
-    .collection(PublicCollections.TOKEN_PURCHASE)
+    .collection(Dataset.TOKEN_PURCHASE)
     .where('token', '==', token)
     .where('age', 'array-contains', TokenPurchaseAge.IN_7_D)
     .orderBy('price', 'asc');

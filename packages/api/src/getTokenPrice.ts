@@ -1,9 +1,9 @@
 import { build5Db } from '@build-5/database';
 import {
   COL,
+  Dataset,
   GetTokenPrice,
   MIN_IOTA_AMOUNT,
-  PublicCollections,
   QUERY_MAX_LENGTH,
   QUERY_MIN_LENGTH,
   Ticker,
@@ -55,7 +55,7 @@ const getPriceForTokenLive = (token: string, ticker: Observable<Ticker>) => {
 
 const lowestSellQuery = (token: string) =>
   build5Db()
-    .collection(PublicCollections.TOKEN_MARKET)
+    .collection(Dataset.TOKEN_MARKET)
     .where('status', '==', TokenTradeOrderStatus.ACTIVE)
     .where('token', '==', token)
     .where('type', '==', TokenTradeOrderType.SELL)
@@ -64,7 +64,7 @@ const lowestSellQuery = (token: string) =>
 
 const highestBuyQuery = (token: string) =>
   build5Db()
-    .collection(PublicCollections.TOKEN_MARKET)
+    .collection(Dataset.TOKEN_MARKET)
     .where('status', '==', TokenTradeOrderStatus.ACTIVE)
     .where('token', '==', token)
     .where('type', '==', TokenTradeOrderType.BUY)

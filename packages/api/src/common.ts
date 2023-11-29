@@ -1,10 +1,5 @@
 import { IDocument, IQuery } from '@build-5/database';
-import {
-  PublicCollections,
-  PublicSubCollections,
-  QUERY_MAX_LENGTH,
-  TokenPurchase,
-} from '@build-5/interfaces';
+import { Dataset, QUERY_MAX_LENGTH, Subset, TokenPurchase } from '@build-5/interfaces';
 import Joi from 'joi';
 import { head } from 'lodash';
 import { Observable, map } from 'rxjs';
@@ -30,8 +25,8 @@ const queryStrToParams = (url: string) => {
   );
 };
 
-export const isHiddenNft = (collection: PublicCollections, data?: Record<string, unknown>) =>
-  collection === PublicCollections.NFT && data?.hidden === true;
+export const isHiddenNft = (dataset: Dataset, data?: Record<string, unknown>) =>
+  dataset === Dataset.NFT && data?.hidden === true;
 
 export const queryToObservable = <T>(query: IQuery) =>
   new Observable<T[]>((observer) => {
@@ -75,25 +70,22 @@ export class CommonJoi {
   }
 }
 
-export const getQueryLimit = (collection: PublicCollections) => {
-  switch (collection) {
-    case PublicCollections.AVATARS:
-    case PublicCollections.BADGES:
+export const getQueryLimit = (dataset: Dataset) => {
+  switch (dataset) {
+    case Dataset.AVATARS:
+    case Dataset.BADGES:
       return 1;
     default:
       return QUERY_MAX_LENGTH;
   }
 };
 
-export const shouldSetProjectFilter = (
-  col: PublicCollections,
-  subCol?: PublicSubCollections,
-): boolean =>
+export const shouldSetProjectFilter = (dataset: Dataset, subset?: Subset): boolean =>
   ![
-    PublicCollections.MILESTONE,
-    PublicCollections.MEMBER,
-    PublicCollections.PROJECT,
-    PublicCollections.MILESTONE_RMS,
-    PublicCollections.MILESTONE_SMR,
-    PublicCollections.TICKER,
-  ].includes(col) && !subCol;
+    Dataset.MILESTONE,
+    Dataset.MEMBER,
+    Dataset.PROJECT,
+    Dataset.MILESTONE_RMS,
+    Dataset.MILESTONE_SMR,
+    Dataset.TICKER,
+  ].includes(dataset) && !subset;

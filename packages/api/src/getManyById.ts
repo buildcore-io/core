@@ -1,10 +1,5 @@
 import { build5Db } from '@build-5/database';
-import {
-  GetManyByIdRequest,
-  PublicCollections,
-  PublicSubCollections,
-  QUERY_MAX_LENGTH,
-} from '@build-5/interfaces';
+import { Dataset, GetManyByIdRequest, QUERY_MAX_LENGTH, Subset } from '@build-5/interfaces';
 import Joi from 'joi';
 import { combineLatest, map } from 'rxjs';
 import {
@@ -18,14 +13,14 @@ import {
 const uidSchema = Joi.string().alphanum().min(5).max(maxAddressLength).required();
 
 const getManyByIdSchema = Joi.object({
-  collection: Joi.string()
-    .equal(...Object.values(PublicCollections))
+  dataset: Joi.string()
+    .equal(...Object.values(Dataset))
     .required(),
-  parentUids: Joi.array().items(CommonJoi.uid(false, 7)).max(QUERY_MAX_LENGTH),
-  subCollection: Joi.string()
-    .equal(...Object.values(PublicSubCollections))
+  setIds: Joi.array().items(CommonJoi.uid(false, 7)).max(QUERY_MAX_LENGTH).required(),
+  subset: Joi.string()
+    .equal(...Object.values(Subset))
     .optional(),
-  uids: Joi.array().items(uidSchema).min(1).max(QUERY_MAX_LENGTH).required(),
+  subsetIds: Joi.array().items(uidSchema).min(1).max(QUERY_MAX_LENGTH).optional(),
 });
 
 export const getManyById = async (url: string) => {
@@ -33,18 +28,18 @@ export const getManyById = async (url: string) => {
 
   const observables = getQueries(body).map(documentToObservable<Record<string, unknown>>);
   return combineLatest(observables).pipe(
-    map((all) => all.flat().filter((record) => record && !isHiddenNft(body.collection, record))),
+    map((all) => all.flat().filter((record) => record && !isHiddenNft(body.dataset, record))),
   );
 };
 
 const getQueries = (body: GetManyByIdRequest) =>
-  body.uids.map((uid, i) => {
-    if (body.subCollection && body.parentUids?.[i]) {
+  body.setIds.map((setId, i) => {
+    if (body.subset && body.subsetIds?.[i]) {
       return build5Db()
-        .collection(body.collection)
-        .doc(body.parentUids?.[i])
-        .collection(body.subCollection)
-        .doc(uid);
+        .collection(body.dataset)
+        .doc(setId)
+        .collection(body.subset)
+        .doc(body.subsetIds[i]);
     }
-    return build5Db().doc(`${body.collection}/${uid}`);
+    return build5Db().doc(`${body.dataset}/${setId}`);
   });
