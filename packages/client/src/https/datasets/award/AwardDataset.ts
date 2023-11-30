@@ -12,7 +12,6 @@ import {
   Opr,
   WEN_FUNC,
 } from '@build-5/interfaces';
-import { AwardFilter } from '../..';
 import { DatasetClass } from '../Dataset';
 
 export class AwardDataset<D extends Dataset> extends DatasetClass<D, Award> {
@@ -32,43 +31,46 @@ export class AwardDataset<D extends Dataset> extends DatasetClass<D, Award> {
 
   cancel = this.sendRequest(WEN_FUNC.cancelAward)<AwardCancelRequest>;
 
-  getBySpaceAndFilterLive = (space: string, filter = AwardFilter.ALL) => {
-    const fieldName = ['space'];
-    const fieldValue: (string | number | boolean)[] = [space];
-    const operator: Opr[] = [Opr.EQUAL];
-
-    switch (filter) {
-      case AwardFilter.ACTIVE: {
-        fieldName.push('endDate', 'completed', 'approved');
-        fieldValue.push(new Date().toISOString(), false, true);
-        operator.push(Opr.GREATER_OR_EQUAL, Opr.EQUAL, Opr.EQUAL);
-        break;
-      }
-      case AwardFilter.COMPLETED: {
-        fieldName.push('completed', 'approved');
-        fieldValue.push(true, true);
-        operator.push(Opr.EQUAL, Opr.EQUAL);
-        break;
-      }
-      case AwardFilter.DRAFT: {
-        fieldName.push('endDate', 'rejected', 'approved');
-        fieldValue.push(new Date().toISOString(), false, false);
-        operator.push(Opr.GREATER_OR_EQUAL, Opr.EQUAL, Opr.EQUAL);
-        break;
-      }
-      case AwardFilter.REJECTED: {
-        fieldName.push('rejected');
-        fieldValue.push(true);
-        operator.push(Opr.EQUAL);
-        break;
-      }
-    }
-
+  getActiveLive = (space: string, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {
       dataset: this.dataset,
-      fieldName,
-      fieldValue,
-      operator,
+      fieldName: ['space', 'endDate', 'completed', 'approved'],
+      fieldValue: [space, new Date().toISOString(), false, true],
+      operator: [Opr.EQUAL, Opr.GREATER_OR_EQUAL, Opr.EQUAL, Opr.EQUAL],
+      startAfter,
+    };
+    return this.getManyAdvancedLive(params);
+  };
+
+  getCompletedLive = (space: string, startAfter?: string) => {
+    const params: GetManyAdvancedRequest = {
+      dataset: this.dataset,
+      fieldName: ['space', 'completed', 'approved'],
+      fieldValue: [space, true, true],
+      operator: [Opr.EQUAL, Opr.EQUAL, Opr.EQUAL],
+      startAfter,
+    };
+    return this.getManyAdvancedLive(params);
+  };
+
+  getDraftLive = (space: string, startAfter?: string) => {
+    const params: GetManyAdvancedRequest = {
+      dataset: this.dataset,
+      fieldName: ['space', 'endDate', 'rejected', 'approved'],
+      fieldValue: [space, new Date().toISOString(), false, false],
+      operator: [Opr.EQUAL, Opr.GREATER_OR_EQUAL, Opr.EQUAL, Opr.EQUAL],
+      startAfter,
+    };
+    return this.getManyAdvancedLive(params);
+  };
+
+  getRejectedLive = (space: string, startAfter?: string) => {
+    const params: GetManyAdvancedRequest = {
+      dataset: this.dataset,
+      fieldName: ['space', 'rejected'],
+      fieldValue: [space, false],
+      operator: [Opr.EQUAL, Opr.EQUAL],
+      startAfter,
     };
     return this.getManyAdvancedLive(params);
   };

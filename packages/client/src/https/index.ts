@@ -2,22 +2,6 @@ import { HttpsWrapper } from './https';
 
 export const https = (origin = Build5.PROD) => new HttpsWrapper(origin);
 
-export enum ProposalFilter {
-  ALL = 'all',
-  DRAFT = 'draft',
-  ACTIVE = 'active',
-  COMPLETED = 'completed',
-  REJECTED = 'rejected',
-}
-
-export enum AwardFilter {
-  ALL = 'all',
-  DRAFT = 'draft',
-  ACTIVE = 'active',
-  COMPLETED = 'completed',
-  REJECTED = 'rejected',
-}
-
 export enum Build5 {
   PROD = 'https://api.build5.com',
   TEST = 'https://api-test.build5.com',

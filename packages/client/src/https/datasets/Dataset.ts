@@ -1,5 +1,6 @@
 import {
   ApiRoutes,
+  Build5Request,
   Dataset,
   GetManyAdvancedRequest,
   GetManyRequest,
@@ -7,7 +8,6 @@ import {
   Opr,
   Subset,
   WEN_FUNC,
-  WenRequest,
 } from '@build-5/interfaces';
 import axios from 'axios';
 import { Observable, from, switchMap } from 'rxjs';
@@ -45,7 +45,7 @@ export abstract class BaseSet<T> {
 abstract class BaseDataSetClass<T> extends BaseSet<T> {
   protected sendRequest =
     (name: WEN_FUNC) =>
-    async <Req>(request: WenRequest<Req>) => {
+    async <Req>(request: Build5Request<Req>) => {
       const isLocal = this.origin === Build5.LOCAL;
       const url = this.origin + `/${isLocal ? 'https-' : ''}` + name;
 

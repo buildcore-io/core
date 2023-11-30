@@ -7,7 +7,7 @@ import {
   ProjectBilling,
   SOON_PROJECT_ID,
   SUB_COL,
-  WenRequest,
+  Build5Request,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import dotenv from 'dotenv';
@@ -50,7 +50,12 @@ export const PROJECT_API_KEY =
 export const sendOnRequest =
   (func: (req: functions.https.Request, response: express.Response<any>) => void | Promise<void>) =>
   async (body: any, address = '', customToken = '') => {
-    const wenReq: WenRequest<any> = { address, customToken, projectApiKey: PROJECT_API_KEY, body };
+    const wenReq: Build5Request<any> = {
+      address,
+      customToken,
+      projectApiKey: PROJECT_API_KEY,
+      body,
+    };
     const req = {
       ip: '127.0.0.1',
       body: { data: wenReq },

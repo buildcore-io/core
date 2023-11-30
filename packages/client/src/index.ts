@@ -1,4 +1,4 @@
-export { AwardFilter, ProposalFilter, https } from './https';
+export { https } from './https';
 
 export enum Build5 {
   PROD = 'https://api.build5.com',

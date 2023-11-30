@@ -32,7 +32,7 @@ export class Timestamp {
   };
 }
 
-export interface WenRequest<T> {
+export interface Build5Request<T> {
   address: NetworkAddress;
   signature?: string;
   projectApiKey: string;
