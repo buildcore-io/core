@@ -20,13 +20,13 @@ jobs:
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
       - name: Set env vars
-        working-directory: packages/api
+        working-directory: packages/search
         run: echo "$ENV_VARS" > .env
         env:
           ENV_VARS: ${{ secrets.ENV_VARS }}
       - name: Build image
         run: |
-            cp packages/api/Dockerfile .
+            cp packages/search/Dockerfile .
             gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/search
       - name: Deploy
         run: |

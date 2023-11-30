@@ -1,7 +1,7 @@
 {
-  "name": "@build-5/api",
+  "name": "@build-5/search",
   "version": "0.0.0",
-  "description": "Build5 api",
+  "description": "Build5 search",
   "license": "Apache-2.0",
   "main": "lib/index.js",
   "directories": {

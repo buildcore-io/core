@@ -1,15 +1,15 @@
 FROM node:20
 
-WORKDIR /api
+WORKDIR /search
 
 COPY packages/database packages/database
 COPY packages/interfaces packages/interfaces
-COPY packages/api packages/api
+COPY packages/search packages/search
 COPY package-lock.json ./
 COPY package.json ./
 
-RUN npm run build:api
+RUN npm run build:search
 
 EXPOSE 8080
 
-CMD [ "node", "packages/api/lib/index.js" ]
+CMD [ "node", "packages/search/lib/index.js" ]
