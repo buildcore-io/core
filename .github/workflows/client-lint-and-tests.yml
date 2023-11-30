@@ -7,7 +7,7 @@ on:
       - packages/search/**
 
 jobs:
-  soon_lib:
+  prettier_lint:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -18,6 +18,6 @@ jobs:
       - name: Install Dependencies
         run: npm run build:client
       - name: Prettier
-        run: npm run prettier:client
+        run: cd packages/client && npx prettier --check .
       - name: Lint
         run: cd packages/client && npm run lint
