@@ -97,12 +97,12 @@ jobs:
       - name: Init
         run: |
           npm version ${{ github.event.release.tag_name }} --workspace packages/interfaces
-          npm version ${{ github.event.release.tag_name }} --workspace packages/lib
-          npm run build:lib
+          npm version ${{ github.event.release.tag_name }} --workspace packages/client
+          npm run build:client
       - name: Deploy to npm
         run: |
           npm publish --workspace packages/interfaces
-          npm publish --workspace packages/lib
+          npm publish --workspace packages/client
 
   roll-firestore:
     runs-on: ubuntu-latest
