@@ -1,14 +1,17 @@
 import {
   AddressValidationRequest,
   Dataset,
+  Proposal,
   Space,
   SpaceClaimRequest,
   SpaceCreateRequest,
   SpaceJoinRequest,
   SpaceLeaveRequest,
+  SpaceMember,
   SpaceMemberUpsertRequest,
   SpaceUpdateRequest,
   Subset,
+  Transaction,
   WEN_FUNC,
 } from '@build-5/interfaces';
 import { switchMap } from 'rxjs';
@@ -16,29 +19,38 @@ import { DatasetClass } from '../Dataset';
 import { SubsetType } from '../common';
 
 export class SpaceDataset<D extends Dataset> extends DatasetClass<D, Space> {
-  create = this.sendRequest(WEN_FUNC.createSpace)<SpaceCreateRequest>;
+  create = this.sendRequest(WEN_FUNC.createSpace)<SpaceCreateRequest, Space>;
 
-  update = this.sendRequest(WEN_FUNC.updateSpace)<SpaceUpdateRequest>;
+  update = this.sendRequest(WEN_FUNC.updateSpace)<SpaceUpdateRequest, Proposal>;
 
-  join = this.sendRequest(WEN_FUNC.joinSpace)<SpaceJoinRequest>;
+  join = this.sendRequest(WEN_FUNC.joinSpace)<SpaceJoinRequest, SpaceMember>;
 
-  leave = this.sendRequest(WEN_FUNC.leaveSpace)<SpaceLeaveRequest>;
+  leave = this.sendRequest(WEN_FUNC.leaveSpace)<SpaceLeaveRequest, void>;
 
-  blockMember = this.sendRequest(WEN_FUNC.blockMemberSpace)<SpaceMemberUpsertRequest>;
+  blockMember = this.sendRequest(WEN_FUNC.blockMemberSpace)<SpaceMemberUpsertRequest, SpaceMember>;
 
-  unblockMember = this.sendRequest(WEN_FUNC.unblockMemberSpace)<SpaceMemberUpsertRequest>;
+  unblockMember = this.sendRequest(WEN_FUNC.unblockMemberSpace)<SpaceMemberUpsertRequest, void>;
 
-  acceptMember = this.sendRequest(WEN_FUNC.acceptMemberSpace)<SpaceMemberUpsertRequest>;
+  acceptMember = this.sendRequest(WEN_FUNC.acceptMemberSpace)<
+    SpaceMemberUpsertRequest,
+    SpaceMember
+  >;
 
-  declineMember = this.sendRequest(WEN_FUNC.declineMemberSpace)<SpaceMemberUpsertRequest>;
+  declineMember = this.sendRequest(WEN_FUNC.declineMemberSpace)<SpaceMemberUpsertRequest, void>;
 
-  addGuardian = this.sendRequest(WEN_FUNC.addGuardianSpace)<SpaceMemberUpsertRequest>;
+  addGuardian = this.sendRequest(WEN_FUNC.addGuardianSpace)<SpaceMemberUpsertRequest, Proposal>;
 
-  removeGuardian = this.sendRequest(WEN_FUNC.removeGuardianSpace)<SpaceMemberUpsertRequest>;
+  removeGuardian = this.sendRequest(WEN_FUNC.removeGuardianSpace)<
+    SpaceMemberUpsertRequest,
+    Proposal
+  >;
 
-  claim = this.sendRequest(WEN_FUNC.claimSpace)<SpaceClaimRequest>;
+  claim = this.sendRequest(WEN_FUNC.claimSpace)<SpaceClaimRequest, Transaction>;
 
-  validateAddress = this.sendRequest(WEN_FUNC.validateAddress)<AddressValidationRequest>;
+  validateAddress = this.sendRequest(WEN_FUNC.validateAddress)<
+    AddressValidationRequest,
+    Transaction
+  >;
 
   getTopByMember = (
     member: string,

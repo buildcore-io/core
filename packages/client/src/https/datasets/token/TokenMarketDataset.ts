@@ -8,6 +8,7 @@ import {
   TokenTradeOrderStatus,
   TokenTradeOrderType,
   TradeTokenRequest,
+  Transaction,
   WEN_FUNC,
 } from '@build-5/interfaces';
 import { from, map, switchMap } from 'rxjs';
@@ -17,9 +18,15 @@ import GetTokenPriceGroupedLive from '../../get/GetTokenPriceGroupedLive';
 import { DatasetClass } from '../Dataset';
 
 export class TokenMarketDataset<D extends Dataset> extends DatasetClass<D, TokenTradeOrder> {
-  tradeToken = this.sendRequest(WEN_FUNC.tradeToken)<TradeTokenRequest>;
+  tradeToken = this.sendRequest(WEN_FUNC.tradeToken)<
+    TradeTokenRequest,
+    Transaction | TokenTradeOrder
+  >;
 
-  cancelTradeOrder = this.sendRequest(WEN_FUNC.cancelTradeOrder)<CancelTokenTradeOrderRequest>;
+  cancelTradeOrder = this.sendRequest(WEN_FUNC.cancelTradeOrder)<
+    CancelTokenTradeOrderRequest,
+    TokenTradeOrder
+  >;
 
   getTokenPrice = (token: string) =>
     GetTokenPriceGrouped.get({ origin: this.origin, dataset: this.dataset, setId: token });

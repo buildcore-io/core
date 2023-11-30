@@ -7,18 +7,19 @@ import {
   ProposalCreateRequest,
   ProposalVoteRequest,
   RejectProposalRequest,
+  Transaction,
   WEN_FUNC,
 } from '@build-5/interfaces';
 import { DatasetClass } from '../Dataset';
 
 export class ProposalDataset<D extends Dataset> extends DatasetClass<D, Proposal> {
-  create = this.sendRequest(WEN_FUNC.createProposal)<ProposalCreateRequest>;
+  create = this.sendRequest(WEN_FUNC.createProposal)<ProposalCreateRequest, Proposal>;
 
-  approve = this.sendRequest(WEN_FUNC.approveProposal)<ApproveProposalRequest>;
+  approve = this.sendRequest(WEN_FUNC.approveProposal)<ApproveProposalRequest, Proposal>;
 
-  reject = this.sendRequest(WEN_FUNC.rejectProposal)<RejectProposalRequest>;
+  reject = this.sendRequest(WEN_FUNC.rejectProposal)<RejectProposalRequest, Proposal>;
 
-  vote = this.sendRequest(WEN_FUNC.voteOnProposal)<ProposalVoteRequest>;
+  vote = this.sendRequest(WEN_FUNC.voteOnProposal)<ProposalVoteRequest, Transaction>;
 
   getAllActiveLive = (startAfter?: string) => {
     const params: GetManyAdvancedRequest = {

@@ -5,29 +5,31 @@ import {
   Dataset,
   GetManyAdvancedRequest,
   Opr,
+  Rank,
   RankRequest,
   RejectCollectionRequest,
+  Transaction,
   UpdateCollectionRequest,
-  UpdateMintedCollectionRequest,
+  Vote,
   VoteRequest,
   WEN_FUNC,
 } from '@build-5/interfaces';
 import { DatasetClass } from '../Dataset';
 
 export class CollectionDataset<D extends Dataset> extends DatasetClass<D, Collection> {
-  create = this.sendRequest(WEN_FUNC.createCollection)<CreateCollectionRequest>;
+  create = this.sendRequest(WEN_FUNC.createCollection)<CreateCollectionRequest, Collection>;
 
-  update = this.sendRequest(WEN_FUNC.updateCollection)<
-    UpdateCollectionRequest | UpdateMintedCollectionRequest
-  >;
+  update = this.sendRequest(WEN_FUNC.updateCollection)<UpdateCollectionRequest, Collection>;
 
-  reject = this.sendRequest(WEN_FUNC.rejectCollection)<RejectCollectionRequest>;
+  updateMinted = this.sendRequest(WEN_FUNC.updateCollection)<UpdateCollectionRequest, Collection>;
 
-  mint = this.sendRequest(WEN_FUNC.mintCollection)<CollectionMintRequest>;
+  reject = this.sendRequest(WEN_FUNC.rejectCollection)<RejectCollectionRequest, Collection>;
 
-  vote = this.sendRequest(WEN_FUNC.voteController)<VoteRequest>;
+  mint = this.sendRequest(WEN_FUNC.mintCollection)<CollectionMintRequest, Transaction>;
 
-  rank = this.sendRequest(WEN_FUNC.rankController)<RankRequest>;
+  vote = this.sendRequest(WEN_FUNC.voteController)<VoteRequest, Vote>;
+
+  rank = this.sendRequest(WEN_FUNC.rankController)<RankRequest, Rank>;
 
   getAllPendingLive = (space: string, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {

@@ -10,26 +10,27 @@ import {
   NftUpdateUnsoldRequest,
   NftWithdrawRequest,
   Opr,
+  Transaction,
   WEN_FUNC,
 } from '@build-5/interfaces';
 import { DatasetClass } from './Dataset';
 
 export class NftDataset<D extends Dataset> extends DatasetClass<D, Nft> {
-  create = this.sendRequest(WEN_FUNC.createNft)<NftCreateRequest>;
+  create = this.sendRequest(WEN_FUNC.createNft)<NftCreateRequest, Nft>;
 
-  createBatch = this.sendRequest(WEN_FUNC.createBatchNft)<NftCreateRequest[]>;
+  createBatch = this.sendRequest(WEN_FUNC.createBatchNft)<NftCreateRequest[], Nft[]>;
 
-  setForSale = this.sendRequest(WEN_FUNC.setForSaleNft)<NftSetForSaleRequest>;
+  setForSale = this.sendRequest(WEN_FUNC.setForSaleNft)<NftSetForSaleRequest, Nft>;
 
-  withdraw = this.sendRequest(WEN_FUNC.withdrawNft)<NftWithdrawRequest>;
+  withdraw = this.sendRequest(WEN_FUNC.withdrawNft)<NftWithdrawRequest, void>;
 
-  deposit = this.sendRequest(WEN_FUNC.depositNft)<NftDepositRequest>;
+  deposit = this.sendRequest(WEN_FUNC.depositNft)<NftDepositRequest, Transaction>;
 
-  updateUnsold = this.sendRequest(WEN_FUNC.updateUnsoldNft)<NftUpdateUnsoldRequest>;
+  updateUnsold = this.sendRequest(WEN_FUNC.updateUnsoldNft)<NftUpdateUnsoldRequest, Nft>;
 
-  order = this.sendRequest(WEN_FUNC.orderNft)<NftPurchaseRequest>;
+  order = this.sendRequest(WEN_FUNC.orderNft)<NftPurchaseRequest, Transaction>;
 
-  openBid = this.sendRequest(WEN_FUNC.openBid)<NftBidRequest>;
+  openBid = this.sendRequest(WEN_FUNC.openBid)<NftBidRequest, Transaction>;
 
   getByCollectionLive = (
     collection: string,

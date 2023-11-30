@@ -2,34 +2,41 @@ import {
   Award,
   AwardAddOwnerRequest,
   AwardApproveParticipantRequest,
+  AwardApproveParticipantResponse,
   AwardCancelRequest,
   AwardCreateRequest,
   AwardFundRequest,
+  AwardParticipant,
   AwardParticpateRequest,
   AwardRejectRequest,
   Dataset,
   GetManyAdvancedRequest,
   Opr,
+  Transaction,
   WEN_FUNC,
 } from '@build-5/interfaces';
 import { DatasetClass } from '../Dataset';
 
 export class AwardDataset<D extends Dataset> extends DatasetClass<D, Award> {
-  create = this.sendRequest(WEN_FUNC.createAward)<AwardCreateRequest>;
+  create = this.sendRequest(WEN_FUNC.createAward)<AwardCreateRequest, Award>;
 
-  fund = this.sendRequest(WEN_FUNC.fundAward)<AwardFundRequest>;
+  fund = this.sendRequest(WEN_FUNC.fundAward)<AwardFundRequest, Transaction>;
 
-  rejec = this.sendRequest(WEN_FUNC.rejectAward)<AwardRejectRequest>;
+  rejec = this.sendRequest(WEN_FUNC.rejectAward)<AwardRejectRequest, Award>;
 
-  addOwner = this.sendRequest(WEN_FUNC.addOwnerAward)<AwardAddOwnerRequest>;
+  addOwner = this.sendRequest(WEN_FUNC.addOwnerAward)<AwardAddOwnerRequest, Award>;
 
-  participate = this.sendRequest(WEN_FUNC.participateAward)<AwardParticpateRequest>;
+  participate = this.sendRequest(WEN_FUNC.participateAward)<
+    AwardParticpateRequest,
+    AwardParticipant
+  >;
 
-  approveParticipant = this.sendRequest(
-    WEN_FUNC.approveParticipantAward,
-  )<AwardApproveParticipantRequest>;
+  approveParticipant = this.sendRequest(WEN_FUNC.approveParticipantAward)<
+    AwardApproveParticipantRequest,
+    AwardApproveParticipantResponse
+  >;
 
-  cancel = this.sendRequest(WEN_FUNC.cancelAward)<AwardCancelRequest>;
+  cancel = this.sendRequest(WEN_FUNC.cancelAward)<AwardCancelRequest, Award>;
 
   getActiveLive = (space: string, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {

@@ -45,12 +45,12 @@ export abstract class BaseSet<T> {
 abstract class BaseDataSetClass<T> extends BaseSet<T> {
   protected sendRequest =
     (name: WEN_FUNC) =>
-    async <Req>(request: Build5Request<Req>) => {
+    async <Req, Res>(request: Build5Request<Req>) => {
       const isLocal = this.origin === Build5.LOCAL;
       const url = this.origin + `/${isLocal ? 'https-' : ''}` + name;
 
       try {
-        return (await axios.post(url, { data: request })).data.data;
+        return (await axios.post(url, { data: request })).data.data as Res;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         throw error.response.data;

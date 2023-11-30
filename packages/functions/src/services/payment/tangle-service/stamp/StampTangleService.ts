@@ -9,6 +9,7 @@ import {
   SpaceGuardian,
   Stamp,
   TRANSACTION_AUTO_EXPIRY_MS,
+  Transaction,
   TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
@@ -119,7 +120,11 @@ export const createStampAndStampOrder = async (
   return { stamp, order, space };
 };
 
-const createStampOrder = async (stamp: Stamp, space: Space, aliasId: string) => {
+const createStampOrder = async (
+  stamp: Stamp,
+  space: Space,
+  aliasId: string,
+): Promise<Transaction> => {
   const wallet = await WalletService.newWallet(stamp.network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
 

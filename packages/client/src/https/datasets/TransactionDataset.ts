@@ -12,7 +12,10 @@ import {
 import { DatasetClass } from './Dataset';
 
 export class TransactionDataset<D extends Dataset> extends DatasetClass<D, Transaction> {
-  creditUnrefundable = this.sendRequest(WEN_FUNC.creditUnrefundable)<CreditUnrefundableRequest>;
+  creditUnrefundable = this.sendRequest(WEN_FUNC.creditUnrefundable)<
+    CreditUnrefundableRequest,
+    Transaction
+  >;
 
   getBadgesForMemberLive = (member: string, orderBy = ['createdOn'], startAfter?: string) => {
     const fieldName = ['member', 'type', 'payload.type'];

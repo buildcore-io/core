@@ -4,12 +4,13 @@ import {
   Opr,
   Stake,
   TokenStakeRequest,
+  Transaction,
   WEN_FUNC,
 } from '@build-5/interfaces';
 import { DatasetClass } from './Dataset';
 
 export class StakeDataset<D extends Dataset> extends DatasetClass<D, Stake> {
-  deposit = this.sendRequest(WEN_FUNC.depositStake)<TokenStakeRequest>;
+  deposit = this.sendRequest(WEN_FUNC.depositStake)<TokenStakeRequest, Transaction>;
 
   getByMemberLive = (member: string, startAfter?: string, limit?: number) => {
     const params: GetManyAdvancedRequest = {

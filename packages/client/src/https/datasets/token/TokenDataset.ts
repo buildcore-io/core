@@ -7,6 +7,7 @@ import {
   ImportMintedTokenRequest,
   Opr,
   OrderTokenRequest,
+  Rank,
   RankRequest,
   SetTokenForSaleRequest,
   Token,
@@ -14,33 +15,41 @@ import {
   TokenMintRequest,
   TokenStatus,
   TokenUpdateRequest,
+  Transaction,
+  Vote,
   VoteRequest,
   WEN_FUNC,
 } from '@build-5/interfaces';
 import { DatasetClass } from '../Dataset';
 
 export class TokenDataset<D extends Dataset> extends DatasetClass<D, Token> {
-  create = this.sendRequest(WEN_FUNC.createToken)<TokenCreateRequest>;
+  create = this.sendRequest(WEN_FUNC.createToken)<TokenCreateRequest, Token>;
 
-  update = this.sendRequest(WEN_FUNC.updateToken)<TokenUpdateRequest>;
+  update = this.sendRequest(WEN_FUNC.updateToken)<TokenUpdateRequest, Token>;
 
-  setAvailableForSale = this.sendRequest(WEN_FUNC.setTokenAvailableForSale)<SetTokenForSaleRequest>;
+  setAvailableForSale = this.sendRequest(WEN_FUNC.setTokenAvailableForSale)<
+    SetTokenForSaleRequest,
+    Token
+  >;
 
-  cancelPublicSale = this.sendRequest(WEN_FUNC.cancelPublicSale)<CanelPublicSaleRequest>;
+  cancelPublicSale = this.sendRequest(WEN_FUNC.cancelPublicSale)<CanelPublicSaleRequest, Token>;
 
-  order = this.sendRequest(WEN_FUNC.orderToken)<OrderTokenRequest>;
+  order = this.sendRequest(WEN_FUNC.orderToken)<OrderTokenRequest, Transaction>;
 
-  credit = this.sendRequest(WEN_FUNC.creditToken)<CreditTokenRequest>;
+  credit = this.sendRequest(WEN_FUNC.creditToken)<CreditTokenRequest, Transaction>;
 
-  mint = this.sendRequest(WEN_FUNC.mintTokenOrder)<TokenMintRequest>;
+  mint = this.sendRequest(WEN_FUNC.mintTokenOrder)<TokenMintRequest, Transaction>;
 
-  enableTrading = this.sendRequest(WEN_FUNC.enableTokenTrading)<EnableTokenTradingRequest>;
+  enableTrading = this.sendRequest(WEN_FUNC.enableTokenTrading)<EnableTokenTradingRequest, Token>;
 
-  importMintedToken = this.sendRequest(WEN_FUNC.importMintedToken)<ImportMintedTokenRequest>;
+  importMintedToken = this.sendRequest(WEN_FUNC.importMintedToken)<
+    ImportMintedTokenRequest,
+    Transaction
+  >;
 
-  vote = this.sendRequest(WEN_FUNC.voteController)<VoteRequest>;
+  vote = this.sendRequest(WEN_FUNC.voteController)<VoteRequest, Vote>;
 
-  rank = this.sendRequest(WEN_FUNC.rankController)<RankRequest>;
+  rank = this.sendRequest(WEN_FUNC.rankController)<RankRequest, Rank>;
 
   getByMemberLive = (member: string, startAfter?: string, limit?: number) => {
     const params: GetManyAdvancedRequest = {
