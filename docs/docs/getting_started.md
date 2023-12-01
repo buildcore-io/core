@@ -7,6 +7,9 @@ keywords:
   - smart contracts
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 Build.5 API provides various ways to interact with our platform. Of course, you can read IOTA/Shimmer directly or use our friendly APIs to simplify access.
 
 There are REST APIs to simplify read and write operations. See following:
@@ -20,21 +23,28 @@ As we plan to eventually migrate all features into L1 / L2 Smart Contracts (once
 
 We provide two endpoints. One for testing and one for production. See below:
 
+<Tabs>
+<TabItem value="production" label="Production Endpoint" default>
+
 ```
-// Production endpoint
 https://api.build5.com
+```
 
-// Sandbox available endpoint
-https://api-test.build5.com
+</TabItem>
+<TabItem value="testing" label="Testing Endpoint">
 
 ```
+https://api-test.build5.com
+```
+
+</TabItem>
+</Tabs>
 
 > Make sure to consider [API's limitations](limitations)
 
-Let's do a simple GET Request to get the member's object:
+Let's do a simple GET Request to get the member's object of `@adam_unchained`:
 
 ```
-// Get @adam_unchained profile
 curl --request GET 'https://api.build5.com/api/getById?collection=member&uid=0x551fd2c7c7bf356bac194587dab2fcd46420054b'
 ```
 
