@@ -2,9 +2,9 @@
 title: Overview
 ---
 
-| :exclamation:  Documentation has not started yet. |
-|-------------------------------------------------- |
+import NotStarted from '../../_admonitions/_not-started-yet.md';
 
+<NotStarted/>
 
 __Features__: 
 - Space Management

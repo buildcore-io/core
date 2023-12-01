@@ -1,9 +1,14 @@
 ---
 title: Architecture
+description: A description of the current and future architecture of build.5
+keywords:
+  - architecture
+  - smart contracts
 ---
 
-| :exclamation:  Documentation in progress. |
-|-------------------------------------------------- |
+import InProgress from './_admonitions/_in-progress.md';
+
+<InProgress/>
 
 ## Current Architecture
 ![image](assets/architecture_before.png)

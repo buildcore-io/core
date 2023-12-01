@@ -1,9 +1,14 @@
 ---
 title: Limitation
+description: The limits of the build.5 endpoints
+keywords:
+  - APIs
+  - limits
 ---
 
-| :exclamation:  Documentation in progress. |
-|-------------------------------------------------- |
+import InProgress from './_admonitions/_in-progress.md';
+
+<InProgress/>
 
 We only allow:
 
