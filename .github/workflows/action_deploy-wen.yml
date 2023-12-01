@@ -56,15 +56,14 @@ jobs:
       - name: Init
         run: |
           LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
-          npm version $LATEST_TAG --workspace packages/interfaces
-          npm version $LATEST_TAG --workspace packages/client
-          npm version preminor --workspace packages/interfaces --preid=beta
-          npm version preminor --workspace packages/client --preid=beta
+          TIMESTAMP=$(date +%s)
+          npm version $LATEST_TAG.$TIMESTAMP --workspace packages/interfaces
+          npm version $LATEST_TAG.$TIMESTAMP --workspace packages/client
           npm run build:client
       - name: Deploy to npm as "upcoming" package
         run: |
-          npm publish --workspace packages/interfaces --tag beta
-          npm publish --workspace packages/client --tag beta
+          npm publish --workspace packages/interfaces --tag next
+          npm publish --workspace packages/client --tag next
   deploy_functions:
     runs-on: ubuntu-latest
     environment: staging
