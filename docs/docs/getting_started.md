@@ -1,5 +1,10 @@
 ---
 title: Getting started
+description: Learn about build.5 and its APIs
+keywords:
+  - APIs
+  - OTR
+  - smart contracts
 ---
 
 Build.5 API provides various ways to interact with our platform. Of course, you can read IOTA/Shimmer directly or use our friendly APIs to simplify access.

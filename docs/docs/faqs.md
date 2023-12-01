@@ -1,5 +1,9 @@
 ---
 title: FAQs
+description: Questions and answers collections for build.5
+keywords:
+  - faq
+  - open source
 ---
 
 import InProgress from './_admonitions/_in-progress.md';

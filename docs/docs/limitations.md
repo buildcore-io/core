@@ -1,5 +1,9 @@
 ---
 title: Limitation
+description: The limits of the build.5 endpoints
+keywords:
+  - APIs
+  - limits
 ---
 
 import InProgress from './_admonitions/_in-progress.md';
