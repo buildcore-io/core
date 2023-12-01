@@ -1,5 +1,6 @@
 import { build5Db } from '@build-5/database';
 import {
+  Build5Request,
   COL,
   DecodedToken,
   Member,
@@ -7,7 +8,6 @@ import {
   NetworkAddress,
   WEN_FUNC,
   WenError,
-  WenRequest,
 } from '@build-5/interfaces';
 import { Ed25519 } from '@iota/crypto.js';
 import { Ed25519 as Ed25519Next } from '@iota/crypto.js-next';
@@ -37,7 +37,7 @@ const toHex = (stringToConvert: string) =>
     .join('');
 
 export const decodeAuth = async (
-  req: WenRequest,
+  req: Build5Request<unknown>,
   func: WEN_FUNC,
   requireProjectApiKey?: boolean,
 ): Promise<DecodedToken> => {
@@ -70,7 +70,7 @@ export const decodeAuth = async (
   throw unAuthenticated(WenError.signature_or_custom_token_must_be_provided);
 };
 
-const validateWithSignature = async (req: WenRequest) => {
+const validateWithSignature = async (req: Build5Request<unknown>) => {
   const member = await getMember(req.address);
 
   const recoveredAddress = recoverPersonalSignature({
@@ -86,7 +86,7 @@ const validateWithSignature = async (req: WenRequest) => {
   await memberDocRef.update({ nonce: getRandomNonce() });
 };
 
-const validateLegacyPubKey = async (req: WenRequest) => {
+const validateLegacyPubKey = async (req: Build5Request<unknown>) => {
   const network = req.legacyPublicKey!.network;
 
   const validateFunc = getValidateFuncForNetwork(network);
@@ -117,7 +117,7 @@ const getValidateFuncForNetwork = (network: Network) => {
   }
   throw unAuthenticated(WenError.invalid_network);
 };
-const validateSmrPubKey = async (req: WenRequest) => {
+const validateSmrPubKey = async (req: Build5Request<unknown>) => {
   const signedData = ConverterNext.hexToBytes(HexHelper.stripPrefix(req.signature!));
   const legacyPublicKey = ConverterNext.hexToBytes(
     HexHelper.stripPrefix(req.legacyPublicKey?.hex!),
@@ -140,7 +140,7 @@ const validateSmrPubKey = async (req: WenRequest) => {
   return { member, address: bech32Address };
 };
 
-const validateIotaPubKey = async (req: WenRequest) => {
+const validateIotaPubKey = async (req: Build5Request<unknown>) => {
   const signedData = Converter.hexToBytes(HexHelper.stripPrefix(req.signature!));
   const legacyPublicKey = Converter.hexToBytes(HexHelper.stripPrefix(req.legacyPublicKey?.hex!));
 
@@ -161,7 +161,7 @@ const validateIotaPubKey = async (req: WenRequest) => {
   return { member, address: bech32Address };
 };
 
-const validateWithPublicKey = async (req: WenRequest) => {
+const validateWithPublicKey = async (req: Build5Request<unknown>) => {
   const network = req.publicKey!.network;
 
   const wallet = await WalletService.newWallet(network);
@@ -181,7 +181,7 @@ const validateWithPublicKey = async (req: WenRequest) => {
   return address;
 };
 
-const validatePubKey = async (info: INodeInfo, req: WenRequest) => {
+const validatePubKey = async (info: INodeInfo, req: Build5Request<unknown>) => {
   const bech32Address = Utils.hexPublicKeyToBech32Address(
     req.publicKey?.hex!,
     info.protocol.bech32Hrp,
@@ -212,7 +212,7 @@ const getMember = async (address: NetworkAddress) => {
   return member;
 };
 
-const validateWithIdToken = async (req: WenRequest, func: WEN_FUNC) => {
+const validateWithIdToken = async (req: Build5Request<unknown>, func: WEN_FUNC) => {
   const decoded = jwt.verify(req.customToken!, getJwtSecretKey());
 
   if (get(decoded, 'uid', '') !== req.address) {
@@ -238,7 +238,7 @@ export function getRandomEthAddress() {
 
 export const getRandomNonce = () => Math.floor(Math.random() * 1000000).toString();
 
-export const getProject = (req: WenRequest, requireProjectApiKey = true) => {
+export const getProject = (req: Build5Request<unknown>, requireProjectApiKey = true) => {
   try {
     const decoded = jwt.verify(req.projectApiKey, getJwtSecretKey());
     const project = get(decoded, 'project', '');

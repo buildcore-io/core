@@ -133,7 +133,7 @@ export const validateMemberAddressFunc = async (spy: any, adr: string, network?:
 export const createMember = async (spy: any): Promise<string> => {
   const memberAddress = wallet.getRandomEthAddress();
   mockWalletReturnValue(spy, memberAddress, {});
-  await testEnv.wrap(createMemberFunc)(memberAddress);
+  await testEnv.wrap(createMemberFunc)({ address: memberAddress });
   for (const network of Object.values(Network)) {
     const wallet = await getWallet(network);
     const address = await wallet.getNewIotaAddressDetails();

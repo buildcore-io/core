@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, PublicCollections, PublicSubCollections, SUB_COL } from '@build-5/interfaces';
+import { COL, Dataset, SUB_COL, Subset } from '@build-5/interfaces';
 
 export interface IDatabase {
-  collection: (col: COL | PublicCollections) => ICollection;
-  collectionGroup: (col: SUB_COL | PublicSubCollections) => ICollectionGroup;
+  collection: (col: COL | Dataset) => ICollection;
+  collectionGroup: (col: SUB_COL | Subset) => ICollectionGroup;
   doc: (documentPath: string) => IDocument;
 
   batch: () => IBatch;
@@ -43,7 +43,7 @@ export interface IDocument {
     error?: (error: Error) => void,
   ) => () => void;
 
-  collection: (subCol: SUB_COL | PublicSubCollections) => ICollection;
+  collection: (subCol: SUB_COL | Subset) => ICollection;
   get: <D>() => Promise<D | undefined>;
 
   getPath: () => string;

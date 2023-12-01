@@ -1,4 +1,4 @@
-import { TangleRequestType } from './api/tangle/common';
+import { TangleRequestType } from './search/tangle/common';
 
 /**
  * Object of possible error codes.

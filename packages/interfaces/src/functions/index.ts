@@ -85,7 +85,6 @@ export enum WEN_FUNC {
 
   createProject = 'createproject',
   deactivateProject = 'deactivateproject',
-  createProjetApiKey = 'createprojetapikey',
 
   stamp = 'stamp',
   createauction = 'createauction',
