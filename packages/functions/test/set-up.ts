@@ -1,5 +1,6 @@
 import { build5Db } from '@build-5/database';
 import {
+  Build5Request,
   COL,
   MIN_IOTA_AMOUNT,
   Network,
@@ -7,7 +8,6 @@ import {
   ProjectBilling,
   SOON_PROJECT_ID,
   SUB_COL,
-  Build5Request,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import dotenv from 'dotenv';
@@ -58,7 +58,7 @@ export const sendOnRequest =
     };
     const req = {
       ip: '127.0.0.1',
-      body: { data: wenReq },
+      body: wenReq,
       headers: { origin: true },
     } as any;
     let error = false;
@@ -70,7 +70,7 @@ export const sendOnRequest =
         }
       },
       send: (res: any) => {
-        response = res.data;
+        response = res;
       },
       setHeader: (key: any, value: any) => {},
       getHeader: (key: any) => {},

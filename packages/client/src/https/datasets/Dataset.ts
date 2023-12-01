@@ -50,7 +50,7 @@ abstract class BaseDataSetClass<T> extends BaseSet<T> {
       const url = this.origin + `/${isLocal ? 'https-' : ''}` + name;
 
       try {
-        return (await axios.post(url, { data: request })).data.data as Res;
+        return (await axios.post(url, request)).data as Res;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         throw error.response.data;

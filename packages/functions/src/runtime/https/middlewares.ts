@@ -13,7 +13,7 @@ export const auth = async (
   options?: ValidationOptions,
   requireProjectApiKey?: boolean,
 ): Promise<Context<any>> => {
-  const decoded = await decodeAuth(req.body.data, func, requireProjectApiKey);
+  const decoded = await decodeAuth(req.body, func, requireProjectApiKey);
   const owner = decoded.address.toLowerCase();
   const params = await assertValidationAsync(schema, decoded.body, options);
   return {
@@ -29,9 +29,9 @@ export const auth = async (
 export const createMember = async (req: express.Request): Promise<Context<any>> => {
   return {
     ip: req.ip || '',
-    owner: (req.body.data as Build5Request<CreateMemberRequest>).body.address,
+    owner: (req.body as Build5Request<CreateMemberRequest>).body.address,
     params: {},
-    project: getProject(req.body.data as Build5Request<unknown>),
+    project: getProject(req.body as Build5Request<unknown>),
     headers: req.headers,
     rawBody: req.body,
   };
