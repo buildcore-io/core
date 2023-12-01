@@ -18,7 +18,7 @@ let walletSpy: any;
 describe('MemberController: ' + WEN_FUNC.createMember, () => {
   it('successfully create member', async () => {
     const dummyAddress = wallet.getRandomEthAddress();
-    const member = await testEnv.wrap(createMember)(dummyAddress);
+    const member = await testEnv.wrap(createMember)({ address: dummyAddress });
     expect(member?.uid).toEqual(dummyAddress.toLowerCase());
     expect(member?.createdOn).toBeDefined();
     expect(member?.updatedOn).toBeDefined();
@@ -33,7 +33,7 @@ describe('MemberController: ' + WEN_FUNC.updateMember, () => {
     dummyAddress = wallet.getRandomEthAddress();
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     mockWalletReturnValue(walletSpy, dummyAddress, {});
-    doc = await testEnv.wrap(createMember)(dummyAddress);
+    doc = await testEnv.wrap(createMember)({ address: dummyAddress });
     expect(doc?.uid).toEqual(dummyAddress.toLowerCase());
   });
 
@@ -63,7 +63,7 @@ describe('MemberController: ' + WEN_FUNC.updateMember, () => {
 
     const dummyAddress2 = wallet.getRandomEthAddress();
     mockWalletReturnValue(walletSpy, dummyAddress2, {});
-    const cMember = await testEnv.wrap(createMember)(dummyAddress2);
+    const cMember = await testEnv.wrap(createMember)({ address: dummyAddress2 });
     expect(cMember?.uid).toEqual(dummyAddress2.toLowerCase());
 
     mockWalletReturnValue(walletSpy, dummyAddress2, { name: updateParams.name });

@@ -32,7 +32,7 @@ export class Timestamp {
   };
 }
 
-export interface WenRequest {
+export interface Build5Request<T> {
   address: NetworkAddress;
   signature?: string;
   projectApiKey: string;
@@ -45,7 +45,7 @@ export interface WenRequest {
     hex: string;
     network: Network;
   };
-  body: any;
+  body: T;
 }
 
 export enum COL {

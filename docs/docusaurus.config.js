@@ -20,13 +20,13 @@ const config = {
     [
       'docusaurus-plugin-typedoc',
       {
-        id: 'api-post',
+        id: 'search-post',
         sidebar: {
           categoryLabel: 'POST Requests',
         },
-        entryPoints: ['../packages/interfaces/src/api/post/index.ts'],
+        entryPoints: ['../packages/interfaces/src/search/post/index.ts'],
         tsconfig: '../packages/interfaces/tsconfig.json',
-        out: 'api-post',
+        out: 'search-post',
         watch: process.env.TYPEDOC_WATCH,
         cleanOutputDir: true,
       },
@@ -34,16 +34,16 @@ const config = {
     [
       'docusaurus-plugin-typedoc',
       {
-        id: 'api-get',
+        id: 'search-get',
         sidebar: {
           categoryLabel: 'GET Requests',
         },
         entryPoints: [
-          '../packages/interfaces/src/api/base.ts',
-          '../packages/interfaces/src/api/request.ts',
+          '../packages/interfaces/src/search/base.ts',
+          '../packages/interfaces/src/search/request.ts',
         ],
         tsconfig: '../packages/interfaces/tsconfig.json',
-        out: 'api-get',
+        out: 'search-get',
         watch: process.env.TYPEDOC_WATCH,
         cleanOutputDir: true,
       },
@@ -51,13 +51,13 @@ const config = {
     [
       'docusaurus-plugin-typedoc',
       {
-        id: 'api-otr',
+        id: 'search-otr',
         sidebar: {
           categoryLabel: 'OTR Requests',
         },
-        entryPoints: ['../packages/interfaces/src/api/tangle/index.ts'],
+        entryPoints: ['../packages/interfaces/src/search/tangle/index.ts'],
         tsconfig: '../packages/interfaces/tsconfig.json',
-        out: 'api-otr',
+        out: 'search-otr',
         watch: process.env.TYPEDOC_WATCH,
         cleanOutputDir: true,
       },
@@ -65,7 +65,7 @@ const config = {
     [
       'docusaurus-plugin-typedoc',
       {
-        id: 'api-models',
+        id: 'search-models',
         sidebar: {
           categoryLabel: 'Records / Models',
         },
@@ -76,7 +76,7 @@ const config = {
           '../packages/interfaces/src/errors.ts',
         ],
         tsconfig: '../packages/interfaces/tsconfig.json',
-        out: 'api-models',
+        out: 'search-models',
         watch: process.env.TYPEDOC_WATCH,
         cleanOutputDir: true,
       },

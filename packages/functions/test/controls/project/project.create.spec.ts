@@ -151,23 +151,21 @@ describe('Project create', () => {
       coinType: CoinType.IOTA,
     });
     const request = {
-      data: {
-        address: address.bech32,
-        projectApiKey: '',
-        signature: signature.signature,
-        publicKey: {
-          hex: signature.publicKey,
-          network: Network.RMS,
-        },
-        body: {
-          name: 'My project',
-          contactEmail: 'myemail@gmail.com',
-          config: { billing: ProjectBilling.VOLUME_BASED },
-        },
+      address: address.bech32,
+      projectApiKey: '',
+      signature: signature.signature,
+      publicKey: {
+        hex: signature.publicKey,
+        network: Network.RMS,
+      },
+      body: {
+        name: 'My project',
+        contactEmail: 'myemail@gmail.com',
+        config: { billing: ProjectBilling.VOLUME_BASED },
       },
     };
     const url = 'http://127.0.0.1:5001/soonaverse-dev/us-central1/https-createproject';
     const response = await axios.post(url, request);
-    expect(response.data.data.token).toBeDefined();
+    expect(response.data.token).toBeDefined();
   });
 });

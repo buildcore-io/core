@@ -5,7 +5,7 @@ on:
     types: [published]
 
 jobs:
-  deploy_api:
+  deploy_search:
     runs-on: ubuntu-latest
     environment: production
     steps:
@@ -20,18 +20,18 @@ jobs:
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
       - name: Set env vars
-        working-directory: packages/api
+        working-directory: packages/search
         run: echo "$ENV_VARS" > .env
         env:
           ENV_VARS: ${{ secrets.ENV_VARS }}
       - name: Build image
         run: |
-            cp packages/api/Dockerfile .
-            gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/api
+            cp packages/search/Dockerfile .
+            gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/search
       - name: Deploy
         run: |
-            gcloud run deploy api \
-              --image gcr.io/$GOOGLE_CLOUD_PROJECT/api \
+            gcloud run deploy search \
+              --image gcr.io/$GOOGLE_CLOUD_PROJECT/search \
               --min-instances=3 \
               --memory=1Gi \
               --cpu=1 \
@@ -97,12 +97,12 @@ jobs:
       - name: Init
         run: |
           npm version ${{ github.event.release.tag_name }} --workspace packages/interfaces
-          npm version ${{ github.event.release.tag_name }} --workspace packages/lib
-          npm run build:lib
+          npm version ${{ github.event.release.tag_name }} --workspace packages/client
+          npm run build:client
       - name: Deploy to npm
         run: |
           npm publish --workspace packages/interfaces
-          npm publish --workspace packages/lib
+          npm publish --workspace packages/client
 
   roll-firestore:
     runs-on: ubuntu-latest

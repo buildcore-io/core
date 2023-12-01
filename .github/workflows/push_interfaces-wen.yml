@@ -26,27 +26,4 @@ jobs:
         cd interfaces
         git add --all
         git commit -a --allow-empty-message -m ''
-        git push origin develop
-
-  push_lib:
-    runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Git
-      run: |
-        git config --global user.name "${{ github.actor }}"
-        git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-
-    - name: Push to public repo
-      run: |
-        cd ../
-        git clone -b develop https://username:$GITHUB_TOKEN@github.com/build-5/lib.git
-        cp -r core/packages/lib/* lib/
-        cd lib
-        git add --all
-        git commit -a --allow-empty-message -m ''
-        git push origin develop
-  
+        git push origin develop  

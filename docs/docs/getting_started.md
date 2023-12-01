@@ -45,7 +45,8 @@ https://api-test.build5.com
 Let's do a simple GET Request to get the member's object of `@adam_unchained`:
 
 ```
-curl --request GET 'https://api.build5.com/api/getById?collection=member&uid=0x551fd2c7c7bf356bac194587dab2fcd46420054b'
+// Get @adam_unchained profile
+curl --request GET 'https://api.build5.com/search/getById?collection=member&uid=0x551fd2c7c7bf356bac194587dab2fcd46420054b'
 ```
 
 If you're interested to see tons of various examples, we recommend the following repositories: 

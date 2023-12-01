@@ -5,6 +5,7 @@ import {
   DEFAULT_NETWORK,
   Member,
   Network,
+  Transaction,
   WenError,
 } from '@build-5/interfaces';
 import { createAddressValidationOrder } from '../../services/payment/tangle-service/address/address-validation.service';
@@ -15,7 +16,7 @@ export const validateAddressControl = async ({
   owner,
   params,
   project,
-}: Context<AddressValidationRequest>) => {
+}: Context<AddressValidationRequest>): Promise<Transaction> => {
   const network = (params.network as Network) || DEFAULT_NETWORK;
   const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();
 
