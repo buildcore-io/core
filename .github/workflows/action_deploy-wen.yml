@@ -6,7 +6,7 @@ on:
       - develop
 
 jobs:
-  deploy_api:
+  deploy_search:
     runs-on: ubuntu-latest
     environment: staging
     steps:
@@ -41,7 +41,26 @@ jobs:
               --timeout=600 \
               --ingress=internal-and-cloud-load-balancing \
               --region=us-central1 \
-
+  deploy_to_npm_as_next:
+    runs-on: ubuntu-latest
+    env:
+      NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org/
+      - name: Init
+        run: |
+          LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+          npm version $LATEST_TAG --workspace packages/interfaces
+          npm version $LATEST_TAG --workspace packages/client
+          npm run build:client
+      - name: Deploy to npm as "upcoming" package
+        run: |
+          npm publish --workspace packages/interfaces --tag next
+          npm publish --workspace packages/client --tag next
   deploy_functions:
     runs-on: ubuntu-latest
     environment: staging
