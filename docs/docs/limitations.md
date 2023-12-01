@@ -2,8 +2,9 @@
 title: Limitation
 ---
 
-| :exclamation:  Documentation in progress. |
-|-------------------------------------------------- |
+import InProgress from './_admonitions/_in-progress.md';
+
+<InProgress/>
 
 We only allow:
 

@@ -2,11 +2,13 @@
 title: Overview
 ---
 
-| :exclamation:  Documentation is in progress.      |
-|-------------------------------------------------- |
+:::warning In Progress
 
-Welcome to the BUILD.5 documentation. Please note this documentation is still in progress. Main focus goes towards the API's documentations and eventually more tutorials will be added here.
+Please note this documentation is still in Progress. The main focus goes towards the API's documentations and eventually more tutorials will be added here.
 
+:::
+
+Welcome to the BUILD.5 documentation.
 We recommend you to start with [Getting Started](getting_started) page.
 
 Build.5 product have been evolved over two years starting on IOTA Mainnet. The most of it's features were migrated to support Stardust on the Shimmer. Once Startdust is enabled on IOTA mainnet Build.5 product will enable all Stardust features on Mainnet as well.

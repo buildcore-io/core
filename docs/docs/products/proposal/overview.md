@@ -2,10 +2,9 @@
 title: Overview
 ---
 
+import NotStarted from '../../_admonitions/_not-started-yet.md';
 
-| :exclamation:  Documentation has not started yet. |
-|-------------------------------------------------- |
-
+<NotStarted/>
 
 __Features__: 
 - Proposal Management

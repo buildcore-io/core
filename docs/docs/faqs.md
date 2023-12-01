@@ -2,8 +2,9 @@
 title: FAQs
 ---
 
-| :exclamation:  Documentation in progress. |
-|-------------------------------------------------- |
+import InProgress from './_admonitions/_in-progress.md';
+
+<InProgress/>
 
 Is Build.5 Open Sourced?
 
