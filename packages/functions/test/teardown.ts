@@ -1,5 +1,5 @@
 import { build5Db } from '@build-5/database';
-import { BaseRecord, COL } from '@build-5/interfaces';
+import { BaseRecord, COL, Transaction, TransactionType } from '@build-5/interfaces';
 import { isEmpty } from 'lodash';
 
 const collections = [
@@ -28,6 +28,11 @@ const teardown = async () => {
         throw Error('Project not defined');
       }
     }
+  }
+
+  const transactions = await build5Db().collection(COL.TRANSACTION).get<Transaction>();
+  for (const transaction of transactions) {
+    expect(transaction.isOrderType).toBe(transaction.type === TransactionType.ORDER);
   }
 };
 

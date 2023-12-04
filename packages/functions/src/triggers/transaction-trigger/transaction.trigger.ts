@@ -71,7 +71,7 @@ export const onTransactionWrite = async (event: FirestoreDocEvent<Transaction>) 
   const isCreate = prev === undefined;
   const shouldRetry = !prev?.shouldRetry && curr?.shouldRetry;
 
-  if (isCreate) {
+  if (isCreate && curr.isOrderType === undefined) {
     const docRef = build5Db().doc(`${COL.TRANSACTION}/${curr.uid}`);
     await docRef.update({ isOrderType: curr.type === TransactionType.ORDER });
   }
