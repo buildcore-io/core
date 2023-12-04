@@ -19,6 +19,13 @@ const sidebars = {
     {
       type: 'category',
       label: 'Products',
+      link: {
+        type: 'generated-index',
+        title: 'BUILD.5 Products',
+        description: 'Learn about the BUILD.5 products and how to use them.',
+        slug: '/products',
+        keywords: ['products', 'api', 'blockchain', 'nft', 'digital twin', 'token', 'staking', 'trading', 'launchpad', 'staking', 'reputation', 'member', 'project', 'proposal', 'stake reward', 'token distribution', 'dao management'],
+      },
       collapsible: true,
       collapsed: false,
       items: [
@@ -72,6 +79,13 @@ const sidebars = {
     {
       type: 'category',
       label: 'Tutorials',
+      link: {
+        type: 'generated-index',
+        title: 'Tutorials',
+        description: 'List of tutorials for the BUILD.5 products.',
+        slug: '/tutorials',
+        keywords: ['tutorials', 'api', 'blockchain', 'nft', 'digital twin', 'token', 'staking', 'trading', 'launchpad', 'staking', 'reputation', 'member', 'project', 'proposal', 'stake reward', 'token distribution', 'dao management'],
+      },
       collapsible: true,
       collapsed: false,
       items: [
