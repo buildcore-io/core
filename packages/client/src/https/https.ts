@@ -1,7 +1,6 @@
 import { Dataset, WEN_FUNC } from '@build-5/interfaces';
 import axios from 'axios';
 import FormData from 'form-data';
-import fs from 'fs';
 import { API_KEY, Build5 } from '.';
 import { AuctionDataset } from './datasets/AuctionDataset';
 import { BadgesDataset } from './datasets/BadgesDataset';
@@ -91,7 +90,9 @@ export class HttpsWrapper {
     form.append('uid', uid);
     console.log(this.origin);
     form.append('projectApiKey', API_KEY[this.origin]);
-    form.append('file', fs.createReadStream(pathToFile));
+    // Disabled
+    console.log('FS Disabled to enable browser support', pathToFile);
+    // form.append('file', fs.createReadStream(pathToFile));
     try {
       return (await axios.post(url, form)).data;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
