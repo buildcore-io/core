@@ -240,7 +240,7 @@ export const getRandomNonce = () => Math.floor(Math.random() * 1000000).toString
 
 export const getProject = (req: Build5Request<unknown>, requireProjectApiKey = true) => {
   try {
-    const decoded = jwt.verify(req.projectApiKey, getJwtSecretKey());
+    const decoded = jwt.verify(req.projectApiKey || '', getJwtSecretKey());
     const project = get(decoded, 'project', '');
     if (requireProjectApiKey && !project) {
       throw invalidArgument(WenError.invalid_project_api_key);

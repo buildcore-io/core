@@ -35,7 +35,7 @@ export class Timestamp {
 export interface Build5Request<T> {
   address: NetworkAddress;
   signature?: string;
-  projectApiKey: string;
+  projectApiKey?: string;
   customToken?: string;
   publicKey?: {
     hex: string;
