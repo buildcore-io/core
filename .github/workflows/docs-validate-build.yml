@@ -1,10 +1,7 @@
-name: test
+name: Docs - Validate build
 
 on:
-  pull_request:
-    branches:
-      - main
-      - develop
+  pull_request
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
