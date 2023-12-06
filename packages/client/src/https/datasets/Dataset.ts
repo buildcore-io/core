@@ -20,6 +20,7 @@ import { AwardOwnerSubset } from './award/AwardOwnerSubset';
 import { AwardParticpateSubset } from './award/AwardParticipantSubset';
 import { CollectionStatsSubset } from './collection/CollectionStatsSubset';
 import { SubsetType } from './common';
+import { MilestoneTransactionSubset } from './milestone/MilestoneTransactionSubset';
 import { SpaceBlockedMemberSubset } from './space/SpaceBlockedMemberSubset';
 import { SpaceGuardianSubset } from './space/SpaceGuardianSubset';
 import { SpaceKnockingMemberSubset } from './space/SpaceKnockingMemberSubset';
@@ -231,6 +232,13 @@ export class ExactDataSet<D extends Dataset, T> extends BaseSet<T> {
           this.dataset,
           this.setId,
           Subset.DISTRIBUTION,
+        ) as SubsetType<D, S>;
+      case Subset.TRANSACTIONS:
+        return new MilestoneTransactionSubset(
+          this.origin,
+          this.dataset,
+          this.setId,
+          Subset.TRANSACTIONS,
         ) as SubsetType<D, S>;
       default:
         throw Error('invalid subset name');

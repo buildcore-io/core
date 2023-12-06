@@ -2,7 +2,6 @@ import { Dataset, Subset } from '@build-5/interfaces';
 import { AuctionDataset } from './AuctionDataset';
 import { BadgesDataset } from './BadgesDataset';
 import { MemberDataset } from './MemberDataset';
-import { MilestoneDataset } from './MilestoneDataset';
 import { NftDataset } from './NftDataset';
 import { NftStakeDataset } from './NftStakeDataset';
 import { NotificationDataset } from './NotificationDataset';
@@ -17,6 +16,8 @@ import { AwardOwnerSubset } from './award/AwardOwnerSubset';
 import { AwardParticpateSubset } from './award/AwardParticipantSubset';
 import { CollectionDataset } from './collection/CollectionDataset';
 import { CollectionStatsSubset } from './collection/CollectionStatsSubset';
+import { MilestoneDataset } from './milestone/MilestoneDataset';
+import { MilestoneTransactionSubset } from './milestone/MilestoneTransactionSubset';
 import { ProposalDataset } from './proposal/ProposalDataset';
 import { ProposalMemberSubset } from './proposal/ProposalMemberSubset';
 import { ProposalOwnerSubset } from './proposal/ProposalOwnerSubset';
@@ -66,6 +67,12 @@ export type SubsetType<D extends Dataset, S extends Subset> =
     S extends Subset.OWNERS ? AwardOwnerSubset : unknown :
   D extends Dataset.COLLECTION ? 
     S extends Subset.STATS ? CollectionStatsSubset : unknown :
+  D extends Dataset.MILESTONE ? 
+    S extends Subset.TRANSACTIONS ? MilestoneTransactionSubset : unknown :
+  D extends Dataset.MILESTONE_SMR ? 
+    S extends Subset.TRANSACTIONS ? MilestoneTransactionSubset : unknown :    
+  D extends Dataset.MILESTONE_RMS ? 
+    S extends Subset.TRANSACTIONS ? MilestoneTransactionSubset : unknown :    
   D extends Dataset.PROPOSAL ? 
     S extends Subset.MEMBERS ? ProposalMemberSubset :
     S extends Subset.OWNERS ? ProposalOwnerSubset : unknown :
