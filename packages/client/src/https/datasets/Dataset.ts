@@ -11,7 +11,7 @@ import {
 } from '@build-5/interfaces';
 import axios from 'axios';
 import { Observable, from, switchMap } from 'rxjs';
-import { API_KEY, Build5 } from '..';
+import { Build5 } from '..';
 import { toQueryParams, wrappedFetch } from '../fetch.utils';
 import GetByIdGrouped from '../get/GetByIdGrouped';
 import GetByIdGroupedLive from '../get/GetByIdGroupedLive';
@@ -29,17 +29,15 @@ import { TokenDistributionSubset } from './token/TokenDistributionSubset';
 import { TokenStatsSubset } from './token/TokenStatsSubset';
 
 export abstract class BaseSet<T> {
-  protected token: string;
   constructor(
     protected readonly origin: Build5,
+    protected readonly apiKey: string,
     protected readonly dataset: Dataset,
-  ) {
-    this.token = API_KEY[this.origin];
-  }
+  ) {}
 
   protected getManyAdvancedLive = (params: GetManyAdvancedRequest): Observable<T[]> => {
     const url = this.origin + ApiRoutes.GET_MANY_ADVANCED + toQueryParams({ ...params });
-    return fetchLive<T[]>(this.origin, url);
+    return fetchLive<T[]>(this.origin, this.apiKey, url);
   };
 }
 
@@ -51,7 +49,7 @@ abstract class BaseDataSetClass<T> extends BaseSet<T> {
       const url = this.origin + `/${isLocal ? 'https-' : ''}` + name;
 
       try {
-        return (await axios.post(url, request)).data as Res;
+        return (await axios.post(url, { ...request, projectApiKey: this.apiKey })).data as Res;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         throw error.response.data;
@@ -61,7 +59,7 @@ abstract class BaseDataSetClass<T> extends BaseSet<T> {
 
 export abstract class DatasetClass<D extends Dataset, T> extends BaseDataSetClass<T> {
   getManyById = (setIds: string[]) =>
-    wrappedFetch<T[]>(this.token, this.origin + ApiRoutes.GET_MANY_BY_ID, {
+    wrappedFetch<T[]>(this.apiKey, this.origin + ApiRoutes.GET_MANY_BY_ID, {
       dataset: this.dataset,
       setIds,
     });
@@ -69,7 +67,7 @@ export abstract class DatasetClass<D extends Dataset, T> extends BaseDataSetClas
   getManyByIdLive = (setIds: string[]): Observable<T[]> => {
     const params = { dataset: this.dataset, setIds };
     const url = this.origin + ApiRoutes.GET_MANY_BY_ID + toQueryParams({ ...params });
-    return fetchLive<T[]>(this.origin, url);
+    return fetchLive<T[]>(this.origin, this.apiKey, url);
   };
 
   getByField = async (
@@ -78,7 +76,7 @@ export abstract class DatasetClass<D extends Dataset, T> extends BaseDataSetClas
     startAfter?: string,
   ) => {
     const params = { dataset: this.dataset, fieldName, fieldValue, startAfter };
-    return await wrappedFetch<T[]>(API_KEY[this.origin], this.origin + ApiRoutes.GET_MANY, params);
+    return await wrappedFetch<T[]>(this.apiKey, this.origin + ApiRoutes.GET_MANY, params);
   };
 
   getByFieldLive = (
@@ -88,7 +86,7 @@ export abstract class DatasetClass<D extends Dataset, T> extends BaseDataSetClas
   ): Observable<T[]> => {
     const params: GetManyRequest = { dataset: this.dataset, fieldName, fieldValue, startAfter };
     const url = this.origin + ApiRoutes.GET_MANY + toQueryParams({ ...params });
-    return fetchLive<T[]>(this.origin, url);
+    return fetchLive<T[]>(this.origin, this.apiKey, url);
   };
 
   getBySpace = async (space: string, startAfter?: string) => {
@@ -99,7 +97,7 @@ export abstract class DatasetClass<D extends Dataset, T> extends BaseDataSetClas
       startAfter,
     };
     const url = this.origin + ApiRoutes.GET_MANY;
-    return await wrappedFetch<T[]>(API_KEY[this.origin], url, { ...params });
+    return await wrappedFetch<T[]>(this.apiKey, url, { ...params });
   };
 
   getBySpaceLive = (space: string, startAfter?: string) => {
@@ -118,13 +116,13 @@ export abstract class DatasetClass<D extends Dataset, T> extends BaseDataSetClas
   getAllUpdatedAfter = async (updatedAfter: number, startAfter?: string) => {
     const params: GetUpdatedAfterRequest = { dataset: this.dataset, updatedAfter, startAfter };
     const url = this.origin + ApiRoutes.GET_UPDATED_AFTER;
-    return await wrappedFetch<T[]>(API_KEY[this.origin], url, { ...params });
+    return await wrappedFetch<T[]>(this.apiKey, url, { ...params });
   };
 
   getAllUpdatedAfterLive = (updatedAfter: number, startAfter?: string): Observable<T[]> => {
     const params: GetUpdatedAfterRequest = { dataset: this.dataset, updatedAfter, startAfter };
     const url = this.origin + ApiRoutes.GET_UPDATED_AFTER + toQueryParams({ ...params });
-    return fetchLive<T[]>(this.origin, url);
+    return fetchLive<T[]>(this.origin, this.apiKey, url);
   };
 
   getTopLive = (startAfter?: string, limit?: number): Observable<T[]> => {
@@ -141,26 +139,37 @@ export abstract class DatasetClass<D extends Dataset, T> extends BaseDataSetClas
     return this.getManyAdvancedLive(params);
   };
 
-  id = (setId: string) => new ExactDataSet<D, T>(this.origin, this.dataset, setId);
+  id = (setId: string) => new ExactDataSet<D, T>(this.origin, this.apiKey, this.dataset, setId);
 
   subset = <S extends Subset>(subset: S) =>
-    new ExactDataSet<D, T>(this.origin, this.dataset, '').subset(subset);
+    new ExactDataSet<D, T>(this.origin, this.apiKey, this.dataset, '').subset(subset);
 }
 
 export class ExactDataSet<D extends Dataset, T> extends BaseSet<T> {
   constructor(
     origin: Build5,
+    apiKey: string,
     dataset: Dataset,
     private readonly setId: string,
   ) {
-    super(origin, dataset);
+    super(origin, apiKey, dataset);
   }
   get = () =>
-    GetByIdGrouped.get<T>({ origin: this.origin, dataset: this.dataset, setId: this.setId });
+    GetByIdGrouped.get<T>({
+      origin: this.origin,
+      dataset: this.dataset,
+      setId: this.setId,
+      apiKey: this.apiKey,
+    });
 
   getLive = () =>
     from(
-      GetByIdGroupedLive.get({ origin: this.origin, dataset: this.dataset, setId: this.setId }),
+      GetByIdGroupedLive.get<T>({
+        origin: this.origin,
+        dataset: this.dataset,
+        setId: this.setId,
+        apiKey: this.apiKey,
+      }),
     ).pipe(switchMap((inner) => inner));
 
   subset = <S extends Subset>(subset: S): SubsetType<D, S> => {
@@ -168,6 +177,7 @@ export class ExactDataSet<D extends Dataset, T> extends BaseSet<T> {
       case Subset.PARTICIPANTS:
         return new AwardParticpateSubset(
           this.origin,
+          this.apiKey,
           this.dataset,
           this.setId,
           Subset.PARTICIPANTS,
@@ -175,6 +185,7 @@ export class ExactDataSet<D extends Dataset, T> extends BaseSet<T> {
       case Subset.OWNERS:
         return new AwardOwnerSubset(
           this.origin,
+          this.apiKey,
           this.dataset,
           this.setId,
           Subset.OWNERS,
@@ -183,6 +194,7 @@ export class ExactDataSet<D extends Dataset, T> extends BaseSet<T> {
         if (this.dataset === Dataset.TOKEN) {
           return new TokenStatsSubset(
             this.origin,
+            this.apiKey,
             this.dataset,
             this.setId,
             Subset.STATS,
@@ -191,6 +203,7 @@ export class ExactDataSet<D extends Dataset, T> extends BaseSet<T> {
         if (this.dataset === Dataset.COLLECTION) {
           return new CollectionStatsSubset(
             this.origin,
+            this.apiKey,
             this.dataset,
             this.setId,
             Subset.STATS,
@@ -201,6 +214,7 @@ export class ExactDataSet<D extends Dataset, T> extends BaseSet<T> {
       case Subset.MEMBERS:
         return new SpaceMemberSubset(
           this.origin,
+          this.apiKey,
           this.dataset,
           this.setId,
           Subset.MEMBERS,
@@ -208,6 +222,7 @@ export class ExactDataSet<D extends Dataset, T> extends BaseSet<T> {
       case Subset.GUARDIANS:
         return new SpaceGuardianSubset(
           this.origin,
+          this.apiKey,
           this.dataset,
           this.setId,
           Subset.GUARDIANS,
@@ -215,6 +230,7 @@ export class ExactDataSet<D extends Dataset, T> extends BaseSet<T> {
       case Subset.KNOCKING_MEMBERS:
         return new SpaceKnockingMemberSubset(
           this.origin,
+          this.apiKey,
           this.dataset,
           this.setId,
           Subset.KNOCKING_MEMBERS,
@@ -222,6 +238,7 @@ export class ExactDataSet<D extends Dataset, T> extends BaseSet<T> {
       case Subset.BLOCKED_MEMBERS:
         return new SpaceBlockedMemberSubset(
           this.origin,
+          this.apiKey,
           this.dataset,
           this.setId,
           Subset.BLOCKED_MEMBERS,
@@ -229,6 +246,7 @@ export class ExactDataSet<D extends Dataset, T> extends BaseSet<T> {
       case Subset.DISTRIBUTION:
         return new TokenDistributionSubset(
           this.origin,
+          this.apiKey,
           this.dataset,
           this.setId,
           Subset.DISTRIBUTION,
@@ -236,6 +254,7 @@ export class ExactDataSet<D extends Dataset, T> extends BaseSet<T> {
       case Subset.TRANSACTIONS:
         return new MilestoneTransactionSubset(
           this.origin,
+          this.apiKey,
           this.dataset,
           this.setId,
           Subset.TRANSACTIONS,

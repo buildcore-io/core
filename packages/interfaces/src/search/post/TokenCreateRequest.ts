@@ -10,7 +10,7 @@ export interface TokenCreateRequest {
   /**
    * Access type of the token
    */
-  access: 0 | 1 | 2 | 3 | 4;
+  access?: 0 | 1 | 2 | 3 | 4;
   /**
    * Build5 id of the awards. If present only members with the given awards can purchase this token.
    */
@@ -22,7 +22,7 @@ export interface TokenCreateRequest {
   /**
    * Token supply allocations.
    */
-  allocations: {
+  allocations?: {
     /**
      * If true, this allocation is public. Only one public allocation is allowed.
      */
@@ -57,7 +57,7 @@ The total percentage has to be 100
   /**
    * Build5 url pointing to the token icon.
    */
-  icon: string;
+  icon?: string;
   /**
    * Usefull links for the token.
    */
@@ -69,7 +69,7 @@ The total percentage has to be 100
   /**
    * Build5 url pointing to the overview graphics of the token.
    */
-  overviewGraphics: string;
+  overviewGraphics?: string;
   /**
    * Price per token. Minimum 0.000001, maximum 1000000000000.
    */
@@ -101,7 +101,7 @@ The total percentage has to be 100
   /**
    * Terms and conditions of the token.
    */
-  termsAndConditions: string;
+  termsAndConditions?: string;
   /**
    * Title of the token.
    */

@@ -31,7 +31,7 @@ export const createMember = async (req: express.Request): Promise<Context<any>> 
     ip: req.ip || '',
     owner: (req.body as Build5Request<CreateMemberRequest>).body.address,
     params: {},
-    project: getProject(req.body as Build5Request<unknown>),
+    project: getProject(req.body as Build5Request<unknown>, false),
     headers: req.headers,
     rawBody: req.body,
   };

@@ -9,35 +9,34 @@ import {
   Subset,
 } from '@build-5/interfaces';
 import { Observable, from, switchMap } from 'rxjs';
+import { Build5 } from '..';
 import { toQueryParams, wrappedFetch } from '../fetch.utils';
 import GetByIdGrouped from '../get/GetByIdGrouped';
 import GetByIdGroupedLive from '../get/GetByIdGroupedLive';
 import { fetchLive } from '../get/observable';
-import { API_KEY, Build5 } from '..';
 
 export abstract class BaseSubset<T> {
-  protected token: string;
   constructor(
     protected readonly origin: Build5,
+    protected readonly apiKey: string,
     protected readonly dataset: Dataset,
-  ) {
-    this.token = API_KEY[this.origin];
-  }
+  ) {}
 
   protected getManyAdvancedLive = (params: GetManyAdvancedRequest): Observable<T[]> => {
     const url = this.origin + ApiRoutes.GET_MANY_ADVANCED + toQueryParams({ ...params });
-    return fetchLive<T[]>(this.origin, url);
+    return fetchLive<T[]>(this.origin, this.apiKey, url);
   };
 }
 
 export class SubsetClass<T> extends BaseSubset<T> {
   constructor(
     origin: Build5,
+    apiKey: string,
     dataset: Dataset,
     protected readonly setId: string,
     protected readonly subset: Subset,
   ) {
-    super(origin, dataset);
+    super(origin, apiKey, dataset);
   }
 
   getManyById = async (subsetIds: string[]) => {
@@ -48,7 +47,7 @@ export class SubsetClass<T> extends BaseSubset<T> {
       subsetIds,
     };
     const url = this.origin + ApiRoutes.GET_MANY_BY_ID;
-    return await wrappedFetch<T[]>(this.token, url, { ...params });
+    return await wrappedFetch<T[]>(this.apiKey, url, { ...params });
   };
 
   getManyByIdLive = (subsetIds: string[]): Observable<T[]> => {
@@ -59,7 +58,7 @@ export class SubsetClass<T> extends BaseSubset<T> {
       subsetIds,
     };
     const url = this.origin + ApiRoutes.GET_MANY_BY_ID + toQueryParams({ ...params });
-    return fetchLive<T[]>(this.origin, url);
+    return fetchLive<T[]>(this.origin, this.apiKey, url);
   };
 
   getAll = async (startAfter?: string) => {
@@ -70,7 +69,7 @@ export class SubsetClass<T> extends BaseSubset<T> {
       startAfter,
     };
     const url = this.origin + ApiRoutes.GET_MANY;
-    return await wrappedFetch<T[]>(this.token, url, { ...params });
+    return await wrappedFetch<T[]>(this.apiKey, url, { ...params });
   };
 
   getAllLive = (startAfter?: string) => {
@@ -102,7 +101,7 @@ export class SubsetClass<T> extends BaseSubset<T> {
       startAfter,
     };
     const url = this.origin + ApiRoutes.GET_MANY;
-    return await wrappedFetch<T[]>(this.token, url, { ...params });
+    return await wrappedFetch<T[]>(this.apiKey, url, { ...params });
   };
 
   getAllUpdatedAfter = async (updatedAfter: number) => {
@@ -113,7 +112,7 @@ export class SubsetClass<T> extends BaseSubset<T> {
       updatedAfter,
     };
     const url = this.origin + ApiRoutes.GET_UPDATED_AFTER;
-    return await wrappedFetch<T[]>(this.token, url, { ...params });
+    return await wrappedFetch<T[]>(this.apiKey, url, { ...params });
   };
 
   getTopBySubColIdLive = (
@@ -138,12 +137,13 @@ export class SubsetClass<T> extends BaseSubset<T> {
   };
 
   subsetId = (subsetId: string) =>
-    new ExactSubset<T>(this.origin, this.dataset, this.setId, this.subset, subsetId);
+    new ExactSubset<T>(this.origin, this.apiKey, this.dataset, this.setId, this.subset, subsetId);
 }
 
 class ExactSubset<T> {
   constructor(
     private readonly origin: Build5,
+    private readonly apiKey: string,
     private readonly dataset: Dataset,
     private readonly setId: string,
     private readonly subset: Subset,
@@ -160,6 +160,7 @@ class ExactSubset<T> {
       setId: this.setId,
       subset: this.subset,
       subsetId: this.subsetId,
+      apiKey: this.apiKey,
     });
   };
 
@@ -168,8 +169,9 @@ class ExactSubset<T> {
       throw Error('Setid must be set');
     }
     return from(
-      GetByIdGroupedLive.get({
+      GetByIdGroupedLive.get<T>({
         origin: this.origin,
+        apiKey: this.apiKey,
         dataset: this.dataset,
         setId: this.setId,
         subset: this.subset,
