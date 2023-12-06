@@ -31,7 +31,7 @@ const getManySchema = Joi.object({
     .equal(...Object.values(Dataset))
     .required(),
   setId: CommonJoi.uid(false),
-  subSet: Joi.string()
+  subset: Joi.string()
     .equal(...Object.values(Subset))
     .optional(),
   fieldName: Joi.alternatives()
