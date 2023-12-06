@@ -61,7 +61,8 @@ export const documentToObservable = <T>(doc: IDocument) =>
 export const getHeadPriceObs = (query: IQuery) =>
   queryToObservable<TokenPurchase>(query).pipe(map((r) => head(r)?.price || 0));
 
-export const minAddressLength = 42;
+// Used to be 42, changed to 5 to support milestone get and transactions subset
+export const minAddressLength = 5;
 export const maxAddressLength = 255;
 export class CommonJoi {
   public static uid(required = true, minLength = minAddressLength): Joi.StringSchema<string> {
