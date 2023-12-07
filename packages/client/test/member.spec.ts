@@ -7,29 +7,30 @@ import { address } from './config';
 describe('', () => {
   it('Create and update member name', async () => {
     const origin = Build5.LOCAL;
-    let response = await build5
-      .https(origin)
-      .dataset(Dataset.MEMBER)
-      .create({
-        address: address.bech32,
-        signature: '',
-        projectApiKey: API_KEY[origin],
-        body: {
-          address: address.bech32,
-        },
-      });
+
+    let response = await build5.https(origin).createMember({
+      address: address.bech32,
+      signature: '',
+      body: { address: address.bech32 },
+    });
 
     const uid = response.uid;
 
     const apiOrigin = Build5.API_LOCAL;
-    const member = await build5.https(apiOrigin).dataset(Dataset.MEMBER).id(uid).get();
+    const apiKey = API_KEY[apiOrigin];
+    const member = await build5
+      .https(apiOrigin)
+      .project(apiKey)
+      .dataset(Dataset.MEMBER)
+      .id(uid)
+      .get();
     expect(member?.uid).toBe(uid);
 
     const name = Math.random().toString().split('.')[1];
-
     const signature = await getSignature(uid, address);
     response = await build5
       .https(origin)
+      .project(API_KEY[origin])
       .dataset(Dataset.MEMBER)
       .update({
         address: address.bech32,
@@ -38,7 +39,6 @@ describe('', () => {
           hex: signature.publicKey,
           network: Network.RMS,
         },
-        projectApiKey: API_KEY[origin],
         body: {
           name,
         },

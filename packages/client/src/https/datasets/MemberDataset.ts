@@ -1,6 +1,5 @@
 import {
   AddressValidationRequest,
-  CreateMemberRequest,
   CustomTokenRequest,
   Dataset,
   Member,
@@ -11,8 +10,6 @@ import {
 import { DatasetClass } from './Dataset';
 
 export class MemberDataset<D extends Dataset> extends DatasetClass<D, Member> {
-  create = this.sendRequest(WEN_FUNC.createMember)<CreateMemberRequest, Member>;
-
   update = this.sendRequest(WEN_FUNC.updateMember)<MemberUpdateRequest, Member>;
 
   generateCustomToken = this.sendRequest(WEN_FUNC.generateCustomToken)<CustomTokenRequest, string>;

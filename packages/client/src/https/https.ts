@@ -1,7 +1,7 @@
 import { Dataset, WEN_FUNC } from '@build-5/interfaces';
 import axios from 'axios';
 import FormData from 'form-data';
-import { API_KEY, Build5 } from '.';
+import { Build5 } from '.';
 import { AuctionDataset } from './datasets/AuctionDataset';
 import { BadgesDataset } from './datasets/BadgesDataset';
 import { MemberDataset } from './datasets/MemberDataset';
@@ -25,57 +25,60 @@ import { TokenDataset } from './datasets/token/TokenDataset';
 import { TokenMarketDataset } from './datasets/token/TokenMarketDataset';
 import { TokenPurchaseDataset } from './datasets/token/TokenPurchaseDataset';
 
-export class HttpsWrapper {
-  constructor(private readonly origin: Build5) {}
+export class ProjectWrapper {
+  constructor(
+    private readonly origin: Build5,
+    private readonly apiKey: string,
+  ) {}
 
   dataset<D extends Dataset>(dataset: D): DatasetType<D> {
     switch (dataset) {
       case Dataset.AIRDROP:
-        return new AirdropDataset(this.origin, dataset) as DatasetType<D>;
+        return new AirdropDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       case Dataset.AWARD:
-        return new AwardDataset(this.origin, dataset) as DatasetType<D>;
+        return new AwardDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       case Dataset.AUCTION:
-        return new AuctionDataset(this.origin, dataset) as DatasetType<D>;
+        return new AuctionDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       case Dataset.BADGES:
-        return new BadgesDataset(this.origin, dataset) as DatasetType<D>;
+        return new BadgesDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       case Dataset.COLLECTION:
-        return new CollectionDataset(this.origin, dataset) as DatasetType<D>;
+        return new CollectionDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       case Dataset.MILESTONE:
-        return new MilestoneDataset(this.origin, dataset) as DatasetType<D>;
+        return new MilestoneDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       case Dataset.MILESTONE_RMS:
-        return new MilestoneDataset(this.origin, dataset) as DatasetType<D>;
+        return new MilestoneDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       case Dataset.MILESTONE_SMR:
-        return new MilestoneDataset(this.origin, dataset) as DatasetType<D>;
+        return new MilestoneDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       case Dataset.MEMBER:
-        return new MemberDataset(this.origin, dataset) as DatasetType<D>;
+        return new MemberDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       case Dataset.NFT:
-        return new NftDataset(this.origin, dataset) as DatasetType<D>;
+        return new NftDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       case Dataset.NFT_STAKE:
-        return new NftStakeDataset(this.origin, dataset) as DatasetType<D>;
+        return new NftStakeDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       case Dataset.NOTIFICATION:
-        return new NotificationDataset(this.origin, dataset) as DatasetType<D>;
+        return new NotificationDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       case Dataset.PROJECT:
-        return new ProjectDataset(this.origin, dataset) as DatasetType<D>;
+        return new ProjectDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       case Dataset.PROPOSAL:
-        return new ProposalDataset(this.origin, dataset) as DatasetType<D>;
+        return new ProposalDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       case Dataset.SPACE:
-        return new SpaceDataset(this.origin, dataset) as DatasetType<D>;
+        return new SpaceDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       case Dataset.STAKE:
-        return new StakeDataset(this.origin, dataset) as DatasetType<D>;
+        return new StakeDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       case Dataset.STAKE_REWARD:
-        return new StakeRewardDataset(this.origin, dataset) as DatasetType<D>;
+        return new StakeRewardDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       case Dataset.STAMP:
-        return new StampDataset(this.origin, dataset) as DatasetType<D>;
+        return new StampDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       case Dataset.TOKEN:
-        return new TokenDataset(this.origin, dataset) as DatasetType<D>;
+        return new TokenDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       case Dataset.TOKEN_MARKET:
-        return new TokenMarketDataset(this.origin, dataset) as DatasetType<D>;
+        return new TokenMarketDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       case Dataset.TOKEN_PURCHASE:
-        return new TokenPurchaseDataset(this.origin, dataset) as DatasetType<D>;
+        return new TokenPurchaseDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       case Dataset.TICKER:
-        return new TickerDataset(this.origin, dataset) as DatasetType<D>;
+        return new TickerDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       case Dataset.TRANSACTION:
-        return new TransactionDataset(this.origin, dataset) as DatasetType<D>;
+        return new TransactionDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       default:
         throw Error('invalid dataset name');
     }
@@ -84,12 +87,12 @@ export class HttpsWrapper {
   uploadFile = async (pathToFile: string, member: string, uid: string) => {
     const isLocal = this.origin === Build5.LOCAL;
     const url = this.origin + `/${isLocal ? 'https-' : ''}` + WEN_FUNC.uploadFile;
-    console.log(API_KEY[this.origin]);
+    console.log(this.apiKey);
     const form = new FormData();
     form.append('member', member);
     form.append('uid', uid);
     console.log(this.origin);
-    form.append('projectApiKey', API_KEY[this.origin]);
+    form.append('projectApiKey', this.apiKey);
     // Disabled
     console.log('FS Disabled to enable browser support', pathToFile);
     // form.append('file', fs.createReadStream(pathToFile));

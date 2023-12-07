@@ -136,9 +136,6 @@ export interface BaseRecord extends Base {
    */
   createdBy?: string;
 
-  // Sharabble url
-  wenUrl?: string;
-
   // Doc cursor used internally.
   _doc?: any;
   // Sometimes we want data from parent collecton because we search through it.

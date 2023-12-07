@@ -1,6 +1,41 @@
-import { HttpsWrapper } from './https';
+import {
+  Build5Request,
+  CreateMemberRequest,
+  Member,
+  ProjectCreateRequest,
+  ProjectCreateResponse,
+  WEN_FUNC,
+} from '@build-5/interfaces';
+import axios from 'axios';
+import { ProjectWrapper } from './https';
 
 export const https = (origin = Build5.PROD) => new HttpsWrapper(origin);
+
+class HttpsWrapper {
+  constructor(private readonly origin: Build5) {}
+
+  private sendRequest =
+    (name: WEN_FUNC) =>
+    async <Req, Res>(request: Build5Request<Req>) => {
+      const isLocal = this.origin === Build5.LOCAL;
+      const url = this.origin + `/${isLocal ? 'https-' : ''}` + name;
+      try {
+        return (await axios.post(url, request)).data as Res;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        throw error.response.data;
+      }
+    };
+
+  project = (apiKey: string) => new ProjectWrapper(this.origin, apiKey);
+
+  createMember = this.sendRequest(WEN_FUNC.createMember)<CreateMemberRequest, Member>;
+
+  createProject = this.sendRequest(WEN_FUNC.createProject)<
+    ProjectCreateRequest,
+    ProjectCreateResponse
+  >;
+}
 
 export enum Build5 {
   PROD = 'https://api.build5.com',

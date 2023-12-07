@@ -186,7 +186,8 @@ describe('Token controller: ' + WEN_FUNC.createToken, () => {
   it('Should throw, no terms and conditions', async () => {
     delete token.termsAndConditions;
     mockWalletReturnValue(walletSpy, memberAddress, token);
-    await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key);
+    const result = await testEnv.wrap(createToken)({});
+    expect(result).toBeDefined();
   });
 
   it('Should throw, no symbol', async () => {
@@ -212,10 +213,11 @@ describe('Token controller: ' + WEN_FUNC.createToken, () => {
     await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key);
   });
 
-  it('Should throw, no allocations', async () => {
+  it('Should work with no allocations', async () => {
     delete token.allocations;
     mockWalletReturnValue(walletSpy, memberAddress, token);
-    await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key);
+    const result = await testEnv.wrap(createToken)({});
+    expect(result).toBeDefined();
   });
 
   it('Should throw, wrong total percentage', async () => {

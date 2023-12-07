@@ -1,8 +1,8 @@
 import {
   ApiRoutes,
-  CancelTokenTradeOrderRequest,
   Dataset,
   GetManyAdvancedRequest,
+  GetTokenPriceResponse,
   Opr,
   TokenTradeOrder,
   TokenTradeOrderStatus,
@@ -18,22 +18,24 @@ import GetTokenPriceGroupedLive from '../../get/GetTokenPriceGroupedLive';
 import { DatasetClass } from '../Dataset';
 
 export class TokenMarketDataset<D extends Dataset> extends DatasetClass<D, TokenTradeOrder> {
-  tradeToken = this.sendRequest(WEN_FUNC.tradeToken)<
-    TradeTokenRequest,
-    Transaction | TokenTradeOrder
-  >;
-
-  cancelTradeOrder = this.sendRequest(WEN_FUNC.cancelTradeOrder)<
-    CancelTokenTradeOrderRequest,
-    TokenTradeOrder
-  >;
+  tradeToken = this.sendRequest(WEN_FUNC.tradeToken)<TradeTokenRequest, Transaction>;
 
   getTokenPrice = (token: string) =>
-    GetTokenPriceGrouped.get({ origin: this.origin, dataset: this.dataset, setId: token });
+    GetTokenPriceGrouped.get({
+      origin: this.origin,
+      dataset: this.dataset,
+      setId: token,
+      apiKey: this.apiKey,
+    });
 
   getTokenPriceLive = (token: string) =>
     from(
-      GetTokenPriceGroupedLive.get({ origin: this.origin, dataset: this.dataset, setId: token }),
+      GetTokenPriceGroupedLive.get<GetTokenPriceResponse>({
+        origin: this.origin,
+        dataset: this.dataset,
+        setId: token,
+        apiKey: this.apiKey,
+      }),
     ).pipe(
       switchMap((inner) => inner),
       map((r) => r || { id: token, price: 0, usdPrice: 0 }),

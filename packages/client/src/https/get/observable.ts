@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { API_RETRY_TIMEOUT } from '@build-5/interfaces';
 import { Observable as RxjsObservable, Subscriber, shareReplay } from 'rxjs';
+import { Build5 } from '..';
 import { processObject, processObjectArray } from '../utils';
-import { API_KEY, Build5 } from '..';
 const WebSocket = global.WebSocket || require('ws');
 
 class Observable<T> extends RxjsObservable<T> {
@@ -11,6 +11,7 @@ class Observable<T> extends RxjsObservable<T> {
 
   constructor(
     protected readonly origin: Build5,
+    protected readonly apiKey: string,
     private readonly url: string,
   ) {
     super((observer) => {
@@ -34,7 +35,7 @@ class Observable<T> extends RxjsObservable<T> {
   };
 
   private onOpen = () => {
-    this.ws!.send(API_KEY[this.origin]);
+    this.ws!.send(this.apiKey);
   };
 
   private onMessage = (message: MessageEvent) => {
@@ -74,5 +75,5 @@ class Observable<T> extends RxjsObservable<T> {
   };
 }
 
-export const fetchLive = <T>(origin: Build5, url: string): RxjsObservable<T> =>
-  new Observable<T>(origin, url).pipe(shareReplay({ refCount: true }));
+export const fetchLive = <T>(origin: Build5, apiKey: string, url: string): RxjsObservable<T> =>
+  new Observable<T>(origin, apiKey, url).pipe(shareReplay({ refCount: true }));

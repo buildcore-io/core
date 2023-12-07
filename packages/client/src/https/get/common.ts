@@ -11,6 +11,7 @@ export interface Request {
   subset?: Subset;
   subsetId?: string;
   origin: Build5;
+  apiKey: string;
 }
 
 export interface CreateUrlResponse {
@@ -50,7 +51,7 @@ export abstract class AbstractGroupedGet {
     const remainin: Request[] = [];
     const result = requests.reduce(
       (acc, act) => {
-        const key = act.origin + act.dataset + act.subset;
+        const key = act.origin + act.apiKey + act.dataset + act.subset;
         const current = acc[key] || [];
         if (current.length < BATCH_MAX_SIZE) {
           current.push(act);

@@ -31,6 +31,7 @@ export class TokenPurchaseDataset<D extends Dataset> extends DatasetClass<D, Tok
         origin: this.origin,
         dataset: Dataset.TOKEN,
         setId: token,
+        apiKey: this.apiKey,
       }),
     ).pipe(
       switchMap((inner) => inner),
@@ -43,6 +44,7 @@ export class TokenPurchaseDataset<D extends Dataset> extends DatasetClass<D, Tok
         origin: this.origin,
         dataset: Dataset.TOKEN,
         setId: token,
+        apiKey: this.apiKey,
       }),
     ).pipe(
       switchMap((inner) => inner),

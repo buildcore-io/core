@@ -23,8 +23,9 @@ export class GetByIdGroupedLiveClass extends AbstractGetByIdGrouped {
   protected executeRequests = async () => {
     const promises = this.createUrl().map(async ({ requests, url, params }) => {
       try {
+        const apiKey = requests[0].apiKey;
         const origin = requests[0].origin;
-        const source = fetchLive(origin, url + toQueryParams(params)).pipe(
+        const source = fetchLive(origin, apiKey, url + toQueryParams(params)).pipe(
           map((r) => (Array.isArray(r) ? r : [r])),
         );
         for (const r of requests) {
