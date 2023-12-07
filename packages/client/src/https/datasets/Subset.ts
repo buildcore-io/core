@@ -24,7 +24,7 @@ export abstract class BaseSubset<T> {
 
   protected getManyAdvancedLive = (params: GetManyAdvancedRequest): Observable<T[]> => {
     const url = this.origin + ApiRoutes.GET_MANY_ADVANCED + toQueryParams({ ...params });
-    return fetchLive<T[]>(this.origin, this.apiKey, url);
+    return fetchLive<T[]>(this.apiKey, url);
   };
 }
 
@@ -58,7 +58,7 @@ export class SubsetClass<T> extends BaseSubset<T> {
       subsetIds,
     };
     const url = this.origin + ApiRoutes.GET_MANY_BY_ID + toQueryParams({ ...params });
-    return fetchLive<T[]>(this.origin, this.apiKey, url);
+    return fetchLive<T[]>(this.apiKey, url);
   };
 
   getAll = async (startAfter?: string) => {

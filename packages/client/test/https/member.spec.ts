@@ -1,8 +1,8 @@
 import { Dataset, Network } from '@build-5/interfaces';
-import * as build5 from '../src';
-import { API_KEY, Build5 } from '../src/https';
-import { getSignature } from './common';
-import { address } from './config';
+import * as build5 from '../../src';
+import { API_KEY, Build5 } from '../../src/https';
+import { getSignature } from '../common';
+import { address } from '../config';
 
 describe('', () => {
   it('Create and update member name', async () => {

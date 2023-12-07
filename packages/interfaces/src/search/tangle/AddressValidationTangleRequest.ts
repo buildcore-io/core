@@ -4,13 +4,9 @@
  */
 
 /**
- * Tangle request object to validate an address. If the source address is SMR, the address will be validated, otherswise and address validation order is created.
+ * Tangle request object to validate an address.
  */
 export interface AddressValidationTangleRequest {
-  /**
-   * Network to use for the address
-   */
-  network?: 'iota' | 'smr' | 'atoi' | 'rms';
   /**
    * Type of the tangle request.
    */

@@ -1,4 +1,5 @@
 export { https } from './https';
+export { otr } from './otr';
 
 export enum Build5 {
   PROD = 'https://api.build5.com',

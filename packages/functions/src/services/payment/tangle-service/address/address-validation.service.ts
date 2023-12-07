@@ -36,7 +36,7 @@ export class TangleAddressValidationService extends BaseService {
     const order = await createAddressValidationOrder(
       project,
       owner,
-      (params.network as Network) || tangleOrder.network,
+      tangleOrder.network,
       params.space,
     );
     set(order, 'payload.amount', tranEntry.amount);

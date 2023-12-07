@@ -70,7 +70,7 @@ export class TangleTokenTradeService extends BaseService {
       this.transactionService.transaction,
       owner,
       token,
-      params.type as TokenTradeOrderType,
+      type,
       params.count || 0,
       params.price,
       params.targetAddress,
@@ -82,7 +82,7 @@ export class TangleTokenTradeService extends BaseService {
       throw invalidArgument(WenError.invalid_params);
     }
 
-    if (params.type === TokenTradeOrderType.SELL && token?.status === TokenStatus.MINTED) {
+    if (type === TokenTradeOrderType.SELL && token?.status === TokenStatus.MINTED) {
       set(tradeOrderTransaction, 'payload.amount', tranEntry.amount);
     }
     this.transactionService.push({
