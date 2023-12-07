@@ -45,6 +45,6 @@ export interface Milestone {
    * Cmi number
    */
   cmi: number;
-  complete: boolean;
+  completed: boolean;
   processed: boolean;
 }
