@@ -7,13 +7,16 @@ describe('', () => {
     const otrAddress = Build5OtrAddress.TEST;
     const request = build5.otr(otrAddress).dataset(Dataset.MEMBER).validateAddress();
 
-    const deeplink = await request.getFireflyDeepLink();
+    const { deeplink, tag } = await request.getFireflyDeepLink();
 
     console.log(deeplink);
 
-    const obs = request.track();
-    obs.subscribe((n) => console.log(n));
+    console.log(tag);
+    const obs = build5.otr(otrAddress).trackByTag(tag);
+    const subs = obs.subscribe((n) => console.log(n));
 
-    await new Promise((resolve) => setTimeout(resolve, 100000));
+    await new Promise((resolve) => setTimeout(resolve, 20000));
+
+    subs.unsubscribe();
   });
 });

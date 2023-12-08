@@ -11,8 +11,6 @@ import {
   TransactionType,
   WEN_FUNC,
 } from '@build-5/interfaces';
-import { head } from 'lodash';
-import { of, switchMap } from 'rxjs';
 import { toQueryParams, wrappedFetch } from '../fetch.utils';
 import { fetchLive } from '../get/observable';
 import { DatasetClass } from './Dataset';
@@ -155,7 +153,7 @@ export class TransactionDataset<D extends Dataset> extends DatasetClass<D, Trans
       fieldValue: [TransactionType.PAYMENT, tag],
     };
     const url = this.origin + ApiRoutes.GET_MANY + toQueryParams({ ...params });
-    return fetchLive<Transaction[]>(this.apiKey, url).pipe(switchMap((r) => of(head(r))));
+    return fetchLive<Transaction[]>(this.apiKey, url);
   };
 
   getBySourceTransaction = async (sourceTransaction: string) => {
