@@ -1,5 +1,4 @@
 import { INativeToken } from '@iota/sdk';
-export const TAG = 'build5-client';
 
 export interface AddressDetails {
   bech32: string;
@@ -12,4 +11,5 @@ export interface WalletPrams {
   amount?: number;
   nativeTokens?: INativeToken;
   metadata: Record<string, unknown>;
+  tag: string;
 }

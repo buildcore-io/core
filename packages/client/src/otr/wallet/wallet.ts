@@ -17,7 +17,7 @@ import {
 } from '@iota/sdk';
 import { isEmpty } from 'lodash';
 import { getSecretManager } from './client';
-import { AddressDetails, TAG, WalletPrams } from './common';
+import { AddressDetails, WalletPrams } from './common';
 import { packBasicOutput } from './output';
 
 export class Wallet {
@@ -53,7 +53,7 @@ export class Wallet {
       inputsCommitment,
       inputs,
       outputs,
-      new TaggedDataPayload(utf8ToHex(TAG), ''),
+      new TaggedDataPayload(utf8ToHex(params.tag), ''),
     );
 
     const fromUnlock = await createUnlock(essence, sourceAddress);

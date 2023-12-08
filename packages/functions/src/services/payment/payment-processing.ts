@@ -98,6 +98,7 @@ export class ProcessingService {
           ? TransactionPayloadType.UNLOCK_NFT
           : TransactionPayloadType.UNLOCK_FUNDS;
         await this.tranService.createUnlockTransaction(
+          undefined,
           order,
           tran,
           tranEntry,

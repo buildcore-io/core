@@ -1,6 +1,6 @@
 import { OtrWrapper } from './otr';
 
-export const otr = (otrAddress = Build5OtrAddress.SHIMMER) => new OtrWrapper(otrAddress);
+export const otr = (otrAddress: string = Build5OtrAddress.SHIMMER) => new OtrWrapper(otrAddress);
 
 export enum Build5OtrAddress {
   IOTA = 'iota1qpwxxaw6fw8zeezefyqf0y7hnrpkcmfa4afc67ywfkpp3gwj0ttzcexhvan',

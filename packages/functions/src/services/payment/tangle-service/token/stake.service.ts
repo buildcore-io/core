@@ -22,7 +22,14 @@ import { BaseService, HandlerParams } from '../../base';
 import { depositStakeSchemaObject } from './TokenStakeTangleRequestSchema';
 
 export class TangleStakeService extends BaseService {
-  public handleRequest = async ({ owner, request, tran, tranEntry, project }: HandlerParams) => {
+  public handleRequest = async ({
+    owner,
+    request,
+    tran,
+    tranEntry,
+    project,
+    payment,
+  }: HandlerParams) => {
     const params = await assertValidationAsync(depositStakeSchemaObject, request);
 
     const order = await createStakeOrder(
@@ -42,6 +49,7 @@ export class TangleStakeService extends BaseService {
     });
 
     this.transactionService.createUnlockTransaction(
+      payment,
       order,
       tran,
       tranEntry,

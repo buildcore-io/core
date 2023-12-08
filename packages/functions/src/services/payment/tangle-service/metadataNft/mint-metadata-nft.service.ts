@@ -47,6 +47,7 @@ export class MintMetadataNftService extends BaseService {
     tran,
     tranEntry,
     order: tangleOrder,
+    payment,
   }: HandlerParams) => {
     const params = await assertValidationAsync(metadataNftSchema, request);
 
@@ -118,6 +119,7 @@ export class MintMetadataNftService extends BaseService {
     this.transactionService.push({ ref: orderDocRef, data: order, action: 'set' });
 
     this.transactionService.createUnlockTransaction(
+      payment,
       order,
       tran,
       tranEntry,

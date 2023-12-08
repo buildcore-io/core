@@ -36,6 +36,7 @@ export class ProposalVoteService extends BaseService {
     request,
     tran,
     tranEntry,
+    payment,
   }: HandlerParams): Promise<ProposalVoteTangleResponse | undefined> => {
     const params = await assertValidationAsync(voteOnProposalSchemaObject, request);
 
@@ -60,6 +61,7 @@ export class ProposalVoteService extends BaseService {
       }
 
       await this.handleTokenVoteRequest(
+        payment,
         getProject(order),
         owner,
         proposal,
@@ -77,6 +79,7 @@ export class ProposalVoteService extends BaseService {
   };
 
   private handleTokenVoteRequest = async (
+    payment: Transaction | undefined,
     project: string,
     owner: string,
     proposal: Proposal,
@@ -95,6 +98,7 @@ export class ProposalVoteService extends BaseService {
     });
 
     this.transactionService.createUnlockTransaction(
+      payment,
       order,
       milestoneTran,
       milestoneTranEntry,

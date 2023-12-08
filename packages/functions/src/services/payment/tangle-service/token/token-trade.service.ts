@@ -48,12 +48,13 @@ export class TangleTokenTradeService extends BaseService {
     owner,
     request,
     build5Tran,
+    payment,
   }: HandlerParams) => {
     const type =
       request.requestType === TransactionPayloadType.BUY_TOKEN
         ? TokenTradeOrderType.BUY
         : TokenTradeOrderType.SELL;
-    const params = await assertValidationAsync(tradeMintedTokenSchema, { ...request, type });
+    const params = await assertValidationAsync(tradeMintedTokenSchema, request);
 
     let token = await getTokenBySymbol(params.symbol);
     const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token?.uid}`);
@@ -92,6 +93,7 @@ export class TangleTokenTradeService extends BaseService {
     });
 
     this.transactionService.createUnlockTransaction(
+      payment,
       tradeOrderTransaction,
       tran,
       tranEntry,

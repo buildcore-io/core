@@ -31,6 +31,7 @@ export class TangleAddressValidationService extends BaseService {
     tranEntry,
     owner,
     request,
+    payment,
   }: HandlerParams): Promise<BaseTangleResponse | undefined> => {
     const params = await assertValidationAsync(validateAddressSchemaObject, request);
     const order = await createAddressValidationOrder(
@@ -48,6 +49,7 @@ export class TangleAddressValidationService extends BaseService {
     });
 
     this.transactionService.createUnlockTransaction(
+      payment,
       order,
       tran,
       tranEntry,

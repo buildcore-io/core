@@ -18,6 +18,7 @@ export class TangleNftAuctionBidService {
     order: tangleOrder,
     tran,
     tranEntry,
+    payment,
   }: HandlerParams) => {
     const params = await assertValidationAsync(nftBidSchema, request);
 
@@ -40,6 +41,7 @@ export class TangleNftAuctionBidService {
     });
 
     this.transactionService.createUnlockTransaction(
+      payment,
       order,
       tran,
       tranEntry,
@@ -60,6 +62,7 @@ export class TangleAuctionBidService {
     order: tangleOrder,
     tran,
     tranEntry,
+    payment,
   }: HandlerParams) => {
     const params = await assertValidationAsync(auctionBidTangleSchema, request);
 
@@ -77,6 +80,7 @@ export class TangleAuctionBidService {
     });
 
     this.transactionService.createUnlockTransaction(
+      payment,
       order,
       tran,
       tranEntry,

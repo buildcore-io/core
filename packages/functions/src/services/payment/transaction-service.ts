@@ -96,6 +96,9 @@ export class TransactionService {
         invalidPayment,
       },
     };
+    if (tran.to.tag) {
+      data.payload.tag = tran.to.tag;
+    }
     if (order.payload.stamp) {
       data.payload.stamp = order.payload.stamp;
     }
@@ -489,6 +492,7 @@ export class TransactionService {
   };
 
   public createUnlockTransaction = async (
+    payment: Transaction | undefined,
     order: Transaction,
     tran: MilestoneTransaction,
     tranOutput: MilestoneTransactionEntry,
@@ -518,7 +522,7 @@ export class TransactionService {
         ].includes(type)
           ? order.payload.targetAddress
           : tranOutput.address,
-        sourceTransaction: [order.uid],
+        sourceTransaction: [payment?.uid || order.uid],
         expiresOn: expiresOn || dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
         milestoneTransactionPath: `${getMilestoneCol(network)}/${tran.milestone}/${
           SUB_COL.TRANSACTIONS

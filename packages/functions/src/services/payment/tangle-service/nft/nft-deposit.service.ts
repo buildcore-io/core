@@ -39,6 +39,7 @@ export class NftDepositService extends BaseService {
     this.transactionService.push({ ref: orderDocRef, data: order, action: 'set' });
 
     this.transactionService.createUnlockTransaction(
+      params.payment,
       order,
       tran,
       tranEntry,

@@ -61,6 +61,7 @@ export enum Opr {
   GREATER = '>',
   GREATER_OR_EQUAL = '>=',
   IN = 'in',
+  ARRAY_CONTAINS = 'array-contains',
 }
 
 export interface GetManyAdvancedRequest {

@@ -29,7 +29,7 @@ const getNodeUrl = (address: string) => {
   }
   if (address.startsWith(Network.RMS)) {
     // TODO - get rms node url
-    return NODE_URLS[Network.SMR];
+    return 'https://rms1.svrs.io/';
   }
   if (address.startsWith('iota')) {
     return NODE_URLS[Network.IOTA];

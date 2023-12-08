@@ -47,6 +47,7 @@ export class TangleNftPurchaseService extends BaseService {
     owner,
     tran,
     tranEntry,
+    payment,
   }: HandlerParams): Promise<BaseTangleResponse | undefined> => {
     const params = await assertValidationAsync(nftPurchaseSchema, request);
 
@@ -78,6 +79,7 @@ export class TangleNftPurchaseService extends BaseService {
     }
 
     this.transactionService.createUnlockTransaction(
+      payment,
       order,
       tran,
       tranEntry,
