@@ -2,6 +2,7 @@ import { build5Db } from '@build-5/database';
 import {
   COL,
   TRANSACTION_AUTO_EXPIRY_MS,
+  TangleResponse,
   Transaction,
   TransactionPayloadType,
   TransactionType,
@@ -12,9 +13,9 @@ import { getProject } from '../../../../utils/common.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet.service';
-import { BaseService, HandlerParams } from '../../base';
+import { BaseTangleService, HandlerParams } from '../../base';
 
-export class NftDepositService extends BaseService {
+export class NftDepositService extends BaseTangleService<TangleResponse> {
   public handleRequest = async ({ owner, tran, tranEntry, ...params }: HandlerParams) => {
     const wallet = await WalletService.newWallet(params.order.network);
     const targetAddress = await wallet.getNewIotaAddressDetails();
@@ -46,6 +47,7 @@ export class NftDepositService extends BaseService {
       TransactionPayloadType.UNLOCK_NFT,
       tranEntry.outputId,
     );
-    return;
+
+    return {};
   };
 }

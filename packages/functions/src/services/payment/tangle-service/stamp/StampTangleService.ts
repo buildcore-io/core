@@ -8,6 +8,7 @@ import {
   Space,
   SpaceGuardian,
   Stamp,
+  StampCreateTangleResponse,
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
   TransactionPayloadType,
@@ -34,11 +35,16 @@ import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { isStorageUrl } from '../../../joi/common';
 import { Wallet } from '../../../wallet/wallet';
 import { WalletService } from '../../../wallet/wallet.service';
-import { BaseService, HandlerParams } from '../../base';
+import { BaseTangleService, HandlerParams } from '../../base';
 import { stampTangleSchema } from './StampTangleRequestSchema';
 
-export class StampTangleService extends BaseService {
-  public handleRequest = async ({ project, owner, request, order: tangleOrder }: HandlerParams) => {
+export class StampTangleService extends BaseTangleService<StampCreateTangleResponse> {
+  public handleRequest = async ({
+    project,
+    owner,
+    request,
+    order: tangleOrder,
+  }: HandlerParams): Promise<StampCreateTangleResponse> => {
     const params = await assertValidationAsync(stampTangleSchema, request);
 
     const { order, stamp, space } = await createStampAndStampOrder(

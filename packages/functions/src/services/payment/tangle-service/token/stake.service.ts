@@ -3,6 +3,7 @@ import {
   COL,
   StakeType,
   TRANSACTION_AUTO_EXPIRY_MS,
+  TangleResponse,
   Transaction,
   TransactionPayloadType,
   TransactionType,
@@ -18,10 +19,10 @@ import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getTokenBySymbol } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet.service';
-import { BaseService, HandlerParams } from '../../base';
+import { BaseTangleService, HandlerParams } from '../../base';
 import { depositStakeSchemaObject } from './TokenStakeTangleRequestSchema';
 
-export class TangleStakeService extends BaseService {
+export class TangleStakeService extends BaseTangleService<TangleResponse> {
   public handleRequest = async ({
     owner,
     request,
@@ -56,7 +57,8 @@ export class TangleStakeService extends BaseService {
       TransactionPayloadType.TANGLE_TRANSFER,
       tranEntry.outputId,
     );
-    return;
+
+    return {};
   };
 }
 

@@ -5,14 +5,15 @@ import {
   Network,
   NetworkAddress,
   TangleRequestType,
+  TangleResponse,
   Transaction,
   WenError,
 } from '@build-5/interfaces';
-import { get } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import { getOutputMetadata } from '../../../utils/basic-output.utils';
 import { invalidArgument } from '../../../utils/error.utils';
 import { getRandomNonce } from '../../../utils/wallet.utils';
-import { BaseService, HandlerParams } from '../base';
+import { BaseTangleService, HandlerParams } from '../base';
 import { TangleAddressValidationService } from './address/address-validation.service';
 import { TangleAuctionBidService, TangleNftAuctionBidService } from './auction/auction.bid.service';
 import { TangleAuctionCreateService } from './auction/auction.create.service';
@@ -38,7 +39,7 @@ import { TangleStakeService } from './token/stake.service';
 import { TangleTokenClaimService } from './token/token-claim.service';
 import { TangleTokenTradeService } from './token/token-trade.service';
 
-export class TangleRequestService extends BaseService {
+export class TangleRequestService extends BaseTangleService<TangleResponse> {
   public handleRequest = async (params: HandlerParams) => {
     const { match, order, tranEntry } = params;
     let owner = match.from;
@@ -53,7 +54,7 @@ export class TangleRequestService extends BaseService {
       const service = this.getService(serviceParams);
       const response = await service.handleRequest(serviceParams);
 
-      if (response) {
+      if (!isEmpty(response)) {
         this.transactionService.createTangleCredit(
           payment,
           match,
@@ -77,9 +78,11 @@ export class TangleRequestService extends BaseService {
         tranEntry.outputId!,
       );
     }
+
+    return {};
   };
 
-  private getService = (params: HandlerParams) => {
+  private getService = (params: HandlerParams): BaseTangleService<TangleResponse> => {
     if (params.tranEntry.nftOutput) {
       return new NftDepositService(this.transactionService);
     }

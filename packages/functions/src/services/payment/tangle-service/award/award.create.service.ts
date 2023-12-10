@@ -27,11 +27,11 @@ import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { isStorageUrl } from '../../../joi/common';
 import { WalletService } from '../../../wallet/wallet.service';
 import { getAwardgStorageDeposits as getAwardStorageDeposits } from '../../award/award-service';
-import { BaseService, HandlerParams } from '../../base';
+import { BaseTangleService, HandlerParams } from '../../base';
 import { awardCreateSchema } from './AwardCreateTangleRequestSchema';
 import { createAwardFundOrder } from './award.fund.service';
 
-export class AwardCreateService extends BaseService {
+export class AwardCreateService extends BaseTangleService<AwardCreateTangleResponse> {
   public handleRequest = async ({
     project,
     owner,

@@ -1,12 +1,10 @@
-import { NetworkAddress } from '../../models';
+import { NetworkAddress } from '../../../models';
+import { TangleResponse } from './TangleResponse';
 
 /**
  * Tangle response object returned after voting on a proposal
  */
-export interface ProposalVoteTangleResponse {
-  /**
-   * Status of the request
-   */
+export interface ProposalVoteTangleResponse extends TangleResponse {
   status?: string;
   /**
    * Build5 id of the created vote transaction
@@ -17,7 +15,7 @@ export interface ProposalVoteTangleResponse {
 /**
  * Tangle response object returned after creating a proposal
  */
-export interface ProposalCreateTangleResponse {
+export interface ProposalCreateTangleResponse extends TangleResponse {
   /**
    * Build5 id of the created proposal
    */

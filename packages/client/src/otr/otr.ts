@@ -1,4 +1,10 @@
-import { Dataset, Network, Transaction, TransactionType } from '@build-5/interfaces';
+import {
+  Dataset,
+  Network,
+  TangleResponse,
+  Transaction,
+  TransactionType,
+} from '@build-5/interfaces';
 import { utf8ToHex } from '@iota/sdk';
 import { Observable as RxjsObservable, Subscriber, Subscription } from 'rxjs';
 import { API_KEY, Build5 } from '..';
@@ -50,8 +56,8 @@ export class OtrWrapper {
   };
 }
 
-class Observable extends RxjsObservable<string> {
-  private observer: Subscriber<string> | undefined;
+class Observable extends RxjsObservable<TangleResponse> {
+  private observer: Subscriber<TangleResponse> | undefined;
   private paymentsSubs: Subscription;
   private payments: string[] = [];
   private dataset: TransactionDataset<Dataset.TRANSACTION>;
@@ -63,7 +69,7 @@ class Observable extends RxjsObservable<string> {
     });
     this.dataset = https(origin).project(API_KEY[origin]).dataset(Dataset.TRANSACTION);
 
-    this.observer?.next('Waiting for payment');
+    this.observer?.next({ status: 'waiting for payment' });
 
     this.paymentsSubs = this.dataset
       .getPaymentByTagLive(tag.startsWith('0x') ? tag : utf8ToHex(tag))
@@ -85,12 +91,12 @@ class Observable extends RxjsObservable<string> {
       const result = await this.dataset.getBySourceTransaction(payment.uid);
       const credit = result.find((t) => t.type === TransactionType.CREDIT_TANGLE_REQUEST);
       if (credit) {
-        this.observer?.next(JSON.stringify(credit.payload.response));
+        this.observer?.next(credit.payload.response);
         return;
       }
       const transfer = result.find((t) => t.type === TransactionType.UNLOCK);
       if (transfer) {
-        this.observer?.next('Success');
+        this.observer?.next({ status: 'success' });
         return;
       }
       await new Promise((resolve) => setTimeout(resolve, 1000));

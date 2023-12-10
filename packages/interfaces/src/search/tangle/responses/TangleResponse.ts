@@ -1,9 +1,9 @@
-import { NativeToken, NetworkAddress } from '../../models';
+import { NativeToken, NetworkAddress } from '../../../models';
 
 /**
  * A common Tangle response object returned various tangle requests
  */
-export interface BaseTangleResponse {
+export interface TangleResponse {
   /**
    * Status of the request
    */

@@ -1,5 +1,5 @@
 import { build5Db, build5Storage } from '@build-5/database';
-import { COL, MediaStatus, Network, SUB_COL } from '@build-5/interfaces';
+import { COL, MediaStatus, Network, SUB_COL, SpaceCreateTangleResponse } from '@build-5/interfaces';
 import { get, set } from 'lodash';
 import { downloadMediaAndPackCar } from '../../../../utils/car.utils';
 import { getBucket, isProdEnv } from '../../../../utils/config.utils';
@@ -9,11 +9,15 @@ import { spaceToIpfsMetadata } from '../../../../utils/space.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { isStorageUrl } from '../../../joi/common';
 import { WalletService } from '../../../wallet/wallet.service';
-import { BaseService, HandlerParams } from '../../base';
+import { BaseTangleService, HandlerParams } from '../../base';
 import { createSpaceSchemaObject } from './SpaceCreateTangleRequestSchema';
 
-export class SpaceCreateService extends BaseService {
-  public handleRequest = async ({ project, owner, request }: HandlerParams) => {
+export class SpaceCreateService extends BaseTangleService<SpaceCreateTangleResponse> {
+  public handleRequest = async ({
+    project,
+    owner,
+    request,
+  }: HandlerParams): Promise<SpaceCreateTangleResponse> => {
     await assertValidationAsync(createSpaceSchemaObject, request);
 
     const { space, guardian, member } = await getCreateSpaceData(project, owner, request);

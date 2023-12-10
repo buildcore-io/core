@@ -23,13 +23,13 @@ import { invalidArgument } from '../../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../../utils/schema.utils';
 import { getTokenForSpace } from '../../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../../utils/wallet.utils';
-import { BaseService, HandlerParams } from '../../../base';
+import { BaseTangleService, HandlerParams } from '../../../base';
 import { voteOnProposalSchemaObject } from './ProposalVoteTangleRequestSchema';
 import { executeSimpleVoting } from './simple.voting';
 import { voteWithStakedTokens } from './staked.token.voting';
 import { createVoteTransactionOrder } from './token.voting';
 
-export class ProposalVoteService extends BaseService {
+export class ProposalVoteService extends BaseTangleService<ProposalVoteTangleResponse> {
   public handleRequest = async ({
     order,
     owner,
@@ -37,7 +37,7 @@ export class ProposalVoteService extends BaseService {
     tran,
     tranEntry,
     payment,
-  }: HandlerParams): Promise<ProposalVoteTangleResponse | undefined> => {
+  }: HandlerParams): Promise<ProposalVoteTangleResponse> => {
     const params = await assertValidationAsync(voteOnProposalSchemaObject, request);
 
     const proposal = await getProposal(params.uid as string);
@@ -70,7 +70,7 @@ export class ProposalVoteService extends BaseService {
         tran,
         tranEntry,
       );
-      return;
+      return {};
     }
 
     return await this.handleSimpleVoteRequest(getProject(order), proposal, proposalMember, [

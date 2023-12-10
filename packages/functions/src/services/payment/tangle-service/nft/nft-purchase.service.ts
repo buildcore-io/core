@@ -1,6 +1,5 @@
 import { build5Db } from '@build-5/database';
 import {
-  BaseTangleResponse,
   COL,
   Collection,
   CollectionStatus,
@@ -17,6 +16,7 @@ import {
   Space,
   StakeType,
   TRANSACTION_AUTO_EXPIRY_MS,
+  TangleResponse,
   Transaction,
   TransactionPayloadType,
   TransactionType,
@@ -37,10 +37,10 @@ import { getSpace } from '../../../../utils/space.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { assertHasAccess } from '../../../validators/access';
 import { WalletService } from '../../../wallet/wallet.service';
-import { BaseService, HandlerParams } from '../../base';
+import { BaseTangleService, HandlerParams } from '../../base';
 import { nftPurchaseSchema } from './NftPurchaseTangleRequestSchema';
 
-export class TangleNftPurchaseService extends BaseService {
+export class TangleNftPurchaseService extends BaseTangleService<TangleResponse> {
   public handleRequest = async ({
     order: tangleOrder,
     request,
@@ -48,7 +48,7 @@ export class TangleNftPurchaseService extends BaseService {
     tran,
     tranEntry,
     payment,
-  }: HandlerParams): Promise<BaseTangleResponse | undefined> => {
+  }: HandlerParams) => {
     const params = await assertValidationAsync(nftPurchaseSchema, request);
 
     const order = await createNftPuchaseOrder(
@@ -86,7 +86,8 @@ export class TangleNftPurchaseService extends BaseService {
       TransactionPayloadType.TANGLE_TRANSFER,
       tranEntry.outputId,
     );
-    return;
+
+    return {};
   };
 }
 

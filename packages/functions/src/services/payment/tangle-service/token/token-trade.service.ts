@@ -6,6 +6,7 @@ import {
   Network,
   SUB_COL,
   TRANSACTION_MAX_EXPIRY_MS,
+  TangleResponse,
   Token,
   TokenDistribution,
   TokenStatus,
@@ -37,10 +38,10 @@ import {
 } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet.service';
-import { BaseService, HandlerParams } from '../../base';
+import { BaseTangleService, HandlerParams } from '../../base';
 import { tradeMintedTokenSchema } from './TokenTradeTangleRequestSchema';
 
-export class TangleTokenTradeService extends BaseService {
+export class TangleTokenTradeService extends BaseTangleService<TangleResponse> {
   public handleRequest = async ({
     order,
     tran,
@@ -101,7 +102,8 @@ export class TangleTokenTradeService extends BaseService {
       tranEntry.outputId,
       build5Tran?.payload?.expiresOn || dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS)),
     );
-    return;
+
+    return {};
   };
 }
 
