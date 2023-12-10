@@ -2767,6 +2767,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@saucelabs/theme-github-codeblock@npm:^0.2.3":
+  version: 0.2.3
+  resolution: "@saucelabs/theme-github-codeblock@npm:0.2.3"
+  checksum: d09580bba2049e021558c0487ee0555ec48746248a058ea754c086462e9111852fc76a3fe54bce1f78d391674d7aa777e217c36eec2b5d144c626e9179212164
+  languageName: node
+  linkType: hard
+
 "@sideway/address@npm:^4.1.3":
   version: 4.1.4
   resolution: "@sideway/address@npm:4.1.4"
@@ -5169,6 +5176,7 @@ __metadata:
     "@docusaurus/plugin-content-pages": "npm:^2.4.1"
     "@docusaurus/preset-classic": "npm:2.4.1"
     "@mdx-js/react": "npm:^1.6.22"
+    "@saucelabs/theme-github-codeblock": "npm:^0.2.3"
     "@tsconfig/docusaurus": "npm:^1.0.5"
     clsx: "npm:^1.2.1"
     docusaurus-plugin-typedoc: "npm:^0.19.2"
