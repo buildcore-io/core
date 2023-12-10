@@ -4,6 +4,9 @@ This website is built using [Docusaurus 2](https://docusaurus.io/), a modern sta
 
 ### Installation
 
+> [!NOTE]
+> The docs use modern [Yarn](https://yarnpkg.com). So don't forget to run `corepack enable` first if you don't have it already.
+
 ```
 $ yarn
 ```

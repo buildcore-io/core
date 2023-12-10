@@ -13,13 +13,13 @@ import TabItem from '@theme/TabItem';
 Build.5 API provides various ways to interact with our platform. Of course, you can read IOTA/Shimmer directly or use our friendly APIs to simplify access.
 
 There are REST APIs to simplify read and write operations. See following:
-- [GET](api-get) - Use this APIs to get any data from Build.5
-- [WSS](api-get) - Any [GET](api-get) can be requested as wss:// to receive web socket with real-time updates
-- [POST](api-post) - Use these APIs to post any requests to Build.5 (alternative to [OTR])
+- [GET](search-get) - Use this APIs to get any data from Build.5
+- [WSS](search-get) - Any [GET](search-get) can be requested as wss:// to receive web socket with real-time updates
+- [POST](search-post) - Use these APIs to post any requests to Build.5 (alternative to [OTR](search-otr))
 
 As we plan to eventually migrate all features into L1 / L2 Smart Contracts (once the technology is available), you can use our On Tangle Request(OTR) instead. Using OTR enables you to be more future-proof and reduce the amount of refactoring / UI changes you might have to make. It provides a more secure channel as all communication happens directly with your node and over Tangle.
 
-- [OTR](api-otr) - omnichannel to interact with Build.5. Same as [POST](api-post), except all communication is done over Tangle.
+- [OTR](search-otr) - omnichannel to interact with Build.5. Same as [POST](search-post), except all communication is done over Tangle.
 
 We provide two endpoints. One for testing and one for production. See below:
 
