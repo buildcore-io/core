@@ -10,6 +10,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./docs
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -17,9 +20,7 @@ jobs:
           node-version: 16
       - name: Allow modern Yarn
         run: corepack enable
-        shell: bash
       - name: Install dependencies
         run: yarn
-        shell: bash
       - name: Build
         run: yarn build
