@@ -2299,6 +2299,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@docusaurus/remark-plugin-npm2yarn@npm:^2.4.1":
+  version: 2.4.3
+  resolution: "@docusaurus/remark-plugin-npm2yarn@npm:2.4.3"
+  dependencies:
+    npm-to-yarn: "npm:^2.0.0"
+    tslib: "npm:^2.4.1"
+    unist-util-visit: "npm:^2.0.3"
+  checksum: e80fe27f9d366154686c3db6328d37871d192ef6dbc0762f75852b9705cb1d193832aa74ba73cff375c175845f84c05a202165d17f2f2a2f9c525ecf4aa51f8b
+  languageName: node
+  linkType: hard
+
 "@docusaurus/theme-classic@npm:2.4.1":
   version: 2.4.1
   resolution: "@docusaurus/theme-classic@npm:2.4.1"
@@ -5175,6 +5186,7 @@ __metadata:
     "@docusaurus/plugin-content-docs": "npm:^2.4.1"
     "@docusaurus/plugin-content-pages": "npm:^2.4.1"
     "@docusaurus/preset-classic": "npm:2.4.1"
+    "@docusaurus/remark-plugin-npm2yarn": "npm:^2.4.1"
     "@mdx-js/react": "npm:^1.6.22"
     "@saucelabs/theme-github-codeblock": "npm:^0.2.3"
     "@tsconfig/docusaurus": "npm:^1.0.5"
@@ -8001,6 +8013,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"npm-to-yarn@npm:^2.0.0":
+  version: 2.1.0
+  resolution: "npm-to-yarn@npm:2.1.0"
+  checksum: c2a406b74d12cf5b09a2eb3c51973f1232bc023bce383d0f8442be0dc17b4618ad4fcb2f0a2beca7bef046d778eb61bfefe6b24f4ac92fd17ebaa8bd5a6a7606
+  languageName: node
+  linkType: hard
+
 "nprogress@npm:^0.2.0":
   version: 0.2.0
   resolution: "nprogress@npm:0.2.0"
@@ -10549,7 +10568,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.4.0":
+"tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.4.0, tslib@npm:^2.4.1":
   version: 2.6.2
   resolution: "tslib@npm:2.6.2"
   checksum: e03a8a4271152c8b26604ed45535954c0a45296e32445b4b87f8a5abdb2421f40b59b4ca437c4346af0f28179780d604094eb64546bee2019d903d01c6c19bdb
