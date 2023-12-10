@@ -1,16 +1,13 @@
 import { build5Db } from '@build-5/database';
-import { COL, Nft, TransactionPayloadType, WenError } from '@build-5/interfaces';
+import { COL, Nft, TangleResponse, TransactionPayloadType, WenError } from '@build-5/interfaces';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
-import { HandlerParams } from '../../base';
-import { TransactionService } from '../../transaction-service';
+import { BaseTangleService, HandlerParams } from '../../base';
 import { auctionBidTangleSchema } from './AuctionBidTangleRequestSchema';
 import { nftBidSchema } from './NftBidTangleRequestSchema';
 import { createBidOrder } from './auction.bid.order';
 
-export class TangleNftAuctionBidService {
-  constructor(readonly transactionService: TransactionService) {}
-
+export class TangleNftAuctionBidService extends BaseTangleService<TangleResponse> {
   public handleRequest = async ({
     request,
     project,
@@ -18,6 +15,7 @@ export class TangleNftAuctionBidService {
     order: tangleOrder,
     tran,
     tranEntry,
+    payment,
   }: HandlerParams) => {
     const params = await assertValidationAsync(nftBidSchema, request);
 
@@ -40,19 +38,19 @@ export class TangleNftAuctionBidService {
     });
 
     this.transactionService.createUnlockTransaction(
+      payment,
       order,
       tran,
       tranEntry,
       TransactionPayloadType.TANGLE_TRANSFER,
       tranEntry.outputId,
     );
-    return;
+
+    return {};
   };
 }
 
-export class TangleAuctionBidService {
-  constructor(readonly transactionService: TransactionService) {}
-
+export class TangleAuctionBidService extends BaseTangleService<TangleResponse> {
   public handleRequest = async ({
     request,
     project,
@@ -60,6 +58,7 @@ export class TangleAuctionBidService {
     order: tangleOrder,
     tran,
     tranEntry,
+    payment,
   }: HandlerParams) => {
     const params = await assertValidationAsync(auctionBidTangleSchema, request);
 
@@ -77,12 +76,13 @@ export class TangleAuctionBidService {
     });
 
     this.transactionService.createUnlockTransaction(
+      payment,
       order,
       tran,
       tranEntry,
       TransactionPayloadType.TANGLE_TRANSFER,
       tranEntry.outputId,
     );
-    return;
+    return {};
   };
 }

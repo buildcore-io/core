@@ -6,6 +6,7 @@ import {
   Network,
   SUB_COL,
   TRANSACTION_MAX_EXPIRY_MS,
+  TangleResponse,
   Token,
   TokenDistribution,
   TokenStatus,
@@ -37,10 +38,10 @@ import {
 } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet.service';
-import { BaseService, HandlerParams } from '../../base';
+import { BaseTangleService, HandlerParams } from '../../base';
 import { tradeMintedTokenSchema } from './TokenTradeTangleRequestSchema';
 
-export class TangleTokenTradeService extends BaseService {
+export class TangleTokenTradeService extends BaseTangleService<TangleResponse> {
   public handleRequest = async ({
     order,
     tran,
@@ -48,12 +49,13 @@ export class TangleTokenTradeService extends BaseService {
     owner,
     request,
     build5Tran,
+    payment,
   }: HandlerParams) => {
     const type =
       request.requestType === TransactionPayloadType.BUY_TOKEN
         ? TokenTradeOrderType.BUY
         : TokenTradeOrderType.SELL;
-    const params = await assertValidationAsync(tradeMintedTokenSchema, { ...request, type });
+    const params = await assertValidationAsync(tradeMintedTokenSchema, request);
 
     let token = await getTokenBySymbol(params.symbol);
     const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token?.uid}`);
@@ -70,7 +72,7 @@ export class TangleTokenTradeService extends BaseService {
       this.transactionService.transaction,
       owner,
       token,
-      params.type as TokenTradeOrderType,
+      type,
       params.count || 0,
       params.price,
       params.targetAddress,
@@ -82,7 +84,7 @@ export class TangleTokenTradeService extends BaseService {
       throw invalidArgument(WenError.invalid_params);
     }
 
-    if (params.type === TokenTradeOrderType.SELL && token?.status === TokenStatus.MINTED) {
+    if (type === TokenTradeOrderType.SELL && token?.status === TokenStatus.MINTED) {
       set(tradeOrderTransaction, 'payload.amount', tranEntry.amount);
     }
     this.transactionService.push({
@@ -92,6 +94,7 @@ export class TangleTokenTradeService extends BaseService {
     });
 
     this.transactionService.createUnlockTransaction(
+      payment,
       tradeOrderTransaction,
       tran,
       tranEntry,
@@ -99,7 +102,8 @@ export class TangleTokenTradeService extends BaseService {
       tranEntry.outputId,
       build5Tran?.payload?.expiresOn || dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS)),
     );
-    return;
+
+    return {};
   };
 }
 

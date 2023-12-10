@@ -1,7 +1,9 @@
 import {
+  ApiRoutes,
   CreditUnrefundableRequest,
   Dataset,
   GetManyAdvancedRequest,
+  GetManyRequest,
   Nft,
   Opr,
   Transaction,
@@ -9,6 +11,8 @@ import {
   TransactionType,
   WEN_FUNC,
 } from '@build-5/interfaces';
+import { toQueryParams, wrappedFetch } from '../fetch.utils';
+import { fetchLive } from '../get/observable';
 import { DatasetClass } from './Dataset';
 
 export class TransactionDataset<D extends Dataset> extends DatasetClass<D, Transaction> {
@@ -140,5 +144,29 @@ export class TransactionDataset<D extends Dataset> extends DatasetClass<D, Trans
       orderByDir: ['desc'],
     };
     return this.getManyAdvancedLive(params);
+  };
+
+  getPaymentByTagLive = (tag: string) => {
+    const params: GetManyRequest = {
+      dataset: this.dataset,
+      fieldName: ['type', 'payload.tag'],
+      fieldValue: [TransactionType.PAYMENT, tag],
+    };
+    const url = this.origin + ApiRoutes.GET_MANY + toQueryParams({ ...params });
+    return fetchLive<Transaction[]>(this.apiKey, url);
+  };
+
+  getBySourceTransaction = async (sourceTransaction: string) => {
+    const params: GetManyAdvancedRequest = {
+      dataset: this.dataset,
+      fieldName: ['payload.sourceTransaction'],
+      fieldValue: [sourceTransaction],
+      operator: [Opr.ARRAY_CONTAINS],
+    };
+    return await wrappedFetch<Transaction[]>(
+      this.apiKey,
+      this.origin + ApiRoutes.GET_MANY_ADVANCED,
+      { ...params },
+    );
   };
 }

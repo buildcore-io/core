@@ -7,6 +7,7 @@ import {
   Space,
   SpaceGuardian,
   TRANSACTION_AUTO_EXPIRY_MS,
+  TangleResponse,
   Transaction,
   TransactionPayloadType,
   TransactionType,
@@ -35,10 +36,10 @@ import {
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { Wallet } from '../../../wallet/wallet';
 import { WalletService } from '../../../wallet/wallet.service';
-import { BaseService, HandlerParams } from '../../base';
+import { BaseTangleService, HandlerParams } from '../../base';
 import { metadataNftSchema } from './MetadataNftTangleRequestSchema';
 
-export class MintMetadataNftService extends BaseService {
+export class MintMetadataNftService extends BaseTangleService<TangleResponse> {
   public handleRequest = async ({
     project,
     owner,
@@ -47,6 +48,7 @@ export class MintMetadataNftService extends BaseService {
     tran,
     tranEntry,
     order: tangleOrder,
+    payment,
   }: HandlerParams) => {
     const params = await assertValidationAsync(metadataNftSchema, request);
 
@@ -118,13 +120,15 @@ export class MintMetadataNftService extends BaseService {
     this.transactionService.push({ ref: orderDocRef, data: order, action: 'set' });
 
     this.transactionService.createUnlockTransaction(
+      payment,
       order,
       tran,
       tranEntry,
       TransactionPayloadType.TANGLE_TRANSFER,
       tranEntry.outputId,
     );
-    return;
+
+    return {};
   };
 }
 

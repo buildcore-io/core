@@ -23,10 +23,10 @@ import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { BaseService, HandlerParams } from '../../base';
+import { BaseTangleService, HandlerParams } from '../../base';
 import { editSpaceMemberSchemaObject } from './SpaceEditMemberTangleRequestSchema';
 
-export class SpaceGuardianService extends BaseService {
+export class SpaceGuardianService extends BaseTangleService<SpaceGuardianUpsertTangleResponse> {
   public handleRequest = async ({
     order,
     owner,

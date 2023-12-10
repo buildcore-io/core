@@ -1,10 +1,11 @@
-import { NativeToken, NetworkAddress } from '../../models';
-import { ApiError } from '../post/common';
+import { NativeToken, NetworkAddress } from '../../../models';
+import { ApiError } from '../../post/common';
+import { TangleResponse } from './TangleResponse';
 
 /**
  * Tangle response object returned after approving award participation
  */
-export interface AwardApproveParticipantTangleResponse {
+export interface AwardApproveParticipantTangleResponse extends TangleResponse {
   /**
    * Key value pair for the received badges where
    * key is the build5 id/wallet address of the member
@@ -22,19 +23,11 @@ export interface AwardApproveParticipantTangleResponse {
 /**
  * Tangle response object returned after creating an award
  */
-export interface AwardCreateTangleResponse {
+export interface AwardCreateTangleResponse extends TangleResponse {
   /**
    * Build5 id of the award created
    */
   award: NetworkAddress;
-  /**
-   * Amount that is needed to fund the award
-   */
-  amount: number;
-  /**
-   * Target address that needs to be funded to fund the award
-   */
-  address: NetworkAddress;
   /**
    * Native token count in case the award type is Native
    */

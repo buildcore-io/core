@@ -37,7 +37,7 @@ export abstract class BaseSet<T> {
 
   protected getManyAdvancedLive = (params: GetManyAdvancedRequest): Observable<T[]> => {
     const url = this.origin + ApiRoutes.GET_MANY_ADVANCED + toQueryParams({ ...params });
-    return fetchLive<T[]>(this.origin, this.apiKey, url);
+    return fetchLive<T[]>(this.apiKey, url);
   };
 }
 
@@ -67,7 +67,7 @@ export abstract class DatasetClass<D extends Dataset, T> extends BaseDataSetClas
   getManyByIdLive = (setIds: string[]): Observable<T[]> => {
     const params = { dataset: this.dataset, setIds };
     const url = this.origin + ApiRoutes.GET_MANY_BY_ID + toQueryParams({ ...params });
-    return fetchLive<T[]>(this.origin, this.apiKey, url);
+    return fetchLive<T[]>(this.apiKey, url);
   };
 
   getByField = async (
@@ -86,7 +86,7 @@ export abstract class DatasetClass<D extends Dataset, T> extends BaseDataSetClas
   ): Observable<T[]> => {
     const params: GetManyRequest = { dataset: this.dataset, fieldName, fieldValue, startAfter };
     const url = this.origin + ApiRoutes.GET_MANY + toQueryParams({ ...params });
-    return fetchLive<T[]>(this.origin, this.apiKey, url);
+    return fetchLive<T[]>(this.apiKey, url);
   };
 
   getBySpace = async (space: string, startAfter?: string) => {
@@ -122,7 +122,7 @@ export abstract class DatasetClass<D extends Dataset, T> extends BaseDataSetClas
   getAllUpdatedAfterLive = (updatedAfter: number, startAfter?: string): Observable<T[]> => {
     const params: GetUpdatedAfterRequest = { dataset: this.dataset, updatedAfter, startAfter };
     const url = this.origin + ApiRoutes.GET_UPDATED_AFTER + toQueryParams({ ...params });
-    return fetchLive<T[]>(this.origin, this.apiKey, url);
+    return fetchLive<T[]>(this.apiKey, url);
   };
 
   getTopLive = (startAfter?: string, limit?: number): Observable<T[]> => {

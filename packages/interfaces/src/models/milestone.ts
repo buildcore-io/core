@@ -13,6 +13,7 @@ export interface MilestoneTransactionEntry {
   nftOutput?: any;
   output?: any;
   outputId?: string;
+  tag?: string;
 }
 
 export interface MilestoneTransaction extends Base {

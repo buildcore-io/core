@@ -27,8 +27,4 @@ export interface TradeTokenTangleRequest {
    * Funds will be sent here in case of a successfull trade.
    */
   targetAddress?: string;
-  /**
-   * Direction of the trade.
-   */
-  type: 'sell' | 'buy';
 }

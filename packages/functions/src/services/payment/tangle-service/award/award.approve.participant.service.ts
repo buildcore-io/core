@@ -26,10 +26,10 @@ import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { BaseService, HandlerParams } from '../../base';
+import { BaseTangleService, HandlerParams } from '../../base';
 import { approveAwardParticipantSchemaObject } from './AwardAppParticipantTangleRequestSchema';
 
-export class AwardApproveParticipantService extends BaseService {
+export class AwardApproveParticipantService extends BaseTangleService<AwardApproveParticipantTangleResponse> {
   public handleRequest = async ({
     project,
     owner,

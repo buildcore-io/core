@@ -1,10 +1,10 @@
 import { build5Db } from '@build-5/database';
 import {
-  BaseTangleResponse,
   COL,
   Member,
   SUB_COL,
   TRANSACTION_AUTO_EXPIRY_MS,
+  TangleResponse,
   TokenDistribution,
   TokenDrop,
   TokenDropStatus,
@@ -25,15 +25,11 @@ import { dropToOutput } from '../../../../utils/token-minting-utils/member.utils
 import { getTokenBySymbol, getUnclaimedDrops } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet.service';
-import { BaseService, HandlerParams } from '../../base';
+import { BaseTangleService, HandlerParams } from '../../base';
 import { tokenClaimSchema } from './TokenClaimTangleRequestSchema';
 
-export class TangleTokenClaimService extends BaseService {
-  public handleRequest = async ({
-    project,
-    owner,
-    request,
-  }: HandlerParams): Promise<BaseTangleResponse> => {
+export class TangleTokenClaimService extends BaseTangleService<TangleResponse> {
+  public handleRequest = async ({ project, owner, request }: HandlerParams) => {
     const params = await assertValidationAsync(tokenClaimSchema, request);
     const order = await createMintedTokenAirdropCalimOrder(project, owner, params.symbol);
     this.transactionService.push({

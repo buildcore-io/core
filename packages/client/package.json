@@ -13,16 +13,20 @@
   },
   "dependencies": {
     "@build-5/interfaces": "*",
+    "@iota/sdk": "1.1.4",
     "axios": "^1.6.2",
+    "bip39": "3.1.0",
     "form-data": "^4.0.0",
     "lodash": "4.17.21",
     "rxjs": "7.8.1",
+    "uuid": "^9.0.1",
     "ws": "8.14.2"
   },
   "devDependencies": {
     "@babel/preset-typescript": "7.23.3",
     "@types/jest": "29.5.8",
     "@types/lodash": "4.14.201",
+    "@types/uuid": "^9.0.7",
     "@types/ws": "8.5.9",
     "@typescript-eslint/eslint-plugin": "6.11.0",
     "@typescript-eslint/parser": "6.11.0",

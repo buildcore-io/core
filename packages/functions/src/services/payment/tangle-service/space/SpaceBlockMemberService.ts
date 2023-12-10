@@ -1,18 +1,14 @@
 import { build5Db } from '@build-5/database';
-import { BaseTangleResponse, COL, Space, SUB_COL, WenError } from '@build-5/interfaces';
+import { COL, Space, SUB_COL, TangleResponse, WenError } from '@build-5/interfaces';
 import { getProject } from '../../../../utils/common.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
-import { BaseService, HandlerParams } from '../../base';
+import { BaseTangleService, HandlerParams } from '../../base';
 import { editSpaceMemberSchemaObject } from './SpaceEditMemberTangleRequestSchema';
 
-export class SpaceBlockMemberService extends BaseService {
-  public handleRequest = async ({
-    order,
-    owner,
-    request,
-  }: HandlerParams): Promise<BaseTangleResponse> => {
+export class SpaceBlockMemberService extends BaseTangleService<TangleResponse> {
+  public handleRequest = async ({ order, owner, request }: HandlerParams) => {
     const params = await assertValidationAsync(editSpaceMemberSchemaObject, request);
 
     const member = params.member;
