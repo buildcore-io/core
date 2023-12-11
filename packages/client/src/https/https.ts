@@ -85,7 +85,7 @@ export class ProjectWrapper {
   }
 
   uploadFile = async (pathToFile: string, member: string, uid: string) => {
-    const isLocal = this.origin === Build5.LOCAL;
+    const isLocal = !Object.values(Build5).includes(this.origin);
     const url = this.origin + `/${isLocal ? 'https-' : ''}` + WEN_FUNC.uploadFile;
     console.log(this.apiKey);
     const form = new FormData();

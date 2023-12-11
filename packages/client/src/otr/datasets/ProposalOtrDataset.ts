@@ -13,15 +13,15 @@ export class ProposalOtrDataset extends DatasetClass {
       requestType: TangleRequestType.PROPOSAL_CREATE,
     });
 
-  approve = (proposal: string) =>
+  approve = (params: Omit<ApproveProposalTangleRequest, 'requestType'>) =>
     new OtrRequest<ApproveProposalTangleRequest>(this.otrAddress, {
-      uid: proposal,
+      ...params,
       requestType: TangleRequestType.PROPOSAL_APPROVE,
     });
 
-  reject = (proposal: string) =>
+  reject = (params: Omit<ApproveProposalTangleRequest, 'requestType'>) =>
     new OtrRequest<ApproveProposalTangleRequest>(this.otrAddress, {
-      uid: proposal,
+      ...params,
       requestType: TangleRequestType.PROPOSAL_REJECT,
     });
 

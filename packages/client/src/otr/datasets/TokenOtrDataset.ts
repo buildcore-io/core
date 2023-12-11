@@ -8,45 +8,33 @@ import {
 import { DatasetClass, OtrRequest } from './common';
 
 export class TokenOtrDataset extends DatasetClass {
-  sellBaseToken = (symbol: string, count: number, price: number) => {
-    if (!Object.values(Network).includes(symbol.toLowerCase() as Network)) {
+  sellBaseToken = (params: Omit<TradeTokenTangleRequest, 'requestType'>) => {
+    if (!Object.values(Network).includes(params.symbol.toLowerCase() as Network)) {
       throw Error('Invalid base token symbol');
     }
     return new OtrRequest<TradeTokenTangleRequest>(
       this.otrAddress,
       {
+        ...params,
         requestType: TangleRequestType.SELL_TOKEN,
-        symbol,
-        count,
-        price,
       },
-      Math.floor(count * price),
+      Math.floor((params.count || 0) * params.price),
     );
   };
 
-  sellMintedToken = (tokenId: string, symbol: string, count: number, price: number) =>
+  sellMintedToken = (tokenId: string, params: Omit<TradeTokenTangleRequest, 'requestType'>) =>
     new OtrRequest<TradeTokenTangleRequest>(
       this.otrAddress,
-      {
-        requestType: TangleRequestType.SELL_TOKEN,
-        symbol,
-        count,
-        price,
-      },
+      { ...params, requestType: TangleRequestType.SELL_TOKEN },
       undefined,
-      { amount: BigInt(count), id: tokenId },
+      { amount: BigInt(params.count || 0), id: tokenId },
     );
 
-  buyToken = (symbol: string, count: number, price: number) =>
+  buyToken = (params: Omit<TradeTokenTangleRequest, 'requestType'>) =>
     new OtrRequest<TradeTokenTangleRequest>(
       this.otrAddress,
-      {
-        requestType: TangleRequestType.BUY_TOKEN,
-        symbol,
-        count,
-        price,
-      },
-      Math.floor(count * price),
+      { ...params, requestType: TangleRequestType.BUY_TOKEN },
+      Math.floor((params.count || 0) * params.price),
     );
 
   stake = (tokenId: string, count: number, params: Omit<TokenStakeTangleRequest, 'requestType'>) =>
@@ -60,9 +48,9 @@ export class TokenOtrDataset extends DatasetClass {
       { amount: BigInt(count), id: tokenId },
     );
 
-  claimAirdrops = (symbol: string) =>
+  claimAirdrops = (params: Omit<ClaimAirdroppedTokensTangleRequest, 'requestType'>) =>
     new OtrRequest<ClaimAirdroppedTokensTangleRequest>(this.otrAddress, {
+      ...params,
       requestType: TangleRequestType.CLAIM_MINTED_AIRDROPS,
-      symbol,
     });
 }

@@ -45,9 +45,8 @@ abstract class BaseDataSetClass<T> extends BaseSet<T> {
   protected sendRequest =
     (name: WEN_FUNC) =>
     async <Req, Res>(request: Build5Request<Req>) => {
-      const isLocal = this.origin === Build5.LOCAL;
+      const isLocal = !Object.values(Build5).includes(this.origin);
       const url = this.origin + `/${isLocal ? 'https-' : ''}` + name;
-
       try {
         return (await axios.post(url, { ...request, projectApiKey: this.apiKey })).data as Res;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
