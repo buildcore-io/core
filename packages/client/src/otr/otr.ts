@@ -15,7 +15,7 @@ import { NftOtrDataset } from './datasets/NftOtrDataset';
 import { ProposalOtrDataset } from './datasets/ProposalOtrDataset';
 import { SpaceOtrDataset } from './datasets/SpaceOtrDataset';
 import { TokenOtrDataset } from './datasets/TokenOtrDataset';
-import { DatasetType } from './datasets/common';
+import { DatasetType, toHex } from './datasets/common';
 
 export class OtrWrapper {
   constructor(private readonly otrAddress: string) {}
@@ -42,13 +42,17 @@ export class OtrWrapper {
   }
 
   trackByTag = (tag: string) => {
-    const origin = this.otrAddress.startsWith(Network.SMR) ? Build5.PROD : Build5.TEST;
+    const origin = this.otrAddress.startsWith(Network.RMS) ? Build5.TEST : Build5.PROD;
     return new Observable(origin, tag);
   };
 }
 
-class Observable extends RxjsObservable<TangleResponse> {
-  private observer: Subscriber<TangleResponse> | undefined;
+interface TagTrackResult extends TangleResponse {
+  chainReference?: string;
+}
+
+class Observable extends RxjsObservable<TagTrackResult> {
+  private observer: Subscriber<TagTrackResult> | undefined;
   private paymentsSubs: Subscription | undefined;
   private payments: string[] = [];
   private dataset: TransactionDataset<Dataset.TRANSACTION> | undefined;
@@ -83,12 +87,15 @@ class Observable extends RxjsObservable<TangleResponse> {
       const result = await this.dataset!.getBySourceTransaction(payment.uid);
       const credit = result.find((t) => t.type === TransactionType.CREDIT_TANGLE_REQUEST);
       if (credit) {
-        this.observer?.next(credit.payload.response);
+        this.observer?.next({
+          ...credit.payload.response,
+          chainReference: credit.payload.chainReference || '',
+        });
         return;
       }
       const transfer = result.find((t) => t.type === TransactionType.UNLOCK);
       if (transfer) {
-        this.observer?.next({ status: 'success' });
+        this.observer?.next({ status: 'Success' });
         return;
       }
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -100,10 +107,3 @@ class Observable extends RxjsObservable<TangleResponse> {
     this.observer?.complete();
   };
 }
-
-const toHex = (stringToConvert: string) =>
-  '0x' +
-  stringToConvert
-    .split('')
-    .map((c) => c.charCodeAt(0).toString(16).padStart(2, '0'))
-    .join('');

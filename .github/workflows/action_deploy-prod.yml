@@ -102,7 +102,7 @@ jobs:
       - name: Deploy to npm
         run: |
           npm publish --workspace packages/interfaces
-          npm publish --workspace packages/client
+          cd packages/client/lib && npm publish
 
   roll-firestore:
     runs-on: ubuntu-latest

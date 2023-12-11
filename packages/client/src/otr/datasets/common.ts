@@ -1,4 +1,4 @@
-import { Dataset, MIN_IOTA_AMOUNT, Network } from '@build-5/interfaces';
+import { Dataset, Network } from '@build-5/interfaces';
 import { v4 as uuid } from 'uuid';
 import { MemberOtrDataset } from './MemberOtrDataset';
 import { ProposalOtrDataset } from './ProposalOtrDataset';
@@ -32,25 +32,22 @@ export class OtrRequest<T> {
     public readonly nativeToken?: INativeToken,
   ) {}
 
-  getMetadata = () => {
-    const data = {
-      targetAddress: this.otrAddress,
-      amount: this.amount,
-      metadata: { request: this.metadata },
-      nativeToken: this.nativeToken,
-      tag: this.generateTag(),
-    };
-    return { ...data, amount: Math.max(MIN_IOTA_AMOUNT / 2, this.amount || 0) };
-  };
+  getMetadata = () => ({
+    targetAddress: this.otrAddress,
+    metadata: { request: this.metadata },
+    nativeToken: this.nativeToken,
+    tag: this.generateTag(),
+    amount: this.amount,
+  });
 
   getFireflyDeepLink = () => {
-    const { amount, metadata, nativeToken, tag } = this.getMetadata();
+    const { metadata, nativeToken, tag } = this.getMetadata();
     const walletType = getFireflyWalletType(this.otrAddress);
     return (
       walletType +
       `://wallet/sendConfirmation?address=${this.otrAddress}` +
       '&disableToggleGift=true&disableChangeExpiration=true' +
-      `&amount=${nativeToken ? nativeToken.amount : amount}` +
+      `&amount=${nativeToken ? nativeToken.amount : this.amount}` +
       `&tag=${tag}&giftStorageDeposit=true` +
       `&metadata=${JSON.stringify(metadata)}` +
       (nativeToken ? `&assetId=${nativeToken?.id}` : '')
@@ -58,8 +55,7 @@ export class OtrRequest<T> {
   };
 
   getBloomDeepLink = () => {
-    const { amount, metadata, nativeToken, tag } = this.getMetadata();
-
+    const { metadata, nativeToken, tag, amount } = this.getMetadata();
     const parameters = {
       address: this.otrAddress,
       baseCoinAmount: Number(amount).toFixed(0),
@@ -102,4 +98,20 @@ const getFireflyWalletType = (otrAddress: string) => {
     return 'iota';
   }
   throw Error('Invalid otr address, ono firefly wallet type found');
+};
+
+export const toHex = (stringToConvert: string) =>
+  '0x' +
+  stringToConvert
+    .split('')
+    .map((c) => c.charCodeAt(0).toString(16).padStart(2, '0'))
+    .join('');
+
+export const otrAddressToNetwork = (address: string): Network => {
+  for (const network of Object.values(Network)) {
+    if (address.startsWith(network)) {
+      return network as Network;
+    }
+  }
+  throw Error('Invalid otr address');
 };

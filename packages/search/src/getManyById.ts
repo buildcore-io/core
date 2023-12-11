@@ -16,7 +16,7 @@ const getManyByIdSchema = Joi.object({
   dataset: Joi.string()
     .equal(...Object.values(Dataset))
     .required(),
-  setIds: Joi.array().items(CommonJoi.uid(false, 7)).max(QUERY_MAX_LENGTH).required(),
+  setIds: Joi.array().items(CommonJoi.uid(false, 5)).max(QUERY_MAX_LENGTH).required(),
   subset: Joi.string()
     .equal(...Object.values(Subset))
     .optional(),

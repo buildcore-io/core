@@ -3,7 +3,7 @@ import * as build5 from '../../src';
 import { Build5OtrAddress } from '../../src/otr';
 
 describe('', () => {
-  it.skip('Deep link test', async () => {
+  it('Deep link test', async () => {
     const otrAddress = Build5OtrAddress.TEST;
     const request = build5.otr(otrAddress).dataset(Dataset.MEMBER).validateAddress();
 
