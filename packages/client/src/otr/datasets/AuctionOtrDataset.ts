@@ -12,9 +12,9 @@ export class AuctionOtrDataset extends DatasetClass {
       requestType: TangleRequestType.CREATE_AUCTION,
     });
 
-  bid = (auction: string) =>
+  bid = (params: Omit<AuctionBidTangleRequest, 'requestType'>) =>
     new OtrRequest<AuctionBidTangleRequest>(this.otrAddress, {
+      ...params,
       requestType: TangleRequestType.BID_AUCTION,
-      auction,
     });
 }

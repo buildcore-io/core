@@ -1,9 +1,5 @@
-import { Dataset, Network } from '@build-5/interfaces';
-import { INativeToken } from '@iota/sdk';
+import { Dataset, MIN_IOTA_AMOUNT, Network } from '@build-5/interfaces';
 import { v4 as uuid } from 'uuid';
-import { getClient } from '../wallet/client';
-import { packBasicOutput } from '../wallet/output';
-import { Wallet } from '../wallet/wallet';
 import { MemberOtrDataset } from './MemberOtrDataset';
 import { ProposalOtrDataset } from './ProposalOtrDataset';
 import { SpaceOtrDataset } from './SpaceOtrDataset';
@@ -19,54 +15,50 @@ export type DatasetType<T extends Dataset> =
   T extends Dataset.STAMP ? StamptOtrDataset:
   unknown;
 
+export interface INativeToken {
+  id: string;
+  amount: bigint;
+}
+
 export abstract class DatasetClass {
   constructor(protected readonly otrAddress: string) {}
 }
 
-interface DeeplinkResponse {
-  deeplink: string;
-  tag: string;
-}
-
 export class OtrRequest<T> {
   constructor(
-    private readonly otrAddress: string,
-    private readonly metadata: T,
-    private readonly amount?: number,
-    private readonly nativeToken?: INativeToken,
+    public readonly otrAddress: string,
+    public readonly metadata: T,
+    public readonly amount?: number,
+    public readonly nativeToken?: INativeToken,
   ) {}
 
-  getMetadata = async () => {
-    const { client } = await getClient(this.otrAddress);
+  getMetadata = () => {
     const data = {
       targetAddress: this.otrAddress,
       amount: this.amount,
       metadata: { request: this.metadata },
       nativeToken: this.nativeToken,
-      tag: this.getTag(),
+      tag: this.generateTag(),
     };
-    const output = await packBasicOutput(client, data);
-    return { ...data, amount: output.amount };
+    return { ...data, amount: Math.max(MIN_IOTA_AMOUNT / 2, this.amount || 0) };
   };
 
-  getFireflyDeepLink = async (): Promise<DeeplinkResponse> => {
-    const { amount, metadata, nativeToken, tag } = await this.getMetadata();
+  getFireflyDeepLink = () => {
+    const { amount, metadata, nativeToken, tag } = this.getMetadata();
     const walletType = getFireflyWalletType(this.otrAddress);
-    return {
-      deeplink:
-        walletType +
-        `://wallet/sendConfirmation?address=${this.otrAddress}` +
-        '&disableToggleGift=true&disableChangeExpiration=true' +
-        `&amount=${nativeToken ? nativeToken.amount : amount}` +
-        `&tag=${tag}&giftStorageDeposit=true` +
-        `&metadata=${JSON.stringify(metadata)}` +
-        (nativeToken ? `&assetId=${nativeToken?.id}` : ''),
-      tag,
-    };
+    return (
+      walletType +
+      `://wallet/sendConfirmation?address=${this.otrAddress}` +
+      '&disableToggleGift=true&disableChangeExpiration=true' +
+      `&amount=${nativeToken ? nativeToken.amount : amount}` +
+      `&tag=${tag}&giftStorageDeposit=true` +
+      `&metadata=${JSON.stringify(metadata)}` +
+      (nativeToken ? `&assetId=${nativeToken?.id}` : '')
+    );
   };
 
-  getBloomDeepLink = async (): Promise<DeeplinkResponse> => {
-    const { amount, metadata, nativeToken, tag } = await this.getMetadata();
+  getBloomDeepLink = () => {
+    const { amount, metadata, nativeToken, tag } = this.getMetadata();
 
     const parameters = {
       address: this.otrAddress,
@@ -86,19 +78,20 @@ export class OtrRequest<T> {
       .map((e) => `${e[0]}=${e[1]}`)
       .join('&');
 
-    return { deeplink: `bloom://wallet/sendTransaction?${searchParams}`, tag };
+    return `bloom://wallet/sendTransaction?${searchParams}`;
   };
 
-  submit = (wallet: Wallet) =>
-    wallet.send({
-      targetAddress: this.otrAddress,
-      metadata: { request: this.metadata },
-      amount: this.amount,
-      nativeTokens: this.nativeToken,
-      tag: this.getTag(),
-    });
+  generateTag = () => uuid().replace(/-/g, '');
 
-  private getTag = () => uuid().replace(/-/g, '');
+  getTag = (deeplink: string) => {
+    const search = 'tag=';
+    const startIndex = deeplink.indexOf(search);
+    const endIndex = deeplink.indexOf('&', startIndex + search.length);
+    if (startIndex === -1 || endIndex === -1 || endIndex <= startIndex) {
+      return '';
+    }
+    return deeplink.substring(startIndex + search.length, endIndex);
+  };
 }
 
 const getFireflyWalletType = (otrAddress: string) => {

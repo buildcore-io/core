@@ -16,8 +16,9 @@ import {
   utf8ToHex,
 } from '@iota/sdk';
 import { isEmpty } from 'lodash';
+import { OtrRequest } from '../otr/datasets/common';
 import { getSecretManager } from './client';
-import { AddressDetails, WalletPrams } from './common';
+import { AddressDetails } from './common';
 import { packBasicOutput } from './output';
 
 export class Wallet {
@@ -27,7 +28,14 @@ export class Wallet {
     private readonly info: INodeInfo,
   ) {}
 
-  public send = async (params: WalletPrams): Promise<string> => {
+  public send = async (request: OtrRequest<unknown>): Promise<string> => {
+    const params = {
+      targetAddress: request.otrAddress,
+      metadata: { request: request.metadata },
+      amount: request.amount,
+      nativeTokens: request.nativeToken,
+      tag: request.generateTag(),
+    };
     const sourceAddress = await this.getAddressDetails(this.info, this.mnemonic);
 
     const output = await packBasicOutput(this.client, params);

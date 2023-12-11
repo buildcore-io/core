@@ -13,16 +13,15 @@ export class AwardOtrDataset extends DatasetClass {
       requestType: TangleRequestType.AWARD_CREATE,
     });
 
-  fund = (award: string) =>
+  fund = (params: Omit<AwardFundTangleRequest, 'requestType'>) =>
     new OtrRequest<AwardFundTangleRequest>(this.otrAddress, {
+      ...params,
       requestType: TangleRequestType.AWARD_FUND,
-      uid: award,
     });
 
-  approveParticipant = (award: string, members: []) =>
+  approveParticipant = (params: Omit<AwardApproveParticipantTangleRequest, 'requestType'>) =>
     new OtrRequest<AwardApproveParticipantTangleRequest>(this.otrAddress, {
+      ...params,
       requestType: TangleRequestType.AWARD_APPROVE_PARTICIPANT,
-      award,
-      members,
     });
 }

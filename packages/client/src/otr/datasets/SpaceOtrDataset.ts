@@ -9,62 +9,57 @@ import {
 import { DatasetClass, OtrRequest } from './common';
 
 export class SpaceOtrDataset extends DatasetClass {
-  validateAddress = (space: string) =>
+  validateAddress = (params: Omit<AddressValidationTangleRequest, 'requestType'>) =>
     new OtrRequest<AddressValidationTangleRequest>(this.otrAddress, {
+      ...params,
       requestType: TangleRequestType.ADDRESS_VALIDATION,
-      space,
     });
 
   create = (params: Omit<SpaceCreateTangleRequest, 'requestType'>) =>
     new OtrRequest<SpaceCreateTangleRequest>(this.otrAddress, {
-      requestType: TangleRequestType.SPACE_CREATE,
       ...params,
+      requestType: TangleRequestType.SPACE_CREATE,
     });
 
-  join = (space: string) =>
+  join = (params: Omit<SpaceJoinTangleRequest, 'requestType'>) =>
     new OtrRequest<SpaceJoinTangleRequest>(this.otrAddress, {
+      ...params,
       requestType: TangleRequestType.SPACE_JOIN,
-      uid: space,
     });
 
-  leave = (space: string) =>
+  leave = (params: Omit<SpaceLeaveTangleRequest, 'requestType'>) =>
     new OtrRequest<SpaceLeaveTangleRequest>(this.otrAddress, {
+      ...params,
       requestType: TangleRequestType.SPACE_LEAVE,
-      uid: space,
     });
 
-  addGuardian = (space: string, member: string) =>
+  addGuardian = (params: Omit<SpaceMemberUpsertTangleRequest, 'requestType'>) =>
     new OtrRequest<SpaceMemberUpsertTangleRequest>(this.otrAddress, {
+      ...params,
       requestType: TangleRequestType.SPACE_ADD_GUARDIAN,
-      uid: space,
-      member,
     });
 
-  removeGuardian = (space: string, member: string) =>
+  removeGuardian = (params: Omit<SpaceMemberUpsertTangleRequest, 'requestType'>) =>
     new OtrRequest<SpaceMemberUpsertTangleRequest>(this.otrAddress, {
+      ...params,
       requestType: TangleRequestType.SPACE_REMOVE_GUARDIAN,
-      uid: space,
-      member,
     });
 
-  acceptMember = (space: string, member: string) =>
+  acceptMember = (params: Omit<SpaceMemberUpsertTangleRequest, 'requestType'>) =>
     new OtrRequest<SpaceMemberUpsertTangleRequest>(this.otrAddress, {
+      ...params,
       requestType: TangleRequestType.SPACE_ACCEPT_MEMBER,
-      uid: space,
-      member,
     });
 
-  blockMember = (space: string, member: string) =>
+  blockMember = (params: Omit<SpaceMemberUpsertTangleRequest, 'requestType'>) =>
     new OtrRequest<SpaceMemberUpsertTangleRequest>(this.otrAddress, {
+      ...params,
       requestType: TangleRequestType.SPACE_BLOCK_MEMBER,
-      uid: space,
-      member,
     });
 
-  declineMember = (space: string, member: string) =>
+  declineMember = (params: Omit<SpaceMemberUpsertTangleRequest, 'requestType'>) =>
     new OtrRequest<SpaceMemberUpsertTangleRequest>(this.otrAddress, {
+      ...params,
       requestType: TangleRequestType.SPACE_DECLINE_MEMBER,
-      uid: space,
-      member,
     });
 }
