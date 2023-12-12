@@ -24,6 +24,7 @@ import { AirdropDataset } from './datasets/token/AirdropDataset';
 import { TokenDataset } from './datasets/token/TokenDataset';
 import { TokenMarketDataset } from './datasets/token/TokenMarketDataset';
 import { TokenPurchaseDataset } from './datasets/token/TokenPurchaseDataset';
+import { Observable } from './tag.tracker';
 
 export class ProjectWrapper {
   constructor(
@@ -83,6 +84,8 @@ export class ProjectWrapper {
         throw Error('invalid dataset name');
     }
   }
+
+  trackByTag = (tag: string) => new Observable(this.origin, tag);
 
   uploadFile = async (pathToFile: string, member: string, uid: string) => {
     const isLocal = !Object.values(Build5).includes(this.origin);

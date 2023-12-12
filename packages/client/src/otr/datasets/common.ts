@@ -47,7 +47,7 @@ export class OtrRequest<T> {
       walletType +
       `://wallet/sendConfirmation?address=${this.otrAddress}` +
       '&disableToggleGift=true&disableChangeExpiration=true' +
-      `&amount=${nativeToken ? nativeToken.amount : this.amount}` +
+      `&amount=${nativeToken ? nativeToken.amount : this.amount || 0}` +
       `&tag=${tag}&giftStorageDeposit=true` +
       `&metadata=${JSON.stringify(metadata)}` +
       (nativeToken ? `&assetId=${nativeToken?.id}` : '')
@@ -58,7 +58,7 @@ export class OtrRequest<T> {
     const { metadata, nativeToken, tag, amount } = this.getMetadata();
     const parameters = {
       address: this.otrAddress,
-      baseCoinAmount: Number(amount).toFixed(0),
+      baseCoinAmount: Number(amount || 0).toFixed(0),
       tokenId: nativeToken?.id,
       tokenAmount: nativeToken ? Number(nativeToken.amount).toFixed(0) : undefined,
       tag,
@@ -99,13 +99,6 @@ const getFireflyWalletType = (otrAddress: string) => {
   }
   throw Error('Invalid otr address, ono firefly wallet type found');
 };
-
-export const toHex = (stringToConvert: string) =>
-  '0x' +
-  stringToConvert
-    .split('')
-    .map((c) => c.charCodeAt(0).toString(16).padStart(2, '0'))
-    .join('');
 
 export const otrAddressToNetwork = (address: string): Network => {
   for (const network of Object.values(Network)) {
