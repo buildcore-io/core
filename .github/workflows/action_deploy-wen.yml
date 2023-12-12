@@ -63,7 +63,7 @@ jobs:
       - name: Deploy to npm as "upcoming" package
         run: |
           npm publish --workspace packages/interfaces --tag next
-          npm publish --workspace packages/client --tag next
+          cd packages/client/lib && npm publish --tag next
   deploy_functions:
     runs-on: ubuntu-latest
     environment: staging

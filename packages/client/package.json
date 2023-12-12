@@ -9,11 +9,11 @@
     "serve": "run-p \"run:search\" \"run:functions\"",
     "lint": "eslint --ext .js,.ts src",
     "build": "tsc",
+    "postbuild": "cp package.json ./lib",
     "test": "jest"
   },
   "dependencies": {
     "@build-5/interfaces": "*",
-    "@iota/sdk": "1.1.4",
     "axios": "^1.6.2",
     "bip39": "3.1.0",
     "form-data": "^4.0.0",
