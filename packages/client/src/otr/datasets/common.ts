@@ -1,6 +1,9 @@
 import { Dataset, Network } from '@build-5/interfaces';
 import { v4 as uuid } from 'uuid';
+import { AuctionOtrDataset } from './AuctionOtrDataset';
+import { AwardOtrDataset } from './AwardOtrDataset';
 import { MemberOtrDataset } from './MemberOtrDataset';
+import { NftOtrDataset } from './NftOtrDataset';
 import { ProposalOtrDataset } from './ProposalOtrDataset';
 import { SpaceOtrDataset } from './SpaceOtrDataset';
 import { StamptOtrDataset } from './StampOtrDataset';
@@ -8,11 +11,14 @@ import { TokenOtrDataset } from './TokenOtrDataset';
 
 // prettier-ignore
 export type DatasetType<T extends Dataset> = 
+  T extends Dataset.AUCTION ? AuctionOtrDataset:
+  T extends Dataset.AWARD ? AwardOtrDataset:
   T extends Dataset.MEMBER ? MemberOtrDataset:
-  T extends Dataset.SPACE ? SpaceOtrDataset:
-  T extends Dataset.TOKEN ? TokenOtrDataset:
+  T extends Dataset.NFT ? NftOtrDataset:
   T extends Dataset.PROPOSAL ? ProposalOtrDataset:
+  T extends Dataset.SPACE ? SpaceOtrDataset:
   T extends Dataset.STAMP ? StamptOtrDataset:
+  T extends Dataset.TOKEN ? TokenOtrDataset:
   unknown;
 
 export interface INativeToken {

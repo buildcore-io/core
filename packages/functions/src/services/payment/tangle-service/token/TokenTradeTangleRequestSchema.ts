@@ -21,9 +21,9 @@ export const tradeMintedTokenSchema = toJoiObject<TradeTokenTangleRequest>({
     .min(MIN_PRICE_PER_TOKEN)
     .max(MAX_PRICE)
     .precision(6)
-    .required()
+    .optional()
     .description(
-      `Pirce of the token to trade. Minimum ${MIN_PRICE_PER_TOKEN}, maximum: ${MAX_PRICE}.`,
+      `Price of the token to trade. Minimum ${MIN_PRICE_PER_TOKEN}, maximum: ${MAX_PRICE}.`,
     ),
   count: Joi.number()
     .min(MIN_COUNT)

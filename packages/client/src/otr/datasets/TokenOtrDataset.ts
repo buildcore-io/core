@@ -18,7 +18,7 @@ export class TokenOtrDataset extends DatasetClass {
         ...params,
         requestType: TangleRequestType.SELL_TOKEN,
       },
-      Math.floor((params.count || 0) * params.price),
+      Math.floor((params.count || 0) * (params.price || 0)),
     );
   };
 
@@ -34,7 +34,7 @@ export class TokenOtrDataset extends DatasetClass {
     new OtrRequest<TradeTokenTangleRequest>(
       this.otrAddress,
       { ...params, requestType: TangleRequestType.BUY_TOKEN },
-      Math.floor((params.count || 0) * params.price),
+      Math.floor((params.count || 0) * (params.price || 0)),
     );
 
   stake = (tokenId: string, count: number, params: Omit<TokenStakeTangleRequest, 'requestType'>) =>

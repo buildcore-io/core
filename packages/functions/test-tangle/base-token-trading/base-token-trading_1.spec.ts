@@ -6,6 +6,7 @@ import {
   TokenPurchase,
   TokenStatus,
   TokenTradeOrder,
+  TokenTradeOrderStatus,
   TokenTradeOrderType,
   Transaction,
   TransactionPayloadType,
@@ -219,7 +220,20 @@ describe('Base token trading', () => {
     expect(dayjs(buy.expiresAt.toDate()).isSame(dayjs(expiresAt.toDate()))).toBe(true);
   });
 
-  it('Should credit buy order with expiration unlock, wrong amount', async () => {
+  it('Should not credit buy order with expiration unlock, custom amount', async () => {
+    mockWalletReturnValue(helper.walletSpy, helper.seller!.uid, {
+      symbol: helper.token!.symbol,
+      count: MIN_IOTA_AMOUNT,
+      price: 2,
+      type: TokenTradeOrderType.SELL,
+    });
+    const sellOrder = await testEnv.wrap(tradeToken)({});
+    await requestFundsFromFaucet(
+      helper.sourceNetwork,
+      sellOrder.payload.targetAddress,
+      MIN_IOTA_AMOUNT,
+    );
+
     const date = dayjs().add(2, 'h').millisecond(0).toDate();
     const expiresAt = dateToTimestamp(date) as Timestamp;
 
@@ -230,24 +244,32 @@ describe('Base token trading', () => {
       type: TokenTradeOrderType.BUY,
     });
     const buyOrder = await testEnv.wrap(tradeToken)({});
-    const { faucetAddress } = await requestFundsFromFaucet(
+    await requestFundsFromFaucet(
       helper.targetNetwork,
       buyOrder.payload.targetAddress,
       4 * MIN_IOTA_AMOUNT,
       expiresAt,
     );
 
+    const buyQuery = build5Db()
+      .collection(COL.TOKEN_MARKET)
+      .where('type', '==', TokenTradeOrderType.BUY)
+      .where('owner', '==', helper.buyer?.uid);
     await wait(async () => {
-      const snap = await build5Db()
-        .collection(COL.TRANSACTION)
-        .where('type', '==', TransactionType.CREDIT)
-        .where('member', '==', helper.buyer?.uid)
-        .get<Transaction>();
-      return (
-        snap.length === 1 &&
-        snap[0]!.payload.amount === 4 * MIN_IOTA_AMOUNT &&
-        snap[0]!.payload.targetAddress === faucetAddress.bech32
-      );
+      const snap = await buyQuery.get<TokenTradeOrder>();
+      return snap.length === 1 && snap[0].status === TokenTradeOrderStatus.SETTLED;
     });
+    const buy = (await buyQuery.get<TokenTradeOrder>())[0];
+    expect(buy.balance).toBe(2 * MIN_IOTA_AMOUNT);
+    expect(buy.count).toBe(MIN_IOTA_AMOUNT);
+    expect(buy.fulfilled).toBe(MIN_IOTA_AMOUNT);
+
+    const credit = await build5Db()
+      .collection(COL.TRANSACTION)
+      .where('member', '==', helper.buyer?.uid)
+      .where('payload.type', '==', TransactionPayloadType.TOKEN_TRADE_FULLFILLMENT)
+      .get<Transaction>();
+    expect(credit.length).toBe(1);
+    expect(credit[0].payload.amount).toBe(2 * MIN_IOTA_AMOUNT);
   });
 });

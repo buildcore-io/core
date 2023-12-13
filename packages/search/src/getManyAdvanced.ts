@@ -36,7 +36,7 @@ const getManyAdvancedSchema = Joi.object({
   dataset: Joi.string()
     .equal(...Object.values(Dataset))
     .required(),
-  setId: CommonJoi.uid(false),
+  setId: CommonJoi.uid(false, 5),
   subset: Joi.string()
     .equal(...Object.values(Subset))
     .optional(),
