@@ -9,7 +9,7 @@ import {
 import axios from 'axios';
 import { ProjectWrapper } from './https';
 
-export const https = (origin = Build5.PROD) => new HttpsWrapper(origin);
+export const https = (origin: string = Build5.PROD) => new HttpsWrapper(origin as Build5);
 
 class HttpsWrapper {
   constructor(private readonly origin: Build5) {}

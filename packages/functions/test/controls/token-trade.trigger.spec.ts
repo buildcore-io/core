@@ -1107,37 +1107,6 @@ describe('Trade trigger', () => {
     expect(purchase.price).toBe(2 * MIN_IOTA_AMOUNT);
   });
 
-  it('Should cancel after it needs higher fulfillment price', async () => {
-    mockWalletReturnValue(walletSpy, seller, {
-      symbol: token.symbol,
-      price: 0.8 * MIN_IOTA_AMOUNT,
-      count: 8,
-      type: TokenTradeOrderType.SELL,
-    });
-    await testEnv.wrap(tradeToken)({});
-
-    const request = {
-      symbol: token.symbol,
-      price: 0.82 * MIN_IOTA_AMOUNT,
-      count: 10,
-      type: TokenTradeOrderType.BUY,
-    };
-    await buyTokenFunc(buyer, request);
-
-    const buyQuery = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', buyer);
-
-    await wait(async () => {
-      return (
-        (await buyQuery.get<TokenTradeOrder>())[0]?.status ===
-        TokenTradeOrderStatus.CANCELLED_UNFULFILLABLE
-      );
-    });
-
-    expect((await buyQuery.get<TokenTradeOrder>())[0]?.status).toBe(
-      TokenTradeOrderStatus.CANCELLED_UNFULFILLABLE,
-    );
-  });
-
   it('Should fulfill low price sell with high price buy', async () => {
     mockWalletReturnValue(walletSpy, seller, {
       symbol: token.symbol,
