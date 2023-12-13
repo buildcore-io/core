@@ -12,9 +12,9 @@ export interface TradeTokenTangleRequest {
    */
   count?: number;
   /**
-   * Pirce of the token to trade. Minimum 0.000001, maximum: 1000000000000.
+   * Price of the token to trade. Minimum 0.000001, maximum: 1000000000000.
    */
-  price: number;
+  price?: number;
   /**
    * Type of the tangle request.
    */

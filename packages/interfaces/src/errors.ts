@@ -322,4 +322,8 @@ export const WenError = {
     code: 2146,
     key: 'Credit has expired.',
   },
+  no_active_sells: {
+    code: 2147,
+    key: 'No active sell orders.',
+  },
 };

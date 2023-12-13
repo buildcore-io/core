@@ -26,7 +26,6 @@ import { getMemberTier, getTokenTradingFee } from './token-trade-order.trigger';
 const createRoyaltyBillPayments = async (
   wallet: Wallet,
   token: Token,
-  sell: TokenTradeOrder,
   buy: TokenTradeOrder,
   seller: Member,
   buyer: Member,
@@ -200,7 +199,6 @@ const createCreditToSeller = (
 const createCreditToBuyer = (
   token: Token,
   buyer: Member,
-  sell: TokenTradeOrder,
   buy: TokenTradeOrder,
   buyOrderTran: Transaction,
   amount: number,
@@ -250,10 +248,14 @@ export const matchMintedToken = async (
     .doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`)
     .get<Transaction>())!;
 
-  const tokensToTrade = Math.min(sell.count - sell.fulfilled, buy.count - buy.fulfilled);
-  const buyIsFulfilled = buy.fulfilled + tokensToTrade === buy.count;
+  const tokensToTrade = Math.min(
+    sell.count - sell.fulfilled,
+    buy.count - buy.fulfilled,
+    Math.floor(buy.balance / price),
+  );
   let salePrice = Number(bigDecimal.floor(bigDecimal.multiply(price, tokensToTrade)));
   let balanceLeft = buy.balance - salePrice;
+  const buyIsFulfilled = buy.fulfilled + tokensToTrade === buy.count || balanceLeft === 0;
 
   if (balanceLeft < 0) {
     return { purchase: undefined, sellerCreditId: undefined, buyerCreditId: undefined };
@@ -274,7 +276,6 @@ export const matchMintedToken = async (
   const royaltyBillPayments = await createRoyaltyBillPayments(
     wallet,
     token,
-    sell,
     buy,
     seller,
     buyer,
@@ -322,7 +323,7 @@ export const matchMintedToken = async (
 
   const creditToBuyer =
     buyIsFulfilled && balanceLeft
-      ? createCreditToBuyer(token, buyer, sell, buy, buyOrderTran, balanceLeft)
+      ? createCreditToBuyer(token, buyer, buy, buyOrderTran, balanceLeft)
       : undefined;
 
   [
