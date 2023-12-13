@@ -22,8 +22,8 @@ const getUpdatedAfterSchema = Joi.object({
   dataset: Joi.string()
     .equal(...Object.values(Dataset))
     .required(),
-  setId: CommonJoi.uid(false),
-  subCollection: Joi.string()
+  setId: CommonJoi.uid(false, 5),
+  subset: Joi.string()
     .equal(...Object.values(Subset))
     .optional(),
   updatedAfter: Joi.number().min(0).max(MAX_MILLISECONDS).integer().optional(),
