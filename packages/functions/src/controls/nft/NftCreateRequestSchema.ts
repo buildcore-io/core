@@ -7,7 +7,7 @@ export const createSchema = {
   description: Joi.string().allow(null, '').required().description('Description of the nft.'),
   collection: CommonJoi.uid().description('Build5 id of the collection for this nft.'),
   media: CommonJoi.storageUrl(false).description(
-    'Soonaverse url pointing to an nft image or video.',
+    'BUILD.5 url pointing to an nft image or video.',
   ),
   availableFrom: Joi.date().required().description("Starting date of the nft's availability."),
   price: Joi.number()
