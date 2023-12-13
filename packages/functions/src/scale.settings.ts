@@ -76,7 +76,7 @@ export const ALGOLIA_TRIGGER_SCALE: { [key: string]: RuntimeOptions } = {
 };
 
 export const TRIGGER_SCALE: { [key: string]: RuntimeOptions } = {
-  [WEN_FUNC_TRIGGER.onMilestoneTransactionWrite]: { minInstances: highUse },
+  [WEN_FUNC_TRIGGER.onMilestoneTransactionWrite]: { timeoutSeconds: 540, minInstances: highUse },
   [WEN_FUNC_TRIGGER.onAwardUpdated]: { concurrency: 1000 },
   [WEN_FUNC_TRIGGER.onCollectionUpdated]: {
     timeoutSeconds: 540,
