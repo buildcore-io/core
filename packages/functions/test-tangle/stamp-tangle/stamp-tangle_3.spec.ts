@@ -1,8 +1,8 @@
 import { build5Db } from '@build-5/database';
 import {
   COL,
-  MIN_IOTA_AMOUNT,
   Stamp,
+  Transaction,
   TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
@@ -20,38 +20,34 @@ describe('Stamp tangle test', () => {
 
   it('Should extend stamp', async () => {
     const now = dayjs();
+    const fiftyDayCost = 2124 * 50 + 53700 + 108000;
     await helper.wallet!.send(
       helper.address,
       helper.tangleOrder.payload.targetAddress!,
-      MIN_IOTA_AMOUNT,
+      fiftyDayCost,
       { customMetadata: { request: helper.request } },
     );
     await MnemonicService.store(helper.address.bech32, helper.address.mnemonic);
 
-    let creditResponse = await helper.getCreditResponse();
-    let thirtyDayCost =
-      (creditResponse.dailyCost as number) * 30 + (creditResponse.amountToMint as number);
-    await helper.wallet!.send(helper.address, creditResponse.address as string, thirtyDayCost, {});
-    await MnemonicService.store(helper.address.bech32, helper.address.mnemonic);
-
-    const stampDocRef = build5Db().doc(`${COL.STAMP}/${creditResponse.stamp}`);
-    let stamp = await stampDocRef.get<Stamp>();
+    const query = build5Db().collection(COL.STAMP).where('createdBy', '==', helper.address.bech32);
     await wait(async () => {
-      stamp = await stampDocRef.get<Stamp>();
-      return stamp?.nftId !== undefined;
+      const snap = await query.get<Stamp>();
+      return snap.length === 1 && snap[0].nftId !== undefined;
     });
+    let stamp = (await query.get<Stamp>())[0];
 
-    const expiresAfter30Days = dayjs(stamp?.expiresAt.toDate()).isAfter(now.add(8.64e7));
-    expect(expiresAfter30Days).toBe(true);
+    const expiresAfter50Days = dayjs(stamp?.expiresAt.toDate()).isAfter(dayjs().add(4.32e9));
+    expect(expiresAfter50Days).toBe(true);
 
-    thirtyDayCost = (creditResponse.dailyCost as number) * 30;
-    await helper.wallet!.send(helper.address, creditResponse.address as string, thirtyDayCost, {});
+    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${stamp.order}`);
+    const order = <Transaction>await orderDocRef.get();
+    await helper.wallet!.send(helper.address, order.payload.targetAddress!, fiftyDayCost, {});
     await MnemonicService.store(helper.address.bech32, helper.address.mnemonic);
 
     await wait(async () => {
-      stamp = await stampDocRef.get<Stamp>();
-      const expiresAfter60Days = dayjs(stamp?.expiresAt.toDate()).isAfter(now.add(60 * 8.64e7));
-      return expiresAfter60Days;
+      const stamp = (await query.get<Stamp>())[0];
+      const expiresAfter100Days = dayjs(stamp?.expiresAt.toDate()).isAfter(now.add(2 * 4.32e9));
+      return expiresAfter100Days;
     });
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -63,13 +59,13 @@ describe('Stamp tangle test', () => {
       .get();
     expect(snap.length).toBe(2);
 
+    const stampDocRef = build5Db().doc(`${COL.STAMP}/${stamp.uid}`);
     await stampDocRef.update({ expiresAt: dayjs().subtract(1, 'h').toDate() });
     await updateExpiredStamp();
-    stamp = await stampDocRef.get<Stamp>();
+    stamp = <Stamp>await stampDocRef.get();
     expect(stamp?.expired).toBe(true);
 
-    thirtyDayCost = (creditResponse.dailyCost as number) * 30;
-    await helper.wallet!.send(helper.address, creditResponse.address as string, thirtyDayCost, {});
+    await helper.wallet!.send(helper.address, order.payload.targetAddress!, fiftyDayCost, {});
     await MnemonicService.store(helper.address.bech32, helper.address.mnemonic);
 
     await wait(async () => {

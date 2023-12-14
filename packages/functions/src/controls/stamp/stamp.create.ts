@@ -9,6 +9,7 @@ export const stampCreateControl = async ({ project, owner, params }: Context<Sta
     owner,
     params.network as Network,
     params.file,
+    undefined,
     params.aliasId,
   );
 
