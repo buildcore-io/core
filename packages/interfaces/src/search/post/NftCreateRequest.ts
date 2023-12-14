@@ -20,7 +20,7 @@ export interface NftCreateRequest {
    */
   description: string | null | '';
   /**
-   * Soonaverse url pointing to an nft image or video.
+   * BUILD.5 url pointing to an nft image or video.
    */
   media?: string | null | '';
   /**

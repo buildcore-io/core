@@ -1,4 +1,4 @@
-# Contributing to Soonaverse
+# Contributing to BUILD.5
 
 We want to make contributing to this project as easy and transparent as possible, whether it's:
 
