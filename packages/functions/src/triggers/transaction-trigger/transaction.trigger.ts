@@ -135,6 +135,7 @@ export const onTransactionWrite = async (event: FirestoreDocEvent<Transaction>) 
     !prev?.payload.reconciled &&
     curr.payload.reconciled
   ) {
+    console.log('onAirdropClaim', JSON.stringify({ prev, curr }));
     await onAirdropClaim(curr);
     return;
   }
@@ -551,6 +552,7 @@ const onMintedAirdropCleared = async (curr: Transaction) => {
     member: curr.member,
     network: curr.network || DEFAULT_NETWORK,
     payload: {
+      type: TransactionPayloadType.AIRDROP_MINTED_TOKEN,
       amount: curr.payload.amount,
       sourceAddress: curr.payload.targetAddress,
       targetAddress: getAddress(member, curr.network || DEFAULT_NETWORK),
