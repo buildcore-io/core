@@ -53,7 +53,6 @@ export const nftAddressFix = async (app: FirebaseApp) => {
       if (currentAddress !== actualAddress) {
         const docRef = db.doc(`${COL.NFT}/${nft.uid}`);
         await docRef.update({ 'mintingData.address': actualAddress });
-        return;
       }
 
       if (nft.status === NftStatus.WITHDRAWN) {
