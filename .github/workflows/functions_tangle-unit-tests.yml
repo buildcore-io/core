@@ -1830,7 +1830,7 @@ jobs:
           firebase emulators:exec "
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/staking/staking_4.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/staking/staking_5.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/stamp-tangle/stamp-tangle_1.spec.ts 
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/stamp-tangle/stamp-tangle_1_a.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -1865,9 +1865,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/stamp-tangle/stamp-tangle_1_b.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/stamp-tangle/stamp-tangle_2.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/stamp-tangle/stamp-tangle_3.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/stamp-tangle/stamp-tangle_4.spec.ts 
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/stamp-tangle/stamp-tangle_3.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -1902,9 +1902,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/stamp-tangle/stamp-tangle_4.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/stamp-tangle/stamp-tangle_5.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/stamp-tangle/stamp-tangle_6.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/tangleRequest/simple.token.trade.spec.ts 
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/stamp-tangle/stamp-tangle_6.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -1939,9 +1939,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/tangleRequest/simple.token.trade.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/tangleRequest/tangle-request.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token-import/token.import_1.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token-import/token.import_2.spec.ts 
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token-import/token.import_1.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -1976,9 +1976,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token-import/token.import_2.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.based.voting/stake.voting.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.based.voting/token.based.voting_1.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.based.voting/token.based.voting_2.spec.ts 
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.based.voting/token.based.voting_1.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2013,9 +2013,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.based.voting/token.based.voting_2.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.based.voting/token.based.voting_3.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.based.voting/token.based.voting_4.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.based.voting/token.based.voting_5.spec.ts 
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.based.voting/token.based.voting_4.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2050,9 +2050,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.based.voting/token.based.voting_5.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.mint/token.mint_1.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.mint/token.mint_2.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.mint/token.mint_3.spec.ts 
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.mint/token.mint_2.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2087,9 +2087,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.mint/token.mint_3.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.mint/token.mint_4.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/trade-base-token-order.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/tran.match.spec.ts 
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/trade-base-token-order.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2124,9 +2124,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/tran.match.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_1.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_10.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_11.spec.ts 
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_10.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2161,9 +2161,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_11.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_12.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_13.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_14.spec.ts 
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_13.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2198,9 +2198,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_14.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_2.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_3.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_4.spec.ts 
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_3.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2235,9 +2235,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_4.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_5.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_6.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_7.spec.ts 
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_6.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2272,9 +2272,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_7.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_8.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_9.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/web3/web3_1.spec.ts 
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_9.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2309,9 +2309,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/web3/web3_1.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/web3/web3_2.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/web3/web3_3.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1_a.spec.ts 
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/web3/web3_3.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2346,9 +2346,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1_a.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1_b.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1_c.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_10_1.spec.ts 
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1_c.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2383,9 +2383,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_10_1.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_10_2.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_10_3.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_11.spec.ts 
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_10_3.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2420,9 +2420,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_11.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_12_a.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_12_b.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_13.spec.ts 
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_12_b.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2457,9 +2457,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_13.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_14.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_2.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_4_b.spec.ts 
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_2.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2494,9 +2494,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_4_b.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_4.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_5.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_6.spec.ts 
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_5.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2531,9 +2531,9 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_6.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_7.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_8.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_9.spec.ts 
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_8.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
         uses: actions/upload-artifact@v3
@@ -2568,6 +2568,7 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_9.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/workflow-online.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/workflow.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data

@@ -155,4 +155,7 @@ export interface TransactionPayload {
   tokenTradeOderTargetAddress?: string;
 
   auction?: string;
+
+  days?: number;
+  dailyCost?: number;
 }

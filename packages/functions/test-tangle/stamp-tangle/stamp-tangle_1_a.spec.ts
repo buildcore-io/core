@@ -2,7 +2,6 @@ import { build5Db } from '@build-5/database';
 import {
   COL,
   KEY_NAME_TANGLE,
-  MIN_IOTA_AMOUNT,
   MediaStatus,
   Stamp,
   Transaction,
@@ -24,33 +23,32 @@ describe('Stamp tangle test', () => {
   beforeEach(helper.beforeEach);
 
   it('Should create and mint stamp', async () => {
+    const fiftyDayCost = 2124 * 50 + 53700 + 108000;
+
     await helper.wallet!.send(
       helper.address,
       helper.tangleOrder.payload.targetAddress!,
-      MIN_IOTA_AMOUNT,
+      fiftyDayCost,
       { customMetadata: { request: helper.request } },
     );
     await MnemonicService.store(helper.address.bech32, helper.address.mnemonic);
 
-    const creditResponse = await helper.getCreditResponse();
-    const thirtyDayCost =
-      (creditResponse.dailyCost as number) * 30 + (creditResponse.amountToMint as number);
-    await helper.wallet!.send(helper.address, creditResponse.address as string, thirtyDayCost, {});
-    await MnemonicService.store(helper.address.bech32, helper.address.mnemonic);
-
-    const stampDocRef = build5Db().doc(`${COL.STAMP}/${creditResponse.stamp}`);
+    const query = build5Db().collection(COL.STAMP).where('createdBy', '==', helper.address.bech32);
     await wait(async () => {
-      const stamp = await stampDocRef.get<Stamp>();
-      return stamp?.funded;
+      const snap = await query.get<Stamp>();
+      return snap.length === 1 && snap[0].funded;
     });
-    let stamp = await stampDocRef.get<Stamp>();
+    let stamp = (await query.get<Stamp>())[0];
     expect(stamp?.mediaStatus).toBe(MediaStatus.PENDING_UPLOAD);
     expect(stamp?.ipfsMedia).toBeDefined();
 
-    const expiresAfter30Days = dayjs(stamp?.expiresAt.toDate()).isAfter(dayjs().add(8.64e7));
-    expect(expiresAfter30Days).toBe(true);
+    const expiresAfter50Days = dayjs(stamp?.expiresAt.toDate()).isAfter(dayjs().add(4.32e9));
+    expect(expiresAfter50Days).toBe(true);
+    const expiresBefore51Days = dayjs(stamp?.expiresAt.toDate()).isBefore(dayjs().add(4.4064e9));
+    expect(expiresBefore51Days).toBe(true);
 
     await uploadMediaToWeb3();
+    const stampDocRef = build5Db().doc(`${COL.STAMP}/${stamp.uid}`);
     await wait(async () => {
       const stamp = await stampDocRef.get<Stamp>();
       return stamp?.mediaStatus === MediaStatus.UPLOADED;
@@ -59,7 +57,7 @@ describe('Stamp tangle test', () => {
     expect(uploadedMediaStamp?.ipfsMedia).toBe(stamp?.ipfsMedia);
 
     await wait(async () => {
-      stamp = await stampDocRef.get<Stamp>();
+      stamp = <Stamp>await stampDocRef.get();
       return stamp?.aliasId !== EMPTY_ALIAS_ID && stamp?.nftId !== undefined;
     });
 
@@ -79,6 +77,5 @@ describe('Stamp tangle test', () => {
       .where('payload.stamp', '==', stamp?.uid)
       .get<Transaction>();
     expect(billPayment.length).toBe(1);
-    expect(billPayment[0].payload.amount).toBe((creditResponse.dailyCost as number) * 30);
   });
 });

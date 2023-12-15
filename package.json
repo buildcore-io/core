@@ -4,7 +4,7 @@
   "workspaces": [
     "packages/indexes",
     "packages/interfaces",
-    "packages/client",
+    "packages/sdk",
     "packages/database",
     "packages/search",
     "packages/functions"
@@ -12,7 +12,7 @@
   "scripts": {
     "build:functions": "npm run build:database  && npm i --workspace=packages/functions && npm run build --workspace=packages/functions",
     "build:interfaces": "npm i --workspace=packages/interfaces && npm run build --workspace=packages/interfaces",
-    "build:client": "npm run build:interfaces && npm i --workspace=packages/client && npm run build --workspace=packages/client",
+    "build:sdk": "npm run build:interfaces && npm i --workspace=packages/sdk && npm run build --workspace=packages/sdk",
     "build:indexes": "npm i --workspace=packages/indexes && npm run build --workspace=packages/indexes",
     "build:database": "npm run build:interfaces && npm i --workspace=packages/database && npm run build --workspace=packages/database",
     "build:search": "npm run build:database && npm i --workspace=packages/search && npm run build --workspace=packages/search",
@@ -21,9 +21,9 @@
     "clean:database": "rm -rf packages/database/lib; rm -rf packages/database/node_modules",
     "clean:functions": "rm -rf packages/functions/lib; rm -rf packages/functions/node_modules",
     "clean:interfaces": "rm -rf packages/interfaces/lib; rm -rf packages/interfaces/node_modules",
-    "clean:client": "rm -rf packages/client/lib; rm -rf packages/client/node_modules",
+    "clean:sdk": "rm -rf packages/sdk/lib; rm -rf packages/sdk/node_modules",
     "clean:indexes": "rm -rf packages/indexes/lib; rm -rf packages/indexes/node_modules",
-    "clean": "npm run clean:functions; npm run clean:interfaces; npm run clean:indexes; npm run clean:client; npm run clean:search; npm run clean:database; rm -rf node_modules",
+    "clean": "npm run clean:functions; npm run clean:interfaces; npm run clean:indexes; npm run clean:sdk; npm run clean:search; npm run clean:database; rm -rf node_modules",
     "prettier": "npx prettier --write ./packages/**",
     "joi-to-types": "ts-node ./scripts/joi-generator-post.ts && ts-node ./scripts/joi-generator-tangle.ts && npm run prettier",
     "rebuild": "npm run clean; npm run build",

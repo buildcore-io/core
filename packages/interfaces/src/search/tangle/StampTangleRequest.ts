@@ -12,6 +12,10 @@ export interface StampTangleRequest {
    */
   aliasId?: string;
   /**
+   * If specified, system will only use token amount for that exact period and refund the rest. Otherwise, it’ll use whatever it can.
+   */
+  days?: number;
+  /**
    * Type of the tangle request.
    */
   requestType: 'STAMP';
