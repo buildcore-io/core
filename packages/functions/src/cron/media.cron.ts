@@ -19,6 +19,7 @@ import {
   tokenToIpfsMetadata,
 } from '../utils/car.utils';
 import { spaceToIpfsMetadata } from '../utils/space.utils';
+import { logger } from '../utils/logger';
 
 export const MEDIA_UPLOAD_BACH_SIZE = 30;
 
@@ -153,7 +154,7 @@ const setMediaStatusToError = async (col: COL, uid: string, errorCount: number, 
   };
   if (errorCount >= MAX_WALLET_RETRY) {
     data.mediaStatus = MediaStatus.ERROR;
-    console.error(col, uid, 'Image upload error', error);
+    logger.error(col, uid, 'Image upload error', error);
   }
   const docRef = build5Db().doc(`${col}/${uid}`);
   await docRef.update(data);
