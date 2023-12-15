@@ -58,12 +58,12 @@ jobs:
           LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
           TIMESTAMP=$(date +%s)
           npm version $LATEST_TAG.$TIMESTAMP --workspace packages/interfaces
-          npm version $LATEST_TAG.$TIMESTAMP --workspace packages/client
-          npm run build:client
+          npm version $LATEST_TAG.$TIMESTAMP --workspace packages/sdk
+          npm run build:sdk
       - name: Deploy to npm as "upcoming" package
         run: |
           npm publish --workspace packages/interfaces --tag next
-          cd packages/client/lib && npm publish --tag next
+          cd packages/sdk/lib && npm publish --tag next
   deploy_functions:
     runs-on: ubuntu-latest
     environment: staging

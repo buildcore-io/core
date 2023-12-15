@@ -1,9 +1,9 @@
-name: Client | lint
+name: SDK | lint
 
 on:
   pull_request:
     paths:
-      - packages/client/**
+      - packages/sdk/**
       - packages/search/**
 
 jobs:
@@ -16,8 +16,8 @@ jobs:
         with:
           node-version: 20
       - name: Install Dependencies
-        run: npm run build:client
+        run: npm run build:sdk
       - name: Prettier
-        run: cd packages/client && npx prettier --check .
+        run: cd packages/sdk && npx prettier --check .
       - name: Lint
-        run: cd packages/client && npm run lint
+        run: cd packages/sdk && npm run lint
