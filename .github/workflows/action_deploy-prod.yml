@@ -1,8 +1,6 @@
 name: Action | Deploy to Production
 
-on:
-  release:
-    types: [published]
+on: pull_request
 
 jobs:
   deploy_api:

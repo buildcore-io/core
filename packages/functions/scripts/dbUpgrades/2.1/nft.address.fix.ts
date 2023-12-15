@@ -1,5 +1,5 @@
-import { FirebaseApp, Firestore } from '@build-5/database';
-import { COL, Nft, NftStatus, Transaction, TransactionType } from '@build-5/interfaces';
+import { FirebaseApp } from '@build-5/database';
+import { COL, Network, Nft, NftStatus, Transaction, TransactionType } from '@build-5/interfaces';
 import {
   AddressUnlockCondition,
   Client,
@@ -8,47 +8,80 @@ import {
   UnlockConditionType,
   Utils,
 } from '@iota/sdk';
+import dayjs from 'dayjs';
+import { Firestore } from 'firebase-admin/firestore';
+import { last } from 'lodash';
 
-const colletionId = '0x79bc2bc75ee54282f49f886d2f7bcef0413b6684';
+const mintedAfter = dayjs.unix(1700006400);
 
 export const nftAddressFix = async (app: FirebaseApp) => {
-  const db = new Firestore(app);
-  const client = new Client({ nodes: ['https://smr1.svrs.io/'] });
+  const db = app.getInstance().firestore() as Firestore;
+  const clients = {
+    [Network.SMR]: new Client({ nodes: ['https://smr1.svrs.io/'] }),
+    [Network.RMS]: new Client({ nodes: ['https://rms1.svrs.io/'] }),
+    [Network.IOTA]: new Client({ nodes: ['https://us3.svrs.io/'] }),
+    [Network.ATOI]: new Client({ nodes: ['https://rms1.svrs.io/'] }),
+  };
 
-  const nfts = await db.collection(COL.NFT).where('collection', '==', colletionId).get<Nft>();
-  for (const nft of nfts) {
-    if (nft.status !== NftStatus.MINTED || nft.hidden) {
-      continue;
+  let lastDocRef: any | undefined = undefined;
+  do {
+    let query = db
+      .collection(COL.NFT)
+      .where('mintingData.mintedOn', '>=', mintedAfter.toDate())
+      .limit(1000);
+    if (lastDocRef) {
+      query = query.startAfter(lastDocRef);
     }
+    const snap = await query.get();
+    lastDocRef = last(snap.docs);
 
-    const outputId = await client.nftOutputId(nft.mintingData?.nftId!);
-    const output = (await client.getOutput(outputId)).output as NftOutput;
-    const unlock = output.unlockConditions.find(
-      (u) => u.type === UnlockConditionType.Address,
-    ) as AddressUnlockCondition;
-    const address = Utils.hexToBech32((unlock.address as Ed25519Address).pubKeyHash, 'smr');
+    const promises = snap.docs.map(async (doc) => {
+      const nft = doc.data() as Nft;
+      const network = nft.mintingData?.network!;
+      const currentAddress = nft.depositData?.address || nft.mintingData?.address;
 
-    const docRef = db.doc(`${COL.NFT}/${nft.uid}`);
-    await docRef.update({ 'mintingData.address': address });
+      const outputId = await clients[network].nftOutputId(nft.mintingData?.nftId!);
+      const output = (await clients[network].getOutput(outputId)).output as NftOutput;
+      const unlock = output.unlockConditions.find(
+        (u) => u.type === UnlockConditionType.Address,
+      ) as AddressUnlockCondition;
+      const actualAddress = Utils.hexToBech32(
+        (unlock.address as Ed25519Address).pubKeyHash,
+        network,
+      );
 
-    const withdrawOrder = await db
-      .collection(COL.TRANSACTION)
-      .where('type', '==', TransactionType.WITHDRAW_NFT)
-      .where('payload.nftId', '==', nft.mintingData?.nftId!)
-      .where('payload.walletReference.confirmed', '==', false)
-      .limit(1)
-      .get<Transaction>();
+      if (currentAddress !== actualAddress) {
+        const docRef = db.doc(`${COL.NFT}/${nft.uid}`);
+        await docRef.update({ 'mintingData.address': actualAddress });
+        return;
+      }
 
-    if (withdrawOrder.length) {
-      const withdrawOrderDocRef = db.doc(`${COL.TRANSACTION}/${withdrawOrder[0].uid}`);
-      await withdrawOrderDocRef.update({
-        'payload.walletReference.count': 4,
-        'payload.walletReference.chainReference': null,
-        'payload.sourceAddress': address,
-        shouldRetry: true,
-      });
-    }
-  }
+      if (nft.status === NftStatus.WITHDRAWN) {
+        const withdrawOrderSnap = await db
+          .collection(COL.TRANSACTION)
+          .where('type', '==', TransactionType.WITHDRAW_NFT)
+          .where('payload.nftId', '==', nft.mintingData?.nftId!)
+          .where('payload.walletReference.confirmed', '==', false)
+          .limit(1)
+          .get();
+
+        if (!withdrawOrderSnap.size) {
+          return;
+        }
+
+        const withdrawOrder = withdrawOrderSnap.docs[0].data() as Transaction;
+        const withdrawOrderDocRef = db.doc(`${COL.TRANSACTION}/${withdrawOrder.uid}`);
+        await withdrawOrderDocRef.update({
+          'payload.walletReference.count': 1,
+          'payload.walletReference.chainReference': null,
+          'payload.sourceAddress': actualAddress,
+          shouldRetry: true,
+        });
+      }
+    });
+
+    await Promise.all(promises);
+  } while (lastDocRef);
 };
 
 export const roll = nftAddressFix;
