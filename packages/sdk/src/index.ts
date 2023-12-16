@@ -1,2 +1,2 @@
-export { https } from './https';
+export * from './https';
 export { otr } from './otr';
