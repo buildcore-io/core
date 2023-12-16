@@ -12,7 +12,11 @@ import { AddressDetails } from './secret';
  * @returns
  */
 export const walletSign = async (uid: string, address: AddressDetails) => {
-  const member = await https(Build5.TEST).project(API_KEY[Build5.TEST]).dataset(Dataset.MEMBER).id(uid).get();
+  const member = await https(Build5.TEST)
+    .project(API_KEY[Build5.TEST])
+    .dataset(Dataset.MEMBER)
+    .id(uid)
+    .get();
   const seed = mnemonicToSeedSync(address.mnemonic);
   const hexSeed = '0x' + seed.toString('hex');
   const secretManager = new SecretManager({ hexSeed });

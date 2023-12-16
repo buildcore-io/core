@@ -9,25 +9,30 @@ async function main() {
   let userSign = await walletSign(address.bech32, address);
   try {
     responseProject = await https(origin).createProject({
-        address: address.bech32,
-        signature: userSign.signature,
-        publicKey: {
-          hex: userSign.publicKey,
-          network: Network.RMS,
+      address: address.bech32,
+      signature: userSign.signature,
+      publicKey: {
+        hex: userSign.publicKey,
+        network: Network.RMS,
+      },
+      body: {
+        name: 'TanKRURK',
+        config: {
+          billing: 'volume_based',
         },
-        body: {
-          name: 'TanKRURK',
-          config: {
-            billing: 'volume_based',
-          },
-        },
-      });
+      },
+    });
   } catch (e) {
     console.log(e);
     return;
   }
 
-  console.log('Project created id: ', responseProject.project.uid, ', API Key: ', responseProject.token);
+  console.log(
+    'Project created id: ',
+    responseProject.project.uid,
+    ', API Key: ',
+    responseProject.token,
+  );
 }
 
 main().then(() => process.exit());

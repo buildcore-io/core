@@ -4,31 +4,32 @@ import { address } from './utils/secret';
 import { walletSign } from './utils/utils';
 
 async function main() {
-    const origin = Build5.TEST;
-    let response: Space;
-    const userSign = await walletSign(address.bech32, address);
-    try {
-      response = await https(origin).project(API_KEY[origin])
-        .dataset(Dataset.SPACE)
-        .create({
-          address: address.bech32,
-          signature: userSign.signature,
-          publicKey: {
-            hex: userSign.publicKey,
-            network: Network.RMS,
-          },
-          // Use SOONAVERSE TEST - wen.soonaverse.com
-          projectApiKey: API_KEY[origin],
-          body: {
-            name: 'TanKRURK',
-          },
+  const origin = Build5.TEST;
+  let response: Space;
+  const userSign = await walletSign(address.bech32, address);
+  try {
+    response = await https(origin)
+      .project(API_KEY[origin])
+      .dataset(Dataset.SPACE)
+      .create({
+        address: address.bech32,
+        signature: userSign.signature,
+        publicKey: {
+          hex: userSign.publicKey,
+          network: Network.RMS,
+        },
+        // Use SOONAVERSE TEST - wen.soonaverse.com
+        projectApiKey: API_KEY[origin],
+        body: {
+          name: 'TanKRURK',
+        },
       });
-    } catch (e) {
-      console.log(e);
-      return;
-    }
-  
-    console.log(response);
+  } catch (e) {
+    console.log(e);
+    return;
   }
-  
-  main().then(() => process.exit());
+
+  console.log(response);
+}
+
+main().then(() => process.exit());

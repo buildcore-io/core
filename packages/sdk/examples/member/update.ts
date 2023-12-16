@@ -5,11 +5,16 @@ import { walletSign } from '../utils/utils';
 
 async function main() {
   const origin = Build5.TEST;
-  const member = await https(origin).project(API_KEY[Build5.TEST]).dataset(Dataset.MEMBER).id(address.bech32).get();
-  
+  const member = await https(origin)
+    .project(API_KEY[Build5.TEST])
+    .dataset(Dataset.MEMBER)
+    .id(address.bech32)
+    .get();
+
   const name = Math.random().toString().split('.')[1];
   const signature = await walletSign(member.uid, address);
-  const response = await https(origin).project(API_KEY[Build5.TEST])
+  const response = await https(origin)
+    .project(API_KEY[Build5.TEST])
     .dataset(Dataset.MEMBER)
     .update({
       address: address.bech32,
