@@ -3,13 +3,14 @@ import algoliasearch from 'algoliasearch';
 import { algoliaAppId, algoliaKey } from '../../utils/config.utils';
 import { FirestoreDocEvent } from '../common';
 import { docToAlgoliaData } from './firestore.to.algolia';
+import { logger } from '../../utils/logger';
 const client = algoliasearch(algoliaAppId(), algoliaKey());
 
 const deleteObject = async (col: COL, objectID: string) => {
   try {
     await client.initIndex(col).deleteObject(objectID);
   } catch (error) {
-    console.error(col, objectID, error);
+    logger.error(col, objectID, error);
   }
 };
 
@@ -18,7 +19,7 @@ const upsertObject = async (rawData: Record<string, unknown>, col: COL, objectID
   try {
     await client.initIndex(col).saveObject(data).wait();
   } catch (error) {
-    console.error(col, objectID, error);
+    logger.error(col, objectID, error);
   }
 };
 

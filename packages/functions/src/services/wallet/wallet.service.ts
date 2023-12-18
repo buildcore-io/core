@@ -5,6 +5,7 @@ import { getRandomIndex } from '../../utils/common.utils';
 import { IotaWallet } from './IotaWalletService';
 import { SmrWallet } from './SmrWalletService';
 import { Wallet } from './wallet';
+import { logger } from '../../utils/logger';
 
 export interface AddressDetails {
   bech32: string;
@@ -43,11 +44,11 @@ const getClient = async (network: Network, nodeIndexToExclude?: number) => {
         return { client, info: info.nodeInfo, nodeIndex, nodeUrl };
       }
     } catch (error) {
-      console.warn(`Could not connect to client ${network}`, nodeUrl, error);
+      logger.warn(`Could not connect to client ${network}`, nodeUrl, error);
     }
     await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 1000 + 500)));
   }
-  console.error(`Could not connect to client ${network}`, nodeUrl);
+  logger.error(`Could not connect to client ${network}`, nodeUrl);
   throw Error(`Could not connect to any client ${network}`);
 };
 

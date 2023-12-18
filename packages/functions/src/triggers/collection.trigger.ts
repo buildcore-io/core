@@ -18,6 +18,7 @@ import { collectionToIpfsMetadata, downloadMediaAndPackCar } from '../utils/car.
 import { getProject } from '../utils/common.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 import { FirestoreDocEvent } from './common';
+import { logger } from '../utils/logger';
 
 export const onCollectionUpdated = async (event: FirestoreDocEvent<Collection>) => {
   const { prev, curr } = event;
@@ -48,7 +49,7 @@ export const onCollectionUpdated = async (event: FirestoreDocEvent<Collection>) 
       return await onNftMediaPrepared(curr);
     }
   } catch (error) {
-    console.error(curr.uid, error);
+    logger.error(curr.uid, error);
   }
 };
 

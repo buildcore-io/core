@@ -26,6 +26,7 @@ import { getProject } from '../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { dropToOutput } from '../../utils/token-minting-utils/member.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { logger } from '../../utils/logger';
 
 const LOOP_SIZE = 10000;
 
@@ -168,6 +169,7 @@ const onMintedAirdropClaim = async (order: Transaction, token: Token) => {
   });
 
   if (storageDepositUsed < order.payload.amount!) {
+    logger.info('onMintedAirdropClaim', order.uid, storageDepositUsed, order.payload.amount);
     const credit: Transaction = {
       project: getProject(order),
       type: TransactionType.CREDIT,
@@ -176,6 +178,7 @@ const onMintedAirdropClaim = async (order: Transaction, token: Token) => {
       member: member.uid,
       network: order.network,
       payload: {
+        type: TransactionPayloadType.CLAIM_MINTED_TOKEN,
         amount: order.payload.amount! - storageDepositUsed,
         sourceAddress: order.payload.targetAddress,
         targetAddress: getAddress(member, order.network!),

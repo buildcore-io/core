@@ -27,6 +27,7 @@ import { WalletService } from '../../wallet/wallet.service';
 import { BaseService, HandlerParams } from '../base';
 import { createNftWithdrawOrder } from '../tangle-service/nft/nft-purchase.service';
 import { NftDepositService } from './nft-deposit.service';
+import { logger } from '../../../utils/logger';
 
 export class NftStakeService extends BaseService {
   public handleRequest = async ({ project, order, match, tranEntry }: HandlerParams) => {
@@ -79,7 +80,7 @@ export class NftStakeService extends BaseService {
     } catch (error: any) {
       const payment = await this.transactionService.createPayment(order, match, true);
       this.transactionService.createNftCredit(payment, match, error, customErrorParams);
-      console.error(order.uid, payment.uid, error, customErrorParams);
+      logger.error(order.uid, payment.uid, error, customErrorParams);
     }
   };
 

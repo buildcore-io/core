@@ -17,6 +17,7 @@ import os from 'os';
 import path from 'path';
 import { BUCKET_BASE_URLS } from '../services/joi/common';
 import { getBucket, isEmulatorEnv } from './config.utils';
+import { logger } from './logger';
 
 export const migrateUriToSotrage = async (
   col: COL,
@@ -40,7 +41,7 @@ export const migrateUriToSotrage = async (
       bucket.getName() === Bucket.DEV ? response : `https://${bucket.getName()}/${destination}`;
     return build5Url;
   } catch (error: any) {
-    console.error(col, uid, error);
+    logger.error(col, uid, error);
     throw error.code && error.key ? error : WenError.ipfs_retrieve;
   } finally {
     fs.rmSync(workdir, { recursive: true, force: true });

@@ -62,8 +62,8 @@ jobs:
           npm run build:sdk
       - name: Deploy to npm as "upcoming" package
         run: |
-          npm publish --workspace packages/interfaces --tag next
-          cd packages/sdk/lib && npm publish --tag next
+          npm publish --workspace packages/interfaces --tag next --access public
+          cd packages/sdk/lib && npm publish --tag next --access public
   deploy_functions:
     runs-on: ubuntu-latest
     environment: staging
