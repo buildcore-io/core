@@ -17,6 +17,6 @@ jobs:
           node-version: 20
       - name: Install Dependencies and build SDK
         run: npm run build:sdk
-      - name: Build Examples
-        run: npm run build
+      - name: Install and build Examples
+        run: npm i && npm run build
         working-directory: packages/sdk/examples
