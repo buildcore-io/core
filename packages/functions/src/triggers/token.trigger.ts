@@ -34,7 +34,6 @@ import {
 } from '../utils/token.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 import { FirestoreDocEvent } from './common';
-import { logger } from '../utils/logger';
 
 export const onTokenStatusUpdated = async (event: FirestoreDocEvent<Token>) => {
   const { prev, curr } = event;
@@ -334,7 +333,7 @@ const cancelPublicSale = async (token: Token) => {
   await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ status });
 
   if (status === TokenStatus.ERROR) {
-    logger.error('Token processing error', token.uid, errors);
+    console.error('Token processing error', token.uid, errors);
   }
 };
 
@@ -368,7 +367,7 @@ const processTokenDistribution = async (token: Token) => {
   await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ status });
 
   if (status === TokenStatus.ERROR) {
-    logger.error('Token processing error', token.uid, errors);
+    console.error('Token processing error', token.uid, errors);
   }
 };
 
