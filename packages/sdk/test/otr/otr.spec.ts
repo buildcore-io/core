@@ -1,6 +1,6 @@
 import { Dataset } from '@build-5/interfaces';
 import * as build5 from '../../src';
-import { API_KEY, Build5 } from '../../src/https';
+import { Build5ApiKey, Build5 } from '../../src/https';
 import { Build5OtrAddress } from '../../src/otr';
 
 describe('', () => {
@@ -15,7 +15,7 @@ describe('', () => {
     const tag = request.getTag(deeplink);
     console.log(tag);
 
-    const obs = build5.https(Build5.TEST).project(API_KEY[Build5.TEST]).trackByTag(tag);
+    const obs = build5.https(Build5.TEST).project(Build5ApiKey[Build5.TEST]).trackByTag(tag);
     const subs = obs.subscribe((n) => console.log(n));
 
     await new Promise((resolve) => setTimeout(resolve, 200000));
