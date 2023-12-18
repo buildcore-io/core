@@ -1,6 +1,7 @@
 import { build5Db } from '@build-5/database';
 import { COL, TICKERS } from '@build-5/interfaces';
 import axios from 'axios';
+import { logger } from '../utils/logger';
 
 export const getLatestBitfinexPricesCron = async () => {
   try {
@@ -27,6 +28,6 @@ export const getLatestBitfinexPricesCron = async () => {
       });
     }
   } catch (e) {
-    console.error('Failed to get latest prices. Try again in 5 minutes', e);
+    logger.error('Failed to get latest prices. Try again in 5 minutes', e);
   }
 };

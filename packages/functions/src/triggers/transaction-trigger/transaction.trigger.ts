@@ -37,6 +37,7 @@ import { onStakingConfirmed } from './staking';
 import { onStampMintUpdate } from './stamp-minting';
 import { onTokenMintingUpdate } from './token-minting';
 import { getWalletParams } from './wallet-params';
+import { logger } from '../../utils/logger';
 
 export const DEFAULT_EXECUTABLE_TRANSACTIONS = [
   TransactionType.BILL_PAYMENT,
@@ -135,6 +136,7 @@ export const onTransactionWrite = async (event: FirestoreDocEvent<Transaction>) 
     !prev?.payload.reconciled &&
     curr.payload.reconciled
   ) {
+    logger.info('onAirdropClaim', JSON.stringify({ prev, curr }));
     await onAirdropClaim(curr);
     return;
   }
@@ -239,7 +241,7 @@ const executeTransaction = async (transactionId: string) => {
         }
 
         default: {
-          console.error('Unsupported executable transaction type', transaction);
+          logger.error('Unsupported executable transaction type', transaction);
           throw Error('Unsupported executable transaction type ' + transaction.type);
         }
       }
@@ -253,7 +255,7 @@ const executeTransaction = async (transactionId: string) => {
       'payload.walletReference.nodeIndex': wallet.nodeIndex,
     });
   } catch (error) {
-    console.error(transaction.uid, wallet.nodeUrl, error);
+    logger.error(transaction.uid, wallet.nodeUrl, error);
     await docRef.update({
       'payload.walletReference.chainReference': null,
       'payload.walletReference.processedOn': dayjs().toDate(),
@@ -291,7 +293,7 @@ const submitCollectionMintTransactions = (
       return aliasWallet.changeAliasOwner(transaction, params);
     }
     default: {
-      console.error('Unsupported executable transaction type', transaction);
+      logger.error('Unsupported executable transaction type', transaction);
       throw Error('Unsupported executable transaction type ' + transaction.payload.type);
     }
   }
@@ -316,7 +318,7 @@ const submitTokenMintTransactions = (
       return aliasWallet.changeAliasOwner(transaction, params);
     }
     default: {
-      console.error('Unsupported executable transaction type', transaction);
+      logger.error('Unsupported executable transaction type', transaction);
       throw Error('Unsupported executable transaction type ' + transaction.payload.type);
     }
   }
@@ -345,7 +347,7 @@ const submitCreateAwardTransaction = (
       return aliasWallet.burnAlias(transaction, params);
     }
     default: {
-      console.error(
+      logger.error(
         'Unsupported executable transaction type in submitCreateAwardTransaction',
         transaction,
       );
@@ -377,7 +379,7 @@ const submitMintMetadataTransaction = async (
       return nftWallet.updateMetadataNft(transaction, params);
     }
     default: {
-      console.error(
+      logger.error(
         'Unsupported executable transaction type in submitMintMetadataTransaction',
         transaction,
       );
@@ -401,7 +403,7 @@ const submitMintStampTransaction = async (
       return nftWallet.mintStampNft(transaction, params);
     }
     default: {
-      console.error(
+      logger.error(
         'Unsupported executable transaction type in submitCreateAwardTransaction',
         transaction,
       );
@@ -432,7 +434,7 @@ const submitUnlockTransaction = async (
       return nftWallet.changeNftOwner(transaction, params);
     }
     default: {
-      console.error('Unsupported executable transaction type', transaction);
+      logger.error('Unsupported executable transaction type', transaction);
       throw Error('Unsupported executable transaction type ' + transaction.payload.type);
     }
   }
@@ -551,6 +553,7 @@ const onMintedAirdropCleared = async (curr: Transaction) => {
     member: curr.member,
     network: curr.network || DEFAULT_NETWORK,
     payload: {
+      type: TransactionPayloadType.AIRDROP_MINTED_TOKEN,
       amount: curr.payload.amount,
       sourceAddress: curr.payload.targetAddress,
       targetAddress: getAddress(member, curr.network || DEFAULT_NETWORK),

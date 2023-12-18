@@ -25,6 +25,7 @@ import { getOutputMetadata } from '../../utils/basic-output.utils';
 import { getProject } from '../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { logger } from '../../utils/logger';
 export interface TransactionMatch {
   msgId: string;
   from: string;
@@ -331,7 +332,7 @@ export class TransactionService {
       ? { status: 'error', code: error.code || '', message: error.key || '', ...customErrorParams }
       : {};
     if (!isEmpty(error) && !get(error, 'code')) {
-      console.error(payment.uid, tran.to.nftOutput?.nftId, error);
+      logger.error(payment.uid, tran.to.nftOutput?.nftId, error);
     }
     const transaction: Transaction = {
       project: getProject(payment),
