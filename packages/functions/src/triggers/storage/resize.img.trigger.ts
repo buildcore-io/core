@@ -6,8 +6,8 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import sharp from 'sharp';
-import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { logger } from '../../utils/logger';
+import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const ffprobePath = require('@ffprobe-installer/ffprobe').path;
@@ -30,12 +30,12 @@ export const onStorageObjectFinalized = async (data: StorageObject) => {
     const downloadedMediaPath = await downloadMedia(workdir, data);
     if (data.contentType?.startsWith('image/')) {
       await uploadeResizedImages(workdir, data, downloadedMediaPath);
-    } else {
+    } else if (data.contentType?.startsWith('video/')) {
       await uploadVideoPreview(workdir, data, downloadedMediaPath);
     }
+    logger.warn('Unsupported content type ' + JSON.stringify(data));
   } catch (error) {
-    logger.error(error);
-    throw error;
+    logger.error(JSON.stringify({ data, error }));
   } finally {
     fs.rmSync(workdir, { recursive: true, force: true });
   }
