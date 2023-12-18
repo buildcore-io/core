@@ -95,6 +95,7 @@ const config = {
           sidebarPath: require.resolve('./sidebars.js'),
           remarkPlugins: [
             [require('@docusaurus/remark-plugin-npm2yarn'), {sync: true}],
+            [require('remark-code-import'), {removeRedundantIndentations: true}],
           ],
         },
         blog: false,
@@ -179,6 +180,7 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
+        dditionalLanguages: ['ts'],
       },
     }),
 };

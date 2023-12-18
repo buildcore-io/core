@@ -5193,9 +5193,11 @@ __metadata:
     clsx: "npm:^1.2.1"
     docusaurus-plugin-typedoc: "npm:^0.19.2"
     prism-react-renderer: "npm:^1.3.5"
+    raw-loader: "npm:^4.0.2"
     react: "npm:^17.0.2"
     react-dom: "npm:^17.0.2"
     react-router-dom: "npm:5.3.4"
+    remark-code-import: "npm:0.4.0"
     typedoc: "npm:^0.24.8"
     typedoc-plugin-markdown: "npm:^3.17.1"
     typescript: "npm:4.9.5"
@@ -9087,6 +9089,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"raw-loader@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "raw-loader@npm:4.0.2"
+  dependencies:
+    loader-utils: "npm:^2.0.0"
+    schema-utils: "npm:^3.0.0"
+  peerDependencies:
+    webpack: ^4.0.0 || ^5.0.0
+  checksum: 981ebe65e1cee7230300d21ba6dcd8bd23ea81ef4ad2b167c0f62d93deba347f27921d330be848634baab3831cf9f38900af6082d6416c2e937fe612fa6a74ff
+  languageName: node
+  linkType: hard
+
 "rc@npm:1.2.8, rc@npm:^1.2.8":
   version: 1.2.8
   resolution: "rc@npm:1.2.8"
@@ -9453,6 +9467,16 @@ __metadata:
   version: 0.2.7
   resolution: "relateurl@npm:0.2.7"
   checksum: c248b4e3b32474f116a804b537fa6343d731b80056fb506dffd91e737eef4cac6be47a65aae39b522b0db9d0b1011d1a12e288d82a109ecd94a5299d82f6573a
+  languageName: node
+  linkType: hard
+
+"remark-code-import@npm:0.4.0":
+  version: 0.4.0
+  resolution: "remark-code-import@npm:0.4.0"
+  dependencies:
+    to-gatsby-remark-plugin: "npm:^0.1.0"
+    unist-util-visit: "npm:^2.0.1"
+  checksum: a284c20cc96ed64b594376bdc1a0b40fd01bbc10b806e8378b164f066a699fb6337eceacf85404d02905a4b890c5e027c5d2aaa0a77a556ddc4d70224c5f8025
   languageName: node
   linkType: hard
 
@@ -10510,6 +10534,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"to-gatsby-remark-plugin@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "to-gatsby-remark-plugin@npm:0.1.0"
+  dependencies:
+    to-vfile: "npm:^6.1.0"
+  checksum: ae6893b59c69b3942c152484ed2f793ccffd1645669aa6fdddeafdcd38f95f15b3304abe012443b3456e4e0da70687c9c01c54a81fcc18212e13767f56616f7a
+  languageName: node
+  linkType: hard
+
 "to-readable-stream@npm:^1.0.0":
   version: 1.0.0
   resolution: "to-readable-stream@npm:1.0.0"
@@ -10523,6 +10556,16 @@ __metadata:
   dependencies:
     is-number: "npm:^7.0.0"
   checksum: 487988b0a19c654ff3e1961b87f471702e708fa8a8dd02a298ef16da7206692e8552a0250e8b3e8759270f62e9d8314616f6da274734d3b558b1fc7b7724e892
+  languageName: node
+  linkType: hard
+
+"to-vfile@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "to-vfile@npm:6.1.0"
+  dependencies:
+    is-buffer: "npm:^2.0.0"
+    vfile: "npm:^4.0.0"
+  checksum: 769591736463332c8c99c418fd94ef0810cf53ae24bdcb7e78b7ce7b0daff5ddf8425e02045e47a722afef538b8986307cf32aee4e36b2568a727b5b6514f81e
   languageName: node
   linkType: hard
 
@@ -10839,7 +10882,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"unist-util-visit@npm:2.0.3, unist-util-visit@npm:^2.0.0, unist-util-visit@npm:^2.0.3":
+"unist-util-visit@npm:2.0.3, unist-util-visit@npm:^2.0.0, unist-util-visit@npm:^2.0.1, unist-util-visit@npm:^2.0.3":
   version: 2.0.3
   resolution: "unist-util-visit@npm:2.0.3"
   dependencies:
