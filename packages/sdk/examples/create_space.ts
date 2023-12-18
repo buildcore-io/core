@@ -1,5 +1,5 @@
 import { Dataset, Network, Space } from '@build-5/interfaces';
-import { API_KEY, Build5, https } from '@build-5/sdk';
+import { Build5, Build5ApiKey, https } from '@build-5/sdk';
 import { address } from './utils/secret';
 import { walletSign } from './utils/utils';
 
@@ -9,7 +9,7 @@ async function main() {
   const userSign = await walletSign(address.bech32, address);
   try {
     response = await https(origin)
-      .project(API_KEY[origin])
+      .project(Build5ApiKey[origin])
       .dataset(Dataset.SPACE)
       .create({
         address: address.bech32,
@@ -19,7 +19,7 @@ async function main() {
           network: Network.RMS,
         },
         // Use SOONAVERSE TEST - wen.soonaverse.com
-        projectApiKey: API_KEY[origin],
+        projectApiKey: Build5ApiKey[origin],
         body: {
           name: 'TanKRURK',
         },

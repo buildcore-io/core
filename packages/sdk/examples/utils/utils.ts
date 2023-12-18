@@ -1,5 +1,5 @@
 import { Dataset, Member } from '@build-5/interfaces';
-import { API_KEY, Build5, https } from '@build-5/sdk';
+import { Build5, Build5ApiKey, https } from '@build-5/sdk';
 import { CoinType, SecretManager, utf8ToHex } from '@iota/sdk';
 import { mnemonicToSeedSync } from 'bip39';
 import { AddressDetails } from './secret';
@@ -13,7 +13,7 @@ import { AddressDetails } from './secret';
  */
 export const walletSign = async (uid: string, address: AddressDetails) => {
   const member = await https(Build5.TEST)
-    .project(API_KEY[Build5.TEST])
+    .project(Build5ApiKey[Build5.TEST])
     .dataset(Dataset.MEMBER)
     .id(uid)
     .get();

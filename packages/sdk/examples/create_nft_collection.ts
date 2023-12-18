@@ -1,5 +1,5 @@
 import { Dataset, Network } from '@build-5/interfaces';
-import { API_KEY, Build5, https } from '@build-5/sdk';
+import { Build5, Build5ApiKey, https } from '@build-5/sdk';
 import { address } from './utils/secret';
 import { walletSign } from './utils/utils';
 
@@ -7,7 +7,7 @@ async function main() {
   const network = Network.RMS;
   let userSign = await walletSign(address.bech32, address);
   try {
-    const projectAPIKey = API_KEY[Build5.TEST];
+    const projectAPIKey = Build5ApiKey[Build5.TEST];
 
     console.log('Create NFT Collection under your project...');
     const collectionName = Math.random()
