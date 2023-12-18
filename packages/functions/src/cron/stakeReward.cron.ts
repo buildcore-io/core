@@ -21,6 +21,7 @@ import { isEmpty, last } from 'lodash';
 import { getProject } from '../utils/common.utils';
 import { serverTime } from '../utils/dateTime.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
+import { logger } from '../utils/logger';
 
 export const onStakeRewardExpired = async () => {
   const stakeRewards = await getDueStakeRewards();
@@ -32,7 +33,7 @@ export const onStakeRewardExpired = async () => {
       const { totalAirdropped, totalStaked } = await executeStakeRewardDistribution(stakeReward);
       await stakeRewardDocRef.update({ totalStaked, totalAirdropped });
     } catch (error) {
-      console.error('Stake reward error', stakeReward.uid, error);
+      logger.error('Stake reward error', stakeReward.uid, error);
       await stakeRewardDocRef.update({ status: StakeRewardStatus.ERROR });
     }
   }

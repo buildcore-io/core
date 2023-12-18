@@ -5,11 +5,12 @@ import { isStorageUrl } from '../services/joi/common';
 import { isProdEnv } from './config.utils';
 import { invalidArgument } from './error.utils';
 import { fileExists } from './storage.utils';
+import { logger } from './logger';
 
 const assertValidation = (r: ValidationResult) => {
   if (r.error) {
     const detail = head(r.error.details);
-    isProdEnv() && console.warn('invalid-argument', 'Invalid argument', { func: r.error });
+    isProdEnv() && logger.warn('invalid-argument', 'Invalid argument', { func: r.error });
     throw invalidArgument(
       WenError.invalid_params,
       detail ? `${detail.message || ''}. ${detail.context?.message || ''}` : '',
