@@ -7,6 +7,7 @@ import { MilestoneTransactionAdapter } from './MilestoneTransactionAdapter';
 import { confirmTransaction } from './common';
 import { processConsumedVoteOutputs } from './consumed.vote.outputs';
 import { updateTokenSupplyData } from './token.foundry';
+import { logger } from '../../utils/logger';
 
 export const handleMilestoneTransactionWrite =
   (network: Network) => async (event: FirestoreDocEvent<Record<string, unknown>>) => {
@@ -37,6 +38,6 @@ export const handleMilestoneTransactionWrite =
         return transaction.update(docRef, { processed: true, processedOn: dayjs().toDate() });
       });
     } catch (error) {
-      console.error(`${network} transaction error`, event.path, error);
+      logger.error(`${network} transaction error`, event.path, error);
     }
   };

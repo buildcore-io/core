@@ -38,6 +38,7 @@ import { NftWallet } from '../../wallet/NftWallet';
 import { WalletService } from '../../wallet/wallet.service';
 import { BaseService, HandlerParams } from '../base';
 import { TransactionMatch } from '../transaction-service';
+import { logger } from '../../../utils/logger';
 
 export class NftDepositService extends BaseService {
   public handleRequest = async ({ order, match, tranEntry }: HandlerParams) => {
@@ -218,7 +219,7 @@ export class NftDepositService extends BaseService {
         set(migratedCollection, 'mediaStatus', MediaStatus.PENDING_UPLOAD);
         set(space, 'avatarUrl', bannerUrl);
       } catch (error) {
-        console.warn('Could not get banner url', order.uid, nftOutput.nftId, error);
+        logger.warn('Could not get banner url', order.uid, nftOutput.nftId, error);
       }
     }
 

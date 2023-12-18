@@ -7,6 +7,7 @@ import os from 'os';
 import path from 'path';
 import sharp from 'sharp';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { logger } from '../../utils/logger';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const ffprobePath = require('@ffprobe-installer/ffprobe').path;
@@ -33,7 +34,7 @@ export const onStorageObjectFinalized = async (data: StorageObject) => {
       await uploadVideoPreview(workdir, data, downloadedMediaPath);
     }
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     throw error;
   } finally {
     fs.rmSync(workdir, { recursive: true, force: true });
