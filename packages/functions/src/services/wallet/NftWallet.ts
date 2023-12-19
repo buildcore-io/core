@@ -55,7 +55,6 @@ import { AliasWallet } from './AliasWallet';
 import { MnemonicService } from './mnemonic';
 import { Wallet, WalletParams } from './wallet';
 import { AddressDetails, setConsumedOutputIds } from './wallet.service';
-import { logger } from '../../utils/logger';
 
 interface MintNftInputParams {
   readonly aliasOutputId: string;
@@ -314,7 +313,7 @@ export class NftWallet {
 
     if (!nftsToMint) {
       await unclockMnemonic(sourceAddress.bech32);
-      logger.error('Nft data to big to mint', head(nfts));
+      console.error('nft mint error', 'Nft data to big to mint', head(nfts));
       throw Error('Nft data to big to mint');
     }
     return blockId;
