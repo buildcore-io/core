@@ -46,11 +46,13 @@ export const createCollectionControl = async ({
     }
   }
 
-  const royaltySpace = await build5Db().doc(`${COL.SPACE}/${params.royaltiesSpace}`).get<Space>();
-  if (!royaltySpace) {
-    throw invalidArgument(WenError.space_does_not_exists);
+  if (params.royaltiesFee) {
+    const royaltySpace = await build5Db().doc(`${COL.SPACE}/${params.royaltiesSpace}`).get<Space>();
+    if (!royaltySpace) {
+      throw invalidArgument(WenError.space_does_not_exists);
+    }
+    assertSpaceHasValidAddress(royaltySpace, DEFAULT_NETWORK);
   }
-  assertSpaceHasValidAddress(royaltySpace, DEFAULT_NETWORK);
 
   if (params.availableFrom) {
     params.availableFrom = dateToTimestamp(params.availableFrom, true).toDate();

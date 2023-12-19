@@ -75,7 +75,7 @@ export interface UpdateCollectionRequest {
   /**
    * Build5 id of the royalty space.
    */
-  royaltiesSpace: string;
+  royaltiesSpace?: string;
   /**
    * Twitter url of the collection.
    */

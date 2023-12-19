@@ -1,6 +1,6 @@
 import { Dataset, TangleResponse, Transaction, TransactionType } from '@build-5/interfaces';
 import { Observable as RxjsObservable, Subscriber, Subscription } from 'rxjs';
-import { Build5ApiKey, Build5, https } from '../https';
+import { Build5, SoonaverseApiKey, https } from '../https';
 import { TransactionDataset } from '../https/datasets/TransactionDataset';
 
 export interface TagTrackResult extends TangleResponse {
@@ -17,7 +17,7 @@ export class Observable extends RxjsObservable<TagTrackResult> {
     super((observer) => {
       this.observer = observer;
 
-      this.dataset = https(origin).project(Build5ApiKey[origin]).dataset(Dataset.TRANSACTION);
+      this.dataset = https(origin).project(SoonaverseApiKey[origin]).dataset(Dataset.TRANSACTION);
       this.observer.next({ status: 'waiting for payment' });
 
       this.subs['payment'] = this.dataset

@@ -142,7 +142,7 @@ export const createNftPuchaseOrder = async (
       beneficiaryUid: nft.owner || collection.space,
       beneficiaryAddress: getAddress(currentOwner, network),
       royaltiesFee: collection.royaltiesFee,
-      royaltiesSpace: collection.royaltiesSpace,
+      royaltiesSpace: collection.royaltiesSpace || '',
       royaltiesSpaceAddress: getAddress(royaltySpace, network),
       expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
       validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,

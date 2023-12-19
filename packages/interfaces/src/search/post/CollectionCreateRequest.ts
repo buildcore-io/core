@@ -95,7 +95,7 @@ export interface CreateCollectionRequest {
   /**
    * Build5 id of the royalty space.
    */
-  royaltiesSpace: string;
+  royaltiesSpace?: string;
   /**
    * Build5 id of the space for this collection.
    */

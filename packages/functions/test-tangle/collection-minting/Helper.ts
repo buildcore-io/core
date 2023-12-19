@@ -183,11 +183,11 @@ export class CollectionMintHelper {
     expect(lockTran[0].payload?.walletReference?.confirmed).toBe(true);
   };
 
-  public createDummyCollection = (space: string, royaltiesSpace: string) => ({
+  public createDummyCollection = (space: string, royaltiesSpace = '') => ({
     name: 'Collection A',
     description: 'babba',
     type: CollectionType.CLASSIC,
-    royaltiesFee: 0.6,
+    royaltiesFee: royaltiesSpace ? 0.6 : 0,
     category: Categories.ART,
     access: Access.OPEN,
     space,
