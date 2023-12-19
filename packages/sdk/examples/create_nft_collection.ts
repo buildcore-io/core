@@ -4,7 +4,6 @@ import { address } from './utils/secret';
 import { walletSign } from './utils/utils';
 
 async function main() {
-  const network = Network.RMS;
   let userSign = await walletSign(address.bech32, address);
   try {
     const projectAPIKey = Build5ApiKey[Build5.TEST];
@@ -15,7 +14,6 @@ async function main() {
       .substring(2, 5)
       .replace(/[0-9]/g, '')
       .toUpperCase();
-    const availableFrom = Date.now();
     const collection = await https(Build5.TEST)
       .project(projectAPIKey)
       .dataset(Dataset.COLLECTION)
@@ -24,12 +22,12 @@ async function main() {
         signature: userSign.signature,
         publicKey: {
           hex: userSign.publicKey,
-          network: network,
+          network: Network.RMS,
         },
         body: {
           name: collectionName + ' collection',
           description: collectionName + ' collection description',
-          availableFrom: availableFrom,
+          availableFrom: Date.now(),
           access: 0,
           category: 'COLLECTIBLE',
           bannerUrl:
@@ -72,7 +70,7 @@ async function main() {
         signature: userSign.signature,
         publicKey: {
           hex: userSign.publicKey,
-          network: network,
+          network: Network.RMS,
         },
         body: <any>nftLists,
       });
