@@ -2,6 +2,4 @@
 title: Space Management
 ---
 
-Spaces can have multiplpe members. Members can be added and removed from a space. Members can be assigned different roles.
-The following How-To's will help you manage your members.
-
+Spaces are a way to organize members, tokens, and more around a specific topic/project. Spaces can create their tokens, NFT collections, staking events, and many other things. Spaces can have different types of members, each with additional permissions.
