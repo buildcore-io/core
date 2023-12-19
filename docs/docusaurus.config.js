@@ -95,7 +95,7 @@ const config = {
           sidebarPath: require.resolve('./sidebars.js'),
           remarkPlugins: [
             [require('@docusaurus/remark-plugin-npm2yarn'), {sync: true}],
-            [require('remark-code-import'), {removeRedundantIndentations: true}],
+            require('remark-code-import'),
           ],
         },
         blog: false,

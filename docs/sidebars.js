@@ -30,24 +30,6 @@ const sidebars = {
       collapsed: false,
       items: [
         {
-          'DAO Management API': ['products/dao_management/overview'],
-        },
-        {
-          'Digital Twin NFT': ['products/digital_twin_nft/overview'],
-        },
-        {
-          'NFT API': ['products/nft/overview'],
-        },
-        {
-          'NFT Trading API': ['products/nft_trading/overview'],
-        },
-        {
-          'NFT Staking API': ['products/nft_staking/overview'],
-        },
-        {
-          'Member API': ['products/member/overview'],
-        },
-        {
           'Project API': [
             'products/project/overview',
             {
@@ -56,6 +38,65 @@ const sidebars = {
               ],
             }
           ],
+        },
+        {
+          'DAO Management API': [
+            'products/dao_management/overview',
+            {
+              type: 'category',
+              label: 'Space',
+              link: {type: 'doc', id: 'products/dao_management/space/overview'},
+              items: [
+                {
+                  'How To': [
+                    'products/dao_management/space/how-to/create-space',
+                  ],
+                }
+              ],
+            },
+            {
+              type: 'category',
+              label: 'Member',
+              link: {type: 'doc', id: 'products/dao_management/member/overview'},
+              items: [
+                {
+                  'How To': [
+                    'products/dao_management/member/how-to/create-member',
+                    'products/dao_management/member/how-to/update-member',
+                  ],
+                }
+              ],
+            },
+          ],
+        },
+        {
+          'NFT API': [
+            'products/nft/overview',
+            {
+              'How To': [
+                'products/nft/how-to/create-nft-collection',
+              ],
+            }
+          ],
+        },
+        {
+          'Stamp API': [
+            'products/stamp/overview',
+            {
+              'How To': [
+                'products/stamp/how-to/create-stamp',
+              ],
+            }
+          ],
+        },
+        {
+          'Digital Twin NFT': ['products/digital_twin_nft/overview'],
+        },
+        {
+          'NFT Trading API': ['products/nft_trading/overview'],
+        },
+        {
+          'NFT Staking API': ['products/nft_staking/overview'],
         },
         {
           'Proposal API': ['products/proposal/overview'],
