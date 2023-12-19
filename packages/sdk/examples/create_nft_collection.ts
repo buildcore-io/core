@@ -14,6 +14,7 @@ async function main() {
       .substring(2, 5)
       .replace(/[0-9]/g, '')
       .toUpperCase();
+    const dateNow = Date.now();
     const collection = await https(Build5.TEST)
       .project(projectAPIKey)
       .dataset(Dataset.COLLECTION)
@@ -27,7 +28,7 @@ async function main() {
         body: {
           name: collectionName + ' collection',
           description: collectionName + ' collection description',
-          availableFrom: Date.now(),
+          availableFrom: dateNow,
           access: 0,
           category: 'COLLECTIBLE',
           bannerUrl:
@@ -52,7 +53,7 @@ async function main() {
         .replace(/[0-9]/g, '')
         .toUpperCase();
       nftLists.push({
-        availableFrom: availableFrom,
+        availableFrom: dateNow,
         collection: collection.uid,
         description: nftName + ' description',
         media:
