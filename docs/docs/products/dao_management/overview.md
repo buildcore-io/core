@@ -2,9 +2,7 @@
 title: Overview
 ---
 
-import NotStarted from '../../_admonitions/_not-started-yet.md';
-
-<NotStarted/>
+Build.5 provides a set of tools to manage DAOs. Part of that is creating spaces, members, changing roles, etc.
 
 __Features__: 
 - Space Management

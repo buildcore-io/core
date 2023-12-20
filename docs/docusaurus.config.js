@@ -91,7 +91,13 @@ const config = {
       'classic',
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
-        docs: { sidebarPath: require.resolve('./sidebars.js') },
+        docs: { 
+          sidebarPath: require.resolve('./sidebars.js'),
+          remarkPlugins: [
+            [require('@docusaurus/remark-plugin-npm2yarn'), {sync: true}],
+            require('remark-code-import'),
+          ],
+        },
         blog: false,
         pages: {
           path: 'src/pages',
@@ -102,6 +108,7 @@ const config = {
       }),
     ],
   ],
+  themes: ['@saucelabs/theme-github-codeblock'],
 
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
@@ -173,6 +180,7 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
+        dditionalLanguages: ['ts'],
       },
     }),
 };
