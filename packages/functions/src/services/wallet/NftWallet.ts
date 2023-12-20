@@ -48,7 +48,6 @@ import {
   createNftOutput,
   nftToMetadata,
 } from '../../utils/collection-minting-utils/nft.utils';
-import { logger } from '../../utils/logger';
 import { EMPTY_ALIAS_ID } from '../../utils/token-minting-utils/alias.utils';
 import { awardBadgeToNttMetadata, awardToCollectionMetadata } from '../payment/award/award-service';
 import { stampToNftMetadata } from '../payment/tangle-service/stamp/StampTangleService';
