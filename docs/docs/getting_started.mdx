@@ -56,10 +56,22 @@ https://api-test.build5.com
 Let's do a simple GET Request to get the member's object of `@adam_unchained`:
 
 ```
-// Get @adam_unchained profile
-curl --request GET 'https://api.build5.com/search/getById?collection=member&uid=0x551fd2c7c7bf356bac194587dab2fcd46420054b'
-```
+import { Build5, https } from '@build-5/sdk';
+import { Dataset } from '@build-5/interfaces';
 
-If you're interested to see tons of various examples, we recommend the following repositories: 
-- https://github.com/soonaverse/app/tree/master/src/app/%40api - Example of various interactions Soonaverse does with Build.5 APIs. Both write and read.
-- https://github.com/build-5/build5-otr-examples - Here, you can find various OTR examples.
+const member = await https(origin).createProject(<YourProjectApiKey>)
+                                  .dataset(Dataset.MEMBER)
+                                  .id('0x551fd2c7c7bf356bac194587dab2fcd46420054b')
+                                  .get();
+
+console.log(member);
+```
+> See [Create Project](products/project/how-to/create-project) guide to create project.
+
+### See some of our first how to's:
+- [Create Project](products/project/how-to/create-project)
+- [Create Space](products/dao_management/space/how-to/create-space)
+- [Create Member](products/dao_management/member/how-to/create-member)
+- [Update Member](products/dao_management/member/how-to/update-member)
+- [Create NFT Collection](products/nft/how-to/create-nft-collection)
+- [Create Stamp](products/stamp/how-to/create-stamp)

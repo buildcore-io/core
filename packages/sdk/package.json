@@ -9,7 +9,7 @@
     "serve": "run-p \"run:search\" \"run:functions\"",
     "lint": "eslint --ext .js,.ts src",
     "build": "tsc",
-    "postbuild": "cp package.json ./lib",
+    "postbuild": "cp package.json ./lib && cp README.md ./lib && cp LICENSE ./lib",
     "test": "jest"
   },
   "dependencies": {
