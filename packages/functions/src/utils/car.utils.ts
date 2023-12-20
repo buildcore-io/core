@@ -91,7 +91,7 @@ export const collectionToIpfsMetadata = (collection: Collection) => ({
   description: collection.description,
   author: collection.createdBy,
   space: collection.space,
-  royaltySpace: collection.royaltiesSpace,
+  royaltySpace: collection.royaltiesSpace || '',
   platform: KEY_NAME_TANGLE,
   uid: collection.uid,
 });
@@ -104,7 +104,7 @@ export const nftToIpfsMetadata = (collection: Collection, nft: Nft) => {
     description: nft.description,
     author: nft.createdBy,
     space: nft.space,
-    royaltySpace: collection.royaltiesSpace,
+    royaltySpace: collection.royaltiesSpace || '',
     platform: KEY_NAME_TANGLE,
     uid: nft.uid,
     attributes: [...props, ...stats],

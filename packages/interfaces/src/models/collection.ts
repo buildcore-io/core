@@ -92,7 +92,7 @@ export interface CollectionBase extends BaseRecord {
   /**
    * Roaylty space {@link Space}
    */
-  royaltiesSpace: NetworkAddress;
+  royaltiesSpace?: NetworkAddress;
   /**
    * Discount lines
    */

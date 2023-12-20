@@ -1,14 +1,10 @@
 import { AddressValidationTangleRequest, TangleRequestType } from '@build-5/interfaces';
-import { validateAddressSchema } from '../../../../controls/address/AddressValidationRequestSchema';
-import { toJoiObject } from '../../../joi/common';
+import { CommonJoi, toJoiObject } from '../../../joi/common';
 import { baseTangleSchema } from '../common';
 
 export const validateAddressSchemaObject = toJoiObject<AddressValidationTangleRequest>({
   ...baseTangleSchema(TangleRequestType.ADDRESS_VALIDATION),
-  ...validateAddressSchema,
+  space: CommonJoi.uid(false).optional().description('Build5 id of the space'),
 })
-  .description(
-    'Tangle request object to validate an address. ' +
-      'If the source address is SMR, the address will be validated, otherswise and address validation order is created.',
-  )
+  .description('Tangle request object to validate an address.')
   .meta({ className: 'AddressValidationTangleRequest' });

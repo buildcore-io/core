@@ -13,6 +13,7 @@ export interface MilestoneTransactionEntry {
   nftOutput?: any;
   output?: any;
   outputId?: string;
+  tag?: string;
 }
 
 export interface MilestoneTransaction extends Base {
@@ -45,6 +46,6 @@ export interface Milestone {
    * Cmi number
    */
   cmi: number;
-  complete: boolean;
+  completed: boolean;
   processed: boolean;
 }

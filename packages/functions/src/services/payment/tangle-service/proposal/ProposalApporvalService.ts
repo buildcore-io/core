@@ -1,19 +1,13 @@
 import { build5Db } from '@build-5/database';
-import {
-  BaseTangleResponse,
-  COL,
-  Proposal,
-  TangleRequestType,
-  WenError,
-} from '@build-5/interfaces';
+import { COL, Proposal, TangleRequestType, TangleResponse, WenError } from '@build-5/interfaces';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
-import { BaseService, HandlerParams } from '../../base';
+import { BaseTangleService, HandlerParams } from '../../base';
 import { proposalApproveSchema } from './ProposalApproveTangleRequestSchema';
 
-export class ProposalApprovalService extends BaseService {
-  public handleRequest = async ({ owner, request }: HandlerParams): Promise<BaseTangleResponse> => {
+export class ProposalApprovalService extends BaseTangleService<TangleResponse> {
+  public handleRequest = async ({ owner, request }: HandlerParams) => {
     const params = await assertValidationAsync(proposalApproveSchema, request);
     const data = await getProposalApprovalData(
       owner,

@@ -28,3 +28,7 @@ export abstract class BaseService {
 
   abstract handleRequest(params: HandlerParams): Promise<unknown>;
 }
+
+export abstract class BaseTangleService<T> extends BaseService {
+  abstract handleRequest(params: HandlerParams): Promise<T>;
+}

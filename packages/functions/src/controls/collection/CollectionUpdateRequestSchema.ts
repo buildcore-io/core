@@ -21,7 +21,13 @@ export const updateCollectionSchema = {
     .description(
       `Royalty fee for the collection. Minimum ${MIN_ROYALTY_FEE}, maximum ${MAX_ROYALTY_FEE}`,
     ),
-  royaltiesSpace: CommonJoi.uid().description('Build5 id of the royalty space.'),
+  royaltiesSpace: Joi.string()
+    .when('royaltiesFee', {
+      is: Joi.number().greater(0),
+      then: CommonJoi.uid(true),
+      otherwise: CommonJoi.uid(false).allow(''),
+    })
+    .description('Build5 id of the royalty space.'),
   discord: Joi.string()
     .allow(null, '')
     .regex(DISCORD_REGEXP)

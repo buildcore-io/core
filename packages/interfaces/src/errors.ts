@@ -1,4 +1,4 @@
-import { TangleRequestType } from './api/tangle/common';
+import { TangleRequestType } from './search/tangle/common';
 
 /**
  * Object of possible error codes.
@@ -321,5 +321,9 @@ export const WenError = {
   credit_has_expired: {
     code: 2146,
     key: 'Credit has expired.',
+  },
+  no_active_sells: {
+    code: 2147,
+    key: 'No active sell orders.',
   },
 };

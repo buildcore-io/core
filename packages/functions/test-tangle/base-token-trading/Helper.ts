@@ -37,14 +37,14 @@ export class Helper {
 
     const sellerId = wallet.getRandomEthAddress();
     mockWalletReturnValue(this.walletSpy, sellerId, {});
-    await testEnv.wrap(createMember)(sellerId);
+    await testEnv.wrap(createMember)({ address: sellerId });
     this.sellerValidateAddress[Network.ATOI] = await addValidatedAddress(Network.ATOI, sellerId);
     this.sellerValidateAddress[Network.RMS] = await addValidatedAddress(Network.RMS, sellerId);
     this.seller = <Member>await build5Db().doc(`${COL.MEMBER}/${sellerId}`).get();
 
     const buyerId = wallet.getRandomEthAddress();
     mockWalletReturnValue(this.walletSpy, buyerId, {});
-    await testEnv.wrap(createMember)(buyerId);
+    await testEnv.wrap(createMember)({ address: buyerId });
     this.buyerValidateAddress[Network.ATOI] = await addValidatedAddress(Network.ATOI, buyerId);
     this.buyerValidateAddress[Network.RMS] = await addValidatedAddress(Network.RMS, buyerId);
     this.buyer = <Member>await build5Db().doc(`${COL.MEMBER}/${buyerId}`).get();

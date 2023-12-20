@@ -2,9 +2,9 @@
 title: Overview
 ---
 
+import NotStarted from '../../_admonitions/_not-started-yet.md';
 
-| :exclamation:  Documentation has not started yet. |
-|-------------------------------------------------- |
+<NotStarted/>
 
 Award is time-locked NFT (NTT)
 

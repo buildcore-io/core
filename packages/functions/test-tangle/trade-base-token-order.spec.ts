@@ -47,7 +47,7 @@ describe('Trade base token controller', () => {
 
     const sellerId = wallet.getRandomEthAddress();
     mockWalletReturnValue(walletSpy, sellerId, {});
-    await testEnv.wrap(createMember)(sellerId);
+    await testEnv.wrap(createMember)({ address: sellerId });
     validateAddress[Network.ATOI] = await addValidatedAddress(Network.ATOI, sellerId);
     validateAddress[Network.RMS] = await addValidatedAddress(Network.RMS, sellerId);
     seller = <Member>await build5Db().doc(`${COL.MEMBER}/${sellerId}`).get();

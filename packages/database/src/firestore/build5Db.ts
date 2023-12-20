@@ -1,4 +1,4 @@
-import { COL, PublicCollections, PublicSubCollections, SUB_COL } from '@build-5/interfaces';
+import { COL, Dataset, SUB_COL, Subset } from '@build-5/interfaces';
 import { build5App } from '../app/build5App';
 import { Firestore } from './firestore';
 import { IDatabase } from './interfaces';
@@ -6,9 +6,9 @@ import { IDatabase } from './interfaces';
 export const build5Db = (): IDatabase => new Firestore(build5App);
 
 export const getSnapshot = (
-  col: COL | PublicCollections,
+  col: COL | Dataset,
   id?: string,
-  subCol?: SUB_COL | PublicSubCollections,
+  subCol?: SUB_COL | Subset,
   childId?: string,
 ) => {
   if (!id) {

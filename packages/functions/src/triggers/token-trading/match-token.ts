@@ -143,7 +143,9 @@ const updateTrade = (trade: TokenTradeOrder, purchase: TokenPurchase, creditTran
   const balance =
     trade.balance - (trade.type === TokenTradeOrderType.SELL ? purchase.count : salePrice);
   const status =
-    trade.count === fulfilled ? TokenTradeOrderStatus.SETTLED : TokenTradeOrderStatus.ACTIVE;
+    trade.count === fulfilled || !balance
+      ? TokenTradeOrderStatus.SETTLED
+      : TokenTradeOrderStatus.ACTIVE;
   return { ...trade, fulfilled, balance, status, creditTransactionId };
 };
 

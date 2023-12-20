@@ -1,6 +1,19 @@
-# About
-
-Your Enterprise ready web3 plug & play platform
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+    <img src="docs/static/img/logo.svg" alt="BUILD.5 logo">
+    <h3 align="center">BUILD.5 Core</h3>
+    <p align="center">
+        Your Enterprise ready web3 plug & play platform
+        <br />
+        <a href="https://developer.build5.com/"><strong>Explore the docs »</strong></a>
+        <br />
+        <br />
+        <a href="https://github.com/build-5/core/issues/new?template=bug_report.md">Report Bug</a>
+        ·
+        <a href="https://github.com/build-5/core/issues/new?template=feature_request.md">Request Feature</a>
+    </p>
+</div>
 
 # Framework
 

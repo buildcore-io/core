@@ -49,7 +49,7 @@ export const createTokenSchema = toJoiObject<TokenCreateRequest>({
       `Total token supply. Minimum ${MIN_TOTAL_TOKEN_SUPPLY}, maximum ${MAX_TOTAL_TOKEN_SUPPLY}`,
     ),
   allocations: Joi.array()
-    .required()
+    .optional()
     .items(
       Joi.object().keys({
         title: Joi.string().required().description('Allocation name.'),
@@ -112,17 +112,18 @@ export const createTokenSchema = toJoiObject<TokenCreateRequest>({
     .optional()
     .description('If true, purchases will be fullfilled once reuqest reach 100%.'),
   links: Joi.array().min(0).items(Joi.string().uri()).description('Usefull links for the token.'),
-  icon: CommonJoi.storageUrl().description('Build5 url pointing to the token icon.'),
-  overviewGraphics: CommonJoi.storageUrl().description(
-    'Build5 url pointing to the overview graphics of the token.',
-  ),
+  icon: Joi.string().uri().description('Build5 url pointing to the token icon.'),
+  overviewGraphics: Joi.string()
+    .uri()
+    .description('Build5 url pointing to the overview graphics of the token.'),
   termsAndConditions: Joi.string()
     .uri()
-    .required()
+    .optional()
     .description('Terms and conditions of the token.'),
   access: Joi.number()
     .equal(...Object.values(Access).filter((v) => typeof v === 'number'))
-    .required()
+    .default(0)
+    .optional()
     .description('Access type of the token'),
   accessAwards: Joi.array()
     .when('access', {

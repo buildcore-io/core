@@ -101,7 +101,7 @@ export const createBidOrder = async (
         beneficiaryUid: nft.owner || collection.space,
         beneficiaryAddress: getAddress(nft.owner ? prevOwner : space, network),
         royaltiesFee: collection.royaltiesFee,
-        royaltiesSpace: collection.royaltiesSpace,
+        royaltiesSpace: collection.royaltiesSpace || '',
         royaltiesSpaceAddress: getAddress(royaltySpace, network),
         expiresOn: nft.auctionTo!,
         nft: nft.uid,

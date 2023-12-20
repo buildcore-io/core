@@ -25,7 +25,7 @@ describe('Collection minting', () => {
     await helper.beforeEach();
   });
 
-  it('Should retry minging when prepare ipfs failed', async () => {
+  it('Should retry minting when prepare ipfs failed', async () => {
     const count = 5;
     const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${helper.collection}`);
     await collectionDocRef.update({ total: count });

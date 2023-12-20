@@ -1,11 +1,11 @@
 import { build5Db } from '@build-5/database';
 import {
-  BaseTangleResponse,
   COL,
   Space,
   SpaceMember,
   StakeType,
   SUB_COL,
+  TangleResponse,
   TokenDistribution,
   WenError,
 } from '@build-5/interfaces';
@@ -15,15 +15,11 @@ import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getTokenForSpace } from '../../../../utils/token.utils';
 import { getStakeForType } from '../../../stake.service';
-import { BaseService, HandlerParams } from '../../base';
+import { BaseTangleService, HandlerParams } from '../../base';
 import { joinSpaceSchema } from './SpaceJoinTangleRequestSchema';
 
-export class SpaceJoinService extends BaseService {
-  public handleRequest = async ({
-    order,
-    owner,
-    request,
-  }: HandlerParams): Promise<BaseTangleResponse> => {
+export class SpaceJoinService extends BaseTangleService<TangleResponse> {
+  public handleRequest = async ({ order, owner, request }: HandlerParams) => {
     const params = await assertValidationAsync(joinSpaceSchema, request);
 
     const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);

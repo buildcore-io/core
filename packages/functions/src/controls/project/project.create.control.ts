@@ -5,6 +5,7 @@ import {
   ProjectAdmin,
   ProjectBilling,
   ProjectCreateRequest,
+  ProjectCreateResponse,
   ProjectOtr,
   SUB_COL,
   Transaction,
@@ -25,7 +26,10 @@ import { getTokenBySymbol } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { AVAILABLE_NETWORKS, Context } from '../common';
 
-export const createProjectControl = async ({ owner, params }: Context<ProjectCreateRequest>) => {
+export const createProjectControl = async ({
+  owner,
+  params,
+}: Context<ProjectCreateRequest>): Promise<ProjectCreateResponse> => {
   const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
   const member = await memberDocRef.get();
   if (!member) {
@@ -78,7 +82,7 @@ export const createProjectControl = async ({ owner, params }: Context<ProjectCre
 
   await batch.commit();
 
-  return { project: await projectDocRef.get<Project>(), token };
+  return { project: (await projectDocRef.get<Project>())!, token };
 };
 
 const createOtrs = async (batch: IBatch, project: string) => {

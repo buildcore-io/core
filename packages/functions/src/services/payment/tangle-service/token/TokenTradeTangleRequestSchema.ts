@@ -3,7 +3,6 @@ import {
   MAX_TOTAL_TOKEN_SUPPLY,
   MIN_PRICE_PER_TOKEN,
   TangleRequestType,
-  TokenTradeOrderType,
   TradeTokenTangleRequest,
 } from '@build-5/interfaces';
 import Joi from 'joi';
@@ -22,9 +21,9 @@ export const tradeMintedTokenSchema = toJoiObject<TradeTokenTangleRequest>({
     .min(MIN_PRICE_PER_TOKEN)
     .max(MAX_PRICE)
     .precision(6)
-    .required()
+    .optional()
     .description(
-      `Pirce of the token to trade. Minimum ${MIN_PRICE_PER_TOKEN}, maximum: ${MAX_PRICE}.`,
+      `Price of the token to trade. Minimum ${MIN_PRICE_PER_TOKEN}, maximum: ${MAX_PRICE}.`,
     ),
   count: Joi.number()
     .min(MIN_COUNT)
@@ -35,10 +34,6 @@ export const tradeMintedTokenSchema = toJoiObject<TradeTokenTangleRequest>({
       `Count of the tokens to be bought. Only specify is type is BUY. ` +
         `Minimum ${MIN_COUNT}, maximum ${MAX_COUNT}`,
     ),
-  type: Joi.string()
-    .equal(TokenTradeOrderType.SELL, TokenTradeOrderType.BUY)
-    .required()
-    .description('Direction of the trade.'),
   targetAddress: CommonJoi.uid(false).description(
     'Funds will be sent here in case of a successfull trade.',
   ),

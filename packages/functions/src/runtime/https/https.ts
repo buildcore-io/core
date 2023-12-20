@@ -47,15 +47,13 @@ export const onRequest = (params: OnRequest) => {
         params.requireProjectApiKey,
       );
       const result = await params.handler(context);
-      res.send({ data: result || {} });
+      res.send(result || {});
     } catch (error) {
       res.status(get(error, 'httpErrorCode.status', 400));
       res.send({
-        data: {
-          code: get(error, 'details.code', 0),
-          key: get(error, 'details.key', ''),
-          message: get(error, 'message', ''),
-        },
+        code: get(error, 'details.code', 0),
+        key: get(error, 'details.key', ''),
+        message: get(error, 'message', ''),
       });
     }
   };

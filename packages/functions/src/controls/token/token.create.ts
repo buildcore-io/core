@@ -55,7 +55,10 @@ export const createTokenControl = async ({
     throw invalidArgument(WenError.token_symbol_must_be_globally_unique);
   }
 
-  const publicSaleTimeFrames = shouldSetPublicSaleTimeFrames({ ...params }, params.allocations)
+  const publicSaleTimeFrames = shouldSetPublicSaleTimeFrames(
+    { ...params },
+    params.allocations || [],
+  )
     ? getPublicSaleTimeFrames(
         dateToTimestamp(params.saleStartDate, true),
         params.saleLength || 0,

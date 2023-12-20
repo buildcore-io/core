@@ -6,9 +6,7 @@ export const createSchema = {
   name: Joi.string().allow(null, '').required().description('Name of the nft'),
   description: Joi.string().allow(null, '').required().description('Description of the nft.'),
   collection: CommonJoi.uid().description('Build5 id of the collection for this nft.'),
-  media: CommonJoi.storageUrl(false).description(
-    'Soonaverse url pointing to an nft image or video.',
-  ),
+  media: CommonJoi.storageUrl(false).description('BUILD.5 url pointing to an nft image or video.'),
   availableFrom: Joi.date().required().description("Starting date of the nft's availability."),
   price: Joi.number()
     .min(MIN_IOTA_AMOUNT)
