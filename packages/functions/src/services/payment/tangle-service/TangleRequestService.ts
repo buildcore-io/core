@@ -38,7 +38,6 @@ import { StampTangleService } from './stamp/StampTangleService';
 import { TangleStakeService } from './token/stake.service';
 import { TangleTokenClaimService } from './token/token-claim.service';
 import { TangleTokenTradeService } from './token/token-trade.service';
-import { logger } from '../../../utils/logger';
 
 export class TangleRequestService extends BaseTangleService<TangleResponse> {
   public handleRequest = async (params: HandlerParams) => {
@@ -64,7 +63,7 @@ export class TangleRequestService extends BaseTangleService<TangleResponse> {
         );
       }
     } catch (error) {
-      logger.warn(owner, error);
+      console.warn('tangle service error warning', owner, error);
       if (!payment) {
         payment = await this.transactionService.createPayment({ ...order, member: owner }, match);
       }

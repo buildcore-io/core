@@ -18,7 +18,6 @@ import * as onStorage from './runtime/storage/index';
 import { StorageFunction } from './runtime/storage/storage';
 import * as onTriggers from './runtime/trigger/index';
 import { TriggeredFunction } from './runtime/trigger/trigger';
-import { logger } from './utils/logger';
 
 const app = express();
 
@@ -57,7 +56,7 @@ Object.entries(flattenObject(onTriggers)).forEach(([name, config]) => {
       };
       await (config as TriggeredFunction).handler(event);
     } catch (error) {
-      logger.error(name, JSON.stringify(json), error);
+      console.error('onTriggers-error', name, JSON.stringify(json), error);
     } finally {
       res.sendStatus(200);
     }
@@ -70,7 +69,7 @@ Object.entries(flattenObject(onScheduled)).forEach(([name, config]) => {
     try {
       await (config as ScheduledFunction).func();
     } catch (error) {
-      logger.error(name, error);
+      console.error('onScheduled-error', name, error);
     } finally {
       res.sendStatus(200);
     }
@@ -92,7 +91,7 @@ Object.entries(flattenObject(onStorage)).forEach(([name, config]) => {
         contentType: get(event, 'data.contentType'),
       });
     } catch (error) {
-      logger.error(name, error);
+      console.error('onStorage-error', name, error);
     } finally {
       res.sendStatus(200);
     }
