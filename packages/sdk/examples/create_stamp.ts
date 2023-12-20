@@ -1,5 +1,5 @@
 import { Dataset, Network, Transaction } from '@build-5/interfaces';
-import { Build5, Build5ApiKey, https } from '@build-5/sdk';
+import { Build5, SoonaverseApiKey, https } from '@build-5/sdk';
 import { address } from './utils/secret';
 import { walletSign } from './utils/utils';
 
@@ -11,7 +11,7 @@ async function main() {
   console.log('Create stamp under your project...');
   try {
     response = await https(origin)
-      .project(Build5ApiKey[origin])
+      .project(SoonaverseApiKey[origin])
       .dataset(Dataset.STAMP)
       .stamp({
         address: address.bech32,
