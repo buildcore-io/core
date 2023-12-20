@@ -8,13 +8,8 @@ import {
   SUB_COL,
   TokenDistribution,
   TokenTradeOrder,
-  TokenTradeOrderStatus,
-  TokenTradeOrderType,
 } from '@build-5/interfaces';
-import bigDecimal from 'js-big-decimal';
 import { getStakeForType, getTier } from '../../services/stake.service';
-import { cancelTradeOrderUtil } from '../../utils/token-trade.utils';
-import { BIG_DECIMAL_PRECISION } from '../../utils/token.utils';
 import { FirestoreDocEvent } from '../common';
 import { matchTradeOrder } from './match-token';
 
@@ -27,29 +22,6 @@ export const onTokenTradeOrderWrite = async (event: FirestoreDocEvent<TokenTrade
   if (!prev || (!prev.shouldRetry && curr?.shouldRetry)) {
     return await matchTradeOrder(curr);
   }
-
-  return await build5Db().runTransaction(async (transaction) => {
-    const tradeOrderDocRef = build5Db().doc(`${COL.TOKEN_MARKET}/${curr.uid}`);
-    const tradeOrder = await transaction.get<TokenTradeOrder>(tradeOrderDocRef);
-    if (tradeOrder && isActiveBuy(tradeOrder) && needsHigherBuyAmount(tradeOrder!)) {
-      await cancelTradeOrderUtil(
-        transaction,
-        tradeOrder,
-        TokenTradeOrderStatus.CANCELLED_UNFULFILLABLE,
-      );
-    }
-  });
-};
-
-const isActiveBuy = (sale?: TokenTradeOrder) =>
-  sale?.type === TokenTradeOrderType.BUY && sale?.status === TokenTradeOrderStatus.ACTIVE;
-
-const needsHigherBuyAmount = (buy: TokenTradeOrder) => {
-  const tokensLeft = Number(bigDecimal.subtract(buy.count, buy.fulfilled));
-  const price = Number(
-    bigDecimal.floor(bigDecimal.divide(buy.balance || 0, tokensLeft, BIG_DECIMAL_PRECISION)),
-  );
-  return price > buy.price;
 };
 
 export const getMemberTier = async (projectId: string, member: Member) => {

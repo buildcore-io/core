@@ -121,7 +121,7 @@ describe('Create award, base', () => {
     expect(collectionMetadata.uri).toBe(`ipfs://${space.ipfsMedia}`);
     expect(collectionMetadata.name).toBe('award');
     expect(collectionMetadata.description).toBe('awarddesc');
-    expect(collectionMetadata.issuerName).toBe('Soonaverse');
+    expect(collectionMetadata.issuerName).toBe('BUILD.5');
     expect(collectionMetadata.build5Id).toBe(award.uid);
 
     const nttItems = (await walletService.client.nftOutputIds([{ address: memberBech32 }])).items;
@@ -141,7 +141,7 @@ describe('Create award, base', () => {
       );
       expect(nttMetadata.name).toBe('badge');
       expect(nttMetadata.description).toBe('badgedesc');
-      expect(nttMetadata.issuerName).toBe('Soonaverse');
+      expect(nttMetadata.issuerName).toBe('BUILD.5');
       expect(nttMetadata.collectionId).toBe(award.collectionId);
       expect(nttMetadata.collectionName).toBe('award');
 

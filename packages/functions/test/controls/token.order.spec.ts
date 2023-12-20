@@ -80,7 +80,6 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
       ],
       createdBy: memberAddress,
       name: 'MyToken',
-      wenUrl: 'https://wen.soonaverse.com/token/' + tokenId,
       saleLength: 86400000 * 2,
       saleStartDate: dateToTimestamp(dayjs().subtract(1, 'd').toDate()),
       links: [],

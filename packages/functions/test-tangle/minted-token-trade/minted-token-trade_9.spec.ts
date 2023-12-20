@@ -9,6 +9,7 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 import { tradeToken } from '../../src/runtime/firebase/token/trading';
+import { packBasicOutput } from '../../src/utils/basic-output.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
 import { testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
@@ -53,7 +54,15 @@ describe('Token minting', () => {
     });
     const snap = await query.get();
     const credit = <Transaction>snap[0];
-    expect(credit.payload.amount).toBe(sellOrder.payload.amount);
+    const output = await packBasicOutput(
+      helper.walletService!,
+      sellOrder.payload.targetAddress,
+      0,
+      {
+        nativeTokens: [{ amount: BigInt(10), id: helper.token!.mintingData?.tokenId! }],
+      },
+    );
+    expect(credit.payload.amount).toBe(Number(output.amount));
     expect(credit.payload.nativeTokens![0].id).toBe(MINTED_TOKEN_ID);
     expect(credit.payload.nativeTokens![0].amount).toBe(10);
     const sellSnap = await build5Db()

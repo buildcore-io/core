@@ -102,7 +102,6 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
       ],
       createdBy: memberAddress,
       name: 'MyToken',
-      wenUrl: 'https://wen.soonaverse.com/token/' + tokenId,
       links: [],
       status: TokenStatus.AVAILABLE,
       totalDeposit: 0,

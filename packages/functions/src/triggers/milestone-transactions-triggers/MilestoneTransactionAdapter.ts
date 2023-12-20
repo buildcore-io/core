@@ -6,10 +6,12 @@ import {
 } from '@build-5/interfaces';
 import {
   BasicOutput,
+  FeatureType,
   NftOutput,
   OutputType,
   RegularTransactionEssence,
   SignatureUnlock,
+  TagFeature,
   TransactionPayload,
   UTXOInput,
   UnlockType,
@@ -41,12 +43,16 @@ export class MilestoneTransactionAdapter {
       }
       const output = <VALID_OUTPUT>outputs[i];
       const address = wallet.bechAddressFromOutput(output);
+      const tag = output.features?.find((f) => f.type === FeatureType.Tag) as
+        | TagFeature
+        | undefined;
       const entry: MilestoneTransactionEntry = {
         amount: Number(output.amount),
         address,
         nativeTokens: output.nativeTokens || [],
         unlockConditions: output.unlockConditions,
         outputId: Utils.computeOutputId(Utils.transactionId(payload), i),
+        tag: tag?.tag,
       };
       if (output.type === OutputType.Nft) {
         entry.nftOutput = output;

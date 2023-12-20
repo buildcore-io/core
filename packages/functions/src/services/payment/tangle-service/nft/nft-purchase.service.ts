@@ -1,6 +1,5 @@
 import { build5Db } from '@build-5/database';
 import {
-  BaseTangleResponse,
   COL,
   Collection,
   CollectionStatus,
@@ -17,6 +16,7 @@ import {
   Space,
   StakeType,
   TRANSACTION_AUTO_EXPIRY_MS,
+  TangleResponse,
   Transaction,
   TransactionPayloadType,
   TransactionType,
@@ -37,17 +37,18 @@ import { getSpace } from '../../../../utils/space.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { assertHasAccess } from '../../../validators/access';
 import { WalletService } from '../../../wallet/wallet.service';
-import { BaseService, HandlerParams } from '../../base';
+import { BaseTangleService, HandlerParams } from '../../base';
 import { nftPurchaseSchema } from './NftPurchaseTangleRequestSchema';
 
-export class TangleNftPurchaseService extends BaseService {
+export class TangleNftPurchaseService extends BaseTangleService<TangleResponse> {
   public handleRequest = async ({
     order: tangleOrder,
     request,
     owner,
     tran,
     tranEntry,
-  }: HandlerParams): Promise<BaseTangleResponse | undefined> => {
+    payment,
+  }: HandlerParams) => {
     const params = await assertValidationAsync(nftPurchaseSchema, request);
 
     const order = await createNftPuchaseOrder(
@@ -78,13 +79,15 @@ export class TangleNftPurchaseService extends BaseService {
     }
 
     this.transactionService.createUnlockTransaction(
+      payment,
       order,
       tran,
       tranEntry,
       TransactionPayloadType.TANGLE_TRANSFER,
       tranEntry.outputId,
     );
-    return;
+
+    return {};
   };
 }
 
@@ -139,7 +142,7 @@ export const createNftPuchaseOrder = async (
       beneficiaryUid: nft.owner || collection.space,
       beneficiaryAddress: getAddress(currentOwner, network),
       royaltiesFee: collection.royaltiesFee,
-      royaltiesSpace: collection.royaltiesSpace,
+      royaltiesSpace: collection.royaltiesSpace || '',
       royaltiesSpaceAddress: getAddress(royaltySpace, network),
       expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
       validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,

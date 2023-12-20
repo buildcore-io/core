@@ -1,5 +1,6 @@
 import { build5Db } from '@build-5/database';
 import {
+  Build5Request,
   COL,
   MIN_IOTA_AMOUNT,
   Network,
@@ -7,7 +8,6 @@ import {
   ProjectBilling,
   SOON_PROJECT_ID,
   SUB_COL,
-  WenRequest,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import dotenv from 'dotenv';
@@ -50,10 +50,15 @@ export const PROJECT_API_KEY =
 export const sendOnRequest =
   (func: (req: functions.https.Request, response: express.Response<any>) => void | Promise<void>) =>
   async (body: any, address = '', customToken = '') => {
-    const wenReq: WenRequest = { address, customToken, projectApiKey: PROJECT_API_KEY, body };
+    const wenReq: Build5Request<any> = {
+      address,
+      customToken,
+      projectApiKey: PROJECT_API_KEY,
+      body,
+    };
     const req = {
       ip: '127.0.0.1',
-      body: { data: wenReq },
+      body: wenReq,
       headers: { origin: true },
     } as any;
     let error = false;
@@ -65,7 +70,7 @@ export const sendOnRequest =
         }
       },
       send: (res: any) => {
-        response = res.data;
+        response = res;
       },
       setHeader: (key: any, value: any) => {},
       getHeader: (key: any) => {},

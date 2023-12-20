@@ -76,7 +76,7 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     dummyAddress = await createMemberFunc(walletSpy);
-    member = await testEnv.wrap(createMember)(dummyAddress);
+    member = await testEnv.wrap(createMember)({ address: dummyAddress });
     expect(member?.uid).toEqual(dummyAddress.toLowerCase());
     space = await createSpaceFunc(walletSpy, dummyAddress);
   });

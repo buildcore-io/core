@@ -2,9 +2,7 @@
 title: Overview
 ---
 
-| :exclamation:  Documentation has not started yet. |
-|-------------------------------------------------- |
-
+Build.5 provides a set of tools to manage DAOs. Part of that is creating spaces, members, changing roles, etc.
 
 __Features__: 
 - Space Management

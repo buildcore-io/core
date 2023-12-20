@@ -1,9 +1,14 @@
 ---
 title: FAQs
+description: Questions and answers collections for build.5
+keywords:
+  - faq
+  - open source
 ---
 
-| :exclamation:  Documentation in progress. |
-|-------------------------------------------------- |
+import InProgress from './_admonitions/_in-progress.md';
+
+<InProgress/>
 
 Is Build.5 Open Sourced?
 

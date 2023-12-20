@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { COL, PublicCollections, PublicSubCollections, SUB_COL } from '@build-5/interfaces';
+import { COL, Dataset, SUB_COL, Subset } from '@build-5/interfaces';
 import admin from 'firebase-admin';
 import { Filter } from 'firebase-admin/firestore';
 import { isEmpty } from 'lodash';
@@ -23,10 +23,10 @@ export class Firestore implements IDatabase {
     this.db = this.app.getInstance().firestore();
   }
 
-  public collection = (col: COL | PublicCollections) =>
+  public collection = (col: COL | Dataset) =>
     new FirestoreCollection(this.db, this.db.collection(col));
 
-  public collectionGroup = (col: SUB_COL | PublicSubCollections) =>
+  public collectionGroup = (col: SUB_COL | Subset) =>
     new FirestoreCollectionGroup(this.db.collectionGroup(col));
 
   public doc = (documentPath: string) => new FirestoreDocument(this.db, this.db.doc(documentPath));
@@ -221,7 +221,7 @@ export class FirestoreDocument implements IDocument {
       },
     );
 
-  public collection = (subCol: SUB_COL | PublicSubCollections): ICollection =>
+  public collection = (subCol: SUB_COL | Subset): ICollection =>
     new FirestoreCollection(this.db, this.document.collection(subCol));
 
   public get = async <T>(): Promise<T | undefined> => {

@@ -9,6 +9,8 @@ import {
   SpaceGuardian,
   Stamp,
   TRANSACTION_AUTO_EXPIRY_MS,
+  TangleResponse,
+  Transaction,
   TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
@@ -17,9 +19,10 @@ import {
 import { AliasAddress, Ed25519Address } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
+import { packBasicOutput } from '../../../../utils/basic-output.utils';
 import { downloadMediaAndPackCar } from '../../../../utils/car.utils';
 import { createNftOutput } from '../../../../utils/collection-minting-utils/nft.utils';
-import { generateRandomAmount, getProject } from '../../../../utils/common.utils';
+import { getProject } from '../../../../utils/common.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { getRandomBuild5Url, uriToUrl } from '../../../../utils/media.utils';
@@ -33,11 +36,20 @@ import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { isStorageUrl } from '../../../joi/common';
 import { Wallet } from '../../../wallet/wallet';
 import { WalletService } from '../../../wallet/wallet.service';
-import { BaseService, HandlerParams } from '../../base';
+import { BaseTangleService, HandlerParams } from '../../base';
 import { stampTangleSchema } from './StampTangleRequestSchema';
 
-export class StampTangleService extends BaseService {
-  public handleRequest = async ({ project, owner, request, order: tangleOrder }: HandlerParams) => {
+export class StampTangleService extends BaseTangleService<TangleResponse> {
+  public handleRequest = async ({
+    project,
+    owner,
+    request,
+    order: tangleOrder,
+    match,
+    payment,
+    tran,
+    tranEntry,
+  }: HandlerParams): Promise<TangleResponse> => {
     const params = await assertValidationAsync(stampTangleSchema, request);
 
     const { order, stamp, space } = await createStampAndStampOrder(
@@ -45,6 +57,7 @@ export class StampTangleService extends BaseService {
       owner,
       tangleOrder.network,
       params.uri,
+      params.days,
       params.aliasId,
     );
 
@@ -66,12 +79,22 @@ export class StampTangleService extends BaseService {
     const stampDocRef = build5Db().doc(`${COL.STAMP}/${stamp.uid}`);
     this.transactionService.push({ ref: stampDocRef, data: stamp, action: 'set' });
 
-    return {
-      address: order.payload.targetAddress!,
-      dailyCost: getStampDailyCost(stamp),
-      stamp: stamp.uid,
-      amountToMint: order.payload.aliasOutputAmount! + order.payload.nftOutputAmount!,
-    };
+    if (match.to.amount < order.payload.amount!) {
+      return {
+        address: order.payload.targetAddress!,
+        amount: order.payload.amount!,
+      };
+    }
+
+    this.transactionService.createUnlockTransaction(
+      payment,
+      order,
+      tran,
+      tranEntry,
+      TransactionPayloadType.TANGLE_TRANSFER,
+      tranEntry.outputId,
+    );
+    return {};
   };
 }
 
@@ -80,6 +103,7 @@ export const createStampAndStampOrder = async (
   owner: string,
   network: Network,
   uri: string,
+  days?: number,
   aliasId = EMPTY_ALIAS_ID,
 ) => {
   const stampUid = getRandomEthAddress();
@@ -111,22 +135,32 @@ export const createStampAndStampOrder = async (
     ipfsMedia: car.ipfsMedia,
     aliasId,
   };
-
-  const order = await createStampOrder(stamp, space, aliasId);
+  const dailyCost = getStampDailyCost(stamp);
+  const order = await createStampOrder(stamp, space, aliasId, days || 0, dailyCost);
 
   set(stamp, 'order', order.uid);
 
   return { stamp, order, space };
 };
 
-const createStampOrder = async (stamp: Stamp, space: Space, aliasId: string) => {
+const createStampOrder = async (
+  stamp: Stamp,
+  space: Space,
+  aliasId: string,
+  days: number,
+  dailyCost: number,
+): Promise<Transaction> => {
   const wallet = await WalletService.newWallet(stamp.network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
 
   const aliasOutputAmount = await getAliasOutputAmount(stamp, space, wallet);
   const nftOutputAmount = await getNftOutputAmount(stamp, aliasId, wallet);
 
-  return {
+  const royaltyOutput = await packBasicOutput(wallet, targetAddress.bech32, 0, {});
+  const storageDeposit = aliasOutputAmount + nftOutputAmount;
+  const amount = Math.max(days * dailyCost, Number(royaltyOutput.amount)) + storageDeposit;
+
+  const order = {
     project: getProject(stamp),
     type: TransactionType.ORDER,
     uid: getRandomEthAddress(),
@@ -135,7 +169,7 @@ const createStampOrder = async (stamp: Stamp, space: Space, aliasId: string) => 
     network: stamp.network,
     payload: {
       type: TransactionPayloadType.STAMP,
-      amount: generateRandomAmount(),
+      amount,
       targetAddress: targetAddress.bech32,
       expiresOn: dateToTimestamp(dayjs().add(100, 'y')),
       validationType: TransactionValidationType.ADDRESS,
@@ -146,9 +180,14 @@ const createStampOrder = async (stamp: Stamp, space: Space, aliasId: string) => 
       aliasOutputAmount,
       aliasId: aliasId === EMPTY_ALIAS_ID ? '' : aliasId,
       nftOutputAmount,
+      dailyCost,
     },
     linkedTransactions: [],
   };
+  if (days) {
+    set(order, 'payload.days', days);
+  }
+  return order;
 };
 
 const getSpace = async (project: string, owner: string, aliasId: string) => {

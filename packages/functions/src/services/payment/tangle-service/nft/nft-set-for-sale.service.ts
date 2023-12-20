@@ -11,6 +11,7 @@ import {
   Nft,
   NftAccess,
   NftSetForSaleRequest,
+  TangleResponse,
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
@@ -20,10 +21,10 @@ import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { BaseService, HandlerParams } from '../../base';
+import { BaseTangleService, HandlerParams } from '../../base';
 import { setNftForSaleTangleSchema } from './NftSetForSaleTangleRequestSchema';
 
-export class TangleNftSetForSaleService extends BaseService {
+export class TangleNftSetForSaleService extends BaseTangleService<TangleResponse> {
   public handleRequest = async ({ owner, request, project }: HandlerParams) => {
     const params = await assertValidationAsync(setNftForSaleTangleSchema, request);
     const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);

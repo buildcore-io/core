@@ -154,8 +154,10 @@ export class NftWallet {
     if (collection.type === CollectionType.METADATA) {
       return { immutableMetadata: '', mutableMetadata: '' };
     }
-    const royaltySpaceDocRef = build5Db().doc(`${COL.SPACE}/${collection.royaltiesSpace}`);
-    const royaltySpace = <Space>await royaltySpaceDocRef.get();
+    const royaltySpaceDocRef = build5Db().doc(
+      `${COL.SPACE}/${collection.royaltiesSpace || undefined}`,
+    );
+    const royaltySpace = await royaltySpaceDocRef.get<Space>();
     const royaltySpaceAddress = getAddress(royaltySpace, network);
     const collectionMetadata = await collectionToMetadata(collection, royaltySpaceAddress);
     return { immutableMetadata: JSON.stringify(collectionMetadata), mutableMetadata: '' };
@@ -250,9 +252,10 @@ export class NftWallet {
     const collection = <Collection>(
       await build5Db().doc(`${COL.COLLECTION}/${transaction.payload.collection}`).get()
     );
-    const royaltySpace = <Space>(
-      await build5Db().doc(`${COL.SPACE}/${collection.royaltiesSpace}`).get()
+    const royaltySpaceDocRef = build5Db().doc(
+      `${COL.SPACE}/${collection.royaltiesSpace || undefined}`,
     );
+    const royaltySpace = await royaltySpaceDocRef.get<Space>();
     const royaltySpaceAddress = getAddress(royaltySpace, transaction.network!);
 
     const nfts = await getPreMintedNfts(transaction.payload.collection as string);

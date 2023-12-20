@@ -2,16 +2,20 @@ import { ITransaction, build5Db } from '@build-5/database';
 import {
   COL,
   DEFAULT_NETWORK,
+  MAX_TOTAL_TOKEN_SUPPLY,
+  MIN_PRICE_PER_TOKEN,
   Member,
   Network,
   SUB_COL,
   TRANSACTION_MAX_EXPIRY_MS,
+  TangleResponse,
   Token,
   TokenDistribution,
   TokenStatus,
   TokenTradeOrder,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
+  TradeTokenTangleRequest,
   Transaction,
   TransactionPayloadType,
   TransactionType,
@@ -21,9 +25,8 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
-import { set } from 'lodash';
+import { head, set } from 'lodash';
 import { assertMemberHasValidAddress } from '../../../../utils/address.utils';
-import { packBasicOutput } from '../../../../utils/basic-output.utils';
 import { getProject } from '../../../../utils/common.utils';
 import { isProdEnv } from '../../../../utils/config.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
@@ -37,10 +40,10 @@ import {
 } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet.service';
-import { BaseService, HandlerParams } from '../../base';
+import { BaseTangleService, HandlerParams } from '../../base';
 import { tradeMintedTokenSchema } from './TokenTradeTangleRequestSchema';
 
-export class TangleTokenTradeService extends BaseService {
+export class TangleTokenTradeService extends BaseTangleService<TangleResponse> {
   public handleRequest = async ({
     order,
     tran,
@@ -48,12 +51,13 @@ export class TangleTokenTradeService extends BaseService {
     owner,
     request,
     build5Tran,
+    payment,
   }: HandlerParams) => {
     const type =
       request.requestType === TransactionPayloadType.BUY_TOKEN
         ? TokenTradeOrderType.BUY
         : TokenTradeOrderType.SELL;
-    const params = await assertValidationAsync(tradeMintedTokenSchema, { ...request, type });
+    const params = await assertValidationAsync(tradeMintedTokenSchema, request);
 
     let token = await getTokenBySymbol(params.symbol);
     const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token?.uid}`);
@@ -70,9 +74,9 @@ export class TangleTokenTradeService extends BaseService {
       this.transactionService.transaction,
       owner,
       token,
-      params.type as TokenTradeOrderType,
-      params.count || 0,
-      params.price,
+      type,
+      getCount(params, type),
+      await getPrice(params, type, token.uid),
       params.targetAddress,
       '',
       [TokenStatus.BASE, TokenStatus.MINTED],
@@ -82,7 +86,7 @@ export class TangleTokenTradeService extends BaseService {
       throw invalidArgument(WenError.invalid_params);
     }
 
-    if (params.type === TokenTradeOrderType.SELL && token?.status === TokenStatus.MINTED) {
+    if (type === TokenTradeOrderType.SELL && token?.status === TokenStatus.MINTED) {
       set(tradeOrderTransaction, 'payload.amount', tranEntry.amount);
     }
     this.transactionService.push({
@@ -92,6 +96,7 @@ export class TangleTokenTradeService extends BaseService {
     });
 
     this.transactionService.createUnlockTransaction(
+      payment,
       tradeOrderTransaction,
       tran,
       tranEntry,
@@ -99,7 +104,8 @@ export class TangleTokenTradeService extends BaseService {
       tranEntry.outputId,
       build5Tran?.payload?.expiresOn || dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS)),
     );
-    return;
+
+    return {};
   };
 }
 
@@ -109,6 +115,7 @@ const ACCEPTED_TOKEN_STATUSES = [
   TokenStatus.MINTED,
   TokenStatus.BASE,
 ];
+
 export const createTokenTradeOrder = async (
   project: string,
   transaction: ITransaction,
@@ -228,12 +235,12 @@ const createTradeOrderTransaction = async (
     network,
     payload: {
       type: isSell ? TransactionPayloadType.SELL_TOKEN : TransactionPayloadType.BUY_TOKEN,
-      amount: await getAmount(token, count, price, isSell),
+      amount: getAmount(token, count, price, isSell),
       nativeTokens:
-        isMinted && isSell ? [{ id: token.mintingData?.tokenId!, amount: BigInt(count) }] : [],
+        isMinted && isSell ? [{ id: token.mintingData?.tokenId!, amount: BigInt(0) }] : [],
       targetAddress: targetAddress.bech32,
       expiresOn: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS)),
-      validationType: getValidationType(token, isSell),
+      validationType: TransactionValidationType.ADDRESS,
       reconciled: false,
       void: false,
       chainReference: null,
@@ -249,21 +256,45 @@ const createTradeOrderTransaction = async (
   return order;
 };
 
-const getAmount = async (token: Token, count: number, price: number, isSell: boolean) => {
+const getPrice = async (
+  params: TradeTokenTangleRequest,
+  type: TokenTradeOrderType,
+  token: string,
+) => {
+  if (params.price) {
+    return params.price;
+  }
+  if (type === TokenTradeOrderType.SELL) {
+    return MIN_PRICE_PER_TOKEN;
+  }
+
+  const snap = await build5Db()
+    .collection(COL.TOKEN_MARKET)
+    .where('token', '==', token)
+    .where('status', '==', TokenTradeOrderStatus.ACTIVE)
+    .orderBy('price', 'desc')
+    .limit(1)
+    .get<TokenTradeOrder>();
+  const highestSell = head(snap);
+  if (!highestSell) {
+    throw invalidArgument(WenError.no_active_sells);
+  }
+  return highestSell.price;
+};
+
+const getCount = (params: TradeTokenTangleRequest, type: TokenTradeOrderType) => {
+  if (type === TokenTradeOrderType.BUY) {
+    return params.count || MAX_TOTAL_TOKEN_SUPPLY;
+  }
+  return params.count || 0;
+};
+
+const getAmount = (token: Token, count: number, price: number, isSell: boolean) => {
   if (!isSell) {
     return Number(bigDecimal.floor(bigDecimal.multiply(count, price)));
   }
   if (token.status !== TokenStatus.MINTED) {
     return count;
   }
-  const wallet = await WalletService.newWallet(token.mintingData?.network);
-  const tmpAddress = await wallet.getNewIotaAddressDetails(false);
-  const nativeTokens = [{ amount: BigInt(count), id: token.mintingData?.tokenId! }];
-  const output = await packBasicOutput(wallet, tmpAddress.bech32, 0, { nativeTokens });
-  return Number(output.amount);
+  return 0;
 };
-
-const getValidationType = (token: Token, isSell: boolean) =>
-  isSell && token.status === TokenStatus.MINTED
-    ? TransactionValidationType.ADDRESS
-    : TransactionValidationType.ADDRESS_AND_AMOUNT;

@@ -5,7 +5,6 @@ WORKDIR /functions
 COPY packages/database packages/database
 COPY packages/interfaces packages/interfaces
 COPY packages/functions packages/functions
-COPY package-lock.json ./
 COPY package.json ./
 COPY data.proto ./
 

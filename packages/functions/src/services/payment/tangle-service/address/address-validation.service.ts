@@ -1,10 +1,10 @@
 import { build5Db } from '@build-5/database';
 import {
-  BaseTangleResponse,
   COL,
   Network,
   Space,
   TRANSACTION_AUTO_EXPIRY_MS,
+  TangleResponse,
   Transaction,
   TransactionPayloadType,
   TransactionType,
@@ -20,10 +20,10 @@ import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet.service';
-import { BaseService, HandlerParams } from '../../base';
+import { BaseTangleService, HandlerParams } from '../../base';
 import { validateAddressSchemaObject } from './AddressValidationTangleRequestSchema';
 
-export class TangleAddressValidationService extends BaseService {
+export class TangleAddressValidationService extends BaseTangleService<TangleResponse> {
   public handleRequest = async ({
     project,
     tran,
@@ -31,12 +31,13 @@ export class TangleAddressValidationService extends BaseService {
     tranEntry,
     owner,
     request,
-  }: HandlerParams): Promise<BaseTangleResponse | undefined> => {
+    payment,
+  }: HandlerParams) => {
     const params = await assertValidationAsync(validateAddressSchemaObject, request);
     const order = await createAddressValidationOrder(
       project,
       owner,
-      (params.network as Network) || tangleOrder.network,
+      tangleOrder.network,
       params.space,
     );
     set(order, 'payload.amount', tranEntry.amount);
@@ -48,13 +49,15 @@ export class TangleAddressValidationService extends BaseService {
     });
 
     this.transactionService.createUnlockTransaction(
+      payment,
       order,
       tran,
       tranEntry,
       TransactionPayloadType.TANGLE_TRANSFER,
       tranEntry.outputId,
     );
-    return;
+
+    return {};
   };
 }
 

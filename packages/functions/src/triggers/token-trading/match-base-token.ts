@@ -2,7 +2,6 @@ import { ITransaction, build5Db } from '@build-5/database';
 import {
   COL,
   Entity,
-  MIN_IOTA_AMOUNT,
   Member,
   Space,
   Token,
@@ -33,11 +32,11 @@ const createIotaPayments = async (
   buyer: Member,
   count: number,
 ): Promise<Transaction[]> => {
-  if (count < MIN_IOTA_AMOUNT) {
-    return [];
-  }
   const balance = sell.balance - count;
-  if (balance !== 0 && balance < MIN_IOTA_AMOUNT) {
+  const wallet = await WalletService.newWallet(sell.sourceNetwork!);
+  const tmpAddress = await wallet.getNewIotaAddressDetails(false);
+  const remainder = await packBasicOutput(wallet, tmpAddress.bech32, balance, {});
+  if (balance !== 0 && balance < Number(remainder.amount)) {
     return [];
   }
   const sellOrder = await build5Db()
@@ -156,9 +155,9 @@ const createSmrPayments = async (
     .doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`)
     .get<Transaction>();
 
-  const fulfilled = buy.fulfilled + tokensToTrade === buy.count;
   let salePrice = Number(bigDecimal.floor(bigDecimal.multiply(price, tokensToTrade)));
   let balanceLeft = buy.balance - salePrice;
+  const fulfilled = buy.fulfilled + tokensToTrade === buy.count || balanceLeft === 0;
 
   if (balanceLeft < 0) {
     return [];
@@ -252,7 +251,11 @@ export const matchBaseToken = async (
   price: number,
   triggeredBy: TokenTradeOrderType,
 ): Promise<Match> => {
-  const tokensToTrade = Math.min(sell.count - sell.fulfilled, buy.count - buy.fulfilled);
+  const tokensToTrade = Math.min(
+    sell.count - sell.fulfilled,
+    buy.count - buy.fulfilled,
+    Math.floor(buy.balance / price),
+  );
   const seller = await build5Db().doc(`${COL.MEMBER}/${sell.owner}`).get<Member>();
   const buyer = await build5Db().doc(`${COL.MEMBER}/${buy.owner}`).get<Member>();
 

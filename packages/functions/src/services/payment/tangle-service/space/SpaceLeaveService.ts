@@ -1,12 +1,12 @@
 import { build5Db } from '@build-5/database';
-import { BaseTangleResponse, COL, Space, SUB_COL, WenError } from '@build-5/interfaces';
+import { COL, Space, SUB_COL, TangleResponse, WenError } from '@build-5/interfaces';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
-import { BaseService, HandlerParams } from '../../base';
+import { BaseTangleService, HandlerParams } from '../../base';
 import { leaveSpaceSchema } from './SpaceLeaveTangleRequestSchema';
 
-export class SpaceLeaveService extends BaseService {
-  public handleRequest = async ({ owner, request }: HandlerParams): Promise<BaseTangleResponse> => {
+export class SpaceLeaveService extends BaseTangleService<TangleResponse> {
+  public handleRequest = async ({ owner, request }: HandlerParams) => {
     const params = await assertValidationAsync(leaveSpaceSchema, request);
 
     const { space, member } = await getLeaveSpaceData(owner, params.uid);

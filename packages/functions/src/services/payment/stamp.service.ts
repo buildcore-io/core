@@ -10,12 +10,14 @@ import {
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
+import { packBasicOutput } from '../../utils/basic-output.utils';
 import { getProject } from '../../utils/common.utils';
 import { getBucket, getStampRoyaltyAddress } from '../../utils/config.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { migrateUriToSotrage, uriToUrl } from '../../utils/media.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { isStorageUrl } from '../joi/common';
+import { WalletService } from '../wallet/wallet.service';
 import { BaseService, HandlerParams } from './base';
 import { getStampDailyCost } from './tangle-service/stamp/StampTangleService';
 
@@ -26,10 +28,18 @@ export class StampService extends BaseService {
     const stampDocRef = build5Db().doc(`${COL.STAMP}/${order.payload.stamp}`);
     const stamp = <Stamp>await this.transaction.get(stampDocRef);
 
-    const dailyCost = getStampDailyCost(stamp);
-    const mintAmount = order.payload.aliasOutputAmount! + order.payload.nftOutputAmount!;
-    const feeAmount = match.to.amount - (stamp.funded ? 0 : mintAmount);
-    if (feeAmount < dailyCost) {
+    const mintAmount = stamp.funded
+      ? 0
+      : order.payload.aliasOutputAmount! + order.payload.nftOutputAmount!;
+    const days = order.payload.days || 0;
+
+    const wallet = await WalletService.newWallet(order.network);
+    const royaltyOutput = await packBasicOutput(wallet, order.payload.targetAddress!, 0, {});
+
+    const minRequiredAmount = order.payload.amount! - mintAmount;
+    let feeAmount = match.to.amount - mintAmount;
+
+    if (feeAmount < minRequiredAmount) {
       await this.transactionService.createCredit(
         TransactionPayloadType.INVALID_AMOUNT,
         payment,
@@ -45,6 +55,42 @@ export class StampService extends BaseService {
         match,
       );
       return;
+    }
+
+    const excessAmount = days ? feeAmount - minRequiredAmount : 0;
+    if (excessAmount) {
+      const output = await packBasicOutput(
+        wallet,
+        payment.payload.sourceAddress!,
+        excessAmount,
+        {},
+      );
+      if (excessAmount >= Number(output.amount)) {
+        feeAmount -= excessAmount;
+        const credit: Transaction = {
+          project: getProject(payment),
+          type: TransactionType.CREDIT,
+          uid: getRandomEthAddress(),
+          space: payment.space,
+          member: payment.member,
+          network: payment.network,
+          payload: {
+            type: TransactionPayloadType.STAMP,
+            amount: excessAmount,
+            sourceAddress: order.payload.targetAddress,
+            targetAddress: match.from,
+            sourceTransaction: [payment.uid],
+            reconciled: true,
+            void: false,
+          },
+        };
+        const creditDocRef = build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`);
+        this.transactionService.push({
+          ref: creditDocRef,
+          data: credit,
+          action: 'set',
+        });
+      }
     }
 
     const expiresAt = dayjs(stamp.expiresAt.toDate()).add(
@@ -95,6 +141,16 @@ export class StampService extends BaseService {
       ref: royaltyPaymentDocRef,
       data: royaltyPayment,
       action: 'set',
+    });
+
+    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
+    this.transactionService.push({
+      ref: orderDocRef,
+      data: {
+        'payload.days': build5Db().deleteField(),
+        'payload.amount': Number(royaltyOutput.amount),
+      },
+      action: 'update',
     });
 
     if (stamp.funded) {
@@ -149,12 +205,13 @@ export class StampService extends BaseService {
         stamp: order.payload.stamp,
       },
     };
-    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${mintNftOrder.uid}`);
+    const nftMintOrderDocRef = build5Db().doc(`${COL.TRANSACTION}/${mintNftOrder.uid}`);
     this.transactionService.push({
-      ref: orderDocRef,
+      ref: nftMintOrderDocRef,
       data: mintNftOrder,
       action: 'set',
     });
+
     return;
   };
 

@@ -2,9 +2,9 @@ import { build5Db } from '@build-5/database';
 import {
   Award,
   AwardBadgeType,
-  BaseTangleResponse,
   COL,
   TRANSACTION_AUTO_EXPIRY_MS,
+  TangleResponse,
   Transaction,
   TransactionPayloadType,
   TransactionType,
@@ -19,15 +19,11 @@ import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet.service';
-import { BaseService, HandlerParams } from '../../base';
+import { BaseTangleService, HandlerParams } from '../../base';
 import { awardFundSchema } from './AwardFundTangleRequestSchema';
 
-export class AwardFundService extends BaseService {
-  public handleRequest = async ({
-    project,
-    owner,
-    request,
-  }: HandlerParams): Promise<BaseTangleResponse> => {
+export class AwardFundService extends BaseTangleService<TangleResponse> {
+  public handleRequest = async ({ project, owner, request }: HandlerParams) => {
     const params = await assertValidationAsync(awardFundSchema, request);
 
     const award = await getAwardForFunding(owner, params.uid);

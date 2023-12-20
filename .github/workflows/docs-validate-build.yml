@@ -1,0 +1,26 @@
+name: Docs - Validate build
+
+on:
+  pull_request
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./docs
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Allow modern Yarn
+        run: corepack enable
+      - name: Install dependencies
+        run: yarn
+      - name: Build
+        run: yarn build

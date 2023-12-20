@@ -20,7 +20,7 @@ export enum URL_PATHS {
   TRANSACTION = 'transaction',
 }
 
-export const WEN_NAME = 'Soonaverse';
+export const WEN_NAME = 'BUILD.5';
 /**
  * Soonaverse space in production.
  */

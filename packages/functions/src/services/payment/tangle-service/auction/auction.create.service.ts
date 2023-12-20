@@ -3,6 +3,7 @@ import {
   Auction,
   AuctionCreateRequest,
   AuctionCreateTangleRequest,
+  AuctionCreateTangleResponse,
   AuctionType,
   COL,
   Member,
@@ -13,14 +14,15 @@ import { assertMemberHasValidAddress, getAddress } from '../../../../utils/addre
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
-import { HandlerParams } from '../../base';
-import { TransactionService } from '../../transaction-service';
+import { BaseTangleService, HandlerParams } from '../../base';
 import { auctionCreateTangleSchema } from './AuctionCreateTangleRequestSchema';
 
-export class TangleAuctionCreateService {
-  constructor(readonly transactionService: TransactionService) {}
-
-  public handleRequest = async ({ request, project, owner }: HandlerParams) => {
+export class TangleAuctionCreateService extends BaseTangleService<AuctionCreateTangleResponse> {
+  handleRequest = async ({
+    request,
+    owner,
+    project,
+  }: HandlerParams): Promise<AuctionCreateTangleResponse> => {
     const params = await assertValidationAsync(auctionCreateTangleSchema, request);
 
     const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);

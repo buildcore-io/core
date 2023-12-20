@@ -1,6 +1,5 @@
 import { build5Db } from '@build-5/database';
 import {
-  BaseTangleResponse,
   COL,
   Collection,
   MIN_IOTA_AMOUNT,
@@ -8,6 +7,7 @@ import {
   Nft,
   NftStatus,
   TangleRequestType,
+  TangleResponse,
   Transaction,
   TransactionPayloadType,
   TransactionType,
@@ -59,7 +59,7 @@ describe('Minted nft trading', () => {
 
       const snap = await creditQuery.get<Transaction>();
       const credit = snap[0];
-      const response = credit.payload.response as BaseTangleResponse;
+      const response = credit.payload.response as TangleResponse;
 
       await helper.walletService!.send(address, response.address!, response.amount!, {});
       await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);

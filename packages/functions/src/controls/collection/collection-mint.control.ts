@@ -77,10 +77,12 @@ export const mintCollectionOrderControl = async ({
     const space = await build5Db().doc(`${COL.SPACE}/${collection.space}`).get<Space>();
     assertSpaceHasValidAddress(space, network);
 
-    const royaltySpace = await build5Db()
-      .doc(`${COL.SPACE}/${collection.royaltiesSpace}`)
-      .get<Space>();
-    assertSpaceHasValidAddress(royaltySpace, network);
+    if (collection.royaltiesFee) {
+      const royaltySpace = await build5Db()
+        .doc(`${COL.SPACE}/${collection.royaltiesSpace}`)
+        .get<Space>();
+      assertSpaceHasValidAddress(royaltySpace, network);
+    }
 
     const wallet = await WalletService.newWallet(network);
     const targetAddress = await wallet.getNewIotaAddressDetails();
