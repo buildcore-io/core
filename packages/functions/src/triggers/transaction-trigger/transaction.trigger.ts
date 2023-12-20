@@ -24,6 +24,7 @@ import { getAddress } from '../../utils/address.utils';
 import { getProject } from '../../utils/common.utils';
 import { isEmulatorEnv } from '../../utils/config.utils';
 import { serverTime } from '../../utils/dateTime.utils';
+import { logger } from '../../utils/logger';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { FirestoreDocEvent } from '../common';
 import { unclockMnemonic } from '../milestone-transactions-triggers/common';
@@ -37,7 +38,6 @@ import { onStakingConfirmed } from './staking';
 import { onStampMintUpdate } from './stamp-minting';
 import { onTokenMintingUpdate } from './token-minting';
 import { getWalletParams } from './wallet-params';
-import { logger } from '../../utils/logger';
 
 export const DEFAULT_EXECUTABLE_TRANSACTIONS = [
   TransactionType.BILL_PAYMENT,

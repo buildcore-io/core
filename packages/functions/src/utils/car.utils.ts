@@ -10,8 +10,8 @@ import os from 'os';
 import { Filelike, Web3Storage, getFilesFromPath } from 'web3.storage';
 import { propsToAttributes } from './collection-minting-utils/nft.prop.utils';
 import { getWeb3Token } from './config.utils';
-import { downloadFile } from './media.utils';
 import { logger } from './logger';
+import { downloadFile } from './media.utils';
 const MAX_BLOCK_SIZE = 1048576;
 
 export const PLACEHOLDER_CID = 'bafybeig3zxv7cfqvfwqljktfzyyhij67pcg45eiku4dcw2fpajzu7s4xwi';
@@ -92,7 +92,7 @@ export const collectionToIpfsMetadata = (collection: Collection) => ({
   description: collection.description,
   author: collection.createdBy,
   space: collection.space,
-  royaltySpace: collection.royaltiesSpace,
+  royaltySpace: collection.royaltiesSpace || '',
   platform: KEY_NAME_TANGLE,
   uid: collection.uid,
 });
@@ -105,7 +105,7 @@ export const nftToIpfsMetadata = (collection: Collection, nft: Nft) => {
     description: nft.description,
     author: nft.createdBy,
     space: nft.space,
-    royaltySpace: collection.royaltiesSpace,
+    royaltySpace: collection.royaltiesSpace || '',
     platform: KEY_NAME_TANGLE,
     uid: nft.uid,
     attributes: [...props, ...stats],

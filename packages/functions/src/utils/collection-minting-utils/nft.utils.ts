@@ -76,9 +76,7 @@ export const nftToMetadata = async (
 
     attributes: [...props, ...stats],
 
-    royalties: {
-      [royaltySpaceAddress]: collection.royaltiesFee,
-    },
+    royalties: collection.royaltiesFee ? { [royaltySpaceAddress]: collection.royaltiesFee } : {},
 
     build5Id: nft.uid,
   };
@@ -96,9 +94,7 @@ export const collectionToMetadata = async (
     name: collection.name,
     description: collection.description || '',
     issuerName: KEY_NAME_TANGLE,
-    royalties: {
-      [royaltySpaceAddress]: collection.royaltiesFee,
-    },
+    royalties: collection.royaltiesFee ? { [royaltySpaceAddress]: collection.royaltiesFee } : {},
     build5Id: collection.uid,
   };
 };
