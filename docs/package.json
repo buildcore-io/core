@@ -20,12 +20,16 @@
     "@docusaurus/plugin-content-docs": "^2.4.1",
     "@docusaurus/plugin-content-pages": "^2.4.1",
     "@docusaurus/preset-classic": "2.4.1",
+    "@docusaurus/remark-plugin-npm2yarn": "^2.4.1",
     "@mdx-js/react": "^1.6.22",
+    "@saucelabs/theme-github-codeblock": "^0.2.3",
     "clsx": "^1.2.1",
     "prism-react-renderer": "^1.3.5",
+    "raw-loader": "^4.0.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-router-dom": "5.3.4"
+    "react-router-dom": "5.3.4",
+    "remark-code-import": "0.4.0"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "2.4.1",
