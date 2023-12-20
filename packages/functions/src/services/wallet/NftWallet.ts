@@ -317,7 +317,7 @@ export class NftWallet {
 
     if (!nftsToMint) {
       await unclockMnemonic(sourceAddress.bech32);
-      logger.error('Nft data to big to mint', head(nfts));
+      console.error('nft mint error', 'Nft data to big to mint', head(nfts));
       throw Error('Nft data to big to mint');
     }
     return blockId;

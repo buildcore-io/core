@@ -10,7 +10,6 @@ import os from 'os';
 import { Filelike, Web3Storage, getFilesFromPath } from 'web3.storage';
 import { propsToAttributes } from './collection-minting-utils/nft.prop.utils';
 import { getWeb3Token } from './config.utils';
-import { logger } from './logger';
 import { downloadFile } from './media.utils';
 const MAX_BLOCK_SIZE = 1048576;
 
@@ -28,7 +27,7 @@ export const packCar = async (directory: string) => {
     const car = await CarReader.fromIterable(out);
     return { car, cid: root.toString() };
   } catch (error) {
-    logger.error('Pack car error', error);
+    console.error('Pack car error', error);
     throw error;
   } finally {
     await blockstore.close();

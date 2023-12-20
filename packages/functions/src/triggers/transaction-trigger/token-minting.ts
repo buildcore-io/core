@@ -21,7 +21,6 @@ import dayjs from 'dayjs';
 import { getAddress } from '../../utils/address.utils';
 import { getProject } from '../../utils/common.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-import { logger } from '../../utils/logger';
 
 export const onTokenMintingUpdate = async (transaction: Transaction) => {
   switch (transaction.payload.type) {
@@ -38,7 +37,7 @@ export const onTokenMintingUpdate = async (transaction: Transaction) => {
       break;
     }
     default: {
-      logger.error('Unsupported executable transaction type', transaction);
+      console.error('Unsupported executable transaction type error', transaction);
       throw Error('Unsupported executable transaction type ' + transaction.type);
     }
   }
