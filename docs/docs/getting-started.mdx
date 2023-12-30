@@ -57,7 +57,7 @@ https://api-test.build5.com
 
 Let's do a simple GET Request to get the member's object of `@adam_unchained`:
 
-```
+```ts
 import { Build5, https } from '@build-5/sdk';
 import { Dataset } from '@build-5/interfaces';
 
@@ -68,7 +68,11 @@ const member = await https(origin).createProject(<YourProjectApiKey>)
 
 console.log(member);
 ```
-> See [Create Project](products/project/how-to/create-project) guide to create project.
+:::info Create Project
+
+Checkout the [Create Project](products/project/how-to/create-project) guide to create project.
+
+:::
 
 ### See some of our first how to's:
 - [Create Project](products/project/how-to/create-project)
