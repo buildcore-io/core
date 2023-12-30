@@ -8,6 +8,7 @@ To update a member, we first get the member with their ID, which, in this case, 
 ```
 
 With the member, we can create a signature and update, for example, the name by calling `update` on `dataset(Dataset.MEMBER)` and passing the new name in the body.
+`update` takes an object of type `Build5Request<`[`MemberUpdateRequest`](../../../../search-post/interfaces/MemberUpdateRequest.md)`>` as parameter.
 
 ```tsx file=../../../../../../packages/sdk/examples/member/update.ts#L16-L29
 ```
