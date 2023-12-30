@@ -16,6 +16,7 @@ const sidebars = {
   tutorialSidebar: [
     'overview',
     'getting-started',
+    'on-tangle-request',
     {
       type: 'category',
       label: 'Products',
