@@ -1,5 +1,9 @@
 ---
 title: Create Member
+keywords:
+  - how-to
+  - create
+  - member
 ---
 
 To create a member, you need to call `createMember`.

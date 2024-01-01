@@ -1,5 +1,9 @@
 ---
 title: Create Space
+keywords:
+  - how-to
+  - create
+  - space
 ---
 
 To create a space, you must call `create` on `dataset(Dataset.SPACE)`. In the body, you can specify the name of the space.

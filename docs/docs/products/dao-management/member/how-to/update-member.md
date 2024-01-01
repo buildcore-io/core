@@ -1,5 +1,9 @@
 ---
 title: Update Member
+keywords:
+  - how-to
+  - update
+  - member
 ---
 
 To update a member, we first get the member with their ID, which, in this case, is the member's address.

@@ -1,5 +1,9 @@
 ---
 title: Create a Stamp
+keywords:
+  - how-to
+  - create
+  - stamp
 ---
 
 To create a stamp, you must call `create` on `dataset(Dataset.STAMP)`. In the body, you can specify the file you want to stamp.

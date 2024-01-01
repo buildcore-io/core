@@ -1,5 +1,11 @@
 ---
 title: Create NFT Collection
+keywords:
+  - how-to
+  - create
+  - nft
+  - collection
+  - nft-collection
 ---
 
 To create a NFT collection, you must call `create` on `dataset(Dataset.NFT_COLLECTION)`. In the body, you can specify the collection's name, the symbol, the base URI, and more.
