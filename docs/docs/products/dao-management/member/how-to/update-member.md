@@ -1,6 +1,6 @@
 ---
 title: Update Member
-keywords:
+tags:
   - how-to
   - update
   - member

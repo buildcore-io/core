@@ -1,6 +1,6 @@
 ---
 title: Create a Stamp
-keywords:
+tags:
   - how-to
   - create
   - stamp
