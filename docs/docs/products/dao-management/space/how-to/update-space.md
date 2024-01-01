@@ -11,7 +11,7 @@ To update a Space, we first as an example get the first space of our member.
 ```tsx file=../../../../../../packages/sdk/examples/space/update.ts#L9-L15
 ```
 
-:::info
+:::info Update a Space as Guardian
 
 You can only update Spaces where you are a Guardian
 

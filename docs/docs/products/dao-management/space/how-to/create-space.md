@@ -9,7 +9,7 @@ keywords:
 To create a space, you must call `create` on `dataset(Dataset.SPACE)`. In the body, you can specify the name of the space.
 `create` takes an object of type `Build5Request<`[`SpaceCreateRequest`](../../../../search-post/interfaces/SpaceCreateRequest.md)`>` as parameter.
 
-:::info
+:::info Create a Member first
 
 To create a space, don't forget to create a member first
 
