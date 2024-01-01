@@ -15,5 +15,5 @@ To create a space, don't forget to create a member first
 
 :::
 
-```tsx file=../../../../../../packages/sdk/examples/create_space.ts#L11-L26
+```tsx file=../../../../../../packages/sdk/examples/space/create.ts#L11-L26
 ```
