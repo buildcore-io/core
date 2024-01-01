@@ -22,17 +22,17 @@ async function main() {
         },
       },
     });
-  } catch (e) {
-    console.log(e);
-    return;
-  }
 
-  console.log(
-    'Project created id: ',
-    responseProject.project.uid,
-    ', API Key: ',
-    responseProject.token,
-  );
+
+    console.log(
+      'Project created id: ',
+      responseProject.project.uid,
+      ', API Key: ',
+      responseProject.token,
+    );
+  } catch (error) {
+    console.error('Error: ', error);
+  }
 }
 
 main().then(() => process.exit());

@@ -25,19 +25,18 @@ async function main() {
           network: Network.RMS,
         },
       });
-  } catch (e) {
-    console.log(e);
-    return;
-  }
 
-  console.log(
-    'Sent: ',
-    response.payload.amount,
-    ' to ',
-    response.payload.targetAddress,
-    ', full order object: ',
-    response,
-  );
+      console.log(
+        'Sent: ',
+        response.payload.amount,
+        ' to ',
+        response.payload.targetAddress,
+        ', full order object: ',
+        response,
+      );
+  } catch (error) {
+    console.error('Error: ', error);
+  }
 }
 
 main().then(() => process.exit());

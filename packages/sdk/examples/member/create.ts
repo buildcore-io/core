@@ -3,15 +3,19 @@ import { address } from '../utils/secret';
 
 async function main() {
   const origin = Build5.TEST;
-  const response = await https(origin).createMember({
-    address: address.bech32,
-    signature: '',
-    body: {
+  try {
+    const response = await https(origin).createMember({
       address: address.bech32,
-    },
-  });
-
-  console.log('Member uid: ', response.uid);
+      signature: '',
+      body: {
+        address: address.bech32,
+      },
+    });
+  
+    console.log('Member uid: ', response.uid);
+  } catch (error) {
+    console.error('Error: ', error);
+  }
 }
 
 main().then(() => process.exit());
