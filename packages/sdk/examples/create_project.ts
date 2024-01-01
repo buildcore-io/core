@@ -23,7 +23,6 @@ async function main() {
       },
     });
 
-
     console.log(
       'Project created id: ',
       responseProject.project.uid,

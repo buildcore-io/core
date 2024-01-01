@@ -25,7 +25,7 @@ async function main() {
         },
       });
 
-      console.log(response);
+    console.log(response);
   } catch (error) {
     console.error('Error: ', error);
   }

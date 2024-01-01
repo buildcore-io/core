@@ -11,7 +11,7 @@ async function main() {
       .dataset(Dataset.MEMBER)
       .id(address.bech32)
       .get();
-  
+
     const name = Math.random().toString().split('.')[1];
     const signature = await walletSign(member.uid, address);
     const response = await https(origin)
@@ -28,7 +28,7 @@ async function main() {
           name: name + '_fun',
         },
       });
-  
+
     console.log('Member updated: ', response);
   } catch (error) {
     console.error('Error: ', error);

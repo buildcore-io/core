@@ -8,11 +8,11 @@
 
 > @build-5/sdk is a complete framework to interact with Build5 platform and various DLTs like IOTA and Shimmer.
 
-* 🕒 Fast and Reliable
-* 💪 Tested and trusted
-* 🔥 Scalable
-* 📦 Simple and easy to use
-* 👫 Supports both client and server use
+- 🕒 Fast and Reliable
+- 💪 Tested and trusted
+- 🔥 Scalable
+- 📦 Simple and easy to use
+- 👫 Supports both client and server use
 
 ---
 
@@ -31,7 +31,7 @@ npm install @build-5/interfaces --save
 
 ### API
 
-It's easy to use Build5 SDK to read, post or constract OTR requests. 
+It's easy to use Build5 SDK to read, post or constract OTR requests.
 
 ```
 import { Build5, https } from '@build-5/sdk';

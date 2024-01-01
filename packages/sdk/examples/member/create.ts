@@ -11,7 +11,7 @@ async function main() {
         address: address.bech32,
       },
     });
-  
+
     console.log('Member uid: ', response.uid);
   } catch (error) {
     console.error('Error: ', error);

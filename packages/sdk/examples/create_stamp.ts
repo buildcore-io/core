@@ -26,14 +26,14 @@ async function main() {
         },
       });
 
-      console.log(
-        'Sent: ',
-        response.payload.amount,
-        ' to ',
-        response.payload.targetAddress,
-        ', full order object: ',
-        response,
-      );
+    console.log(
+      'Sent: ',
+      response.payload.amount,
+      ' to ',
+      response.payload.targetAddress,
+      ', full order object: ',
+      response,
+    );
   } catch (error) {
     console.error('Error: ', error);
   }
