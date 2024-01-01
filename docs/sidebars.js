@@ -20,13 +20,7 @@ const sidebars = {
     {
       type: 'category',
       label: 'Products',
-      link: {
-        type: 'generated-index',
-        title: 'BUILD.5 Products',
-        description: 'Learn about the BUILD.5 products and how to use them.',
-        slug: '/products',
-        keywords: ['products', 'api', 'blockchain', 'nft', 'digital twin', 'token', 'staking', 'trading', 'launchpad', 'staking', 'reputation', 'member', 'project', 'proposal', 'stake reward', 'token distribution', 'dao management'],
-      },
+      link: {type: 'doc', id: 'products/overview'},
       collapsible: true,
       collapsed: false,
       items: [
