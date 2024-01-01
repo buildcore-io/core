@@ -65,6 +65,7 @@ const sidebars = {
                 {
                   'How To': [
                     'products/dao-management/space/how-to/create-space',
+                    'products/dao-management/space/how-to/update-space',
                     'products/dao-management/space/how-to/validate-address',
                   ],
                 }
