@@ -1,6 +1,6 @@
 ---
 title: Create NFT Collection
-keywords:
+tags:
   - how-to
   - create
   - nft

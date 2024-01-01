@@ -1,7 +1,7 @@
 ---
 title: On Tangle Request(OTR)
 description: Learn about On Tangle Request(OTR).
-keywords:
+tags:
   - OTR
   - smart contracts
 ---

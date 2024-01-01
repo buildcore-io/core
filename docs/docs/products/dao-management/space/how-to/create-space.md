@@ -1,6 +1,6 @@
 ---
 title: Create Space
-keywords:
+tags:
   - how-to
   - create
   - space

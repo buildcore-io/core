@@ -1,6 +1,6 @@
 ---
 title: Create Member
-keywords:
+tags:
   - how-to
   - create
   - member

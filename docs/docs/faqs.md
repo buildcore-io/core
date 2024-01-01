@@ -1,7 +1,7 @@
 ---
 title: FAQs
 description: Questions and answers collections for build.5
-keywords:
+tags:
   - faq
   - open source
 ---
