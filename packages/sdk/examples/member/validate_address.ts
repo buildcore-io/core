@@ -28,7 +28,8 @@ async function main() {
         },
       });
 
-    console.log('Address validated: ', response);
+    console.log('Address validation request send: ', response);
+    console.log(`Please send ${response.payload.amount} to ${response.payload.targetAddress}.`);
   } catch (error) {
     console.log(error);
   }

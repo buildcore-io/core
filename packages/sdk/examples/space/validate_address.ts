@@ -6,11 +6,14 @@ import { walletSign } from '../utils/utils';
 async function main() {
   try {
     const origin = Build5.TEST;
+
+    // Get the first space of our member and let's hope we are a guardian there as this is needed to update the space
     const member = await https(origin)
       .project(SoonaverseApiKey[Build5.TEST])
       .dataset(Dataset.MEMBER)
       .id(address.bech32)
       .get();
+    const space = Object.values(member.spaces)[0];
 
     const signature = await walletSign(member.uid, address);
     const response = await https(origin)
@@ -25,11 +28,12 @@ async function main() {
         },
         body: {
           network: 'rms',
-          space: '0x47e4cc5fee9666c836bd50d6284b477f6db51347',
+          space: space.uid,
         },
       });
 
-    console.log('Address validated: ', response);
+    console.log('Address validation request send: ', response);
+    console.log(`Please send ${response.payload.amount} to ${response.payload.targetAddress}.`);
   } catch (error) {
     console.log(error);
   }
