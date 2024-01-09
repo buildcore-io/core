@@ -12,10 +12,13 @@ import {
   Dataset,
   GetManyAdvancedRequest,
   Opr,
+  Subset,
   Transaction,
   WEN_FUNC,
 } from '@build-5/interfaces';
+import { switchMap } from 'rxjs';
 import { DatasetClass } from '../Dataset';
+import { SubsetType } from '../common';
 
 export class AwardDataset<D extends Dataset> extends DatasetClass<D, Award> {
   create = this.sendRequest(WEN_FUNC.createAward)<AwardCreateRequest, Award>;
@@ -96,5 +99,17 @@ export class AwardDataset<D extends Dataset> extends DatasetClass<D, Award> {
       orderBy,
     };
     return this.getManyAdvancedLive(params);
+  };
+
+  getTopByMemberLive = (member: string, completed: boolean, startAfter?: string) => {
+    const members = (
+      this.subset(Subset.MEMBERS) as SubsetType<Dataset.AWARD, Subset.PARTICIPANTS>
+    ).getTopByMemberLive(member, completed, startAfter);
+    return members.pipe(
+      switchMap(async (members) => {
+        const promises = members.map((member) => this.id(member.parentId).get());
+        return (await Promise.all(promises)).map((s) => s!);
+      }),
+    );
   };
 }

@@ -16,28 +16,27 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@docusaurus/core": "2.4.1",
-    "@docusaurus/plugin-content-docs": "^2.4.1",
-    "@docusaurus/plugin-content-pages": "^2.4.1",
-    "@docusaurus/preset-classic": "2.4.1",
-    "@docusaurus/remark-plugin-npm2yarn": "^2.4.1",
-    "@mdx-js/react": "^1.6.22",
+    "@docusaurus/core": "3.0.1",
+    "@docusaurus/plugin-content-docs": "3.0.1",
+    "@docusaurus/plugin-content-pages": "3.0.1",
+    "@docusaurus/preset-classic": "3.0.1",
+    "@docusaurus/remark-plugin-npm2yarn": "3.0.1",
+    "@mdx-js/react": "3.0.0",
     "@saucelabs/theme-github-codeblock": "^0.2.3",
-    "clsx": "^1.2.1",
-    "prism-react-renderer": "^1.3.5",
+    "clsx": "^2.0.0",
+    "prism-react-renderer": "^2.1.0",
     "raw-loader": "^4.0.2",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-router-dom": "5.3.4",
-    "remark-code-import": "0.4.0"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "remark-code-import": "1.2.0"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "2.4.1",
-    "@tsconfig/docusaurus": "^1.0.5",
-    "docusaurus-plugin-typedoc": "^0.19.2",
-    "typedoc": "^0.24.8",
+    "@docusaurus/module-type-aliases": "3.0.1",
+    "@docusaurus/tsconfig": "3.0.1",
+    "docusaurus-plugin-typedoc": "^0.22.0",
+    "typedoc": "^0.25.5",
     "typedoc-plugin-markdown": "^3.17.1",
-    "typescript": "4.9.5"
+    "typescript": "5.3.3"
   },
   "browserslist": {
     "production": [

@@ -39,6 +39,20 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "stake",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "project",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "updatedOn",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ]
 }

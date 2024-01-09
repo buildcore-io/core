@@ -1,8 +1,11 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
+import codeImport from 'remark-code-import';
 
-const lightCodeTheme = require('prism-react-renderer/themes/github');
-const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+const path = require('path');
+const {themes} = require('prism-react-renderer');
+const lightTheme = themes.github;
+const darkTheme = themes.dracula;
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -95,7 +98,7 @@ const config = {
           sidebarPath: require.resolve('./sidebars.js'),
           remarkPlugins: [
             [require('@docusaurus/remark-plugin-npm2yarn'), {sync: true}],
-            require('remark-code-import'),
+            [codeImport, {rootDir: path.resolve('../.')}],
           ],
         },
         blog: false,
@@ -178,9 +181,9 @@ const config = {
         copyright: `Copyright © ${new Date().getFullYear()} BUILD.5. All Rights Reserved.`,
       },
       prism: {
-        theme: lightCodeTheme,
-        darkTheme: darkCodeTheme,
-        dditionalLanguages: ['ts'],
+        theme: lightTheme,
+        darkTheme: darkTheme,
+        additionalLanguages: ['bash'],
       },
     }),
 };
