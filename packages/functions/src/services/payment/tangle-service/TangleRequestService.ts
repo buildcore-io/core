@@ -22,6 +22,7 @@ import { AwardCreateService } from './award/award.create.service';
 import { AwardFundService } from './award/award.fund.service';
 import { MintMetadataNftService } from './metadataNft/mint-metadata-nft.service';
 import { NftDepositService } from './nft/nft-deposit.service';
+import { TangleNftPurchaseBulkService } from './nft/nft-purchase.bulk.service';
 import { TangleNftPurchaseService } from './nft/nft-purchase.service';
 import { TangleNftSetForSaleService } from './nft/nft-set-for-sale.service';
 import { ProposalApprovalService } from './proposal/ProposalApporvalService';
@@ -96,6 +97,8 @@ export class TangleRequestService extends BaseTangleService<TangleResponse> {
         return new TangleStakeService(this.transactionService);
       case TangleRequestType.NFT_PURCHASE:
         return new TangleNftPurchaseService(this.transactionService);
+      case TangleRequestType.NFT_PURCHASE_BULK:
+        return new TangleNftPurchaseBulkService(this.transactionService);
       case TangleRequestType.NFT_SET_FOR_SALE:
         return new TangleNftSetForSaleService(this.transactionService);
       case TangleRequestType.NFT_BID:

@@ -1,6 +1,7 @@
 import {
   MintMetadataNftTangleRequest,
   NftBidTangleRequest,
+  NftPurchaseBulkTangleRequest,
   NftPurchaseTangleRequest,
   NftSetForSaleTangleRequest,
   TangleRequestType,
@@ -29,6 +30,12 @@ export class NftOtrDataset extends DatasetClass {
   mintMetadataNft = (params: Omit<MintMetadataNftTangleRequest, 'requestType'>) =>
     new OtrRequest<MintMetadataNftTangleRequest>(this.otrAddress, {
       requestType: TangleRequestType.MINT_METADATA_NFT,
+      ...params,
+    });
+
+  bulkPurchase = (params: Omit<NftPurchaseBulkTangleRequest, 'requestType'>) =>
+    new OtrRequest<NftPurchaseBulkTangleRequest>(this.otrAddress, {
+      requestType: TangleRequestType.NFT_PURCHASE_BULK,
       ...params,
     });
 }

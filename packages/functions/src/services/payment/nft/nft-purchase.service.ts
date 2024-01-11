@@ -42,7 +42,7 @@ export class NftPurchaseService extends BaseService {
     }
   };
 
-  private creditBids = async (auctionId: string) => {
+  public creditBids = async (auctionId: string) => {
     const auctionDocRef = build5Db().doc(`${COL.AUCTION}/${auctionId}`);
     const auction = <Auction>await this.transaction.get(auctionDocRef);
     this.transactionService.push({

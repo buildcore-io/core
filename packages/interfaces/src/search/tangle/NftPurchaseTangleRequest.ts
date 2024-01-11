@@ -16,7 +16,7 @@ export interface NftPurchaseTangleRequest {
    */
   disableWithdraw?: boolean;
   /**
-   * Build5 if of the nft to be purchased.
+   * Build5 id of the nft to be purchased.
    */
   nft?: string;
   /**

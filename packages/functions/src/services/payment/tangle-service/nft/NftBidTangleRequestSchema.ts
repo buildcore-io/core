@@ -5,7 +5,7 @@ import { baseTangleSchema } from '../common';
 
 export const nftBidSchema = toJoiObject<NftBidTangleRequest>({
   ...baseTangleSchema(TangleRequestType.NFT_BID),
-  nft: CommonJoi.uid().description('Build5 if of the nft to bid on.'),
+  nft: CommonJoi.uid().description('Build5 id of the nft to bid on.'),
   disableWithdraw: Joi.boolean().description(
     "If set to true, NFT will not be sent to the buyer's validated address upon purchase.",
   ),

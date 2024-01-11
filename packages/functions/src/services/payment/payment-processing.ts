@@ -23,6 +23,7 @@ import { CreditService } from './credit-service';
 import { MetadataNftService } from './metadataNft-service';
 import { CollectionMintingService } from './nft/collection-minting.service';
 import { NftDepositService } from './nft/nft-deposit.service';
+import { NftPurchaseBulkService } from './nft/nft-purchase.bulk.service';
 import { NftPurchaseService } from './nft/nft-purchase.service';
 import { NftStakeService } from './nft/nft-stake.service';
 import { SpaceClaimService } from './space/space-service';
@@ -143,6 +144,8 @@ export class ProcessingService {
     switch (type) {
       case TransactionPayloadType.NFT_PURCHASE:
         return new NftPurchaseService(tranService);
+      case TransactionPayloadType.NFT_PURCHASE_BULK:
+        return new NftPurchaseBulkService(tranService);
       case TransactionPayloadType.NFT_BID:
       case TransactionPayloadType.AUCTION_BID:
         return new AuctionBidService(tranService);

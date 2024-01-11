@@ -8,6 +8,7 @@ import {
   ProjectBilling,
   SOON_PROJECT_ID,
   SUB_COL,
+  SendToManyTargets,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import dotenv from 'dotenv';
@@ -16,11 +17,7 @@ import test from 'firebase-functions-test';
 import * as functions from 'firebase-functions/v2';
 import { isEmpty } from 'lodash';
 import { Wallet, WalletParams } from '../src/services/wallet/wallet';
-import {
-  AddressDetails,
-  SendToManyTargets,
-  WalletService,
-} from '../src/services/wallet/wallet.service';
+import { AddressDetails, WalletService } from '../src/services/wallet/wallet.service';
 import { dateToTimestamp } from '../src/utils/dateTime.utils';
 
 dotenv.config({ path: '.env.local' });

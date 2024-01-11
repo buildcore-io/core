@@ -1,7 +1,13 @@
-import { NativeToken, Network, Timestamp, Transaction } from '@build-5/interfaces';
+import {
+  NativeToken,
+  Network,
+  SendToManyTargets,
+  Timestamp,
+  Transaction,
+} from '@build-5/interfaces';
 import { AliasOutput, BasicOutput, Client, FoundryOutput, INodeInfo, NftOutput } from '@iota/sdk';
 import { Expiration } from './IotaWalletService';
-import { AddressDetails, SendToManyTargets } from './wallet.service';
+import { AddressDetails } from './wallet.service';
 
 export interface WalletParams {
   readonly data?: string;

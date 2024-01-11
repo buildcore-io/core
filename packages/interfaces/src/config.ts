@@ -216,3 +216,5 @@ export const STAMP_ROYALTY_ADDRESS = {
   [Network.IOTA]: 'iota1qr5ped7rfdkh8j9acj6qyyxz4mmhfsrqage37y7l0m09snclk07gsyup5dp',
   [Network.ATOI]: 'atoi1qr9f2a43rw3me665vzda3fq4wdtv69v38pvrkvx9rqu0pm57lyk4vc0mf9j',
 };
+
+export const MAX_NFT_BULK_PURCHASE = 100;

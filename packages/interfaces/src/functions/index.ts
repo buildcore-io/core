@@ -49,6 +49,7 @@ export enum WEN_FUNC {
 
   // ORDER functions
   orderNft = 'ordernft',
+  orderNftBulk = 'ordernftbulk',
   openBid = 'openbid',
   validateAddress = 'validateaddress',
 

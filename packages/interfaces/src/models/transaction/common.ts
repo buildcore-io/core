@@ -5,6 +5,9 @@ export const TRANSACTION_AUTO_EXPIRY_MS = 4 * 60 * 1000;
 export const TRANSACTION_MAX_EXPIRY_MS = 31 * 24 * 60 * 60 * 1000;
 export const TRANSACTION_DEFAULT_AUCTION = 3 * 24 * 60 * 60 * 1000;
 
+/**
+ * Enum to represent why a transaction was ignored to process
+ */
 export enum IgnoreWalletReason {
   NONE = '',
   UNREFUNDABLE_DUE_UNLOCK_CONDITIONS = 'UnrefundableDueUnlockConditions',
@@ -15,6 +18,9 @@ export enum IgnoreWalletReason {
   MISSING_TARGET_ADDRESS = 'MISSING_TARGET_ADDRESS',
 }
 
+/**
+ * Enum representing all the possible transactions
+ */
 export enum TransactionType {
   VOTE = 'VOTE',
   ORDER = 'ORDER',
@@ -52,8 +58,12 @@ export enum Network {
   RMS = 'rms',
 }
 
+/**
+ * Enum representing transaction payload type
+ */
 export enum TransactionPayloadType {
   NFT_PURCHASE = 'NFT_PURCHASE',
+  NFT_PURCHASE_BULK = 'NFT_PURCHASE_BULK',
   NFT_BID = 'NFT_BID',
   AUCTION_BID = 'AUCTION_BID',
   SPACE_ADDRESS_VALIDATION = 'SPACE_ADDRESS_VALIDATION',
@@ -99,6 +109,7 @@ export enum TransactionPayloadType {
   UNLOCK_FUNDS = 'UNLOCK_FUNDS',
   UNLOCK_NFT = 'UNLOCK_NFT',
   TANGLE_TRANSFER = 'TANGLE_TRANSFER',
+  TANGLE_TRANSFER_MANY = 'TANGLE_TRANSFER_MANY',
 
   MINT_NFT = 'MINT_NFT',
   UPDATE_MINTED_NFT = 'UPDATE_MINTED_NFT',
@@ -120,11 +131,17 @@ export enum TransactionPayloadType {
   STAMP = 'STAMP',
 }
 
+/**
+ * Validation type. Defines when a received amount is processed
+ */
 export enum TransactionValidationType {
   ADDRESS_AND_AMOUNT = 0,
   ADDRESS = 1,
 }
 
+/**
+ * Base transaction record
+ */
 export interface Transaction extends BaseRecord {
   network: Network;
   type: TransactionType;
@@ -138,6 +155,9 @@ export interface Transaction extends BaseRecord {
   payload: TransactionPayload;
 }
 
+/**
+ * Result after processing a transaction
+ */
 export interface WalletResult {
   createdOn: Timestamp;
   processedOn: Timestamp;
@@ -152,16 +172,25 @@ export interface WalletResult {
   nodeIndex?: number;
 }
 
+/**
+ * Storage return params
+ */
 export interface StorageReturn {
   readonly amount: number;
   readonly address: NetworkAddress;
 }
 
+/**
+ * Enum representing the type of the owner or the beneficiary of a transaction
+ */
 export enum Entity {
   SPACE = 'space',
   MEMBER = 'member',
 }
 
+/**
+ * Interface representing a tangle payload
+ */
 export interface IOTATangleTransaction {
   tranId: string;
   network: string;
@@ -185,10 +214,18 @@ export interface IOTATangleTransaction {
   invalidPayment?: boolean;
 }
 
+/**
+ * Enum representing why payment was credited
+ */
 export enum CreditPaymentReason {
   TRADE_CANCELLED = 'trade_cancelled',
 }
 
+/**
+ * Function to get the pair of a DLT network
+ * @param network
+ * @returns
+ */
 export const getNetworkPair = (network: Network) => {
   switch (network) {
     case Network.IOTA:
@@ -202,6 +239,9 @@ export const getNetworkPair = (network: Network) => {
   }
 };
 
+/**
+ * Detail of each DLT network
+ */
 export const NETWORK_DETAIL = {
   [Network.IOTA]: {
     label: 'IOTA',
@@ -225,6 +265,9 @@ export const NETWORK_DETAIL = {
   },
 };
 
+/**
+ * Default network decimals
+ */
 export const DEFAULT_NETWORK_DECIMALS = 6;
 
 export const getDefDecimalIfNotSet = (v?: number | null) => {

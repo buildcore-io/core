@@ -5,6 +5,7 @@ import {
   NftBidRequest,
   NftCreateRequest,
   NftDepositRequest,
+  NftPurchaseBulkRequest,
   NftPurchaseRequest,
   NftSetForSaleRequest,
   NftUpdateUnsoldRequest,
@@ -31,6 +32,8 @@ export class NftDataset<D extends Dataset> extends DatasetClass<D, Nft> {
   order = this.sendRequest(WEN_FUNC.orderNft)<NftPurchaseRequest, Transaction>;
 
   openBid = this.sendRequest(WEN_FUNC.openBid)<NftBidRequest, Transaction>;
+
+  bulkPurchase = this.sendRequest(WEN_FUNC.orderNftBulk)<NftPurchaseBulkRequest, Transaction>;
 
   getByCollectionLive = (
     collection: string,

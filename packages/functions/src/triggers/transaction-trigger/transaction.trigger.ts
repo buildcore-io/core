@@ -428,6 +428,10 @@ const submitUnlockTransaction = async (
         transaction.payload.outputToConsume,
       );
     }
+    case TransactionPayloadType.TANGLE_TRANSFER_MANY: {
+      const sourceAddress = await wallet.getAddressDetails(transaction.payload.sourceAddress!);
+      return wallet.sendToMany(sourceAddress, transaction.payload.targetAddresses!, params);
+    }
     case TransactionPayloadType.UNLOCK_NFT: {
       const nftWallet = new NftWallet(wallet);
       return nftWallet.changeNftOwner(transaction, params);
