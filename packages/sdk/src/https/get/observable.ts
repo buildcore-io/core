@@ -25,10 +25,10 @@ class Observable<T> extends RxjsObservable<T> {
       this.ws = new WebSocket(url);
       this.ws?.addEventListener('open', this.onOpen);
       this.ws?.addEventListener('message', this.onMessage);
-      this.ws?.addEventListener('error', this.onError);
-      this.ws?.addEventListener('close', this.onClose);
+      this.ws?.addEventListener('error', this.reconnect);
+      this.ws?.addEventListener('close', this.reconnect);
     } catch {
-      await this.onThrow();
+      await this.reconnect();
     }
   };
 
@@ -42,30 +42,15 @@ class Observable<T> extends RxjsObservable<T> {
     this.observer!.next(func(json) as T);
   };
 
-  private onError = () => {
-    this.closeConnection();
-    this.observer?.error(new Error(this.url.replace('http', 'ws')));
-  };
-
-  private onClose = async (closeEvent: CloseEvent) => {
-    this.closeConnection();
-    if (closeEvent.code === 1000) {
-      await new Promise((resolve) => setTimeout(resolve, API_RETRY_TIMEOUT));
-      this.init();
-    } else {
-      this.observer?.error(new Error(this.url.replace('http', 'ws')));
-    }
-  };
-
-  private onThrow = async () => {
+  private reconnect = async () => {
     this.closeConnection();
     await new Promise((resolve) => setTimeout(resolve, API_RETRY_TIMEOUT));
     this.init();
   };
 
   private closeConnection = () => {
-    this.ws?.removeEventListener('close', this.onClose);
-    this.ws?.removeEventListener('error', this.onError);
+    this.ws?.removeEventListener('close', this.reconnect);
+    this.ws?.removeEventListener('error', this.reconnect);
     this.ws?.removeEventListener('message', this.onMessage);
     if (this.ws?.readyState === 1) {
       this.ws?.close();
