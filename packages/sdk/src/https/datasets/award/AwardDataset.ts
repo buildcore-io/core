@@ -103,7 +103,7 @@ export class AwardDataset<D extends Dataset> extends DatasetClass<D, Award> {
 
   getTopByMemberLive = (member: string, completed: boolean, startAfter?: string) => {
     const members = (
-      this.subset(Subset.MEMBERS) as SubsetType<Dataset.AWARD, Subset.PARTICIPANTS>
+      this.subset(Subset.PARTICIPANTS) as SubsetType<Dataset.AWARD, Subset.PARTICIPANTS>
     ).getTopByMemberLive(member, completed, startAfter);
     return members.pipe(
       switchMap(async (members) => {
