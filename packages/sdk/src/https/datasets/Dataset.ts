@@ -21,6 +21,7 @@ import { AwardParticpateSubset } from './award/AwardParticipantSubset';
 import { CollectionStatsSubset } from './collection/CollectionStatsSubset';
 import { SubsetType } from './common';
 import { MilestoneTransactionSubset } from './milestone/MilestoneTransactionSubset';
+import { ProposalMemberSubset } from './proposal/ProposalMemberSubset';
 import { SpaceBlockedMemberSubset } from './space/SpaceBlockedMemberSubset';
 import { SpaceGuardianSubset } from './space/SpaceGuardianSubset';
 import { SpaceKnockingMemberSubset } from './space/SpaceKnockingMemberSubset';
@@ -211,13 +212,25 @@ export class ExactDataSet<D extends Dataset, T> extends BaseSet<T> {
         throw Error('invalid subset name');
       }
       case Subset.MEMBERS:
-        return new SpaceMemberSubset(
-          this.origin,
-          this.apiKey,
-          this.dataset,
-          this.setId,
-          Subset.MEMBERS,
-        ) as SubsetType<D, S>;
+        if (this.dataset === Dataset.PROPOSAL) {
+          return new ProposalMemberSubset(
+            this.origin,
+            this.apiKey,
+            this.dataset,
+            this.setId,
+            Subset.MEMBERS,
+          ) as SubsetType<D, S>;
+        }
+        if (this.dataset === Dataset.SPACE) {
+          return new SpaceMemberSubset(
+            this.origin,
+            this.apiKey,
+            this.dataset,
+            this.setId,
+            Subset.MEMBERS,
+          ) as SubsetType<D, S>;
+        }
+        throw Error('invalid subset name');
       case Subset.GUARDIANS:
         return new SpaceGuardianSubset(
           this.origin,
