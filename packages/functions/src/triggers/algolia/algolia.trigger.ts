@@ -25,7 +25,7 @@ const upsertObject = async (rawData: Record<string, unknown>, col: COL, objectID
 export const algoliaTrigger = async (event: FirestoreDocEvent<Record<string, string>>) => {
   const { prev, curr, col } = event;
 
-  if (curr?.project !== SOON_PROJECT_ID) {
+  if (col !== COL.MEMBER && curr?.project !== SOON_PROJECT_ID) {
     return;
   }
 
