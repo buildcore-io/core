@@ -1,6 +1,7 @@
 import { Dataset, Subset } from '@build-5/interfaces';
 import { AuctionDataset } from './AuctionDataset';
 import { BadgesDataset } from './BadgesDataset';
+import { DatasetClass } from './Dataset';
 import { MemberDataset } from './MemberDataset';
 import { NftDataset } from './NftDataset';
 import { NftStakeDataset } from './NftStakeDataset';
@@ -32,6 +33,7 @@ import { TokenDistributionSubset } from './token/TokenDistributionSubset';
 import { TokenMarketDataset } from './token/TokenMarketDataset';
 import { TokenPurchaseDataset } from './token/TokenPurchaseDataset';
 import { TokenStatsSubset } from './token/TokenStatsSubset';
+import { SubsetClass } from './Subset';
 
 // prettier-ignore
 export type DatasetType<T extends Dataset> = 
@@ -58,7 +60,7 @@ export type DatasetType<T extends Dataset> =
   T extends Dataset.TOKEN_PURCHASE ? TokenPurchaseDataset<Dataset.TOKEN_PURCHASE> :
   T extends Dataset.TICKER ? TickerDataset<Dataset.TICKER> :
   T extends Dataset.TRANSACTION ? TransactionDataset<Dataset.TRANSACTION> :
-  unknown;
+  DatasetClass<T, unknown>;
 
 // prettier-ignore
 export type SubsetType<D extends Dataset, S extends Subset> = 
@@ -84,4 +86,4 @@ export type SubsetType<D extends Dataset, S extends Subset> =
   D extends Dataset.TOKEN ? 
     S extends Subset.DISTRIBUTION ? TokenDistributionSubset :
     S extends Subset.STATS ? TokenStatsSubset : unknown :
-  unknown
+  SubsetClass<D>
