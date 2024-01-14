@@ -97,7 +97,7 @@ export const TRIGGER_SCALE: { [key: string]: RuntimeOptions } = {
     concurrency: 40,
   },
   [WEN_FUNC_TRIGGER.onTransactionWrite]: {
-    timeoutSeconds: 540,
+    timeoutSeconds: 1800,
     minInstances: lowWarm,
     memory: '4GiB',
   },
