@@ -53,6 +53,7 @@ const sidebars = {
                     'products/dao-management/member/how-to/create-member',
                     'products/dao-management/member/how-to/update-member',
                     'products/dao-management/member/how-to/validate-address',
+                    'products/dao-management/member/how-to/get-member',
                   ],
                 }
               ],
