@@ -76,9 +76,8 @@ async function main() {
         body: <any>nftLists,
       });
     console.log('NFT ', nfts);
-  } catch (e) {
-    console.log(e);
-    return;
+  } catch (error) {
+    console.error('Error: ', error);
   }
 }
 

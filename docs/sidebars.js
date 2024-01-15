@@ -16,6 +16,7 @@ const sidebars = {
   tutorialSidebar: [
     'overview',
     'getting-started',
+    'on-tangle-request',
     {
       type: 'category',
       label: 'Products',
@@ -44,18 +45,6 @@ const sidebars = {
             'products/dao-management/overview',
             {
               type: 'category',
-              label: 'Space',
-              link: {type: 'doc', id: 'products/dao-management/space/overview'},
-              items: [
-                {
-                  'How To': [
-                    'products/dao-management/space/how-to/create-space',
-                  ],
-                }
-              ],
-            },
-            {
-              type: 'category',
               label: 'Member',
               link: {type: 'doc', id: 'products/dao-management/member/overview'},
               items: [
@@ -63,6 +52,18 @@ const sidebars = {
                   'How To': [
                     'products/dao-management/member/how-to/create-member',
                     'products/dao-management/member/how-to/update-member',
+                  ],
+                }
+              ],
+            },
+            {
+              type: 'category',
+              label: 'Space',
+              link: {type: 'doc', id: 'products/dao-management/space/overview'},
+              items: [
+                {
+                  'How To': [
+                    'products/dao-management/space/how-to/create-space',
                   ],
                 }
               ],
