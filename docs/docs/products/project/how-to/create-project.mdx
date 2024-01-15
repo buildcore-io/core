@@ -1,18 +1,20 @@
 ---
 title: Create Project
 description: How to create a project
-keywords:
+tags:
+  - how-to
   - project
   - client
+  - create
 ---
 
+import SoonaverseProject from '../../../_admonitions/_soonaverse-project.md';
+
 Before creating NFT collections, tokens, and more, the first thing to do should be to create a project with the `createProject` function.
+`createProject` takes an object of type `Build5Request<`[`ProjectCreateRequest`](../../../search-post/interfaces/ProjectCreateRequest.md)`>` as parameter.
 
-:::info
+<SoonaverseProject/>
 
-In the following examples, we will connect to the soonaverse project (its API keys are part of the SDK for ease of use). You can also create your own project to give you your API key.
-
-:::
  
 ```tsx file=../../../../../packages/sdk/examples/create_project.ts#L11-L24
 ```

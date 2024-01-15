@@ -15,7 +15,8 @@
 const sidebars = {
   tutorialSidebar: [
     'overview',
-    'getting_started',
+    'getting-started',
+    'on-tangle-request',
     {
       type: 'category',
       label: 'Products',
@@ -41,28 +42,28 @@ const sidebars = {
         },
         {
           'DAO Management API': [
-            'products/dao_management/overview',
+            'products/dao-management/overview',
             {
               type: 'category',
-              label: 'Space',
-              link: {type: 'doc', id: 'products/dao_management/space/overview'},
+              label: 'Member',
+              link: {type: 'doc', id: 'products/dao-management/member/overview'},
               items: [
                 {
                   'How To': [
-                    'products/dao_management/space/how-to/create-space',
+                    'products/dao-management/member/how-to/create-member',
+                    'products/dao-management/member/how-to/update-member',
                   ],
                 }
               ],
             },
             {
               type: 'category',
-              label: 'Member',
-              link: {type: 'doc', id: 'products/dao_management/member/overview'},
+              label: 'Space',
+              link: {type: 'doc', id: 'products/dao-management/space/overview'},
               items: [
                 {
                   'How To': [
-                    'products/dao_management/member/how-to/create-member',
-                    'products/dao_management/member/how-to/update-member',
+                    'products/dao-management/space/how-to/create-space',
                   ],
                 }
               ],
@@ -90,13 +91,13 @@ const sidebars = {
           ],
         },
         {
-          'Digital Twin NFT': ['products/digital_twin_nft/overview'],
+          'Digital Twin NFT': ['products/digital-twin-nft/overview'],
         },
         {
-          'NFT Trading API': ['products/nft_trading/overview'],
+          'NFT Trading API': ['products/nft-trading/overview'],
         },
         {
-          'NFT Staking API': ['products/nft_staking/overview'],
+          'NFT Staking API': ['products/nft-staking/overview'],
         },
         {
           'Proposal API': ['products/proposal/overview'],
@@ -105,22 +106,22 @@ const sidebars = {
           'Reputation API': ['products/reputation/overview'],
         },
         {
-          'Stake Reward API': ['products/stake_reward/overview'],
+          'Stake Reward API': ['products/stake-reward/overview'],
         },
         {
           'Token API': ['products/token/overview'],
         },
         {
-          'Token Launchpad API': ['products/token_launchpad/overview'],
+          'Token Launchpad API': ['products/token-launchpad/overview'],
         },
         {
-          'Token Trading API': ['products/token_trading/overview'],
+          'Token Trading API': ['products/token-trading/overview'],
         },
         {
-          'Token Staking API': ['products/token_staking/overview'],
+          'Token Staking API': ['products/token-staking/overview'],
         },
         {
-          'Token Distribution API': ['products/token_distribution/overview'],
+          'Token Distribution API': ['products/token-distribution/overview'],
         },
       ],
     },
@@ -150,7 +151,7 @@ const sidebars = {
       ],
     },
     'architecture',
-    'token_governance',
+    'token-governance',
     'faqs',
     'limitations',
   ],

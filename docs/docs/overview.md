@@ -9,7 +9,7 @@ Please note this documentation is still in progress. The main focus is the API's
 :::
 
 Welcome to the BUILD.5 documentation.
-We recommend you start with the [Getting Started](getting_started) page.
+We recommend you start with the [Getting Started](getting-started) page.
 
 [Our architecture](architecture) is designed to fully adopt new features built on IOTA/Shimmer L1 and L2. Our primary focus will always be L1, as we believe it gives us a significant advantage within the DLT ecosystem. Ultimately, our execution logic would be fully migrated into L1 and L2 Smart Contracts once the technology is available.
 

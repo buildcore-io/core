@@ -24,12 +24,11 @@ async function main() {
           name: 'TanKRURK',
         },
       });
-  } catch (e) {
-    console.log(e);
-    return;
-  }
 
-  console.log(response);
+    console.log(response);
+  } catch (error) {
+    console.error('Error: ', error);
+  }
 }
 
 main().then(() => process.exit());

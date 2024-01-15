@@ -12,4 +12,4 @@ __Features__:
 
 ## Related
 - [Token](../token/overview)
-- [Stake Reward](../stake_reward/overview)
+- [Stake Reward](../stake-reward/overview)
