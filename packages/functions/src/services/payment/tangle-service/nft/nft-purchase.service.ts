@@ -157,7 +157,7 @@ export const createNftPuchaseOrder = async (
   };
 };
 
-const getCollection = async (id: string) => {
+export const getCollection = async (id: string) => {
   const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${id}`);
   const collection = await collectionDocRef.get<Collection>();
   if (!collection) {
@@ -170,7 +170,7 @@ const getCollection = async (id: string) => {
   return collection;
 };
 
-const getMember = async (id: string) => {
+export const getMember = async (id: string) => {
   const memberDocRef = build5Db().doc(`${COL.MEMBER}/${id}`);
   return <Member>await memberDocRef.get();
 };
@@ -204,7 +204,7 @@ const getNft = async (collection: Collection, nftId: string | undefined) => {
   throw invalidArgument(WenError.no_more_nft_available_for_sale);
 };
 
-const getNftAbove = (collection: Collection, position: number) =>
+export const getNftAbove = (collection: Collection, position: number, limit = 1) =>
   build5Db()
     .collection(COL.NFT)
     .where('sold', '==', false)
@@ -213,10 +213,10 @@ const getNftAbove = (collection: Collection, position: number) =>
     .where('collection', '==', collection.uid)
     .where('position', '>=', position)
     .orderBy('position', 'asc')
-    .limit(1)
+    .limit(limit)
     .get<Nft>();
 
-const getNftBelow = (collection: Collection, position: number) =>
+export const getNftBelow = (collection: Collection, position: number, limit = 1) =>
   build5Db()
     .collection(COL.NFT)
     .where('sold', '==', false)
@@ -225,10 +225,10 @@ const getNftBelow = (collection: Collection, position: number) =>
     .where('collection', '==', collection.uid)
     .where('position', '<=', position)
     .orderBy('position', 'asc')
-    .limitToLast(1)
+    .limitToLast(limit)
     .get<Nft>();
 
-const assertNftCanBePurchased = async (
+export const assertNftCanBePurchased = async (
   space: Space,
   collection: Collection,
   nft: Nft,
@@ -281,7 +281,7 @@ const assertNftCanBePurchased = async (
   }
 };
 
-const assertUserHasAccess = (space: Space, collection: Collection, owner: string) =>
+export const assertUserHasAccess = (space: Space, collection: Collection, owner: string) =>
   assertHasAccess(
     space.uid,
     owner,
@@ -290,7 +290,7 @@ const assertUserHasAccess = (space: Space, collection: Collection, owner: string
     collection.accessCollections || [],
   );
 
-const assertUserHasOnlyOneNft = async (collection: Collection, owner: string) => {
+export const assertUserHasOnlyOneNft = async (collection: Collection, owner: string) => {
   const snap = await build5Db()
     .collection(COL.TRANSACTION)
     .where('member', '==', owner)
@@ -303,7 +303,7 @@ const assertUserHasOnlyOneNft = async (collection: Collection, owner: string) =>
   }
 };
 
-const assertNoOrderInProgress = async (owner: string) => {
+export const assertNoOrderInProgress = async (owner: string) => {
   const orderInProgress = await build5Db()
     .collection(COL.TRANSACTION)
     .where('payload.reconciled', '==', false)
@@ -318,7 +318,7 @@ const assertNoOrderInProgress = async (owner: string) => {
   }
 };
 
-const assertCurrentOwnerAddress = (currentOwner: Space | Member, nft: Nft) => {
+export const assertCurrentOwnerAddress = (currentOwner: Space | Member, nft: Nft) => {
   const network = nft.mintingData?.network || DEFAULT_NETWORK;
   const currentOwnerAddress = getAddress(currentOwner, network);
   if (isEmpty(currentOwnerAddress)) {
@@ -329,7 +329,7 @@ const assertCurrentOwnerAddress = (currentOwner: Space | Member, nft: Nft) => {
   }
 };
 
-const getDiscount = (collection: Collection, member: Member) => {
+export const getDiscount = (collection: Collection, member: Member) => {
   const spaceRewards = (member.spaces || {})[collection.space || ''] || {};
   const descDiscounts = [...(collection.discounts || [])].sort((a, b) => b.amount - a.amount);
   for (const discount of descDiscounts) {
@@ -342,7 +342,7 @@ const getDiscount = (collection: Collection, member: Member) => {
   return 1;
 };
 
-const lockNft = async (nftId: string, orderId: string) =>
+export const lockNft = async (nftId: string, orderId: string) =>
   build5Db().runTransaction(async (transaction) => {
     const docRef = build5Db().doc(`${COL.NFT}/${nftId}`);
     const nft = <Nft>await transaction.get(docRef);
@@ -352,7 +352,7 @@ const lockNft = async (nftId: string, orderId: string) =>
     transaction.update(docRef, { locked: true, lockedBy: orderId });
   });
 
-const getNftFinalPrice = (nft: Nft, discount: number) => {
+export const getNftFinalPrice = (nft: Nft, discount: number) => {
   let finalPrice = nft.availablePrice || nft.price;
   if (discount < 1 && !nft.owner) {
     finalPrice = Math.ceil(discount * nft.price);

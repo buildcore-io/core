@@ -1,5 +1,5 @@
 import { build5Db } from '@build-5/database';
-import { COL, DEFAULT_NETWORK, NativeToken, Network } from '@build-5/interfaces';
+import { COL, DEFAULT_NETWORK, Network } from '@build-5/interfaces';
 import { Client } from '@iota/sdk';
 import { getRandomIndex } from '../../utils/common.utils';
 import { IotaWallet } from './IotaWalletService';
@@ -10,13 +10,6 @@ export interface AddressDetails {
   bech32: string;
   hex: string;
   mnemonic: string;
-}
-
-export interface SendToManyTargets {
-  toAddress: string;
-  amount: number;
-  customMetadata?: Record<string, unknown>;
-  nativeTokens?: NativeToken[];
 }
 
 const NODES = {

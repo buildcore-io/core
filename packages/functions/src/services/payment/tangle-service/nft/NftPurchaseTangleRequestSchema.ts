@@ -8,7 +8,7 @@ export const nftPurchaseSchema = toJoiObject<NftPurchaseTangleRequest>({
   collection: CommonJoi.uid().description(
     'Build5 id of the collection in case a random nft is bought.',
   ),
-  nft: CommonJoi.uid(false).description('Build5 if of the nft to be purchased.'),
+  nft: CommonJoi.uid(false).description('Build5 id of the nft to be purchased.'),
   disableWithdraw: Joi.boolean().description(
     "If set to true, NFT will not be sent to the buyer's validated address upon purchase.",
   ),

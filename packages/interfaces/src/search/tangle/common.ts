@@ -5,6 +5,7 @@ export enum TangleRequestType {
   STAKE = 'STAKE',
 
   NFT_PURCHASE = 'NFT_PURCHASE',
+  NFT_PURCHASE_BULK = 'NFT_PURCHASE_BULK',
   NFT_BID = 'NFT_BID',
   NFT_SET_FOR_SALE = 'NFT_SET_FOR_SALE',
 

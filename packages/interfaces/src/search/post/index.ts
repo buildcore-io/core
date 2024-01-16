@@ -26,6 +26,7 @@ export * from './UpdateMemberRequest';
 export * from './NftBidRequest';
 export * from './NftCreateRequest';
 export * from './NftDepositRequest';
+export * from './NftPurchaseBulkRequest';
 export * from './NftPurchaseRequest';
 export * from './NftSetForSaleRequest';
 export * from './NftStakeRequest';
