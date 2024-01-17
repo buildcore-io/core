@@ -70,11 +70,11 @@
     "@build-5/interfaces": "*",
     "@ffmpeg-installer/ffmpeg": "1.1.0",
     "@ffprobe-installer/ffprobe": "2.1.2",
-    "@iota/sdk": "1.1.4",
     "@iota/crypto.js": "1.8.6",
     "@iota/crypto.js-next": "npm:@iota/crypto.js@2.0.0-rc.2",
     "@iota/iota.js": "1.8.6",
     "@iota/iota.js-next": "npm:@iota/iota.js@2.0.0-rc.4",
+    "@iota/sdk": "1.1.4",
     "@iota/util.js": "1.8.6",
     "@iota/util.js-next": "npm:@iota/util.js@2.0.0-rc.2",
     "@metamask/eth-sig-util": "7.0.0",
@@ -88,6 +88,7 @@
     "crypto-js": "4.2.0",
     "dayjs": "1.11.10",
     "ethers": "6.8.1",
+    "files-from-path": "^1.0.4",
     "firebase-admin": "11.11.0",
     "firebase-functions": "4.5.0",
     "glob": "8.0.3",
@@ -98,10 +99,10 @@
     "jsonwebtoken": "9.0.2",
     "lodash": "4.17.21",
     "mime-types": "2.1.35",
+    "nft.storage": "7.1.1",
     "node-ipinfo": "3.5.0",
     "protobufjs": "7.2.5",
     "rxjs": "7.8.1",
-    "sharp": "0.32.6",
-    "web3.storage": "4.5.5"
+    "sharp": "0.32.6"
   }
 }

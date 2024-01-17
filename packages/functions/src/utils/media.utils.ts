@@ -51,7 +51,7 @@ const downloadMedia = async (workdir: string, url: string, allowAnyType: boolean
   let error = WenError.ipfs_retrieve;
   for (let i = 0; i < 5; ++i) {
     try {
-      const head: any = await axios.head(url);
+      const head: any = await axios({ method: 'HEAD', url, timeout: 10000 });
       if (head.status !== 200) {
         error = WenError.ipfs_retrieve;
         continue;
