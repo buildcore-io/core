@@ -124,6 +124,21 @@ export abstract class DatasetClass<D extends Dataset, T> extends BaseDataSetClas
     return fetchLive<T[]>(this.apiKey, url);
   };
 
+  getTop = async (startAfter?: string, limit?: number): Promise<T[]> => {
+    const params: GetManyAdvancedRequest = {
+      dataset: this.dataset,
+      fieldName: [],
+      fieldValue: [],
+      operator: [],
+      startAfter,
+      limit,
+      orderBy: ['createdOn'],
+      orderByDir: ['desc'],
+    };
+    const url = this.origin + ApiRoutes.GET_MANY_ADVANCED;
+    return await wrappedFetch<T[]>(this.apiKey, url, { ...params });
+  };
+
   getTopLive = (startAfter?: string, limit?: number): Observable<T[]> => {
     const params: GetManyAdvancedRequest = {
       dataset: this.dataset,
