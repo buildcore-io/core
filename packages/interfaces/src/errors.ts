@@ -326,4 +326,8 @@ export const WenError = {
     code: 2147,
     key: 'No active sell orders.',
   },
+  nfts_must_be_within_same_network: {
+    code: 2148,
+    key: 'Nfts must be within same network.',
+  },
 };

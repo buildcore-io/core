@@ -37,6 +37,7 @@ import { updateMemberControl } from '../../controls/member/member.update';
 import { nftBidSchema } from '../../controls/nft/NftBidRequestSchema';
 import { createSchema, nftCreateSchema } from '../../controls/nft/NftCreateRequestSchema';
 import { depositNftSchema } from '../../controls/nft/NftDepositRequestSchema';
+import { nftPurchaseBulkSchema } from '../../controls/nft/NftPurchaseBulkRequestSchema';
 import { nftPurchaseSchema } from '../../controls/nft/NftPurchaseRequestSchema';
 import { setNftForSaleSchema } from '../../controls/nft/NftSetForSaleRequestSchema';
 import { stakeNftSchema } from '../../controls/nft/NftStakeRequestSchema';
@@ -45,6 +46,7 @@ import { nftWithdrawSchema } from '../../controls/nft/NftWithdrawRequestSchema';
 import { nftBidControl } from '../../controls/nft/nft.bid.control';
 import { createBatchNftControl, createNftControl } from '../../controls/nft/nft.create';
 import { depositNftControl } from '../../controls/nft/nft.deposit';
+import { orderNftBulkControl } from '../../controls/nft/nft.puchase.bulk.control';
 import { orderNftControl } from '../../controls/nft/nft.puchase.control';
 import { setForSaleNftControl } from '../../controls/nft/nft.set.for.sale';
 import { nftStakeControl } from '../../controls/nft/nft.stake';
@@ -342,6 +344,12 @@ exports[WEN_FUNC.orderNft] = onRequest({
   name: WEN_FUNC.orderNft,
   schema: nftPurchaseSchema,
   handler: orderNftControl,
+});
+
+exports[WEN_FUNC.orderNftBulk] = onRequest({
+  name: WEN_FUNC.orderNftBulk,
+  schema: nftPurchaseBulkSchema,
+  handler: orderNftBulkControl,
 });
 
 exports[WEN_FUNC.openBid] = onRequest({

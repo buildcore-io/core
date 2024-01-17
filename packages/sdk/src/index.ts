@@ -1,2 +1,2 @@
-export { SoonaverseApiKey, Build5, https } from './https';
-export { otr } from './otr';
+export { Build5, SoonaverseApiKey, https } from './https';
+export { Build5OtrAddress, otr } from './otr';

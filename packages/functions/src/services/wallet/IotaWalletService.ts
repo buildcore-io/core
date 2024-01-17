@@ -1,4 +1,10 @@
-import { NativeToken, NetworkAddress, Timestamp, Transaction } from '@build-5/interfaces';
+import {
+  NativeToken,
+  NetworkAddress,
+  SendToManyTargets,
+  Timestamp,
+  Transaction,
+} from '@build-5/interfaces';
 import {
   AddressUnlockCondition,
   AliasOutput,
@@ -24,7 +30,7 @@ import { getSecretManager } from '../../utils/secret.manager.utils';
 import { NftWallet } from './NftWallet';
 import { MnemonicService } from './mnemonic';
 import { Wallet, WalletParams } from './wallet';
-import { AddressDetails, SendToManyTargets, setConsumedOutputIds } from './wallet.service';
+import { AddressDetails, setConsumedOutputIds } from './wallet.service';
 
 export interface Expiration {
   readonly expiresAt: Timestamp;
