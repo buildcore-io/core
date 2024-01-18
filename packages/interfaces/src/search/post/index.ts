@@ -21,6 +21,7 @@ export * from './CollectionUpdateMintedRequest';
 export * from './CollectionUpdateRequest';
 export * from './CreditUnrefundableRequest';
 export * from './FileUploadRequest';
+export * from './FileUploadResponse';
 export * from './CreateMemberRequest';
 export * from './UpdateMemberRequest';
 export * from './NftBidRequest';
