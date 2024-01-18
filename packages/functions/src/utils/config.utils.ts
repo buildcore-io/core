@@ -46,7 +46,7 @@ export const getRankingSpace = (col: COL) => {
 
 export const getRankingThreshold = () => RANK_CONFIG.RANK_THRESHOLD;
 
-export const getWeb3Token = () => process.env.WEB3_TOKEN!;
+export const getNftStorageToken = () => process.env.NFT_STORAGE_TOKEN!;
 
 export const getBucket = () => {
   if (isProdEnv()) {
