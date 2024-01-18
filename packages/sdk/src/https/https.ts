@@ -1,6 +1,7 @@
-import { Dataset, WEN_FUNC } from '@build-5/interfaces';
+import { Dataset, FileUploadResponse, WEN_FUNC } from '@build-5/interfaces';
 import axios from 'axios';
-import FormData from 'form-data';
+import FormData, { Stream } from 'form-data';
+import { Observable as RxjsObservable, from, map } from 'rxjs';
 import { Build5 } from '.';
 import { AuctionDataset } from './datasets/AuctionDataset';
 import { BadgesDataset } from './datasets/BadgesDataset';
@@ -87,20 +88,20 @@ export class ProjectWrapper {
 
   trackByTag = (tag: string) => new Observable(this.origin, tag);
 
-  uploadFile = async (pathToFile: string, member: string, uid: string) => {
+  uploadFile = (
+    file: Blob | Stream,
+    member: string,
+    uid: string,
+  ): RxjsObservable<FileUploadResponse> => {
     const isLocal = !Object.values(Build5).includes(this.origin);
     const url = this.origin + `/${isLocal ? 'https-' : ''}` + WEN_FUNC.uploadFile;
-    console.log(this.apiKey);
     const form = new FormData();
     form.append('member', member);
     form.append('uid', uid);
-    console.log(this.origin);
     form.append('projectApiKey', this.apiKey);
-    // Disabled
-    console.log('FS Disabled to enable browser support', pathToFile);
-    // form.append('file', fs.createReadStream(pathToFile));
+    form.append('file', file);
     try {
-      return (await axios.post(url, form)).data;
+      return from(axios.post(url, form)).pipe(map((r) => r.data as FileUploadResponse));
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       throw error.response.data;
