@@ -29,8 +29,11 @@ export const onStorageObjectFinalized = async (data: StorageObject) => {
     const downloadedMediaPath = await downloadMedia(workdir, data);
     if (data.contentType?.startsWith('image/')) {
       await uploadeResizedImages(workdir, data, downloadedMediaPath);
-    } else if (data.contentType?.startsWith('video/')) {
+      return;
+    }
+    if (data.contentType?.startsWith('video/')) {
       await uploadVideoPreview(workdir, data, downloadedMediaPath);
+      return;
     }
     console.warn('Unsupported content type error', data);
   } catch (error) {

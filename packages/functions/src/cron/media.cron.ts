@@ -61,7 +61,7 @@ const uploadMedia = async <T>(
   const snap = await pendingUploadQuery(col, batchSize).get<Record<string, unknown>>();
   const promises = snap.map(async (data) => {
     try {
-      return await uploadFunc(<T>data);
+      await uploadFunc(<T>data);
     } catch (error) {
       await setMediaStatusToError(
         col,

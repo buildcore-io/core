@@ -2,14 +2,15 @@ import { Collection, KEY_NAME_TANGLE, Nft, Token } from '@build-5/interfaces';
 import { CarReader } from '@ipld/car';
 import * as dagPb from '@ipld/dag-pb';
 import { randomUUID } from 'crypto';
+import { FileLike, filesFromPaths } from 'files-from-path';
 import fs from 'fs';
 import { FsBlockStore as Blockstore } from 'ipfs-car/blockstore/fs';
 import { pack } from 'ipfs-car/pack';
 import { isEmpty, last } from 'lodash';
+import { NFTStorage } from 'nft.storage';
 import os from 'os';
-import { Filelike, Web3Storage, getFilesFromPath } from 'web3.storage';
 import { propsToAttributes } from './collection-minting-utils/nft.prop.utils';
-import { getWeb3Token } from './config.utils';
+import { getNftStorageToken } from './config.utils';
 import { downloadFile } from './media.utils';
 const MAX_BLOCK_SIZE = 1048576;
 
@@ -18,9 +19,9 @@ export const PLACEHOLDER_CID = 'bafybeig3zxv7cfqvfwqljktfzyyhij67pcg45eiku4dcw2f
 export const packCar = async (directory: string) => {
   const blockstore = new Blockstore();
   try {
-    const files = await getFilesFromPath(directory);
+    const files = await filesFromPaths(directory);
     const { out, root } = await pack({
-      input: Array.from(files as Iterable<Filelike>).map(toImportCandidate),
+      input: files.map(toImportCandidate),
       blockstore,
       maxChunkSize: MAX_BLOCK_SIZE,
     });
@@ -60,8 +61,8 @@ export const downloadMediaAndPackCar = async <M>(uid: string, mediaUrl: string, 
 };
 
 export const putCar = (car: CarReader) => {
-  const client = new Web3Storage({ token: getWeb3Token() });
-  return client.putCar(car, { maxRetries: 0 });
+  const client = new NFTStorage({ token: getNftStorageToken() });
+  return client.storeCar(car, { maxRetries: 0 });
 };
 
 export const getNameToCidMap = (car: CarReader) => {
@@ -79,7 +80,7 @@ export const getNameToCidMap = (car: CarReader) => {
   return map;
 };
 
-const toImportCandidate = (file: Filelike) => ({
+const toImportCandidate = (file: FileLike) => ({
   path: last(file.name.split('/')),
   get content() {
     return file.stream();

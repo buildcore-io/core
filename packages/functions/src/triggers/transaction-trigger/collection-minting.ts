@@ -112,37 +112,42 @@ const saveCollectionMintingData = (
     });
 
 const onNftMintSuccess = async (transaction: Transaction) => {
+  const batch = build5Db().batch();
+
   const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${transaction.payload.collection}`);
   const collection = <Collection>await collectionDocRef.get();
-  await build5Db()
-    .doc(`${COL.COLLECTION}/${transaction.payload.collection}`)
-    .update({
-      'mintingData.nftsToMint': build5Db().inc(-transaction.payload.nfts!.length),
-    });
+
+  batch.update(collectionDocRef, {
+    'mintingData.nftsToMint': build5Db().inc(-transaction.payload.nfts!.length),
+  });
+
   const milestoneTransaction = (await build5Db()
     .doc(transaction.payload.walletReference?.milestoneTransactionPath!)
     .get<Record<string, unknown>>())!;
-  const promises = (transaction.payload.nfts as string[]).map((nftId, i) => {
+  transaction.payload.nfts!.forEach((nftId, i) => {
     const outputId = Utils.computeOutputId(
       Utils.transactionId(milestoneTransaction.payload as TransactionPayload),
       i + 2,
     );
-    return build5Db()
-      .doc(`${COL.NFT}/${nftId}`)
-      .update({
-        'mintingData.network': transaction.network,
-        'mintingData.mintedOn': dayjs().toDate(),
-        'mintingData.mintedBy': transaction.member,
-        'mintingData.blockId': milestoneTransaction.blockId,
-        'mintingData.nftId': Utils.computeNftId(outputId),
-        status: NftStatus.MINTED,
-      });
+    const docRef = build5Db().doc(`${COL.NFT}/${nftId}`);
+
+    batch.update(docRef, {
+      'mintingData.network': transaction.network,
+      'mintingData.mintedOn': dayjs().toDate(),
+      'mintingData.mintedBy': transaction.member,
+      'mintingData.blockId': milestoneTransaction.blockId,
+      'mintingData.nftId': Utils.computeNftId(outputId),
+      status: NftStatus.MINTED,
+    });
   });
-  await Promise.all(promises);
+
   if (collection.mintingData?.nftsToMint! - transaction.payload.nfts!.length > 0) {
     const order = createMintNftsTransaction(transaction);
-    await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+    const docRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
+    batch.create(docRef, order);
   }
+
+  await batch.commit();
 };
 
 const createMintNftsTransaction = (transaction: Transaction): Transaction => ({
