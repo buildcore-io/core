@@ -30,6 +30,6 @@
     "create-deploy-script": "ts-node packages/functions/deploy.script.ts"
   },
   "devDependencies": {
-    "joi-to-typescript": "4.7.0"
+    "joi-to-typescript": "4.12.0"
   }
 }

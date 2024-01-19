@@ -28,9 +28,9 @@ export interface TokenCreateRequest {
      */
     isPublicSale?: boolean;
     /**
-     * Percentage value of the allocaation. 
-Minimum 0.01, maximum 100. 
-The total percentage has to be 100
+     * Percentage value of the allocaation.
+     * Minimum 0.01, maximum 100.
+     * The total percentage has to be 100
      */
     percentage: number;
     /**

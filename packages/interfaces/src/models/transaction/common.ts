@@ -44,6 +44,8 @@ export enum TransactionType {
   METADATA_NFT = 'METADATA_NFT',
 
   STAMP = 'STAMP',
+
+  NFT_TRANSFER = 'NFT_TRANSFER',
 }
 
 /**

@@ -218,3 +218,4 @@ export const STAMP_ROYALTY_ADDRESS = {
 };
 
 export const MAX_NFT_BULK_PURCHASE = 100;
+export const NFT_TRANSFER_LIMIT = 100;

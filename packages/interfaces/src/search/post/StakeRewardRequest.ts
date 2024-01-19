@@ -8,18 +8,18 @@
  */
 export interface TokenStakeRewardRequest {
   /**
-   * End date of the reward in milliseconds. The base is current date. 
-Minimum 0, maximum 7978758988368, and it has to be after start date.
+   * End date of the reward in milliseconds. The base is current date.
+   * Minimum 0, maximum 7978758988368, and it has to be after start date.
    */
   endDate: number;
   /**
-   * Staring date of the reward in milliseconds. The base is current date. 
-Minimum 0, maximum 7978758988368
+   * Staring date of the reward in milliseconds. The base is current date.
+   * Minimum 0, maximum 7978758988368
    */
   startDate: number;
   /**
-   * Vesting time of the reward in milliseconds. The base is current date. 
-Minimum 0, maximum 7978758988368, and it has to be after end date.
+   * Vesting time of the reward in milliseconds. The base is current date.
+   * Minimum 0, maximum 7978758988368, and it has to be after end date.
    */
   tokenVestingDate: number;
   /**

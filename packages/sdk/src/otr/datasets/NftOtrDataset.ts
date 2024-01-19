@@ -4,6 +4,7 @@ import {
   NftPurchaseBulkTangleRequest,
   NftPurchaseTangleRequest,
   NftSetForSaleTangleRequest,
+  NftTransferTangleRequest,
   TangleRequestType,
 } from '@build-5/interfaces';
 import { DatasetClass, OtrRequest } from './common';
@@ -36,6 +37,12 @@ export class NftOtrDataset extends DatasetClass {
   bulkPurchase = (params: Omit<NftPurchaseBulkTangleRequest, 'requestType'>) =>
     new OtrRequest<NftPurchaseBulkTangleRequest>(this.otrAddress, {
       requestType: TangleRequestType.NFT_PURCHASE_BULK,
+      ...params,
+    });
+
+  transfer = (params: Omit<NftTransferTangleRequest, 'requestType'>) =>
+    new OtrRequest<NftTransferTangleRequest>(this.otrAddress, {
+      requestType: TangleRequestType.NFT_TRANSFER,
       ...params,
     });
 }

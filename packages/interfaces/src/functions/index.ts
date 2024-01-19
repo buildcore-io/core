@@ -90,6 +90,8 @@ export enum WEN_FUNC {
   stamp = 'stamp',
   createauction = 'createauction',
   bidAuction = 'bidauction',
+
+  nftTransfer = 'nftTransfer',
 }
 
 export interface cMemberNotExists {

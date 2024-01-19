@@ -15,6 +15,7 @@ export * from './NftBidTangleRequest';
 export * from './NftPurchaseBulkTangleRequest';
 export * from './NftPurchaseTangleRequest';
 export * from './NftSetForSaleTangleRequest';
+export * from './NftTransferTangleRequest';
 export * from './ProposalApproveTangleRequest';
 export * from './ProposalCreateTangleRequest';
 export * from './ProposalVoteTangleRequest';
