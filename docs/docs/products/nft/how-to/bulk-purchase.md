@@ -15,7 +15,7 @@ import TabItem from '@theme/TabItem';
     To bulk purchase NFTs, you must call `bulkPurchase` on `dataset(Dataset.NFT)`.
     `bulkPurchase` takes an object of type [`NftPurchaseBulkTangleRequest`](../../../search-otr/interfaces/NftPurchaseBulkTangleRequest.md) as parameter.
 
-    ```tsx file=../../../../../packages/sdk/examples/nft/otr/bulk_purchase.ts#L11-L14
+    ```tsx file=../../../../../packages/sdk/examples/nft/otr/bulk_purchase.ts#L11-L13
     ```
   </TabItem>  
   <TabItem value="https" label="HTTPS">

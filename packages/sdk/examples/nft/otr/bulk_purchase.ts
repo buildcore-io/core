@@ -8,12 +8,13 @@ const origin = Build5.TEST;
 const otrAddress = Build5OtrAddress[origin];
 
 async function main() {
-  const fireflyDeepling = otr(otrAddress)
+  const otrRequest = otr(otrAddress)
     .dataset(Dataset.NFT)
-    .bulkPurchase({ orders: nftIds.map((nftId) => ({ collection: collectionId, nft: nftId })) })
-    .getFireflyDeepLink();
+    .bulkPurchase({ orders: nftIds.map((nftId) => ({ collection: collectionId, nft: nftId })) });
 
-  console.log(fireflyDeepling);
+  const fireflyDeeplink = otrRequest.getFireflyDeepLink();
+
+  console.log(fireflyDeeplink);
 
   console.log('Sending whatever amount:');
   console.log(
