@@ -13,6 +13,11 @@ To get one or multiple members there are multiple way. This how-to will list and
 All those functions also have a `Live` function which returns an `Observable` you can listen to. Just append `Live` to the function name.
 
 :::
+:::tip
+
+Most of the functions have an optional `startAfter` parameter. This parameter is used for pagination. You can pass for example the `id` of the last member you received to get the next page.
+
+:::
 
 ## Get By Field
 
@@ -23,14 +28,14 @@ You need to call `getByField`. `getByField` takes a `string` as `fieldName` and 
 
 ## Get By Space
 
-You need to call `getBySpace`. `getBySpace` takes a `string` as `space` id and an optional `startAfter` TODO.
+You need to call `getBySpace`. `getBySpace` takes a `string` as `space` id.
 
 ```tsx file=../../../../../../packages/sdk/examples/member/get.ts#L16-L19
 ```
 
 ## Get All Updated After
 
-You need to call `getAllUpdatedAfter`. `getAllUpdatedAfter` takes a TODO.
+You need to call `getAllUpdatedAfter`. `getAllUpdatedAfter` takes a unix timestamp. The results will contain all members updated after this timestamp.
 
 ```tsx file=../../../../../../packages/sdk/examples/member/get.ts#L23-L26
 ```
