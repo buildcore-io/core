@@ -27,7 +27,7 @@ async function main() {
     console.log('Members updated after ', new Date(updatedAfter * 1000), ':', members.length);
 
     // Let's get some member ids
-    const member_ids = members.map((member) => member.uid).slice(members.length-2);
+    const member_ids = members.map((member) => member.uid).slice(members.length - 2);
     members = await https(origin)
       .project(SoonaverseApiKey[Build5.TEST])
       .dataset(Dataset.MEMBER)
