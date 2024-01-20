@@ -70,6 +70,7 @@ const sidebars = {
             {
               'How To': [
                 'products/nft/how-to/create-collection',
+                'products/nft/how-to/bulk-purchase',
               ],
             }
           ],
