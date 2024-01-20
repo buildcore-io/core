@@ -6,16 +6,16 @@ tags:
   - member
 ---
 
-To get one or multiple members there are multiple way. This how-to will list and explain them.
+You can use different functions depending on your needs to get one or multiple members. This how-to will list and explain them.
 
-:::tip
+:::tip Live listeners
 
-All those functions also have a `Live` function which returns an `Observable` you can listen to. Just append `Live` to the function name.
+All those functions also have a `Live` function, which returns an `Observable` you can listen to. Just append `Live` to the function name.
 
 :::
-:::tip
+:::tip Pagination
 
-Most of the functions have an optional `startAfter` parameter. This parameter is used for pagination. You can pass for example the `id` of the last member you received to get the next page.
+Most of the functions have an optional `startAfter` parameter. You can use this parameter for pagination. You can pass, for example, the `uid` of the last member you received to get to the next page.
 
 :::
 
