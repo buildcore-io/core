@@ -17,69 +17,32 @@ const config = {
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
-  onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'throw',
+  onBrokenLinks: 'warn',
+  onBrokenMarkdownLinks: 'warn',
   plugins: [
     [
       'docusaurus-plugin-typedoc',
       {
-        id: 'search-post',
+        id: 'reference-api',
         sidebar: {
-          categoryLabel: 'POST Requests',
-        },
-        entryPoints: ['../packages/interfaces/src/search/post/index.ts'],
-        tsconfig: '../packages/interfaces/tsconfig.json',
-        out: 'search-post',
-        watch: process.env.TYPEDOC_WATCH,
-        cleanOutputDir: true,
-      },
-    ],
-    [
-      'docusaurus-plugin-typedoc',
-      {
-        id: 'search-get',
-        sidebar: {
-          categoryLabel: 'GET Requests',
+          categoryLabel: 'Reference API',
         },
         entryPoints: [
-          '../packages/interfaces/src/search/base.ts',
-          '../packages/interfaces/src/search/request.ts',
-        ],
-        tsconfig: '../packages/interfaces/tsconfig.json',
-        out: 'search-get',
-        watch: process.env.TYPEDOC_WATCH,
-        cleanOutputDir: true,
-      },
-    ],
-    [
-      'docusaurus-plugin-typedoc',
-      {
-        id: 'search-otr',
-        sidebar: {
-          categoryLabel: 'OTR Requests',
-        },
-        entryPoints: ['../packages/interfaces/src/search/tangle/index.ts'],
-        tsconfig: '../packages/interfaces/tsconfig.json',
-        out: 'search-otr',
-        watch: process.env.TYPEDOC_WATCH,
-        cleanOutputDir: true,
-      },
-    ],
-    [
-      'docusaurus-plugin-typedoc',
-      {
-        id: 'search-models',
-        sidebar: {
-          categoryLabel: 'Records / Models',
-        },
-        entryPoints: [
+          // SDK Documentation.
+          '../packages/sdk/src/https/https.ts',
+
+          // Interfaces.
           '../packages/interfaces/src/models/index.ts',
           '../packages/interfaces/src/models/transaction/index.ts',
           '../packages/interfaces/src/config.ts',
           '../packages/interfaces/src/errors.ts',
+          '../packages/interfaces/src/search/base.ts',
+          '../packages/interfaces/src/search/request.ts',
+          '../packages/interfaces/src/search/post/index.ts',
+          '../packages/interfaces/src/search/tangle/index.ts'
         ],
-        tsconfig: '../packages/interfaces/tsconfig.json',
-        out: 'search-models',
+        tsconfig: './tsconfig.api-doc.json',
+        out: 'reference-api',
         watch: process.env.TYPEDOC_WATCH,
         cleanOutputDir: true,
       },

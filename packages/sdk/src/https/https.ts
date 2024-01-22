@@ -27,12 +27,20 @@ import { TokenMarketDataset } from './datasets/token/TokenMarketDataset';
 import { TokenPurchaseDataset } from './datasets/token/TokenPurchaseDataset';
 import { Observable } from './tag.tracker';
 
+/**
+ * Project wrapper.
+ */
 export class ProjectWrapper {
   constructor(
     private readonly origin: Build5,
     private readonly apiKey: string,
   ) {}
 
+  /**
+   * Select dataset.
+   * @param dataset 
+   * @returns 
+   */
   dataset<D extends Dataset>(dataset: D): DatasetType<D> {
     switch (dataset) {
       case Dataset.AIRDROP:
@@ -86,8 +94,22 @@ export class ProjectWrapper {
     }
   }
 
+  /**
+   * Track transaction by it's tag ID. This is used to track OTR transaction progress.
+   * 
+   * @param tag
+   * @returns 
+   */
   trackByTag = (tag: string) => new Observable(this.origin, tag);
 
+  /**
+   * HTTPS Function to upload files to Build.5
+   * 
+   * @param file 
+   * @param member 
+   * @param uid 
+   * @returns 
+   */
   uploadFile = (
     file: Blob | Stream,
     member: string,

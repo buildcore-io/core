@@ -1,7 +1,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-    <img src="docs/static/img/logo.svg" alt="BUILD.5 logo">
+    <img src="docs/static/img/logo.svg" alt="BUILD.5 logo" />
     <h3 align="center">BUILD.5 Core</h3>
     <p align="center">
         Your Enterprise ready web3 plug & play platform

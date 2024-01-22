@@ -4,6 +4,8 @@
 # Production
 /build
 /docs/search-*
+/docs/reference-api
+/docs/sdk
 
 # Generated files
 .docusaurus
