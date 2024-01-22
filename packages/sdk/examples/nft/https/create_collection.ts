@@ -1,7 +1,7 @@
 import { Dataset, Network } from '@build-5/interfaces';
 import { Build5, SoonaverseApiKey, https } from '@build-5/sdk';
-import { address } from './utils/secret';
-import { walletSign } from './utils/utils';
+import { address } from '../../utils/secret';
+import { walletSign } from '../../utils/utils';
 
 async function main() {
   let userSign = await walletSign(address.bech32, address);

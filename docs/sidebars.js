@@ -73,7 +73,8 @@ const sidebars = {
             'products/nft/overview',
             {
               'How To': [
-                'products/nft/how-to/create-nft-collection',
+                'products/nft/how-to/create-collection',
+                'products/nft/how-to/bulk-purchase',
               ],
             }
           ],
