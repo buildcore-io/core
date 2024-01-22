@@ -50,7 +50,7 @@ export interface GetTokenPriceResponse {
  */
 export interface GetAddressesRequest {
   readonly network: Network;
-  readonly createdAfter?: number;
+  readonly createdAfter: number;
 }
 
 export enum Opr {

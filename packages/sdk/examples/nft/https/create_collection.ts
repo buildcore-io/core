@@ -37,7 +37,6 @@ async function main() {
             'https://images-wen.soonaverse.com/0x551fd2c7c7bf356bac194587dab2fcd46420054b/rrvhjuksm4/fe1105c6-2a66-4496-96d1-ed1625293014.jpeg',
           price: 10000000,
           royaltiesFee: 0,
-          royaltiesSpace: '0xdb8902015d244df5d6985b45db089b725713709e',
           type: 0,
         },
       });
