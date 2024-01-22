@@ -20,7 +20,7 @@ export const getAddresses = async (url: string) => {
     .collection(COL.MNEMONIC)
     .where('network', '==', body.network)
     .orderBy('createdOn')
-    .startAfter(dayjs(body.createdAfter).toDate())
+    .startAfter(dayjs.unix(body.createdAfter).toDate())
     .limit(1000);
 
   return queryToObservable<Mnemonic>(query).pipe(
