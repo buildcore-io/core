@@ -39,6 +39,7 @@ import { StampTangleService } from './stamp/StampTangleService';
 import { TangleStakeService } from './token/stake.service';
 import { TangleTokenClaimService } from './token/token-claim.service';
 import { TangleTokenTradeService } from './token/token-trade.service';
+import { TangleNftTransferService } from './nft/nft-transfer.service';
 
 export class TangleRequestService extends BaseTangleService<TangleResponse> {
   public handleRequest = async (params: HandlerParams) => {
@@ -143,6 +144,8 @@ export class TangleRequestService extends BaseTangleService<TangleResponse> {
         return new TangleAuctionCreateService(this.transactionService);
       case TangleRequestType.BID_AUCTION:
         return new TangleAuctionBidService(this.transactionService);
+      case TangleRequestType.NFT_TRANSFER:
+        return new TangleNftTransferService(this.transactionService);
       default:
         throw invalidArgument(WenError.invalid_tangle_request_type);
     }
