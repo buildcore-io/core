@@ -8,9 +8,9 @@
  */
 export interface TokenStakeRequest {
   /**
-   * Custom metadata object. It can have 5 field. 
-For each field the name can be maximum 50 character long. 
-For each field  the value can be 255 characters long.
+   * Custom metadata object. It can have 5 field.
+   * For each field the name can be maximum 50 character long.
+   * For each field  the value can be 255 characters long.
    */
   customMetadata?: {
     /**

@@ -1,7 +1,7 @@
 import { Dataset, Network } from '@build-5/interfaces';
 import { Build5, SoonaverseApiKey, https } from '@build-5/sdk';
-import { address } from './utils/secret';
-import { walletSign } from './utils/utils';
+import { address } from '../../utils/secret';
+import { walletSign } from '../../utils/utils';
 
 async function main() {
   let userSign = await walletSign(address.bech32, address);
@@ -37,7 +37,6 @@ async function main() {
             'https://images-wen.soonaverse.com/0x551fd2c7c7bf356bac194587dab2fcd46420054b/rrvhjuksm4/fe1105c6-2a66-4496-96d1-ed1625293014.jpeg',
           price: 10000000,
           royaltiesFee: 0,
-          royaltiesSpace: '0xdb8902015d244df5d6985b45db089b725713709e',
           type: 0,
         },
       });

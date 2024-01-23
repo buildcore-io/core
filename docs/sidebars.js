@@ -46,6 +46,8 @@ const sidebars = {
                   'How To': [
                     'products/dao-management/member/how-to/create-member',
                     'products/dao-management/member/how-to/update-member',
+                    'products/dao-management/member/how-to/validate-address',
+                    'products/dao-management/member/how-to/get-member',
                   ],
                 }
               ],
@@ -58,6 +60,8 @@ const sidebars = {
                 {
                   'How To': [
                     'products/dao-management/space/how-to/create-space',
+                    'products/dao-management/space/how-to/update-space',
+                    'products/dao-management/space/how-to/validate-address',
                   ],
                 }
               ],
@@ -69,7 +73,8 @@ const sidebars = {
             'products/nft/overview',
             {
               'How To': [
-                'products/nft/how-to/create-nft-collection',
+                'products/nft/how-to/create-collection',
+                'products/nft/how-to/bulk-purchase',
               ],
             }
           ],

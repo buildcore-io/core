@@ -19,3 +19,5 @@ export const orderNftBulk = https[WEN_FUNC.orderNftBulk];
 export const stakeNft = https[WEN_FUNC.stakeNft];
 
 export const openBid = https[WEN_FUNC.openBid];
+
+export const nftTransfer = https[WEN_FUNC.nftTransfer];
