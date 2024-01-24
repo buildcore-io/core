@@ -2,7 +2,7 @@
 title: Validate Space Address
 ---
 
-To validate the address of a member, you must call `validateAddress` on `dataset(Dataset.MEMBER)`. `validateAddress` takes an object of type `Build5Request<`[`AddressValidationRequest`](../../../../reference-api/interfaces/AddressValidationRequest.md)`>` as parameter.
+To validate the address of a member, you must call `validateAddress` on `dataset(Dataset.MEMBER)`. `validateAddress` takes an object of type `Build5Request<`[`AddressValidationRequest`](../../../../reference-api/interfaces/interfaces_src_search_post.AddressValidationRequest.md)`>` as parameter.
 
 ```tsx file=../../../../../../packages/sdk/examples/member/validate_address.ts#L16-L30
 ```
