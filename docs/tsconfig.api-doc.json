@@ -3,6 +3,7 @@
     "declaration": true,
     "module": "commonjs",
     "noImplicitReturns": true,
+    "strictNullChecks": false,
     "noUnusedLocals": true,
     "outDir": "lib",
     "sourceMap": true,
@@ -14,7 +15,7 @@
   },
   "compileOnSave": true,
   "include": [
-    "../packages/interfaces/src",
-    "../packages/sdk/src"
+    "../packages/interfaces",
+    "../packages/sdk"
   ]
 }

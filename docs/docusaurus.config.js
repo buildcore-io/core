@@ -21,26 +21,22 @@ const config = {
   onBrokenMarkdownLinks: 'throw',
   plugins: [
     [
+      // FUll help: https://typedoc.org/options/configuration/
       'docusaurus-plugin-typedoc',
       {
         id: 'reference-api',
+        name: 'Reference API',
         sidebar: {
           categoryLabel: 'Reference API',
         },
         entryPoints: [
           // SDK Documentation.
-          '../packages/sdk/src/https/https.ts',
+          '../packages/sdk/doc.ts',
 
           // Interfaces.
-          '../packages/interfaces/src/models/index.ts',
-          '../packages/interfaces/src/models/transaction/index.ts',
-          '../packages/interfaces/src/config.ts',
-          '../packages/interfaces/src/errors.ts',
-          '../packages/interfaces/src/search/base.ts',
-          '../packages/interfaces/src/search/request.ts',
-          '../packages/interfaces/src/search/post/index.ts',
-          '../packages/interfaces/src/search/tangle/index.ts'
+          '../packages/interfaces/doc.ts',
         ],
+        readme: '../packages/interfaces/README.md',
         tsconfig: './tsconfig.api-doc.json',
         out: 'reference-api',
         watch: process.env.TYPEDOC_WATCH,

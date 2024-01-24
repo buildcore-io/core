@@ -13,5 +13,8 @@
     "resolveJsonModule": true
   },
   "compileOnSave": true,
-  "include": ["src"]
+  "include": [
+    "src",
+    "doc.ts"
+  ]
 }

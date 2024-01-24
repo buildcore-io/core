@@ -18,7 +18,7 @@ You can only update Spaces where you are a Guardian
 :::
 
 With the space ID and Guardian member we can create a signature and update, for example, the name by calling `update` on `dataset(Dataset.SPACE)` and passing the new name in the body.
-`update` takes an object of type `Build5Request<`[`SpaceUpdateRequest`](../../../../reference-api/interfaces/interfaces_src_search_post.SpaceUpdateRequest.md)`>` as parameter.
+`update` takes an object of type `Build5Request<`[`SpaceUpdateRequest`](../../../../reference-api/interfaces/interfaces_doc.SpaceUpdateRequest.md)`>` as parameter.
 
 ```tsx file=../../../../../../packages/sdk/examples/space/update.ts#L19-L33
 ```

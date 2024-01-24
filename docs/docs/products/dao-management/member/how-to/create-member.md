@@ -7,7 +7,7 @@ tags:
 ---
 
 To create a member, you need to call `createMember`.
-`createMember` takes an object of type `Build5Request<`[`CreateMemberRequest`](../../../../reference-api/interfaces/interfaces_src_search_post.CreateMemberRequest.md)`>` as parameter.
+`createMember` takes an object of type `Build5Request<`[`CreateMemberRequest`](../../../../reference-api/interfaces/interfaces_doc.CreateMemberRequest.md)`>` as parameter.
 
 
 ```tsx file=../../../../../../packages/sdk/examples/member/create.ts#L7-L13
