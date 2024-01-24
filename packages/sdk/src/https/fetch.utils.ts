@@ -19,8 +19,8 @@ export const isOnlineCheckInterval = setInterval(async () => {
 
 /**
  * Promise based function to provide online status.
- * 
- * @returns 
+ *
+ * @returns
  */
 export const isOnline = (): any => {
   if (isAppOnline) {
@@ -38,11 +38,11 @@ export const isOnline = (): any => {
 
 /**
  * Wrapped fetch function to inject bearer and process responses
- * 
- * @param token 
- * @param url 
- * @param params 
- * @returns 
+ *
+ * @param token
+ * @param url
+ * @param params
+ * @returns
  */
 export const wrappedFetch = async <T>(
   token: string,
@@ -67,9 +67,9 @@ export const wrappedFetch = async <T>(
 
 /**
  * Convert object into query params
- * 
- * @param params 
- * @returns 
+ *
+ * @param params
+ * @returns
  */
 export const toQueryParams = (params: Record<string, unknown>) => {
   let query = '';

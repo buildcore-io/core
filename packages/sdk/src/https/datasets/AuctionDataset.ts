@@ -13,7 +13,7 @@ import { DatasetClass } from './Dataset';
  */
 export class AuctionDataset<D extends Dataset> extends DatasetClass<D, Auction> {
   /**
-   * Create generic auction
+   * Create generic auction.
    */
   create = this.sendRequest(WEN_FUNC.createauction)<AuctionCreateRequest, Auction>;
 

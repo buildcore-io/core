@@ -24,7 +24,7 @@ import { SubsetType } from '../common';
  * Award HTTPS Dataset object
  */
 export class AwardDataset<D extends Dataset> extends DatasetClass<D, Award> {
-  /** 
+  /**
    * Create Award
    */
   create = this.sendRequest(WEN_FUNC.createAward)<AwardCreateRequest, Award>;
@@ -40,14 +40,14 @@ export class AwardDataset<D extends Dataset> extends DatasetClass<D, Award> {
    * Add owner of the award. This grants the ability to manage it.
    */
   addOwner = this.sendRequest(WEN_FUNC.addOwnerAward)<AwardAddOwnerRequest, Award>;
-  /** 
+  /**
    * Participate in the award to receive badge and tokens.
    */
   participate = this.sendRequest(WEN_FUNC.participateAward)<
     AwardParticpateRequest,
     AwardParticipant
   >;
-  /** 
+  /**
    * Approve participants and distribute them with token and NFT
    */
   approveParticipant = this.sendRequest(WEN_FUNC.approveParticipantAward)<
@@ -60,10 +60,10 @@ export class AwardDataset<D extends Dataset> extends DatasetClass<D, Award> {
   cancel = this.sendRequest(WEN_FUNC.cancelAward)<AwardCancelRequest, Award>;
   /**
    * Helper GET function to get "active" awards per space. Returns observable with continues updates via Websocket.
-   * 
-   * @param space 
-   * @param startAfter 
-   * @returns 
+   *
+   * @param space
+   * @param startAfter
+   * @returns
    */
   getActiveLive = (space: string, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {
@@ -78,10 +78,10 @@ export class AwardDataset<D extends Dataset> extends DatasetClass<D, Award> {
 
   /**
    * Helper GET function to get "completed" awards per space. Returns observable with continues updates via Websocket.
-   * 
-   * @param space 
-   * @param startAfter 
-   * @returns 
+   *
+   * @param space
+   * @param startAfter
+   * @returns
    */
   getCompletedLive = (space: string, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {
@@ -95,10 +95,10 @@ export class AwardDataset<D extends Dataset> extends DatasetClass<D, Award> {
   };
   /**
    * Helper GET function to get "draft" awards per space. Returns observable with continues updates via Websocket.
-   * 
-   * @param space 
-   * @param startAfter 
-   * @returns 
+   *
+   * @param space
+   * @param startAfter
+   * @returns
    */
   getDraftLive = (space: string, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {
@@ -112,10 +112,10 @@ export class AwardDataset<D extends Dataset> extends DatasetClass<D, Award> {
   };
   /**
    * Helper GET function to get "rejected" awards per space. Returns observable with continues updates via Websocket.
-   * 
-   * @param space 
-   * @param startAfter 
-   * @returns 
+   *
+   * @param space
+   * @param startAfter
+   * @returns
    */
   getRejectedLive = (space: string, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {
@@ -130,9 +130,9 @@ export class AwardDataset<D extends Dataset> extends DatasetClass<D, Award> {
 
   /**
    * Helper GET function to get closest finishing awards. Returns observable with continues updates via Websocket.
-   * 
-   * @param startAfter 
-   * @returns 
+   *
+   * @param startAfter
+   * @returns
    */
   getLastActiveLive = (startAfter?: string) => {
     const fieldName = ['endDate', 'completed', 'approved'];
@@ -152,9 +152,9 @@ export class AwardDataset<D extends Dataset> extends DatasetClass<D, Award> {
 
   /**
    * Helper GET Award participants. Returns observable with continues updates via Websocket.
-   * 
-   * @param startAfter 
-   * @returns 
+   *
+   * @param startAfter
+   * @returns
    */
   getTopByMemberLive = (member: string, completed: boolean, startAfter?: string) => {
     const members = (

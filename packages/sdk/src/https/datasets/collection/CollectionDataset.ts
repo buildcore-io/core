@@ -50,10 +50,10 @@ export class CollectionDataset<D extends Dataset> extends DatasetClass<D, Collec
   rank = this.sendRequest(WEN_FUNC.rankController)<RankRequest, Rank>;
   /**
    * Get all pending collections per space. Real time stream.
-   * 
-   * @param space 
-   * @param startAfter 
-   * @returns 
+   *
+   * @param space
+   * @param startAfter
+   * @returns
    */
   getAllPendingLive = (space: string, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {
@@ -69,10 +69,10 @@ export class CollectionDataset<D extends Dataset> extends DatasetClass<D, Collec
   };
   /**
    * Get all available collections per space. Real time stream.
-   * 
-   * @param space 
-   * @param startAfter 
-   * @returns 
+   *
+   * @param space
+   * @param startAfter
+   * @returns
    */
   getAllAvailableLive = (space: string, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {
@@ -88,10 +88,10 @@ export class CollectionDataset<D extends Dataset> extends DatasetClass<D, Collec
   };
   /**
    * Get all rejected collections per space. Real time stream.
-   * 
-   * @param space 
-   * @param startAfter 
-   * @returns 
+   *
+   * @param space
+   * @param startAfter
+   * @returns
    */
   getAllRejectedLive = (space: string, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {

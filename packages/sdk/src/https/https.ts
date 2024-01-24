@@ -38,8 +38,8 @@ export class ProjectWrapper {
 
   /**
    * Select dataset.
-   * @param dataset 
-   * @returns 
+   * @param dataset
+   * @returns
    */
   dataset<D extends Dataset>(dataset: D): DatasetType<D> {
     switch (dataset) {
@@ -96,19 +96,19 @@ export class ProjectWrapper {
 
   /**
    * Track transaction by it's tag ID. This is used to track OTR transaction progress.
-   * 
+   *
    * @param tag
-   * @returns 
+   * @returns
    */
   trackByTag = (tag: string) => new Observable(this.origin, tag);
 
   /**
    * HTTPS Function to upload files to Build.5
-   * 
-   * @param file 
-   * @param member 
-   * @param uid 
-   * @returns 
+   *
+   * @param file
+   * @param member
+   * @param uid
+   * @returns
    */
   uploadFile = (
     file: Blob | Stream,

@@ -1,6 +1,6 @@
 /**
- * Manually prepare TS file for docusaurus to export documentation. 
- * 
+ * Manually prepare TS file for docusaurus to export documentation.
+ *
  * I'm not sure how better to do it atm.
  */
 // HTTPS functions.
@@ -49,7 +49,6 @@ export * from './src/https/datasets/token/TokenStatsSubset';
 export * from './src/https/fetch.utils';
 export * from './src/https/tag.tracker';
 
-
 // OTR Functions
 export * from './src/otr/otr';
 
@@ -63,4 +62,3 @@ export * from './src/otr/datasets/SpaceOtrDataset';
 export * from './src/otr/datasets/StampOtrDataset';
 export * from './src/otr/datasets/TokenOtrDataset';
 export * as DatasetClassOtr from './src/otr/datasets/common';
-
