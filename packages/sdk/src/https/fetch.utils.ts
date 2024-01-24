@@ -22,9 +22,9 @@ export const isOnlineCheckInterval = setInterval(async () => {
  *
  * @returns
  */
-export const isOnline = (): any => {
+export const isOnline = () => {
   if (isAppOnline) {
-    return;
+    return Promise.resolve();
   }
   return new Promise<void>((resolve) => {
     const checkInterval = setInterval(() => {
