@@ -17,8 +17,6 @@
   },
   "dependencies": {
     "@docusaurus/core": "3.0.1",
-    "@build-5/interfaces": "file:../packages/interfaces/src",
-    "@build-5/sdk": "file:../packages/sdk/src",
     "@docusaurus/plugin-content-docs": "3.0.1",
     "@docusaurus/plugin-content-pages": "3.0.1",
     "@docusaurus/preset-classic": "3.0.1",
