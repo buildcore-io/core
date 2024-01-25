@@ -21,6 +21,6 @@ jobs:
       - name: Allow modern Yarn
         run: corepack enable
       - name: Install dependencies
-        run: yarn
+        run: npm install
       - name: Build
-        run: yarn build
+        run: npm run build:prod
