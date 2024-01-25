@@ -32,9 +32,6 @@ const config = {
         entryPoints: [
           // SDK Documentation.
           '../packages/sdk/doc.ts',
-
-          // Interfaces.
-          '../packages/interfaces/doc.ts',
         ],
         readme: '../packages/interfaces/README.md',
         tsconfig: './tsconfig.api-doc.json',

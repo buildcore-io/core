@@ -9,6 +9,7 @@ import {
   AwardParticipant,
   AwardParticpateRequest,
   AwardRejectRequest,
+  Build5Request,
   Dataset,
   GetManyAdvancedRequest,
   Opr,
@@ -24,6 +25,15 @@ import { SubsetType } from '../common';
  * Award HTTPS Dataset object
  */
 export class AwardDataset<D extends Dataset> extends DatasetClass<D, Award> {
+  /**
+   * Create Award
+   * 
+   * @param request {@link Build5Request} with data {@link AwardCreateRequest} 
+   * @returns Promise with {@link Award}
+   */
+  public async createDefinedAsMethod(request: Build5Request<AwardCreateRequest>): Promise<Award> {
+    return this.sendRequest(WEN_FUNC.createAward)<AwardCreateRequest, Award>(request);
+  }
   /**
    * Create Award
    */

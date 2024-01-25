@@ -32,19 +32,43 @@ export class Timestamp {
   };
 }
 
+/**
+ * Build 5 Request
+ */
 export interface Build5Request<T> {
+  /**
+   * Network Address.
+   */
   address: NetworkAddress;
+  /**
+   * Signature
+   */
   signature?: string;
+  /**
+   * Project API Key
+   */
   projectApiKey?: string;
+  /**
+   * Custom token
+   */
   customToken?: string;
+  /**
+   * Public key
+   */
   publicKey?: {
     hex: string;
     network: Network;
   };
+  /**
+   * Legacy public key, pre stardust signatures.
+   */
   legacyPublicKey?: {
     hex: string;
     network: Network;
   };
+  /**
+   * Payload for the request.
+   */
   body: T;
 }
 

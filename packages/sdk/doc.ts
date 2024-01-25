@@ -3,6 +3,9 @@
  *
  * I'm not sure how better to do it atm.
  */
+// Interfaces.
+export * from '../interfaces/doc';
+
 // HTTPS functions.
 export * from './src/https/https';
 
@@ -62,3 +65,4 @@ export * from './src/otr/datasets/SpaceOtrDataset';
 export * from './src/otr/datasets/StampOtrDataset';
 export * from './src/otr/datasets/TokenOtrDataset';
 export * as DatasetClassOtr from './src/otr/datasets/common';
+
