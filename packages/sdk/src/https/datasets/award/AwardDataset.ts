@@ -27,47 +27,42 @@ import { SubsetType } from '../common';
 export class AwardDataset<D extends Dataset> extends DatasetClass<D, Award> {
   /**
    * Create Award
-   * 
-   * @param request {@link Build5Request} with data {@link AwardCreateRequest} 
-   * @returns Promise with {@link Award}
    */
-  public async createDefinedAsMethod(request: Build5Request<AwardCreateRequest>): Promise<Award> {
-    return this.sendRequest(WEN_FUNC.createAward)<AwardCreateRequest, Award>(request);
-  }
-  /**
-   * Create Award
-   */
-  create = this.sendRequest(WEN_FUNC.createAward)<AwardCreateRequest, Award>;
+  create = (req: Build5Request<AwardCreateRequest>) =>
+    this.sendRequest(WEN_FUNC.createAward)<AwardCreateRequest, Award>(req);
   /**
    * Fund award with native or base token.
    */
-  fund = this.sendRequest(WEN_FUNC.fundAward)<AwardFundRequest, Transaction>;
+  fund = (req: Build5Request<AwardFundRequest>) =>
+    this.sendRequest(WEN_FUNC.fundAward)<AwardFundRequest, Transaction>(req);
   /**
    * Reject award
    */
-  reject = this.sendRequest(WEN_FUNC.rejectAward)<AwardRejectRequest, Award>;
+  reject = (req: Build5Request<AwardRejectRequest>) =>
+    this.sendRequest(WEN_FUNC.rejectAward)<AwardRejectRequest, Award>(req);
   /**
    * Add owner of the award. This grants the ability to manage it.
    */
-  addOwner = this.sendRequest(WEN_FUNC.addOwnerAward)<AwardAddOwnerRequest, Award>;
+  addOwner = (req: Build5Request<AwardAddOwnerRequest>) =>
+    this.sendRequest(WEN_FUNC.addOwnerAward)<AwardAddOwnerRequest, Award>(req);
   /**
    * Participate in the award to receive badge and tokens.
    */
-  participate = this.sendRequest(WEN_FUNC.participateAward)<
-    AwardParticpateRequest,
-    AwardParticipant
-  >;
+  participate = (req: Build5Request<AwardParticpateRequest>) =>
+    this.sendRequest(WEN_FUNC.participateAward)<AwardParticpateRequest, AwardParticipant>(req);
   /**
    * Approve participants and distribute them with token and NFT
    */
-  approveParticipant = this.sendRequest(WEN_FUNC.approveParticipantAward)<
-    AwardApproveParticipantRequest,
-    AwardApproveParticipantResponse
-  >;
+  approveParticipant = (req: Build5Request<AwardApproveParticipantRequest>) =>
+    this.sendRequest(WEN_FUNC.approveParticipantAward)<
+      AwardApproveParticipantRequest,
+      AwardApproveParticipantResponse
+    >(req);
   /**
    * Cancel ongoing award and get refunded with remaining tokens.
    */
-  cancel = this.sendRequest(WEN_FUNC.cancelAward)<AwardCancelRequest, Award>;
+  cancel = (req: Build5Request<AwardCancelRequest>) =>
+    this.sendRequest(WEN_FUNC.cancelAward)<AwardCancelRequest, Award>(req);
   /**
    * Helper GET function to get "active" awards per space. Returns observable with continues updates via Websocket.
    *

@@ -1,5 +1,6 @@
 import {
   ApproveProposalRequest,
+  Build5Request,
   Dataset,
   GetManyAdvancedRequest,
   Opr,
@@ -13,13 +14,17 @@ import {
 import { DatasetClass } from '../Dataset';
 
 export class ProposalDataset<D extends Dataset> extends DatasetClass<D, Proposal> {
-  create = this.sendRequest(WEN_FUNC.createProposal)<ProposalCreateRequest, Proposal>;
+  create = (req: Build5Request<ProposalCreateRequest>) =>
+    this.sendRequest(WEN_FUNC.createProposal)<ProposalCreateRequest, Proposal>(req);
 
-  approve = this.sendRequest(WEN_FUNC.approveProposal)<ApproveProposalRequest, Proposal>;
+  approve = (req: Build5Request<ApproveProposalRequest>) =>
+    this.sendRequest(WEN_FUNC.approveProposal)<ApproveProposalRequest, Proposal>(req);
 
-  reject = this.sendRequest(WEN_FUNC.rejectProposal)<RejectProposalRequest, Proposal>;
+  reject = (req: Build5Request<RejectProposalRequest>) =>
+    this.sendRequest(WEN_FUNC.rejectProposal)<RejectProposalRequest, Proposal>(req);
 
-  vote = this.sendRequest(WEN_FUNC.voteOnProposal)<ProposalVoteRequest, Transaction>;
+  vote = (req: Build5Request<ProposalVoteRequest>) =>
+    this.sendRequest(WEN_FUNC.voteOnProposal)<ProposalVoteRequest, Transaction>(req);
 
   getAllActiveLive = (startAfter?: string) => {
     const params: GetManyAdvancedRequest = {

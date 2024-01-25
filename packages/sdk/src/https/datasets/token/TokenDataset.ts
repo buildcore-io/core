@@ -1,4 +1,5 @@
 import {
+  Build5Request,
   CanelPublicSaleRequest,
   CreditTokenRequest,
   Dataset,
@@ -23,33 +24,38 @@ import {
 import { DatasetClass } from '../Dataset';
 
 export class TokenDataset<D extends Dataset> extends DatasetClass<D, Token> {
-  create = this.sendRequest(WEN_FUNC.createToken)<TokenCreateRequest, Token>;
+  create = (req: Build5Request<TokenCreateRequest>) =>
+    this.sendRequest(WEN_FUNC.createToken)<TokenCreateRequest, Token>(req);
 
-  update = this.sendRequest(WEN_FUNC.updateToken)<TokenUpdateRequest, Token>;
+  update = (req: Build5Request<TokenUpdateRequest>) =>
+    this.sendRequest(WEN_FUNC.updateToken)<TokenUpdateRequest, Token>(req);
 
-  setAvailableForSale = this.sendRequest(WEN_FUNC.setTokenAvailableForSale)<
-    SetTokenForSaleRequest,
-    Token
-  >;
+  setAvailableForSale = (req: Build5Request<SetTokenForSaleRequest>) =>
+    this.sendRequest(WEN_FUNC.setTokenAvailableForSale)<SetTokenForSaleRequest, Token>(req);
 
-  cancelPublicSale = this.sendRequest(WEN_FUNC.cancelPublicSale)<CanelPublicSaleRequest, Token>;
+  cancelPublicSale = (req: Build5Request<CanelPublicSaleRequest>) =>
+    this.sendRequest(WEN_FUNC.cancelPublicSale)<CanelPublicSaleRequest, Token>(req);
 
-  order = this.sendRequest(WEN_FUNC.orderToken)<OrderTokenRequest, Transaction>;
+  order = (req: Build5Request<OrderTokenRequest>) =>
+    this.sendRequest(WEN_FUNC.orderToken)<OrderTokenRequest, Transaction>(req);
 
-  credit = this.sendRequest(WEN_FUNC.creditToken)<CreditTokenRequest, Transaction>;
+  credit = (req: Build5Request<CreditTokenRequest>) =>
+    this.sendRequest(WEN_FUNC.creditToken)<CreditTokenRequest, Transaction>(req);
 
-  mint = this.sendRequest(WEN_FUNC.mintTokenOrder)<TokenMintRequest, Transaction>;
+  mint = (req: Build5Request<TokenMintRequest>) =>
+    this.sendRequest(WEN_FUNC.mintTokenOrder)<TokenMintRequest, Transaction>(req);
 
-  enableTrading = this.sendRequest(WEN_FUNC.enableTokenTrading)<EnableTokenTradingRequest, Token>;
+  enableTrading = (req: Build5Request<EnableTokenTradingRequest>) =>
+    this.sendRequest(WEN_FUNC.enableTokenTrading)<EnableTokenTradingRequest, Token>(req);
 
-  importMintedToken = this.sendRequest(WEN_FUNC.importMintedToken)<
-    ImportMintedTokenRequest,
-    Transaction
-  >;
+  importMintedToken = (req: Build5Request<ImportMintedTokenRequest>) =>
+    this.sendRequest(WEN_FUNC.importMintedToken)<ImportMintedTokenRequest, Transaction>(req);
 
-  vote = this.sendRequest(WEN_FUNC.voteController)<VoteRequest, Vote>;
+  vote = (req: Build5Request<VoteRequest>) =>
+    this.sendRequest(WEN_FUNC.voteController)<VoteRequest, Vote>(req);
 
-  rank = this.sendRequest(WEN_FUNC.rankController)<RankRequest, Rank>;
+  rank = (req: Build5Request<RankRequest>) =>
+    this.sendRequest(WEN_FUNC.rankController)<RankRequest, Rank>(req);
 
   getByMemberLive = (member: string, startAfter?: string, limit?: number) => {
     const params: GetManyAdvancedRequest = {

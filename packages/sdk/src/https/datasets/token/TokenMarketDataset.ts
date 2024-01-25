@@ -1,5 +1,6 @@
 import {
   ApiRoutes,
+  Build5Request,
   Dataset,
   GetManyAdvancedRequest,
   GetTokenPriceResponse,
@@ -18,7 +19,8 @@ import GetTokenPriceGroupedLive from '../../get/GetTokenPriceGroupedLive';
 import { DatasetClass } from '../Dataset';
 
 export class TokenMarketDataset<D extends Dataset> extends DatasetClass<D, TokenTradeOrder> {
-  tradeToken = this.sendRequest(WEN_FUNC.tradeToken)<TradeTokenRequest, Transaction>;
+  tradeToken = (req: Build5Request<TradeTokenRequest>) =>
+    this.sendRequest(WEN_FUNC.tradeToken)<TradeTokenRequest, Transaction>(req);
 
   getTokenPrice = (token: string) =>
     GetTokenPriceGrouped.get({

@@ -1,5 +1,6 @@
 import {
   AddressValidationRequest,
+  Build5Request,
   CustomTokenRequest,
   Dataset,
   Member,
@@ -10,12 +11,12 @@ import {
 import { DatasetClass } from './Dataset';
 
 export class MemberDataset<D extends Dataset> extends DatasetClass<D, Member> {
-  update = this.sendRequest(WEN_FUNC.updateMember)<MemberUpdateRequest, Member>;
+  update = (req: Build5Request<MemberUpdateRequest>) =>
+    this.sendRequest(WEN_FUNC.updateMember)<MemberUpdateRequest, Member>(req);
 
-  generateCustomToken = this.sendRequest(WEN_FUNC.generateCustomToken)<CustomTokenRequest, string>;
+  generateCustomToken = (req: Build5Request<CustomTokenRequest>) =>
+    this.sendRequest(WEN_FUNC.generateCustomToken)<CustomTokenRequest, string>(req);
 
-  validateAddress = this.sendRequest(WEN_FUNC.validateAddress)<
-    AddressValidationRequest,
-    Transaction
-  >;
+  validateAddress = (req: Build5Request<AddressValidationRequest>) =>
+    this.sendRequest(WEN_FUNC.validateAddress)<AddressValidationRequest, Transaction>(req);
 }

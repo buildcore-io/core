@@ -1,4 +1,5 @@
 import {
+  Build5Request,
   Collection,
   CollectionMintRequest,
   CreateCollectionRequest,
@@ -23,31 +24,38 @@ export class CollectionDataset<D extends Dataset> extends DatasetClass<D, Collec
   /**
    * Create NFT Collection.
    */
-  create = this.sendRequest(WEN_FUNC.createCollection)<CreateCollectionRequest, Collection>;
+  create = (req: Build5Request<CreateCollectionRequest>) =>
+    this.sendRequest(WEN_FUNC.createCollection)<CreateCollectionRequest, Collection>(req);
   /**
    * Update NFT Collection.
    */
-  update = this.sendRequest(WEN_FUNC.updateCollection)<UpdateCollectionRequest, Collection>;
+  update = (req: Build5Request<UpdateCollectionRequest>) =>
+    this.sendRequest(WEN_FUNC.updateCollection)<UpdateCollectionRequest, Collection>(req);
   /**
    * Update minted NFT Collection. Only certain fields are updated (typically those that are not immutable and stored on DLT)
    */
-  updateMinted = this.sendRequest(WEN_FUNC.updateCollection)<UpdateCollectionRequest, Collection>;
+  updateMinted = (req: Build5Request<UpdateCollectionRequest>) =>
+    this.sendRequest(WEN_FUNC.updateCollection)<UpdateCollectionRequest, Collection>(req);
   /**
    * Reject collection and hide it.
    */
-  reject = this.sendRequest(WEN_FUNC.rejectCollection)<RejectCollectionRequest, Collection>;
+  reject = (req: Build5Request<RejectCollectionRequest>) =>
+    this.sendRequest(WEN_FUNC.rejectCollection)<RejectCollectionRequest, Collection>(req);
   /**
    * Mint collection on defined network.
    */
-  mint = this.sendRequest(WEN_FUNC.mintCollection)<CollectionMintRequest, Transaction>;
+  mint = (req: Build5Request<CollectionMintRequest>) =>
+    this.sendRequest(WEN_FUNC.mintCollection)<CollectionMintRequest, Transaction>(req);
   /**
    * Give collection a vote up or down.
    */
-  vote = this.sendRequest(WEN_FUNC.voteController)<VoteRequest, Vote>;
+  vote = (req: Build5Request<VoteRequest>) =>
+    this.sendRequest(WEN_FUNC.voteController)<VoteRequest, Vote>(req);
   /**
    * Rank collection. This typically is managed by Rank Moderators.
    */
-  rank = this.sendRequest(WEN_FUNC.rankController)<RankRequest, Rank>;
+  rank = (req: Build5Request<RankRequest>) =>
+    this.sendRequest(WEN_FUNC.rankController)<RankRequest, Rank>(req);
   /**
    * Get all pending collections per space. Real time stream.
    *
