@@ -1,4 +1,5 @@
 import {
+  Build5Request,
   Collection,
   CollectionMintRequest,
   CreateCollectionRequest,
@@ -16,21 +17,52 @@ import {
 } from '@build-5/interfaces';
 import { DatasetClass } from '../Dataset';
 
+/**
+ * NFT Collection Dataset
+ */
 export class CollectionDataset<D extends Dataset> extends DatasetClass<D, Collection> {
-  create = this.sendRequest(WEN_FUNC.createCollection)<CreateCollectionRequest, Collection>;
-
-  update = this.sendRequest(WEN_FUNC.updateCollection)<UpdateCollectionRequest, Collection>;
-
-  updateMinted = this.sendRequest(WEN_FUNC.updateCollection)<UpdateCollectionRequest, Collection>;
-
-  reject = this.sendRequest(WEN_FUNC.rejectCollection)<RejectCollectionRequest, Collection>;
-
-  mint = this.sendRequest(WEN_FUNC.mintCollection)<CollectionMintRequest, Transaction>;
-
-  vote = this.sendRequest(WEN_FUNC.voteController)<VoteRequest, Vote>;
-
-  rank = this.sendRequest(WEN_FUNC.rankController)<RankRequest, Rank>;
-
+  /**
+   * Create NFT Collection.
+   */
+  create = (req: Build5Request<CreateCollectionRequest>) =>
+    this.sendRequest(WEN_FUNC.createCollection)<CreateCollectionRequest, Collection>(req);
+  /**
+   * Update NFT Collection.
+   */
+  update = (req: Build5Request<UpdateCollectionRequest>) =>
+    this.sendRequest(WEN_FUNC.updateCollection)<UpdateCollectionRequest, Collection>(req);
+  /**
+   * Update minted NFT Collection. Only certain fields are updated (typically those that are not immutable and stored on DLT)
+   */
+  updateMinted = (req: Build5Request<UpdateCollectionRequest>) =>
+    this.sendRequest(WEN_FUNC.updateCollection)<UpdateCollectionRequest, Collection>(req);
+  /**
+   * Reject collection and hide it.
+   */
+  reject = (req: Build5Request<RejectCollectionRequest>) =>
+    this.sendRequest(WEN_FUNC.rejectCollection)<RejectCollectionRequest, Collection>(req);
+  /**
+   * Mint collection on defined network.
+   */
+  mint = (req: Build5Request<CollectionMintRequest>) =>
+    this.sendRequest(WEN_FUNC.mintCollection)<CollectionMintRequest, Transaction>(req);
+  /**
+   * Give collection a vote up or down.
+   */
+  vote = (req: Build5Request<VoteRequest>) =>
+    this.sendRequest(WEN_FUNC.voteController)<VoteRequest, Vote>(req);
+  /**
+   * Rank collection. This typically is managed by Rank Moderators.
+   */
+  rank = (req: Build5Request<RankRequest>) =>
+    this.sendRequest(WEN_FUNC.rankController)<RankRequest, Rank>(req);
+  /**
+   * Get all pending collections per space. Real time stream.
+   *
+   * @param space
+   * @param startAfter
+   * @returns
+   */
   getAllPendingLive = (space: string, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {
       dataset: this.dataset,
@@ -43,7 +75,13 @@ export class CollectionDataset<D extends Dataset> extends DatasetClass<D, Collec
     };
     return this.getManyAdvancedLive(params);
   };
-
+  /**
+   * Get all available collections per space. Real time stream.
+   *
+   * @param space
+   * @param startAfter
+   * @returns
+   */
   getAllAvailableLive = (space: string, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {
       dataset: this.dataset,
@@ -56,7 +94,13 @@ export class CollectionDataset<D extends Dataset> extends DatasetClass<D, Collec
     };
     return this.getManyAdvancedLive(params);
   };
-
+  /**
+   * Get all rejected collections per space. Real time stream.
+   *
+   * @param space
+   * @param startAfter
+   * @returns
+   */
   getAllRejectedLive = (space: string, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {
       dataset: this.dataset,

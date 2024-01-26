@@ -2,6 +2,7 @@ import { Dataset } from '@build-5/interfaces';
 import { Build5, Build5OtrAddress, otr } from '@build-5/sdk';
 
 const origin = Build5.TEST;
+// @ts-ignore
 const otrAddress = Build5OtrAddress[origin];
 
 async function main() {

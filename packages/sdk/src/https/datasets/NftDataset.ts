@@ -1,4 +1,5 @@
 import {
+  Build5Request,
   Dataset,
   GetManyAdvancedRequest,
   Nft,
@@ -18,23 +19,32 @@ import {
 import { DatasetClass } from './Dataset';
 
 export class NftDataset<D extends Dataset> extends DatasetClass<D, Nft> {
-  create = this.sendRequest(WEN_FUNC.createNft)<NftCreateRequest, Nft>;
+  create = (req: Build5Request<NftCreateRequest>) =>
+    this.sendRequest(WEN_FUNC.createNft)<NftCreateRequest, Nft>(req);
 
-  createBatch = this.sendRequest(WEN_FUNC.createBatchNft)<NftCreateRequest[], Nft[]>;
+  createBatch = (req: Build5Request<NftCreateRequest[]>) =>
+    this.sendRequest(WEN_FUNC.createBatchNft)<NftCreateRequest[], Nft[]>(req);
 
-  setForSale = this.sendRequest(WEN_FUNC.setForSaleNft)<NftSetForSaleRequest, Nft>;
+  setForSale = (req: Build5Request<NftSetForSaleRequest>) =>
+    this.sendRequest(WEN_FUNC.setForSaleNft)<NftSetForSaleRequest, Nft>(req);
 
-  withdraw = this.sendRequest(WEN_FUNC.withdrawNft)<NftWithdrawRequest, void>;
+  withdraw = (req: Build5Request<NftWithdrawRequest>) =>
+    this.sendRequest(WEN_FUNC.withdrawNft)<NftWithdrawRequest, void>(req);
 
-  deposit = this.sendRequest(WEN_FUNC.depositNft)<NftDepositRequest, Transaction>;
+  deposit = (req: Build5Request<NftDepositRequest>) =>
+    this.sendRequest(WEN_FUNC.depositNft)<NftDepositRequest, Transaction>(req);
 
-  updateUnsold = this.sendRequest(WEN_FUNC.updateUnsoldNft)<NftUpdateUnsoldRequest, Nft>;
+  updateUnsold = (req: Build5Request<NftUpdateUnsoldRequest>) =>
+    this.sendRequest(WEN_FUNC.updateUnsoldNft)<NftUpdateUnsoldRequest, Nft>(req);
 
-  order = this.sendRequest(WEN_FUNC.orderNft)<NftPurchaseRequest, Transaction>;
+  order = (req: Build5Request<NftPurchaseRequest>) =>
+    this.sendRequest(WEN_FUNC.orderNft)<NftPurchaseRequest, Transaction>(req);
 
-  openBid = this.sendRequest(WEN_FUNC.openBid)<NftBidRequest, Transaction>;
+  openBid = (req: Build5Request<NftBidRequest>) =>
+    this.sendRequest(WEN_FUNC.openBid)<NftBidRequest, Transaction>(req);
 
-  bulkPurchase = this.sendRequest(WEN_FUNC.orderNftBulk)<NftPurchaseBulkRequest, Transaction>;
+  bulkPurchase = (req: Build5Request<NftPurchaseBulkRequest>) =>
+    this.sendRequest(WEN_FUNC.orderNftBulk)<NftPurchaseBulkRequest, Transaction>(req);
 
   transfer = this.sendRequest(WEN_FUNC.nftTransfer)<NftTransferRequest, { [key: string]: number }>;
 

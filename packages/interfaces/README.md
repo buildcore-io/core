@@ -1,10 +1,6 @@
-# About
-
-Build.5 - Your Enterprise ready web3 plug & play platform
-
 # Overview
 
-Build.5 interfaces for all models.
+Complete reference documentation for @build-5/sdk and @build-5/interfaces.
 
 # 🤝 Contributing
 

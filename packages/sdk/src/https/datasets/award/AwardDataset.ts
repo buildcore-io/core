@@ -9,6 +9,7 @@ import {
   AwardParticipant,
   AwardParticpateRequest,
   AwardRejectRequest,
+  Build5Request,
   Dataset,
   GetManyAdvancedRequest,
   Opr,
@@ -20,27 +21,55 @@ import { switchMap } from 'rxjs';
 import { DatasetClass } from '../Dataset';
 import { SubsetType } from '../common';
 
+/**
+ * Award HTTPS Dataset object
+ */
 export class AwardDataset<D extends Dataset> extends DatasetClass<D, Award> {
-  create = this.sendRequest(WEN_FUNC.createAward)<AwardCreateRequest, Award>;
-
-  fund = this.sendRequest(WEN_FUNC.fundAward)<AwardFundRequest, Transaction>;
-
-  rejec = this.sendRequest(WEN_FUNC.rejectAward)<AwardRejectRequest, Award>;
-
-  addOwner = this.sendRequest(WEN_FUNC.addOwnerAward)<AwardAddOwnerRequest, Award>;
-
-  participate = this.sendRequest(WEN_FUNC.participateAward)<
-    AwardParticpateRequest,
-    AwardParticipant
-  >;
-
-  approveParticipant = this.sendRequest(WEN_FUNC.approveParticipantAward)<
-    AwardApproveParticipantRequest,
-    AwardApproveParticipantResponse
-  >;
-
-  cancel = this.sendRequest(WEN_FUNC.cancelAward)<AwardCancelRequest, Award>;
-
+  /**
+   * Create Award
+   */
+  create = (req: Build5Request<AwardCreateRequest>) =>
+    this.sendRequest(WEN_FUNC.createAward)<AwardCreateRequest, Award>(req);
+  /**
+   * Fund award with native or base token.
+   */
+  fund = (req: Build5Request<AwardFundRequest>) =>
+    this.sendRequest(WEN_FUNC.fundAward)<AwardFundRequest, Transaction>(req);
+  /**
+   * Reject award
+   */
+  reject = (req: Build5Request<AwardRejectRequest>) =>
+    this.sendRequest(WEN_FUNC.rejectAward)<AwardRejectRequest, Award>(req);
+  /**
+   * Add owner of the award. This grants the ability to manage it.
+   */
+  addOwner = (req: Build5Request<AwardAddOwnerRequest>) =>
+    this.sendRequest(WEN_FUNC.addOwnerAward)<AwardAddOwnerRequest, Award>(req);
+  /**
+   * Participate in the award to receive badge and tokens.
+   */
+  participate = (req: Build5Request<AwardParticpateRequest>) =>
+    this.sendRequest(WEN_FUNC.participateAward)<AwardParticpateRequest, AwardParticipant>(req);
+  /**
+   * Approve participants and distribute them with token and NFT
+   */
+  approveParticipant = (req: Build5Request<AwardApproveParticipantRequest>) =>
+    this.sendRequest(WEN_FUNC.approveParticipantAward)<
+      AwardApproveParticipantRequest,
+      AwardApproveParticipantResponse
+    >(req);
+  /**
+   * Cancel ongoing award and get refunded with remaining tokens.
+   */
+  cancel = (req: Build5Request<AwardCancelRequest>) =>
+    this.sendRequest(WEN_FUNC.cancelAward)<AwardCancelRequest, Award>(req);
+  /**
+   * Helper GET function to get "active" awards per space. Returns observable with continues updates via Websocket.
+   *
+   * @param space
+   * @param startAfter
+   * @returns
+   */
   getActiveLive = (space: string, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {
       dataset: this.dataset,
@@ -52,6 +81,13 @@ export class AwardDataset<D extends Dataset> extends DatasetClass<D, Award> {
     return this.getManyAdvancedLive(params);
   };
 
+  /**
+   * Helper GET function to get "completed" awards per space. Returns observable with continues updates via Websocket.
+   *
+   * @param space
+   * @param startAfter
+   * @returns
+   */
   getCompletedLive = (space: string, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {
       dataset: this.dataset,
@@ -62,7 +98,13 @@ export class AwardDataset<D extends Dataset> extends DatasetClass<D, Award> {
     };
     return this.getManyAdvancedLive(params);
   };
-
+  /**
+   * Helper GET function to get "draft" awards per space. Returns observable with continues updates via Websocket.
+   *
+   * @param space
+   * @param startAfter
+   * @returns
+   */
   getDraftLive = (space: string, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {
       dataset: this.dataset,
@@ -73,7 +115,13 @@ export class AwardDataset<D extends Dataset> extends DatasetClass<D, Award> {
     };
     return this.getManyAdvancedLive(params);
   };
-
+  /**
+   * Helper GET function to get "rejected" awards per space. Returns observable with continues updates via Websocket.
+   *
+   * @param space
+   * @param startAfter
+   * @returns
+   */
   getRejectedLive = (space: string, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {
       dataset: this.dataset,
@@ -85,6 +133,12 @@ export class AwardDataset<D extends Dataset> extends DatasetClass<D, Award> {
     return this.getManyAdvancedLive(params);
   };
 
+  /**
+   * Helper GET function to get closest finishing awards. Returns observable with continues updates via Websocket.
+   *
+   * @param startAfter
+   * @returns
+   */
   getLastActiveLive = (startAfter?: string) => {
     const fieldName = ['endDate', 'completed', 'approved'];
     const fieldValue = [new Date().toISOString(), false, true];
@@ -101,6 +155,12 @@ export class AwardDataset<D extends Dataset> extends DatasetClass<D, Award> {
     return this.getManyAdvancedLive(params);
   };
 
+  /**
+   * Helper GET Award participants. Returns observable with continues updates via Websocket.
+   *
+   * @param startAfter
+   * @returns
+   */
   getTopByMemberLive = (member: string, completed: boolean, startAfter?: string) => {
     const members = (
       this.subset(Subset.PARTICIPANTS) as SubsetType<Dataset.AWARD, Subset.PARTICIPANTS>

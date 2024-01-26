@@ -5,6 +5,7 @@ const collectionId = 'build5nftcollectionid';
 const nftIds = ['build5nftid1', 'build5nftid2'];
 
 const origin = Build5.TEST;
+// @ts-ignore
 const otrAddress = Build5OtrAddress[origin];
 
 async function main() {

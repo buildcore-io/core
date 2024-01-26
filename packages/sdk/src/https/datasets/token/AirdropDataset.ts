@@ -1,4 +1,5 @@
 import {
+  Build5Request,
   ClaimAirdroppedTokensRequest,
   ClaimPreMintedAirdroppedTokensRequest,
   CreateAirdropsRequest,
@@ -10,20 +11,20 @@ import {
 import { DatasetClass } from '../Dataset';
 
 export class AirdropDataset<D extends Dataset> extends DatasetClass<D, TokenDrop> {
-  airdropToken = this.sendRequest(WEN_FUNC.airdropToken)<CreateAirdropsRequest, void>;
+  airdropToken = (req: Build5Request<CreateAirdropsRequest>) =>
+    this.sendRequest(WEN_FUNC.airdropToken)<CreateAirdropsRequest, void>(req);
 
-  airdropMintedToken = this.sendRequest(WEN_FUNC.airdropMintedToken)<
-    CreateAirdropsRequest,
-    Transaction
-  >;
+  airdropMintedToken = (req: Build5Request<CreateAirdropsRequest>) =>
+    this.sendRequest(WEN_FUNC.airdropMintedToken)<CreateAirdropsRequest, Transaction>(req);
 
-  claimMintedAirdrop = this.sendRequest(WEN_FUNC.claimMintedTokenOrder)<
-    ClaimAirdroppedTokensRequest,
-    Transaction
-  >;
+  claimMintedAirdrop = (req: Build5Request<ClaimAirdroppedTokensRequest>) =>
+    this.sendRequest(WEN_FUNC.claimMintedTokenOrder)<ClaimAirdroppedTokensRequest, Transaction>(
+      req,
+    );
 
-  claimAirdropped = this.sendRequest(WEN_FUNC.claimAirdroppedToken)<
-    ClaimPreMintedAirdroppedTokensRequest,
-    Transaction
-  >;
+  claimAirdropped = (req: Build5Request<ClaimPreMintedAirdroppedTokensRequest>) =>
+    this.sendRequest(WEN_FUNC.claimAirdroppedToken)<
+      ClaimPreMintedAirdroppedTokensRequest,
+      Transaction
+    >(req);
 }
