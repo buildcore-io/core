@@ -57,19 +57,41 @@ abstract class BaseDataSetClass<T> extends BaseSet<T> {
     };
 }
 
+/**
+ * Dataset base class.
+ */
 export abstract class DatasetClass<D extends Dataset, T> extends BaseDataSetClass<T> {
+  /**
+   * Get many records by id.
+   *
+   * @param setIds
+   * @returns
+   */
   getManyById = (setIds: string[]) =>
     wrappedFetch<T[]>(this.apiKey, this.origin + ApiRoutes.GET_MANY_BY_ID, {
       dataset: this.dataset,
       setIds,
     });
-
+  /**
+   * Get many records by id. Real time stream.
+   *
+   * @param setIds
+   * @returns
+   */
   getManyByIdLive = (setIds: string[]): Observable<T[]> => {
     const params = { dataset: this.dataset, setIds };
     const url = this.origin + ApiRoutes.GET_MANY_BY_ID + toQueryParams({ ...params });
     return fetchLive<T[]>(this.apiKey, url);
   };
 
+  /**
+   * Get records by field.
+   *
+   * @param fieldName
+   * @param fieldValue
+   * @param startAfter
+   * @returns
+   */
   getByField = async (
     fieldName: string | string[],
     fieldValue: string | number | boolean | (string | number | boolean)[],
@@ -79,6 +101,13 @@ export abstract class DatasetClass<D extends Dataset, T> extends BaseDataSetClas
     return await wrappedFetch<T[]>(this.apiKey, this.origin + ApiRoutes.GET_MANY, params);
   };
 
+  /**
+   * Get records by field. Real time stream.
+   * @param fieldName
+   * @param fieldValue
+   * @param startAfter
+   * @returns
+   */
   getByFieldLive = (
     fieldName: string | string[],
     fieldValue: string | number | boolean | (string | number | boolean)[],
@@ -89,6 +118,13 @@ export abstract class DatasetClass<D extends Dataset, T> extends BaseDataSetClas
     return fetchLive<T[]>(this.apiKey, url);
   };
 
+  /**
+   * Get records by space.
+   *
+   * @param space
+   * @param startAfter
+   * @returns
+   */
   getBySpace = async (space: string, startAfter?: string) => {
     const params: GetManyRequest = {
       dataset: this.dataset,
@@ -100,6 +136,12 @@ export abstract class DatasetClass<D extends Dataset, T> extends BaseDataSetClas
     return await wrappedFetch<T[]>(this.apiKey, url, { ...params });
   };
 
+  /**
+   * Get records by space. Real time stream.
+   * @param space
+   * @param startAfter
+   * @returns
+   */
   getBySpaceLive = (space: string, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {
       dataset: this.dataset,
@@ -113,12 +155,25 @@ export abstract class DatasetClass<D extends Dataset, T> extends BaseDataSetClas
     return this.getManyAdvancedLive(params);
   };
 
+  /**
+   * Get all records updated after unix timestamp.
+   *
+   * @param updatedAfter
+   * @param startAfter
+   * @returns
+   */
   getAllUpdatedAfter = async (updatedAfter: number, startAfter?: string) => {
     const params: GetUpdatedAfterRequest = { dataset: this.dataset, updatedAfter, startAfter };
     const url = this.origin + ApiRoutes.GET_UPDATED_AFTER;
     return await wrappedFetch<T[]>(this.apiKey, url, { ...params });
   };
-
+  /**
+   * Get all records updated after unix timestamp. Real time stream.
+   *
+   * @param updatedAfter
+   * @param startAfter
+   * @returns
+   */
   getAllUpdatedAfterLive = (updatedAfter: number, startAfter?: string): Observable<T[]> => {
     const params: GetUpdatedAfterRequest = { dataset: this.dataset, updatedAfter, startAfter };
     const url = this.origin + ApiRoutes.GET_UPDATED_AFTER + toQueryParams({ ...params });
