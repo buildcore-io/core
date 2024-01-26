@@ -19,9 +19,9 @@ import { DatasetClass } from '../Dataset';
 export class ProposalDataset<D extends Dataset> extends DatasetClass<D, Proposal> {
   /**
    * Method to create Proposal
-   * 
+   *
    * @param req Use {@link Build5Request} with data based on {@link ProposalCreateRequest}
-   * @returns 
+   * @returns
    */
   create = (req: Build5Request<ProposalCreateRequest>) =>
     this.sendRequest(WEN_FUNC.createProposal)<ProposalCreateRequest, Proposal>(req);
