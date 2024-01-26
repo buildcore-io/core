@@ -31,6 +31,7 @@ export * from './NftPurchaseBulkRequest';
 export * from './NftPurchaseRequest';
 export * from './NftSetForSaleRequest';
 export * from './NftStakeRequest';
+export * from './NftTransferRequest';
 export * from './NftUpdateUnsoldRequest';
 export * from './NftWithdrawRequest';
 export * from './ProjectCreateRequest';

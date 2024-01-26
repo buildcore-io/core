@@ -5,10 +5,10 @@ import {
   CollectionStatus,
   Member,
   Nft,
-  NftStatus,
   NftWithdrawRequest,
   WenError,
 } from '@build-5/interfaces';
+import { assertCanBeWithdrawn } from '../../services/payment/nft/nft-withdraw.service';
 import { createNftWithdrawOrder } from '../../services/payment/tangle-service/nft/nft-purchase.service';
 import { assertMemberHasValidAddress, getAddress } from '../../utils/address.utils';
 import { invalidArgument } from '../../utils/error.utils';
@@ -22,21 +22,7 @@ export const withdrawNftControl = async ({ owner, params, project }: Context<Nft
       throw invalidArgument(WenError.nft_does_not_exists);
     }
 
-    if (nft.owner !== owner) {
-      throw invalidArgument(WenError.you_must_be_the_owner_of_nft);
-    }
-
-    if (nft.status !== NftStatus.MINTED) {
-      throw invalidArgument(WenError.nft_not_minted);
-    }
-
-    if (nft.availableFrom || nft.auctionFrom) {
-      throw invalidArgument(WenError.nft_on_sale);
-    }
-
-    if (nft.setAsAvatar) {
-      throw invalidArgument(WenError.nft_set_as_avatar);
-    }
+    assertCanBeWithdrawn(nft, owner);
 
     const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nft.collection}`);
     const collection = await collectionDocRef.get<Collection>();

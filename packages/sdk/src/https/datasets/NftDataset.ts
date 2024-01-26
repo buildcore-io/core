@@ -9,6 +9,7 @@ import {
   NftPurchaseBulkRequest,
   NftPurchaseRequest,
   NftSetForSaleRequest,
+  NftTransferRequest,
   NftUpdateUnsoldRequest,
   NftWithdrawRequest,
   Opr,
@@ -44,6 +45,8 @@ export class NftDataset<D extends Dataset> extends DatasetClass<D, Nft> {
 
   bulkPurchase = (req: Build5Request<NftPurchaseBulkRequest>) =>
     this.sendRequest(WEN_FUNC.orderNftBulk)<NftPurchaseBulkRequest, Transaction>(req);
+
+  transfer = this.sendRequest(WEN_FUNC.nftTransfer)<NftTransferRequest, { [key: string]: number }>;
 
   getByCollectionLive = (
     collection: string,
