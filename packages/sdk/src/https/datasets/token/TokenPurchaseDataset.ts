@@ -11,7 +11,16 @@ import GetTokenAvgPriceGroupedLive from '../../get/GetTokenAvgPriceGroupedLive';
 import GetTokenPriceChangeGroupedLive from '../../get/GetTokenPriceChangeGroupedLive';
 import { DatasetClass } from '../Dataset';
 
+/**
+ * Token purchase dataset.
+ */
 export class TokenPurchaseDataset<D extends Dataset> extends DatasetClass<D, TokenPurchase> {
+  /**
+   * TODO
+   * @param token
+   * @param startAfter
+   * @returns
+   */
   getPuchasesLive = (token: string, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {
       dataset: this.dataset,
@@ -24,7 +33,11 @@ export class TokenPurchaseDataset<D extends Dataset> extends DatasetClass<D, Tok
     };
     return this.getManyAdvancedLive(params);
   };
-
+  /**
+   * TODO
+   * @param token
+   * @returns
+   */
   getAvgPriceLive = (token: string) =>
     from(
       GetTokenAvgPriceGroupedLive.get<GetAvgPriceResponse>({
@@ -37,7 +50,11 @@ export class TokenPurchaseDataset<D extends Dataset> extends DatasetClass<D, Tok
       switchMap((inner) => inner),
       map((result) => result?.avg || 0),
     );
-
+  /**
+   * TODO
+   * @param token
+   * @returns
+   */
   getPriceChangeLive = (token: string) =>
     from(
       GetTokenPriceChangeGroupedLive.get<GetPriceChangeResponse>({

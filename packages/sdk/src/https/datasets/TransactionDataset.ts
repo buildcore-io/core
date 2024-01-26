@@ -17,9 +17,22 @@ import { fetchLive } from '../get/observable';
 import { DatasetClass } from './Dataset';
 
 export class TransactionDataset<D extends Dataset> extends DatasetClass<D, Transaction> {
+  /**
+   * Credit blocked transactions back (ie. not gifted storage deposit)
+   *
+   * @param req Use {@link Build5Request} with data based on {@link CreditUnrefundableRequest}
+   * @returns
+   */
   creditUnrefundable = (req: Build5Request<CreditUnrefundableRequest>) =>
     this.sendRequest(WEN_FUNC.creditUnrefundable)<CreditUnrefundableRequest, Transaction>(req);
-
+  /**
+   * TODO
+   *
+   * @param member
+   * @param orderBy
+   * @param startAfter
+   * @returns
+   */
   getBadgesForMemberLive = (member: string, orderBy = ['createdOn'], startAfter?: string) => {
     const fieldName = ['member', 'type', 'payload.type'];
     const params: GetManyAdvancedRequest = {
@@ -33,7 +46,15 @@ export class TransactionDataset<D extends Dataset> extends DatasetClass<D, Trans
     };
     return this.getManyAdvancedLive(params);
   };
-
+  /**
+   * TODO
+   *
+   * @param orderBy
+   * @param startAfter
+   * @param member
+   * @param previousOwner
+   * @returns
+   */
   getTopTransactionsLive = (
     orderBy = ['createdOn'],
     startAfter?: string,
@@ -76,7 +97,13 @@ export class TransactionDataset<D extends Dataset> extends DatasetClass<D, Trans
     };
     return this.getManyAdvancedLive(params);
   };
-
+  /**
+   * TODO
+   *
+   * @param nft
+   * @param startAfter
+   * @returns
+   */
   getNftOffersLive = (nft: Nft, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {
       dataset: this.dataset,
@@ -94,7 +121,15 @@ export class TransactionDataset<D extends Dataset> extends DatasetClass<D, Trans
     };
     return this.getManyAdvancedLive(params);
   };
-
+  /**
+   * TODO
+   *
+   * @param member
+   * @param nft
+   * @param currentAuction
+   * @param startAfter
+   * @returns
+   */
   getMembersBidsLive = (member: string, nft: Nft, currentAuction = false, startAfter?: string) => {
     const fieldName = ['member', 'payload.nft', 'type', 'type'];
     const fieldValue: (string | number)[] = [
@@ -124,6 +159,14 @@ export class TransactionDataset<D extends Dataset> extends DatasetClass<D, Trans
     return this.getManyAdvancedLive(params);
   };
 
+  /**
+   * TODO
+   *
+   * @param proposal
+   * @param member
+   * @param startAfter
+   * @returns
+   */
   getLatestVotesForProposalLive = (proposal: string, member?: string, startAfter?: string) => {
     const fieldName = ['payload.proposalId', 'type'];
     const fieldValue = [proposal, TransactionType.VOTE];
@@ -144,7 +187,12 @@ export class TransactionDataset<D extends Dataset> extends DatasetClass<D, Trans
     };
     return this.getManyAdvancedLive(params);
   };
-
+  /**
+   * TODO
+   *
+   * @param tag
+   * @returns
+   */
   getPaymentByTagLive = (tag: string) => {
     const params: GetManyRequest = {
       dataset: this.dataset,
@@ -155,6 +203,12 @@ export class TransactionDataset<D extends Dataset> extends DatasetClass<D, Trans
     return fetchLive<Transaction[]>(this.apiKey, url);
   };
 
+  /**
+   * TODO
+   *
+   * @param sourceTransaction
+   * @returns
+   */
   getBySourceTransactionLive = (sourceTransaction: string) => {
     const params: GetManyAdvancedRequest = {
       dataset: this.dataset,
