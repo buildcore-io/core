@@ -25,16 +25,37 @@ export class ProposalDataset<D extends Dataset> extends DatasetClass<D, Proposal
    */
   create = (req: Build5Request<ProposalCreateRequest>) =>
     this.sendRequest(WEN_FUNC.createProposal)<ProposalCreateRequest, Proposal>(req);
-
+  /**
+   * Method to approve Proposal
+   *
+   * @param req Use {@link Build5Request} with data based on {@link ApproveProposalRequest}
+   * @returns
+   */
   approve = (req: Build5Request<ApproveProposalRequest>) =>
     this.sendRequest(WEN_FUNC.approveProposal)<ApproveProposalRequest, Proposal>(req);
-
+  /**
+   * Method to reject Proposal
+   *
+   * @param req Use {@link Build5Request} with data based on {@link RejectProposalRequest}
+   * @returns
+   */
   reject = (req: Build5Request<RejectProposalRequest>) =>
     this.sendRequest(WEN_FUNC.rejectProposal)<RejectProposalRequest, Proposal>(req);
-
+  /**
+   * Method to vote on Proposal
+   *
+   * @param req Use {@link Build5Request} with data based on {@link ProposalVoteRequest}
+   * @returns
+   */
   vote = (req: Build5Request<ProposalVoteRequest>) =>
     this.sendRequest(WEN_FUNC.voteOnProposal)<ProposalVoteRequest, Transaction>(req);
 
+  /**
+   * TODO
+   *
+   * @param startAfter
+   * @returns
+   */
   getAllActiveLive = (startAfter?: string) => {
     const params: GetManyAdvancedRequest = {
       dataset: this.dataset,
@@ -47,7 +68,13 @@ export class ProposalDataset<D extends Dataset> extends DatasetClass<D, Proposal
     };
     return this.getManyAdvancedLive(params);
   };
-
+  /**
+   * TODO
+   *
+   * @param space
+   * @param startAfter
+   * @returns
+   */
   getActiveLive = (space: string, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {
       dataset: this.dataset,
@@ -60,7 +87,13 @@ export class ProposalDataset<D extends Dataset> extends DatasetClass<D, Proposal
     };
     return this.getManyAdvancedLive(params);
   };
-
+  /**
+   * TODO
+   *
+   * @param space
+   * @param startAfter
+   * @returns
+   */
   getCompletedLive = (space: string, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {
       dataset: this.dataset,
@@ -73,7 +106,13 @@ export class ProposalDataset<D extends Dataset> extends DatasetClass<D, Proposal
     };
     return this.getManyAdvancedLive(params);
   };
-
+  /**
+   * TODO
+   *
+   * @param space
+   * @param startAfter
+   * @returns
+   */
   getDraftLive = (space: string, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {
       dataset: this.dataset,
@@ -86,7 +125,13 @@ export class ProposalDataset<D extends Dataset> extends DatasetClass<D, Proposal
     };
     return this.getManyAdvancedLive(params);
   };
-
+  /**
+   * TODO
+   *
+   * @param space
+   * @param startAfter
+   * @returns
+   */
   getRejectedLive = (space: string, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {
       dataset: this.dataset,
