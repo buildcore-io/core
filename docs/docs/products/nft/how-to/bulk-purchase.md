@@ -9,6 +9,7 @@ tags:
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import DeepLink from '../../../_admonitions/_deep_link.md'
 
 <Tabs>
   <TabItem value="otr" label="OTR">
@@ -17,6 +18,8 @@ import TabItem from '@theme/TabItem';
 
     ```tsx file=../../../../../packages/sdk/examples/nft/otr/bulk_purchase.ts#L12-L14
     ```
+
+    <DeepLink/>
   </TabItem>  
   <TabItem value="https" label="HTTPS">
     To bulk purchase NFTs, you must call `bulkPurchase` on `dataset(Dataset.NFT)`.
