@@ -75,6 +75,7 @@ const sidebars = {
               'How To': [
                 'products/nft/how-to/create-collection',
                 'products/nft/how-to/bulk-purchase',
+                'products/nft/how-to/create-metadata',
               ],
             }
           ],
@@ -88,9 +89,6 @@ const sidebars = {
               ],
             }
           ],
-        },
-        {
-          'Digital Twin NFT': ['products/digital-twin-nft/overview'],
         },
         {
           'NFT Trading API': ['products/nft-trading/overview'],
