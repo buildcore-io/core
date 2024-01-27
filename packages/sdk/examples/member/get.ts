@@ -33,6 +33,12 @@ async function main() {
       .dataset(Dataset.MEMBER)
       .getManyById(member_ids);
     console.log('Members by id: ', members.length);
+
+    members = await https(origin)
+      .project(SoonaverseApiKey[Build5.TEST])
+      .dataset(Dataset.MEMBER)
+      .getTop(3);
+    console.log('Top 3 member ids: ', members.map((member) => member.uid));
   } catch (error) {
     console.error('Error: ', error);
   }
