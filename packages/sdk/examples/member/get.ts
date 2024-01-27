@@ -38,7 +38,10 @@ async function main() {
       .project(SoonaverseApiKey[Build5.TEST])
       .dataset(Dataset.MEMBER)
       .getTop(3);
-    console.log('Top 3 member ids: ', members.map((member) => member.uid));
+    console.log(
+      'Top 3 member ids: ',
+      members.map((member) => member.uid),
+    );
   } catch (error) {
     console.error('Error: ', error);
   }

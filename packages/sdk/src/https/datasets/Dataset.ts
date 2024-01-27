@@ -125,7 +125,7 @@ export abstract class DatasetClass<D extends Dataset, T> extends BaseDataSetClas
     return fetchLive<T[]>(this.apiKey, url);
   };
 
-  getTop = async ( limit?: number, startAfter?: string): Promise<T[]> => {
+  getTop = async (limit?: number, startAfter?: string): Promise<T[]> => {
     const params: GetManyAdvancedRequest = {
       dataset: this.dataset,
       fieldName: [],
