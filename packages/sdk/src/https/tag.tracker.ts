@@ -7,6 +7,9 @@ export interface TagTrackResult extends TangleResponse {
   chainReference?: string;
 }
 
+/**
+ * Enhanced observable to track OTR transaction on Tangle / Build.5
+ */
 export class Observable extends RxjsObservable<TagTrackResult> {
   private observer: Subscriber<TagTrackResult> | undefined;
   private dataset: TransactionDataset<Dataset.TRANSACTION> | undefined;

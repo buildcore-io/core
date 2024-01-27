@@ -5,15 +5,17 @@ const collectionId = 'build5nftcollectionid';
 const nftIds = ['build5nftid1', 'build5nftid2'];
 
 const origin = Build5.TEST;
+// @ts-ignore
 const otrAddress = Build5OtrAddress[origin];
 
 async function main() {
-  const fireflyDeepling = otr(otrAddress)
+  const otrRequest = otr(otrAddress)
     .dataset(Dataset.NFT)
-    .bulkPurchase({ orders: nftIds.map((nftId) => ({ collection: collectionId, nft: nftId })) })
-    .getFireflyDeepLink();
+    .bulkPurchase({ orders: nftIds.map((nftId) => ({ collection: collectionId, nft: nftId })) });
 
-  console.log(fireflyDeepling);
+  const fireflyDeeplink = otrRequest.getFireflyDeepLink();
+
+  console.log(fireflyDeeplink);
 
   console.log('Sending whatever amount:');
   console.log(

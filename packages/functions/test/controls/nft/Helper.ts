@@ -58,11 +58,7 @@ export class Helper {
     this.collection = await testEnv.wrap(createCollection)({});
     await build5Db().doc(`${COL.COLLECTION}/${this.collection.uid}`).update({ approved: true });
 
-    mockWalletReturnValue(this.spy, this.member, {
-      media: MEDIA,
-      ...dummyNft(this.collection.uid),
-    });
-    this.nft = await testEnv.wrap(createNft)({});
+    this.nft = await this.createNft();
 
     const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${this.collection.uid}`);
     await wait(async () => {
@@ -70,17 +66,26 @@ export class Helper {
       return this.collection.availableNfts === 1;
     });
 
-    mockWalletReturnValue(this.spy, this.member, {
-      collection: this.collection.uid,
-      nft: this.nft.uid,
-    });
-    const nftOrder = await testEnv.wrap(orderNft)({});
-    await submitMilestoneFunc(nftOrder);
+    await this.orderNft(this.nft.uid);
 
     await wait(async () => {
       this.collection = <Collection>await collectionDocRef.get();
       return this.collection.availableNfts === 0;
     });
+  };
+
+  public createNft = async () => {
+    mockWalletReturnValue(this.spy, this.member, {
+      media: MEDIA,
+      ...dummyNft(this.collection.uid),
+    });
+    return (await testEnv.wrap(createNft)({})) as Nft;
+  };
+
+  public orderNft = async (nft: string) => {
+    mockWalletReturnValue(this.spy, this.member, { collection: this.collection.uid, nft });
+    const nftOrder = await testEnv.wrap(orderNft)({});
+    await submitMilestoneFunc(nftOrder);
   };
 
   public bidNft = async (memberId: string, amount: number) => {

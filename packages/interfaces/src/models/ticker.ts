@@ -4,8 +4,8 @@ import { BaseRecord } from './base';
  * Available tickers.
  */
 export enum TICKERS {
-  SMRUSD = 'SMRUSD',
-  IOTAUSD = 'IOTAUSD',
+  SMRUSD = 'smrusd',
+  IOTAUSD = 'iotausd',
 }
 
 /**

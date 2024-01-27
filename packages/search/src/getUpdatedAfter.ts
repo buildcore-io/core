@@ -38,7 +38,7 @@ export const getUpdatedAfter = async (project: string, url: string) => {
     ? `${body.dataset}/${body.setId}/${body.subset}`
     : body.dataset;
 
-  const updatedAfter = body.updatedAfter ? dayjs(body.updatedAfter) : dayjs().subtract(1, 'h');
+  const updatedAfter = body.updatedAfter ? dayjs.unix(body.updatedAfter) : dayjs().subtract(1, 'h');
 
   let query = build5Db()
     .collection(baseCollectionPath as COL)

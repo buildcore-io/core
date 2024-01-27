@@ -18,9 +18,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
+      - name: Build whole project
+        run: cd .. && npm run build && cd docs
       - name: Allow modern Yarn
         run: corepack enable
       - name: Install dependencies
-        run: yarn
+        run: npm install
       - name: Build
-        run: yarn build
+        run: npm run build:prod

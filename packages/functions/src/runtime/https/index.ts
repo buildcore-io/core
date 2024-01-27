@@ -41,6 +41,7 @@ import { nftPurchaseBulkSchema } from '../../controls/nft/NftPurchaseBulkRequest
 import { nftPurchaseSchema } from '../../controls/nft/NftPurchaseRequestSchema';
 import { setNftForSaleSchema } from '../../controls/nft/NftSetForSaleRequestSchema';
 import { stakeNftSchema } from '../../controls/nft/NftStakeRequestSchema';
+import { nftTransferSchema } from '../../controls/nft/NftTransferRequestSchema';
 import { updateUnsoldNftSchema } from '../../controls/nft/NftUpdateUnsoldRequestSchema';
 import { nftWithdrawSchema } from '../../controls/nft/NftWithdrawRequestSchema';
 import { nftBidControl } from '../../controls/nft/nft.bid.control';
@@ -50,6 +51,7 @@ import { orderNftBulkControl } from '../../controls/nft/nft.puchase.bulk.control
 import { orderNftControl } from '../../controls/nft/nft.puchase.control';
 import { setForSaleNftControl } from '../../controls/nft/nft.set.for.sale';
 import { nftStakeControl } from '../../controls/nft/nft.stake';
+import { transferNftsControl } from '../../controls/nft/nft.transfer';
 import { updateUnsoldNftControl } from '../../controls/nft/nft.update.unsold';
 import { withdrawNftControl } from '../../controls/nft/nft.withdraw';
 import { projectCreateSchema } from '../../controls/project/ProjectCreateRequestSchema';
@@ -326,6 +328,12 @@ exports[WEN_FUNC.withdrawNft] = onRequest({
   name: WEN_FUNC.withdrawNft,
   schema: nftWithdrawSchema,
   handler: withdrawNftControl,
+});
+
+exports[WEN_FUNC.nftTransfer] = onRequest({
+  name: WEN_FUNC.nftTransfer,
+  schema: nftTransferSchema,
+  handler: transferNftsControl,
 });
 
 exports[WEN_FUNC.depositNft] = onRequest({
