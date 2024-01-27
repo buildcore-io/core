@@ -102,8 +102,8 @@ To build the project locally, follow these simple steps. If you are interested i
 Make sure you have the following installed:
 
 * npm
-* node
-* yarn (optional, for running the docs locally)
+* node >= 20
+* modern yarn (optional, for running the docs locally)
 
 
 
