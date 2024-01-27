@@ -1,7 +1,7 @@
 import { Dataset, Network, Transaction } from '@build-5/interfaces';
 import { Build5, SoonaverseApiKey, https } from '@build-5/sdk';
-import { address } from './utils/secret';
-import { walletSign } from './utils/utils';
+import { address } from '../../utils/secret';
+import { walletSign } from '../../utils/utils';
 
 async function main() {
   const origin = Build5.TEST;
