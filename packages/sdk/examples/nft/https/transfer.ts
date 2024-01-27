@@ -16,7 +16,7 @@ async function main() {
 
   try {
     const signature = await walletSign(member.uid, address);
-    const respose = await https(origin)
+    const response = await https(origin)
       .project(SoonaverseApiKey[origin])
       .dataset(Dataset.NFT)
       .transfer({
@@ -34,7 +34,7 @@ async function main() {
         },
       });
 
-    console.log(respose);
+    console.log(response);
   } catch (e) {
     console.log(e);
     return;
