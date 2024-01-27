@@ -1,6 +1,6 @@
 ---
 title: Update Space
-keywords:
+tags:
   - how-to
   - update
   - space
