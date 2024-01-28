@@ -184,30 +184,34 @@ const onNftMinted = async (transaction: Transaction) => {
     .doc(`${COL.SPACE}/${collection?.space}`)
     .get<Space>();
 
-  const creditTransaction: Transaction = {
-    project: getProject(order),
-    type: TransactionType.CREDIT,
-    uid: getRandomEthAddress(),
-    space: transaction.space,
-    member: transaction.member,
-    network: order.network,
-    payload: {
-      type: TransactionPayloadType.MINT_METADATA_NFT,
-      amount: order.payload.amount! - storageDepositTotal,
-      sourceAddress: order.payload.targetAddress,
-      targetAddress: getAddress(member, order.network || DEFAULT_NETWORK),
-      reconciled: true,
-      void: false,
-      customMetadata: {
-        nftId,
-        collectionId: collection?.mintingData?.nftId || '',
-        aliasId: space?.alias?.aliasId || '',
+  const remainder = order.payload.amount! - storageDepositTotal;
+
+  if (remainder) {
+    const creditTransaction: Transaction = {
+      project: getProject(order),
+      type: TransactionType.CREDIT,
+      uid: getRandomEthAddress(),
+      space: transaction.space,
+      member: transaction.member,
+      network: order.network,
+      payload: {
+        type: TransactionPayloadType.MINT_METADATA_NFT,
+        amount: remainder,
+        sourceAddress: order.payload.targetAddress,
+        targetAddress: getAddress(member, order.network || DEFAULT_NETWORK),
+        reconciled: true,
+        void: false,
+        customMetadata: {
+          nftId,
+          collectionId: collection?.mintingData?.nftId || '',
+          aliasId: space?.alias?.aliasId || '',
+        },
+        tag: order.payload.tag || '',
       },
-      tag: order.payload.tag || '',
-    },
-  };
-  const creditDocRef = build5Db().doc(`${COL.TRANSACTION}/${creditTransaction.uid}`);
-  batch.create(creditDocRef, creditTransaction);
+    };
+    const creditDocRef = build5Db().doc(`${COL.TRANSACTION}/${creditTransaction.uid}`);
+    batch.create(creditDocRef, creditTransaction);
+  }
 
   await batch.commit();
 };
@@ -235,30 +239,32 @@ const onNftUpdated = async (transaction: Transaction) => {
     .doc(`${COL.SPACE}/${collection?.space}`)
     .get<Space>();
 
-  const creditTransaction: Transaction = {
-    project: getProject(order),
-    type: TransactionType.CREDIT,
-    uid: getRandomEthAddress(),
-    space: transaction.space,
-    member: transaction.member,
-    network: order.network,
-    payload: {
-      type: TransactionPayloadType.MINT_METADATA_NFT,
-      amount: Number(balance),
-      sourceAddress: order.payload.targetAddress,
-      targetAddress: getAddress(member, order.network || DEFAULT_NETWORK),
-      reconciled: true,
-      void: false,
-      customMetadata: {
-        nftId: nft?.mintingData?.nftId || '',
-        collectionId: collection?.mintingData?.nftId || '',
-        aliasId: space?.alias?.aliasId || '',
+  if (Number(balance)) {
+    const creditTransaction: Transaction = {
+      project: getProject(order),
+      type: TransactionType.CREDIT,
+      uid: getRandomEthAddress(),
+      space: transaction.space,
+      member: transaction.member,
+      network: order.network,
+      payload: {
+        type: TransactionPayloadType.MINT_METADATA_NFT,
+        amount: Number(balance),
+        sourceAddress: order.payload.targetAddress,
+        targetAddress: getAddress(member, order.network || DEFAULT_NETWORK),
+        reconciled: true,
+        void: false,
+        customMetadata: {
+          nftId: nft?.mintingData?.nftId || '',
+          collectionId: collection?.mintingData?.nftId || '',
+          aliasId: space?.alias?.aliasId || '',
+        },
+        tag: order.payload.tag || '',
       },
-      tag: order.payload.tag || '',
-    },
-  };
-  const creditDocRef = build5Db().doc(`${COL.TRANSACTION}/${creditTransaction.uid}`);
-  batch.create(creditDocRef, creditTransaction);
+    };
+    const creditDocRef = build5Db().doc(`${COL.TRANSACTION}/${creditTransaction.uid}`);
+    batch.create(creditDocRef, creditTransaction);
+  }
 
   await batch.commit();
 };

@@ -92,6 +92,7 @@ export enum WEN_FUNC {
   bidAuction = 'bidauction',
 
   nftTransfer = 'nftTransfer',
+  mintMetadataNft = 'mintmetadatanft',
 }
 
 export interface cMemberNotExists {
