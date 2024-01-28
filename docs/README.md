@@ -1,11 +1,14 @@
 # Website
 
-This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator.
+This website is built using [Docusaurus 3](https://docusaurus.io/), a modern static website generator.
 
 ### Installation
 
 > [!NOTE]
 > The docs use modern [Yarn](https://yarnpkg.com). So don't forget to run `corepack enable` first if you don't have it already.
+
+> [!NOTE]
+> To use the docs you have to [build](../README.md) the packages first. 
 
 ```
 $ yarn

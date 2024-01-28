@@ -2,21 +2,29 @@ import { processObject, processObjectArray } from './utils';
 
 let isAppOnline = true;
 
+/**
+ * Helper function to check online status
+ */
 export const isOnlineCheckInterval = setInterval(async () => {
   if (isAppOnline) {
     return;
   }
   try {
-    const response = await fetch('https://soonaverse.com', { method: 'HEAD' });
+    const response = await fetch('https://build5.com', { method: 'HEAD' });
     isAppOnline = response.ok;
   } catch {
     isAppOnline = false;
   }
 }, 1000);
 
+/**
+ * Promise based function to provide online status.
+ *
+ * @returns
+ */
 export const isOnline = () => {
   if (isAppOnline) {
-    return;
+    return Promise.resolve();
   }
   return new Promise<void>((resolve) => {
     const checkInterval = setInterval(() => {
@@ -28,6 +36,14 @@ export const isOnline = () => {
   });
 };
 
+/**
+ * Wrapped fetch function to inject bearer and process responses
+ *
+ * @param token
+ * @param url
+ * @param params
+ * @returns
+ */
 export const wrappedFetch = async <T>(
   token: string,
   url: string,
@@ -49,6 +65,12 @@ export const wrappedFetch = async <T>(
   }
 };
 
+/**
+ * Convert object into query params
+ *
+ * @param params
+ * @returns
+ */
 export const toQueryParams = (params: Record<string, unknown>) => {
   let query = '';
   for (const entry of Object.entries(params)) {

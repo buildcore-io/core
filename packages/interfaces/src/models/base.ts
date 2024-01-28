@@ -32,19 +32,43 @@ export class Timestamp {
   };
 }
 
+/**
+ * Build 5 Request
+ */
 export interface Build5Request<T> {
+  /**
+   * Network Address.
+   */
   address: NetworkAddress;
+  /**
+   * Signature
+   */
   signature?: string;
+  /**
+   * Project API Key
+   */
   projectApiKey?: string;
+  /**
+   * Custom token
+   */
   customToken?: string;
+  /**
+   * Public key
+   */
   publicKey?: {
     hex: string;
     network: Network;
   };
+  /**
+   * Legacy public key, pre stardust signatures.
+   */
   legacyPublicKey?: {
     hex: string;
     network: Network;
   };
+  /**
+   * Payload for the request.
+   */
   body: T;
 }
 
@@ -183,27 +207,73 @@ export interface ValidatedAddress {
  * NFT Minted Metadata.
  */
 export interface NftMintingData {
+  /**
+   * Address of the asset.
+   */
   readonly address?: string;
+  /**
+   * Network its minted on.
+   */
   readonly network?: Network;
-
+  /**
+   * Date minted on.
+   */
   readonly mintedOn?: Timestamp;
+  /**
+   * User it's minted by.
+   */
   readonly mintedBy?: string;
-
+  /**
+   * Block id on the chain
+   */
   readonly blockId?: string;
+  /**
+   * NFT ID on the chain.
+   */
   readonly nftId?: string;
+  /**
+   * Storage deposit requirement.
+   */
   readonly storageDeposit?: number;
-
+  /**
+   * Alias Block Id on chain.
+   */
   readonly aliasBlockId?: string;
+  /**
+   * Alias Id on chain.
+   */
   readonly aliasId?: string;
+  /**
+   * Alias storage deposit requirement.
+   */
   readonly aliasStorageDeposit?: number;
-
+  /**
+   * Minting order id to initiate this mint.
+   */
   readonly mintingOrderId?: string;
-
+  /**
+   * Total number of NFTs to be minted.
+   */
   readonly nftsToMint?: number;
+  /**
+   * Total number of NFTs to be uploaded to file storage.
+   */
   readonly nftMediaToUpload?: number;
+  /**
+   * Total number of NFTs to be prepared for the file upload.
+   */
   readonly nftMediaToPrepare?: number;
+  /**
+   * Unsold options. What happens to unsold NFTs after mint.
+   */
   readonly unsoldMintingOptions?: UnsoldMintingOptions;
+  /**
+   * New price for NFT after it's minted.
+   */
   readonly newPrice?: number;
+  /**
+   * NFT Storage deposit requirement.
+   */
   readonly nftsStorageDeposit?: number;
 }
 

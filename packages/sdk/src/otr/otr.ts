@@ -9,9 +9,19 @@ import { StamptOtrDataset } from './datasets/StampOtrDataset';
 import { TokenOtrDataset } from './datasets/TokenOtrDataset';
 import { DatasetType } from './datasets/common';
 
+/**
+ * OTR Dataset selection.
+ *
+ */
 export class OtrWrapper {
   constructor(private readonly otrAddress: string) {}
 
+  /**
+   * Access Dataset.
+   *
+   * @param dataset {@link DatasetType}
+   * @returns
+   */
   dataset<D extends Dataset>(dataset: D): DatasetType<D> {
     switch (dataset) {
       case Dataset.AUCTION:
