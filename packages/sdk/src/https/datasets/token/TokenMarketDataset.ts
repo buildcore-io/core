@@ -1,5 +1,6 @@
 import {
   ApiRoutes,
+  Build5Request,
   Dataset,
   GetManyAdvancedRequest,
   GetTokenPriceResponse,
@@ -18,8 +19,21 @@ import GetTokenPriceGroupedLive from '../../get/GetTokenPriceGroupedLive';
 import { DatasetClass } from '../Dataset';
 
 export class TokenMarketDataset<D extends Dataset> extends DatasetClass<D, TokenTradeOrder> {
-  tradeToken = this.sendRequest(WEN_FUNC.tradeToken)<TradeTokenRequest, Transaction>;
+  /**
+   * Trade token.
+   *
+   * @param req Use {@link Build5Request} with data based on {@link TradeTokenRequest}
+   * @returns
+   */
+  tradeToken = (req: Build5Request<TradeTokenRequest>) =>
+    this.sendRequest(WEN_FUNC.tradeToken)<TradeTokenRequest, Transaction>(req);
 
+  /**
+   * TODO
+   *
+   * @param token
+   * @returns
+   */
   getTokenPrice = (token: string) =>
     GetTokenPriceGrouped.get({
       origin: this.origin,
@@ -28,6 +42,12 @@ export class TokenMarketDataset<D extends Dataset> extends DatasetClass<D, Token
       apiKey: this.apiKey,
     });
 
+  /**
+   * TODO
+   *
+   * @param token
+   * @returns
+   */
   getTokenPriceLive = (token: string) =>
     from(
       GetTokenPriceGroupedLive.get<GetTokenPriceResponse>({
@@ -41,12 +61,27 @@ export class TokenMarketDataset<D extends Dataset> extends DatasetClass<D, Token
       map((r) => r || { id: token, price: 0, usdPrice: 0 }),
     );
 
+  /**
+   * TODO
+   *
+   * @param token
+   * @returns
+   */
   getTokenPriceInUsd = async (token: string) => {
     const url = this.origin + ApiRoutes.GET_TOKEN_PRICE;
     const response = await wrappedFetch(this.origin, url, { token });
     return (response as Record<string, unknown>).usdPrice;
   };
 
+  /**
+   * TODO
+   *
+   * @param token
+   * @param type
+   * @param status
+   * @param startAfter
+   * @returns
+   */
   getBidsLive = (
     token: string,
     type: TokenTradeOrderType,
@@ -65,6 +100,14 @@ export class TokenMarketDataset<D extends Dataset> extends DatasetClass<D, Token
     return this.getManyAdvancedLive(params);
   };
 
+  /**
+   * TODO
+   * @param token
+   * @param member
+   * @param type
+   * @param startAfter
+   * @returns
+   */
   getMemberBidsLive = (
     token: string,
     member: string,

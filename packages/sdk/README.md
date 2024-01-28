@@ -1,9 +1,9 @@
 <p align="center">Super easy to use framework to interact with Web3</p>
 <p align="center">
     <a href="https://www.npmjs.com/package/@build-5/sdk"><img src="https://img.shields.io/npm/v/@build-5/sdk.svg?style=flat-square&colorB=51C838"
-                                                       alt="NPM Version"></a>
+                                                       alt="NPM Version" /></a>
     <img
-            src="https://img.shields.io/badge/license-APACHE2-brightgreen.svg?style=flat-square" alt="License">
+            src="https://img.shields.io/badge/license-APACHE2-brightgreen.svg?style=flat-square" alt="License" />
 </p>
 
 > @build-5/sdk is a complete framework to interact with Build5 platform and various DLTs like IOTA and Shimmer.

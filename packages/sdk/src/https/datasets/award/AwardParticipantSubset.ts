@@ -1,7 +1,19 @@
 import { AwardParticipant, GetManyAdvancedRequest, Opr } from '@build-5/interfaces';
 import { SubsetClass } from '../Subset';
 
+/**
+ * Subset of Award's participatents
+ */
 export class AwardParticpateSubset extends SubsetClass<AwardParticipant> {
+  /**
+   * Get list of Award's participants. Live stream.
+   *
+   * @param award
+   * @param completed
+   * @param searchIds
+   * @param startAfter
+   * @returns
+   */
   getParticipantsLive = (
     award: string,
     completed: boolean,
@@ -22,6 +34,14 @@ export class AwardParticpateSubset extends SubsetClass<AwardParticipant> {
     return this.getManyAdvancedLive(params);
   };
 
+  /**
+   * Get Awards participants ordered by the most recent one.
+   *
+   * @param member
+   * @param completed
+   * @param startAfter
+   * @returns
+   */
   getTopByMemberLive = (member: string, completed = true, startAfter?: string) => {
     const params: GetManyAdvancedRequest = {
       dataset: this.dataset,

@@ -29,12 +29,11 @@ class HttpsWrapper {
 
   project = (apiKey: string) => new ProjectWrapper(this.origin, apiKey);
 
-  createMember = this.sendRequest(WEN_FUNC.createMember)<CreateMemberRequest, Member>;
+  createMember = (req: Build5Request<CreateMemberRequest>) =>
+    this.sendRequest(WEN_FUNC.createMember)<CreateMemberRequest, Member>(req);
 
-  createProject = this.sendRequest(WEN_FUNC.createProject)<
-    ProjectCreateRequest,
-    ProjectCreateResponse
-  >;
+  createProject = (req: Build5Request<ProjectCreateRequest>) =>
+    this.sendRequest(WEN_FUNC.createProject)<ProjectCreateRequest, ProjectCreateResponse>(req);
 }
 
 export enum Build5 {

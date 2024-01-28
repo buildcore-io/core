@@ -30,6 +30,10 @@ export abstract class DatasetClass {
   constructor(protected readonly otrAddress: string) {}
 }
 
+/**
+ * OTR Request base class.
+ *
+ */
 export class OtrRequest<T> {
   constructor(
     public readonly otrAddress: string,
@@ -38,6 +42,11 @@ export class OtrRequest<T> {
     public readonly nativeToken?: INativeToken,
   ) {}
 
+  /**
+   * Prepare required metadata based on your request to be sent to Tangle.
+   *
+   * @returns
+   */
   getMetadata = () => ({
     targetAddress: this.otrAddress,
     metadata: { request: this.metadata },
@@ -46,6 +55,11 @@ export class OtrRequest<T> {
     amount: this.amount,
   });
 
+  /**
+   * Get Firefly deeplink with required data to submit request via tangle.
+   *
+   * @returns
+   */
   getFireflyDeepLink = () => {
     const { metadata, nativeToken, tag } = this.getMetadata();
     const walletType = getFireflyWalletType(this.otrAddress);
@@ -60,6 +74,11 @@ export class OtrRequest<T> {
     );
   };
 
+  /**
+   * Get Bloom deeplink with required data to submit request via tangle.
+   *
+   * @returns
+   */
   getBloomDeepLink = () => {
     const { metadata, nativeToken, tag, amount } = this.getMetadata();
     const parameters = {
@@ -83,8 +102,19 @@ export class OtrRequest<T> {
     return `bloom://wallet/sendTransaction?${searchParams}`;
   };
 
+  /**
+   * Generate unique tag to be able to track OTR progress via {@link ProjectWrapper.trackByTag}
+   *
+   * @returns
+   */
   generateTag = () => uuid().replace(/-/g, '');
 
+  /**
+   * Get tag that was generated for the OTR request.
+   *
+   * @param deeplink
+   * @returns
+   */
   getTag = (deeplink: string) => {
     const search = 'tag=';
     const startIndex = deeplink.indexOf(search);
@@ -96,6 +126,12 @@ export class OtrRequest<T> {
   };
 }
 
+/**
+ * Detect wallet type based on the address.
+ *
+ * @param otrAddress
+ * @returns
+ */
 const getFireflyWalletType = (otrAddress: string) => {
   if (otrAddress.startsWith(Network.SMR) || otrAddress.startsWith(Network.RMS)) {
     return 'firefly';
@@ -106,6 +142,12 @@ const getFireflyWalletType = (otrAddress: string) => {
   throw Error('Invalid otr address, ono firefly wallet type found');
 };
 
+/**
+ * Detect {@link Network} based on the address
+ *
+ * @param address
+ * @returns
+ */
 export const otrAddressToNetwork = (address: string): Network => {
   for (const network of Object.values(Network)) {
     if (address.startsWith(network)) {

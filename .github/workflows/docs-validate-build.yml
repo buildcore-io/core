@@ -10,14 +10,13 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./docs
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
+      - name: Build whole project
+        run: npm run build && cd docs
       - name: Allow modern Yarn
         run: corepack enable
       - name: Install dependencies

@@ -8,7 +8,7 @@ tags:
 
 On tangle requests are a secure and transparent way to interact with build.5 products. They are a way to send a request to a build.5 backend over the Tangle. The backend will then execute the request. All interactions can be verified on the Tangle.
 
-OTR uses metadata to describe the request. The metadata is a JSON object. You can find the API reference for the metadata [here](search-otr), but we recommend using our [SDK](https://developer.build5.com/docs/getting_started#sdk).
+OTR uses metadata to describe the request. The metadata is a JSON object. You can find the API reference for the metadata [here](reference-api), but we recommend using our [SDK](https://developer.build5.com/docs/getting_started#sdk).
 
 ## Why OTR?
 
