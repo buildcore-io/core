@@ -18,6 +18,10 @@ import GetTokenPriceGrouped from '../../get/GetTokenPriceGrouped';
 import GetTokenPriceGroupedLive from '../../get/GetTokenPriceGroupedLive';
 import { DatasetClass } from '../Dataset';
 
+/**
+ * Token Market Dataset
+ *
+ */
 export class TokenMarketDataset<D extends Dataset> extends DatasetClass<D, TokenTradeOrder> {
   /**
    * Trade token.
