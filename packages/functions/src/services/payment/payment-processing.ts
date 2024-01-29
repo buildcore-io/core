@@ -187,6 +187,7 @@ export class ProcessingService {
       case TransactionPayloadType.IMPORT_TOKEN:
         return new ImportMintedTokenService(tranService);
       case TransactionPayloadType.MINT_METADATA_NFT:
+      case TransactionPayloadType.UPDATE_MINTED_NFT:
         return new MetadataNftService(tranService);
       case TransactionPayloadType.STAMP:
         return new StampService(tranService);

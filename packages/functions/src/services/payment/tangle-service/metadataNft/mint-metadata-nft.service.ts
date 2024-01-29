@@ -1,6 +1,7 @@
 import { build5Db } from '@build-5/database';
 import {
   COL,
+  MintMetadataNftRequest,
   MintMetadataNftTangleRequest,
   NftStatus,
   SUB_COL,
@@ -49,18 +50,21 @@ export class MintMetadataNftService extends BaseTangleService<TangleResponse> {
     tranEntry,
     order: tangleOrder,
     payment,
-  }: HandlerParams) => {
+  }: HandlerParams): Promise<TangleResponse> => {
     const params = await assertValidationAsync(metadataNftSchema, request);
 
     const wallet = await WalletService.newWallet(tangleOrder.network);
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
-    const { nftId, collectionId, aliasId } = await getIds(params, wallet);
-
-    const space = await getSpace(project, owner, aliasId);
-    const aliasOutputAmount = await getAliasOutputAmount(owner, space, wallet);
-    const collectionOutputAmount = await getCollectionOutputAmount(aliasId, collectionId, wallet);
-    const nftOutputAmount = await getNftOutputAmount(collectionId, nftId, params.metadata, wallet);
+    const {
+      aliasId,
+      aliasOutputAmount,
+      collectionId,
+      collectionOutputAmount,
+      nftId,
+      nftOutputAmount,
+      space,
+    } = await createMetadataNftMintData(project, owner, wallet, params);
 
     const amount = aliasOutputAmount + collectionOutputAmount + nftOutputAmount;
 
@@ -131,6 +135,35 @@ export class MintMetadataNftService extends BaseTangleService<TangleResponse> {
     return {};
   };
 }
+
+export const createMetadataNftMintData = async (
+  project: string,
+  owner: string,
+  wallet: Wallet,
+  params: MintMetadataNftRequest | MintMetadataNftTangleRequest,
+) => {
+  const { nftId, collectionId, aliasId } = await getIds(
+    wallet,
+    params.nftId,
+    params.collectionId,
+    params.aliasId,
+  );
+
+  const space = await getSpace(project, owner, aliasId);
+  const aliasOutputAmount = await getAliasOutputAmount(owner, space, wallet);
+  const collectionOutputAmount = await getCollectionOutputAmount(aliasId, collectionId, wallet);
+  const nftOutputAmount = await getNftOutputAmount(collectionId, nftId, params.metadata, wallet);
+
+  return {
+    nftId,
+    collectionId,
+    aliasId,
+    space,
+    aliasOutputAmount,
+    collectionOutputAmount,
+    nftOutputAmount,
+  };
+};
 
 const getAliasOutputAmount = async (owner: string, space: Space, wallet: Wallet) => {
   const targetAddress = await wallet.getNewIotaAddressDetails();
@@ -216,23 +249,25 @@ const getNftOutputAmount = async (
   throw invalidArgument(WenError.nft_not_deposited);
 };
 
-const getIds = async (request: MintMetadataNftTangleRequest, wallet: Wallet) => {
-  const nftId = request.nftId as string;
-  if (nftId) {
+const getIds = async (
+  wallet: Wallet,
+  nftId = EMPTY_NFT_ID,
+  collectionId = EMPTY_NFT_ID,
+  aliasId = EMPTY_ALIAS_ID,
+) => {
+  if (nftId !== EMPTY_NFT_ID) {
     const collectionId = await getCollectionId(wallet, nftId);
     const collectionOutput = await getCollectionOutput(wallet, collectionId);
     const aliasId = getAliasId(collectionOutput);
     return { nftId, collectionId: collectionOutput.nftId, aliasId };
   }
 
-  const collectionId = request.collectionId as string;
-  if (collectionId) {
+  if (collectionId !== EMPTY_NFT_ID) {
     const collectionOutput = await getCollectionOutput(wallet, collectionId);
     const aliasId = getAliasId(collectionOutput);
     return { nftId: EMPTY_NFT_ID, collectionId, aliasId };
   }
 
-  const aliasId = (request.aliasId as string) || EMPTY_ALIAS_ID;
   return { nftId: EMPTY_NFT_ID, collectionId: EMPTY_NFT_ID, aliasId };
 };
 

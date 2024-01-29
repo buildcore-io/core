@@ -2,6 +2,7 @@ import {
   Build5Request,
   Dataset,
   GetManyAdvancedRequest,
+  MintMetadataNftRequest,
   Nft,
   NftBidRequest,
   NftCreateRequest,
@@ -101,6 +102,13 @@ export class NftDataset<D extends Dataset> extends DatasetClass<D, Nft> {
    * @returns
    */
   transfer = this.sendRequest(WEN_FUNC.nftTransfer)<NftTransferRequest, { [key: string]: number }>;
+  /**
+   * Mint metadata NFT
+   *
+   * @param req Use {@link Build5Request} with data based on {@link MintMetadataNftRequest}
+   * @returns
+   */
+  mintMetadata = this.sendRequest(WEN_FUNC.mintMetadataNft)<MintMetadataNftRequest, Transaction>;
 
   /**
    * Get all NFTs by collection. Real time stream.
