@@ -14,7 +14,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: cache
         with:
           path: |
@@ -35,7 +35,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -57,7 +57,7 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award-tangle/award-tangle_1.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-chunk_0
@@ -72,7 +72,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -94,7 +94,7 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award-tangle/award-tangle_4.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-chunk_1
@@ -109,7 +109,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -131,7 +131,7 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award-tangle/award-tangle_7.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-chunk_2
@@ -146,7 +146,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -168,7 +168,7 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award/award_10.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-chunk_3
@@ -183,7 +183,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -205,7 +205,7 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award/award_4.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-chunk_4
@@ -220,7 +220,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -242,7 +242,7 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award/award_7.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-chunk_5
@@ -257,7 +257,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -279,7 +279,7 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_1.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-chunk_6
@@ -294,7 +294,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -316,7 +316,7 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_11_b.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-chunk_7
@@ -331,7 +331,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -353,7 +353,7 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_12.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-chunk_8
@@ -368,7 +368,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -390,7 +390,7 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_15.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-chunk_9
@@ -405,7 +405,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -427,7 +427,7 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_2.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-chunk_10
@@ -442,7 +442,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -464,7 +464,7 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_5.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-chunk_11
@@ -479,7 +479,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -501,7 +501,7 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_8.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-chunk_12
@@ -516,7 +516,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -538,7 +538,7 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_10.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-chunk_13
@@ -553,7 +553,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -575,7 +575,7 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_13.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-chunk_14
@@ -590,7 +590,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -612,7 +612,7 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_4_b.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-chunk_15
@@ -627,7 +627,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -649,7 +649,7 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_6.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-chunk_16
@@ -664,7 +664,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -686,7 +686,7 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_9.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-chunk_17
@@ -701,7 +701,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -720,10 +720,10 @@ jobs:
           firebase emulators:exec "
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_1_b.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_1.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_2.spec.ts 
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_10.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-chunk_18
@@ -738,7 +738,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -755,12 +755,12 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_2.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_3_b.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_3.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_4.spec.ts 
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_3.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-chunk_19
@@ -775,7 +775,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -792,12 +792,12 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_4.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_5_b.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_5.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_6.spec.ts 
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_5.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-chunk_20
@@ -812,7 +812,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -829,12 +829,12 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
           npm run milestone-sync &
           firebase emulators:exec "
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_6.spec.ts &&
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_7.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_1_b.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_1.spec.ts 
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_8.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
            name: firestore-data-test-tangle-chunk_21
@@ -849,7 +849,44 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
+        with:
+          path: |
+           node_modules
+           packages/functions/node_modules
+           packages/interfaces/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
+      - name: Init
+        run: |
+          npm run build:functions
+          npm install -g firebase-tools
+      - name: Test
+        working-directory: packages/functions
+        run: |
+          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
+          npm run milestone-sync &
+          firebase emulators:exec "
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_9.spec.ts &&
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_1_b.spec.ts &&
+                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_1.spec.ts 
+             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
+      - name: Archive firestore data
+        uses: actions/upload-artifact@v4
+        if: ${{ failure() }}
+        with:
+           name: firestore-data-test-tangle-chunk_22
+           path: ./packages/functions/firestore-data/
+           retention-days: 1
+  chunk_23:
+    needs: npm-install
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -871,13 +908,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_3.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_22
+           name: firestore-data-test-tangle-chunk_23
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_23:
+  chunk_24:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -886,7 +923,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -908,13 +945,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_6.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_23
+           name: firestore-data-test-tangle-chunk_24
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_24:
+  chunk_25:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -923,7 +960,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -945,13 +982,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_1_a.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_24
+           name: firestore-data-test-tangle-chunk_25
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_25:
+  chunk_26:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -960,7 +997,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -982,13 +1019,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_2.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_25
+           name: firestore-data-test-tangle-chunk_26
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_26:
+  chunk_27:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -997,7 +1034,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1019,13 +1056,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-claim/token.claim.minted_1.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_26
+           name: firestore-data-test-tangle-chunk_27
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_27:
+  chunk_28:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1034,7 +1071,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1056,13 +1093,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-claim/token.claim.minted_4.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_27
+           name: firestore-data-test-tangle-chunk_28
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_28:
+  chunk_29:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1071,7 +1108,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1093,13 +1130,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-claim/token.claim.minted_7.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_28
+           name: firestore-data-test-tangle-chunk_29
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_29:
+  chunk_30:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1108,7 +1145,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1130,13 +1167,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_11.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_29
+           name: firestore-data-test-tangle-chunk_30
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_30:
+  chunk_31:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1145,7 +1182,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1167,13 +1204,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_13.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_30
+           name: firestore-data-test-tangle-chunk_31
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_31:
+  chunk_32:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1182,7 +1219,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1204,13 +1241,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_16.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_31
+           name: firestore-data-test-tangle-chunk_32
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_32:
+  chunk_33:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1219,7 +1256,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1241,13 +1278,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_19.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_32
+           name: firestore-data-test-tangle-chunk_33
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_33:
+  chunk_34:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1256,7 +1293,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1278,13 +1315,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_20.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_33
+           name: firestore-data-test-tangle-chunk_34
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_34:
+  chunk_35:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1293,7 +1330,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1315,13 +1352,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_23.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_34
+           name: firestore-data-test-tangle-chunk_35
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_35:
+  chunk_36:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1330,7 +1367,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1352,13 +1389,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_4.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_35
+           name: firestore-data-test-tangle-chunk_36
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_36:
+  chunk_37:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1367,7 +1404,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1389,13 +1426,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_7.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_36
+           name: firestore-data-test-tangle-chunk_37
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_37:
+  chunk_38:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1404,7 +1441,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1426,13 +1463,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-bid/nft-bid.otr_1.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_37
+           name: firestore-data-test-tangle-chunk_38
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_38:
+  chunk_39:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1441,7 +1478,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1463,13 +1500,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-bid/nft-bid.otr_4.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_38
+           name: firestore-data-test-tangle-chunk_39
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_39:
+  chunk_40:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1478,7 +1515,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1500,13 +1537,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-bulk/order.bulk_3.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_39
+           name: firestore-data-test-tangle-chunk_40
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_40:
+  chunk_41:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1515,7 +1552,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1537,13 +1574,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-bulk/order.bulk_6.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_40
+           name: firestore-data-test-tangle-chunk_41
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_41:
+  chunk_42:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1552,7 +1589,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1574,13 +1611,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-set-for-sale/nft-set-for-sale_3.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_41
+           name: firestore-data-test-tangle-chunk_42
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_42:
+  chunk_43:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1589,7 +1626,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1611,13 +1648,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-staking/nft-staking_2.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_42
+           name: firestore-data-test-tangle-chunk_43
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_43:
+  chunk_44:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1626,7 +1663,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1648,13 +1685,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-staking/nft-staking_5.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_43
+           name: firestore-data-test-tangle-chunk_44
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_44:
+  chunk_45:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1663,7 +1700,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1685,13 +1722,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-staking/nft-staking_8.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_44
+           name: firestore-data-test-tangle-chunk_45
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_45:
+  chunk_46:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1700,7 +1737,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1722,13 +1759,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-transfer/nft-transfer_2.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_45
+           name: firestore-data-test-tangle-chunk_46
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_46:
+  chunk_47:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1737,7 +1774,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1759,13 +1796,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-transfer/nft-transfer_5.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_46
+           name: firestore-data-test-tangle-chunk_47
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_47:
+  chunk_48:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1774,7 +1811,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1796,13 +1833,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-transfer/nft-transfer_8.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_47
+           name: firestore-data-test-tangle-chunk_48
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_48:
+  chunk_49:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1811,7 +1848,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1833,13 +1870,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/proposal-tangle/proposal.simple.vote.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_48
+           name: firestore-data-test-tangle-chunk_49
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_49:
+  chunk_50:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1848,7 +1885,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1870,13 +1907,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/space-tangle/space.accept.member.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_49
+           name: firestore-data-test-tangle-chunk_50
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_50:
+  chunk_51:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1885,7 +1922,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1907,13 +1944,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/space-tangle/space.decline.member.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_50
+           name: firestore-data-test-tangle-chunk_51
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_51:
+  chunk_52:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1922,7 +1959,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1944,13 +1981,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/space-tangle/space.leave.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_51
+           name: firestore-data-test-tangle-chunk_52
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_52:
+  chunk_53:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1959,7 +1996,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -1981,13 +2018,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/staking/staking_3.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_52
+           name: firestore-data-test-tangle-chunk_53
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_53:
+  chunk_54:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1996,7 +2033,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -2018,13 +2055,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/stamp-tangle/stamp-tangle_1_a.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_53
+           name: firestore-data-test-tangle-chunk_54
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_54:
+  chunk_55:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -2033,7 +2070,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -2055,13 +2092,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/stamp-tangle/stamp-tangle_3.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_54
+           name: firestore-data-test-tangle-chunk_55
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_55:
+  chunk_56:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -2070,7 +2107,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -2092,13 +2129,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/stamp-tangle/stamp-tangle_6.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_55
+           name: firestore-data-test-tangle-chunk_56
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_56:
+  chunk_57:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -2107,7 +2144,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -2129,13 +2166,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token-import/token.import_1.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_56
+           name: firestore-data-test-tangle-chunk_57
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_57:
+  chunk_58:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -2144,7 +2181,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -2166,13 +2203,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.based.voting/token.based.voting_1.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_57
+           name: firestore-data-test-tangle-chunk_58
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_58:
+  chunk_59:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -2181,7 +2218,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -2203,13 +2240,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.based.voting/token.based.voting_4.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_58
+           name: firestore-data-test-tangle-chunk_59
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_59:
+  chunk_60:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -2218,7 +2255,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -2240,13 +2277,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.mint/token.mint_2.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_59
+           name: firestore-data-test-tangle-chunk_60
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_60:
+  chunk_61:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -2255,7 +2292,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -2277,13 +2314,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/trade-base-token-order.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_60
+           name: firestore-data-test-tangle-chunk_61
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_61:
+  chunk_62:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -2292,7 +2329,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -2314,13 +2351,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_10.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_61
+           name: firestore-data-test-tangle-chunk_62
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_62:
+  chunk_63:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -2329,7 +2366,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -2351,13 +2388,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_13.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_62
+           name: firestore-data-test-tangle-chunk_63
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_63:
+  chunk_64:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -2366,7 +2403,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -2388,13 +2425,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_3.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_63
+           name: firestore-data-test-tangle-chunk_64
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_64:
+  chunk_65:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -2403,7 +2440,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -2425,13 +2462,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_6.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_64
+           name: firestore-data-test-tangle-chunk_65
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_65:
+  chunk_66:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -2440,7 +2477,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -2462,13 +2499,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_9.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_65
+           name: firestore-data-test-tangle-chunk_66
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_66:
+  chunk_67:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -2477,7 +2514,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -2499,13 +2536,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/web3/web3_3.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_66
+           name: firestore-data-test-tangle-chunk_67
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_67:
+  chunk_68:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -2514,7 +2551,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -2536,13 +2573,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1_c.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_67
+           name: firestore-data-test-tangle-chunk_68
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_68:
+  chunk_69:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -2551,7 +2588,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -2573,13 +2610,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_10_3.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_68
+           name: firestore-data-test-tangle-chunk_69
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_69:
+  chunk_70:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -2588,7 +2625,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -2610,13 +2647,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_12_b.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_69
+           name: firestore-data-test-tangle-chunk_70
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_70:
+  chunk_71:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -2625,7 +2662,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -2647,13 +2684,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_2.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_70
+           name: firestore-data-test-tangle-chunk_71
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_71:
+  chunk_72:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -2662,7 +2699,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -2684,13 +2721,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_5.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_71
+           name: firestore-data-test-tangle-chunk_72
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_72:
+  chunk_73:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -2699,7 +2736,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -2721,13 +2758,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_8.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_72
+           name: firestore-data-test-tangle-chunk_73
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_73:
+  chunk_74:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -2736,7 +2773,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -2758,13 +2795,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/workflow.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_73
+           name: firestore-data-test-tangle-chunk_74
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_74:
+  chunk_75:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -2773,7 +2810,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -2793,13 +2830,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_3.only.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_74
+           name: firestore-data-test-tangle-chunk_75
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_75:
+  chunk_76:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -2808,7 +2845,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -2828,13 +2865,13 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_11.only.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_75
+           name: firestore-data-test-tangle-chunk_76
            path: ./packages/functions/firestore-data/
            retention-days: 1
-  chunk_76:
+  chunk_77:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -2843,7 +2880,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
            node_modules
@@ -2863,9 +2900,9 @@ jobs:
                 npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_15.only.spec.ts 
              " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
       - name: Archive firestore data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-           name: firestore-data-test-tangle-chunk_76
+           name: firestore-data-test-tangle-chunk_77
            path: ./packages/functions/firestore-data/
            retention-days: 1

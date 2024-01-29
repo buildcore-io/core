@@ -46,3 +46,10 @@ You need to call `getManyById`. `getManyById` takes a list of IDs as `string`.
 
 ```tsx file=../../../../../../packages/sdk/examples/member/get.ts#L31-L34
 ```
+
+## Get Top
+
+You need to call `getTop`. `getTop` takes an optional limit to for example only get the top 3 members.
+
+```tsx file=../../../../../../packages/sdk/examples/member/get.ts#L37-L40
+```
