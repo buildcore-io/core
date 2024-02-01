@@ -1,8 +1,17 @@
 import { BaseRecord, NetworkAddress, Timestamp } from '../base';
 import { TransactionPayload } from './payload';
 
+/**
+ * Timelimit for ORDER transaction to auto-expire.
+ */
 export const TRANSACTION_AUTO_EXPIRY_MS = 4 * 60 * 1000;
+/**
+ * Maximum amount of time any funds can be hold by Soonaverse address.
+ */
 export const TRANSACTION_MAX_EXPIRY_MS = 31 * 24 * 60 * 60 * 1000;
+/**
+ * Default auction length time.
+ */
 export const TRANSACTION_DEFAULT_AUCTION = 3 * 24 * 60 * 60 * 1000;
 
 /**
