@@ -23,7 +23,7 @@ import DeepLink from '../../_admonitions/_deep_link.md'
   <TabItem value="https" label="HTTPS">
     To create a NFT with Metadata, you must call `mintMetadata` on `dataset(Dataset.NFT)`. `mintMetadata` takes an object of type [`MintMetadataNftRequest`](../../reference-api/interfaces/MintMetadataNftRequest.md) as parameter. In there you can specify the metadata of the NFT which for example could be used to create a digital twin.
 
-    ```tsx file=../../../../packages/sdk/examples/nft/https/nft.metadata.ts#L6-L117
+    ```tsx file=../../../../packages/sdk/examples/nft/https/nft.metadata.ts#L19-L33
     ```
   </TabItem>
 </Tabs>
