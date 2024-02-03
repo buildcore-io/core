@@ -8,8 +8,8 @@ tags:
   - nft-collection
 ---
 
-To create a NFT collection, you must call `create` on `dataset(Dataset.NFT_COLLECTION)`. In the body, you can specify the collection's name, the symbol, the base URI, and more.
-`create` takes an object of type `Build5Request<`[`CreateCollectionRequest`](../../reference-api/interfaces/CreateCollectionRequest.md)`>` as parameter.
+To create a NFT collection, you must call [`create`](../../reference-api/classes/CollectionDataset.md#create) on `dataset(Dataset.COLLECTION)`. In the body, you can specify the collection's name, the symbol, the base URI, and more.
+[`create`](../../reference-api/classes/CollectionDataset.md#create) takes an object of type [`Build5Request`](../../reference-api/interfaces/Build5Request)`<`[`CreateCollectionRequest`](../../reference-api/interfaces/CreateCollectionRequest.md)`>` as parameter.
 
 ```tsx file=../../../../packages/sdk/examples/nft/https/create_collection.ts#L18-L42
 ```
@@ -34,8 +34,8 @@ After that, you should create a list of objects that describe the single NFTs, t
 ```tsx file=../../../../packages/sdk/examples/nft/https/create_collection.ts#L47-L63
 ```
 
-As a last step, you can mint the batch of NFTs by calling `createBatch` on `dataset(Dataset.NFT)` and passing the list of NFTs in the body.
-`createBatch` takes an object of type `Build5Request<`[`NftCreateRequest`](../../reference-api/interfaces/NftCreateRequest.md)`[]>` as parameter.
+As a last step, you can mint the batch of NFTs by calling [`createBatch`](../../reference-api/classes/NftDataset.md#createbatch) on `dataset(Dataset.NFT)` and passing the list of NFTs in the body.
+[`createBatch`](../../reference-api/classes/NftDataset.md#createbatch) takes an object of type [`Build5Request`](../../reference-api/interfaces/Build5Request)`<`[`NftCreateRequest`](../../reference-api/interfaces/NftCreateRequest.md)`[]>` as parameter.
 
 ```tsx file=../../../../packages/sdk/examples/nft/https/create_collection.ts#L65-L76
 ```
