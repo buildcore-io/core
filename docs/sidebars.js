@@ -107,7 +107,15 @@ const sidebars = {
           'Stake Reward API': ['products/stake-reward/overview'],
         },
         {
-          'Token API': ['products/token/overview'],
+          'Token API': [
+            'products/token/overview',
+            {
+              'How To': [
+                'products/token/how-to/create-token',
+                'products/token/how-to/trade-token',
+              ],
+            }
+          ],
         },
         {
           'Token Launchpad API': ['products/token-launchpad/overview'],
