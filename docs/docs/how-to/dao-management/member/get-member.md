@@ -23,33 +23,33 @@ Most of the functions have an optional `startAfter` parameter. You can use this 
 
 You need to call `getByField`. `getByField` takes a `string` as `fieldName` and the value you want to look for as `fieldValue`.
 
-```tsx file=../../../../../../packages/sdk/examples/member/get.ts#L9-L12
+```tsx file=../../../../../packages/sdk/examples/member/get.ts#L9-L12
 ```
 
 ## Get By Space
 
 You need to call `getBySpace`. `getBySpace` takes a `string` as `space` id.
 
-```tsx file=../../../../../../packages/sdk/examples/member/get.ts#L16-L19
+```tsx file=../../../../../packages/sdk/examples/member/get.ts#L16-L19
 ```
 
 ## Get All Updated After
 
 You need to call `getAllUpdatedAfter`. `getAllUpdatedAfter` takes a unix timestamp. The results will contain all members updated after this timestamp.
 
-```tsx file=../../../../../../packages/sdk/examples/member/get.ts#L23-L26
+```tsx file=../../../../../packages/sdk/examples/member/get.ts#L23-L26
 ```
 
 ## Get Many By Id
 
 You need to call `getManyById`. `getManyById` takes a list of IDs as `string`.
 
-```tsx file=../../../../../../packages/sdk/examples/member/get.ts#L31-L34
+```tsx file=../../../../../packages/sdk/examples/member/get.ts#L31-L34
 ```
 
 ## Get Top
 
 You need to call `getTop`. `getTop` takes an optional limit to for example only get the top 3 members.
 
-```tsx file=../../../../../../packages/sdk/examples/member/get.ts#L37-L40
+```tsx file=../../../../../packages/sdk/examples/member/get.ts#L37-L40
 ```
