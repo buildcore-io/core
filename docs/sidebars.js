@@ -113,6 +113,7 @@ const sidebars = {
               'How To': [
                 'products/token/how-to/create-token',
                 'products/token/how-to/trade-token',
+                'products/token/how-to/mint-token',
               ],
             }
           ],
