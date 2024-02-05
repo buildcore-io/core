@@ -330,4 +330,28 @@ export const WenError = {
     code: 2148,
     key: 'Nfts must be within same network.',
   },
+  invalid_foundry: {
+    code: 2149,
+    key: 'Invalid foundry.',
+  },
+  invalid_swap_uid: {
+    code: 2150,
+    key: 'Invalid swap uid.',
+  },
+  not_swap_owner: {
+    code: 2151,
+    key: 'You are not the creator of this swap.',
+  },
+  swap_must_be_funded: {
+    code: 2152,
+    key: "You must send assets to the swap's address.",
+  },
+  swap_already_fulfilled: {
+    code: 2153,
+    key: 'Swap is already fulfilled.',
+  },
+  swap_already_rejected: {
+    code: 2154,
+    key: 'Swap is already rejected.',
+  },
 };

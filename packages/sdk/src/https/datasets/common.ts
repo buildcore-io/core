@@ -34,6 +34,7 @@ import { TokenMarketDataset } from './token/TokenMarketDataset';
 import { TokenPurchaseDataset } from './token/TokenPurchaseDataset';
 import { TokenStatsSubset } from './token/TokenStatsSubset';
 import { SubsetClass } from './Subset';
+import { SwapDataset } from './SwapDataset';
 
 // prettier-ignore
 export type DatasetType<T extends Dataset> = 
@@ -60,6 +61,7 @@ export type DatasetType<T extends Dataset> =
   T extends Dataset.TOKEN_PURCHASE ? TokenPurchaseDataset<Dataset.TOKEN_PURCHASE> :
   T extends Dataset.TICKER ? TickerDataset<Dataset.TICKER> :
   T extends Dataset.TRANSACTION ? TransactionDataset<Dataset.TRANSACTION> :
+  T extends Dataset.SWAP ? SwapDataset<Dataset.SWAP> :
   DatasetClass<T, unknown>;
 
 // prettier-ignore

@@ -131,6 +131,8 @@ export enum TransactionPayloadType {
   BASE_AIRDROP_CLAIM = 'BASE_AIRDROP_CLAIM',
 
   STAMP = 'STAMP',
+
+  SWAP = 'SWAP',
 }
 
 /**

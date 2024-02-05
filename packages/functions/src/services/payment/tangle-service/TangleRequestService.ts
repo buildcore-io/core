@@ -25,6 +25,7 @@ import { NftDepositService } from './nft/nft-deposit.service';
 import { TangleNftPurchaseBulkService } from './nft/nft-purchase.bulk.service';
 import { TangleNftPurchaseService } from './nft/nft-purchase.service';
 import { TangleNftSetForSaleService } from './nft/nft-set-for-sale.service';
+import { TangleNftTransferService } from './nft/nft-transfer.service';
 import { ProposalApprovalService } from './proposal/ProposalApporvalService';
 import { ProposalCreateService } from './proposal/ProposalCreateService';
 import { ProposalVoteService } from './proposal/voting/ProposalVoteService';
@@ -36,10 +37,12 @@ import { SpaceGuardianService } from './space/SpaceGuardianService';
 import { SpaceJoinService } from './space/SpaceJoinService';
 import { SpaceLeaveService } from './space/SpaceLeaveService';
 import { StampTangleService } from './stamp/StampTangleService';
+import { SwapCreateTangleService } from './swap/SwapCreateTangleService';
+import { SwapRejectTangleService } from './swap/SwapRejectTangleService';
+import { SwapSetFundedTangleService } from './swap/SwapSetFundedTangleService';
 import { TangleStakeService } from './token/stake.service';
 import { TangleTokenClaimService } from './token/token-claim.service';
 import { TangleTokenTradeService } from './token/token-trade.service';
-import { TangleNftTransferService } from './nft/nft-transfer.service';
 
 export class TangleRequestService extends BaseTangleService<TangleResponse> {
   public handleRequest = async (params: HandlerParams) => {
@@ -146,6 +149,12 @@ export class TangleRequestService extends BaseTangleService<TangleResponse> {
         return new TangleAuctionBidService(this.transactionService);
       case TangleRequestType.NFT_TRANSFER:
         return new TangleNftTransferService(this.transactionService);
+      case TangleRequestType.CREATE_SWAP:
+        return new SwapCreateTangleService(this.transactionService);
+      case TangleRequestType.SET_SWAP_FUNDED:
+        return new SwapSetFundedTangleService(this.transactionService);
+      case TangleRequestType.REJECT_SWAP:
+        return new SwapRejectTangleService(this.transactionService);
       default:
         throw invalidArgument(WenError.invalid_tangle_request_type);
     }

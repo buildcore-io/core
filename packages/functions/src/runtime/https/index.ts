@@ -92,6 +92,12 @@ import { stakeRewardControl } from '../../controls/stake/stake.reward';
 import { removeStakeRewardControl } from '../../controls/stake/stake.reward.revoke';
 import { stampSchema } from '../../controls/stamp/StampRequestSchema';
 import { stampCreateControl } from '../../controls/stamp/stamp.create';
+import { swapCreateSchema } from '../../controls/swaps/SwapCreateRequestSchema';
+import { swapFundedSchema } from '../../controls/swaps/SwapSetFundedSchema';
+import { swapRejectSchema } from '../../controls/swaps/SwapRejectSchema';
+import { swapCreateControl } from '../../controls/swaps/swap.create.control';
+import { swapFundedControl } from '../../controls/swaps/swap.funded.control';
+import { swapRejectControl } from '../../controls/swaps/swap.reject.control';
 import { symbolSchema } from '../../controls/token-minting/TokenClaimMintedRequestSchema';
 import { importMintedTokenSchema } from '../../controls/token-minting/TokenImportRequestSchema';
 import { mintTokenSchema } from '../../controls/token-minting/TokenMintRequestSchema';
@@ -555,4 +561,22 @@ exports[WEN_FUNC.createauction] = onRequest({
   name: WEN_FUNC.createauction,
   schema: auctionCreateSchemaObject,
   handler: auctionCreateControl,
+});
+
+exports[WEN_FUNC.createSwap] = onRequest({
+  name: WEN_FUNC.createSwap,
+  schema: swapCreateSchema,
+  handler: swapCreateControl,
+});
+
+exports[WEN_FUNC.setSwapFunded] = onRequest({
+  name: WEN_FUNC.setSwapFunded,
+  schema: swapFundedSchema,
+  handler: swapFundedControl,
+});
+
+exports[WEN_FUNC.rejectSwap] = onRequest({
+  name: WEN_FUNC.rejectSwap,
+  schema: swapRejectSchema,
+  handler: swapRejectControl,
 });

@@ -493,4 +493,6 @@ export interface TransactionPayload {
    * List representing the NFT bulk order
    */
   nftOrders?: NftBulkOrder[];
+
+  swap?: string;
 }
