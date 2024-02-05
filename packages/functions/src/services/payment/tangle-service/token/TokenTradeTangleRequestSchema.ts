@@ -16,7 +16,9 @@ const MAX_COUNT = MAX_TOTAL_TOKEN_SUPPLY;
 
 export const tradeMintedTokenSchema = toJoiObject<TradeTokenTangleRequest>({
   ...baseTangleSchema(TangleRequestType.BUY_TOKEN, TangleRequestType.SELL_TOKEN),
-  symbol: CommonJoi.tokenSymbol().description('Symbol of the token to trade.'),
+  symbol: CommonJoi.tokenSymbol(false).description(
+    'Symbol of the token to trade. Set it only during minted token trade.',
+  ),
   price: Joi.number()
     .min(MIN_PRICE_PER_TOKEN)
     .max(MAX_PRICE)
