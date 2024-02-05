@@ -19,107 +19,83 @@ const sidebars = {
     'on-tangle-request',
     {
       type: 'category',
-      label: 'Products',
-      link: {type: 'doc', id: 'products/overview'},
+      label: 'How To',
+      link: {type: 'doc', id: 'how-to/overview'},
       collapsible: true,
       collapsed: false,
       items: [
         {
-          'Project API': [
-            'products/project/overview',
-            {
-              'How To': [
-                'products/project/how-to/create-project',
-              ],
-            }
+          'Projects': [
+            'how-to/project/create-project',
           ],
         },
         {
-          'DAO Management API': [
-            'products/dao-management/overview',
+          'DAO Management': [
             {
               type: 'category',
               label: 'Member',
-              link: {type: 'doc', id: 'products/dao-management/member/overview'},
+              link: {type: 'doc', id: 'how-to/dao-management/member/overview'},
               items: [
-                {
-                  'How To': [
-                    'products/dao-management/member/how-to/create-member',
-                    'products/dao-management/member/how-to/update-member',
-                    'products/dao-management/member/how-to/validate-address',
-                    'products/dao-management/member/how-to/get-member',
-                  ],
-                }
+                'how-to/dao-management/member/create-member',
+                'how-to/dao-management/member/update-member',
+                'how-to/dao-management/member/validate-address',
+                'how-to/dao-management/member/get-member',
               ],
             },
             {
               type: 'category',
               label: 'Space',
-              link: {type: 'doc', id: 'products/dao-management/space/overview'},
+              link: {type: 'doc', id: 'how-to/dao-management/space/overview'},
               items: [
-                {
-                  'How To': [
-                    'products/dao-management/space/how-to/create-space',
-                    'products/dao-management/space/how-to/update-space',
-                    'products/dao-management/space/how-to/validate-address',
-                  ],
-                }
+                'how-to/dao-management/space/create-space',
+                'how-to/dao-management/space/update-space',
+                'how-to/dao-management/space/validate-address',
               ],
             },
           ],
         },
         {
           'NFT API': [
-            'products/nft/overview',
-            {
-              'How To': [
-                'products/nft/how-to/create-collection',
-                'products/nft/how-to/bulk-purchase',
-                'products/nft/how-to/create-metadata',
-                'products/nft/how-to/transfer',
-              ],
-            }
+            'how-to/nft/create-collection',
+            'how-to/nft/bulk-purchase',
+            'how-to/nft/create-metadata',
+            'how-to/nft/transfer',
           ],
         },
         {
           'Stamp API': [
-            'products/stamp/overview',
-            {
-              'How To': [
-                'products/stamp/how-to/create-stamp',
-              ],
-            }
+            'how-to/stamp/create-stamp',
           ],
         },
         {
-          'NFT Trading API': ['products/nft-trading/overview'],
+          'NFT Trading API': ['how-to/nft-trading/overview'],
         },
         {
-          'NFT Staking API': ['products/nft-staking/overview'],
+          'NFT Staking API': ['how-to/nft-staking/overview'],
         },
         {
-          'Proposal API': ['products/proposal/overview'],
+          'Proposal API': ['how-to/proposal/overview'],
         },
         {
-          'Reputation API': ['products/reputation/overview'],
+          'Reputation API': ['how-to/reputation/overview'],
         },
         {
-          'Stake Reward API': ['products/stake-reward/overview'],
+          'Stake Reward API': ['how-to/stake-reward/overview'],
         },
         {
-          'Token API': ['products/token/overview'],
+          'Token API': ['how-to/token/overview'],
         },
         {
-          'Token Launchpad API': ['products/token-launchpad/overview'],
+          'Token Launchpad API': ['how-to/token-launchpad/overview'],
         },
         {
-          'Token Trading API': ['products/token-trading/overview'],
+          'Token Trading API': ['how-to/token-trading/overview'],
         },
         {
-          'Token Staking API': ['products/token-staking/overview'],
+          'Token Staking API': ['how-to/token-staking/overview'],
         },
         {
-          'Token Distribution API': ['products/token-distribution/overview'],
+          'Token Distribution API': ['how-to/token-distribution/overview'],
         },
       ],
     },
@@ -129,7 +105,7 @@ const sidebars = {
       link: {
         type: 'generated-index',
         title: 'Tutorials',
-        description: 'List of tutorials for the BUILD.5 products.',
+        description: 'List of tutorials for the BUILD.5 how-to.',
         slug: '/tutorials',
         keywords: ['tutorials', 'api', 'blockchain', 'nft', 'digital twin', 'token', 'staking', 'trading', 'launchpad', 'staking', 'reputation', 'member', 'project', 'proposal', 'stake reward', 'token distribution', 'dao management'],
       },

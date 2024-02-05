@@ -9,6 +9,3 @@ import NotStarted from '../../_admonitions/_not-started-yet.md';
 __Features__: 
 - NFT Stake management
 - NFT Stake metadata 
-
-## Related
-- [NFT](../nft/overview)
