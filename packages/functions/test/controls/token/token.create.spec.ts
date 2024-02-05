@@ -196,17 +196,6 @@ describe('Token controller: ' + WEN_FUNC.createToken, () => {
     await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key);
   });
 
-  it('Should throw, no valid space address', async () => {
-    space = await createSpace(walletSpy, memberAddress);
-    await build5Db().doc(`${COL.SPACE}/${space.uid}`).update({ validatedAddress: {} });
-    token.space = space.uid;
-    mockWalletReturnValue(walletSpy, memberAddress, token);
-    await expectThrow(
-      testEnv.wrap(createToken)({}),
-      WenError.space_must_have_validated_address.key,
-    );
-  });
-
   it('Should throw, no totalSupply', async () => {
     delete token.totalSupply;
     mockWalletReturnValue(walletSpy, memberAddress, token);

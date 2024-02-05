@@ -1,9 +1,7 @@
 import { build5Db } from '@build-5/database';
 import {
   COL,
-  DEFAULT_NETWORK,
   SOON_PROJECT_ID,
-  Space,
   Token,
   TokenCreateRequest,
   TokenStatus,
@@ -11,7 +9,6 @@ import {
 } from '@build-5/interfaces';
 import { merge } from 'lodash';
 import { hasStakedTokens } from '../../services/stake.service';
-import { assertSpaceHasValidAddress } from '../../utils/address.utils';
 import { isProdEnv } from '../../utils/config.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
@@ -41,9 +38,6 @@ export const createTokenControl = async ({
       throw invalidArgument(WenError.token_already_exists_for_space);
     }
     await assertIsGuardian(space, owner);
-
-    const spaceData = await build5Db().doc(`${COL.SPACE}/${space}`).get<Space>();
-    assertSpaceHasValidAddress(spaceData, DEFAULT_NETWORK);
   }
 
   const symbolSnapshot = await build5Db()
