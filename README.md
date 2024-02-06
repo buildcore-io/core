@@ -119,7 +119,7 @@ Make sure you have the following installed:
    ```
 3. Build the packages
    ```sh
-   yarn build
+   npm run build
    ```
 
 For running the docs locally, please refer to the documentation [README](./docs/README.md).

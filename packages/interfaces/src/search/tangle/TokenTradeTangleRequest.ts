@@ -20,9 +20,9 @@ export interface TradeTokenTangleRequest {
    */
   requestType: 'BUY_TOKEN' | 'SELL_TOKEN';
   /**
-   * Symbol of the token to trade.
+   * Symbol of the token to trade. Set it only during minted token trade.
    */
-  symbol: string;
+  symbol?: string;
   /**
    * Funds will be sent here in case of a successfull trade.
    */
