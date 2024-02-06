@@ -1,5 +1,14 @@
 import { build5Db } from '@build-5/database';
-import { COL, SetTokenForSaleRequest, Token, TokenStatus, WenError } from '@build-5/interfaces';
+import {
+  COL,
+  DEFAULT_NETWORK,
+  SetTokenForSaleRequest,
+  Space,
+  Token,
+  TokenStatus,
+  WenError,
+} from '@build-5/interfaces';
+import { assertSpaceHasValidAddress } from '../../utils/address.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import {
@@ -25,6 +34,9 @@ export const setTokenAvailableForSaleControl = async ({
     if (!token.space) {
       throw invalidArgument(WenError.token_must_have_space);
     }
+
+    const spaceData = await build5Db().doc(`${COL.SPACE}/${token.space}`).get<Space>();
+    assertSpaceHasValidAddress(spaceData, DEFAULT_NETWORK);
 
     assertTokenApproved(token);
     if (!token.public) {

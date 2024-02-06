@@ -724,11 +724,13 @@ export class NftWallet {
   };
 
   public changeNftOwner = async (transaction: Transaction, params: WalletParams) => {
-    const sourceMnemonic = await MnemonicService.getData(transaction.payload.sourceAddress);
+    const prevConsumedOutputIds = transaction.payload.outputToConsume
+      ? [transaction.payload.outputToConsume]
+      : (await MnemonicService.getData(transaction.payload.sourceAddress)).consumedNftOutputIds;
     const nftOutputs = await this.getNftOutputs(
       transaction.payload.nftId || undefined,
       transaction.payload.sourceAddress,
-      sourceMnemonic.consumedNftOutputIds,
+      prevConsumedOutputIds,
     );
 
     const nftOutput = Object.values(nftOutputs)[0];

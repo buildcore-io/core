@@ -59,7 +59,10 @@ export class TangleTokenTradeService extends BaseTangleService<TangleResponse> {
         : TokenTradeOrderType.SELL;
     const params = await assertValidationAsync(tradeMintedTokenSchema, request);
 
-    let token = await getTokenBySymbol(params.symbol);
+    const symbol =
+      params.symbol ||
+      (type === TokenTradeOrderType.SELL ? order.network : getNetworkPair(order.network));
+    let token = await getTokenBySymbol(symbol);
     const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token?.uid}`);
     token = await this.transactionService.get<Token>(tokenDocRef);
     if (!token) {

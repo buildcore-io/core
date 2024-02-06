@@ -28,4 +28,8 @@ export interface TangleResponse {
    * Native token count in case the request needs native tokens to perform
    */
   readonly nativeTokens?: NativeToken[];
+  /**
+   * Swap Build5 uid
+   */
+  readonly swap?: string;
 }
