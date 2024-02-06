@@ -6,6 +6,7 @@ import { NftOtrDataset } from './datasets/NftOtrDataset';
 import { ProposalOtrDataset } from './datasets/ProposalOtrDataset';
 import { SpaceOtrDataset } from './datasets/SpaceOtrDataset';
 import { StamptOtrDataset } from './datasets/StampOtrDataset';
+import { SwapOtrDataset } from './datasets/SwapOtrDataset';
 import { TokenOtrDataset } from './datasets/TokenOtrDataset';
 import { DatasetType } from './datasets/common';
 
@@ -40,6 +41,8 @@ export class OtrWrapper {
         return new TokenOtrDataset(this.otrAddress) as DatasetType<D>;
       case Dataset.STAMP:
         return new StamptOtrDataset(this.otrAddress) as DatasetType<D>;
+      case Dataset.SWAP:
+        return new SwapOtrDataset(this.otrAddress) as DatasetType<D>;
       default:
         throw Error('invalid dataset name');
     }
