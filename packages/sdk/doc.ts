@@ -21,6 +21,7 @@ export * from './src/https/datasets/StakeDataset';
 export * from './src/https/datasets/StakeRewardDataset';
 export * from './src/https/datasets/StampDataset';
 export * from './src/https/datasets/Subset';
+export * from './src/https/datasets/SwapDataset';
 export * from './src/https/datasets/TickerDataset';
 export * from './src/https/datasets/TransactionDataset';
 export * from './src/https/datasets/collection/CollectionDataset';
@@ -63,5 +64,7 @@ export * from './src/otr/datasets/NftOtrDataset';
 export * from './src/otr/datasets/ProposalOtrDataset';
 export * from './src/otr/datasets/SpaceOtrDataset';
 export * from './src/otr/datasets/StampOtrDataset';
+export * from './src/otr/datasets/SwapOtrDataset';
 export * from './src/otr/datasets/TokenOtrDataset';
 export * as DatasetClassOtr from './src/otr/datasets/common';
+
