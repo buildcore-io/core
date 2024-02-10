@@ -16,11 +16,11 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@docusaurus/core": "3.0.1",
-    "@docusaurus/plugin-content-docs": "3.0.1",
-    "@docusaurus/plugin-content-pages": "3.0.1",
-    "@docusaurus/preset-classic": "3.0.1",
-    "@docusaurus/remark-plugin-npm2yarn": "3.0.1",
+    "@docusaurus/core": "3.1.1",
+    "@docusaurus/plugin-content-docs": "3.1.1",
+    "@docusaurus/plugin-content-pages": "3.1.1",
+    "@docusaurus/preset-classic": "3.1.1",
+    "@docusaurus/remark-plugin-npm2yarn": "3.1.1",
     "@mdx-js/react": "3.0.0",
     "@saucelabs/theme-github-codeblock": "^0.2.3",
     "clsx": "^2.0.0",
@@ -31,8 +31,8 @@
     "remark-code-import": "1.2.0"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.0.1",
-    "@docusaurus/tsconfig": "3.0.1",
+    "@docusaurus/module-type-aliases": "3.1.1",
+    "@docusaurus/tsconfig": "3.1.1",
     "docusaurus-plugin-typedoc": "^0.22.0",
     "typedoc": "^0.25.5",
     "typedoc-plugin-markdown": "^3.17.1",
