@@ -6,35 +6,29 @@ async function main() {
   const otrAddress = Build5OtrAddress[origin];
 
   try {
-    const otrRequestBuy = await otr(otrAddress)
-      .dataset(Dataset.TOKEN)
-      .buyToken({
-          count: 10,
-          symbol: 'IOTA',
-          price: 0.002,
-      })
+    const otrRequestBuy = await otr(otrAddress).dataset(Dataset.TOKEN).buyToken({
+      count: 10,
+      symbol: 'IOTA',
+      price: 0.002,
+    });
 
     var fireflyDeeplink = otrRequestBuy.getFireflyDeepLink();
     console.log(fireflyDeeplink);
 
-    const otrRequestSellBase = await otr(otrAddress)
-      .dataset(Dataset.TOKEN)
-      .sellBaseToken({
-          count: 10,
-          symbol: 'SMR',
-          price: 0.002,
-      })
+    const otrRequestSellBase = await otr(otrAddress).dataset(Dataset.TOKEN).sellBaseToken({
+      count: 10,
+      symbol: 'SMR',
+      price: 0.002,
+    });
 
     fireflyDeeplink = otrRequestSellBase.getFireflyDeepLink();
     console.log(fireflyDeeplink);
 
-    const otrRequestSell = await otr(otrAddress)
-      .dataset(Dataset.TOKEN)
-      .sellMintedToken('tokenId', {
-          count: 10,
-          symbol: 'IOTA',
-          price: 0.002,
-      })
+    const otrRequestSell = await otr(otrAddress).dataset(Dataset.TOKEN).sellMintedToken('tokenId', {
+      count: 10,
+      symbol: 'IOTA',
+      price: 0.002,
+    });
 
     fireflyDeeplink = otrRequestSell.getFireflyDeepLink();
     console.log(fireflyDeeplink);

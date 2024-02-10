@@ -25,8 +25,8 @@ async function main() {
           network: Network.RMS,
         },
         body: {
-            network: 'rms',
-            token: 'token_id',
+          network: 'rms',
+          token: 'token_id',
         },
       });
 
