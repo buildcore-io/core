@@ -43,6 +43,6 @@ import DeepLink from '../../_admonitions/_deep_link.md'
 
 :::info setFunded
 
-With `setFunded` you can specify if you want to fund the swap right on creation or TODO
+With `setFunded` you can specify if you want to fund the swap right on creation or create an "open" swap where you send your bid/funds later
 
 :::
