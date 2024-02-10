@@ -14,7 +14,7 @@ import DeepLink from '../../_admonitions/_deep_link.md'
 <Tabs>
   <TabItem value="otr" label="OTR">
     To create a swap order, you must call [`create`](../../reference-api/classes/SwapOtrDataset.md#create) on `dataset(Dataset.SWAP)`.
-    [`create`](../../reference-api/classes/SwapOtrDataset.md#create) takes an object of type [`SwapCreateTangleRequest`](../../reference-api/interfaces/SwapCreateTangleRequest.md) as parameter.
+    [`create`](../../reference-api/classes/SwapOtrDataset.md#create) takes an object of type [`SwapCreateTangleRequest`](../../reference-api/interfaces/SwapCreateTangleRequest.md) as parameter, in which you can specify the recipient, native tokens, NFTs and base token you are interested in.
 
     ```tsx file=../../../../packages/sdk/examples/swap/otr/create.ts#L21-L27
     ```
@@ -23,7 +23,7 @@ import DeepLink from '../../_admonitions/_deep_link.md'
   </TabItem>  
   <TabItem value="https" label="HTTPS">
     To create a swap order, you must call [`create`](../../reference-api/classes/SwapDataset.md#create) on `dataset(Dataset.SWAP)`.
-    [`create`](../../reference-api/classes/SwapDataset.md#create) takes an object of type [`SwapCreateRequest`](../../reference-api/interfaces/SwapCreateRequest.md) as parameter.
+    [`create`](../../reference-api/classes/SwapDataset.md#create) takes an object of type [`SwapCreateRequest`](../../reference-api/interfaces/SwapCreateRequest.md) as parameter, in which you can specify the recipient, native tokens, NFTs and base token you are interested in.
 
     ```tsx file=../../../../packages/sdk/examples/swap/https/create.ts#L14-L29
     ```
@@ -40,3 +40,9 @@ import DeepLink from '../../_admonitions/_deep_link.md'
     
   </TabItem>
 </Tabs>
+
+:::info setFunded
+
+With `setFunded` you can specify if you want to fund the swap right on creation or TODO
+
+:::
