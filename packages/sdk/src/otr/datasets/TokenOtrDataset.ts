@@ -1,6 +1,5 @@
 import {
   ClaimAirdroppedTokensTangleRequest,
-  Network,
   TangleRequestType,
   TokenStakeTangleRequest,
   TradeTokenTangleRequest,
@@ -18,15 +17,10 @@ export class TokenOtrDataset extends DatasetClass {
    * @returns
    */
   sellBaseToken = (params: Omit<TradeTokenTangleRequest, 'requestType'>) => {
-    if (!Object.values(Network).includes(params.symbol.toLowerCase() as Network)) {
-      throw Error('Invalid base token symbol');
-    }
+    delete params.symbol;
     return new OtrRequest<TradeTokenTangleRequest>(
       this.otrAddress,
-      {
-        ...params,
-        requestType: TangleRequestType.SELL_TOKEN,
-      },
+      { ...params, requestType: TangleRequestType.SELL_TOKEN },
       Math.floor((params.count || 0) * (params.price || 0)),
     );
   };

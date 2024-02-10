@@ -7,6 +7,7 @@ import { NftOtrDataset } from './NftOtrDataset';
 import { ProposalOtrDataset } from './ProposalOtrDataset';
 import { SpaceOtrDataset } from './SpaceOtrDataset';
 import { StamptOtrDataset } from './StampOtrDataset';
+import { SwapOtrDataset } from './SwapOtrDataset';
 import { TokenOtrDataset } from './TokenOtrDataset';
 
 // prettier-ignore
@@ -19,6 +20,7 @@ export type DatasetType<T extends Dataset> =
   T extends Dataset.SPACE ? SpaceOtrDataset:
   T extends Dataset.STAMP ? StamptOtrDataset:
   T extends Dataset.TOKEN ? TokenOtrDataset:
+  T extends Dataset.SWAP ? SwapOtrDataset:
   unknown;
 
 export interface INativeToken {

@@ -9,6 +9,7 @@ import {
   SOON_PROJECT_ID,
   SUB_COL,
   SendToManyTargets,
+  TokenStatus,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import dotenv from 'dotenv';
@@ -100,6 +101,8 @@ export const MEDIA =
 export const SOON_PROJ_GUARDIAN = '0x3d5d0b3f40c9438871b1c43d6b70117eeff77ad8';
 
 export const soonTokenId = '0xa381bfccaf121e38e31362d85b5ad30cd7fc0d06';
+export const rmsTokenId = '0x52f27a34170900537acb61e5ff0fe94a2841ff52';
+export const atoiTokenId = '0x9c119bd60f7cadf3406c43cead6c8723012bca27';
 
 const setup = async () => {
   await build5Db().doc(`${COL.TOKEN}/${soonTokenId}`).set({
@@ -107,6 +110,22 @@ const setup = async () => {
     uid: soonTokenId,
     symbol: 'SOON',
   });
+  await build5Db()
+    .doc(`${COL.TOKEN}/${rmsTokenId}`)
+    .set({
+      project: SOON_PROJECT_ID,
+      symbol: 'RMS',
+      approved: true,
+      space: '',
+      uid: rmsTokenId,
+      name: 'RMS token',
+      status: TokenStatus.BASE,
+      access: 0,
+      icon: MEDIA,
+      mintingData: {
+        network: Network.RMS,
+      },
+    });
 
   const soonProject = {
     uid: SOON_PROJECT_ID,

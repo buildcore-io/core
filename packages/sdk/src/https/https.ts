@@ -13,6 +13,7 @@ import { ProjectDataset } from './datasets/ProjectDataset';
 import { StakeDataset } from './datasets/StakeDataset';
 import { StakeRewardDataset } from './datasets/StakeRewardDataset';
 import { StampDataset } from './datasets/StampDataset';
+import { SwapDataset } from './datasets/SwapDataset';
 import { TickerDataset } from './datasets/TickerDataset';
 import { TransactionDataset } from './datasets/TransactionDataset';
 import { AwardDataset } from './datasets/award/AwardDataset';
@@ -89,6 +90,8 @@ export class ProjectWrapper {
         return new TickerDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       case Dataset.TRANSACTION:
         return new TransactionDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
+      case Dataset.SWAP:
+        return new SwapDataset(this.origin, this.apiKey, dataset) as DatasetType<D>;
       default:
         throw Error('invalid dataset name');
     }

@@ -21,8 +21,9 @@ export class CommonJoi {
     return required ? base.required() : base.allow(null, '').optional();
   }
 
-  public static tokenSymbol(): Joi.StringSchema<string> {
-    return Joi.string().min(2).max(5).regex(RegExp('^\\$?[A-Z]+$')).required();
+  public static tokenSymbol(required = true): Joi.StringSchema<string> {
+    const base = Joi.string().min(2).max(5).regex(RegExp('^\\$?[A-Z]+$'));
+    return required ? base.required() : base.optional();
   }
 }
 

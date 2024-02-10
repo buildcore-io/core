@@ -93,6 +93,10 @@ export enum WEN_FUNC {
 
   nftTransfer = 'nftTransfer',
   mintMetadataNft = 'mintmetadatanft',
+
+  createSwap = 'createswap',
+  setSwapFunded = 'setswapfunded',
+  rejectSwap = 'rejectSwap',
 }
 
 export interface cMemberNotExists {
