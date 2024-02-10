@@ -9,6 +9,7 @@ tags:
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import { Build5, SoonaverseApiKey } from '@site/../packages/sdk/src/https';
 
 Build.5 API provides various ways to interact with our platform. Of course, you can read IOTA/Shimmer directly or use our friendly APIs or the Build.5 SDK directly to simplify access.
 
@@ -36,21 +37,32 @@ We are in the process of migrating to so-called On Tangle Requests(OTR). Read mo
 
 We provide two endpoints. One for testing and one for production. See below:
 
-<Tabs>
-<TabItem value="production" label="Production Endpoint" default>
+<Tabs groupId="environment">
+  <TabItem value="production" label="Production Endpoint">
+    <pre><code>
+      {Build5.PROD}
+    </code></pre>
+  </TabItem>
+  <TabItem value="testing" label="Testing Endpoint">
+    <pre><code>
+      {Build5.TEST}
+    </code></pre>
+  </TabItem>
+</Tabs>
 
-```
-https://api.build5.com
-```
+You can use these endpoints with the following tokens/keys:
 
-</TabItem>
-<TabItem value="testing" label="Testing Endpoint">
-
-```
-https://api-test.build5.com
-```
-
-</TabItem>
+<Tabs groupId="environment">
+  <TabItem value="production" label="Production Key">
+    <pre><code>
+      {SoonaverseApiKey[Build5.PROD]}
+    </code></pre>
+  </TabItem>
+    <TabItem value="testing" label="Testing Key">
+      <pre><code>
+        {SoonaverseApiKey[Build5.TEST]}
+      </code></pre>
+    </TabItem>
 </Tabs>
 
 > Make sure to consider [API's limitations](limitations)
