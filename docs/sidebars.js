@@ -63,6 +63,11 @@ const sidebars = {
           ],
         },
         {
+          'Swap': [
+            'how-to/swap/create-swap',
+          ]
+        },
+        {
           'Stamp API': [
             'how-to/stamp/create-stamp',
           ],
