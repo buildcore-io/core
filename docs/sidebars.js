@@ -30,6 +30,9 @@ const sidebars = {
           ],
         },
         {
+          'Auction API': ['how-to/auction/create'],
+        },
+        {
           'DAO Management': [
             {
               type: 'category',
