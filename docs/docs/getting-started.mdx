@@ -50,21 +50,6 @@ We provide two endpoints. One for testing and one for production. See below:
   </TabItem>
 </Tabs>
 
-You can use these endpoints with the following tokens/keys:
-
-<Tabs groupId="environment">
-  <TabItem value="production" label="Production Key">
-    <pre><code>
-      {SoonaverseApiKey[Build5.PROD]}
-    </code></pre>
-  </TabItem>
-    <TabItem value="testing" label="Testing Key">
-      <pre><code>
-        {SoonaverseApiKey[Build5.TEST]}
-      </code></pre>
-    </TabItem>
-</Tabs>
-
 > Make sure to consider [API's limitations](limitations)
 
 Let's do a simple GET Request to get the member's object of `@adam_unchained`:
@@ -86,6 +71,21 @@ console.log(member);
 Checkout the [Create Project](how-to/project/create-project) guide to create project.
 
 :::
+
+You can also use public Soonaverse keys to test against live community driven project, see following tokens/keys:
+
+<Tabs groupId="environment">
+  <TabItem value="production" label="Production Key">
+    <pre><code>
+      {SoonaverseApiKey[Build5.PROD]}
+    </code></pre>
+  </TabItem>
+    <TabItem value="testing" label="Testing Key">
+      <pre><code>
+        {SoonaverseApiKey[Build5.TEST]}
+      </code></pre>
+    </TabItem>
+</Tabs>
 
 ### See some of our first how to's:
 - [Create Project](how-to/project/create-project)
