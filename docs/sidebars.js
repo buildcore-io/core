@@ -60,6 +60,7 @@ const sidebars = {
         {
           'NFT API': [
             'how-to/nft/create-collection',
+            'how-to/nft/purchase',
             'how-to/nft/bulk-purchase',
             'how-to/nft/create-metadata',
             'how-to/nft/transfer',
