@@ -24,11 +24,16 @@ export class AuctionOtrDataset extends DatasetClass {
    * Bid on Auction.
    *
    * @param params Use {@link OtrRequest} with data based on {@link AuctionBidTangleRequest}
+   * @param amount Custom amount used for the cretion of the deep link
    * @returns
    */
-  bid = (params: Omit<AuctionBidTangleRequest, 'requestType'>) =>
-    new OtrRequest<AuctionBidTangleRequest>(this.otrAddress, {
-      ...params,
-      requestType: TangleRequestType.BID_AUCTION,
-    });
+  bid = (params: Omit<AuctionBidTangleRequest, 'requestType'>, amount = 0) =>
+    new OtrRequest<AuctionBidTangleRequest>(
+      this.otrAddress,
+      {
+        ...params,
+        requestType: TangleRequestType.BID_AUCTION,
+      },
+      amount,
+    );
 }
