@@ -161,9 +161,16 @@ export class TangleRequestService extends BaseTangleService<TangleResponse> {
   };
 
   private getOwner = async (senderAddress: NetworkAddress, network: Network) => {
+    const docRef = build5Db().doc(`${COL.MEMBER}/${senderAddress}`);
+    const member = await docRef.get<Member>();
+    if (member) {
+      return senderAddress;
+    }
+
     const snap = await build5Db()
       .collection(COL.MEMBER)
       .where(`validatedAddress.${network}`, '==', senderAddress)
+      .limit(2)
       .get<Member>();
 
     if (snap.length > 1) {
@@ -174,18 +181,14 @@ export class TangleRequestService extends BaseTangleService<TangleResponse> {
       return snap[0].uid;
     }
 
-    const docRef = build5Db().doc(`${COL.MEMBER}/${senderAddress}`);
-    const member = <Member | undefined>await docRef.get();
-    if (!member) {
-      const memberData = {
-        uid: senderAddress,
-        nonce: getRandomNonce(),
-        validatedAddress: {
-          [network as string]: senderAddress,
-        },
-      };
-      await docRef.create(memberData);
-    }
+    const memberData = {
+      uid: senderAddress,
+      nonce: getRandomNonce(),
+      validatedAddress: {
+        [network as string]: senderAddress,
+      },
+    };
+    await docRef.create(memberData);
 
     return senderAddress;
   };

@@ -17,24 +17,34 @@ export class NftOtrDataset extends DatasetClass {
    * Purchase NFT via OTR
    *
    * @param params Use {@link OtrRequest} with data based on {@link NftPurchaseTangleRequest}
+   * @param amount Custom amount used for the cretion of the deep link
    * @returns
    */
-  purchase = (params: Omit<NftPurchaseTangleRequest, 'requestType'>) =>
-    new OtrRequest<NftPurchaseTangleRequest>(this.otrAddress, {
-      ...params,
-      requestType: TangleRequestType.NFT_PURCHASE,
-    });
+  purchase = (params: Omit<NftPurchaseTangleRequest, 'requestType'>, amount = 0) =>
+    new OtrRequest<NftPurchaseTangleRequest>(
+      this.otrAddress,
+      {
+        ...params,
+        requestType: TangleRequestType.NFT_PURCHASE,
+      },
+      amount,
+    );
   /**
    * Bid on NFT Auction
    *
    * @param params Use {@link OtrRequest} with data based on {@link AddressValidationTangleRequest}
+   * @param amount Custom amount used for the cretion of the deep link
    * @returns
    */
-  bid = (params: Omit<NftBidTangleRequest, 'requestType'>) =>
-    new OtrRequest<NftBidTangleRequest>(this.otrAddress, {
-      ...params,
-      requestType: TangleRequestType.NFT_BID,
-    });
+  bid = (params: Omit<NftBidTangleRequest, 'requestType'>, amount = 0) =>
+    new OtrRequest<NftBidTangleRequest>(
+      this.otrAddress,
+      {
+        ...params,
+        requestType: TangleRequestType.NFT_BID,
+      },
+      amount,
+    );
   /**
    * Set NFT for sale via OTR
    *
