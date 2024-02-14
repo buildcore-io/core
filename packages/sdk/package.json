@@ -10,7 +10,7 @@
     "lint": "eslint --ext .js,.ts src",
     "build": "tsc && cp README.md ./lib && cp LICENSE ./lib",
     "postbuild": "cp package.json ./lib",
-    "test": "jest"
+    "test": "jest --forceExit"
   },
   "dependencies": {
     "@build-5/interfaces": "*",
@@ -44,6 +44,7 @@
     "prettier": "3.1.0",
     "prettier-eslint": "16.1.2",
     "ts-jest": "29.1.1",
-    "typescript": "5.2.2"
+    "typescript": "5.2.2",
+    "@iota/sdk": "^1.1.4"
   }
 }
