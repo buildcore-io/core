@@ -28,13 +28,13 @@ export const nftIrc27Schema = Joi.object({
   collectionName: Joi.string().required(),
   uri: Joi.string().required(),
   name: Joi.string().required(),
-  description: Joi.string().required(),
+  description: Joi.string().optional().default(''),
 });
 
 export const collectionIrc27Scheam = Joi.object({
   uri: Joi.string().required(),
   name: Joi.string().required(),
-  description: Joi.string().required(),
+  description: Joi.string().optional().default(''),
   attributes: Joi.array()
     .items(
       Joi.object({

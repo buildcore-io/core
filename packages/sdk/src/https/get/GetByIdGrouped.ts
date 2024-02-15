@@ -11,11 +11,11 @@ export class GetByIdGroupedClass extends AbstractGetByIdGrouped {
 
     if (this.requests.length >= BATCH_MAX_SIZE) {
       await this.executeRequests();
-      return this.result[request.setId + request.subsetId]! as T | undefined;
+      return this.result[this.toKey(request)] as T | undefined;
     }
 
     await this.executeTimed();
-    return this.result[request.setId + request.subsetId]! as T | undefined;
+    return this.result[this.toKey(request)] as T | undefined;
   };
 
   protected executeRequests = async () => {
@@ -24,7 +24,7 @@ export class GetByIdGroupedClass extends AbstractGetByIdGrouped {
         const response = await wrappedFetch(requests[0].apiKey, url, params);
         const source = Array.isArray(response) ? response : [response];
         for (const r of requests) {
-          this.result[r.setId + r.subsetId] = source.find((d) =>
+          this.result[this.toKey(r)] = source.find((d) =>
             [get(d, 'uid', ''), get(d, 'id', '')].includes(r.subsetId || r.setId),
           );
         }
