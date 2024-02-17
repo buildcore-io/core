@@ -209,6 +209,12 @@ export abstract class DatasetClass<D extends Dataset, T> extends BaseDataSetClas
     return this.getManyAdvancedLive(params);
   };
 
+  /**
+   * Get specific record by id.
+   *
+   * @param setId
+   * @returns
+   */
   id = (setId: string) => new ExactDataSet<D, T>(this.origin, this.apiKey, this.dataset, setId);
 
   subset = <S extends Subset>(subset: S) =>
