@@ -42,6 +42,7 @@ const sidebars = {
                 'how-to/dao-management/member/create-member',
                 'how-to/dao-management/member/update-member',
                 'how-to/dao-management/member/validate-address',
+                'how-to/dao-management/member/get-member',
               ],
             },
             {
