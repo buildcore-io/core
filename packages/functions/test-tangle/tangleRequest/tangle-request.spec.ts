@@ -8,10 +8,12 @@ import {
   TangleRequestType,
   Token,
   TokenStatus,
+  TokenTradeOrderType,
   Transaction,
   TransactionType,
   WenError,
 } from '@build-5/interfaces';
+import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
@@ -57,7 +59,7 @@ describe('Tangle request spec', () => {
       customMetadata: {
         request: {
           requestType: TangleRequestType.BUY_TOKEN,
-          symbol: 'ASD',
+          symbol: token.symbol,
           count: 5,
           price: MIN_IOTA_AMOUNT,
         },
@@ -78,6 +80,58 @@ describe('Tangle request spec', () => {
       code: WenError.multiple_members_with_same_address.code,
       message: WenError.multiple_members_with_same_address.key,
       status: 'error',
+    });
+  });
+
+  it('Should use sender as owner when multiple users', async () => {
+    const address = await rmsWallet.getNewIotaAddressDetails();
+
+    await requestFundsFromFaucet(Network.RMS, address.bech32, MIN_IOTA_AMOUNT);
+
+    await rmsWallet.send(address, tangleOrder.payload.targetAddress!, 0.2 * MIN_IOTA_AMOUNT, {
+      customMetadata: {
+        request: {
+          requestType: TangleRequestType.BUY_TOKEN,
+          symbol: token.symbol,
+          count: 5,
+          price: MIN_IOTA_AMOUNT,
+        },
+      },
+    });
+    await MnemonicService.store(address.bech32, address.mnemonic);
+
+    const query = build5Db()
+      .collection(COL.TOKEN_MARKET)
+      .where('owner', '==', address.bech32)
+      .where('type', '==', TokenTradeOrderType.BUY);
+    await wait(async () => {
+      const snap = await query.get<Transaction>();
+      return snap.length === 1;
+    });
+
+    const member2 = await createMember(walletSpy);
+    await build5Db()
+      .doc(`${COL.MEMBER}/${member2}`)
+      .set({ validatedAddress: { [Network.RMS]: rmsAddress.bech32 } }, true);
+    const member3 = await createMember(walletSpy);
+    await build5Db()
+      .doc(`${COL.MEMBER}/${member3}`)
+      .set({ validatedAddress: { [Network.RMS]: rmsAddress.bech32 } }, true);
+
+    await rmsWallet.send(address, tangleOrder.payload.targetAddress!, 0.2 * MIN_IOTA_AMOUNT, {
+      customMetadata: {
+        request: {
+          requestType: TangleRequestType.BUY_TOKEN,
+          symbol: token.symbol,
+          count: 5,
+          price: MIN_IOTA_AMOUNT,
+        },
+      },
+    });
+
+    await wait(async () => {
+      const snap = await query.get<Transaction>();
+      return snap.length === 2;
     });
   });
 
@@ -136,11 +190,11 @@ const saveToken = async (space: string, guardian: string) => {
     uid: wallet.getRandomEthAddress(),
     createdBy: guardian,
     name: 'MyToken',
-    status: TokenStatus.BASE,
+    status: TokenStatus.MINTED,
     access: 0,
     icon: MEDIA,
     mintingData: {
-      network: Network.ATOI,
+      network: Network.RMS,
     },
   };
   await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);

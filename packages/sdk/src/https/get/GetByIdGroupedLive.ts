@@ -13,11 +13,10 @@ export class GetByIdGroupedLiveClass extends AbstractGetByIdGrouped {
 
     if (this.requests.length >= BATCH_MAX_SIZE) {
       await this.executeRequests();
-      return this.observers[request.setId + request.subsetId]! as Observable<T | undefined>;
+      return this.observers[this.toKey(request)] as Observable<T | undefined>;
     }
-
     await this.executeTimed();
-    return this.observers[request.setId + request.subsetId]! as Observable<T | undefined>;
+    return this.observers[this.toKey(request)] as Observable<T | undefined>;
   };
 
   protected executeRequests = async () => {
@@ -28,7 +27,7 @@ export class GetByIdGroupedLiveClass extends AbstractGetByIdGrouped {
           map((r) => (Array.isArray(r) ? r : [r])),
         );
         for (const r of requests) {
-          this.observers[r.setId + r.subsetId] = source.pipe(
+          this.observers[this.toKey(r)] = source.pipe(
             map((s) => {
               const id = r.subsetId || r.setId;
               return s.find((d) => [get(d, 'uid', ''), get(d, 'id', '')].includes(id));

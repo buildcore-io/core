@@ -13,6 +13,13 @@ export const address: AddressDetails = {
   bech32: 'rms1qqzvpk7jmxd8a7auvg4wqz5agrrvcy4drvccdr3njetmk6dnvwxkc25x9uj',
 };
 
+export const address_secondary: AddressDetails = {
+  mnemonic:
+    'want toe guide chaos galaxy relax grass cloth bunker frown street any fox today can element wife tenant deer bulk inmate host april have',
+  hex: '0xbee278544f998b80d96fb07dbbd82a0fd978ef99a9d9fef581acdef2343e1265',
+  bech32: 'rms1qzlwy7z5f7vchqxed7c8mw7c9g8aj780nx5anlh4sxkdau358cfx2tt0zw2',
+};
+
 export const Build5Local = 'http://127.0.0.1:5001/soonaverse-dev/us-central1' as Build5;
 export const Build5LocalApi = 'http://localhost:8080' as Build5;
 export const Build5LocalKey =
