@@ -24,10 +24,10 @@ export abstract class AbstractGroupedGet {
   protected requests: Request[] = [];
   protected timer: Promise<void> | null = null;
 
+  protected toKey = (r: Request) => r.dataset + r.setId + r.subset + r.subsetId;
+
   protected init = (request: Request) => {
-    const existing = this.requests.find(
-      (r) => r.setId === request.setId && r.subsetId === request.subsetId,
-    );
+    const existing = this.requests.find((r) => this.toKey(r) === this.toKey(request));
     if (!existing) {
       this.requests.push(request);
     }

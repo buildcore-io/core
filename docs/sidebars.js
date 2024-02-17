@@ -30,6 +30,9 @@ const sidebars = {
           ],
         },
         {
+          'Auction API': ['how-to/auction/create'],
+        },
+        {
           'DAO Management': [
             {
               type: 'category',
@@ -56,6 +59,7 @@ const sidebars = {
         {
           'NFT API': [
             'how-to/nft/create-collection',
+            'how-to/nft/purchase',
             'how-to/nft/bulk-purchase',
             'how-to/nft/create-metadata',
             'how-to/nft/transfer',
@@ -82,7 +86,12 @@ const sidebars = {
           'Stake Reward API': ['how-to/stake-reward/overview'],
         },
         {
-          'Token API': ['how-to/token/overview'],
+          'Token API': [
+            'how-to/token/overview',
+            'how-to/token/create-token',
+            'how-to/token/trade-token',
+            'how-to/token/mint-token',
+          ],
         },
         {
           'Token Launchpad API': ['how-to/token-launchpad/overview'],
