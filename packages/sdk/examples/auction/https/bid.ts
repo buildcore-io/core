@@ -8,28 +8,19 @@ async function main() {
   const userSign = await walletSign(address.bech32, address);
 
   try {
-    // To create a generic auction we send an https request with the needed params
-    let auction = await https(origin)
+    const transction = await https(origin)
       .project(SoonaverseApiKey[origin])
       .dataset(Dataset.AUCTION)
-      .create({
+      .bid({
         address: address.bech32,
         signature: userSign.signature,
         publicKey: {
           hex: userSign.publicKey,
           network: Network.RMS,
         },
-        body: {
-          auctionFloorPrice: 1000000,
-          auctionFrom: new Date(),
-          auctionLength: 8.64e7, // 1 day in milliseconds
-          maxBids: 1,
-          minimalBidIncrement: 1000000,
-          network: Network.RMS,
-          space: 'build5spaceid',
-        },
+        body: { auction: 'auction id' },
       });
-    console.log('Auction created with id: ', auction.uid);
+    console.log('Target address ', transction.payload.targetAddress);
   } catch (error) {
     console.error('Error: ', error);
   }
