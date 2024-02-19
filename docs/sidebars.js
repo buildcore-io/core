@@ -106,6 +106,7 @@ const sidebars = {
         {
           'Token Distribution API': ['how-to/token-distribution/overview'],
         },
+        'how-to/track-otrs',
       ],
     },
     {
