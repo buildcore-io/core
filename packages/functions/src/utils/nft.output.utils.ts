@@ -48,7 +48,7 @@ export const collectionIrc27Scheam = Joi.object({
 
 export const isMetadataIrc27 = (metadata: Record<string, unknown>, schema: Joi.ObjectSchema) => {
   const result = schema.validate(metadata, { allowUnknown: true });
-  return result.error === undefined;
+  return result.error === undefined ? result.value : undefined;
 };
 
 export const getAliasId = (output: NftOutput) => {
