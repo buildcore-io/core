@@ -78,7 +78,13 @@ export class NftStakeService extends BaseService {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const payment = await this.transactionService.createPayment(order, match, true);
-      this.transactionService.createNftCredit(payment, match, error, customErrorParams);
+
+      if (tranEntry.nftOutput) {
+        this.transactionService.createNftCredit(payment, match, error, customErrorParams);
+      } else {
+        this.transactionService.createCredit(TransactionPayloadType.DEPOSIT_NFT, payment, match);
+      }
+
       console.error('nft stake error', order.uid, payment.uid, error, customErrorParams);
     }
   };
@@ -87,7 +93,9 @@ export class NftStakeService extends BaseService {
     const wallet = await WalletService.newWallet(order.network);
     const weeks = get(order, 'payload.weeks', 0);
     const params: NftOutputBuilderParams = cloneDeep(tranEntry.nftOutput as NftOutput);
-    params.features = params.features?.filter((f) => f.type !== FeatureType.Tag);
+    params.features = params.features?.filter(
+      (f) => f.type !== FeatureType.Tag && f.type !== FeatureType.Sender,
+    );
     params.unlockConditions = params.unlockConditions.filter(
       (uc) => uc.type !== UnlockConditionType.Timelock,
     );
