@@ -22,12 +22,10 @@ export const confirmScamNftCredits = async (app: FirebaseApp) => {
     await docRef.update({
       shouldRetry: true,
       type: TransactionType.CREDIT,
-      payload: {
-        walletReference: db.deleteField(),
-        response: { code: 2137, message: 'Invalid nft id.', status: 'error' },
-        nft: db.deleteField(),
-        nftId: db.deleteField(),
-      },
+      'payload.walletReference': db.deleteField(),
+      'payload.response': { code: 2137, message: 'Invalid nft id.', status: 'error' },
+      'payload.nft': db.deleteField(),
+      'payload.nftId': db.deleteField(),
     });
   }
 };
