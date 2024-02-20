@@ -7,7 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     timeout-minutes: 360
-    needs: [deploy_functions]
     defaults:
       run:
         working-directory: packages/functions
