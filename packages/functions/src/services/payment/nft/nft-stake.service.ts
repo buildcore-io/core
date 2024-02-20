@@ -78,7 +78,13 @@ export class NftStakeService extends BaseService {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const payment = await this.transactionService.createPayment(order, match, true);
-      this.transactionService.createNftCredit(payment, match, error, customErrorParams);
+
+      if (tranEntry.nftOutput) {
+        this.transactionService.createNftCredit(payment, match, error, customErrorParams);
+      } else {
+        this.transactionService.createCredit(TransactionPayloadType.DEPOSIT_NFT, payment, match);
+      }
+
       console.error('nft stake error', order.uid, payment.uid, error, customErrorParams);
     }
   };
