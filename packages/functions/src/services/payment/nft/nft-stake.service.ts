@@ -93,7 +93,9 @@ export class NftStakeService extends BaseService {
     const wallet = await WalletService.newWallet(order.network);
     const weeks = get(order, 'payload.weeks', 0);
     const params: NftOutputBuilderParams = cloneDeep(tranEntry.nftOutput as NftOutput);
-    params.features = params.features?.filter((f) => f.type !== FeatureType.Tag);
+    params.features = params.features?.filter(
+      (f) => f.type !== FeatureType.Tag && f.type !== FeatureType.Sender,
+    );
     params.unlockConditions = params.unlockConditions.filter(
       (uc) => uc.type !== UnlockConditionType.Timelock,
     );

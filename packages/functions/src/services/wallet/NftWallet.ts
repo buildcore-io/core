@@ -738,7 +738,9 @@ export class NftWallet {
     const sourceAddress = await this.wallet.getAddressDetails(transaction.payload.sourceAddress!);
     const targetAddress = Utils.parseBech32Address(transaction.payload.targetAddress!);
     const output: NftOutputBuilderParams = cloneDeep(nftOutput);
-    output.features = output.features?.filter((f) => f.type !== FeatureType.Tag);
+    output.features = output.features?.filter(
+      (f) => f.type !== FeatureType.Tag && f.type !== FeatureType.Sender,
+    );
     output.unlockConditions = [new AddressUnlockCondition(targetAddress)];
 
     const vestingAt = dayjs(transaction.payload.vestingAt?.toDate());
