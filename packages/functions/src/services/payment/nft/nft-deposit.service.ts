@@ -16,6 +16,7 @@ import {
   PropStats,
   Space,
   Transaction,
+  TransactionPayloadType,
   WenError,
 } from '@build-5/interfaces';
 import { NftOutput } from '@iota/sdk';
@@ -54,7 +55,11 @@ export class NftDepositService extends BaseService {
       });
     } catch (error) {
       const payment = await this.transactionService.createPayment(order, match, true);
-      this.transactionService.createNftCredit(payment, match, error as Record<string, unknown>);
+      if (tranEntry.nftOutput) {
+        this.transactionService.createNftCredit(payment, match, error as Record<string, unknown>);
+      } else {
+        this.transactionService.createCredit(TransactionPayloadType.DEPOSIT_NFT, payment, match);
+      }
     }
   };
 
@@ -64,7 +69,7 @@ export class NftDepositService extends BaseService {
     match: TransactionMatch,
   ) => {
     if (!transactionEntry.nftOutput) {
-      throw WenError.invalid_params;
+      throw WenError.invalid_nft_id;
     }
     const nft = await getNftByMintingId(transactionEntry.nftOutput.nftId);
     if (!nft) {
