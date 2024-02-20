@@ -3,7 +3,6 @@ import {
   Award,
   COL,
   MIN_IOTA_AMOUNT,
-  Member,
   Network,
   Space,
   Token,
@@ -23,8 +22,6 @@ import {
 import { joinSpace } from '../../src/runtime/firebase/space';
 import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { Wallet } from '../../src/services/wallet/wallet';
-import { AddressDetails } from '../../src/services/wallet/wallet.service';
-import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { createMember, createSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
@@ -40,7 +37,6 @@ describe('Create award, base', () => {
   let member: string;
   let space: Space;
   let award: Award;
-  let guardianAddress: AddressDetails;
   let walletService: Wallet;
   let token: Token;
 
@@ -61,11 +57,6 @@ describe('Create award, base', () => {
 
     mockWalletReturnValue(walletSpy, guardian, awardRequest(space.uid, token.symbol));
     award = await testEnv.wrap(createAward)({});
-
-    const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${guardian}`);
-    const guardianData = <Member>await guardianDocRef.get();
-    const guardianBech32 = getAddress(guardianData, network);
-    guardianAddress = await walletService.getAddressDetails(guardianBech32);
   });
 
   it.each([false, true])(
@@ -73,7 +64,10 @@ describe('Create award, base', () => {
     async (shouldCancel: boolean) => {
       mockWalletReturnValue(walletSpy, guardian, { uid: award.uid });
       const order = await testEnv.wrap(fundAward)({});
-      await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount);
+
+      const address = await walletService.getNewIotaAddressDetails();
+      await requestFundsFromFaucet(network, address.bech32, order.payload.amount);
+      await walletService.send(address, order.payload.targetAddress, order.payload.amount, {});
 
       const awardDocRef = build5Db().doc(`${COL.AWARD}/${award.uid}`);
       await wait(async () => {
@@ -152,7 +146,7 @@ describe('Create award, base', () => {
         return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
       });
 
-      const { amount } = await walletService.getBalance(guardianAddress.bech32);
+      const { amount } = await walletService.getBalance(address.bech32);
       expect(amount).toBe(award.aliasStorageDeposit + 2 * award.badge.tokenReward);
     },
   );

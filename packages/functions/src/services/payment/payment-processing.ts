@@ -85,16 +85,20 @@ export class ProcessingService {
     }
 
     const expireDate = dayjs(order.payload.expiresOn?.toDate());
-    let expired = false;
-    if (expireDate.isBefore(dayjs(), 'ms')) {
+    const orderExpired = expireDate.isBefore(dayjs(), 'ms');
+    if (orderExpired) {
       const nftService = new NftPurchaseService(this.tranService);
       await this.markAsVoid(nftService, order);
-      expired = true;
     }
 
     const match = await this.tranService.isMatch(tran, tranEntry, order, build5Tran);
-    if (!expired && !order.payload.reconciled && !order.payload.void && match) {
-      const expirationUnlock = this.tranService.getExpirationUnlock(tranEntry.unlockConditions);
+    const expirationUnlock = this.tranService.getExpirationUnlock(tranEntry.unlockConditions);
+    const outputExpired =
+      expirationUnlock !== undefined && dayjs.unix(expirationUnlock.unixTime).isBefore(dayjs());
+
+    if (orderExpired || outputExpired || order.payload.reconciled || order.payload.void || !match) {
+      await this.tranService.processAsInvalid(tran, order, tranEntry, build5Tran);
+    } else {
       if (expirationUnlock !== undefined) {
         const type = tranEntry.nftOutput
           ? TransactionPayloadType.UNLOCK_NFT
@@ -124,11 +128,8 @@ export class ProcessingService {
       };
       const service = this.getService(this.tranService, order.payload.type!);
       await service.handleRequest(serviceParams);
-    } else {
-      await this.tranService.processAsInvalid(tran, order, tranEntry, build5Tran);
     }
 
-    // Add linked transaction.
     this.tranService.push({
       ref: orderRef,
       data: {
