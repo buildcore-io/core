@@ -1,4 +1,4 @@
-import { FirebaseApp, Firestore, build5Db } from '@build-5/database';
+import { FirebaseApp, Firestore } from '@build-5/database';
 import { COL, Transaction, TransactionType } from '@build-5/interfaces';
 
 const uids = [
@@ -13,8 +13,8 @@ export const confirmScamNftCredits = async (app: FirebaseApp) => {
   const db = new Firestore(app);
 
   for (const uid of uids) {
-    const docRef = build5Db().doc(`${COL.TRANSACTION}/${uid}`);
-    const transaction = docRef.get<Transaction>();
+    const docRef = db.doc(`${COL.TRANSACTION}/${uid}`);
+    const transaction = await docRef.get<Transaction>();
     if (!transaction) {
       continue;
     }
