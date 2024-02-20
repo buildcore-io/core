@@ -28,7 +28,8 @@ async function main() {
         },
       });
 
-    console.log('Send bids to swap order address', response.payload.targetAddress);
+    const targetAddress = response.payload.targetAddress;
+    console.log('Send bids to swap order address', targetAddress);
     console.log('Once bids are sent mark the swap as funded.');
 
     await https(origin)

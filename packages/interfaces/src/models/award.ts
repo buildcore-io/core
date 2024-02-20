@@ -184,6 +184,10 @@ export interface Award extends BaseRecord {
    */
   readonly fundedBy?: string;
   /**
+   * Funding address
+   */
+  readonly fundingAddress?: string;
+  /**
    * TODODOC
    */
   readonly address?: string;

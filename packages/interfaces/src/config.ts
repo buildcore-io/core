@@ -68,8 +68,9 @@ export const MIN_AMOUNT_TO_TRANSFER = 1 * 1000 * 1000;
 export const MIN_IOTA_AMOUNT = MIN_AMOUNT_TO_TRANSFER;
 export const MAX_IOTA_AMOUNT = 1000 * 1000 * 1000 * 1000;
 export const MIN_PRICE_PER_TOKEN = 0.000001;
-export const IPFS_GATEWAY_AVATAR = 'https://ipfs2.soonaverse.com/ipfs/';
-export const IPFS_GATEWAY = 'https://ipfs.io/ipfs/';
+export const IPFS_GATEWAY = 'https://cf-ipfs.com/ipfs/';
+// This is legacy and it should be removed. Needs to be removed on Soonaverse
+export const IPFS_GATEWAY_AVATAR = IPFS_GATEWAY;
 export const TOKEN_EXPIRY_HOURS = 1;
 // FEES.
 export const SOONAVERSE_FEE = 10;
