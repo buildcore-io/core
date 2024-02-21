@@ -10,14 +10,15 @@ export const milestoneTransaction = async (app: FirebaseApp) => {
   let lastDoc: any = undefined;
   let total = 0;
   do {
-    const snap = await firestore
+    let query = await firestore
       .collectionGroup(SUB_COL.TRANSACTIONS)
       .where('processed', '==', false)
-      .where('createdOn', '<=', dayjs().subtract(1, 'h').toDate())
-      .orderBy('createdOn')
-      .startAfter(lastDoc)
-      .limit(100)
-      .get();
+      .where('createdOn', '<=', dayjs().subtract(1, 'h').toDate());
+    if (lastDoc) {
+      query = query.startAfter(lastDoc);
+    }
+
+    const snap = await query.orderBy('createdOn').limit(100).get();
     lastDoc = last(snap.docs);
 
     for (const doc of snap.docs) {
