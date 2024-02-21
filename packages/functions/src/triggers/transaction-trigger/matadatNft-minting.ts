@@ -177,12 +177,8 @@ const onNftMinted = async (transaction: Transaction) => {
     get(order, 'payload.nftOutputAmount', 0);
 
   const member = await build5Db().doc(`${COL.MEMBER}/${transaction.member}`).get<Member>();
-  const collection = await build5Db()
-    .doc(`${COL.COLLECTION}/${nft?.collection}`)
-    .get<Collection>();
-  const space = await build5Db()
-    .doc(`${COL.SPACE}/${collection?.space}`)
-    .get<Space>();
+  const collection = await build5Db().doc(`${COL.COLLECTION}/${nft?.collection}`).get<Collection>();
+  const space = await build5Db().doc(`${COL.SPACE}/${collection?.space}`).get<Space>();
 
   const remainder = order.payload.amount! - storageDepositTotal;
 
@@ -232,12 +228,8 @@ const onNftUpdated = async (transaction: Transaction) => {
   const { amount: balance } = await wallet.getBalance(order.payload.targetAddress!);
 
   const member = await build5Db().doc(`${COL.MEMBER}/${transaction.member}`).get<Member>();
-  const collection = await build5Db()
-    .doc(`${COL.COLLECTION}/${nft?.collection}`)
-    .get<Collection>();
-  const space = await build5Db()
-    .doc(`${COL.SPACE}/${collection?.space}`)
-    .get<Space>();
+  const collection = await build5Db().doc(`${COL.COLLECTION}/${nft?.collection}`).get<Collection>();
+  const space = await build5Db().doc(`${COL.SPACE}/${collection?.space}`).get<Space>();
 
   if (Number(balance)) {
     const creditTransaction: Transaction = {
