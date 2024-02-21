@@ -1,11 +1,10 @@
+import { FirebaseApp } from '@build-5/database';
 import { COL } from '@build-5/interfaces';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 import admin from 'firebase-admin';
 import { getFirestore } from 'firebase-admin/firestore';
 import fs from 'fs';
-import { glob } from 'glob';
-import { FirebaseApp } from '@build-5/database';
 import serviceAccount from './serviceAccountKey.json';
 
 dotenv.config({ path: '../.env' });
@@ -17,6 +16,7 @@ process.env.FIREBASE_CONFIG = JSON.stringify({ projectId: serviceAccount.project
 
 const execute = async () => {
   const db = getFirestore(app);
+  const glob = require('glob');
   const files = glob.sync(`./dbUpgrades/**/*.ts`);
   for (const file of files.sort()) {
     const content = fs.readFileSync(file);
