@@ -1,6 +1,7 @@
 import { Bucket } from '@build-5/interfaces';
 import { Bucket as FBucket } from '@google-cloud/storage';
 import { Storage } from 'firebase-admin/storage';
+import { get } from 'lodash';
 import { FirebaseApp } from '../app/app';
 import { IBucket, IStorage } from './interfaces';
 
@@ -28,7 +29,7 @@ export class FirebaseBucket implements IBucket {
 
   public upload = async (path: string, destination: string, metadata: Record<string, unknown>) => {
     const response = await this.bucket.upload(path, { destination, metadata });
-    return response[1].mediaLink;
+    return get(response[1], 'mediaLink', '');
   };
 
   public download = async (fileName: string, destination: string) => {

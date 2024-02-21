@@ -189,9 +189,7 @@ describe('Stake reward test test', () => {
 
     await awaitTransactionConfirmationsForToken(helper.token?.uid!);
 
-    const member = <Member>await build5Db()
-      .doc(`${COL.MEMBER}/${helper.member?.uid}`)
-      .get();
+    const member = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.member?.uid}`).get();
     for (const address of [helper.memberAddress?.bech32!, getAddress(member, Network.RMS)]) {
       const outputs = await helper.walletService!.getOutputs(address, [], false, true);
       const nativeTokens = Object.values(outputs).reduce(
@@ -279,9 +277,7 @@ describe('Stake reward test test', () => {
 
     await awaitTransactionConfirmationsForToken(helper.token?.uid!);
 
-    const member = <Member>await build5Db()
-      .doc(`${COL.MEMBER}/${helper.member?.uid}`)
-      .get();
+    const member = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.member?.uid}`).get();
     for (const address of [helper.memberAddress?.bech32!, getAddress(member, Network.RMS)]) {
       const outputs = await helper.walletService!.getOutputs(address, [], false, true);
       const nativeTokens = Object.values(outputs).reduce(

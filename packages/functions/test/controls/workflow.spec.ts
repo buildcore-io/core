@@ -1,12 +1,14 @@
 import fs from 'fs';
-import glob from 'glob';
 
 describe('Workflow test', () => {
   it('Test if workflow contains all files', async () => {
     const buffer = fs.readFileSync('../../.github/workflows/functions_emulated-tests.yml');
     const workflowTxt = buffer.toString();
 
-    const testFileNames = glob.sync(`./test/**/*.spec.ts`).filter((f) => !f.includes('exclude'));
+    const glob = require('glob');
+    const testFileNames = glob
+      .sync(`./test/**/*.spec.ts`)
+      .filter((f: any) => !f.includes('exclude'));
     for (const testFileName of testFileNames) {
       if (!workflowTxt.includes(testFileName)) {
         throw Error(

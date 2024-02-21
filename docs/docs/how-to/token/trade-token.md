@@ -35,3 +35,8 @@ import TabItem from '@theme/TabItem';
     ```
   </TabItem>
 </Tabs>
+
+Get executed trades:
+
+```tsx file=../../../../packages/sdk/examples/token/https/trade.ts#L49-L69
+```
