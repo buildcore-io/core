@@ -1,5 +1,4 @@
 import fs from 'fs';
-import glob from 'glob';
 
 describe('Workflow test', () => {
   it('Test if workflow contains all files', async () => {
@@ -8,12 +7,13 @@ describe('Workflow test', () => {
     );
     const workflowTxt = buffer.toString();
 
+    const glob = require('glob');
     const testFileNames = glob
       .sync(`./test-tangle/**/*.spec.ts`)
-      .filter((f) => !f.includes('exclude'))
-      .filter((f) => !f.includes('only.spec.ts'))
-      .filter((f) => !f.includes('web3.spec'))
-      .filter((f) => !f.includes('dbRoll'));
+      .filter((f: any) => !f.includes('exclude'))
+      .filter((f: any) => !f.includes('only.spec.ts'))
+      .filter((f: any) => !f.includes('web3.spec'))
+      .filter((f: any) => !f.includes('dbRoll'));
     for (const testFileName of testFileNames) {
       if (!workflowTxt.includes(testFileName)) {
         throw Error(

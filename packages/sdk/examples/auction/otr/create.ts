@@ -1,10 +1,10 @@
 import { Dataset, Network } from '@build-5/interfaces';
-import { Build5, Build5OtrAddress, SoonaverseApiKey, https, otr } from '@build-5/sdk';
+import { Build5, SoonaverseOtrAddress, SoonaverseApiKey, https, otr } from '@build-5/sdk';
 
 async function main() {
   const origin = Build5.TEST;
   // @ts-ignore
-  const otrAddress = Build5OtrAddress[origin];
+  const otrAddress = SoonaverseOtrAddress[origin];
 
   try {
     // To create a generic auction we send an otr request with the needed params
