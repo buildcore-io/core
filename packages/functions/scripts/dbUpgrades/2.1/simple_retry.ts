@@ -14,9 +14,9 @@ export const EXECUTABLE = [
   TransactionType.AWARD,
   TransactionType.METADATA_NFT,
   TransactionType.STAMP,
-  // TransactionType.CREDIT,
-  // TransactionType.CREDIT_TANGLE_REQUEST,
-  // TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED,
+  TransactionType.CREDIT,
+  TransactionType.CREDIT_TANGLE_REQUEST,
+  TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED,
 ];
 
 export const retryNftWithdraw = async (app: FirebaseApp) => {
@@ -43,7 +43,20 @@ export const retryNftWithdraw = async (app: FirebaseApp) => {
     const batch = firestore.batch();
     for (const doc of snap.docs) {
       const data = doc.data() as Transaction;
-      if (EXECUTABLE.includes(data.type) && !data.payload.walletReference?.confirmed) {
+
+      if (!EXECUTABLE.includes(data.type)) {
+        continue;
+      }
+
+      if (data.ignoreWallet && data.payload.walletReference?.confirmed === false) {
+        batch.update(doc.ref, {
+          shouldRetry: false,
+          'payload.walletReference': admin.firestore.FieldValue.delete(),
+        });
+        continue;
+      }
+
+      if (!data.payload.walletReference?.confirmed) {
         ++retry;
         batch.update(doc.ref, {
           shouldRetry: true,
