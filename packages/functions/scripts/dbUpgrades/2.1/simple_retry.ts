@@ -56,17 +56,17 @@ export const retryNftWithdraw = async (app: FirebaseApp) => {
         continue;
       }
 
-      if (!data.payload.walletReference?.confirmed) {
-        ++retry;
-        batch.update(doc.ref, {
-          shouldRetry: true,
-          'payload.walletReference.confirmed': false,
-          'payload.walletReference.inProgress': false,
-          'payload.walletReference.chainReference': null,
-          'payload.walletReference.error': null,
-          'payload.walletReference.count': 1,
-        });
-      }
+      // if (!data.payload.walletReference?.confirmed) {
+      //   ++retry;
+      //   batch.update(doc.ref, {
+      //     shouldRetry: true,
+      //     'payload.walletReference.confirmed': false,
+      //     'payload.walletReference.inProgress': false,
+      //     'payload.walletReference.chainReference': null,
+      //     'payload.walletReference.error': null,
+      //     'payload.walletReference.count': 1,
+      //   });
+      // }
     }
     await batch.commit();
 
