@@ -6,7 +6,6 @@ import { last } from 'lodash';
 export const milestoneTransaction = async (app: FirebaseApp) => {
   const instance = app.getInstance() as admin.app.App;
   const firestore = instance.firestore();
-
   let lastDoc: any = undefined;
   let total = 0;
   do {
