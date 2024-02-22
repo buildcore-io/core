@@ -8,12 +8,12 @@ export const milestoneTransaction = async (app: FirebaseApp) => {
   const firestore = instance.firestore();
   let lastDoc: any = undefined;
   let total = 0;
-  // run
+  // run all
   do {
     let query = firestore
       .collectionGroup(SUB_COL.TRANSACTIONS)
       .where('processed', '==', false)
-      .where('createdOn', '<=', dayjs().subtract(1, 'h').toDate())
+      // .where('createdOn', '<=', dayjs().subtract(1, 'h').toDate())
       .orderBy('createdOn')
       .limit(50);
     if (lastDoc) {
