@@ -11,31 +11,54 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import { Build5, SoonaverseApiKey } from '@site/../packages/sdk/src/https';
 
-Build.5 API provides various ways to interact with our platform. Of course, you can read IOTA/Shimmer directly or use our friendly APIs or the Build.5 SDK directly to simplify access.
+Build.5 API provides various ways to interact with our platform. The recommended one is the [@build-5/sdk](https://www.npmjs.com/package/@build-5/sdk) which interacts through a REST API and our so called [OTRs](#otr) with the Build.5 platform.
 
 ## SDK
 
-The recommend way to interact with Build.5 is to use our library. Just add it to your project and get startet:
+Just add the SDK to your project and get startet:
 
 ```bash npm2yarn
 npm i @build-5/sdk
 npm i @build-5/interfaces
 ```
 
-## API
+The sdk is split into two modules to interact with the Build.5 platform. `otr` and `https`. Checkout the following sections to lern more.
 
-There are REST APIs to simplify read and write operations. See following:
-- [GET](reference-api) - Use this APIs to get any data from Build.5
-- [WSS](reference-api) - Any [GET](reference-api) can be requested as wss:// to receive web socket with real-time updates
-- [POST](reference-api) - Use these APIs to post any requests to Build.5 (alternative to [OTR](reference-api))
+## OTR
 
-:::info
+On tangle requests are a secure and transparent way to interact with build.5 products. They are a way to send a request to a build.5 backend over the Tangle as a transaction. 
+The backend will then execute the request encoded in the OTR. All interactions can be verified on the Tangle.
 
-We are in the process of migrating to so-called On Tangle Requests(OTR). Read more about them [here](on-tangle-request).
+Image Placeholder
+
+To use OTR with the SDK you need to choose an OTR Address and create an [otrWrapper](./reference-api/classes/OtrWrapper.md) object. Checkout this small example:
+```tsx file=../../packages/sdk/examples/basic_otr.ts
+```
+
+:::info Development Environment
+
+You can specify the environment you want to work in, by using the specific OTR Address. In the SDK you can use the [Build5OtrAddress enum](./reference-api/enums/Build5OtrAddress.md) to get the correct address.
 
 :::
 
-We provide two endpoints. One for testing and one for production. See below:
+## HTTPS
+
+The SDK also provides a wrapper for BUILD.5s API.
+
+:::info
+
+We are in the process of migrating POST requests to OTR.
+
+:::
+
+Image Placeholder
+
+To interact with the API you need to choose an endpoint you want to connect to and create an `httpsWrapper` object.
+Let's do a simple GET Request to get the member's object of `Santa Claus`:
+```tsx file=../../packages/sdk/examples/basic_https.ts
+```
+
+We provide two endpoints. One for testing and one for production.  In the SDK you can access them with the [Build5 enum](./reference-api/enums/Build5.md). You can also find them here:
 
 <Tabs groupId="environment">
   <TabItem value="production" label="Production Endpoint">
@@ -52,27 +75,12 @@ We provide two endpoints. One for testing and one for production. See below:
 
 > Make sure to consider [API's limitations](limitations)
 
-Let's do a simple GET Request to get the member's object of `@adam_unchained`:
+:::info API Keys
 
-```tsx
-import { Build5, https } from '@build-5/sdk';
-import { Dataset } from '@build-5/interfaces';
-
-const member = await https(origin).createProject(<YourProjectApiKey>)
-                                  .dataset(Dataset.MEMBER)
-                                  .id('0x551fd2c7c7bf356bac194587dab2fcd46420054b')
-                                  .get();
-
-console.log(member);
-```
-
-:::info Create Project
-
-Checkout the [Create Project](how-to/project/create-project) guide to create project.
+To work with the API you need access keys which you can get by [creating a project](./how-to/project/create-project.mdx).
+You can also use public Soonaverse keys to test against live community driven project. In the SDK you can access the following Keys through the [SoonaverseApiKey constant](./reference-api/modules#soonaverseapikey):
 
 :::
-
-You can also use public Soonaverse keys to test against live community driven project, see following tokens/keys:
 
 <Tabs groupId="environment">
   <TabItem value="production" label="Production Key">
