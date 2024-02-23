@@ -36,11 +36,17 @@ class HttpsWrapper {
     this.sendRequest(WEN_FUNC.createProject)<ProjectCreateRequest, ProjectCreateResponse>(req);
 }
 
+/**
+ * Build.5 API endpoints.
+ */
 export enum Build5 {
   PROD = 'https://api.build5.com',
   TEST = 'https://api-test.build5.com',
 }
 
+/**
+ * Build.5 Soonaverse API keys.
+ */
 export const SoonaverseApiKey: { [key: string]: string } = {
   [Build5.PROD]:
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIweDU1MWZkMmM3YzdiZjM1NmJhYzE5NDU4N2RhYjJmY2Q0NjQyMDA1NGIiLCJwcm9qZWN0IjoiMHg0NjIyM2VkZDQxNTc2MzVkZmM2Mzk5MTU1NjA5ZjMwMWRlY2JmZDg4IiwiaWF0IjoxNzAwMDAyODkwfQ.IYZvBRuCiN0uYORKnVJ0SzT_1H_2o5xyDBG20VmnTQ0',
