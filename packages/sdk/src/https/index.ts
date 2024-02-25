@@ -45,7 +45,7 @@ export enum Build5 {
 }
 
 /**
- * Build.5 Soonaverse API keys.
+ * Soonaverse API keys.
  */
 export const SoonaverseApiKey: { [key: string]: string } = {
   [Build5.PROD]:
