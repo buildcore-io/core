@@ -66,6 +66,11 @@ const sidebars = {
           ],
         },
         {
+          'Swap': [
+            'how-to/swap/create-swap',
+          ]
+        },
+        {
           'Stamp API': [
             'how-to/stamp/create-stamp',
           ],
@@ -105,6 +110,8 @@ const sidebars = {
         {
           'Token Distribution API': ['how-to/token-distribution/overview'],
         },
+        'how-to/get',
+        'how-to/track-otrs'
       ],
     },
     {

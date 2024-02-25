@@ -58,7 +58,6 @@ describe('Swap control test', () => {
     expect(credit.payload.response?.address).toBeDefined();
     expect(credit.payload.response?.swap).toBeDefined();
     const swapAddress = credit.payload.response?.address as string;
-    console.log('ok');
     const swapUid = credit.payload.response?.swap!;
     await h.wallet.send(address, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
       customMetadata: { request: { requestType: TangleRequestType.SET_SWAP_FUNDED, uid: swapUid } },

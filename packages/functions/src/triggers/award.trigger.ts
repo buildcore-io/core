@@ -3,13 +3,12 @@ import {
   Award,
   AwardBadgeType,
   COL,
-  Member,
   Token,
   Transaction,
   TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
-import { getAddress } from '../utils/address.utils';
+import { head } from 'lodash';
 import { getProject } from '../utils/common.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 import { FirestoreDocEvent } from './common';
@@ -25,9 +24,7 @@ export const onAwardUpdated = async (event: FirestoreDocEvent<Award>) => {
     curr.completed &&
     curr.badgesMinted === curr.issued
   ) {
-    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${curr.fundedBy}`);
-    const member = await memberDocRef.get<Member>();
-    const targetAddress = getAddress(member, curr.network);
+    const targetAddress = await getReturnAddress(curr);
 
     const burnAlias = <Transaction>{
       project: getProject(curr),
@@ -80,10 +77,7 @@ export const onAwardUpdated = async (event: FirestoreDocEvent<Award>) => {
     curr.completed &&
     curr.airdropClaimed === curr.issued
   ) {
-    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${curr.fundedBy}`);
-    const member = await memberDocRef.get<Member>();
-    const targetAddress = getAddress(member, curr.network);
-
+    const targetAddress = await getReturnAddress(curr);
     const remainingBadges = curr.badge.total - curr.issued;
 
     const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${curr.badge.tokenUid}`);
@@ -118,4 +112,18 @@ export const onAwardUpdated = async (event: FirestoreDocEvent<Award>) => {
     };
     await build5Db().doc(`${COL.TRANSACTION}/${nativeTokensCredit.uid}`).create(nativeTokensCredit);
   }
+};
+
+const getReturnAddress = async (award: Award) => {
+  if (award.fundingAddress) {
+    return award.fundingAddress;
+  }
+  const snap = await build5Db()
+    .collection(COL.TRANSACTION)
+    .where('type', '==', TransactionType.PAYMENT)
+    .where('payload.targetAddress', '==', award.address)
+    .where('payload.invalidPayment', '==', false)
+    .limit(1)
+    .get<Transaction>();
+  return head(snap)?.payload.sourceAddress || '';
 };

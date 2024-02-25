@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { build5Db } from '@build-5/database';
-import { COL, MIN_IOTA_AMOUNT, Network, Nft } from '@build-5/interfaces';
+import { COL, MIN_IOTA_AMOUNT, Network } from '@build-5/interfaces';
 import {
   Ed25519Address,
   NftAddress,
@@ -20,7 +20,7 @@ import { packBasicOutput } from '../../src/utils/basic-output.utils';
 import { createUnlock, packEssence, submitBlock } from '../../src/utils/block.utils';
 import { EMPTY_NFT_ID, createNftOutput } from '../../src/utils/collection-minting-utils/nft.utils';
 import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { getWallet, testEnv } from '../../test/set-up';
+import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 import { awaitLedgerInclusionState, requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
@@ -35,18 +35,16 @@ describe('Collection minting', () => {
     await helper.beforeEach();
   });
 
-  it('Should migrate, nft has ipfs url ', async () => {
+  it('Should deposit nft with missing description metadata', async () => {
     await mintAndDeposit(
       {
         collectionName: 'test-collection',
-        uri: 'https://ipfs.io/ipfs/bafkreiapx7kczhfukx34ldh3pxhdip5kgvh237dlhp55koefjo6tyupnj4',
+        uri: MEDIA,
         name: 'nft-name',
-        description: 'nft-description',
       },
       {
         uri: 'https://shimmer.network',
         name: 'test',
-        description: 'test',
       },
     );
     const query = build5Db().collection(COL.NFT).where('owner', '==', helper.guardian);
@@ -54,31 +52,6 @@ describe('Collection minting', () => {
       const snap = await query.get();
       return snap.length === 1;
     });
-  });
-
-  it('Should migrated collection not minted with alias and claim space', async () => {
-    await mintAndDeposit(
-      {
-        collectionName: 'test-collection',
-        uri: 'ipfs://bafkreiapx7kczhfukx34ldh3pxhdip5kgvh237dlhp55koefjo6tyupnj4',
-        name: 'nft-name',
-        description: 'nft-description',
-      },
-      {
-        uri: 'ipfs://bafkreiapx7kczhfukx34ldh3pxhdip5kgvh237dlhp55koefjo6tyupnj4',
-        name: 'test',
-        description: 'test',
-      },
-    );
-    const query = build5Db().collection(COL.NFT).where('owner', '==', helper.guardian);
-    await wait(async () => {
-      const snap = await query.get();
-      return snap.length === 1;
-    });
-    const snap = await query.get();
-    const migratedNft = <Nft>snap[0];
-
-    await helper.claimSpaceFunc(migratedNft.space);
   });
 
   const mintAndDeposit = async (nftMetadata: any, collectionMetadata: any) => {

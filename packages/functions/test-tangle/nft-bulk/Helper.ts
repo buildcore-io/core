@@ -57,9 +57,7 @@ export class Helper {
     const cCollection = await testEnv.wrap(createCollection)({});
     expect(cCollection?.uid).toBeDefined();
 
-    await build5Db()
-      .doc(`${COL.COLLECTION}/${cCollection?.uid}`)
-      .update({ approved: true });
+    await build5Db().doc(`${COL.COLLECTION}/${cCollection?.uid}`).update({ approved: true });
     const collection = <Collection>cCollection;
 
     const nft = await this.createNft(address, collection);

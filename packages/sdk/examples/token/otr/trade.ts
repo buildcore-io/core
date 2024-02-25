@@ -1,9 +1,9 @@
 import { Dataset } from '@build-5/interfaces';
-import { otr } from '@build-5/sdk';
+import { otr, SoonaverseOtrAddress } from '@build-5/sdk';
 
 async function main() {
   // @ts-ignore
-  const otrAddress = Build5OtrAddress[origin];
+  const otrAddress = SoonaverseOtrAddress[origin];
 
   try {
     const otrRequestBuy = await otr(otrAddress).dataset(Dataset.TOKEN).buyToken({

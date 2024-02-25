@@ -63,6 +63,7 @@ export class AwardFundService extends BaseService {
         funded: true,
         address: order.payload.targetAddress,
         fundedBy: order.member,
+        fundingAddress: match.from,
         mediaStatus: MediaStatus.PENDING_UPLOAD,
       },
       action: 'update',

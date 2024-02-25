@@ -11,8 +11,8 @@ import {
   BasicOutput,
   BasicOutputBuilderParams,
   CoinType,
-  CommonOutput,
   FoundryOutput,
+  INativeToken,
   NftOutput,
   NftOutputBuilderParams,
   OutputType,
@@ -22,7 +22,7 @@ import {
   Unlock,
   Utils,
 } from '@iota/sdk';
-import { cloneDeep, head, isEmpty } from 'lodash';
+import { cloneDeep, get, head, isEmpty } from 'lodash';
 import { mergeOutputs, packBasicOutput } from '../../utils/basic-output.utils';
 import { Bech32AddressHelper } from '../../utils/bech32-address.helper';
 import { createUnlock, packEssence, submitBlock } from '../../utils/block.utils';
@@ -46,13 +46,10 @@ export class IotaWallet extends Wallet {
     let totalAmount = BigInt(0);
     const totalNativeTokens: { [id: string]: number } = {};
     for (const outputResponse of outputs) {
-      const output = outputResponse.output;
-      if (output instanceof CommonOutput) {
-        (output as CommonOutput).getNativeTokens()?.forEach((token) => {
-          totalNativeTokens[token.id] = (totalNativeTokens[token.id] || 0) + Number(token.amount);
-        });
-      }
-      totalAmount += output.getAmount();
+      get(outputResponse.output, 'nativeTokens', [] as INativeToken[]).forEach((token) => {
+        totalNativeTokens[token.id] = (totalNativeTokens[token.id] || 0) + Number(token.amount);
+      });
+      totalAmount += outputResponse.output.getAmount();
     }
     return { amount: Number(totalAmount), nativeTokens: totalNativeTokens };
   };
