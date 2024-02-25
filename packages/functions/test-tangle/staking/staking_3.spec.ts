@@ -21,9 +21,7 @@ describe('Staking test', () => {
 
   const validateMemberTradingFee = async (expected: number) => {
     await wait(async () => {
-      helper.member = <Member>await build5Db()
-        .doc(`${COL.MEMBER}/${helper.member?.uid}`)
-        .get();
+      helper.member = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.member?.uid}`).get();
       return helper.member.tokenTradingFeePercentage === expected;
     });
   };

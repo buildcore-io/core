@@ -49,9 +49,7 @@ describe('Collection minting', () => {
         await build5Db().doc(`${COL.COLLECTION}/${helper.collection}`).get()
       );
       expect(collectionData.total).toBe(1);
-      nft = <Nft>await build5Db()
-        .doc(`${COL.NFT}/${nft?.uid}`)
-        .get();
+      nft = <Nft>await build5Db().doc(`${COL.NFT}/${nft?.uid}`).get();
       expect(nft.isOwned).toBe(true);
       expect(nft.owner).toBe(helper.guardian);
       expect(nft.sold).toBe(true);

@@ -16,6 +16,7 @@ import {
   PropStats,
   Space,
   Transaction,
+  TransactionPayloadType,
   WenError,
 } from '@build-5/interfaces';
 import { NftOutput } from '@iota/sdk';
@@ -54,7 +55,11 @@ export class NftDepositService extends BaseService {
       });
     } catch (error) {
       const payment = await this.transactionService.createPayment(order, match, true);
-      this.transactionService.createNftCredit(payment, match, error as Record<string, unknown>);
+      if (tranEntry.nftOutput) {
+        this.transactionService.createNftCredit(payment, match, error as Record<string, unknown>);
+      } else {
+        this.transactionService.createCredit(TransactionPayloadType.DEPOSIT_NFT, payment, match);
+      }
     }
   };
 
@@ -64,7 +69,7 @@ export class NftDepositService extends BaseService {
     match: TransactionMatch,
   ) => {
     if (!transactionEntry.nftOutput) {
-      throw WenError.invalid_params;
+      throw WenError.invalid_nft_id;
     }
     const nft = await getNftByMintingId(transactionEntry.nftOutput.nftId);
     if (!nft) {
@@ -265,17 +270,22 @@ export class NftDepositService extends BaseService {
   };
 
   private validateInputAndGetMetadata = async (order: Transaction, nftOutput: NftOutput) => {
-    const nftMetadata = getNftOutputMetadata(nftOutput);
-    set(nftMetadata, 'collectionId', getIssuerNftId(nftOutput));
-    if (!isMetadataIrc27(nftMetadata, nftIrc27Schema)) {
+    const nftMetadata = isMetadataIrc27(
+      { ...getNftOutputMetadata(nftOutput), collectionId: getIssuerNftId(nftOutput) },
+      nftIrc27Schema,
+    );
+    if (!nftMetadata) {
       throw WenError.nft_not_irc27_compilant;
     }
 
     const wallet = await WalletService.newWallet(order.network);
     const nftWallet = new NftWallet(wallet);
     const collectionOutput = await nftWallet.getById(nftMetadata.collectionId);
-    const collectionMetadata = getNftOutputMetadata(collectionOutput);
-    if (!isMetadataIrc27(collectionMetadata, collectionIrc27Scheam)) {
+    const collectionMetadata = isMetadataIrc27(
+      getNftOutputMetadata(collectionOutput),
+      collectionIrc27Scheam,
+    );
+    if (!collectionMetadata) {
       throw WenError.collection_not_irc27_compilant;
     }
 

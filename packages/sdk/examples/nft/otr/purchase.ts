@@ -1,12 +1,12 @@
 import { Dataset } from '@build-5/interfaces';
-import { Build5, Build5OtrAddress, https, otr, SoonaverseApiKey } from '@build-5/sdk';
+import { Build5, SoonaverseOtrAddress, https, otr, SoonaverseApiKey } from '@build-5/sdk';
 
 const collectionId = 'build5collectionid1';
 const nftId = 'build5nftid1';
 
 const origin = Build5.TEST;
 // @ts-ignore
-const otrAddress = Build5OtrAddress[origin];
+const otrAddress = SoonaverseOtrAddress[origin];
 
 async function main() {
   const otrRequest = otr(otrAddress)

@@ -435,7 +435,7 @@ export class TransactionService {
     tran: MilestoneTransaction,
     order: Transaction,
     tranOutput: MilestoneTransactionEntry,
-    build5Transaction?: Transaction,
+    build5Transaction: Transaction | undefined,
   ): Promise<void> {
     const fromAddress = await this.getFromAddress(tran, order, build5Transaction);
     if (fromAddress) {
@@ -447,10 +447,15 @@ export class TransactionService {
       const payment = await this.createPayment(order, match, true);
       const ignoreWalletReason = this.getIngnoreWalletReason(tranOutput.unlockConditions);
       const expiresOn = this.expiresOn(tranOutput.unlockConditions);
+      if (expiresOn && dayjs(expiresOn.toDate()).isBefore(dayjs())) {
+        return;
+      }
+
       if (match.to.nftOutput?.nftId) {
         this.createNftCredit(payment, match, undefined, undefined, ignoreWalletReason, expiresOn);
         return;
       }
+
       await this.createCredit(
         TransactionPayloadType.INVALID_PAYMENT,
         payment,
@@ -539,8 +544,8 @@ export class TransactionService {
     });
   };
 
-  public getExpirationUnlock = (unlockCondiiton: UnlockCondition[] = []) =>
-    unlockCondiiton.find((u) => u.type === UnlockConditionType.Expiration) as
+  public getExpirationUnlock = (unlockCondition: UnlockCondition[] = []) =>
+    unlockCondition.find((u) => u.type === UnlockConditionType.Expiration) as
       | ExpirationUnlockCondition
       | undefined;
 

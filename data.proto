@@ -18,7 +18,6 @@ package google.events.cloud.firestore.v1;
 
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
-import "google/type/latlng.proto";
 
 option csharp_namespace = "Google.Events.Protobuf.Cloud.Firestore.V1";
 option php_namespace = "Google\\Events\\Cloud\\Firestore\\V1";

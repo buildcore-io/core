@@ -13,13 +13,15 @@ import DeepLink from '../../_admonitions/_deep_link.md'
 
 <Tabs>
   <TabItem value="otr" label="OTR">
-    To purchase NFT, you must call [`purchase`](../../reference-api/classes/NftOtrDataset.md#purchase) on `dataset(Dataset.NFT)`.
+    To purchase an NFT, you must call [`purchase`](../../reference-api/classes/NftOtrDataset.md#purchase) on `dataset(Dataset.NFT)`.
     [`purchase`](../../reference-api/classes/NftOtrDataset.md#purchase) takes an object of type [`NftPurchaseTangleRequest`](../../reference-api/interfaces/NftPurchaseTangleRequest.md) as parameter.
 
-    ```tsx file=../../../../packages/sdk/examples/nft/otr/purchase.ts#L4-L27
+    ```tsx file=../../../../packages/sdk/examples/nft/otr/purchase.ts#L12-L14
     ```
 
     <DeepLink/>
+
+    If you want to track the purchase you can use the [track](../track-otrs.md) how-to.
   </TabItem>  
   <TabItem value="https" label="HTTPS">
     TODO

@@ -1,4 +1,4 @@
-import { Dataset, Network } from '@build-5/interfaces';
+import { Dataset, Network, TokenTradeOrderStatus, TokenTradeOrderType } from '@build-5/interfaces';
 import { Build5, SoonaverseApiKey, https } from '@build-5/sdk';
 import { address } from '../../utils/secret';
 import { walletSign } from '../../utils/utils';
@@ -42,3 +42,35 @@ async function main() {
 }
 
 main().then(() => process.exit());
+mainRead().then(() => process.exit());
+
+// Other examples
+async function mainRead() {
+  // Get all active BUYs through live stream. Use getMemberBidsLive to get member's one.
+  const tokenId = 'tokenId';
+  await https(origin)
+    .project(SoonaverseApiKey[origin])
+    .dataset(Dataset.TOKEN_MARKET)
+    .getBidsLive(tokenId, TokenTradeOrderType.BUY, TokenTradeOrderStatus.ACTIVE)
+    .subscribe((bids) => {
+      console.log(bids);
+    });
+
+  // Get all active SELLs through live stream. Use getMemberBidsLive to get member's one.
+  await https(origin)
+    .project(SoonaverseApiKey[origin])
+    .dataset(Dataset.TOKEN_MARKET)
+    .getBidsLive(tokenId, TokenTradeOrderType.SELL, TokenTradeOrderStatus.ACTIVE)
+    .subscribe((bids) => {
+      console.log(bids);
+    });
+
+  // Get live stream of token purchases
+  await https(origin)
+    .project(SoonaverseApiKey[origin])
+    .dataset(Dataset.TOKEN_PURCHASE)
+    .getPuchasesLive(tokenId)
+    .subscribe((bids) => {
+      console.log(bids);
+    });
+}

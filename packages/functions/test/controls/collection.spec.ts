@@ -421,9 +421,7 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
       WenError.you_must_be_the_creator_of_this_collection.key,
     );
 
-    await build5Db()
-      .doc(`${COL.COLLECTION}/${cCollection?.uid}`)
-      .update({ approved: true });
+    await build5Db().doc(`${COL.COLLECTION}/${cCollection?.uid}`).update({ approved: true });
 
     mockWalletReturnValue(walletSpy, secondGuardian, updateData);
     const uCollection = await testEnv.wrap(updateCollection)({});

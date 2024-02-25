@@ -29,9 +29,7 @@ describe('Base token trading', () => {
       customMetadata: { request: { requestType: TangleRequestType.SELL_TOKEN } },
     });
 
-    const query = build5Db()
-      .collection(COL.TOKEN_MARKET)
-      .where('owner', '==', h.seller?.uid);
+    const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', h.seller?.uid);
     await wait(async () => {
       const snap = await query.get();
       return snap.length === 1;

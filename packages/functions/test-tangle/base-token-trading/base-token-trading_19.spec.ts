@@ -31,9 +31,7 @@ describe('Base token trading', () => {
       },
     });
 
-    const query = build5Db()
-      .collection(COL.TOKEN_MARKET)
-      .where('owner', '==', h.buyer?.uid);
+    const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', h.buyer?.uid);
     await wait(async () => {
       const snap = await query.get();
       return snap.length === 1;
