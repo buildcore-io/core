@@ -16,7 +16,6 @@ const sidebars = {
   tutorialSidebar: [
     'overview',
     'getting-started',
-    'on-tangle-request',
     {
       type: 'category',
       label: 'How To',
@@ -30,7 +29,12 @@ const sidebars = {
           ],
         },
         {
-          'Auction API': ['how-to/auction/create'],
+          'Auction API': [
+            'how-to/auction/create',
+            'how-to/auction/bid',
+            'how-to/auction/get-by-id',
+            'how-to/auction/get',
+          ],
         },
         {
           'DAO Management': [

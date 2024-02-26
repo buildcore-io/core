@@ -91,7 +91,7 @@ export enum WEN_FUNC {
   createauction = 'createauction',
   bidAuction = 'bidauction',
 
-  nftTransfer = 'nftTransfer',
+  nftTransfer = 'nfttransfer',
   mintMetadataNft = 'mintmetadatanft',
 
   createSwap = 'createswap',

@@ -7,6 +7,7 @@
 export * from '../interfaces/doc';
 
 // HTTPS functions.
+export * from './src/https';
 export * from './src/https/https';
 
 // Datasets
@@ -54,6 +55,7 @@ export * from './src/https/fetch.utils';
 export * from './src/https/tag.tracker';
 
 // OTR Functions
+export * from './src/otr';
 export * from './src/otr/otr';
 
 // Datasets

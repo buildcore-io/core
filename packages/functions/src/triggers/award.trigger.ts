@@ -3,13 +3,12 @@ import {
   Award,
   AwardBadgeType,
   COL,
-  Member,
   Token,
   Transaction,
   TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
-import { getAddress } from '../utils/address.utils';
+import { head } from 'lodash';
 import { getProject } from '../utils/common.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 import { FirestoreDocEvent } from './common';
@@ -119,7 +118,12 @@ const getReturnAddress = async (award: Award) => {
   if (award.fundingAddress) {
     return award.fundingAddress;
   }
-  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${award.fundedBy}`);
-  const member = await memberDocRef.get<Member>();
-  return getAddress(member, award.network);
+  const snap = await build5Db()
+    .collection(COL.TRANSACTION)
+    .where('type', '==', TransactionType.PAYMENT)
+    .where('payload.targetAddress', '==', award.address)
+    .where('payload.invalidPayment', '==', false)
+    .limit(1)
+    .get<Transaction>();
+  return head(snap)?.payload.sourceAddress || '';
 };
