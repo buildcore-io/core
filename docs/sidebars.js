@@ -19,10 +19,10 @@ const sidebars = {
     {
       type: 'category',
       label: 'How To',
-      link: {type: 'doc', id: 'how-to/overview'},
       collapsible: true,
       collapsed: false,
       items: [
+        'how-to/introduction',
         {
           'Projects': [
             'how-to/project/create-project',
