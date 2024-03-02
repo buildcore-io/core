@@ -41,6 +41,8 @@ import TabItem from '@theme/TabItem';
 
     ```tsx file=../../../../packages/sdk/examples/token/https/trade.ts#L19-L35
     ```
+
+    [`tradeToken`](../../reference-api/classes/TokenMarketDataset.md#tradetoken) returns an oject of type [`Transaction`](../../reference-api/interfaces/Transaction.md).
   </TabItem>
 </Tabs>
 

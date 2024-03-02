@@ -24,6 +24,8 @@ If you are interested in getting Auctions by other filters, have a loot at the [
 
     ```tsx file=../../../../packages/sdk/examples/auction/https/get_by_id.ts#L11-L15
     ```
+
+    `get()` returns an oject of type [`Auction`](../../reference-api/interfaces/Auction.md).
   </TabItem>
 </Tabs>
 

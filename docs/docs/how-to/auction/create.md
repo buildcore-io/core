@@ -34,6 +34,8 @@ The create Auction functionality allows you to run generic auction without or wi
     ```tsx file=../../../../packages/sdk/examples/auction/https/create.ts#L12-L32
     ```
 
+    [`create`](../../reference-api/classes/NftDataset.md#create) returns an oject of type [`Auction`](../../reference-api/interfaces/Auction.md).
+
     You can use the `Auction ID` to [`bid`](./bid.md) on the Auction or get more [`info`](./get-by-id.md) about it.
   </TabItem>
 </Tabs>

@@ -20,7 +20,7 @@ The Stamp API allows you to easily upload a file to IPFS and stamp it on the IOT
     ```tsx file=../../../../packages/sdk/examples/stamp/otr/create.ts#L11-L13
     ```
 
-    [`stamp`](../../reference-api/classes/StamptOtrDataset.md#stamp) returns an oject of type [`OtrRequest`](../../reference-api/classes/DatasetClassOtr.OtrRequest.md)`<`[`StampTangleRequest`](../../reference-api/interfaces/StampTangleRequest.md)`>`
+    [`stamp`](../../reference-api/classes/StamptOtrDataset.md#stamp) returns an oject of type [`OtrRequest`](../../reference-api/classes/DatasetClassOtr.OtrRequest.md)`<`[`StampTangleRequest`](../../reference-api/interfaces/StampTangleRequest.md)`>`.
 
 
 :::info Days Parameter
@@ -34,6 +34,8 @@ When you create a stamp, you can specify the number of days the stamped file sho
 
     ```tsx file=../../../../packages/sdk/examples/stamp/https/create.ts#L13-L27
     ```
+    
+    [`stamp`](../../reference-api/classes/StampDataset.md#stamp) returns an oject of type [`Transaction`](../../reference-api/interfaces/Transaction.md).
   </TabItem>
 </Tabs>
 

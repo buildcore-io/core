@@ -7,6 +7,8 @@ To validate the address of a member, you must call [`validateAddress`](../../../
 ```tsx file=../../../../../packages/sdk/examples/member/validate_address.ts#L16-L30
 ```
 
+[`validateAddress`](../../../reference-api/classes/MemberDataset.md#validateaddress) returns an oject of type [`Transaction`](../../../reference-api/interfaces/Transaction.md).
+
 import ValidateAddress from '../../../_admonitions/_validate-address.md';
 
 <ValidateAddress/>

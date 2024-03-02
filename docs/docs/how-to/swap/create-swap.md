@@ -30,6 +30,8 @@ import DeepLink from '../../_admonitions/_deep_link.md'
     ```tsx file=../../../../packages/sdk/examples/swap/https/create.ts#L14-L29
     ```
 
+    [`create`](../../reference-api/classes/SwapDataset.md#create) returns an oject of type [`Transaction`](../../reference-api/interfaces/Transaction.md)
+
     afterwards you need to fund a specific address:
 
     ```tsx file=../../../../packages/sdk/examples/swap/https/create.ts#L31
@@ -39,7 +41,8 @@ import DeepLink from '../../_admonitions/_deep_link.md'
 
     ```tsx file=../../../../packages/sdk/examples/swap/https/create.ts#L35-L46
     ```
-    
+
+    [`setFunded`](../../reference-api/classes/SwapDataset.md#setfunded) returns an oject of type [`Transaction`](../../reference-api/interfaces/Transaction.md)
   </TabItem>
 </Tabs>
 
