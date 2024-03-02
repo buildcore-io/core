@@ -20,6 +20,8 @@ You can bid on any auction. The only thing you need is an `Auction ID` and the f
     ```tsx file=../../../../packages/sdk/examples/auction/otr/bid.ts#L11-L13
     ```
 
+    [`bid`](../../reference-api/classes/AuctionOtrDataset.md#bid) returns an oject of type [`OtrRequest`](../../reference-api/classes/DatasetClassOtr.OtrRequest.md)`<`[`AuctionBidTangleRequest`](../../reference-api/interfaces/AuctionBidTangleRequest.md)`>`
+
     <DeepLink/>
     
     With the Deeplink you can then send your bid assets for the auction.

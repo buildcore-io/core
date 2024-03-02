@@ -20,6 +20,8 @@ The create Auction functionality allows you to run generic auction without or wi
     ```tsx file=../../../../packages/sdk/examples/auction/otr/create.ts#L11-L19
     ```
 
+    [`create`](../../reference-api/classes/AuctionOtrDataset.md#create) returns an oject of type [`OtrRequest`](../../reference-api/classes/DatasetClassOtr.OtrRequest.md)`<`[`AuctionCreateTangleRequest`](../../reference-api/interfaces/AuctionCreateTangleRequest.md)`>`
+
     <DeepLink/>
     
     The response transaction to your OTR will include an `Auction ID` which others can use to [bid](./bid.md) on your auction or to get more [info](./get-by-id.md) about your Auction. 

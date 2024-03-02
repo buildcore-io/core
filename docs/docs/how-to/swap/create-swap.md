@@ -19,6 +19,8 @@ import DeepLink from '../../_admonitions/_deep_link.md'
     ```tsx file=../../../../packages/sdk/examples/swap/otr/create.ts#L21-L27
     ```
 
+    [`create`](../../reference-api/classes/SwapOtrDataset.md#create) returns an oject of type [`OtrRequest`](../../reference-api/classes/DatasetClassOtr.OtrRequest.md)`<`[`SwapCreateTangleRequest`](../../reference-api/interfaces/SwapCreateTangleRequest.md)`>`
+
     <DeepLink/>
   </TabItem>  
   <TabItem value="https" label="HTTPS">

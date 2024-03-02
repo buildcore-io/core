@@ -19,6 +19,8 @@ import DeepLink from '../../_admonitions/_deep_link.md'
     ```tsx file=../../../../packages/sdk/examples/nft/otr/purchase.ts#L12-L14
     ```
 
+    [`purchase`](../../reference-api/classes/NftOtrDataset.md#purchase) returns an oject of type [`OtrRequest`](../../reference-api/classes/DatasetClassOtr.OtrRequest.md)`<`[`NftPurchaseTangleRequest`](../../reference-api/interfaces/NftPurchaseTangleRequest.md)`>`
+
     <DeepLink/>
 
     If you want to track the purchase you can use the [track](../track-otrs.md) how-to.

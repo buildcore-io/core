@@ -19,6 +19,8 @@ import DeepLink from '../../_admonitions/_deep_link.md'
     ```tsx file=../../../../packages/sdk/examples/nft/otr/bulk_purchase.ts#L12-L14
     ```
 
+    [`bulkPurchase`](../../reference-api/classes/NftOtrDataset.md#bulkpurchase) returns an oject of type [`OtrRequest`](../../reference-api/classes/DatasetClassOtr.OtrRequest.md)`<`[`NftPurchaseBulkRequest`](../../reference-api/interfaces/NftPurchaseBulkRequest.md)`>`
+
     <DeepLink/>
   </TabItem>  
   <TabItem value="https" label="HTTPS">

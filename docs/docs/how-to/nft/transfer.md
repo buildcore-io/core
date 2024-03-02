@@ -19,6 +19,8 @@ import DeepLink from '../../_admonitions/_deep_link.md'
     ```tsx file=../../../../packages/sdk/examples/nft/otr/transfer.ts#L9-L16
     ```
 
+    [`transfer`](../../reference-api/classes/NftOtrDataset.md#transfer) returns an oject of type [`OtrRequest`](../../reference-api/classes/DatasetClassOtr.OtrRequest.md)`<`[`NftTransferTangleRequest`](../../reference-api/interfaces/NftTransferTangleRequest.md)`>`
+
     <DeepLink/>
   </TabItem>  
   <TabItem value="https" label="HTTPS">

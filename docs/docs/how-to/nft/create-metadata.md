@@ -18,6 +18,8 @@ import DeepLink from '../../_admonitions/_deep_link.md'
     ```tsx file=../../../../packages/sdk/examples/nft/otr/nft.metadata.otr.ts#L6-L10
     ```
 
+    [`mintMetadataNft`](../../reference-api/classes/NftOtrDataset.md#mintmetadatanft) returns an oject of type [`OtrRequest`](../../reference-api/classes/DatasetClassOtr.OtrRequest.md)`<`[`MintMetadataNftTangleRequest`](../../reference-api/interfaces/MintMetadataNftTangleRequest.md)`>`
+
     <DeepLink/>
   </TabItem>  
   <TabItem value="https" label="HTTPS">
