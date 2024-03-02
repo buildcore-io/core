@@ -13,7 +13,9 @@ HTTPS requests often return a [Transaction](../reference-api/interfaces/Transact
 OTR requests always return an [OtrRequest](../reference-api/classes/DatasetClassOtr.OtrRequest.md) containing a request-specific object. In most cases, you want to use [getBloomDeepLink](../reference-api/classes/DatasetClassOtr.OtrRequest.md#getbloomdeeplink) or [getFireflyDeepLink](../reference-api/classes/DatasetClassOtr.OtrRequest.md#getfireflydeeplink) to get the corresponding deep link so your wallet knows how to create your OTR.
 Look at the [Getting Started](../getting-started.mdx) section to learn more about the technical differences between HTTPS and OTR requests.
 
+## Error Handling
 
+Most functions will trow a [WenError](../reference-api/modules.md#wenerror) if the fail.
 
 <!-- TODO: Uncomment once the repo is public
 :::tip
