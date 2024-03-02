@@ -12,7 +12,7 @@ import DeepLink from '../../_admonitions/_deep_link.md'
 
 You can bid on any auction. The only thing you need is an `Auction ID` and the funds you want to use for your bid.
 
-<Tabs>
+<Tabs groupId="request-type">
   <TabItem value="otr" label="OTR">
     To bid on an Auction, you must call [`bid`](../../reference-api/classes/AuctionOtrDataset.md#bid) on `dataset(Dataset.AUCTION)`.
     [`bid`](../../reference-api/classes/AuctionOtrDataset.md#bid) takes an object of type [`AuctionBidTangleRequest`](../../reference-api/interfaces/AuctionBidTangleRequest.md) as parameter.
@@ -38,3 +38,16 @@ You can bid on any auction. The only thing you need is an `Auction ID` and the f
 If you are interested in more details about a specific auction, you can check out [this](./get-by-id.md) how-to.
 
 :::
+
+## Full How-To Code
+
+<Tabs groupId="request-type">
+  <TabItem value="otr" label="OTR">
+    ```tsx file=../../../../packages/sdk/examples/auction/otr/bid.ts
+    ```
+  </TabItem>  
+  <TabItem value="https" label="HTTPS">
+    ```tsx file=../../../../packages/sdk/examples/auction/https/bid.ts
+    ```
+  </TabItem>
+</Tabs>

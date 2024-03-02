@@ -10,3 +10,8 @@ Minting the token creates the token on the specified network. You can mint the t
 
 ```tsx file=../../../../packages/sdk/examples/token/https/mint.ts#L17-L31
 ```
+
+## Full How-To Code
+
+```tsx file=../../../../packages/sdk/examples/token/https/mint.ts
+```

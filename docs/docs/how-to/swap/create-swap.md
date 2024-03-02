@@ -11,7 +11,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import DeepLink from '../../_admonitions/_deep_link.md'
 
-<Tabs>
+<Tabs groupId="request-type">
   <TabItem value="otr" label="OTR">
     To create a swap order, you must call [`create`](../../reference-api/classes/SwapOtrDataset.md#create) on `dataset(Dataset.SWAP)`.
     [`create`](../../reference-api/classes/SwapOtrDataset.md#create) takes an object of type [`SwapCreateTangleRequest`](../../reference-api/interfaces/SwapCreateTangleRequest.md) as parameter, in which you can specify the recipient, native tokens, NFTs and base token you are interested in.
@@ -46,3 +46,16 @@ import DeepLink from '../../_admonitions/_deep_link.md'
 With `setFunded`, you can specify if you, as the bidder, are giving your final bid or keeping it open.
 
 :::
+
+## Full How-To Code
+
+<Tabs groupId="request-type">
+  <TabItem value="otr" label="OTR">
+    ```tsx file=../../../../packages/sdk/examples/swap/otr/create.ts
+    ```
+  </TabItem>  
+  <TabItem value="https" label="HTTPS">
+    ```tsx file=../../../../packages/sdk/examples/swap/https/create.ts
+    ```
+  </TabItem>
+</Tabs>

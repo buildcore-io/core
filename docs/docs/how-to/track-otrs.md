@@ -18,3 +18,8 @@ You can use the tag to get an observable object by calling [`trackByTag`](../ref
 
 ```tsx file=../../../packages/sdk/examples/nft/otr/purchase.ts#L25-L27
 ```
+
+## Full How-To Code
+
+```tsx file=../../../packages/sdk/examples/nft/otr/purchase.ts
+```

@@ -12,7 +12,7 @@ import DeepLink from '../../_admonitions/_deep_link.md'
 
 The create Auction functionality allows you to run generic auction without or with an asset. Asset can be an NFT. You can also [bid](./bid.md) on an Auction or get more [infos](./get-by-id.md) about a specific Auction.
 
-<Tabs>
+<Tabs groupId="request-type">
   <TabItem value="otr" label="OTR">
     To create auction, you must call [`create`](../../reference-api/classes/AuctionOtrDataset.md#create) on `dataset(Dataset.AUCTION)`.
     [`create`](../../reference-api/classes/AuctionOtrDataset.md#create) takes an object of type [`AuctionCreateTangleRequest`](../../reference-api/interfaces/AuctionCreateTangleRequest.md) as parameter.
@@ -33,5 +33,18 @@ The create Auction functionality allows you to run generic auction without or wi
     ```
 
     You can use the `Auction ID` to [`bid`](./bid.md) on the Auction or get more [`info`](./get-by-id.md) about it.
+  </TabItem>
+</Tabs>
+
+## Full How-To Code
+
+<Tabs groupId="request-type">
+  <TabItem value="otr" label="OTR">
+    ```tsx file=../../../../packages/sdk/examples/auction/otr/create.ts
+    ```
+  </TabItem>  
+  <TabItem value="https" label="HTTPS">
+    ```tsx file=../../../../packages/sdk/examples/auction/https/create.ts
+    ```
   </TabItem>
 </Tabs>

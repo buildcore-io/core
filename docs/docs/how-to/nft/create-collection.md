@@ -39,3 +39,8 @@ As a last step, you can mint the batch of NFTs by calling [`createBatch`](../../
 
 ```tsx file=../../../../packages/sdk/examples/nft/https/create_collection.ts#L65-L76
 ```
+
+## Full How-To Code
+
+```tsx file=../../../../packages/sdk/examples/nft/https/create_collection.ts
+```

@@ -13,7 +13,7 @@ import TabItem from '@theme/TabItem';
 
 The Stamp API allows you to easily upload a file to IPFS and stamp it on the IOTA tangle by creating an NFT.
 
-<Tabs>
+<Tabs groupId="request-type">
   <TabItem value="otr" label="OTR">
     To create a stamp, you must call [`stamp`](../../reference-api/classes/StamptOtrDataset.md#stamp) on `dataset(Dataset.STAMP)`. [`stamp`](../../reference-api/classes/StamptOtrDataset.md#stamp) takes an object of type [`StampTangleRequest`](../../reference-api/interfaces/StampTangleRequest.md) as parameter in which you can specify the uri for the file you want to stamp.
 
@@ -30,6 +30,19 @@ When you create a stamp, you can specify the number of days the stamped file sho
     To create a stamp, you must call [`stamp`](../../reference-api/classes/StampDataset.md#stamp) on `dataset(Dataset.STAMP)`. [`stamp`](../../reference-api/classes/StampDataset.md#stamp) takes an object of type [`Build5Request`](../../reference-api/interfaces/Build5Request)`<`[`StampRequest`](../../reference-api/interfaces/StampRequest.md)`>` as parameter in which you can specify the file you want to stamp.
 
     ```tsx file=../../../../packages/sdk/examples/stamp/https/create.ts#L13-L27
+    ```
+  </TabItem>
+</Tabs>
+
+## Full How-To Code
+
+<Tabs groupId="request-type">
+  <TabItem value="otr" label="OTR">
+    ```tsx file=../../../../packages/sdk/examples/stamp/otr/create.ts
+    ```
+  </TabItem>  
+  <TabItem value="https" label="HTTPS">
+    ```tsx file=../../../../packages/sdk/examples/stamp/https/create.ts
     ```
   </TabItem>
 </Tabs>

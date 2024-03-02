@@ -11,7 +11,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import DeepLink from '../../_admonitions/_deep_link.md'
 
-<Tabs>
+<Tabs groupId="request-type">
   <TabItem value="otr" label="OTR">
     To create a NFT with Metadata, you must call [`mintMetadataNft`](../../reference-api/classes/NftOtrDataset.md#mintmetadatanft) on `dataset(Dataset.NFT)`. [`mintMetadataNft`](../../reference-api/classes/NftOtrDataset.md#mintmetadatanft) takes an object of type [`MintMetadataNftTangleRequest`](../../reference-api/interfaces/MintMetadataNftTangleRequest.md) as parameter. In there you can specify the metadata of the NFT which for example could be used to create a digital twin.
 
@@ -24,6 +24,19 @@ import DeepLink from '../../_admonitions/_deep_link.md'
     To create a NFT with Metadata, you must call [`mintMetadata`](../../reference-api/classes/NftDataset.md#mintmetadata) on `dataset(Dataset.NFT)`. [`mintMetadata`](../../reference-api/classes/NftDataset.md#mintmetadata) takes an object of type [`MintMetadataNftRequest`](../../reference-api/interfaces/MintMetadataNftRequest.md) as parameter. In there you can specify the metadata of the NFT which for example could be used to create a digital twin.
 
     ```tsx file=../../../../packages/sdk/examples/nft/https/nft.metadata.ts#L19-L33
+    ```
+  </TabItem>
+</Tabs>
+
+## Full How-To Code
+
+<Tabs groupId="request-type">
+  <TabItem value="otr" label="OTR">
+    ```tsx file=../../../../packages/sdk/examples/nft/otr/nft.metadata.otr.ts
+    ```
+  </TabItem>  
+  <TabItem value="https" label="HTTPS">
+    ```tsx file=../../../../packages/sdk/examples/nft/https/nft.metadata.ts
     ```
   </TabItem>
 </Tabs>

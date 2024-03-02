@@ -16,3 +16,8 @@ To create a token, you must call [`create`](../../reference-api/classes/TokenDat
 
 ```tsx file=../../../../packages/sdk/examples/token/https/create.ts#L17-L48
 ```
+
+## Full How-To Code
+
+```tsx file=../../../../packages/sdk/examples/token/https/create.ts
+```

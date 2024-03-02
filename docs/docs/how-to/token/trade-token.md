@@ -9,7 +9,7 @@ tags:
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-<Tabs>
+<Tabs groupId="request-type">
   <TabItem value="otr" label="OTR">
     There is different ways to trade token over OTR.
     
@@ -40,3 +40,16 @@ Get executed trades:
 
 ```tsx file=../../../../packages/sdk/examples/token/https/trade.ts#L49-L69
 ```
+
+## Full How-To Code
+
+<Tabs groupId="request-type">
+  <TabItem value="otr" label="OTR">
+    ```tsx file=../../../../packages/sdk/examples/token/otr/trade.ts
+    ```
+  </TabItem>  
+  <TabItem value="https" label="HTTPS">
+    ```tsx file=../../../../packages/sdk/examples/token/https/trade.ts
+    ```
+  </TabItem>
+</Tabs>
