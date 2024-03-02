@@ -29,12 +29,12 @@ import TabItem from '@theme/TabItem';
     [`sellBaseToken`](../../reference-api/classes/TokenOtrDataset.md#sellbasetoken) returns an oject of type [`OtrRequest`](../../reference-api/classes/DatasetClassOtr.OtrRequest.md)`<`[`TradeTokenTangleRequest`](../../reference-api/interfaces/TradeTokenTangleRequest.md)`>`
 
 
-    To sell token, you must call [`sellMintedToken`](../../reference-api/classes/TokenOtrDataset#sellmintedtoken) on `dataset(Dataset.TOKEN)`. [`sellMintedToken`](../../reference-api/classes/TokenOtrDataset.md#sellmintedtoken) takes an object of type [`TradeTokenTangleRequest`](../../reference-api/interfaces/TradeTokenTangleRequest.md) as parameter in which you can specify the token you want to buy, the price for the offer and the amount.
+    To sell token, you must call [`sellMintedToken`](../../reference-api/classes/TokenOtrDataset.md#sellmintedtoken) on `dataset(Dataset.TOKEN)`. [`sellMintedToken`](../../reference-api/classes/TokenOtrDataset.md#sellmintedtoken) takes an object of type [`TradeTokenTangleRequest`](../../reference-api/interfaces/TradeTokenTangleRequest.md) as parameter in which you can specify the token you want to buy, the price for the offer and the amount.
 
     ```tsx file=../../../../packages/sdk/examples/token/otr/trade.ts#L27-L31
     ```
 
-    [`sellMintedToken`](../../reference-api/classes/TokenOtrDataset.md#sellMintedToken) returns an oject of type [`OtrRequest`](../../reference-api/classes/DatasetClassOtr.OtrRequest.md)`<`[`TradeTokenTangleRequest`](../../reference-api/interfaces/TradeTokenTangleRequest.md)`>`
+    [`sellMintedToken`](../../reference-api/classes/TokenOtrDataset.md#sellmintedtoken) returns an oject of type [`OtrRequest`](../../reference-api/classes/DatasetClassOtr.OtrRequest.md)`<`[`TradeTokenTangleRequest`](../../reference-api/interfaces/TradeTokenTangleRequest.md)`>`
   </TabItem>  
   <TabItem value="https" label="HTTPS">
     To trade a token, you must call [`tradeToken`](../../reference-api/classes/TokenMarketDataset.md#tradetoken) on `dataset(Dataset.TOKEN_MARKET)`. [`tradeToken`](../../reference-api/classes/TokenMarketDataset.md#tradetoken) takes an object of type `Build5Request<`[`TradeTokenRequest`](../../reference-api/interfaces/TradeTokenRequest.md)`>` as parameter in which you can specify the token you want to trade, the price for the offer and the kind of trade like buy or sell.
