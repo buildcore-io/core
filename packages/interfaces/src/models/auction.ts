@@ -12,6 +12,9 @@ export enum AuctionType {
   NFT = 'NFT',
 }
 
+/**
+ * Auction Record.
+ */
 export interface Auction extends BaseRecord {
   space: string;
 

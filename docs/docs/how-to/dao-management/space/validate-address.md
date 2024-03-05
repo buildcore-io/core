@@ -7,6 +7,8 @@ To validate the address of a space, you must call [`validateAddress`](../../../r
 ```tsx file=../../../../../packages/sdk/examples/space/validate_address.ts#L19-L33
 ```
 
+[`validateAddress`](../../../reference-api/classes/SpaceDataset.md#validateaddress) returns an oject of type [`Transaction`](../../../reference-api/interfaces/Transaction.md).
+
 import ValidateAddress from '../../../_admonitions/_validate-address.md';
 
 <ValidateAddress/>
