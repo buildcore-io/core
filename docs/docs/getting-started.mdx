@@ -7,9 +7,9 @@ tags:
   - smart contracts
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
 import { Build5, SoonaverseApiKey } from '@site/../packages/sdk/src/https';
+import TabItem from '@theme/TabItem';
+import Tabs from '@theme/Tabs';
 
 Build.5 API provides various ways to interact with our platform. The recommended one is the [@build-5/sdk](https://www.npmjs.com/package/@build-5/sdk) which interacts through a REST API and our so called [OTRs](#otr) with the Build.5 platform.
 
@@ -90,6 +90,8 @@ Let's do a simple GET Request to get the member's object of `Santa Claus`:
 ```tsx file=../../packages/sdk/examples/basic_https.ts
 ```
 
+### API Endpoints and Keys
+
 We provide two endpoints. One for testing and one for production.  In the SDK you can access them with the [Build5 enum](./reference-api/enums/Build5.md). You can also find them here:
 
 <Tabs groupId="environment">
@@ -105,12 +107,12 @@ We provide two endpoints. One for testing and one for production.  In the SDK yo
   </TabItem>
 </Tabs>
 
-> Make sure to consider [API's limitations](limitations)
+> Make sure to consider [API's limitations](#limitations)
 
 :::info API Keys
 
 To work with the API you need access keys which you can get by [creating a project](./how-to/project/create-project.mdx).
-You can also use public Soonaverse keys to test against live community driven project. In the SDK you can access the following Keys through the [SoonaverseApiKey constant](./reference-api/modules#soonaverseapikey):
+You can also use public Soonaverse keys to test against live community driven project. In the SDK you can access the following Keys through the [SoonaverseApiKey constant](./reference-api/modules#soonaverseapikey).
 
 :::
 
@@ -127,7 +129,20 @@ You can also use public Soonaverse keys to test against live community driven pr
     </TabItem>
 </Tabs>
 
-### See some of our first how to's:
+## Limitations
+
+We only allow:
+
+- unlimited number of requests on OTR through Tangle - recommended! 
+- maximum of 50 requests per second on GET requests
+- maximum of 5 requests per second on POST requests
+
+If you need higher throughput make sure to reach out to use so we can enable higher throughput for you. 
+
+This limits are necessary to avoid abuse and dDos attacks.
+
+## See some of our first how to's:
+
 - [Create Project](how-to/project/create-project)
 - [Create Space](how-to/dao-management/space/create-space)
 - [Create Member](how-to/dao-management/member/create-member)
