@@ -81,6 +81,20 @@ const sidebars = {
           ],
         },
         {
+          'Token API': [
+            'how-to/token/overview',
+            'how-to/token/create-token',
+            'how-to/token/trade-token',
+            'how-to/token/mint-token',
+            'how-to/token/cancel-public-sale',
+            'how-to/token/credit-token',
+            'how-to/token/enable-trading',
+            'how-to/token/import-token',
+            'how-to/token/claim-token',
+            'how-to/token/stake-token',
+          ],
+        },
+        {
           'NFT Trading API': ['how-to/nft-trading/overview'],
         },
         {
@@ -94,20 +108,6 @@ const sidebars = {
         },
         {
           'Stake Reward API': ['how-to/stake-reward/overview'],
-        },
-        {
-          'Token API': [
-            'how-to/token/overview',
-            'how-to/token/create-token',
-            'how-to/token/trade-token',
-            'how-to/token/mint-token',
-            'how-to/token/cancel-public-sale',
-            'how-to/token/credit-token',
-            'how-to/token/enable-trading',
-            'how-to/token/import-token',
-            'how-to/token/claim-token',
-            'how-to/token/stake-token',
-          ],
         },
         {
           'Token Launchpad API': ['how-to/token-launchpad/overview'],
