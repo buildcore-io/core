@@ -94,33 +94,6 @@ const sidebars = {
             'how-to/token/stake-token',
           ],
         },
-        {
-          'NFT Trading API': ['how-to/nft-trading/overview'],
-        },
-        {
-          'NFT Staking API': ['how-to/nft-staking/overview'],
-        },
-        {
-          'Proposal API': ['how-to/proposal/overview'],
-        },
-        {
-          'Reputation API': ['how-to/reputation/overview'],
-        },
-        {
-          'Stake Reward API': ['how-to/stake-reward/overview'],
-        },
-        {
-          'Token Launchpad API': ['how-to/token-launchpad/overview'],
-        },
-        {
-          'Token Trading API': ['how-to/token-trading/overview'],
-        },
-        {
-          'Token Staking API': ['how-to/token-staking/overview'],
-        },
-        {
-          'Token Distribution API': ['how-to/token-distribution/overview'],
-        },
         'how-to/get',
         'how-to/track-otrs'
       ],
