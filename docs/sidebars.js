@@ -83,15 +83,27 @@ const sidebars = {
         {
           'Token API': [
             'how-to/token/overview',
-            'how-to/token/create-token',
-            'how-to/token/trade-token',
-            'how-to/token/mint-token',
-            'how-to/token/cancel-public-sale',
-            'how-to/token/credit-token',
-            'how-to/token/enable-trading',
-            'how-to/token/import-token',
-            'how-to/token/claim-token',
-            'how-to/token/stake-token',
+            {
+              type: 'category',
+              label: 'Creation and Managment',
+              items: [
+                'how-to/token/creation-managment/create-token',
+                'how-to/token/creation-managment/mint-token',
+                'how-to/token/creation-managment/cancel-public-sale',
+                'how-to/token/creation-managment/enable-trading',
+                'how-to/token/creation-managment/import-token',
+              ],
+            },
+            {
+              type: 'category',
+              label: 'Usage and Interaction',
+              items: [
+                'how-to/token/usage-interaction/trade-token',
+                'how-to/token/usage-interaction/credit-token',
+                'how-to/token/usage-interaction/claim-token',
+                'how-to/token/usage-interaction/stake-token',
+              ],
+            }
           ],
         },
         {
