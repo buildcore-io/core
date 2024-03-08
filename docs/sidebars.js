@@ -29,7 +29,7 @@ const sidebars = {
           ],
         },
         {
-          'Auction API': [
+          'Auctions': [
             'how-to/auction/create',
             'how-to/auction/bid',
             'how-to/auction/get-by-id',
@@ -62,7 +62,7 @@ const sidebars = {
           ],
         },
         {
-          'NFT API': [
+          'NFTs': [
             'how-to/nft/create-collection',
             'how-to/nft/purchase',
             'how-to/nft/bulk-purchase',
@@ -71,17 +71,17 @@ const sidebars = {
           ],
         },
         {
-          'Swap': [
+          'Swaps': [
             'how-to/swap/create-swap',
           ]
         },
         {
-          'Stamp API': [
+          'Stamping': [
             'how-to/stamp/create-stamp',
           ],
         },
         {
-          'Token API': [
+          'Tokens': [
             'how-to/token/overview',
             'how-to/token/create-token',
             'how-to/token/trade-token',
