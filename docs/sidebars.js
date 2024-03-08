@@ -101,6 +101,12 @@ const sidebars = {
             'how-to/token/create-token',
             'how-to/token/trade-token',
             'how-to/token/mint-token',
+            'how-to/token/cancel-public-sale',
+            'how-to/token/credit-token',
+            'how-to/token/enable-trading',
+            'how-to/token/import-token',
+            'how-to/token/claim-token',
+            'how-to/token/stake-token',
           ],
         },
         {
