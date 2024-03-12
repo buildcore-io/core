@@ -147,7 +147,6 @@ const sidebars = {
     'architecture',
     'token-governance',
     'faqs',
-    'limitations',
   ],
   apiSidebar: [
     {
