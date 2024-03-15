@@ -17,13 +17,15 @@ If you are interested in getting Auctions by other filters, have a loot at the [
 
 :::
 
-<Tabs>
+<Tabs groupId="request-type">
   <TabItem value="https" label="HTTPS">
     To get infos about a specific Auction, you must call [`id`](../../reference-api/classes/DatasetClass.md#id) on `dataset(Dataset.AUCTION)` followed by a `get()`.
     [`id`](../../reference-api/classes/DatasetClass.md#id) takes an object of type [`AuctionBidRequest`](../../reference-api/interfaces/AuctionBidRequest.md) as parameter.
 
     ```tsx file=../../../../packages/sdk/examples/auction/https/get_by_id.ts#L11-L15
     ```
+
+    `get()` returns an oject of type [`Auction`](../../reference-api/interfaces/Auction.md).
   </TabItem>
 </Tabs>
 
@@ -32,3 +34,8 @@ If you are interested in getting Auctions by other filters, have a loot at the [
 If you are interested about more details about a specific auction, you can check out [this](./get-by-id.md) how-to.
 
 :::
+
+## Full How-To Code
+
+```tsx file=../../../../packages/sdk/examples/auction/https/get_by_id.ts
+```

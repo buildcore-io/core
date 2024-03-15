@@ -16,3 +16,6 @@ With the member, we can create a signature and update, for example, the name by 
 
 ```tsx file=../../../../../packages/sdk/examples/member/update.ts#L17-L30
 ```
+
+[`update`](../../../reference-api/classes/MemberDataset.md#update) returns an oject of type [`Member`](../../../reference-api/interfaces/Member.md).
+

@@ -96,7 +96,7 @@ export enum WEN_FUNC {
 
   createSwap = 'createswap',
   setSwapFunded = 'setswapfunded',
-  rejectSwap = 'rejectSwap',
+  rejectSwap = 'rejectswap',
 }
 
 export interface cMemberNotExists {

@@ -22,3 +22,5 @@ With the space ID and Guardian member we can create a signature and update, for 
 
 ```tsx file=../../../../../packages/sdk/examples/space/update.ts#L19-L33
 ```
+
+[`update`](../../../reference-api/classes/SpaceDataset.md#update) returns an oject of type [`Proposal`](../../../reference-api/interfaces/Proposal.md).
