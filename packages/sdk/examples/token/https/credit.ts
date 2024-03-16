@@ -25,10 +25,10 @@ async function main() {
           network: Network.RMS,
         },
         body: {
-            amount: 1000000,
-            token: 'tokenId',
-        }
-    });
+          amount: 1000000,
+          token: 'tokenId',
+        },
+      });
 
     console.log(response);
   } catch (e) {

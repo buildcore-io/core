@@ -7,7 +7,7 @@ async function main() {
 
   try {
     const otrRequest = await otr(otrAddress).dataset(Dataset.TOKEN).claimAirdrops({
-        symbol: 'IOTA',
+      symbol: 'IOTA',
     });
 
     var fireflyDeeplink = otrRequest.getFireflyDeepLink();
