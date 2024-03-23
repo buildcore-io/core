@@ -81,6 +81,44 @@ const sidebars = {
           ],
         },
         {
+          'Token API': [
+            'how-to/token/overview',
+            {
+              type: 'category',
+              label: 'Creation and Managment',
+              link: {
+                type: 'generated-index',
+                title: 'Token Creation and Managment',
+                description: 'List of token creation and managment how-to.',
+                slug: '/how-to/token/creation-managment',
+              },
+              items: [
+                'how-to/token/creation-managment/create-token',
+                'how-to/token/creation-managment/mint-token',
+                'how-to/token/creation-managment/cancel-public-sale',
+                'how-to/token/creation-managment/enable-trading',
+                'how-to/token/creation-managment/import-token',
+              ],
+            },
+            {
+              type: 'category',
+              label: 'Usage and Interaction',
+              link: {
+                type: 'generated-index',
+                title: 'Token Usage and Interaction',
+                description: 'List of token usage and interaction how-to.',
+                slug: '/how-to/token/usage-interaction',
+              },
+              items: [
+                'how-to/token/usage-interaction/trade-token',
+                'how-to/token/usage-interaction/credit-token',
+                'how-to/token/usage-interaction/claim-token',
+                'how-to/token/usage-interaction/stake-token',
+              ],
+            }
+          ],
+        },
+        {
           'NFT Trading API': ['how-to/nft-trading/overview'],
         },
         {
@@ -94,14 +132,6 @@ const sidebars = {
         },
         {
           'Stake Reward API': ['how-to/stake-reward/overview'],
-        },
-        {
-          'Token API': [
-            'how-to/token/overview',
-            'how-to/token/create-token',
-            'how-to/token/trade-token',
-            'how-to/token/mint-token',
-          ],
         },
         {
           'Token Launchpad API': ['how-to/token-launchpad/overview'],
