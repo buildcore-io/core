@@ -6,6 +6,10 @@ tags:
   - token
 ---
 
+## About Crediting Token
+
+You can use the `credit` functionality if you change your opinion about a trade you made. For example, if you want to buy Token XY with 100 SMR, but later in the `cooldown` phase, if you decide you want to buy less, then you can credit yourself 30 SMR, and after the `cooldown` phase, you will get 70 SMR worth of XY token.
+
 ## Example
 
 To credit a token, you must call [`credit`](../../../reference-api/classes/TokenDataset.md#credit) on `dataset(Dataset.TOKEN)`. [`credit`](../../../reference-api/classes/TokenDataset.md#credit) takes an object of type `Build5Request<`[`CreditTokenRequest`](../../../reference-api/interfaces/CreditTokenRequest.md)`>` as parameter.

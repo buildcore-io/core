@@ -12,6 +12,8 @@ import TabItem from '@theme/TabItem';
 <Tabs groupId="request-type">
   <TabItem value="otr" label="OTR">
     There are different ways to trade tokens over OTR.
+
+    ## Buy Token
     
     To buy a token, you must call [`buyToken`](../../../reference-api/classes/TokenOtrDataset.md#buytoken) on `dataset(Dataset.TOKEN)`. [`buyToken`](../../../reference-api/classes/TokenOtrDataset.md#buytoken) takes an object of type [`TradeTokenTangleRequest`](../../../reference-api/interfaces/TradeTokenTangleRequest.md) as parameter in which you can specify the token you want to buy, the price for the offer and the amount.
 
@@ -20,6 +22,9 @@ import TabItem from '@theme/TabItem';
 
     [`buyToken`](../../../reference-api/classes/TokenOtrDataset.md#buytoken) returns an oject of type [`OtrRequest`](../../../reference-api/classes/DatasetClassOtr.OtrRequest.md)`<`[`TradeTokenTangleRequest`](../../../reference-api/interfaces/TradeTokenTangleRequest.md)`>`
 
+    ## Sell Token
+
+    ### Sell Base Token
 
     To sell the base token, you must call [`sellBaseToken`](../../../reference-api/classes/TokenOtrDataset.md#sellbasetoken) on `dataset(Dataset.TOKEN)`. [`sellBaseToken`](../../../reference-api/classes/TokenOtrDataset.md#sellbasetoken) takes an object of type [`TradeTokenTangleRequest`](../../../reference-api/interfaces/TradeTokenTangleRequest.md) as parameter in which you can specify the price for the offer and the amount.
 
@@ -28,6 +33,7 @@ import TabItem from '@theme/TabItem';
 
     [`sellBaseToken`](../../../reference-api/classes/TokenOtrDataset.md#sellbasetoken) returns an oject of type [`OtrRequest`](../../../reference-api/classes/DatasetClassOtr.OtrRequest.md)`<`[`TradeTokenTangleRequest`](../../../reference-api/interfaces/TradeTokenTangleRequest.md)`>`
 
+    ### Sell Native Token
 
     To sell a token, you must call [`sellMintedToken`](../../../reference-api/classes/TokenOtrDataset.md#sellmintedtoken) on `dataset(Dataset.TOKEN)`. [`sellMintedToken`](../../../reference-api/classes/TokenOtrDataset.md#sellmintedtoken) takes an object of type [`TradeTokenTangleRequest`](../../../reference-api/interfaces/TradeTokenTangleRequest.md) as parameter in which you can specify the token you want to buy, the price for the offer and the amount.
 
