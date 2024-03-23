@@ -1,5 +1,6 @@
 ---
 title: Credit Token
+description: How to credit token
 tags:
   - how-to
   - sale

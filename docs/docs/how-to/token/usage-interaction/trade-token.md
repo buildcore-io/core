@@ -1,5 +1,6 @@
 ---
 title: Trade Token
+description: How to trade token by buying, selling or swapping them
 tags:
   - how-to
   - trade

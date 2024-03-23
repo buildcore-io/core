@@ -10,8 +10,8 @@ Build.5 allows you to create your tokens, create public sales, allow trading, an
 
 ## Creation and Management
 
-This section explains everything you need to create and manage your token for your project.
+[This section](./creation-managment) explains everything you need to create and manage your token for your project.
 
 ## Usage and Interaction
 
-This section explains everything you need to interact with a token, like trading, staking, etc.
+[This section](./usage-interaction) explains everything you need to interact with a token, like trading, staking, etc.

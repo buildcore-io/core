@@ -1,5 +1,6 @@
 ---
 title: Mint a Token
+description: How to mint a created token on a specific L1 Network
 tags:
   - how-to
   - create

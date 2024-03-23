@@ -1,5 +1,6 @@
 ---
 title: Claim Airdrop Token
+description: How to claim tokens from an airdrop
 tags:
   - how-to
   - claim

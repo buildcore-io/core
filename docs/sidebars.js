@@ -86,6 +86,12 @@ const sidebars = {
             {
               type: 'category',
               label: 'Creation and Managment',
+              link: {
+                type: 'generated-index',
+                title: 'Token Creation and Managment',
+                description: 'List of token creation and managment how-to.',
+                slug: '/how-to/token/creation-managment',
+              },
               items: [
                 'how-to/token/creation-managment/create-token',
                 'how-to/token/creation-managment/mint-token',
@@ -97,6 +103,12 @@ const sidebars = {
             {
               type: 'category',
               label: 'Usage and Interaction',
+              link: {
+                type: 'generated-index',
+                title: 'Token Usage and Interaction',
+                description: 'List of token usage and interaction how-to.',
+                slug: '/how-to/token/usage-interaction',
+              },
               items: [
                 'how-to/token/usage-interaction/trade-token',
                 'how-to/token/usage-interaction/credit-token',

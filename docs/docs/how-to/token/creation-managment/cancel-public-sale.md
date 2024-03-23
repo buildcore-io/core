@@ -1,5 +1,6 @@
 ---
 title: Cancel Public Sale
+description: How to cancel a public token sale
 tags:
   - how-to
   - sale

@@ -1,5 +1,6 @@
 ---
 title: Enable Trading
+description: How to enable trading for a token
 tags:
   - how-to
   - sale

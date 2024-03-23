@@ -1,5 +1,6 @@
 ---
 title: Stake Token
+description: How to stake token
 tags:
   - how-to
   - staking
