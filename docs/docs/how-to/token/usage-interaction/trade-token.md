@@ -11,9 +11,9 @@ import TabItem from '@theme/TabItem';
 
 <Tabs groupId="request-type">
   <TabItem value="otr" label="OTR">
-    There is different ways to trade token over OTR.
+    There are different ways to trade tokens over OTR.
     
-    To buy token, you must call [`buyToken`](../../../reference-api/classes/TokenOtrDataset.md#buytoken) on `dataset(Dataset.TOKEN)`. [`buyToken`](../../../reference-api/classes/TokenOtrDataset.md#buytoken) takes an object of type [`TradeTokenTangleRequest`](../../../reference-api/interfaces/TradeTokenTangleRequest.md) as parameter in which you can specify the token you want to buy, the price for the offer and the amount.
+    To buy a token, you must call [`buyToken`](../../../reference-api/classes/TokenOtrDataset.md#buytoken) on `dataset(Dataset.TOKEN)`. [`buyToken`](../../../reference-api/classes/TokenOtrDataset.md#buytoken) takes an object of type [`TradeTokenTangleRequest`](../../../reference-api/interfaces/TradeTokenTangleRequest.md) as parameter in which you can specify the token you want to buy, the price for the offer and the amount.
 
     ```tsx file=../../../../../packages/sdk/examples/token/otr/trade.ts#L9-L13
     ```
@@ -21,7 +21,7 @@ import TabItem from '@theme/TabItem';
     [`buyToken`](../../../reference-api/classes/TokenOtrDataset.md#buytoken) returns an oject of type [`OtrRequest`](../../../reference-api/classes/DatasetClassOtr.OtrRequest.md)`<`[`TradeTokenTangleRequest`](../../../reference-api/interfaces/TradeTokenTangleRequest.md)`>`
 
 
-    To sell base token, you must call [`sellBaseToken`](../../../reference-api/classes/TokenOtrDataset.md#sellbasetoken) on `dataset(Dataset.TOKEN)`. [`sellBaseToken`](../../../reference-api/classes/TokenOtrDataset.md#sellbasetoken) takes an object of type [`TradeTokenTangleRequest`](../../../reference-api/interfaces/TradeTokenTangleRequest.md) as parameter in which you can specify the price for the offer and the amount.
+    To sell the base token, you must call [`sellBaseToken`](../../../reference-api/classes/TokenOtrDataset.md#sellbasetoken) on `dataset(Dataset.TOKEN)`. [`sellBaseToken`](../../../reference-api/classes/TokenOtrDataset.md#sellbasetoken) takes an object of type [`TradeTokenTangleRequest`](../../../reference-api/interfaces/TradeTokenTangleRequest.md) as parameter in which you can specify the price for the offer and the amount.
 
     ```tsx file=../../../../../packages/sdk/examples/token/otr/trade.ts#L18-L22
     ```
@@ -29,7 +29,7 @@ import TabItem from '@theme/TabItem';
     [`sellBaseToken`](../../../reference-api/classes/TokenOtrDataset.md#sellbasetoken) returns an oject of type [`OtrRequest`](../../../reference-api/classes/DatasetClassOtr.OtrRequest.md)`<`[`TradeTokenTangleRequest`](../../../reference-api/interfaces/TradeTokenTangleRequest.md)`>`
 
 
-    To sell token, you must call [`sellMintedToken`](../../../reference-api/classes/TokenOtrDataset.md#sellmintedtoken) on `dataset(Dataset.TOKEN)`. [`sellMintedToken`](../../../reference-api/classes/TokenOtrDataset.md#sellmintedtoken) takes an object of type [`TradeTokenTangleRequest`](../../../reference-api/interfaces/TradeTokenTangleRequest.md) as parameter in which you can specify the token you want to buy, the price for the offer and the amount.
+    To sell a token, you must call [`sellMintedToken`](../../../reference-api/classes/TokenOtrDataset.md#sellmintedtoken) on `dataset(Dataset.TOKEN)`. [`sellMintedToken`](../../../reference-api/classes/TokenOtrDataset.md#sellmintedtoken) takes an object of type [`TradeTokenTangleRequest`](../../../reference-api/interfaces/TradeTokenTangleRequest.md) as parameter in which you can specify the token you want to buy, the price for the offer and the amount.
 
     ```tsx file=../../../../../packages/sdk/examples/token/otr/trade.ts#L27-L31
     ```

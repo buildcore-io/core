@@ -8,7 +8,7 @@ tags:
 
 ## About Creating Tokens
 
-Creating a token allows you to specify all the details around your token like name, links, sale info and more. To create the actual token on L1 you will have to call [mint](./mint-token.md).
+Creating a token lets you specify all the details around your token, like name, links, sale info, and more. To generate the token on L1, you must call [mint](./mint-token.md).
 
 ## Example
 
