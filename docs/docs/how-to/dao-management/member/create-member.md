@@ -14,3 +14,8 @@ To create a member, you need to call `createMember`.
 ```
 
 `createMember` returns an oject of type [`Member`](../../../reference-api/interfaces/Member.md).
+
+## Full How-To Code
+
+```tsx file=../../../../../packages/sdk/examples/member/create.ts
+```
