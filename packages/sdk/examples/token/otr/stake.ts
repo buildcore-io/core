@@ -7,9 +7,9 @@ async function main() {
 
   try {
     const otrRequest = await otr(otrAddress).dataset(Dataset.TOKEN).stake('tokenid', 10, {
-        symbol: 'IOTA',
-        type: 'static',
-        weeks: 10,
+      symbol: 'IOTA',
+      type: 'static',
+      weeks: 10,
     });
 
     var fireflyDeeplink = otrRequest.getFireflyDeepLink();

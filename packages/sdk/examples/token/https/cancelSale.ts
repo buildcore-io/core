@@ -25,9 +25,9 @@ async function main() {
           network: Network.RMS,
         },
         body: {
-            token: 'tokenId',
-        }
-    });
+          token: 'tokenId',
+        },
+      });
 
     console.log(response);
   } catch (e) {

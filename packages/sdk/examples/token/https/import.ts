@@ -25,11 +25,11 @@ async function main() {
           network: Network.RMS,
         },
         body: {
-            network: 'rms',
-            space: 'Nordpol',
-            tokenId: 'tokenId',
-        }
-    });
+          network: 'rms',
+          space: 'Nordpol',
+          tokenId: 'tokenId',
+        },
+      });
 
     console.log(response);
   } catch (e) {
