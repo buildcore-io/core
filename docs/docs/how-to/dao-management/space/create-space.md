@@ -19,3 +19,8 @@ To create a space, don't forget to create a member first
 ```
 
 [`create`](../../../reference-api/classes/SpaceDataset.md#create) returns an oject of type [`Space`](../../../reference-api/interfaces/Space.md).
+
+## Full How-To Code
+
+```tsx file=../../../../../packages/sdk/examples/space/create.ts
+```
