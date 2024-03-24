@@ -2,7 +2,8 @@
   "name": "@build-5/sdk",
   "version": "0.0.0",
   "description": "",
-  "main": "lib/index.js",
+  "main": "index.js",
+  "type": "commonjs",
   "scripts": {
     "run:search": "cd ../search && export FIRESTORE_EMULATOR_HOST=\"127.0.0.1:8080\" && export FIREBASE_STORAGE_EMULATOR_HOST=\"127.0.0.1:9199\" && npm run build && node lib/index.js",
     "run:functions": "cd ../functions && npm run serve",
