@@ -1,0 +1,27 @@
+name: PG workflow
+
+on: pull_request
+
+jobs:
+  runner-job:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: npm i
+
+      - name: Connect to PostgreSQL
+        run: |
+          npm run build
+          node lib/index.js
