@@ -3,7 +3,6 @@ import {
   COL,
   Entity,
   Member,
-  Space,
   Token,
   TokenPurchaseAge,
   TokenTradeOrder,
@@ -39,7 +38,7 @@ const createRoyaltyBillPayments = async (
   const promises = Object.entries(royaltyFees)
     .filter((entry) => entry[1] > 0)
     .map(async ([spaceId, fee]): Promise<Transaction> => {
-      const space = await build5Db().doc(`${COL.SPACE}/${spaceId}`).get<Space>();
+      const space = await build5Db().doc(COL.SPACE, spaceId).get();
       const spaceAddress = getAddress(space, token.mintingData?.network!);
       const sellerAddress = getAddress(seller, token.mintingData?.network!);
       const output = await packBasicOutput(wallet, spaceAddress, 0, {
@@ -238,15 +237,11 @@ export const matchMintedToken = async (
 ): Promise<Match> => {
   const wallet = await WalletService.newWallet(token.mintingData?.network!);
 
-  const seller = (await build5Db().doc(`${COL.MEMBER}/${sell.owner}`).get<Member>())!;
-  const buyer = (await build5Db().doc(`${COL.MEMBER}/${buy.owner}`).get<Member>())!;
+  const seller = (await build5Db().doc(COL.MEMBER, sell.owner).get())!;
+  const buyer = (await build5Db().doc(COL.MEMBER, buy.owner).get())!;
 
-  const buyOrderTran = (await build5Db()
-    .doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`)
-    .get<Transaction>())!;
-  const sellOrderTran = (await build5Db()
-    .doc(`${COL.TRANSACTION}/${sell.orderTransactionId}`)
-    .get<Transaction>())!;
+  const buyOrderTran = (await build5Db().doc(COL.TRANSACTION, buy.orderTransactionId!).get())!;
+  const sellOrderTran = (await build5Db().doc(COL.TRANSACTION, sell.orderTransactionId!).get())!;
 
   const tokensToTrade = Math.min(
     sell.count - sell.fulfilled,
@@ -326,18 +321,17 @@ export const matchMintedToken = async (
       ? createCreditToBuyer(token, buyer, buy, buyOrderTran, balanceLeft)
       : undefined;
 
-  [
+  const payments = [
     ...royaltyBillPayments,
     billPaymentToSeller,
     billPaymentWithNativeTokens,
     creditToSeller,
     creditToBuyer,
-  ]
-    .filter((t) => t !== undefined)
-    .forEach((data) => {
-      const docRef = build5Db().doc(`${COL.TRANSACTION}/${data!.uid}`);
-      transaction.create(docRef, data!);
-    });
+  ].filter((t) => t !== undefined);
+  for (const data of payments) {
+    const docRef = build5Db().doc(COL.TRANSACTION, data!.uid);
+    await transaction.create(docRef, data!);
+  }
 
   return {
     purchase: {

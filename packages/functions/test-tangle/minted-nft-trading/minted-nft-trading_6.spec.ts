@@ -5,7 +5,6 @@ import {
   MIN_IOTA_AMOUNT,
   Network,
   TangleRequestType,
-  Transaction,
   TransactionType,
 } from '@build-5/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
@@ -46,7 +45,7 @@ describe('Minted nft trading', () => {
           .collection(COL.TRANSACTION)
           .where('member', '==', address.bech32)
           .where('type', '==', TransactionType.WITHDRAW_NFT)
-          .get<Transaction>();
+          .get();
         return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
       });
       const nftOutputIds = await helper.walletService!.client.nftOutputIds([

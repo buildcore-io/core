@@ -46,13 +46,13 @@ describe('Minted nft trading', () => {
       .where('member', '==', address.bech32)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
     await wait(async () => {
-      const snap = await creditQuery.get<Transaction>();
+      const snap = await creditQuery.get();
       return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
     });
     const snap = await creditQuery.get();
     const credit = snap[0] as Transaction;
 
-    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${helper.nft?.collection}`);
+    const collectionDocRef = build5Db().doc(COL.COLLECTION, helper.nft?.collection);
     const collection = <Collection>await collectionDocRef.get();
     expect(collection.availableNfts).toBe(1);
     expect(collection.nftsOnSale).toBe(0);
@@ -69,7 +69,7 @@ describe('Minted nft trading', () => {
       {},
     );
 
-    const nftDocRef = build5Db().doc(`${COL.NFT}/${helper.nft?.uid}`);
+    const nftDocRef = build5Db().doc(COL.NFT, helper.nft?.uid);
     await wait(async () => {
       const nft = <Nft>await nftDocRef.get();
       return nft.sold || false;
@@ -78,7 +78,7 @@ describe('Minted nft trading', () => {
     expect(nft.owner).toBe(address.bech32);
 
     await wait(async () => {
-      const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${helper.nft?.collection}`);
+      const collectionDocRef = build5Db().doc(COL.COLLECTION, helper.nft?.collection);
       const collection = <Collection>await collectionDocRef.get();
       return !collection.availableNfts && !collection.nftsOnSale && !collection.nftsOnAuction;
     });

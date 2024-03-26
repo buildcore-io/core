@@ -3,7 +3,6 @@ import {
   COL,
   MIN_IOTA_AMOUNT,
   Network,
-  Nft,
   NftPurchaseTangleRequest,
   NftStatus,
   TangleRequestType,
@@ -44,9 +43,9 @@ describe('Minted nft trading', () => {
       );
       await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
 
-      const nftDocRef = build5Db().doc(`${COL.NFT}/${helper.nft!.uid}`);
+      const nftDocRef = build5Db().doc(COL.NFT, helper.nft!.uid);
       await wait(async () => {
-        const nft = await nftDocRef.get<Nft>();
+        const nft = await nftDocRef.get();
         return nft?.owner === address.bech32 && nft.status === NftStatus.MINTED;
       });
     },

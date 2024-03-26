@@ -31,7 +31,7 @@ db.collection(COL.MEMBER)
       await db
         .collection(COL.TRANSACTION)
         .doc(tranId)
-        .set(<Transaction>{
+        .upsert(<Transaction>{
           project: SOON_PROJECT_ID,
           type: TransactionType.CREDIT,
           uid: tranId,

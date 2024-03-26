@@ -1,15 +1,13 @@
-import { build5Db, getSnapshot } from '@build-5/database';
+import { build5Db } from '@build-5/database';
 import {
   COL,
   DEFAULT_NETWORK,
   Entity,
   Network,
   NetworkAddress,
-  Transaction,
   TransactionPayloadType,
   TransactionType,
 } from '@build-5/interfaces';
-import { last } from 'lodash';
 import { HandlerParams } from '../base';
 import { BaseAddressService } from './common';
 
@@ -23,7 +21,7 @@ export class MemberAddressService extends BaseAddressService {
     );
     if (credit) {
       await this.setValidatedAddress(credit, Entity.MEMBER);
-      await claimBadges(
+      await this.claimBadges(
         order.member!,
         credit.payload.targetAddress!,
         order.network || DEFAULT_NETWORK,
@@ -31,41 +29,34 @@ export class MemberAddressService extends BaseAddressService {
     }
     this.transactionService.markAsReconciled(order, match.msgId);
   };
-}
 
-const claimBadges = async (member: string, memberAddress: NetworkAddress, network: Network) => {
-  let lastDocId = '';
-  do {
-    const lastDoc = await getSnapshot(COL.TRANSACTION, lastDocId);
+  private claimBadges = async (member: string, memberAddress: NetworkAddress, network: Network) => {
     const snap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('network', '==', network)
       .where('type', '==', TransactionType.AWARD)
       .where('member', '==', member)
       .where('ignoreWallet', '==', true)
-      .where('payload.type', '==', TransactionPayloadType.BADGE)
-      .limit(500)
-      .startAfter(lastDoc)
-      .get<Transaction>();
-    lastDocId = last(snap)?.uid || '';
+      .where('payload_type', '==', TransactionPayloadType.BADGE)
+      .get();
 
     const promises = snap.map((badgeTransaction) =>
       updateBadgeTransaction(badgeTransaction.uid, memberAddress),
     );
     await Promise.all(promises);
-  } while (lastDocId);
-};
+  };
+}
 
-const updateBadgeTransaction = async (transactionId: string, memberAddress: NetworkAddress) =>
+const updateBadgeTransaction = (transactionId: string, memberAddress: NetworkAddress) =>
   build5Db().runTransaction(async (transaction) => {
-    const badgeDocRef = build5Db().doc(`${COL.TRANSACTION}/${transactionId}`);
-    const badge = await transaction.get<Transaction>(badgeDocRef);
+    const badgeDocRef = build5Db().doc(COL.TRANSACTION, transactionId);
+    const badge = await transaction.get(badgeDocRef);
     if (badge?.ignoreWallet) {
       const data = {
         ignoreWallet: false,
-        'payload.targetAddress': memberAddress,
+        payload_targetAddress: memberAddress,
         shouldRetry: true,
       };
-      transaction.update(badgeDocRef, data);
+      await transaction.update(badgeDocRef, data);
     }
   });

@@ -6,6 +6,7 @@ import {
   Collection,
   CollectionType,
   MIN_IOTA_AMOUNT,
+  Network,
   NetworkAddress,
   Nft,
   NftAccess,
@@ -14,30 +15,16 @@ import {
   Transaction,
   TransactionPayloadType,
   TransactionType,
+  WEN_FUNC,
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import {
-  createNft,
-  orderNft,
-  setForSaleNft,
-} from '../../../functions/src/runtime/firebase//nft/index';
-import { createCollection } from '../../../functions/src/runtime/firebase/collection/index';
+import { orderNftControl } from '../../src/controls/nft/nft.puchase.control';
 import * as wallet from '../../src/utils/wallet.utils';
-import { testEnv } from '../set-up';
-import {
-  createMember,
-  createSpace,
-  expectThrow,
-  mockIpCheck,
-  mockWalletReturnValue,
-  submitMilestoneFunc,
-  wait,
-} from './common';
+import { mockWalletReturnValue, testEnv } from '../set-up';
+import { expectThrow, mockIpCheck, submitMilestoneFunc, wait } from './common';
 
 const db = build5Db();
-
-let walletSpy: any;
 
 const dummyCollection = (
   space: Space,
@@ -72,24 +59,24 @@ const dummyNft = (
 });
 
 const createCollectionFunc = async <T>(address: NetworkAddress, params: T) => {
-  mockWalletReturnValue(walletSpy, address, params);
-  const cCollection = await testEnv.wrap(createCollection)({});
+  mockWalletReturnValue(address, params);
+  const cCollection = await testEnv.wrap<Collection>(WEN_FUNC.createCollection);
   expect(cCollection?.uid).toBeDefined();
 
-  await build5Db().doc(`${COL.COLLECTION}/${cCollection?.uid}`).update({ approved: true });
+  await build5Db().doc(COL.COLLECTION, cCollection?.uid).update({ approved: true });
   return <Collection>cCollection;
 };
 
 const createNftFunc = async <T>(address: NetworkAddress, params: T) => {
-  mockWalletReturnValue(walletSpy, address, params);
-  const nft = await testEnv.wrap(createNft)({});
+  mockWalletReturnValue(address, params);
+  const nft = await testEnv.wrap<Nft>(WEN_FUNC.createNft);
   expect(nft?.createdOn).toBeDefined();
   return <Nft>nft;
 };
 
 const submitOrderFunc = async <T>(address: NetworkAddress, params: T) => {
-  mockWalletReturnValue(walletSpy, address, params);
-  const order = await testEnv.wrap(orderNft)({});
+  mockWalletReturnValue(address, params);
+  const order = await testEnv.wrap<Transaction>(WEN_FUNC.orderNft);
   expect(order?.createdOn).toBeDefined();
   return order;
 };
@@ -106,9 +93,8 @@ describe('Ordering flows', () => {
   let space: Space;
 
   beforeEach(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    member = await createMember(walletSpy);
-    space = await createSpace(walletSpy, member);
+    member = await testEnv.createMember();
+    space = await testEnv.createSpace(member);
   });
 
   it('One collection, one classic NFT, one purchase - not paid for', async () => {
@@ -145,19 +131,18 @@ describe('Ordering flows', () => {
       );
       if (noRoyaltySpace) {
         await build5Db()
-          .doc(`${COL.COLLECTION}/${collection.uid}`)
+          .doc(COL.COLLECTION, collection.uid)
           .update({ royaltiesSpace: '', royaltiesFee: 0 });
       }
       let nft: Nft = await createNftFunc(member, dummyNft(collection, price));
-
       const order = await submitOrderFunc(member, { collection: collection.uid, nft: nft.uid });
-      expect(order.payload.restrictions.collection).toEqual({
+      expect(order.payload.restrictions!.collection).toEqual({
         access: collection.access,
         accessAwards: collection.accessAwards || [],
         accessCollections: collection.accessCollections || [],
       });
-      expect(order.payload.restrictions.nft).toEqual({
-        saleAccess: nft.saleAccess || null,
+      expect(order.payload.restrictions!.nft).toEqual({
+        saleAccess: nft.saleAccess || undefined,
         saleAccessMembers: nft.saleAccessMembers || [],
       });
       await submitMilestoneFunc(order);
@@ -176,8 +161,8 @@ describe('Ordering flows', () => {
       const billPayments = await build5Db()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
-        .where('payload.nft', '==', nft.uid)
-        .get<Transaction>();
+        .where('payload_nft', '==', nft.uid)
+        .get();
       for (const billPayment of billPayments) {
         expect(billPayment.payload.restrictions).toEqual(order.payload.restrictions);
       }
@@ -199,17 +184,17 @@ describe('Ordering flows', () => {
     nft = <Nft>await nftDocRef.get();
     expect(nft.soldOn).toBeDefined();
 
-    mockWalletReturnValue(walletSpy, member, dummySaleData(nft.uid));
-    await testEnv.wrap(setForSaleNft)({});
+    mockWalletReturnValue(member, dummySaleData(nft.uid));
+    await testEnv.wrap(WEN_FUNC.setForSaleNft);
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    const buyer = await createMember(walletSpy);
+    const buyer = await testEnv.createMember();
     order = await submitOrderFunc(buyer, { collection: collection.uid, nft: nft.uid });
     await submitMilestoneFunc(order);
 
     const secondSoldNft = <Nft>await nftDocRef.get();
-    expect(secondSoldNft.soldOn).toEqual(nft.soldOn);
+    expect(secondSoldNft.soldOn?.seconds).toBe(nft.soldOn?.seconds);
   });
 
   it('One collection, one classic NFT, one purchase & paid for and try again', async () => {
@@ -245,7 +230,7 @@ describe('Ordering flows', () => {
     const order = await submitOrderFunc(member, { collection: collection.uid });
     await submitMilestoneFunc(order);
 
-    const nftDbRec: any = await db.collection(COL.NFT).doc(order.payload.nft).get();
+    const nftDbRec: any = await db.doc(COL.NFT, order.payload.nft!).get();
     expect(member).toBe(nftDbRec.owner);
   });
 
@@ -262,7 +247,7 @@ describe('Ordering flows', () => {
     const order = await submitOrderFunc(member, { collection: collection.uid });
     await submitMilestoneFunc(order);
 
-    const nftDbRec: any = await db.collection(COL.NFT).doc(order.payload.nft).get();
+    const nftDbRec: any = await db.collection(COL.NFT).doc(order.payload.nft!).get();
     expect(member).toBe(nftDbRec.owner);
 
     await expectThrow(
@@ -270,7 +255,7 @@ describe('Ordering flows', () => {
       WenError.no_more_nft_available_for_sale.key,
     );
 
-    const placeholderNftDocRef = build5Db().doc(`${COL.NFT}/${collection.placeholderNft}`);
+    const placeholderNftDocRef = build5Db().doc(COL.NFT, collection.placeholderNft);
     await wait(async () => {
       const placeholderNft = <Nft>await placeholderNftDocRef.get();
       return placeholderNft.hidden || false;
@@ -279,7 +264,7 @@ describe('Ordering flows', () => {
 
   it('One collection, generated NFT, 15 Nfts should equal to 15 purchases', async () => {
     const batchSize = 15;
-    const memberPromises = Array.from(Array(batchSize)).map(() => createMember(walletSpy));
+    const memberPromises = Array.from(Array(batchSize)).map(() => testEnv.createMember());
     const members = await Promise.all(memberPromises);
 
     const price = 100;
@@ -311,7 +296,7 @@ describe('Ordering flows', () => {
       batchSize +
       ' purchases + payment in multiple milestone',
     async () => {
-      const memberPromises = Array.from(Array(batchSize)).map(() => createMember(walletSpy));
+      const memberPromises = Array.from(Array(batchSize)).map(() => testEnv.createMember());
       const members = await Promise.all(memberPromises);
 
       const price = 100;
@@ -368,13 +353,13 @@ describe('Ordering flows', () => {
     const order = await submitOrderFunc(member, { collection: collection.uid });
 
     // Confirm payment.
-    const wrongAmount = order.payload.amount * 1.5;
+    const wrongAmount = order.payload.amount! * 1.5;
     const milestone = await submitMilestoneFunc(order, wrongAmount);
 
-    const nftDbRec = await db.collection(COL.NFT).doc(order.payload.nft).get<Nft>();
+    const nftDbRec = await db.collection(COL.NFT).doc(order.payload.nft!).get();
     expect(nftDbRec?.sold).toBe(false);
 
-    const tran = await db.collection(COL.TRANSACTION).doc(order.uid).get<Transaction>();
+    const tran = await db.collection(COL.TRANSACTION).doc(order.uid).get();
     expect(tran?.linkedTransactions?.length).toBe(2);
 
     let c = 0;
@@ -413,7 +398,7 @@ describe('Ordering flows', () => {
 
     await submitMilestoneFunc(order);
 
-    const nftDbRec: any = await db.collection(COL.NFT).doc(order.payload.nft).get();
+    const nftDbRec: any = await db.collection(COL.NFT).doc(order.payload.nft!).get();
     expect(nftDbRec.sold).toBe(true);
 
     const tran: any = await db.collection(COL.TRANSACTION).doc(order.uid).get();
@@ -438,10 +423,9 @@ describe('Ordering flows', () => {
     );
     const nft = await createNftFunc(member, dummyNft(collection, price));
     mockIpCheck(true, { common: ['HU'] }, { countryCode: 'HU' });
-    await expectThrow(
-      submitOrderFunc(member, { collection: collection.uid, nft: nft.uid }),
-      WenError.blocked_country.key,
-    );
+    mockWalletReturnValue(member, { collection: collection.uid, nft: nft.uid });
+    const call = testEnv.mockWrap<Transaction>(orderNftControl);
+    await expectThrow(call, WenError.blocked_country.key);
   });
 
   it('Order should fail, country blocked for nft', async () => {
@@ -452,10 +436,10 @@ describe('Ordering flows', () => {
     );
     const nft = await createNftFunc(member, dummyNft(collection, price));
     mockIpCheck(true, { common: ['USA'], [nft.uid]: ['USA', 'HU'] }, { countryCode: 'HU' });
-    await expectThrow(
-      submitOrderFunc(member, { collection: collection.uid, nft: nft.uid }),
-      WenError.blocked_country.key,
-    );
+
+    mockWalletReturnValue(member, { collection: collection.uid, nft: nft.uid });
+    const call = testEnv.mockWrap<Transaction>(orderNftControl);
+    await expectThrow(call, WenError.blocked_country.key);
   });
 
   it('Should validate access awards', async () => {
@@ -478,8 +462,9 @@ describe('Ordering flows', () => {
       type: TransactionType.AWARD,
       uid: wallet.getRandomEthAddress(),
       payload: { type: TransactionPayloadType.BADGE, award: awards[0] },
+      network: Network.RMS,
     };
-    await build5Db().doc(`${COL.TRANSACTION}/${badge.uid}`).create(badge);
+    await build5Db().doc(COL.TRANSACTION, badge.uid).create(badge);
     await expectThrow(
       submitOrderFunc(member, { collection: collection.uid, nft: nft.uid }),
       WenError.you_dont_have_required_badge.key,
@@ -491,17 +476,18 @@ describe('Ordering flows', () => {
       type: TransactionType.AWARD,
       uid: wallet.getRandomEthAddress(),
       payload: { type: TransactionPayloadType.BADGE, award: awards[1] },
+      network: Network.RMS,
     };
-    await build5Db().doc(`${COL.TRANSACTION}/${badge.uid}`).create(badge);
+    await build5Db().doc(COL.TRANSACTION, badge.uid).create(badge);
     const order = await submitOrderFunc(member, { collection: collection.uid, nft: nft.uid });
     expect(order).toBeDefined();
-    expect(order.payload.restrictions.collection).toEqual({
+    expect(order.payload.restrictions!.collection).toEqual({
       access: collection.access,
       accessAwards: collection.accessAwards || [],
       accessCollections: collection.accessCollections || [],
     });
-    expect(order.payload.restrictions.nft).toEqual({
-      saleAccess: nft.saleAccess || null,
+    expect(order.payload.restrictions!.nft).toEqual({
+      saleAccess: nft.saleAccess || undefined,
       saleAccessMembers: nft.saleAccessMembers || [],
     });
   });

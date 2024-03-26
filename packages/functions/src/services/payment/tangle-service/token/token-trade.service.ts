@@ -4,13 +4,11 @@ import {
   DEFAULT_NETWORK,
   MAX_TOTAL_TOKEN_SUPPLY,
   MIN_PRICE_PER_TOKEN,
-  Member,
   Network,
   SUB_COL,
   TRANSACTION_MAX_EXPIRY_MS,
   TangleResponse,
   Token,
-  TokenDistribution,
   TokenStatus,
   TokenTradeOrder,
   TokenTradeOrderStatus,
@@ -41,6 +39,7 @@ import {
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet.service';
 import { BaseTangleService, HandlerParams } from '../../base';
+import { Action } from '../../transaction-service';
 import { tradeMintedTokenSchema } from './TokenTradeTangleRequestSchema';
 
 export class TangleTokenTradeService extends BaseTangleService<TangleResponse> {
@@ -63,8 +62,8 @@ export class TangleTokenTradeService extends BaseTangleService<TangleResponse> {
       params.symbol ||
       (type === TokenTradeOrderType.SELL ? order.network : getNetworkPair(order.network));
     let token = await getTokenBySymbol(symbol);
-    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token?.uid}`);
-    token = await this.transactionService.get<Token>(tokenDocRef);
+    const tokenDocRef = build5Db().doc(COL.TOKEN, token?.uid!);
+    token = await this.transaction.get(tokenDocRef);
     if (!token) {
       throw invalidArgument(WenError.token_does_not_exist);
     }
@@ -79,7 +78,7 @@ export class TangleTokenTradeService extends BaseTangleService<TangleResponse> {
       token,
       type,
       getCount(params, type),
-      await getPrice(params, type, token.uid),
+      await getPrice(this.transactionService.transaction, params, type, token.uid),
       params.targetAddress,
       '',
       [TokenStatus.BASE, TokenStatus.MINTED],
@@ -93,9 +92,9 @@ export class TangleTokenTradeService extends BaseTangleService<TangleResponse> {
       set(tradeOrderTransaction, 'payload.amount', tranEntry.amount);
     }
     this.transactionService.push({
-      ref: build5Db().doc(`${COL.TRANSACTION}/${tradeOrderTransaction.uid}`),
+      ref: build5Db().doc(COL.TRANSACTION, tradeOrderTransaction.uid),
       data: tradeOrderTransaction,
-      action: 'set',
+      action: Action.C,
     });
 
     this.transactionService.createUnlockTransaction(
@@ -139,7 +138,7 @@ export const createTokenTradeOrder = async (
   assertTokenStatus(token, acceptedTokenStatuses);
 
   const [sourceNetwork, targetNetwork] = getSourceAndTargetNetwork(token, isSell);
-  const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();
+  const member = await build5Db().doc(COL.MEMBER, owner).get();
   assertMemberHasValidAddress(member, sourceNetwork);
   if (targetAddress) {
     if (!targetAddress.startsWith(targetNetwork === Network.ATOI ? 'rms' : targetNetwork)) {
@@ -164,9 +163,8 @@ export const createTokenTradeOrder = async (
     return { tradeOrderTransaction, tradeOrder: undefined, distribution: undefined };
   }
 
-  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
-  const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(owner);
-  const distribution = await transaction.get<TokenDistribution>(distributionDocRef);
+  const distributionDocRef = build5Db().doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, owner);
+  const distribution = await transaction.get(distributionDocRef);
   if (!distribution) {
     throw invalidArgument(WenError.invalid_params);
   }
@@ -260,6 +258,7 @@ const createTradeOrderTransaction = async (
 };
 
 const getPrice = async (
+  transaction: ITransaction,
   params: TradeTokenTangleRequest,
   type: TokenTradeOrderType,
   token: string,
@@ -277,7 +276,7 @@ const getPrice = async (
     .where('status', '==', TokenTradeOrderStatus.ACTIVE)
     .orderBy('price', 'desc')
     .limit(1)
-    .get<TokenTradeOrder>();
+    .get();
   const highestSell = head(snap);
   if (!highestSell) {
     throw invalidArgument(WenError.no_active_sells);

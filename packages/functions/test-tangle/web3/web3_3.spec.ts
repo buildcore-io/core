@@ -1,28 +1,23 @@
 import { build5Db } from '@build-5/database';
-import { COL, MediaStatus, Space } from '@build-5/interfaces';
+import { COL, MediaStatus, Space, WEN_FUNC } from '@build-5/interfaces';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
-import { updateSpace } from '../../src/runtime/firebase/space';
-import * as wallet from '../../src/utils/wallet.utils';
-import { createMember, createSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
-import { MEDIA, testEnv } from '../../test/set-up';
-
-let walletSpy: any;
+import { wait } from '../../test/controls/common';
+import { MEDIA, mockWalletReturnValue, testEnv } from '../../test/set-up';
 
 describe('Web3 cron test', () => {
   beforeEach(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
     await cleanupPendingUploads();
   });
 
   it('Should upload space media after edit vote', async () => {
-    const guardian = await createMember(walletSpy);
-    let space = await createSpace(walletSpy, guardian);
+    const guardian = await testEnv.createMember();
+    let space = await testEnv.createSpace(guardian);
 
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
+    const spaceDocRef = build5Db().doc(COL.SPACE, space.uid);
     await spaceDocRef.update({ bannerUrl: '' });
 
-    mockWalletReturnValue(walletSpy, guardian, { uid: space?.uid, bannerUrl: MEDIA });
-    await testEnv.wrap(updateSpace)({});
+    mockWalletReturnValue(guardian, { uid: space?.uid, bannerUrl: MEDIA });
+    await testEnv.wrap(WEN_FUNC.updateSpace);
 
     await wait(async () => {
       space = <Space>await spaceDocRef.get();
@@ -38,11 +33,11 @@ describe('Web3 cron test', () => {
   });
 
   it('Should fail first then retry', async () => {
-    const guardian = await createMember(walletSpy);
-    let space = await createSpace(walletSpy, guardian);
+    const guardian = await testEnv.createMember();
+    let space = await testEnv.createSpace(guardian);
 
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
-    await spaceDocRef.update({ bannerUrl: 'asd' });
+    const spaceDocRef = build5Db().doc(COL.SPACE, space.uid);
+    await spaceDocRef.update({ bannerUrl: 'wrong-banner-url' });
 
     await uploadMediaToWeb3();
 
@@ -58,11 +53,11 @@ describe('Web3 cron test', () => {
   });
 
   it('Should fail 5 times, then set to error', async () => {
-    const guardian = await createMember(walletSpy);
-    let space = await createSpace(walletSpy, guardian);
+    const guardian = await testEnv.createMember();
+    let space = await testEnv.createSpace(guardian);
 
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
-    await spaceDocRef.update({ bannerUrl: 'asd' });
+    const spaceDocRef = build5Db().doc(COL.SPACE, space.uid);
+    await spaceDocRef.update({ bannerUrl: 'wrong-banner-url' });
 
     for (let i = 0; i < 6; ++i) {
       await uploadMediaToWeb3();
@@ -79,14 +74,16 @@ describe('Web3 cron test', () => {
 
 const cleanupPendingUploads = async () => {
   for (const col of [COL.TOKEN, COL.NFT, COL.COLLECTION]) {
-    const snap = await pendingUploadsQuery(col).get<Record<string, unknown>>();
+    const snap = await pendingUploadsQuery(col).get();
     const promises = snap.map((d) => {
-      const docRef = build5Db().doc(`${col}/${d.uid}`);
-      return docRef.update({ mediaStatus: build5Db().deleteField() });
+      const docRef = build5Db().doc(col as COL.TOKEN, d.uid);
+      return docRef.update({ mediaStatus: undefined });
     });
     await Promise.all(promises);
   }
 };
 
 const pendingUploadsQuery = (col: COL) =>
-  build5Db().collection(col).where('mediaStatus', '==', MediaStatus.PENDING_UPLOAD);
+  build5Db()
+    .collection(col as COL.TOKEN)
+    .where('mediaStatus', '==', MediaStatus.PENDING_UPLOAD);

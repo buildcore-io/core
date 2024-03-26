@@ -8,11 +8,11 @@ import {
   TokenTradeOrderType,
   Transaction,
   TransactionType,
+  WEN_FUNC,
 } from '@build-5/interfaces';
-import { cancelTradeOrder, tradeToken } from '../../src/runtime/firebase/token/trading';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { Helper } from './Helper';
 
@@ -28,13 +28,13 @@ describe('Token minting', () => {
   });
 
   it('Should create sell with higher storage deposit', async () => {
-    mockWalletReturnValue(helper.walletSpy, helper.seller!, {
+    mockWalletReturnValue(helper.seller!, {
       symbol: helper.token!.symbol,
       count: 1,
       price: 5 * MIN_IOTA_AMOUNT,
       type: TokenTradeOrderType.SELL,
     });
-    const sellOrder: Transaction = await testEnv.wrap(tradeToken)({});
+    const sellOrder: Transaction = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await helper.walletService!.send(
       helper.sellerAddress!,
       sellOrder.payload.targetAddress!,
@@ -65,8 +65,8 @@ describe('Token minting', () => {
       )[0]
     );
 
-    mockWalletReturnValue(helper.walletSpy, helper.seller!, { uid: sell.uid });
-    await testEnv.wrap(cancelTradeOrder)({});
+    mockWalletReturnValue(helper.seller!, { uid: sell.uid });
+    await testEnv.wrap<TokenTradeOrder>(WEN_FUNC.cancelTradeOrder);
 
     const sellerCreditSnap = await build5Db()
       .collection(COL.TRANSACTION)
@@ -83,13 +83,13 @@ describe('Token minting', () => {
   it('Should fulfill sell and credit higher storage deposit', async () => {
     await helper.createBuyOrder(1, 5 * MIN_IOTA_AMOUNT);
 
-    mockWalletReturnValue(helper.walletSpy, helper.seller!, {
+    mockWalletReturnValue(helper.seller!, {
       symbol: helper.token!.symbol,
       count: 1,
       price: 5 * MIN_IOTA_AMOUNT,
       type: TokenTradeOrderType.SELL,
     });
-    const sellOrder: Transaction = await testEnv.wrap(tradeToken)({});
+    const sellOrder: Transaction = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await helper.walletService!.send(
       helper.sellerAddress!,
       sellOrder.payload.targetAddress!,

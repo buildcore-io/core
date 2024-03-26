@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { build5Db } from '@build-5/database';
-import { COL, Transaction, TransactionType } from '@build-5/interfaces';
-import { depositNft } from '../../src/runtime/firebase/nft/index';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { COL, Transaction, TransactionType, WEN_FUNC } from '@build-5/interfaces';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { Helper } from './Helper';
 
 describe('Collection minting', () => {
@@ -30,12 +29,12 @@ describe('Collection minting', () => {
     await helper.updateGuardianAddress(tmpAddress2.bech32);
     await helper.withdrawNftAndAwait(nft2.uid);
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, { network: helper.network });
-    const depositOrder = await testEnv.wrap(depositNft)({});
+    mockWalletReturnValue(helper.guardian!, { network: helper.network });
+    const depositOrder = await testEnv.wrap<Transaction>(WEN_FUNC.depositNft);
 
     const promises = [
-      helper.sendNftToAddress(tmpAddress1, depositOrder.payload.targetAddress),
-      helper.sendNftToAddress(tmpAddress2, depositOrder.payload.targetAddress),
+      helper.sendNftToAddress(tmpAddress1, depositOrder.payload.targetAddress!),
+      helper.sendNftToAddress(tmpAddress2, depositOrder.payload.targetAddress!),
     ];
     await Promise.all(promises);
 
@@ -44,7 +43,7 @@ describe('Collection minting', () => {
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT_NFT)
         .where('member', '==', helper.guardian)
-        .get<Transaction>();
+        .get();
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
   });

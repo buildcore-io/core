@@ -4,18 +4,16 @@ import { getLeaveSpaceData } from '../../services/payment/tangle-service/space/S
 import { Context } from '../common';
 
 export const leaveSpaceControl = async ({ owner, params }: Context<SpaceLeaveRequest>) => {
-  const { space, member } = await getLeaveSpaceData(owner, params.uid);
-
-  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
+  const spaceUpdateData = await getLeaveSpaceData(owner, params.uid);
 
   const batch = build5Db().batch();
 
-  batch.delete(spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner));
-  batch.delete(spaceDocRef.collection(SUB_COL.GUARDIANS).doc(owner));
-  batch.update(spaceDocRef, space);
+  batch.delete(build5Db().doc(COL.SPACE, params.uid, SUB_COL.MEMBERS, owner));
+  batch.delete(build5Db().doc(COL.SPACE, params.uid, SUB_COL.GUARDIANS, owner));
+  batch.update(build5Db().doc(COL.SPACE, params.uid), spaceUpdateData);
 
-  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
-  batch.set(memberDocRef, member, true);
+  const memberDocRef = build5Db().doc(COL.MEMBER, owner);
+  batch.update(memberDocRef, { spaces: { [params.uid]: { isMember: false } } });
 
   await batch.commit();
 

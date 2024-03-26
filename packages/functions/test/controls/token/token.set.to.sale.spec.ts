@@ -4,25 +4,15 @@ import {
   MIN_IOTA_AMOUNT,
   NetworkAddress,
   Space,
+  Token,
   TokenAllocation,
   WEN_FUNC,
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { createToken, setTokenAvailableForSale } from '../../../src/runtime/firebase/token/base';
 import { dateToTimestamp } from '../../../src/utils/dateTime.utils';
-import * as wallet from '../../../src/utils/wallet.utils';
-import { MEDIA, testEnv } from '../../set-up';
-import {
-  createMember,
-  createSpace,
-  expectThrow,
-  getRandomSymbol,
-  mockWalletReturnValue,
-} from '../common';
-
-let walletSpy: any;
-
+import { MEDIA, mockWalletReturnValue, testEnv } from '../../set-up';
+import { expectThrow, getRandomSymbol } from '../common';
 const dummyToken = (space: string) =>
   ({
     name: 'MyToken',
@@ -46,131 +36,141 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
     saleLength: 86400000 * 2,
     coolDownLength: 86400000,
   };
-
   beforeEach(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    memberAddress = await createMember(walletSpy);
-    space = await createSpace(walletSpy, memberAddress);
-    mockWalletReturnValue(walletSpy, memberAddress, dummyToken(space.uid));
-    token = await testEnv.wrap(createToken)({});
-    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true });
+    memberAddress = await testEnv.createMember();
+    space = await testEnv.createSpace(memberAddress);
+    mockWalletReturnValue(memberAddress, dummyToken(space.uid));
+    token = await testEnv.wrap<Token>(WEN_FUNC.createToken);
+    await build5Db().doc(COL.TOKEN, token.uid).update({ approved: true });
   });
 
   it('Should throw, not approved', async () => {
-    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false });
+    await build5Db().doc(COL.TOKEN, token.uid).update({ approved: false });
     const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };
-    mockWalletReturnValue(walletSpy, memberAddress, updateData);
-    await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.token_not_approved.key);
+    mockWalletReturnValue(memberAddress, updateData);
+    await expectThrow(
+      testEnv.wrap(WEN_FUNC.setTokenAvailableForSale),
+      WenError.token_not_approved.key,
+    );
   });
 
   it('Should throw, rejected', async () => {
-    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true, rejected: true });
+    await build5Db().doc(COL.TOKEN, token.uid).update({ approved: true, rejected: true });
     const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };
-    mockWalletReturnValue(walletSpy, memberAddress, updateData);
-    await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.token_not_approved.key);
+    mockWalletReturnValue(memberAddress, updateData);
+    await expectThrow(
+      testEnv.wrap(WEN_FUNC.setTokenAvailableForSale),
+      WenError.token_not_approved.key,
+    );
   });
 
   it('Should throw, not on public sale', async () => {
     const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };
-    mockWalletReturnValue(walletSpy, memberAddress, updateData);
+    mockWalletReturnValue(memberAddress, updateData);
     await expectThrow(
-      testEnv.wrap(setTokenAvailableForSale)({}),
+      testEnv.wrap(WEN_FUNC.setTokenAvailableForSale),
       WenError.no_token_public_sale.key,
     );
   });
 
   it('Should throw, not guardian', async () => {
+    const random = await testEnv.createMember();
     const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };
-    mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), updateData);
+    mockWalletReturnValue(random, updateData);
     await expectThrow(
-      testEnv.wrap(setTokenAvailableForSale)({}),
+      testEnv.wrap(WEN_FUNC.setTokenAvailableForSale),
       WenError.you_are_not_guardian_of_space.key,
     );
   });
 
   it('Should throw, no space', async () => {
-    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
+    const tokenDocRef = build5Db().doc(COL.TOKEN, token.uid);
     await tokenDocRef.update({
       space: '',
-      allocations: [{ title: 'public', percentage: 100, isPublicSale: true }],
+      allocations: JSON.stringify([{ title: 'public', percentage: 100, isPublicSale: true }]),
     });
     const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };
-    mockWalletReturnValue(walletSpy, memberAddress, updateData);
+    mockWalletReturnValue(memberAddress, updateData);
     await expectThrow(
-      testEnv.wrap(setTokenAvailableForSale)({}),
+      testEnv.wrap(WEN_FUNC.setTokenAvailableForSale),
       WenError.token_must_have_space.key,
     );
   });
 
   it('Should set public availability', async () => {
     await build5Db()
-      .doc(`${COL.TOKEN}/${token.uid}`)
-      .update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] });
+      .doc(COL.TOKEN, token.uid)
+      .update({
+        allocations: JSON.stringify([{ title: 'public', percentage: 100, isPublicSale: true }]),
+      });
     const updateData = {
       token: token.uid,
       ...publicTime,
       autoProcessAt100Percent: true,
       pricePerToken: MIN_IOTA_AMOUNT,
     };
-    mockWalletReturnValue(walletSpy, memberAddress, updateData);
-    const result = await testEnv.wrap(setTokenAvailableForSale)({});
-    expect(result?.uid).toBeDefined();
-    expect(result?.saleStartDate.toDate()).toEqual(
+    mockWalletReturnValue(memberAddress, updateData);
+    const result = await testEnv.wrap<Token>(WEN_FUNC.setTokenAvailableForSale);
+    token = await build5Db().doc(COL.TOKEN, result.uid).get();
+    expect(token.uid).toBeDefined();
+    expect(token.saleStartDate!.toDate()).toEqual(
       dateToTimestamp(dayjs(publicTime.saleStartDate), true).toDate(),
     );
-    expect(result?.saleLength).toBe(2 * 86400000);
-    expect(result?.coolDownEnd.toDate()).toEqual(
+    expect(token.saleLength).toBe(2 * 86400000);
+    expect(token.coolDownEnd!.toDate()).toEqual(
       dateToTimestamp(
         dayjs(publicTime.saleStartDate).add(86400000 * 2 + 86400000, 'ms'),
         true,
       ).toDate(),
     );
-    expect(result?.autoProcessAt100Percent).toBe(true);
+    expect(token.autoProcessAt100Percent).toBe(true);
   });
 
   it('Should throw, can not set public availability twice', async () => {
     await build5Db()
-      .doc(`${COL.TOKEN}/${token.uid}`)
-      .update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] });
-    mockWalletReturnValue(walletSpy, memberAddress, {
+      .doc(COL.TOKEN, token.uid)
+      .update({
+        allocations: JSON.stringify([{ title: 'public', percentage: 100, isPublicSale: true }]),
+      });
+    mockWalletReturnValue(memberAddress, {
       token: token.uid,
       ...publicTime,
       pricePerToken: MIN_IOTA_AMOUNT,
     });
-    await testEnv.wrap(setTokenAvailableForSale)({});
-
-    mockWalletReturnValue(walletSpy, memberAddress, {
+    await testEnv.wrap(WEN_FUNC.setTokenAvailableForSale);
+    mockWalletReturnValue(memberAddress, {
       token: token.uid,
       ...publicTime,
       pricePerToken: MIN_IOTA_AMOUNT,
     });
     await expectThrow(
-      testEnv.wrap(setTokenAvailableForSale)({}),
+      testEnv.wrap(WEN_FUNC.setTokenAvailableForSale),
       WenError.public_sale_already_set.key,
     );
   });
 
   it('Should set no cool down length', async () => {
-    const docRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
+    const docRef = build5Db().doc(COL.TOKEN, token.uid);
     await docRef.update({
-      allocations: [{ title: 'public', percentage: 100, isPublicSale: true }],
+      allocations: JSON.stringify([{ title: 'public', percentage: 100, isPublicSale: true }]),
     });
     const publicTime = {
       saleStartDate: dayjs().toDate(),
       saleLength: 86400000 * 2,
       coolDownLength: 0,
     };
-    mockWalletReturnValue(walletSpy, memberAddress, {
+    mockWalletReturnValue(memberAddress, {
       token: token.uid,
       ...publicTime,
       pricePerToken: MIN_IOTA_AMOUNT,
     });
-    const result = await testEnv.wrap(setTokenAvailableForSale)({});
-    expect(result?.saleStartDate.toDate()).toEqual(
+    const result = await testEnv.wrap<Token>(WEN_FUNC.setTokenAvailableForSale);
+    token = await build5Db().doc(COL.TOKEN, result.uid).get();
+    expect(token.saleStartDate!.toDate()).toEqual(
       dateToTimestamp(dayjs(publicTime.saleStartDate), true).toDate(),
     );
-    expect(result?.saleLength).toBe(publicTime.saleLength);
-    expect(result?.coolDownEnd.toDate()).toEqual(
+    expect(token.saleLength).toBe(publicTime.saleLength);
+    expect(token.coolDownEnd!.toDate()).toEqual(
       dateToTimestamp(
         dayjs(publicTime.saleStartDate).add(publicTime.saleLength, 'ms'),
         true,

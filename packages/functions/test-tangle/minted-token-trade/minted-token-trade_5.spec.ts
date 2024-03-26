@@ -6,12 +6,10 @@ import {
   CreditPaymentReason,
   MIN_IOTA_AMOUNT,
   TokenTradeOrder,
-  Transaction,
   TransactionType,
+  WEN_FUNC,
 } from '@build-5/interfaces';
-import { cancelTradeOrder } from '../../src/runtime/firebase/token/trading';
-import { mockWalletReturnValue } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { Helper } from './Helper';
 
@@ -31,14 +29,14 @@ describe('Token minting', () => {
 
     const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer);
     const buy = <TokenTradeOrder>(await query.get())[0];
-    mockWalletReturnValue(helper.walletSpy, helper.buyer!, { uid: buy.uid });
-    await testEnv.wrap(cancelTradeOrder)({});
+    mockWalletReturnValue(helper.buyer!, { uid: buy.uid });
+    await testEnv.wrap<TokenTradeOrder>(WEN_FUNC.cancelTradeOrder);
 
     const buyerCreditnap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer)
       .where('type', '==', TransactionType.CREDIT)
-      .get<Transaction>();
+      .get();
     expect(buyerCreditnap.length).toBe(1);
     expect(buyerCreditnap[0]?.payload?.amount).toBe(10 * MIN_IOTA_AMOUNT);
     expect(buyerCreditnap[0]?.payload?.reason).toBe(CreditPaymentReason.TRADE_CANCELLED);

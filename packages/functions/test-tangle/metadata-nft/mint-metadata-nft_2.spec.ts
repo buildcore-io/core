@@ -1,12 +1,10 @@
 import { build5Db } from '@build-5/database';
 import {
   COL,
-  Collection,
   MIN_IOTA_AMOUNT,
   Network,
   Space,
   TangleRequestType,
-  Transaction,
   TransactionType,
 } from '@build-5/interfaces';
 import { BasicOutput, RegularTransactionEssence, TransactionPayload } from '@iota/sdk';
@@ -23,7 +21,7 @@ describe('Metadata nft', () => {
     'Should mint metada nft, mint new one for same collection',
     async (network: Network) => {
       await helper.beforeEach(network);
-      const metadata = { mytest: 'mytest', asd: 'asdasdasd' };
+      const metadata = { mytest: 'mytest', name: 'asdasdasd' };
       await helper.walletService.send(
         helper.memberAddress,
         helper.tangleOrder.payload.targetAddress!,
@@ -57,14 +55,14 @@ describe('Metadata nft', () => {
         .where('member', '==', helper.member)
         .where('type', '==', TransactionType.CREDIT);
       await wait(async () => {
-        const snap = await creditQuery.get<Transaction>();
+        const snap = await creditQuery.get();
         return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
       });
-      const credit = (await creditQuery.get<Transaction>())[0];
+      const credit = (await creditQuery.get())[0];
 
-      const space = <Space>await build5Db().doc(`${COL.SPACE}/${credit.space}`).get();
+      const space = <Space>await build5Db().doc(COL.SPACE, credit.space!).get();
       const collectionQuery = build5Db().collection(COL.COLLECTION).where('space', '==', space.uid);
-      const collection = (await collectionQuery.get<Collection>())[0];
+      const collection = (await collectionQuery.get())[0];
 
       await helper.walletService.send(
         helper.memberAddress,
@@ -87,13 +85,13 @@ describe('Metadata nft', () => {
       );
 
       await wait(async () => {
-        const snap = await creditQuery.get<Transaction>();
+        const snap = await creditQuery.get();
         return (
           snap.length === 2 &&
           snap.reduce((acc, act) => acc && (act.payload?.walletReference?.confirmed || false), true)
         );
       });
-      const credits = await creditQuery.get<Transaction>();
+      const credits = await creditQuery.get();
       const credit1Meta = await getMetadata(
         helper.walletService,
         credits[0].payload.walletReference!.chainReference!,

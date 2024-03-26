@@ -4,26 +4,16 @@ import {
   NetworkAddress,
   Space,
   SUB_COL,
+  Token,
   TokenAllocation,
   TokenStats,
+  Vote,
+  WEN_FUNC,
   WenError,
 } from '@build-5/interfaces';
-import { createToken } from '../../../src/runtime/firebase/token/base';
-import { voteController } from '../../../src/runtime/firebase/vote';
-import * as wallet from '../../../src/utils/wallet.utils';
-import { MEDIA, testEnv } from '../../set-up';
-import {
-  createMember,
-  createSpace,
-  expectThrow,
-  getRandomSymbol,
-  mockWalletReturnValue,
-  setProdTiers,
-  setTestTiers,
-  wait,
-} from '../common';
-
-let walletSpy: any;
+import { getRandomEthAddress } from '../../../src/utils/wallet.utils';
+import { MEDIA, mockWalletReturnValue, testEnv } from '../../set-up';
+import { expectThrow, getRandomSymbol, setProdTiers, setTestTiers, wait } from '../common';
 
 const dummyToken = (space: string) =>
   ({
@@ -45,45 +35,44 @@ describe('Token vote test', () => {
   let token: any;
 
   beforeEach(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    memberAddress = await createMember(walletSpy);
-    space = await createSpace(walletSpy, memberAddress);
-    mockWalletReturnValue(walletSpy, memberAddress, dummyToken(space.uid));
-    token = await testEnv.wrap(createToken)({});
+    memberAddress = await testEnv.createMember();
+    space = await testEnv.createSpace(memberAddress);
+    mockWalletReturnValue(memberAddress, dummyToken(space.uid));
+    token = await testEnv.wrap<Token>(WEN_FUNC.createToken);
   });
 
   it('Should throw, no token', async () => {
-    mockWalletReturnValue(walletSpy, memberAddress, {
+    mockWalletReturnValue(memberAddress, {
       collection: COL.TOKEN,
-      uid: wallet.getRandomEthAddress(),
+      uid: getRandomEthAddress(),
       direction: 1,
     });
-    await expectThrow(testEnv.wrap(voteController)({}), WenError.token_does_not_exist.key);
+    await expectThrow(testEnv.wrap(WEN_FUNC.voteController), WenError.token_does_not_exist.key);
   });
 
   it('Should throw, invalid direction', async () => {
-    mockWalletReturnValue(walletSpy, memberAddress, {
+    mockWalletReturnValue(memberAddress, {
       collection: COL.TOKEN,
       uid: token.uid,
       direction: 2,
     });
-    await expectThrow(testEnv.wrap(voteController)({}), WenError.invalid_params.key);
+    await expectThrow(testEnv.wrap(WEN_FUNC.voteController), WenError.invalid_params.key);
   });
 
   it('Should throw, no soons staked', async () => {
-    mockWalletReturnValue(walletSpy, memberAddress, {
+    await setProdTiers();
+    mockWalletReturnValue(memberAddress, {
       collection: COL.TOKEN,
       uid: token.uid,
       direction: 1,
     });
-    await setProdTiers();
-    await expectThrow(testEnv.wrap(voteController)({}), WenError.no_staked_soon.key);
+    await expectThrow(testEnv.wrap(WEN_FUNC.voteController), WenError.no_staked_soon.key);
     await setTestTiers();
   });
 
   const validateStats = async (upvotes: number, downvotes: number, diff: number) => {
     await wait(async () => {
-      const statsDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.STATS}/${token.uid}`);
+      const statsDocRef = build5Db().doc(COL.TOKEN, token.uid, SUB_COL.STATS, token.uid);
       const stats = <TokenStats | undefined>await statsDocRef.get();
       return (
         stats?.votes?.upvotes === upvotes &&
@@ -94,12 +83,13 @@ describe('Token vote test', () => {
   };
 
   const sendVote = async (direction: number) => {
-    mockWalletReturnValue(walletSpy, memberAddress, {
+    mockWalletReturnValue(memberAddress, {
       collection: COL.TOKEN,
       uid: token.uid,
       direction,
     });
-    const vote = await testEnv.wrap(voteController)({});
+    const vote = await testEnv.wrap<Vote>(WEN_FUNC.voteController);
+
     expect(vote.uid).toBe(memberAddress);
     expect(vote.parentId).toBe(token.uid);
     expect(vote.parentCol).toBe(COL.TOKEN);
@@ -112,13 +102,13 @@ describe('Token vote test', () => {
 
     await sendVote(-1);
     await validateStats(0, 1, -1);
-
-    mockWalletReturnValue(walletSpy, memberAddress, {
+    mockWalletReturnValue(memberAddress, {
       collection: COL.TOKEN,
       uid: token.uid,
       direction: 0,
     });
-    const vote = await testEnv.wrap(voteController)({});
-    expect(vote).toBe(undefined);
+    const vote = await testEnv.wrap(WEN_FUNC.voteController);
+
+    expect(vote).toEqual({});
   });
 });

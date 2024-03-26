@@ -13,47 +13,29 @@ import {
   TokenTradeOrderType,
   Transaction,
   TransactionType,
+  WEN_FUNC,
   WenError,
 } from '@build-5/interfaces';
-import { createMember } from '../src/runtime/firebase/member';
-import { cancelTradeOrder, tradeToken } from '../src/runtime/firebase/token/trading';
-import { AddressDetails } from '../src/services/wallet/wallet.service';
 import { getAddress } from '../src/utils/address.utils';
 import { serverTime } from '../src/utils/dateTime.utils';
 import * as wallet from '../src/utils/wallet.utils';
-import {
-  createMember as createMemberTest,
-  createRoyaltySpaces,
-  createSpace,
-  expectThrow,
-  getRandomSymbol,
-  mockWalletReturnValue,
-  wait,
-} from '../test/controls/common';
-import { MEDIA, testEnv } from '../test/set-up';
-import { addValidatedAddress, awaitTransactionConfirmationsForToken } from './common';
+import { createRoyaltySpaces, expectThrow, getRandomSymbol, wait } from '../test/controls/common';
+import { MEDIA, mockWalletReturnValue, testEnv } from '../test/set-up';
+import { awaitTransactionConfirmationsForToken } from './common';
 import { requestFundsFromFaucet } from './faucet';
-
-let walletSpy: any;
 
 describe('Trade base token controller', () => {
   let seller: Member;
-  const validateAddress = {} as { [key: string]: AddressDetails };
   let token: Token;
 
   beforeEach(async () => {
     await createRoyaltySpaces();
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
 
-    const sellerId = wallet.getRandomEthAddress();
-    mockWalletReturnValue(walletSpy, sellerId, {});
-    await testEnv.wrap(createMember)({ address: sellerId });
-    validateAddress[Network.ATOI] = await addValidatedAddress(Network.ATOI, sellerId);
-    validateAddress[Network.RMS] = await addValidatedAddress(Network.RMS, sellerId);
-    seller = <Member>await build5Db().doc(`${COL.MEMBER}/${sellerId}`).get();
+    const sellerId = await testEnv.createMember();
+    seller = <Member>await build5Db().doc(COL.MEMBER, sellerId).get();
 
-    const guardian = await createMemberTest(walletSpy);
-    const space = await createSpace(walletSpy, guardian);
+    const guardian = await testEnv.createMember();
+    const space = await testEnv.createSpace(guardian);
 
     token = await saveToken(space.uid, guardian);
   });
@@ -62,13 +44,13 @@ describe('Trade base token controller', () => {
     { sourceNetwork: Network.ATOI, targetNetwork: Network.RMS },
     { sourceNetwork: Network.RMS, targetNetwork: Network.ATOI },
   ])('Should create trade order', async ({ sourceNetwork, targetNetwork }) => {
-    mockWalletReturnValue(walletSpy, seller.uid, {
+    mockWalletReturnValue(seller.uid, {
       symbol: token.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 1,
       type: sourceNetwork === Network.ATOI ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY,
     });
-    const tradeOrder = await testEnv.wrap(tradeToken)({});
+    const tradeOrder = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await requestFundsFromFaucet(sourceNetwork, tradeOrder.payload.targetAddress, MIN_IOTA_AMOUNT);
 
     const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', seller.uid);
@@ -85,8 +67,8 @@ describe('Trade base token controller', () => {
       sourceNetwork === Network.ATOI ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY,
     );
 
-    mockWalletReturnValue(walletSpy, seller.uid, { uid: trade.uid });
-    const cancelled = await testEnv.wrap(cancelTradeOrder)({});
+    mockWalletReturnValue(seller.uid, { uid: trade.uid });
+    const cancelled = await testEnv.wrap<TokenTradeOrder>(WEN_FUNC.cancelTradeOrder);
     expect(cancelled.status).toBe(TokenTradeOrderStatus.CANCELLED);
 
     const creditSnap = await build5Db()
@@ -106,16 +88,16 @@ describe('Trade base token controller', () => {
     'Should throw, source address not verified',
     async (network: Network) => {
       await build5Db()
-        .doc(`${COL.MEMBER}/${seller.uid}`)
-        .update({ [`validatedAddress.${network}`]: build5Db().deleteField() });
-      mockWalletReturnValue(walletSpy, seller.uid, {
+        .doc(COL.MEMBER, seller.uid)
+        .update({ [`${network}Address`]: undefined });
+      mockWalletReturnValue(seller.uid, {
         symbol: token.symbol,
         count: 10,
         price: MIN_IOTA_AMOUNT,
         type: network === Network.ATOI ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY,
       });
       await expectThrow(
-        testEnv.wrap(tradeToken)({}),
+        testEnv.wrap<Transaction>(WEN_FUNC.tradeToken),
         WenError.member_must_have_validated_address.key,
       );
     },
@@ -126,16 +108,16 @@ describe('Trade base token controller', () => {
     { sourceNetwork: Network.RMS, targetNetwork: Network.ATOI },
   ])('Should throw, target address not verified', async ({ sourceNetwork, targetNetwork }) => {
     await build5Db()
-      .doc(`${COL.MEMBER}/${seller.uid}`)
-      .update({ [`validatedAddress.${targetNetwork}`]: build5Db().deleteField() });
-    mockWalletReturnValue(walletSpy, seller.uid, {
+      .doc(COL.MEMBER, seller.uid)
+      .update({ [`${targetNetwork}Address`]: undefined });
+    mockWalletReturnValue(seller.uid, {
       symbol: token.symbol,
       count: 10,
       price: MIN_IOTA_AMOUNT,
       type: sourceNetwork === Network.ATOI ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY,
     });
     await expectThrow(
-      testEnv.wrap(tradeToken)({}),
+      testEnv.wrap<Transaction>(WEN_FUNC.tradeToken),
       WenError.member_must_have_validated_address.key,
     );
   });
@@ -156,7 +138,7 @@ const saveToken = async (space: string, guardian: string) => {
     access: 0,
     icon: MEDIA,
     mintingData: { network: Network.ATOI },
-  };
-  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
-  return token as Token;
+  } as Token;
+  await build5Db().doc(COL.TOKEN, token.uid).create(token);
+  return token;
 };

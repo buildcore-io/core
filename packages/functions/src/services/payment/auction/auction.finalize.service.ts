@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { ITransaction, build5Db } from '@build-5/database';
 import {
   Auction,
   AuctionType,
@@ -13,30 +13,31 @@ import {
 import { invalidArgument } from '../../../utils/error.utils';
 import { NotificationService } from '../../notification/notification';
 import { BaseNftService } from '../nft/common';
-import { TransactionService } from '../transaction-service';
+import { Action, TransactionService } from '../transaction-service';
 
 export class AuctionFinalizeService {
-  constructor(readonly transactionService: TransactionService) {}
+  private transaction: ITransaction;
+  constructor(readonly transactionService: TransactionService) {
+    this.transaction = transactionService.transaction;
+  }
 
   public markAsFinalized = async (auctionId: string) => {
-    const auctionDocRef = build5Db().doc(`${COL.AUCTION}/${auctionId}`);
-    const auction = <Auction>await this.transactionService.get(auctionDocRef);
+    const auctionDocRef = build5Db().doc(COL.AUCTION, auctionId);
+    const auction = <Auction>await this.transaction.get(auctionDocRef);
     if (!auction.active) {
       throw invalidArgument(WenError.auction_not_active);
     }
 
-    this.transactionService.push({ ref: auctionDocRef, data: { active: false }, action: 'update' });
+    this.transactionService.push({ ref: auctionDocRef, data: { active: false }, action: Action.U });
 
     const payments = await build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.PAYMENT)
-      .where('payload.invalidPayment', '==', false)
-      .where('payload.auction', '==', auction.uid)
-      .get<Transaction>();
+      .where('payload_invalidPayment', '==', false)
+      .where('payload_auction', '==', auction.uid)
+      .get();
     for (const payment of payments) {
-      const orderDocRef = build5Db().doc(
-        `${COL.TRANSACTION}/${payment.payload.sourceTransaction![0]}`,
-      );
+      const orderDocRef = build5Db().doc(COL.TRANSACTION, payment.payload.sourceTransaction![0]);
       const order = <Transaction>await orderDocRef.get();
       this.transactionService.createBillPayment(order, payment);
     }
@@ -48,8 +49,8 @@ export class AuctionFinalizeService {
   };
 
   private finalizeNftAuction = async (auction: Auction) => {
-    const nftDocRef = build5Db().doc(`${COL.NFT}/${auction.nftId}`);
-    const nft = <Nft>await this.transactionService.get(nftDocRef);
+    const nftDocRef = build5Db().doc(COL.NFT, auction.nftId!);
+    const nft = <Nft>await this.transaction.get(nftDocRef);
 
     if (!auction.auctionHighestBidder) {
       this.transactionService.push({
@@ -65,12 +66,12 @@ export class AuctionFinalizeService {
           auctionHighestBidder: null,
           auction: null,
         },
-        action: 'update',
+        action: Action.U,
       });
       return;
     }
 
-    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${auction.bids[0].order}`);
+    const orderDocRef = build5Db().doc(COL.TRANSACTION, auction.bids[0].order);
     const order = <Transaction>await orderDocRef.get();
 
     const nftService = new BaseNftService(this.transactionService);
@@ -84,11 +85,10 @@ export class AuctionFinalizeService {
       auction.auctionHighestBid!,
       auction.uid,
     );
-    const notificationDocRef = build5Db().doc(`${COL.NOTIFICATION}/${notification.uid}`);
     this.transactionService.push({
-      ref: notificationDocRef,
+      ref: build5Db().doc(COL.NOTIFICATION, notification.uid),
       data: notification,
-      action: 'set',
+      action: Action.C,
     });
 
     nftService.setTradingStats(nft);

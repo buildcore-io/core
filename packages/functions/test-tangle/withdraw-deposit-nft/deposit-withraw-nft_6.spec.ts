@@ -11,11 +11,11 @@ import {
   Space,
   Transaction,
   TransactionType,
+  WEN_FUNC,
 } from '@build-5/interfaces';
-import { depositNft, withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { getAddress } from '../../src/utils/address.utils';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { Helper } from './Helper';
 
 describe('Nft depositing', () => {
@@ -32,33 +32,33 @@ describe('Nft depositing', () => {
     nft = await helper.createAndOrderNft();
     await helper.mintCollection();
 
-    const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, { nft: nft.uid });
-    await testEnv.wrap(withdrawNft)({});
+    const nftDocRef = build5Db().doc(COL.NFT, nft.uid);
+    mockWalletReturnValue(helper.guardian!, { nft: nft.uid });
+    await testEnv.wrap(WEN_FUNC.withdrawNft);
 
     const query = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.WITHDRAW_NFT)
-      .where('payload.nft', '==', nft.uid);
+      .where('payload_nft', '==', nft.uid);
     await wait(async () => {
-      const snap = await query.get<Transaction>();
+      const snap = await query.get();
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
     nft = <Nft>await nftDocRef.get();
 
-    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nft.collection}`);
+    const collectionDocRef = build5Db().doc(COL.COLLECTION, nft.collection);
     collection = <Collection>await collectionDocRef.get();
   });
 
   it('Should deposit nft minted outside build-5 and withdraw it', async () => {
-    const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
+    const nftDocRef = build5Db().doc(COL.NFT, nft.uid);
 
     await nftDocRef.delete();
-    await build5Db().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
+    await build5Db().doc(COL.COLLECTION, nft.collection).delete();
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, { network: helper.network });
-    let depositOrder = await testEnv.wrap(depositNft)({});
-    await helper.sendNftToAddress(helper.guardianAddress!, depositOrder.payload.targetAddress);
+    mockWalletReturnValue(helper.guardian!, { network: helper.network });
+    let depositOrder = await testEnv.wrap<Transaction>(WEN_FUNC.depositNft);
+    await helper.sendNftToAddress(helper.guardianAddress!, depositOrder.payload.targetAddress!);
 
     const nftQuery = build5Db().collection(COL.NFT).where('owner', '==', helper.guardian);
     await wait(async () => {
@@ -76,7 +76,8 @@ describe('Nft depositing', () => {
     expect(migratedNft.space).toBeDefined();
     expect(migratedNft.owner).toBe(helper.guardian);
     expect(migratedNft.isOwned).toBe(true);
-    expect(migratedNft.depositData?.network).toBe(nft.mintingData?.network);
+    expect(migratedNft.depositData?.network).toBe(helper.network);
+    expect(migratedNft.mintingData?.network).toBe(helper.network);
     expect(migratedNft.depositData?.nftId).toBe(nft.mintingData?.nftId);
     expect(migratedNft.depositData?.address).toBe(depositOrder.payload.targetAddress);
     expect(migratedNft.status).toBe(NftStatus.MINTED);
@@ -85,7 +86,7 @@ describe('Nft depositing', () => {
     expect(migratedNft.properties.custom.value).toBe(1);
     expect(migratedNft.properties.customStat.value).toBe('customStat');
 
-    const migratedCollectionDocRef = build5Db().doc(`${COL.COLLECTION}/${migratedNft.collection}`);
+    const migratedCollectionDocRef = build5Db().doc(COL.COLLECTION, migratedNft.collection);
     const migratedCollection = <Collection>await migratedCollectionDocRef.get();
     expect(migratedCollection.space).toBe(migratedNft.space);
     expect(migratedCollection.uid).toBe(collection.mintingData?.nftId!);
@@ -100,7 +101,7 @@ describe('Nft depositing', () => {
     expect(migratedCollection.royaltiesFee).toBe(0.45);
     expect(migratedCollection.royaltiesSpace).toBe(getAddress(helper.royaltySpace!, Network.RMS));
 
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${migratedNft.space}`);
+    const spaceDocRef = build5Db().doc(COL.SPACE, migratedNft.space);
     const space = <Space>await spaceDocRef.get();
     expect(space.uid).toBeDefined();
     expect(space.name).toBe(migratedCollection.name);
@@ -109,18 +110,18 @@ describe('Nft depositing', () => {
     expect(space.avatarUrl).toBe(migratedCollection.bannerUrl);
 
     const nftId = nft.mintingData?.nftId;
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, { nft: nftId });
-    await testEnv.wrap(withdrawNft)({});
+    mockWalletReturnValue(helper.guardian!, { nft: nftId });
+    await testEnv.wrap(WEN_FUNC.withdrawNft);
     const query = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.WITHDRAW_NFT)
-      .where('payload.nft', '==', nftId);
+      .where('payload_nft', '==', nftId);
     await wait(async () => {
-      const snap = await query.get<Transaction>();
+      const snap = await query.get();
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
 
-    const depositOrderDocRef = build5Db().doc(`${COL.TRANSACTION}/${depositOrder.uid}`);
+    const depositOrderDocRef = build5Db().doc(COL.TRANSACTION, depositOrder.uid);
     depositOrder = <Transaction>await depositOrderDocRef.get();
     expect(depositOrder.payload.nft).toBe(nftId);
   });

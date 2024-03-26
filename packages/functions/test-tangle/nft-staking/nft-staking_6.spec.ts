@@ -1,9 +1,16 @@
 import { build5Db } from '@build-5/database';
-import { COL, KEY_NAME_TANGLE, Network, Nft, StakeType } from '@build-5/interfaces';
+import {
+  COL,
+  KEY_NAME_TANGLE,
+  Network,
+  Nft,
+  StakeType,
+  Transaction,
+  WEN_FUNC,
+} from '@build-5/interfaces';
 import { NftOutput, NftOutputBuilderParams, TagFeature, Utils, utf8ToHex } from '@iota/sdk';
-import { stakeNft } from '../../src/runtime/firebase/nft';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { Helper } from './Helper';
 
 describe('Stake nft', () => {
@@ -19,17 +26,17 @@ describe('Stake nft', () => {
 
   it.each([false, true])('Should stake with tag', async (migration: boolean) => {
     let nft = await helper.createAndOrderNft();
-    let nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
+    let nftDocRef = build5Db().doc(COL.NFT, nft.uid);
     await helper.mintCollection();
     nft = <Nft>await nftDocRef.get();
     await helper.withdrawNftAndAwait(nft.uid);
 
     if (migration) {
       await nftDocRef.delete();
-      await build5Db().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
+      await build5Db().doc(COL.COLLECTION, nft.collection).delete();
     }
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
+    mockWalletReturnValue(helper.guardian!, {
       network: Network.RMS,
       weeks: 25,
       type: StakeType.DYNAMIC,
@@ -47,10 +54,10 @@ describe('Stake nft', () => {
       helper.walletService!.info.protocol.rentStructure,
     );
     const extraAmount = Number(storageDeposit) - Number(nftOutput.amount);
-    const stakeNftOrder = await testEnv.wrap(stakeNft)({});
+    const stakeNftOrder = await testEnv.wrap<Transaction>(WEN_FUNC.stakeNft);
     await helper.sendNftToAddress(
       helper.guardianAddress!,
-      stakeNftOrder.payload.targetAddress,
+      stakeNftOrder.payload.targetAddress!,
       undefined,
       nft.mintingData?.nftId,
       extraAmount,

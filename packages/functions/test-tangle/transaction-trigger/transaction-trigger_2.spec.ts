@@ -53,10 +53,10 @@ describe('Transaction trigger spec', () => {
         void: false,
       },
     };
-    const docRef = build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+    const docRef = build5Db().doc(COL.TRANSACTION, billPayment.uid);
     await docRef.create(billPayment);
     await wait(async () => {
-      const doc = await docRef.get<Transaction>();
+      const doc = await docRef.get();
       return doc?.payload?.walletReference?.confirmed;
     });
     const outputs = await wallet.getOutputs(targetAddress.bech32, [], undefined);

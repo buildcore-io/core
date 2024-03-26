@@ -7,10 +7,10 @@ import {
   TokenTradeOrderStatus,
   TokenTradeOrderType,
   Transaction,
+  WEN_FUNC,
 } from '@build-5/interfaces';
-import { tradeToken } from '../../src/runtime/firebase/token/trading';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsForManyFromFaucet, requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
@@ -24,13 +24,15 @@ describe('Base token trading', () => {
   it('Should fulfill many sells with buy', async () => {
     const count = 15;
 
-    mockWalletReturnValue(helper.walletSpy, helper.seller!.uid, {
+    mockWalletReturnValue(helper.seller!.uid, {
       symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 1,
       type: TokenTradeOrderType.SELL,
     });
-    const promises = Array.from(Array(count)).map(() => testEnv.wrap(tradeToken)({}));
+    const promises = Array.from(Array(count)).map(() =>
+      testEnv.wrap<Transaction>(WEN_FUNC.tradeToken),
+    );
     const orders: Transaction[] = await Promise.all(promises);
 
     await requestFundsForManyFromFaucet(
@@ -46,13 +48,13 @@ describe('Base token trading', () => {
       return snap.length === count;
     });
 
-    mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
+    mockWalletReturnValue(helper.buyer!.uid, {
       symbol: helper.token!.symbol,
       count: count * MIN_IOTA_AMOUNT,
       price: 1,
       type: TokenTradeOrderType.BUY,
     });
-    const trade = await testEnv.wrap(tradeToken)({});
+    const trade = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await requestFundsFromFaucet(Network.RMS, trade.payload.targetAddress, trade.payload.amount);
 
     await wait(async () => {

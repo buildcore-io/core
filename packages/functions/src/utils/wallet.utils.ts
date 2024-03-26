@@ -1,9 +1,8 @@
-import { build5Db } from '@build-5/database';
+import { PgMemberUpdate, build5Db } from '@build-5/database';
 import {
   Build5Request,
   COL,
   DecodedToken,
-  Member,
   Network,
   NetworkAddress,
   WEN_FUNC,
@@ -63,7 +62,7 @@ export const decodeAuth = async (
   }
 
   if (req.customToken) {
-    await validateWithIdToken(req, func);
+    validateWithIdToken(req, func);
     return { address: req.address, project, body: req.body };
   }
 
@@ -82,7 +81,7 @@ const validateWithSignature = async (req: Build5Request<unknown>) => {
     throw unAuthenticated(WenError.invalid_signature);
   }
 
-  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${req.address}`);
+  const memberDocRef = build5Db().doc(COL.MEMBER, req.address);
   await memberDocRef.update({ nonce: getRandomNonce() });
 };
 
@@ -98,10 +97,10 @@ const validateLegacyPubKey = async (req: Build5Request<unknown>) => {
   const validatedAddress = (member.validatedAddress || {})[network] || address;
   const updateData = {
     nonce: getRandomNonce(),
-    validatedAddress: { [network]: validatedAddress },
+    [`${network}Address`]: validatedAddress,
   };
-  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${address}`);
-  await memberDocRef.set(updateData, true);
+  const memberDocRef = build5Db().doc(COL.MEMBER, address);
+  await memberDocRef.upsert(updateData);
 
   return address;
 };
@@ -171,12 +170,12 @@ const validateWithPublicKey = async (req: Build5Request<unknown>) => {
   }
 
   const validatedAddress = (member.validatedAddress || {})[network] || address;
-  const updateData = {
+  const updateData: PgMemberUpdate = {
     nonce: getRandomNonce(),
-    validatedAddress: { [network]: validatedAddress },
+    [`${network}Address`]: validatedAddress,
   };
-  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${address}`);
-  await memberDocRef.set(updateData, true);
+  const memberDocRef = build5Db().doc(COL.MEMBER, address);
+  await memberDocRef.upsert(updateData);
 
   return address;
 };
@@ -201,8 +200,8 @@ const validatePubKey = async (info: INodeInfo, req: Build5Request<unknown>) => {
 };
 
 const getMember = async (address: NetworkAddress) => {
-  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${address}`);
-  const member = await memberDocRef.get<Member>();
+  const memberDocRef = build5Db().doc(COL.MEMBER, address);
+  const member = await memberDocRef.get();
   if (!member) {
     throw unAuthenticated(WenError.failed_to_decode_token);
   }
@@ -212,7 +211,7 @@ const getMember = async (address: NetworkAddress) => {
   return member;
 };
 
-const validateWithIdToken = async (req: Build5Request<unknown>, func: WEN_FUNC) => {
+const validateWithIdToken = (req: Build5Request<unknown>, func: WEN_FUNC) => {
   const decoded = jwt.verify(req.customToken!, getJwtSecretKey());
 
   if (get(decoded, 'uid', '') !== req.address) {

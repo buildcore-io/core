@@ -3,8 +3,8 @@ import {
   COL,
   MIN_IOTA_AMOUNT,
   Network,
-  StakeType,
   SUB_COL,
+  StakeType,
   TangleRequestType,
   TokenDistribution,
   Transaction,
@@ -54,11 +54,14 @@ describe('Stake reward test test', () => {
           },
         },
       });
-      await build5Db().doc(`${COL.MNEMONIC}/${tmp.bech32}`).update({ consumedOutputIds: [] });
+      await build5Db().doc(COL.MNEMONIC, tmp.bech32).update({ consumedOutputIds: [] });
 
       await wait(async () => {
         const distributionDocRef = build5Db().doc(
-          `${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${tmp.bech32}`,
+          COL.TOKEN,
+          helper.token!.uid,
+          SUB_COL.DISTRIBUTION,
+          tmp.bech32,
         );
         const distribution = <TokenDistribution>await distributionDocRef.get();
         return (distribution?.stakes || {})[type]?.value === 200;

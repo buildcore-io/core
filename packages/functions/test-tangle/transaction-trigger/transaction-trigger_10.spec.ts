@@ -49,15 +49,13 @@ describe('Transaction trigger spec', () => {
       targetAddress.bech32,
     );
     const batch = build5Db().batch();
-    batch.create(build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`), credit);
-    batch.create(build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`), billPayment);
+    batch.create(build5Db().doc(COL.TRANSACTION, credit.uid), credit);
+    batch.create(build5Db().doc(COL.TRANSACTION, billPayment.uid), billPayment);
     await batch.commit();
 
     await wait(async () => {
-      billPayment = <Transaction>(
-        await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()
-      );
-      credit = <Transaction>await build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`).get();
+      billPayment = <Transaction>await build5Db().doc(COL.TRANSACTION, billPayment.uid).get();
+      credit = <Transaction>await build5Db().doc(COL.TRANSACTION, credit.uid).get();
       return (
         billPayment?.payload?.walletReference?.confirmed &&
         credit?.payload?.walletReference?.confirmed

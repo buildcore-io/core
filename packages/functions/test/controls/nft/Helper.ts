@@ -9,39 +9,26 @@ import {
   Nft,
   NftAccess,
   Space,
+  Transaction,
+  WEN_FUNC,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { createCollection } from '../../../src/runtime/firebase/collection';
-import { createNft, openBid, orderNft } from '../../../src/runtime/firebase/nft';
-import * as wallet from '../../../src/utils/wallet.utils';
-import { MEDIA, testEnv } from '../../set-up';
-import {
-  createMember,
-  createSpace,
-  mockWalletReturnValue,
-  submitMilestoneFunc,
-  wait,
-} from '../common';
+import { MEDIA, mockWalletReturnValue, testEnv } from '../../set-up';
+import { submitMilestoneFunc, wait } from '../common';
 
 export class Helper {
-  public spy: any = {} as any;
   public member: string = {} as any;
   public members: string[] = [];
   public space: Space = {} as any;
   public collection: Collection = {} as any;
   public nft: Nft = {} as any;
 
-  public beforeAll = async () => {
-    this.spy = jest.spyOn(wallet, 'decodeAuth');
-  };
-
   public beforeEach = async () => {
-    this.member = await createMember(this.spy);
-    const memberPromises = Array.from(Array(3)).map(() => createMember(this.spy));
+    this.member = await testEnv.createMember();
+    const memberPromises = Array.from(Array(3)).map(() => testEnv.createMember());
     this.members = await Promise.all(memberPromises);
-    this.space = await createSpace(this.spy, this.member);
-
-    mockWalletReturnValue(this.spy, this.member, {
+    this.space = await testEnv.createSpace(this.member);
+    const dummyCol = {
       name: 'Collection A',
       description: 'babba',
       type: CollectionType.CLASSIC,
@@ -53,44 +40,41 @@ export class Helper {
       onePerMemberOnly: false,
       availableFrom: dayjs().toDate(),
       price: 10 * 1000 * 1000,
-    });
+    };
+    mockWalletReturnValue(this.member, dummyCol);
+    this.collection = await testEnv.wrap<Collection>(WEN_FUNC.createCollection);
 
-    this.collection = await testEnv.wrap(createCollection)({});
-    await build5Db().doc(`${COL.COLLECTION}/${this.collection.uid}`).update({ approved: true });
-
+    await build5Db().doc(COL.COLLECTION, this.collection.uid).update({ approved: true });
     this.nft = await this.createNft();
-
-    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${this.collection.uid}`);
+    const collectionDocRef = build5Db().doc(COL.COLLECTION, this.collection.uid);
     await wait(async () => {
       this.collection = <Collection>await collectionDocRef.get();
       return this.collection.availableNfts === 1;
     });
-
     await this.orderNft(this.nft.uid);
-
     await wait(async () => {
       this.collection = <Collection>await collectionDocRef.get();
       return this.collection.availableNfts === 0;
     });
   };
 
-  public createNft = async () => {
-    mockWalletReturnValue(this.spy, this.member, {
+  public createNft = () => {
+    mockWalletReturnValue(this.member, {
       media: MEDIA,
       ...dummyNft(this.collection.uid),
     });
-    return (await testEnv.wrap(createNft)({})) as Nft;
+    return testEnv.wrap<Nft>(WEN_FUNC.createNft);
   };
 
   public orderNft = async (nft: string) => {
-    mockWalletReturnValue(this.spy, this.member, { collection: this.collection.uid, nft });
-    const nftOrder = await testEnv.wrap(orderNft)({});
+    mockWalletReturnValue(this.member, { collection: this.collection.uid, nft });
+    const nftOrder = await testEnv.wrap<Transaction>(WEN_FUNC.orderNft);
     await submitMilestoneFunc(nftOrder);
   };
 
   public bidNft = async (memberId: string, amount: number) => {
-    mockWalletReturnValue(this.spy, memberId, { nft: this.nft.uid });
-    const bidOrder = await testEnv.wrap(openBid)({});
+    mockWalletReturnValue(memberId, { nft: this.nft.uid });
+    const bidOrder = await testEnv.wrap<Transaction>(WEN_FUNC.openBid);
     await submitMilestoneFunc(bidOrder, amount);
     return bidOrder;
   };

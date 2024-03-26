@@ -1,18 +1,17 @@
 import { build5Db } from '@build-5/database';
 import { COL, Transaction, TransactionPayloadType, TransactionType } from '@build-5/interfaces';
-import { get, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import { getProject } from '../../utils/common.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { BaseService, HandlerParams } from './base';
+import { Action } from './transaction-service';
 
 export class CreditService extends BaseService {
   public handleRequest = async ({ order, match }: HandlerParams) => {
     const payment = await this.transactionService.createPayment(order, match);
 
-    const transactionDocRef = build5Db().doc(
-      `${COL.TRANSACTION}/${get(order, 'payload.transaction', '')}`,
-    );
-    const transaction = <Transaction>await transactionDocRef.get();
+    const transactionDocRef = build5Db().doc(COL.TRANSACTION, order.payload.transaction || '');
+    const transaction = <Transaction>await this.transaction.get(transactionDocRef);
 
     if (!isEmpty(transaction.payload.unlockedBy)) {
       await this.transactionService.createCredit(
@@ -44,15 +43,15 @@ export class CreditService extends BaseService {
       },
     };
     this.transactionService.push({
-      ref: build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`),
+      ref: build5Db().doc(COL.TRANSACTION, credit.uid),
       data: credit,
-      action: 'set',
+      action: Action.C,
     });
 
     this.transactionService.push({
       ref: transactionDocRef,
-      data: { 'payload.unlockedBy': credit.uid },
-      action: 'update',
+      data: { payload_unlockedBy: credit.uid },
+      action: Action.U,
     });
   };
 }

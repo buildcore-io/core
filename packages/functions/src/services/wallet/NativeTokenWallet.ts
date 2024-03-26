@@ -1,5 +1,5 @@
 import { build5Db } from '@build-5/database';
-import { COL, Member, Token, Transaction } from '@build-5/interfaces';
+import { COL, Member, SUB_COL, Token, Transaction } from '@build-5/interfaces';
 import {
   AliasOutputBuilderParams,
   Client,
@@ -18,8 +18,6 @@ import {
   getVaultAndGuardianOutput,
   tokenToFoundryMetadata,
 } from '../../utils/token-minting-utils/foundry.utils';
-import { getOwnedTokenTotal } from '../../utils/token-minting-utils/member.utils';
-import { getUnclaimedAirdropTotalValue } from '../../utils/token.utils';
 import { AliasWallet } from './AliasWallet';
 import { MnemonicService } from './mnemonic';
 import { Wallet, WalletParams } from './wallet';
@@ -53,7 +51,7 @@ export class NativeTokenWallet {
     nextAliasOutput.stateIndex!++;
     nextAliasOutput.foundryCounter!++;
 
-    const token = <Token>await build5Db().doc(`${COL.TOKEN}/${transaction.payload.token}`).get();
+    const token = <Token>await build5Db().doc(COL.TOKEN, transaction.payload.token!).get();
 
     const metadata = await tokenToFoundryMetadata(token);
     const foundryOutput = await createFoundryOutput(
@@ -63,9 +61,15 @@ export class NativeTokenWallet {
       JSON.stringify(metadata),
     );
 
-    const totalDistributed =
-      (await getOwnedTokenTotal(token.uid)) + (await getUnclaimedAirdropTotalValue(token.uid));
-    const member = <Member>await build5Db().doc(`${COL.MEMBER}/${transaction.member}`).get();
+    const totalOwned = await build5Db()
+      .collection(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION)
+      .getTotalOwned();
+    const airdropTotal = await build5Db()
+      .collection(COL.AIRDROP)
+      .getUnclaimedAirdropTotalValue(token.uid);
+    const totalDistributed = totalOwned + airdropTotal;
+
+    const member = <Member>await build5Db().doc(COL.MEMBER, transaction.member!).get();
     const tokenId = Utils.computeFoundryId(
       nextAliasOutput.aliasId,
       foundryOutput.serialNumber,

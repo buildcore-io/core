@@ -1,9 +1,5 @@
-import {
-  MilestoneTransaction,
-  MilestoneTransactionEntry,
-  Network,
-  Timestamp,
-} from '@build-5/interfaces';
+import { MilestoneTransactions } from '@build-5/database';
+import { MilestoneTransaction, MilestoneTransactionEntry, Network } from '@build-5/interfaces';
 import {
   BasicOutput,
   FeatureType,
@@ -27,10 +23,10 @@ export class MilestoneTransactionAdapter {
   constructor(private readonly network: Network) {}
 
   public toMilestoneTransaction = async (
-    data: Record<string, unknown>,
+    data: MilestoneTransactions,
   ): Promise<MilestoneTransaction> => {
     const wallet = await WalletService.newWallet(this.network);
-    const payload = data.payload as TransactionPayload;
+    const payload = data.payload as unknown as TransactionPayload;
     const essence = payload.essence as RegularTransactionEssence;
     const outputs = essence.outputs
       .filter((o) => VALID_OUTPUTS_TYPES.includes(o.type))
@@ -72,7 +68,7 @@ export class MilestoneTransactionAdapter {
       fromAddresses.push(senderBech32);
     }
 
-    const build5TransactionId = await getMilestoneTransactionId(data);
+    const build5TransactionId = getMilestoneTransactionId(data);
 
     const consumedOutputIds = essence.inputs.map((i) => {
       const { transactionId, transactionOutputIndex } = i as UTXOInput;
@@ -81,9 +77,9 @@ export class MilestoneTransactionAdapter {
 
     return {
       uid: data.uid as string,
-      createdOn: data.createdOn as Timestamp,
+      createdOn: data.createdOn!,
       messageId: data.blockId as string,
-      milestone: data.milestone as number,
+      milestone: data.milestone!,
       consumedOutputIds,
       fromAddresses,
       outputs: entries,

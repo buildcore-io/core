@@ -1,4 +1,4 @@
-import { ITransaction, build5Db } from '@build-5/database';
+import { ITransaction, PgTransaction, build5Db } from '@build-5/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -24,8 +24,9 @@ import { getAddress } from '../../utils/address.utils';
 import { getProject } from '../../utils/common.utils';
 import { isEmulatorEnv } from '../../utils/config.utils';
 import { serverTime } from '../../utils/dateTime.utils';
+import { logger } from '../../utils/logger';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
-import { FirestoreDocEvent } from '../common';
+import { PgDocEvent } from '../common';
 import { unclockMnemonic } from '../milestone-transactions-triggers/common';
 import { onAirdropClaim } from './airdrop.claim';
 import { onAwardUpdate } from './award.transaction.update';
@@ -61,19 +62,20 @@ export const EXECUTABLE_TRANSACTIONS = [
   ...CREDIT_EXECUTABLE_TRANSACTIONS,
 ];
 
-export const onTransactionWrite = async (event: FirestoreDocEvent<Transaction>) => {
+export const onTransactionWrite = async (event: PgDocEvent<PgTransaction>) => {
   const { prev, curr } = event;
   if (!curr) {
     return;
   }
 
-  const isExecutableType = EXECUTABLE_TRANSACTIONS.includes(curr.type);
+  const type = curr.type as TransactionType;
+  const isExecutableType = EXECUTABLE_TRANSACTIONS.includes(type);
   const isCreate = prev === undefined;
   const shouldRetry = !prev?.shouldRetry && curr?.shouldRetry;
 
   if (isCreate) {
-    const docRef = build5Db().doc(`${COL.TRANSACTION}/${curr.uid}`);
-    await docRef.update({ isOrderType: curr.type === TransactionType.ORDER });
+    const docRef = build5Db().doc(COL.TRANSACTION, curr.uid);
+    await docRef.update({ isOrderType: type === TransactionType.ORDER });
   }
 
   if (isExecutableType && !curr?.ignoreWallet && (isCreate || shouldRetry)) {
@@ -81,45 +83,44 @@ export const onTransactionWrite = async (event: FirestoreDocEvent<Transaction>) 
   }
 
   if (
-    curr.payload.type === TransactionPayloadType.AIRDROP_MINTED_TOKEN &&
-    prev?.payload?.unclaimedAirdrops &&
-    curr.payload.unclaimedAirdrops === 0
+    curr.payload_type === TransactionPayloadType.AIRDROP_MINTED_TOKEN &&
+    prev?.payload_unclaimedAirdrops &&
+    curr.payload_unclaimedAirdrops === 0
   ) {
     await onMintedAirdropCleared(curr);
     return;
   }
 
-  if (curr.type === TransactionType.MINT_COLLECTION && isConfirmed(prev, curr)) {
+  if (type === TransactionType.MINT_COLLECTION && isConfirmed(prev, curr)) {
     await onCollectionMintingUpdate(curr);
     return;
   }
 
-  if (curr.type === TransactionType.MINT_TOKEN && isConfirmed(prev, curr)) {
+  if (type === TransactionType.MINT_TOKEN && isConfirmed(prev, curr)) {
     await onTokenMintingUpdate(curr);
     return;
   }
 
-  if (curr.type === TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED && isConfirmed(prev, curr)) {
+  if (type === TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED && isConfirmed(prev, curr)) {
     await build5Db()
-      .doc(`${COL.TRANSACTION}/${curr.payload.transaction}`)
+      .doc(COL.TRANSACTION, curr.payload_transaction!)
       .update({
-        'payload.walletReference.confirmed': true,
-        'payload.walletReference.inProgress': false,
-        'payload.walletReference.count': build5Db().inc(1),
-        'payload.walletReference.processedOn': dayjs().toDate(),
-        'payload.walletReference.chainReference':
-          curr.payload?.walletReference?.chainReference || '',
-        'payload.walletReference.chainReferences': build5Db().arrayUnion(
-          curr.payload?.walletReference?.chainReference || '',
+        payload_walletReference_confirmed: true,
+        payload_walletReference_inProgress: false,
+        payload_walletReference_count: build5Db().inc(1),
+        payload_walletReference_processedOn: dayjs().toDate(),
+        payload_walletReference_chainReference: curr.payload_walletReference_chainReference || '',
+        payload_walletReference_chainReferences: build5Db().arrayUnion(
+          curr.payload_walletReference_chainReference || '',
         ),
       });
     return;
   }
 
   if (
-    curr.type === TransactionType.BILL_PAYMENT &&
+    type === TransactionType.BILL_PAYMENT &&
     isConfirmed(prev, curr) &&
-    !isEmpty(curr.payload.stake)
+    !isEmpty(curr.payload_stake)
   ) {
     await onStakingConfirmed(curr);
     return;
@@ -131,51 +132,50 @@ export const onTransactionWrite = async (event: FirestoreDocEvent<Transaction>) 
     TransactionPayloadType.CLAIM_BASE_TOKEN,
   ];
   if (
-    airdropOrderTypes.includes(curr.payload.type!) &&
-    !prev?.payload.reconciled &&
-    curr.payload.reconciled
+    airdropOrderTypes.includes(curr.payload_type! as TransactionPayloadType) &&
+    !prev?.payload_reconciled &&
+    curr.payload_reconciled
   ) {
-    console.info('onAirdropClaim', JSON.stringify(prev), JSON.stringify(curr));
     await onAirdropClaim(curr);
     return;
   }
 
-  if (isConfirmed(prev, curr) && curr.payload.proposalId && curr.type === TransactionType.CREDIT) {
+  if (isConfirmed(prev, curr) && curr.payload_proposalId && type === TransactionType.CREDIT) {
     await onProposalVoteCreditConfirmed(curr);
     return;
   }
 
-  if (isConfirmed(prev, curr) && curr.payload.weeks && curr.type === TransactionType.WITHDRAW_NFT) {
+  if (isConfirmed(prev, curr) && curr.payload_weeks && type === TransactionType.WITHDRAW_NFT) {
     await onNftStaked(curr);
     return;
   }
 
-  if (isConfirmed(prev, curr) && curr.type === TransactionType.AWARD) {
+  if (isConfirmed(prev, curr) && type === TransactionType.AWARD) {
     await onAwardUpdate(curr);
     return;
   }
 
-  if (isConfirmed(prev, curr) && curr.type === TransactionType.METADATA_NFT) {
+  if (isConfirmed(prev, curr) && type === TransactionType.METADATA_NFT) {
     await onMetadataNftMintUpdate(curr);
     return;
   }
 
-  if (isConfirmed(prev, curr) && curr.type === TransactionType.METADATA_NFT) {
+  if (isConfirmed(prev, curr) && type === TransactionType.METADATA_NFT) {
     await onMetadataNftMintUpdate(curr);
     return;
   }
 
-  if (isConfirmed(prev, curr) && curr.type === TransactionType.STAMP) {
+  if (isConfirmed(prev, curr) && type === TransactionType.STAMP) {
     await onStampMintUpdate(curr);
     return;
   }
 
   if (
     isConfirmed(prev, curr) &&
-    curr.payload.award &&
-    curr.payload.type === TransactionPayloadType.MINTED_AIRDROP_CLAIM
+    curr.payload_award &&
+    curr.payload_type === TransactionPayloadType.MINTED_AIRDROP_CLAIM
   ) {
-    const awardDocRef = build5Db().doc(`${COL.AWARD}/${curr.payload.award}`);
+    const awardDocRef = build5Db().doc(COL.AWARD, curr.payload_award);
     await awardDocRef.update({ airdropClaimed: build5Db().inc(1) });
   }
 };
@@ -186,8 +186,8 @@ const executeTransaction = async (transactionId: string) => {
     return;
   }
 
-  const docRef = build5Db().doc(`${COL.TRANSACTION}/${transactionId}`);
-  const transaction = (await docRef.get<Transaction>())!;
+  const docRef = build5Db().doc(COL.TRANSACTION, transactionId);
+  const transaction = (await docRef.get())!;
   const payload = transaction.payload;
 
   const params = await getWalletParams(transaction);
@@ -240,7 +240,7 @@ const executeTransaction = async (transactionId: string) => {
         }
 
         default: {
-          console.error('Unsupported executable transaction type error', transaction);
+          logger.error('Unsupported executable transaction type error', transaction);
           throw Error('Unsupported executable transaction type ' + transaction.type);
         }
       }
@@ -248,18 +248,18 @@ const executeTransaction = async (transactionId: string) => {
 
     const chainReference = await submit();
     await docRef.update({
-      'payload.walletReference.processedOn': dayjs().toDate(),
-      'payload.walletReference.chainReference': chainReference,
-      'payload.walletReference.chainReferences': build5Db().arrayUnion(chainReference),
-      'payload.walletReference.nodeIndex': wallet.nodeIndex,
+      payload_walletReference_processedOn: dayjs().toDate(),
+      payload_walletReference_chainReference: chainReference,
+      payload_walletReference_chainReferences: build5Db().arrayUnion(chainReference),
+      payload_walletReference_nodeIndex: wallet.nodeIndex,
     });
   } catch (error) {
-    console.error('onTransactionWrite-error', transaction.uid, wallet.nodeUrl, error);
+    logger.error('onTransactionWrite-error', transaction.uid, wallet.nodeUrl, error);
     await docRef.update({
-      'payload.walletReference.chainReference': null,
-      'payload.walletReference.processedOn': dayjs().toDate(),
-      'payload.walletReference.error': JSON.stringify(error),
-      'payload.walletReference.nodeIndex': wallet.nodeIndex,
+      payload_walletReference_chainReference: null,
+      payload_walletReference_processedOn: dayjs().toDate(),
+      payload_walletReference_error: JSON.stringify(error),
+      payload_walletReference_nodeIndex: wallet.nodeIndex,
     });
     await unclockMnemonic(payload.sourceAddress!);
   }
@@ -292,7 +292,7 @@ const submitCollectionMintTransactions = (
       return aliasWallet.changeAliasOwner(transaction, params);
     }
     default: {
-      console.error('Unsupported executable transaction type error', transaction);
+      logger.error('Unsupported executable transaction type error', transaction);
       throw Error('Unsupported executable transaction type ' + transaction.payload.type);
     }
   }
@@ -317,7 +317,7 @@ const submitTokenMintTransactions = (
       return aliasWallet.changeAliasOwner(transaction, params);
     }
     default: {
-      console.error('Unsupported executable transaction type error', transaction);
+      logger.error('Unsupported executable transaction type error', transaction);
       throw Error('Unsupported executable transaction type ' + transaction.payload.type);
     }
   }
@@ -346,7 +346,7 @@ const submitCreateAwardTransaction = (
       return aliasWallet.burnAlias(transaction, params);
     }
     default: {
-      console.error(
+      logger.error(
         'Unsupported executable transaction type in submitCreateAwardTransaction - error',
         transaction,
       );
@@ -355,7 +355,7 @@ const submitCreateAwardTransaction = (
   }
 };
 
-const submitMintMetadataTransaction = async (
+const submitMintMetadataTransaction = (
   transaction: Transaction,
   wallet: Wallet,
   params: WalletParams,
@@ -378,7 +378,7 @@ const submitMintMetadataTransaction = async (
       return nftWallet.updateMetadataNft(transaction, params);
     }
     default: {
-      console.error(
+      logger.error(
         'Unsupported executable transaction type in submitMintMetadataTransaction - error',
         transaction,
       );
@@ -387,7 +387,7 @@ const submitMintMetadataTransaction = async (
   }
 };
 
-const submitMintStampTransaction = async (
+const submitMintStampTransaction = (
   transaction: Transaction,
   wallet: Wallet,
   params: WalletParams,
@@ -402,7 +402,7 @@ const submitMintStampTransaction = async (
       return nftWallet.mintStampNft(transaction, params);
     }
     default: {
-      console.error(
+      logger.error(
         'Unsupported executable transaction type in submitCreateAwardTransaction - error',
         transaction,
       );
@@ -437,7 +437,7 @@ const submitUnlockTransaction = async (
       return nftWallet.changeNftOwner(transaction, params);
     }
     default: {
-      console.error('Unsupported executable transaction type - error', transaction);
+      logger.error('Unsupported executable transaction type - error', transaction);
       throw Error('Unsupported executable transaction type ' + transaction.payload.type);
     }
   }
@@ -445,8 +445,8 @@ const submitUnlockTransaction = async (
 
 const prepareTransaction = (transactionId: string) =>
   build5Db().runTransaction(async (transaction) => {
-    const docRef = build5Db().doc(`${COL.TRANSACTION}/${transactionId}`);
-    const tranData = await transaction.get<Transaction>(docRef);
+    const docRef = build5Db().doc(COL.TRANSACTION, transactionId);
+    const tranData = await transaction.get(docRef);
     if (
       isEmulatorEnv() &&
       [Network.SMR, Network.IOTA].includes(tranData?.network || DEFAULT_NETWORK)
@@ -459,7 +459,7 @@ const prepareTransaction = (transactionId: string) =>
       !isEmpty(walletResponse.chainReference) ||
       walletResponse.count > MAX_WALLET_RETRY
     ) {
-      transaction.update(docRef, { shouldRetry: false });
+      await transaction.update(docRef, { shouldRetry: false });
       return false;
     }
 
@@ -468,10 +468,20 @@ const prepareTransaction = (transactionId: string) =>
       tranData.payload.dependsOnBillPayment
     ) {
       walletResponse.chainReference = null;
-      transaction.update(docRef, {
+      await transaction.update(docRef, {
         shouldRetry: false,
-        'payload.walletReference': walletResponse,
-        'payload.dependsOnBillPayment': false,
+        payload_walletReference_createdOn: walletResponse.createdOn?.toDate(),
+        payload_walletReference_processedOn: walletResponse.processedOn?.toDate(),
+        payload_walletReference_chainReference: walletResponse.chainReference || undefined,
+        payload_walletReference_chainReferences: walletResponse.chainReferences,
+        payload_walletReference_error: walletResponse.error as string,
+        payload_walletReference_confirmed: walletResponse.confirmed,
+        payload_walletReference_confirmedOn: walletResponse.confirmedOn?.toDate(),
+        payload_walletReference_milestoneTransactionPath: walletResponse.milestoneTransactionPath,
+        payload_walletReference_count: walletResponse.count,
+        payload_walletReference_inProgress: walletResponse.inProgress,
+        payload_walletReference_nodeIndex: walletResponse.nodeIndex,
+        payload_dependsOnBillPayment: false,
       });
       return false;
     }
@@ -482,12 +492,25 @@ const prepareTransaction = (transactionId: string) =>
     walletResponse.processedOn = serverTime();
     walletResponse.inProgress = true;
 
-    transaction.update(docRef, { shouldRetry: false, 'payload.walletReference': walletResponse });
+    await transaction.update(docRef, {
+      shouldRetry: false,
+      payload_walletReference_createdOn: walletResponse.createdOn?.toDate(),
+      payload_walletReference_processedOn: walletResponse.processedOn?.toDate(),
+      payload_walletReference_chainReference: walletResponse.chainReference || undefined,
+      payload_walletReference_chainReferences: walletResponse.chainReferences,
+      payload_walletReference_error: walletResponse.error as string,
+      payload_walletReference_confirmed: walletResponse.confirmed,
+      payload_walletReference_confirmedOn: walletResponse.confirmedOn?.toDate(),
+      payload_walletReference_milestoneTransactionPath: walletResponse.milestoneTransactionPath,
+      payload_walletReference_count: walletResponse.count,
+      payload_walletReference_inProgress: walletResponse.inProgress,
+      payload_walletReference_nodeIndex: walletResponse.nodeIndex,
+    });
 
     if (!tranData.payload.outputToConsume) {
-      lockMnemonic(transaction, transactionId, tranData.payload.sourceAddress);
-      lockMnemonic(transaction, transactionId, tranData.payload.storageDepositSourceAddress);
-      lockMnemonic(transaction, transactionId, tranData.payload.aliasGovAddress);
+      await lockMnemonic(transaction, transactionId, tranData.payload.sourceAddress);
+      await lockMnemonic(transaction, transactionId, tranData.payload.storageDepositSourceAddress);
+      await lockMnemonic(transaction, transactionId, tranData.payload.aliasGovAddress);
     }
 
     return true;
@@ -506,13 +529,13 @@ const getMnemonic = async (
   address: NetworkAddress | undefined,
 ): Promise<Mnemonic> => {
   if (isEmpty(address)) {
-    return {};
+    return {} as Mnemonic;
   }
-  const docRef = build5Db().doc(`${COL.MNEMONIC}/${address}`);
-  return (await transaction.get(docRef)) || {};
+  const docRef = build5Db().doc(COL.MNEMONIC, address!);
+  return (await transaction.get(docRef)) || ({} as Mnemonic);
 };
 
-const lockMnemonic = (
+const lockMnemonic = async (
   transaction: ITransaction,
   lockedBy: string,
   address: NetworkAddress | undefined,
@@ -520,8 +543,8 @@ const lockMnemonic = (
   if (isEmpty(address)) {
     return;
   }
-  const docRef = build5Db().doc(`${COL.MNEMONIC}/${address}`);
-  transaction.update(docRef, {
+  const docRef = build5Db().doc(COL.MNEMONIC, address!);
+  await transaction.update(docRef, {
     lockedBy,
     consumedOutputIds: [],
     consumedNftOutputIds: [],
@@ -543,28 +566,29 @@ const mnemonicsAreLocked = async (transaction: ITransaction, tran: Transaction) 
   );
 };
 
-const isConfirmed = (prev: Transaction | undefined, curr: Transaction | undefined) =>
-  !prev?.payload?.walletReference?.confirmed && curr?.payload?.walletReference?.confirmed;
+const isConfirmed = (prev: PgTransaction | undefined, curr: PgTransaction | undefined) =>
+  !prev?.payload_walletReference_confirmed && curr?.payload_walletReference_confirmed;
 
-const onMintedAirdropCleared = async (curr: Transaction) => {
-  const member = <Member>await build5Db().doc(`${COL.MEMBER}/${curr.member}`).get();
+const onMintedAirdropCleared = async (curr: PgTransaction) => {
+  const network = (curr.network as Network) || DEFAULT_NETWORK;
+  const member = <Member>await build5Db().doc(COL.MEMBER, curr.member!).get();
   const credit: Transaction = {
     project: getProject(curr),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: curr.space,
     member: curr.member,
-    network: curr.network || DEFAULT_NETWORK,
+    network,
     payload: {
       type: TransactionPayloadType.AIRDROP_MINTED_TOKEN,
-      amount: curr.payload.amount,
-      sourceAddress: curr.payload.targetAddress,
-      targetAddress: getAddress(member, curr.network || DEFAULT_NETWORK),
+      amount: curr.payload_amount,
+      sourceAddress: curr.payload_targetAddress,
+      targetAddress: getAddress(member, network),
       sourceTransaction: [curr.uid],
       reconciled: true,
       void: false,
-      token: curr.payload.token,
+      token: curr.payload_token,
     },
   };
-  await build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`).create(credit);
+  await build5Db().doc(COL.TRANSACTION, credit.uid).create(credit);
 };

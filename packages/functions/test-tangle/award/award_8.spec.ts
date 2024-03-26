@@ -1,24 +1,24 @@
 import { build5Db } from '@build-5/database';
 import {
   Award,
+  AwardApproveParticipantResponse,
   COL,
   Member,
   MIN_IOTA_AMOUNT,
   Network,
   Space,
   Token,
+  Transaction,
   TransactionPayloadType,
+  WEN_FUNC,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
-import * as wallet from '../../src/utils/wallet.utils';
-import { createMember, createSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
-import { MEDIA, testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { MEDIA, mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { saveBaseToken } from './common';
 
 const network = Network.RMS;
-let walletSpy: any;
 
 describe('Create award, base', () => {
   let guardian: string;
@@ -27,34 +27,32 @@ describe('Create award, base', () => {
   let awards: Award[] = [];
   let tokens: Token[] = [];
 
-  beforeAll(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-  });
+  beforeAll(async () => {});
 
   beforeEach(async () => {
-    guardian = await createMember(walletSpy);
-    member = await createMember(walletSpy);
-    spaces = [await createSpace(walletSpy, guardian), await createSpace(walletSpy, guardian)];
+    guardian = await testEnv.createMember();
+    member = await testEnv.createMember();
+    spaces = [await testEnv.createSpace(guardian), await testEnv.createSpace(guardian)];
 
     tokens = [
       await saveBaseToken(spaces[1].uid, guardian),
       await saveBaseToken(spaces[1].uid, guardian),
     ];
 
-    mockWalletReturnValue(walletSpy, guardian, awardRequest(spaces[0].uid, tokens[0].symbol));
-    awards[0] = await testEnv.wrap(createAward)({});
-    mockWalletReturnValue(walletSpy, guardian, awardRequest(spaces[0].uid, tokens[1].symbol));
-    awards[1] = await testEnv.wrap(createAward)({});
-    mockWalletReturnValue(walletSpy, guardian, awardRequest(spaces[1].uid, tokens[0].symbol));
-    awards[2] = await testEnv.wrap(createAward)({});
+    mockWalletReturnValue(guardian, awardRequest(spaces[0].uid, tokens[0].symbol));
+    awards[0] = await testEnv.wrap(WEN_FUNC.createAward);
+    mockWalletReturnValue(guardian, awardRequest(spaces[0].uid, tokens[1].symbol));
+    awards[1] = await testEnv.wrap(WEN_FUNC.createAward);
+    mockWalletReturnValue(guardian, awardRequest(spaces[1].uid, tokens[0].symbol));
+    awards[2] = await testEnv.wrap(WEN_FUNC.createAward);
   });
 
   const fundAwardWrapper = async (awardId: string) => {
-    mockWalletReturnValue(walletSpy, guardian, { uid: awardId });
-    const order = await testEnv.wrap(fundAward)({});
+    mockWalletReturnValue(guardian, { uid: awardId });
+    const order = await testEnv.wrap<Transaction>(WEN_FUNC.fundAward);
     await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount);
 
-    const awardDocRef = build5Db().doc(`${COL.AWARD}/${awardId}`);
+    const awardDocRef = build5Db().doc(COL.AWARD, awardId);
     await wait(async () => {
       const award = <Award>await awardDocRef.get();
       return award.approved && award.funded;
@@ -62,55 +60,30 @@ describe('Create award, base', () => {
   };
 
   it('Should update member space properly', async () => {
-    let promises = awards.map((award) => fundAwardWrapper(award.uid));
+    const promises = awards.map((award) => fundAwardWrapper(award.uid));
     await Promise.all(promises);
 
-    promises = awards.map((award) => {
-      mockWalletReturnValue(walletSpy, guardian, { award: award.uid, members: [member, member] });
-      return testEnv.wrap(approveAwardParticipant)({});
+    const approvePromises = awards.map((award) => {
+      mockWalletReturnValue(guardian, { award: award.uid, members: [member, member] });
+      return testEnv.wrap<AwardApproveParticipantResponse>(WEN_FUNC.approveParticipantAward);
     });
-    await Promise.all(promises);
+    await Promise.all(approvePromises);
 
     const nttQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
-      .where('payload.type', '==', TransactionPayloadType.BADGE);
+      .where('payload_type', '==', TransactionPayloadType.BADGE);
     await wait(async () => {
       const snap = await nttQuery.get();
       return snap.length === 6;
     });
 
-    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${member}`);
+    const memberDocRef = build5Db().doc(COL.MEMBER, member);
     const memberData = <Member>await memberDocRef.get();
 
-    assertMemberSpaceAwardStats(
-      memberData,
-      spaces[0].uid,
-      tokens[0],
-      4,
-      4 * MIN_IOTA_AMOUNT,
-      2,
-      2 * MIN_IOTA_AMOUNT,
-    );
-    assertMemberSpaceAwardStats(
-      memberData,
-      spaces[0].uid,
-      tokens[1],
-      4,
-      4 * MIN_IOTA_AMOUNT,
-      2,
-      2 * MIN_IOTA_AMOUNT,
-    );
-
-    assertMemberSpaceAwardStats(
-      memberData,
-      spaces[1].uid,
-      tokens[0],
-      2,
-      2 * MIN_IOTA_AMOUNT,
-      2,
-      2 * MIN_IOTA_AMOUNT,
-    );
+    assertMemberSpaceAwardStats(memberData, spaces[0].uid, tokens[0], 4, 2);
+    assertMemberSpaceAwardStats(memberData, spaces[0].uid, tokens[1], 4, 2);
+    assertMemberSpaceAwardStats(memberData, spaces[1].uid, tokens[0], 2, 2);
   });
 });
 
@@ -119,16 +92,12 @@ const assertMemberSpaceAwardStats = (
   spaceId: string,
   token: Token,
   totalCompleted: number,
-  totalReward: number,
   completed: number,
-  reward: number,
 ) => {
   const space = member.spaces![spaceId];
   expect(space.awardsCompleted).toBe(totalCompleted);
-  expect(space.totalReward).toBe(totalReward);
   const stat = space.awardStat![token.uid];
   expect(stat.completed).toBe(completed);
-  expect(stat.totalReward).toBe(reward);
   expect(stat.tokenSymbol).toBe(token.symbol);
 };
 

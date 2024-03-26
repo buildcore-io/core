@@ -23,7 +23,7 @@ describe('Join space', () => {
   });
 
   it('Should join space via tangle request', async () => {
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${helper.space.uid}`);
+    const spaceDocRef = build5Db().doc(COL.SPACE, helper.space.uid);
     await spaceDocRef.update({ open: false });
 
     await requestFundsFromFaucet(Network.RMS, helper.memberAddress.bech32, MIN_IOTA_AMOUNT);
@@ -42,7 +42,7 @@ describe('Join space', () => {
     );
 
     await wait(async () => {
-      const snap = await helper.memberCreditQuery.get<Transaction>();
+      const snap = await helper.memberCreditQuery.get();
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
     let snap = await helper.memberCreditQuery.get();
@@ -70,7 +70,7 @@ describe('Join space', () => {
     );
 
     await wait(async () => {
-      const snap = await helper.guardianCreditQuery.get<Transaction>();
+      const snap = await helper.guardianCreditQuery.get();
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
     snap = await helper.guardianCreditQuery.get();

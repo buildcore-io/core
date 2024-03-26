@@ -60,7 +60,7 @@ describe('Transaction trigger spec', () => {
         void: false,
       },
     };
-    await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
+    await build5Db().doc(COL.TRANSACTION, billPayment.uid).create(billPayment);
     await wait(async () => {
       const { nativeTokens } = await wallet.getBalance(targetAddress.bech32);
       return Number(Object.values(nativeTokens)[0]) === 1;
@@ -80,17 +80,15 @@ describe('Transaction trigger spec', () => {
         void: false,
       },
     };
-    await build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`).create(credit);
+    await build5Db().doc(COL.TRANSACTION, credit.uid).create(credit);
     await wait(async () => {
       const { nativeTokens } = await wallet.getBalance(sourceAddress.bech32);
       return Number(Object.values(nativeTokens)[0]) === 1;
     });
 
     await wait(async () => {
-      billPayment = <Transaction>(
-        await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()
-      );
-      credit = <Transaction>await build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`).get();
+      billPayment = <Transaction>await build5Db().doc(COL.TRANSACTION, billPayment.uid).get();
+      credit = <Transaction>await build5Db().doc(COL.TRANSACTION, credit.uid).get();
       return (
         billPayment.payload?.walletReference?.confirmed &&
         credit.payload?.walletReference?.confirmed

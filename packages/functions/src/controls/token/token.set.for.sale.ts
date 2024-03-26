@@ -3,8 +3,6 @@ import {
   COL,
   DEFAULT_NETWORK,
   SetTokenForSaleRequest,
-  Space,
-  Token,
   TokenStatus,
   WenError,
 } from '@build-5/interfaces';
@@ -23,10 +21,11 @@ export const setTokenAvailableForSaleControl = async ({
   owner,
   params,
 }: Context<SetTokenForSaleRequest>) => {
-  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
+  const tokenDocRef = build5Db().doc(COL.TOKEN, params.token);
 
   await build5Db().runTransaction(async (transaction) => {
-    const token = await transaction.get<Token>(tokenDocRef);
+    const token = await transaction.get(tokenDocRef);
+
     if (!token) {
       throw invalidArgument(WenError.token_does_not_exist);
     }
@@ -35,7 +34,7 @@ export const setTokenAvailableForSaleControl = async ({
       throw invalidArgument(WenError.token_must_have_space);
     }
 
-    const spaceData = await build5Db().doc(`${COL.SPACE}/${token.space}`).get<Space>();
+    const spaceData = await build5Db().doc(COL.SPACE, token.space).get();
     assertSpaceHasValidAddress(spaceData, DEFAULT_NETWORK);
 
     assertTokenApproved(token);
@@ -57,12 +56,14 @@ export const setTokenAvailableForSaleControl = async ({
       params.saleLength,
       params.coolDownLength,
     );
-    transaction.update(tokenDocRef, {
+    await transaction.update(tokenDocRef, {
       ...timeFrames,
+      saleStartDate: timeFrames.saleStartDate?.toDate(),
+      coolDownEnd: timeFrames.coolDownEnd?.toDate(),
       autoProcessAt100Percent: params.autoProcessAt100Percent || false,
       pricePerToken: Number(params.pricePerToken),
     });
   });
 
-  return await tokenDocRef.get<Token>();
+  return await tokenDocRef.get();
 };

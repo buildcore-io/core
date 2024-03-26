@@ -40,8 +40,8 @@ class HttpsWrapper {
  * Build.5 API endpoints.
  */
 export enum Build5 {
-  PROD = 'https://api.build5.com',
-  TEST = 'https://api-test.build5.com',
+  PROD = 'https://api.buildcore.io',
+  TEST = 'https://api-test.buildcore.io',
 }
 
 /**

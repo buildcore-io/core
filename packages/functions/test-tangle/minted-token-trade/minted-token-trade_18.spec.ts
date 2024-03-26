@@ -43,7 +43,7 @@ describe('Minted toke trading tangle request', () => {
         },
       },
     });
-    await build5Db().doc(`${COL.MNEMONIC}/${tmp.bech32}`).update({ consumedOutputIds: [] });
+    await build5Db().doc(COL.MNEMONIC, tmp.bech32).update({ consumedOutputIds: [] });
 
     const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', tmp.bech32);
     await wait(async () => {
@@ -113,7 +113,7 @@ describe('Minted toke trading tangle request', () => {
   );
 
   it('Should throw, trading disabled', async () => {
-    await build5Db().doc(`${COL.TOKEN}/${helper.token!.uid}`).update({ tradingDisabled: true });
+    await build5Db().doc(COL.TOKEN, helper.token!.uid).update({ tradingDisabled: true });
     const tmp = await helper.walletService!.getNewIotaAddressDetails();
     await requestFundsFromFaucet(Network.RMS, tmp.bech32, 10 * MIN_IOTA_AMOUNT);
 
@@ -127,7 +127,7 @@ describe('Minted toke trading tangle request', () => {
         },
       },
     });
-    await build5Db().doc(`${COL.MNEMONIC}/${tmp.bech32}`).update({ consumedOutputIds: [] });
+    await build5Db().doc(COL.MNEMONIC, tmp.bech32).update({ consumedOutputIds: [] });
 
     const creditQuery = build5Db()
       .collection(COL.TRANSACTION)

@@ -26,7 +26,7 @@ export interface Project extends BaseRecord {
 }
 
 export enum ProjectBilling {
-  TOKEN_BASE = 'token_based',
+  TOKEN_BASED = 'token_based',
   VOLUME_BASED = 'volume_based',
 }
 
@@ -59,6 +59,7 @@ export interface ProjectAdmin extends BaseSubCollection {
 export interface ProjectApiKey extends BaseSubCollection {
   uid: string;
   createdOn: Timestamp;
+  token: string;
 }
 
 export interface ProjectOtr {

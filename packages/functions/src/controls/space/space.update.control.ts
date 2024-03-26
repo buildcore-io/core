@@ -7,7 +7,6 @@ import {
   Proposal,
   ProposalType,
   Space,
-  SpaceGuardian,
   SpaceUpdateRequest,
   SUB_COL,
   TokenStatus,
@@ -31,8 +30,8 @@ export const updateSpaceControl = async ({
   params,
   project,
 }: Context<SpaceUpdateRequest>) => {
-  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
-  const space = await spaceDocRef.get<Space>();
+  const spaceDocRef = build5Db().doc(COL.SPACE, params.uid);
+  const space = await spaceDocRef.get();
 
   if (!space) {
     throw invalidArgument(WenError.space_does_not_exists);
@@ -55,9 +54,9 @@ export const updateSpaceControl = async ({
     throw invalidArgument(WenError.ongoing_proposal);
   }
 
-  const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
-  const guardian = await guardianDocRef.get<Member>();
-  const guardians = await spaceDocRef.collection(SUB_COL.GUARDIANS).get<SpaceGuardian>();
+  const guardianDocRef = build5Db().doc(COL.MEMBER, owner);
+  const guardian = await guardianDocRef.get();
+  const guardians = await build5Db().collection(COL.SPACE, params.uid, SUB_COL.GUARDIANS).get();
 
   const proposal = createUpdateSpaceProposal(
     project,
@@ -84,12 +83,11 @@ export const updateSpaceControl = async ({
     linkedTransactions: [],
   };
 
-  const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  const proposalDocRef = build5Db().doc(COL.PROPOSAL, proposal.uid);
   const memberPromisses = guardians.map((guardian) => {
-    proposalDocRef
-      .collection(SUB_COL.MEMBERS)
-      .doc(guardian.uid)
-      .set({
+    build5Db()
+      .doc(COL.PROPOSAL, proposal.uid, SUB_COL.MEMBERS, guardian.uid)
+      .create({
         uid: guardian.uid,
         weight: 1,
         voted: guardian.uid === owner,
@@ -101,11 +99,11 @@ export const updateSpaceControl = async ({
   });
   await Promise.all(memberPromisses);
 
-  await build5Db().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`).create(voteTransaction);
+  await build5Db().doc(COL.TRANSACTION, voteTransaction.uid).create(voteTransaction);
 
   await proposalDocRef.create(proposal);
 
-  return (await proposalDocRef.get<Proposal>())!;
+  return (await proposalDocRef.get())!;
 };
 
 const createUpdateSpaceProposal = (

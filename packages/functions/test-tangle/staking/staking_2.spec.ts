@@ -3,7 +3,6 @@ import { COL, Space, StakeType } from '@build-5/interfaces';
 import { FeatureType, MetadataFeature, UnlockConditionType, hexToUtf8 } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';
-import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { Helper } from './Helper';
 
 describe('Staking test', () => {
@@ -21,7 +20,7 @@ describe('Staking test', () => {
     const type = StakeType.DYNAMIC;
     const customMetadata = {
       name: 'random name',
-      asd: 'true',
+      isOld: 'true',
     };
     await helper.stakeAmount(10, 26, undefined, type, customMetadata);
     await helper.validateStatsStakeAmount(10, 10, 14, 14, type, 1);
@@ -40,13 +39,13 @@ describe('Staking test', () => {
     );
     const decoded = JSON.parse(hexToUtf8(hexMetadata.data));
     expect(decoded.name).toBe(customMetadata.name);
-    expect(decoded.asd).toBe(customMetadata.asd);
+    expect(decoded.isOld).toBe(customMetadata.isOld);
   });
 
   it.each([StakeType.DYNAMIC, StakeType.STATIC])(
     'Should set stake amount and remove it once expired, 52 weeks',
     async (type: StakeType) => {
-      const spaceDocRef = build5Db().doc(`${COL.SPACE}/${helper.space?.uid}`);
+      const spaceDocRef = build5Db().doc(COL.SPACE, helper.space?.uid!);
       await spaceDocRef.update({ tokenBased: true, minStakedValue: 10 });
       let space = <Space>await spaceDocRef.get();
       expect(space.totalMembers).toBe(1);
@@ -65,15 +64,15 @@ describe('Staking test', () => {
       await helper.validateMemberStakeAmount(30, 30, 60, 60, type);
 
       await build5Db()
-        .doc(`${COL.STAKE}/${stake2.uid}`)
-        .update({ expiresAt: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
+        .doc(COL.STAKE, stake2.uid)
+        .update({ expiresAt: dayjs().subtract(1, 'm').toDate() });
       await removeExpiredStakesFromSpace();
       await helper.validateStatsStakeAmount(10, 30, 20, 60, type, 1);
       await helper.validateMemberStakeAmount(10, 30, 20, 60, type);
 
       await build5Db()
-        .doc(`${COL.STAKE}/${stake1.uid}`)
-        .update({ expiresAt: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
+        .doc(COL.STAKE, stake1.uid)
+        .update({ expiresAt: dayjs().subtract(1, 'm').toDate() });
       await removeExpiredStakesFromSpace();
       await helper.validateStatsStakeAmount(0, 30, 0, 60, type, 0);
       await helper.validateMemberStakeAmount(0, 30, 0, 60, type);

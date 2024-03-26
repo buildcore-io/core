@@ -20,12 +20,14 @@ import {
   Utils,
 } from '@iota/sdk';
 import dayjs from 'dayjs';
-import { cloneDeep, get } from 'lodash';
+import { cloneDeep } from 'lodash';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
+import { logger } from '../../../utils/logger';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { WalletService } from '../../wallet/wallet.service';
 import { BaseService, HandlerParams } from '../base';
 import { createNftWithdrawOrder } from '../tangle-service/nft/nft-purchase.service';
+import { Action } from '../transaction-service';
 import { NftDepositService } from './nft-deposit.service';
 
 export class NftStakeService extends BaseService {
@@ -49,31 +51,31 @@ export class NftStakeService extends BaseService {
         nft,
         order.member!,
         match.from,
-        get(order, 'payload.weeks', 0),
-        get(order, 'payload.stakeType', StakeType.DYNAMIC),
+        order.payload.weeks || 0,
+        order.payload.stakeType || StakeType.DYNAMIC,
       );
-      const withdrawOrderDocRef = build5Db().doc(`${COL.TRANSACTION}/${withdrawOrder.uid}`);
+      const withdrawOrderDocRef = build5Db().doc(COL.TRANSACTION, withdrawOrder.uid);
       this.transactionService.push({
         ref: withdrawOrderDocRef,
         data: withdrawOrder,
-        action: 'set',
+        action: Action.C,
       });
 
-      const nftDocRef = build5Db().doc(`${COL.NFT}/${nftUpdateData.uid}`);
+      const nftDocRef = build5Db().doc(COL.NFT, nft.uid);
       this.transactionService.push({
         ref: nftDocRef,
         data: nftUpdateData,
-        action: 'update',
+        action: Action.U,
       });
 
       await this.transactionService.createPayment(order, match);
       this.transactionService.markAsReconciled(order, match.msgId);
 
-      const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
+      const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
       this.transactionService.push({
         ref: orderDocRef,
-        data: { 'payload.nft': nft.uid, 'payload.collection': nft.collection },
-        action: 'update',
+        data: { payload_nft: nft.uid, payload_collection: nft.collection },
+        action: Action.U,
       });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -85,13 +87,13 @@ export class NftStakeService extends BaseService {
         this.transactionService.createCredit(TransactionPayloadType.DEPOSIT_NFT, payment, match);
       }
 
-      console.error('nft stake error', order.uid, payment.uid, error, customErrorParams);
+      logger.error('nft stake error', order.uid, payment.uid, error, customErrorParams);
     }
   };
 
   private getNftOutputAmount = async (order: Transaction, tranEntry: MilestoneTransactionEntry) => {
     const wallet = await WalletService.newWallet(order.network);
-    const weeks = get(order, 'payload.weeks', 0);
+    const weeks = order.payload.weeks || 0;
     const params: NftOutputBuilderParams = cloneDeep(tranEntry.nftOutput as NftOutput);
     params.features = params.features?.filter(
       (f) => f.type !== FeatureType.Tag && f.type !== FeatureType.Sender,

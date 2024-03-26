@@ -34,34 +34,40 @@ export const voteOnProposalControl = async ({
     }
 
     if (params.voteWithStakedTokes) {
-      const voteTransaction = await build5Db().runTransaction(async (transaction) =>
+      const voteTransaction = await build5Db().runTransaction((transaction) =>
         voteWithStakedTokens(project, transaction, owner, proposal, [params.value]),
       );
       return voteTransaction;
     }
 
     const order = await createVoteTransactionOrder(project, owner, proposal, [params.value], token);
-    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
+    const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
     await orderDocRef.create(order);
 
-    return (await orderDocRef.get<Transaction>())!;
+    return (await orderDocRef.get())!;
   }
 
-  const voteData = await executeSimpleVoting(project, proposalMember, proposal, [params.value]);
+  const voteData = executeSimpleVoting(project, proposalMember, proposal, [params.value]);
   const batch = build5Db().batch();
 
-  const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
-  batch.set(proposalDocRef, voteData.proposal, true);
+  if (voteData.proposal) {
+    const proposalDocRef = build5Db().doc(COL.PROPOSAL, proposal.uid);
+    batch.update(proposalDocRef, voteData.proposal);
+  }
 
-  const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(proposalMember.uid);
-  batch.set(proposalMemberDocRef, voteData.proposalMember, true);
-
-  const voteTransactionDocRef = build5Db().doc(
-    `${COL.TRANSACTION}/${voteData.voteTransaction.uid}`,
+  const proposalMemberDocRef = build5Db().doc(
+    COL.PROPOSAL,
+    proposal.uid,
+    SUB_COL.MEMBERS,
+    proposalMember.uid,
   );
+  batch.update(proposalMemberDocRef, voteData.proposalMember);
+
+  const voteTransactionDocRef = build5Db().doc(COL.TRANSACTION, voteData.voteTransaction.uid);
   batch.create(voteTransactionDocRef, voteData.voteTransaction);
+
   await batch.commit();
 
-  const voteTransaction = await voteTransactionDocRef.get<Transaction>();
+  const voteTransaction = await voteTransactionDocRef.get();
   return voteTransaction!;
 };

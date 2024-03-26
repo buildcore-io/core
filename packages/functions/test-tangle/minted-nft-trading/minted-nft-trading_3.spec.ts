@@ -4,12 +4,13 @@ import {
   Collection,
   CollectionStatus,
   Network,
+  Transaction,
   UnsoldMintingOptions,
+  WEN_FUNC,
   WenError,
 } from '@build-5/interfaces';
-import { mintCollection } from '../../src/runtime/firebase/collection/index';
-import { expectThrow, mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { expectThrow, wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
@@ -20,12 +21,12 @@ describe('Minted nft trading', () => {
     await helper.beforeEach(Network.RMS);
     await helper.createAndOrderNft();
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
+    mockWalletReturnValue(helper.guardian!, {
       collection: helper.collection,
       network: helper.network,
       unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE,
     });
-    const collectionMintOrder = await testEnv.wrap(mintCollection)({});
+    const collectionMintOrder = await testEnv.wrap<Transaction>(WEN_FUNC.mintCollection);
     await requestFundsFromFaucet(
       helper.network!,
       collectionMintOrder.payload.targetAddress,
@@ -33,9 +34,7 @@ describe('Minted nft trading', () => {
     );
 
     await wait(async () => {
-      const collection = <Collection>(
-        await build5Db().doc(`${COL.COLLECTION}/${helper.collection}`).get()
-      );
+      const collection = <Collection>await build5Db().doc(COL.COLLECTION, helper.collection).get();
       return collection.status === CollectionStatus.MINTING;
     });
 

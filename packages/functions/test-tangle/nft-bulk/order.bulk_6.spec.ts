@@ -24,10 +24,10 @@ describe('Nft bulk order', () => {
   });
 
   it('Should order 2 nfts, only one available', async () => {
-    const { collection: col1, nft: nft1 } = await h.createColletionAndNft(h.member, h.space);
-    const { collection: col2, nft: nft2 } = await h.createColletionAndNft(h.member, h.space);
-    const nft1DocRef = build5Db().doc(`${COL.NFT}/${nft1.uid}`);
-    const nft2DocRef = build5Db().doc(`${COL.NFT}/${nft2.uid}`);
+    const { collection: col1, nft: nft1 } = await h.createCollectionAndNft(h.member, h.space);
+    const { collection: col2, nft: nft2 } = await h.createCollectionAndNft(h.member, h.space);
+    const nft1DocRef = build5Db().doc(COL.NFT, nft1.uid);
+    const nft2DocRef = build5Db().doc(COL.NFT, nft2.uid);
     await nft2DocRef.update({ locked: true });
 
     await requestFundsFromFaucet(Network.ATOI, h.memberAddress.bech32, 2 * MIN_IOTA_AMOUNT);
@@ -54,11 +54,11 @@ describe('Nft bulk order', () => {
       .where('member', '==', h.member)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
     await wait(async () => {
-      const snap = await query.get<Transaction>();
+      const snap = await query.get();
       return snap.length === 1 && snap[0].payload.walletReference?.confirmed;
     });
 
-    const credit = (await query.get<Transaction>())[0];
+    const credit = (await query.get())[0];
     expect(credit.payload.amount).toBe(2 * MIN_IOTA_AMOUNT);
     expect(credit.payload.response!.amount).toBe(MIN_IOTA_AMOUNT);
     await h.walletService.send(

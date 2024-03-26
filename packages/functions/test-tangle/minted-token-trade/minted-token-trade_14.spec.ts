@@ -44,7 +44,7 @@ describe('Token minting', () => {
       await build5Db()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
-        .where('payload.token', '==', helper.token!.uid)
+        .where('payload_token', '==', helper.token!.uid)
         .get()
     ).map((d) => <Transaction>d);
 

@@ -5,7 +5,6 @@ import {
   CollectionType,
   Member,
   Network,
-  Nft,
   TRANSACTION_AUTO_EXPIRY_MS,
   TangleResponse,
   Transaction,
@@ -27,6 +26,7 @@ import { getSpace } from '../../../../utils/space.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet.service';
 import { BaseTangleService, HandlerParams } from '../../base';
+import { Action } from '../../transaction-service';
 import { nftPurchaseBulkSchema } from './NftPurchaseBulkTangleRequestSchema';
 import {
   assertCurrentOwnerAddress,
@@ -60,9 +60,9 @@ export class TangleNftPurchaseBulkService extends BaseTangleService<TangleRespon
     order.payload.disableWithdraw = params.disableWithdraw || false;
 
     this.transactionService.push({
-      ref: build5Db().doc(`${COL.TRANSACTION}/${order.uid}`),
+      ref: build5Db().doc(COL.TRANSACTION, order.uid),
       data: order,
-      action: 'set',
+      action: Action.C,
     });
 
     if (tranEntry.amount !== order.payload.amount || tangleOrder.network !== order.network) {
@@ -136,12 +136,12 @@ export const createNftBulkOrder = async (
 };
 
 const getNftPrices = async (
-  colletionNftGroup: Dictionary<NftBulkOrder[]>,
+  CollectionNftGroup: Dictionary<NftBulkOrder[]>,
   member: Member,
   ip: string,
 ) => {
   const defaultNetwork = isProdEnv() ? Network.IOTA : Network.ATOI;
-  const pricesPromises = Object.entries(colletionNftGroup).map(
+  const pricesPromises = Object.entries(CollectionNftGroup).map(
     async ([collectionId, nftOrders]) => {
       const nftIds = nftOrders.map((o) => o.nft!);
       const { collection, nfts } = await getNfts(collectionId, nftIds);
@@ -176,7 +176,7 @@ const getNftPrices = async (
             nft: nft.uid,
             requestedNft: nftIdParam,
             price: 0,
-            error: get(error, 'details.code', 0),
+            error: get(error, 'eCode', 0),
           };
         }
       });
@@ -196,8 +196,8 @@ const getNfts = async (collectionId: string, nftIds: (string | undefined)[]) => 
 };
 
 const getNft = async (nftId: string) => {
-  const docRef = build5Db().doc(`${COL.NFT}/${nftId}`);
-  const nft = (await getNftByMintingId(nftId)) || (await docRef.get<Nft>());
+  const docRef = build5Db().doc(COL.NFT, nftId);
+  const nft = (await getNftByMintingId(nftId)) || (await docRef.get());
   if (nft) {
     return nft;
   }

@@ -1,5 +1,5 @@
 import { build5Db } from '@build-5/database';
-import { COL, MIN_IOTA_AMOUNT, Stamp } from '@build-5/interfaces';
+import { COL, MIN_IOTA_AMOUNT } from '@build-5/interfaces';
 import { isEmpty } from 'lodash';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { EMPTY_ALIAS_ID } from '../../src/utils/token-minting-utils/alias.utils';
@@ -23,10 +23,10 @@ describe('Stamp tangle test', () => {
 
     let query = build5Db().collection(COL.STAMP).where('createdBy', '==', helper.address.bech32);
     await wait(async () => {
-      const snap = await query.get<Stamp>();
+      const snap = await query.get();
       return snap.length === 1 && snap[0].aliasId !== EMPTY_ALIAS_ID;
     });
-    const stamp = (await query.get<Stamp>())[0];
+    const stamp = (await query.get())[0];
 
     await helper.wallet!.send(
       helper.address,
@@ -37,15 +37,15 @@ describe('Stamp tangle test', () => {
     await MnemonicService.store(helper.address.bech32, helper.address.mnemonic);
 
     await wait(async () => {
-      const snap = await query.get<Stamp>();
+      const snap = await query.get();
       return snap.length === 2 && snap[0].aliasId === snap[1].aliasId;
     });
 
     await wait(async () => {
-      const snap = await query.get<Stamp>();
+      const snap = await query.get();
       return snap.reduce((acc, act) => acc && !isEmpty(act.nftId), true);
     });
-    const stamps = await query.get<Stamp>();
+    const stamps = await query.get();
     expect(stamps.length).toBe(2);
     expect(stamps[0].aliasId).toBe(stamps[1].aliasId);
     expect(stamps[0].nftId).not.toBe(stamps[1].nftId);

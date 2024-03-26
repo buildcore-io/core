@@ -41,7 +41,7 @@ export const depositNftControl = async ({
       void: false,
     },
   };
-  const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
+  const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
   await orderDocRef.create(order);
   return order;
 };

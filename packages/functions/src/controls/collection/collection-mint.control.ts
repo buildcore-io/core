@@ -1,14 +1,12 @@
-import { build5Db, getSnapshot } from '@build-5/database';
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Collection,
   CollectionMintRequest,
   CollectionStatus,
   CollectionType,
-  Member,
   Network,
   Nft,
-  Space,
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
   TransactionPayloadType,
@@ -43,12 +41,12 @@ export const mintCollectionOrderControl = async ({
 }: Context<CollectionMintRequest>) => {
   const network = params.network as Network;
 
-  const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();
+  const member = await build5Db().doc(COL.MEMBER, owner).get();
   assertMemberHasValidAddress(member, network);
 
   return await build5Db().runTransaction(async (transaction) => {
-    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${params.collection}`);
-    const collection = await transaction.get<Collection>(collectionDocRef);
+    const collectionDocRef = build5Db().doc(COL.COLLECTION, params.collection);
+    const collection = await transaction.get(collectionDocRef);
 
     if (!collection) {
       throw invalidArgument(WenError.collection_does_not_exists);
@@ -74,13 +72,11 @@ export const mintCollectionOrderControl = async ({
 
     await assertIsCollectionGuardian(collection, owner);
 
-    const space = await build5Db().doc(`${COL.SPACE}/${collection.space}`).get<Space>();
+    const space = await build5Db().doc(COL.SPACE, collection.space!).get();
     assertSpaceHasValidAddress(space, network);
 
-    if (collection.royaltiesFee) {
-      const royaltySpace = await build5Db()
-        .doc(`${COL.SPACE}/${collection.royaltiesSpace}`)
-        .get<Space>();
+    if (collection.royaltiesSpace) {
+      const royaltySpace = await build5Db().doc(COL.SPACE, collection.royaltiesSpace).get();
       assertSpaceHasValidAddress(royaltySpace, network);
     }
 
@@ -128,8 +124,8 @@ export const mintCollectionOrderControl = async ({
         nftsToMint,
       },
     };
-    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
-    transaction.create(orderDocRef, order);
+    const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
+    await transaction.create(orderDocRef, order);
     return order;
   });
 };
@@ -142,33 +138,31 @@ const getNftsTotalStorageDeposit = async (
 ) => {
   let storageDeposit = 0;
   let nftsToMint = 0;
-  let lastUid = '';
+  let lastDoc: Nft | undefined = undefined;
   do {
-    const lastDoc = await getSnapshot(COL.NFT, lastUid);
-    const nfts = await build5Db()
+    const nfts: Nft[] = await build5Db()
       .collection(COL.NFT)
       .where('collection', '==', collection.uid)
       .where('placeholderNft', '==', false)
-      .limit(500)
       .startAfter(lastDoc)
-      .get<Nft>();
-    lastUid = last(nfts)?.uid || '';
+      .limit(500)
+      .get();
+    lastDoc = last(nfts);
 
     const promises = nfts.map(async (nft) => {
       if (unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD && !nft.sold) {
         return 0;
       }
       const ownerAddress = new Ed25519Address(address.hex);
-      const metadata = JSON.stringify(
-        await nftToMetadata(nft, collection, address.bech32, EMPTY_NFT_ID),
-      );
+      const nftMetadata = await nftToMetadata(nft, collection, address.bech32, EMPTY_NFT_ID);
+      const metadata = JSON.stringify(nftMetadata);
       const output = await createNftOutput(wallet, ownerAddress, ownerAddress, metadata);
       return Number(output.amount);
     });
     const amounts = await Promise.all(promises);
     storageDeposit += amounts.reduce((acc, act) => acc + act, 0);
     nftsToMint += amounts.filter((a) => a !== 0).length;
-  } while (lastUid);
+  } while (lastDoc);
 
   return { storageDeposit, nftsToMint };
 };

@@ -14,7 +14,7 @@ export const fundAwardControl = async ({
   const award = await getAwardForFunding(owner, params.uid);
   const order = await createAwardFundOrder(project, owner, award);
 
-  await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+  await build5Db().doc(COL.TRANSACTION, order.uid).create(order);
 
   return order;
 };

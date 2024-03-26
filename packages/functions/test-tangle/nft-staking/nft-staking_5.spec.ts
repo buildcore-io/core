@@ -4,16 +4,14 @@ import {
   COL,
   MIN_IOTA_AMOUNT,
   Network,
-  Nft,
   StakeType,
   Transaction,
   TransactionPayloadType,
+  WEN_FUNC,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
-import { stakeNft } from '../../src/runtime/firebase/nft';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { MEDIA, testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { MEDIA, mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { saveBaseToken } from '../award/common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
@@ -31,47 +29,43 @@ describe('Stake nft', () => {
 
   it('Should deposit badge ntt ', async () => {
     const token = await saveBaseToken(helper.space!.uid, helper.guardian!);
-    mockWalletReturnValue(
-      helper.walletSpy,
-      helper.guardian!,
-      awardRequest(helper.space!.uid, token.symbol),
-    );
-    let award = await testEnv.wrap(createAward)({});
+    mockWalletReturnValue(helper.guardian!, awardRequest(helper.space!.uid, token.symbol));
+    let award = await testEnv.wrap<Award>(WEN_FUNC.createAward);
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, { uid: award.uid });
-    const order = await testEnv.wrap(fundAward)({});
+    mockWalletReturnValue(helper.guardian!, { uid: award.uid });
+    const order = await testEnv.wrap<Transaction>(WEN_FUNC.fundAward);
     await requestFundsFromFaucet(Network.RMS, order.payload.targetAddress, order.payload.amount);
 
-    const awardDocRef = build5Db().doc(`${COL.AWARD}/${award.uid}`);
+    const awardDocRef = build5Db().doc(COL.AWARD, award.uid);
     await wait(async () => {
       award = <Award>await awardDocRef.get();
       return award.approved && award.funded;
     });
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
+    mockWalletReturnValue(helper.guardian!, {
       award: award.uid,
       members: [helper.guardian!],
     });
-    await testEnv.wrap(approveAwardParticipant)({});
+    await testEnv.wrap(WEN_FUNC.approveParticipantAward);
 
     const nttQuery = build5Db()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.guardian!)
-      .where('payload.type', '==', TransactionPayloadType.BADGE);
+      .where('payload_type', '==', TransactionPayloadType.BADGE);
     await wait(async () => {
-      const snap = await nttQuery.get<Transaction>();
+      const snap = await nttQuery.get();
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
+    mockWalletReturnValue(helper.guardian!, {
       network: Network.RMS,
       weeks: 25,
       type: StakeType.DYNAMIC,
     });
-    const stakeNftOrder = await testEnv.wrap(stakeNft)({});
+    const stakeNftOrder = await testEnv.wrap<Transaction>(WEN_FUNC.stakeNft);
     await helper.sendNftToAddress(
       helper.guardianAddress!,
-      stakeNftOrder.payload.targetAddress,
+      stakeNftOrder.payload.targetAddress!,
       undefined,
       undefined,
       MIN_IOTA_AMOUNT,
@@ -84,7 +78,7 @@ describe('Stake nft', () => {
     });
 
     const nftQuery = build5Db().collection(COL.NFT).where('space', '==', helper.space?.uid);
-    const nftSnap = await nftQuery.get<Nft>();
+    const nftSnap = await nftQuery.get();
     expect(nftSnap.length).toBe(1);
     expect(nftSnap[0]?.space).toBe(award.space);
   });

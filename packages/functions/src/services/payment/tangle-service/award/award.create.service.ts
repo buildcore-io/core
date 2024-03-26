@@ -26,8 +26,9 @@ import { getTokenBySymbol } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { isStorageUrl } from '../../../joi/common';
 import { WalletService } from '../../../wallet/wallet.service';
-import { getAwardgStorageDeposits as getAwardStorageDeposits } from '../../award/award-service';
+import { getAwardgStorageDeposits } from '../../award/award-service';
 import { BaseTangleService, HandlerParams } from '../../base';
+import { Action } from '../../transaction-service';
 import { awardCreateSchema } from './AwardCreateTangleRequestSchema';
 import { createAwardFundOrder } from './award.fund.service';
 
@@ -40,22 +41,22 @@ export class AwardCreateService extends BaseTangleService<AwardCreateTangleRespo
     const params = await assertValidationAsync(awardCreateSchema, request);
     const { award, owner: awardOwner } = await createAward(project, owner, { ...params });
 
-    const awardDocRef = build5Db().doc(`${COL.AWARD}/${award.uid}`);
+    const awardDocRef = build5Db().doc(COL.AWARD, award.uid);
     this.transactionService.push({
       ref: awardDocRef,
       data: award,
-      action: 'set',
+      action: Action.C,
     });
 
     this.transactionService.push({
-      ref: awardDocRef.collection(SUB_COL.OWNERS).doc(owner),
+      ref: build5Db().doc(COL.AWARD, award.uid, SUB_COL.OWNERS, owner),
       data: awardOwner,
-      action: 'set',
+      action: Action.C,
     });
 
     const order = await createAwardFundOrder(project, owner, award);
-    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
-    this.transactionService.push({ ref: orderDocRef, data: order, action: 'set' });
+    const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
+    this.transactionService.push({ ref: orderDocRef, data: order, action: Action.C });
 
     const response = {
       award: award.uid,
@@ -137,7 +138,7 @@ export const createAward = async (
     funded: false,
   };
   const wallet = await WalletService.newWallet(award.network);
-  const storageDeposits = await getAwardStorageDeposits(award, token, wallet);
+  const storageDeposits = await getAwardgStorageDeposits(award, token, wallet);
 
   const awardOwner: AwardOwner = {
     uid: owner,

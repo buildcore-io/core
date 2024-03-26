@@ -13,7 +13,6 @@ import { isEmpty } from 'lodash';
 import { finalizeAuctions } from '../../src/cron/auction.cron';
 import { IotaWallet } from '../../src/services/wallet/IotaWalletService';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { wait } from '../../test/controls/common';
 import { getWallet } from '../../test/set-up';
 import { getTangleOrder } from '../common';
@@ -50,20 +49,20 @@ describe('Nft otr bid', () => {
       },
     });
     await MnemonicService.store(atoiAddress.bech32, atoiAddress.mnemonic, Network.RMS);
-    const nftDocRef = build5Db().doc(`${COL.NFT}/${helper.nft!.uid}`);
+    const nftDocRef = build5Db().doc(COL.NFT, helper.nft!.uid);
     await wait(async () => {
-      const nft = await nftDocRef.get<Nft>();
+      const nft = await nftDocRef.get();
       return !isEmpty(nft?.auctionHighestBidder);
     });
 
     await build5Db()
-      .doc(`${COL.AUCTION}/${helper.nft!.auction}`)
-      .update({ auctionTo: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
+      .doc(COL.AUCTION, helper.nft!.auction!)
+      .update({ auctionTo: dayjs().subtract(1, 'm').toDate() });
 
     await finalizeAuctions();
 
     await wait(async () => {
-      const nft = <Nft>await build5Db().doc(`${COL.NFT}/${helper.nft!.uid}`).get();
+      const nft = <Nft>await build5Db().doc(COL.NFT, helper.nft!.uid).get();
       return nft.owner === atoiAddress.bech32;
     });
   });

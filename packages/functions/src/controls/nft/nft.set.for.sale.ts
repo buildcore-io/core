@@ -1,5 +1,5 @@
 import { build5Db } from '@build-5/database';
-import { COL, Member, Nft, NftSetForSaleRequest, WenError } from '@build-5/interfaces';
+import { COL, Nft, NftSetForSaleRequest, WenError } from '@build-5/interfaces';
 import { getNftSetForSaleParams } from '../../services/payment/tangle-service/nft/nft-set-for-sale.service';
 import { invalidArgument } from '../../utils/error.utils';
 import { Context } from '../common';
@@ -9,8 +9,8 @@ export const setForSaleNftControl = async ({
   params,
   project,
 }: Context<NftSetForSaleRequest>): Promise<Nft> => {
-  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
-  const member = await memberDocRef.get<Member>();
+  const memberDocRef = build5Db().doc(COL.MEMBER, owner);
+  const member = await memberDocRef.get();
   if (!member) {
     throw invalidArgument(WenError.member_does_not_exists);
   }
@@ -19,15 +19,15 @@ export const setForSaleNftControl = async ({
 
   const batch = build5Db().batch();
 
-  const nftDocRef = build5Db().doc(`${COL.NFT}/${params.nft}`);
+  const nftDocRef = build5Db().doc(COL.NFT, params.nft);
   batch.update(nftDocRef, nft);
 
   if (auction) {
-    const auctionDocRef = build5Db().doc(`${COL.AUCTION}/${auction.uid}`);
+    const auctionDocRef = build5Db().doc(COL.AUCTION, auction.uid);
     batch.create(auctionDocRef, auction);
   }
 
   await batch.commit();
 
-  return (await nftDocRef.get<Nft>())!;
+  return (await nftDocRef.get())!;
 };

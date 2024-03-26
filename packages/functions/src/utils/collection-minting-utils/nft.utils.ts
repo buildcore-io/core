@@ -96,17 +96,14 @@ export const collectionToMetadata = async (
 };
 
 export const getNftByMintingId = async (nftId: string) => {
-  const snap = await build5Db()
-    .collection(COL.NFT)
-    .where('mintingData.nftId', '==', nftId)
-    .get<Nft>();
+  const snap = await build5Db().collection(COL.NFT).where('mintingData_nftId', '==', nftId).get();
   return head(snap);
 };
 
 export const getCollectionByMintingId = async (collectionId: string) => {
   const snap = await build5Db()
     .collection(COL.COLLECTION)
-    .where('mintingData.nftId', '==', collectionId)
-    .get<Collection>();
+    .where('mintingData_nftId', '==', collectionId)
+    .get();
   return head(snap);
 };

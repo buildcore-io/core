@@ -1,5 +1,5 @@
 import { build5Db } from '@build-5/database';
-import { COL, DEFAULT_NETWORK, Mnemonic, NetworkAddress } from '@build-5/interfaces';
+import { COL, DEFAULT_NETWORK, Mnemonic, Network, NetworkAddress } from '@build-5/interfaces';
 import { AES, enc } from 'crypto-js';
 
 export class MnemonicService {
@@ -11,9 +11,12 @@ export class MnemonicService {
     await build5Db()
       .collection(COL.MNEMONIC)
       .doc(address)
-      .set({
+      .upsert({
         mnemonic: AES.encrypt(mnemonic, process.env.ENCRYPTION_SALT || '').toString(),
-        network,
+        network: network as Network,
+        consumedOutputIds: [],
+        consumedNftOutputIds: [],
+        consumedAliasOutputIds: [],
       });
   }
 
@@ -24,8 +27,9 @@ export class MnemonicService {
 
   public static async getData(address: NetworkAddress | undefined): Promise<Mnemonic> {
     if (!address) {
-      return {};
+      return {} as Mnemonic;
     }
-    return (await build5Db().collection(COL.MNEMONIC).doc(address).get()) || {};
+    const docRef = build5Db().doc(COL.MNEMONIC, address);
+    return (await docRef.get()) || ({} as Mnemonic);
   }
 }

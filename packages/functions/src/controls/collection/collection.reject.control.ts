@@ -9,8 +9,8 @@ export const rejectCollectionControl = async ({
   owner,
   params,
 }: Context<RejectCollectionRequest>): Promise<Collection> => {
-  const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${params.uid}`);
-  const collection = await collectionDocRef.get<Collection>();
+  const collectionDocRef = build5Db().doc(COL.COLLECTION, params.uid);
+  const collection = await collectionDocRef.get();
   if (!collection) {
     throw invalidArgument(WenError.collection_does_not_exists);
   }

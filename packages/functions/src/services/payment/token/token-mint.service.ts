@@ -1,13 +1,13 @@
 import { build5Db } from '@build-5/database';
 import { COL, Token, TokenStatus, TransactionPayloadType } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { get } from 'lodash';
 import { BaseService, HandlerParams } from '../base';
+import { Action } from '../transaction-service';
 
 export class TokenMintService extends BaseService {
   public handleRequest = async ({ order, match }: HandlerParams) => {
-    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${order.payload.token}`);
-    const token = <Token>await this.transactionService.get(tokenDocRef);
+    const tokenDocRef = build5Db().doc(COL.TOKEN, order.payload.token!);
+    const token = <Token>await this.transaction.get(tokenDocRef);
 
     const payment = await this.transactionService.createPayment(order, match);
     if (![TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED].includes(token.status)) {
@@ -34,16 +34,16 @@ export class TokenMintService extends BaseService {
       ref: tokenDocRef,
       data: {
         status: TokenStatus.MINTING,
-        'mintingData.mintedBy': order.member,
-        'mintingData.network': order.network,
-        'mintingData.aliasStorageDeposit': get(order, 'payload.aliasStorageDeposit', 0),
-        'mintingData.foundryStorageDeposit': get(order, 'payload.foundryStorageDeposit', 0),
-        'mintingData.vaultStorageDeposit': get(order, 'payload.vaultStorageDeposit', 0),
-        'mintingData.guardianStorageDeposit': get(order, 'payload.guardianStorageDeposit', 0),
-        'mintingData.tokensInVault': get(order, 'payload.tokensInVault', 0),
-        'mintingData.vaultAddress': order.payload.targetAddress,
+        mintingData_mintedBy: order.member,
+        mintingData_network: order.network,
+        mintingData_aliasStorageDeposit: order.payload.aliasStorageDeposit || 0,
+        mintingData_foundryStorageDeposit: order.payload.foundryStorageDeposit || 0,
+        mintingData_vaultStorageDeposit: order.payload.vaultStorageDeposit || 0,
+        mintingData_guardianStorageDeposit: order.payload.guardianStorageDeposit || 0,
+        mintingData_tokensInVault: order.payload.tokensInVault || 0,
+        mintingData_vaultAddress: order.payload.targetAddress,
       },
-      action: 'update',
+      action: Action.U,
     });
   };
 }

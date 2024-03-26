@@ -1,17 +1,13 @@
-import { build5Db, getSnapshot } from '@build-5/database';
+import { build5Db } from '@build-5/database';
 import {
   COL,
-  Collection,
   CollectionStatus,
-  DiscountLine,
-  Member,
-  Nft,
   NftStatus,
   UpdateCollectionRequest,
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { isEmpty, last, set } from 'lodash';
+import { isEmpty, set } from 'lodash';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertValidationAsync } from '../../utils/schema.utils';
@@ -25,17 +21,17 @@ export const updateCollectionControl = async ({
   owner,
   params: rawParams,
 }: Context<UidSchemaObject>) => {
-  const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${rawParams.uid}`);
-  const collection = await collectionDocRef.get<Collection>();
+  const collectionDocRef = build5Db().doc(COL.COLLECTION, rawParams.uid);
+  const collection = await collectionDocRef.get();
   if (!collection) {
     throw invalidArgument(WenError.collection_does_not_exists);
   }
 
   const isMinted = collection.status === CollectionStatus.MINTED;
   const schema = isMinted ? updateMintedCollectionSchemaObject : updateCollectionSchemaObject;
-  const params = await assertValidationAsync(schema, rawParams);
+  const { discounts, ...params } = await assertValidationAsync(schema, rawParams);
 
-  const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();
+  const member = await build5Db().doc(COL.MEMBER, owner).get();
   if (!member) {
     throw invalidArgument(WenError.member_does_not_exists);
   }
@@ -64,13 +60,16 @@ export const updateCollectionControl = async ({
     ...params,
     price,
     availablePrice: price,
+    access: params.access,
     uid: params.uid,
   };
-  const discounts = <DiscountLine[] | undefined>params.discounts;
-  if (discounts) {
-    set(collectionUpdateData, 'discounts', await populateTokenUidOnDiscounts(discounts));
+  if (!params.access) {
+    delete collectionUpdateData.access;
   }
-
+  if (discounts) {
+    const value = JSON.stringify(await populateTokenUidOnDiscounts(discounts));
+    set(collectionUpdateData, 'discounts', value);
+  }
   batch.update(collectionDocRef, collectionUpdateData);
 
   if (!isMinted && collection.placeholderNft) {
@@ -81,7 +80,7 @@ export const updateCollectionControl = async ({
       space: collection.space,
       type: collection.type,
     };
-    const nftDocRef = build5Db().doc(`${COL.NFT}/${collection.placeholderNft}`);
+    const nftDocRef = build5Db().doc(COL.NFT, collection.placeholderNft);
     batch.update(nftDocRef, data);
   }
   await batch.commit();
@@ -96,27 +95,11 @@ export const updateCollectionControl = async ({
   }
   if (!isEmpty(nftUpdateData)) {
     for (const status of [NftStatus.PRE_MINTED, NftStatus.MINTED]) {
-      let lastNftId = '';
-      do {
-        const lastDoc = await getSnapshot(COL.NFT, lastNftId);
-        const nfts = await build5Db()
-          .collection(COL.NFT)
-          .where('collection', '==', collection.uid)
-          .where('isOwned', '==', false)
-          .where('status', '==', status)
-          .limit(500)
-          .startAfter(lastDoc)
-          .get<Nft>();
-        lastNftId = last(nfts)?.uid || '';
-
-        const batch = build5Db().batch();
-        for (const nft of nfts) {
-          batch.update(build5Db().doc(`${COL.NFT}/${nft.uid}`), nftUpdateData);
-        }
-        await batch.commit();
-      } while (lastNftId);
+      await build5Db()
+        .collection(COL.NFT)
+        .update(nftUpdateData, { collection: collection.uid, isOwned: false, status: status });
     }
   }
 
-  return await build5Db().doc(`${COL.COLLECTION}/${params.uid}`).get();
+  return await build5Db().doc(COL.COLLECTION, params.uid).get();
 };

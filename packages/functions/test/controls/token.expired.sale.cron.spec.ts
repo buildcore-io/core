@@ -5,7 +5,6 @@ import {
   SOON_PROJECT_ID,
   SUB_COL,
   Token,
-  TokenDistribution,
   TokenStatus,
   TokenTradeOrder,
   TokenTradeOrderStatus,
@@ -15,21 +14,16 @@ import dayjs from 'dayjs';
 import { cancelExpiredSale } from '../../src/cron/token.cron';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { createMember, getRandomSymbol, wait } from './common';
-
-let walletSpy: any;
+import { testEnv } from '../set-up';
+import { getRandomSymbol, wait } from './common';
 
 describe('Expired sales cron', () => {
   let seller: string;
-
   let token: Token;
-
   beforeEach(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    seller = await createMember(walletSpy);
-
+    seller = await testEnv.createMember();
     const tokenId = wallet.getRandomEthAddress();
-    token = <Token>{
+    const tokenUpsert = {
       project: SOON_PROJECT_ID,
       uid: tokenId,
       symbol: getRandomSymbol(),
@@ -38,11 +32,10 @@ describe('Expired sales cron', () => {
       status: TokenStatus.PRE_MINTED,
       approved: true,
     };
-    await build5Db().doc(`${COL.TOKEN}/${tokenId}`).set(token);
-    const distribution = <TokenDistribution>{ tokenOwned: 1000 };
-    await build5Db()
-      .doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}/${seller}`)
-      .set(distribution);
+    await build5Db().doc(COL.TOKEN, tokenId).upsert(tokenUpsert);
+    token = (await build5Db().doc(COL.TOKEN, tokenId).get())!;
+    const distribution = { tokenOwned: 1000 };
+    await build5Db().doc(COL.TOKEN, tokenId, SUB_COL.DISTRIBUTION, seller).upsert(distribution);
   });
 
   it('Should cancel all expired sales', async () => {
@@ -71,29 +64,26 @@ describe('Expired sales cron', () => {
     ) => {
       const sells = Array.from(Array(count)).map(() => getDummySell(status, type));
       const batch = build5Db().batch();
-      sells.forEach((s) => batch.create(build5Db().doc(`${COL.TOKEN_MARKET}/${s.uid}`), s));
+      const promises = sells.map((s) => batch.create(build5Db().doc(COL.TOKEN_MARKET, s.uid), s));
+      await Promise.all(promises);
       await batch.commit();
       return sells;
     };
-
     await createSales(TokenTradeOrderStatus.ACTIVE, TokenTradeOrderType.SELL, salesCount);
     await createSales(TokenTradeOrderStatus.SETTLED, TokenTradeOrderType.SELL, 3);
-
     await wait(async () => {
       const snap = await build5Db()
         .collection(COL.TOKEN_MARKET)
         .where('owner', '==', seller)
         .where('status', '==', TokenTradeOrderStatus.ACTIVE)
-        .get<TokenTradeOrder>();
+        .get();
       const processed = snap.reduce(
         (sum, act) => sum && (<TokenTradeOrder>act).updatedOn !== undefined,
         true,
       );
       return processed;
     });
-
     await cancelExpiredSale();
-
     const snap = await build5Db()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', seller)

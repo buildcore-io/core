@@ -6,10 +6,10 @@ import {
   Space,
   TangleRequestType,
   Transaction,
+  WEN_FUNC,
 } from '@build-5/interfaces';
-import { joinSpace } from '../../src/runtime/firebase/space';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
@@ -25,10 +25,10 @@ describe('Join space', () => {
   });
 
   it('Should leave space via tangle request', async () => {
-    mockWalletReturnValue(helper.walletSpy, helper.member, { uid: helper.space.uid });
-    await testEnv.wrap(joinSpace)({});
+    mockWalletReturnValue(helper.member, { uid: helper.space.uid });
+    await testEnv.wrap(WEN_FUNC.joinSpace);
 
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${helper.space.uid}`);
+    const spaceDocRef = build5Db().doc(COL.SPACE, helper.space.uid);
     helper.space = <Space>await spaceDocRef.get();
     expect(helper.space.totalMembers).toBe(2);
 
@@ -48,7 +48,7 @@ describe('Join space', () => {
     );
 
     await wait(async () => {
-      const snap = await helper.memberCreditQuery.get<Transaction>();
+      const snap = await helper.memberCreditQuery.get();
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
     let snap = await helper.memberCreditQuery.get();

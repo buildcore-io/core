@@ -25,8 +25,8 @@ export const creditUnrefundableControl = ({
   project,
 }: Context<CreditUnrefundableRequest>): Promise<Transaction> =>
   build5Db().runTransaction(async (transaction) => {
-    const transactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${params.transaction}`);
-    const creditTransaction = await transaction.get<Transaction>(transactionDocRef);
+    const transactionDocRef = build5Db().doc(COL.TRANSACTION, params.transaction);
+    const creditTransaction = await transaction.get(transactionDocRef);
 
     if (
       !creditTransaction ||
@@ -49,8 +49,8 @@ export const creditUnrefundableControl = ({
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
     const creditOrder = createCreditOrder(project, creditTransaction, owner, targetAddress.bech32);
-    const creditDocRef = build5Db().doc(`${COL.TRANSACTION}/${creditOrder.uid}`);
-    transaction.create(creditDocRef, creditOrder);
+    const creditDocRef = build5Db().doc(COL.TRANSACTION, creditOrder.uid);
+    await transaction.create(creditDocRef, creditOrder);
 
     return creditOrder;
   });

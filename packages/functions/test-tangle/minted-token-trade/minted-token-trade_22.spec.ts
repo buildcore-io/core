@@ -5,7 +5,6 @@ import {
   MIN_IOTA_AMOUNT,
   Network,
   TangleRequestType,
-  TokenTradeOrder,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
   Transaction,
@@ -49,10 +48,10 @@ describe('Minted toke trading tangle request', () => {
       .where('owner', '==', tmp.bech32)
       .where('type', '==', TokenTradeOrderType.BUY);
     await wait(async () => {
-      const snap = await buyQuery.get<TokenTradeOrder>();
+      const snap = await buyQuery.get();
       return snap.length === 1 && snap[0].fulfilled === 3;
     });
-    const buyOrder = (await buyQuery.get<TokenTradeOrder>())[0];
+    const buyOrder = (await buyQuery.get())[0];
 
     expect(buyOrder.count).toBe(MAX_TOTAL_TOKEN_SUPPLY);
     expect(buyOrder.fulfilled).toBe(3);
@@ -63,7 +62,7 @@ describe('Minted toke trading tangle request', () => {
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.seller)
       .where('type', '==', TokenTradeOrderType.SELL)
-      .get<TokenTradeOrder>();
+      .get();
     sellOrders.sort((a, b) => a.price - b.price);
 
     expect(sellOrders[0].price).toBe(MIN_IOTA_AMOUNT);

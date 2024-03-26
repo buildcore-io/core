@@ -6,6 +6,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import sharp from 'sharp';
+import { logger } from '../../utils/logger';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -35,9 +36,9 @@ export const onStorageObjectFinalized = async (data: StorageObject) => {
       await uploadVideoPreview(workdir, data, downloadedMediaPath);
       return;
     }
-    console.warn('Unsupported content type error', data);
+    logger.warn('Unsupported content type error', data);
   } catch (error) {
-    console.error('onStorageObjectFinalized-error', data, error);
+    logger.error('onStorageObjectFinalized-error', data, error);
   } finally {
     fs.rmSync(workdir, { recursive: true, force: true });
   }

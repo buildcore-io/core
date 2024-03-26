@@ -2,3 +2,5 @@
 /lib
 /interfaces
 /node_modules
+.env
+sa.json

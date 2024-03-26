@@ -3,9 +3,7 @@ import {
   COL,
   MIN_IOTA_AMOUNT,
   Network,
-  Nft,
   TangleRequestType,
-  Transaction,
   TransactionType,
 } from '@build-5/interfaces';
 import { NftOutput } from '@iota/sdk';
@@ -19,7 +17,7 @@ describe('Metadata nft', () => {
 
   it('Should mint metada nft then update metadata', async () => {
     await helper.beforeEach(Network.ATOI);
-    const metadata = { mytest: 'mytest', asd: 'asdasdasd' };
+    const metadata = { mytest: 'mytest', name: 'asdasdasd' };
     await helper.walletService.send(
       helper.memberAddress,
       helper.tangleOrder.payload.targetAddress!,
@@ -53,12 +51,12 @@ describe('Metadata nft', () => {
       .where('member', '==', helper.member)
       .where('type', '==', TransactionType.CREDIT);
     await wait(async () => {
-      const snap = await creditQuery.get<Transaction>();
+      const snap = await creditQuery.get();
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
 
     const nftQuery = build5Db().collection(COL.NFT).where('owner', '==', helper.member);
-    const nft = (await nftQuery.get<Nft>())[0];
+    const nft = (await nftQuery.get())[0];
 
     await helper.walletService.send(
       helper.memberAddress,
@@ -68,7 +66,7 @@ describe('Metadata nft', () => {
         customMetadata: {
           request: {
             requestType: TangleRequestType.MINT_METADATA_NFT,
-            metadata: { asd: 'hello' },
+            metadata: { name: 'hello' },
             nftId: nft.mintingData?.nftId,
           },
         },
@@ -81,7 +79,7 @@ describe('Metadata nft', () => {
     );
 
     await wait(async () => {
-      const snap = await creditQuery.get<Transaction>();
+      const snap = await creditQuery.get();
       return (
         snap.length === 2 &&
         snap.reduce((acc, act) => acc && (act.payload?.walletReference?.confirmed || false), true)
@@ -91,7 +89,7 @@ describe('Metadata nft', () => {
     let nftOutputId = await helper.walletService.client.nftOutputId(nft.mintingData?.nftId!);
     let nftOutput = (await helper.walletService.client.getOutput(nftOutputId)).output as NftOutput;
     let meta = getOutputMetadata(nftOutput);
-    expect(meta).toEqual({ asd: 'hello' });
+    expect(meta).toEqual({ name: 'hello' });
 
     await helper.walletService.send(
       helper.memberAddress,
@@ -101,7 +99,7 @@ describe('Metadata nft', () => {
         customMetadata: {
           request: {
             requestType: TangleRequestType.MINT_METADATA_NFT,
-            metadata: { asd: 'helloasdasd2' },
+            metadata: { name: 'helloasdasd2' },
             nftId: nft.mintingData?.nftId,
           },
         },
@@ -114,7 +112,7 @@ describe('Metadata nft', () => {
     );
 
     await wait(async () => {
-      const snap = await creditQuery.get<Transaction>();
+      const snap = await creditQuery.get();
       return (
         snap.length === 3 &&
         snap.reduce((acc, act) => acc && (act.payload?.walletReference?.confirmed || false), true)
@@ -124,6 +122,6 @@ describe('Metadata nft', () => {
     nftOutputId = await helper.walletService.client.nftOutputId(nft.mintingData?.nftId!);
     nftOutput = (await helper.walletService.client.getOutput(nftOutputId)).output as NftOutput;
     meta = getOutputMetadata(nftOutput);
-    expect(meta).toEqual({ asd: 'helloasdasd2' });
+    expect(meta).toEqual({ name: 'helloasdasd2' });
   });
 });

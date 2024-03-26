@@ -4,6 +4,7 @@ import {
   MintMetadataNftRequest,
   Network,
   SUB_COL,
+  SpaceGuardian,
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
   TransactionPayloadType,
@@ -43,14 +44,19 @@ export const mintMetadataNftControl = async ({
   const batch = build5Db().batch();
 
   if (aliasId === EMPTY_ALIAS_ID) {
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
+    const spaceDocRef = build5Db().doc(COL.SPACE, space.uid);
     batch.create(spaceDocRef, space);
 
-    const guardian = { uid: owner, parentId: space.uid, parentCol: COL.SPACE };
-    const guardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(owner);
+    const guardian: SpaceGuardian = {
+      uid: owner,
+      parentId: space.uid,
+      parentCol: COL.SPACE,
+      createdOn: dateToTimestamp(dayjs()),
+    };
+    const guardianDocRef = build5Db().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, owner);
     batch.create(guardianDocRef, guardian);
 
-    const memberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner);
+    const memberDocRef = build5Db().doc(COL.SPACE, space.uid, SUB_COL.MEMBERS, owner);
     batch.create(memberDocRef, guardian);
   }
 
@@ -81,7 +87,7 @@ export const mintMetadataNftControl = async ({
       metadata: params.metadata as { [key: string]: unknown },
     },
   };
-  const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
+  const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
   batch.create(orderDocRef, order);
 
   await batch.commit();

@@ -23,13 +23,14 @@ import { createAliasOutput } from '../../../utils/token-minting-utils/alias.util
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { Wallet } from '../../wallet/wallet';
 import { BaseService, HandlerParams } from '../base';
+import { Action } from '../transaction-service';
 
 export class AwardFundService extends BaseService {
   public handleRequest = async ({ order, match }: HandlerParams) => {
     const payment = await this.transactionService.createPayment(order, match);
 
-    const awardDocRef = build5Db().doc(`${COL.AWARD}/${order.payload.award}`);
-    const award = <Award>await this.transactionService.get(awardDocRef);
+    const awardDocRef = build5Db().doc(COL.AWARD, order.payload.award!);
+    const award = <Award>await this.transaction.get(awardDocRef);
 
     if (award.funded) {
       await this.transactionService.createCredit(
@@ -66,7 +67,7 @@ export class AwardFundService extends BaseService {
         fundingAddress: match.from,
         mediaStatus: MediaStatus.PENDING_UPLOAD,
       },
-      action: 'update',
+      action: Action.U,
     });
 
     const mintAliasOrder: Transaction = {
@@ -84,21 +85,22 @@ export class AwardFundService extends BaseService {
         award: award.uid,
       },
     };
-    const mintAliasTranDocRef = build5Db().doc(`${COL.TRANSACTION}/${mintAliasOrder.uid}`);
+    const mintAliasTranDocRef = build5Db().doc(COL.TRANSACTION, mintAliasOrder.uid);
     this.transactionService.push({
       ref: mintAliasTranDocRef,
       data: mintAliasOrder,
-      action: 'set',
+      action: Action.C,
     });
 
     if (order.payload.legacyAwardFundRequestId) {
       const legacyAwardFundRequesDocRef = build5Db().doc(
-        `${COL.TRANSACTION}/${order.payload.legacyAwardFundRequestId}`,
+        COL.TRANSACTION,
+        order.payload.legacyAwardFundRequestId,
       );
       this.transactionService.push({
         ref: legacyAwardFundRequesDocRef,
-        data: { 'payload.legacyAwardsBeeingFunded': build5Db().inc(-1) },
-        action: 'update',
+        data: { payload_legacyAwardsBeeingFunded: build5Db().inc(-1) },
+        action: Action.U,
       });
     }
   };
@@ -177,7 +179,7 @@ export const getAwardgStorageDeposits = async (award: Award, token: Token, walle
 
   const collectioIssuerAddress = new AliasAddress(aliasOutput.aliasId);
 
-  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${award.space}`);
+  const spaceDocRef = build5Db().doc(COL.SPACE, award.space);
   const space = <Space>await spaceDocRef.get();
 
   const collectionMetadata = await awardToCollectionMetadata(award, space);

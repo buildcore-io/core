@@ -138,6 +138,7 @@ export interface Base {
 }
 
 export interface BaseSubCollection {
+  uid?: string;
   project?: string;
   parentId: string;
   parentCol: string;

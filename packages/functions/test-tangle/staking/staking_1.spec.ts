@@ -8,22 +8,16 @@ import {
   SUB_COL,
   Transaction,
   TransactionType,
+  WEN_FUNC,
   WenError,
 } from '@build-5/interfaces';
 import { UnlockConditionType } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';
-import { depositStake } from '../../src/runtime/firebase/stake';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
-import {
-  addGuardianToSpace,
-  createMember,
-  expectThrow,
-  mockWalletReturnValue,
-  wait,
-} from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { addGuardianToSpace, expectThrow, wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { Helper } from './Helper';
 
 describe('Staking test', () => {
@@ -52,13 +46,19 @@ describe('Staking test', () => {
       type: StakeType.STATIC,
       customMetadata,
     };
-    mockWalletReturnValue(helper.walletSpy, helper.member!.uid, data);
-    await expectThrow(testEnv.wrap(depositStake)({}), WenError.invalid_params.key);
+    mockWalletReturnValue(helper.member!.uid, data);
+    await expectThrow(
+      testEnv.wrap<Transaction>(WEN_FUNC.depositStake),
+      WenError.invalid_params.key,
+    );
 
     delete customMetadata.key6;
     customMetadata.key5 = 12;
-    mockWalletReturnValue(helper.walletSpy, helper.member!.uid, { ...data, customMetadata });
-    await expectThrow(testEnv.wrap(depositStake)({}), WenError.invalid_params.key);
+    mockWalletReturnValue(helper.member!.uid, { ...data, customMetadata });
+    await expectThrow(
+      testEnv.wrap<Transaction>(WEN_FUNC.depositStake),
+      WenError.invalid_params.key,
+    );
   });
 
   it('Should throw, invalid weeks', async () => {
@@ -67,11 +67,17 @@ describe('Staking test', () => {
       weeks: 0,
       type: StakeType.STATIC,
     };
-    mockWalletReturnValue(helper.walletSpy, helper.member!.uid, data);
-    await expectThrow(testEnv.wrap(depositStake)({}), WenError.invalid_params.key);
+    mockWalletReturnValue(helper.member!.uid, data);
+    await expectThrow(
+      testEnv.wrap<Transaction>(WEN_FUNC.depositStake),
+      WenError.invalid_params.key,
+    );
 
-    mockWalletReturnValue(helper.walletSpy, helper.member!.uid, { ...data, weeks: 53 });
-    await expectThrow(testEnv.wrap(depositStake)({}), WenError.invalid_params.key);
+    mockWalletReturnValue(helper.member!.uid, { ...data, weeks: 53 });
+    await expectThrow(
+      testEnv.wrap<Transaction>(WEN_FUNC.depositStake),
+      WenError.invalid_params.key,
+    );
   });
 
   it.each([
@@ -79,22 +85,16 @@ describe('Staking test', () => {
     { expiration: false, type: StakeType.STATIC },
     { expiration: true, type: StakeType.DYNAMIC },
   ])('Should set stake amount and remove it once expired', async ({ expiration, type }) => {
-    const secondGuardian = await createMember(helper.walletSpy!);
+    const secondGuardian = await testEnv.createMember();
     await addGuardianToSpace(helper.space?.uid!, secondGuardian);
     await build5Db()
-      .doc(`${COL.TOKEN}/${helper.token?.uid!}/${SUB_COL.DISTRIBUTION}/${secondGuardian}`)
-      .set({
+      .doc(COL.TOKEN, helper.token?.uid!, SUB_COL.DISTRIBUTION, secondGuardian)
+      .upsert({
         parentId: helper.token?.uid!,
-        parentCol: COL.TOKEN,
-        uid: secondGuardian,
-        stakes: {
-          [StakeType.DYNAMIC]: {
-            amount: 10,
-            totalAmount: 10,
-            value: 10,
-            totalValue: 10,
-          },
-        },
+        stakes_dynamic_amount: 10,
+        stakes_dynamic_totalAmount: 10,
+        stakes_dynamic_value: 10,
+        stakes_dynamic_totalValue: 10,
       });
 
     const expiresAt = expiration ? dateToTimestamp(dayjs().add(1, 'h').toDate()) : undefined;
@@ -104,7 +104,7 @@ describe('Staking test', () => {
     await helper.validateMemberStakeAmount(10, 10, 14, 14, type);
     await helper.assertDistributionStakeExpiry(stake1);
 
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${helper.space?.uid}`);
+    const spaceDocRef = build5Db().doc(COL.SPACE, helper.space?.uid!);
     await spaceDocRef.update({ tokenBased: true, minStakedValue: 10 });
 
     const stake2 = await helper.stakeAmount(20, 26, expiresAt, type);
@@ -163,17 +163,17 @@ describe('Staking test', () => {
   it('Should credit invalid stake payment', async () => {
     const expiresAt = dateToTimestamp(dayjs().add(1, 'h').toDate());
 
-    mockWalletReturnValue(helper.walletSpy, helper.member!.uid, {
+    mockWalletReturnValue(helper.member!.uid, {
       symbol: helper.token?.symbol,
       weeks: 26,
       type: StakeType.DYNAMIC,
     });
-    const order = await testEnv.wrap(depositStake)({});
+    const order = await testEnv.wrap<Transaction>(WEN_FUNC.depositStake);
 
     await helper.walletService!.send(
       helper.memberAddress!,
-      order.payload.targetAddress,
-      order.payload.amount,
+      order.payload.targetAddress!,
+      order.payload.amount!,
       {
         expiration: { expiresAt, returnAddressBech32: helper.memberAddress!.bech32 },
         nativeTokens: [{ id: helper.MINTED_TOKEN_ID, amount: BigInt(10) }],
@@ -193,8 +193,8 @@ describe('Staking test', () => {
           .get();
         if (snap.length) {
           await build5Db()
-            .doc(`${COL.TRANSACTION}/${order.uid}`)
-            .update({ 'payload.expiresOn': dateToTimestamp(dayjs().subtract(1, 'd')) });
+            .doc(COL.TRANSACTION, order.uid)
+            .update({ payload_expiresOn: dayjs().subtract(1, 'd').toDate() });
         }
         return snap.length > 0;
       },
@@ -210,7 +210,7 @@ describe('Staking test', () => {
       const snap = await creditQuery.get();
       return snap.length > 0;
     });
-    const credits = await creditQuery.get<Transaction>();
+    const credits = await creditQuery.get();
     expect(credits.length).toBe(1);
     expect(credits[0]?.payload.targetAddress).toBe(helper.memberAddress?.bech32);
   });

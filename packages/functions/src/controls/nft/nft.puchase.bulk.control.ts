@@ -10,8 +10,8 @@ export const orderNftBulkControl = async ({
   project,
 }: Context<NftPurchaseBulkRequest>): Promise<Transaction> => {
   const order = await createNftBulkOrder(project, params.orders, owner, ip);
-  const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
+  const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
   await orderDocRef.create(order);
 
-  return (await orderDocRef.get<Transaction>())!;
+  return (await orderDocRef.get())!;
 };

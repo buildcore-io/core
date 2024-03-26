@@ -28,8 +28,8 @@ export const approveAwardParticipantControl = async ({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       errors[member] = {
-        code: get<number>(error, 'details.code', 0),
-        message: get<string>(error, 'details.key', ''),
+        code: get<number>(error, 'eCode', 0),
+        message: get<string>(error, 'eKey', ''),
       };
     }
   }

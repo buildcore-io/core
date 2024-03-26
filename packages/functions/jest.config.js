@@ -2,8 +2,7 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   testTimeout: 900000,
-  globalSetup: './test/set-up.ts',
-  globalTeardown: './test/teardown.ts',
+  globalSetup: './jest-setup.ts',
   reporters: ['default', 'github-actions'],
   setupFilesAfterEnv: ['./test/teardown.ts'],
 };

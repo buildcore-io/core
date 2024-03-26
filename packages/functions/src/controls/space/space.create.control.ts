@@ -8,22 +8,22 @@ export const createSpaceControl = async ({
   params,
   project,
 }: Context<SpaceCreateRequest>): Promise<Space> => {
-  const { space, guardian, member } = await getCreateSpaceData(project, owner, { ...params });
+  const { space, guardian } = await getCreateSpaceData(project, owner, { ...params });
 
   const batch = build5Db().batch();
 
-  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
+  const spaceDocRef = build5Db().doc(COL.SPACE, space.uid);
   batch.create(spaceDocRef, space);
 
-  const spaceGuardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(owner);
+  const spaceGuardianDocRef = build5Db().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, owner);
   batch.create(spaceGuardianDocRef, guardian);
-  const spaceMemberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner);
+  const spaceMemberDocRef = build5Db().doc(COL.SPACE, space.uid, SUB_COL.MEMBERS, owner);
   batch.create(spaceMemberDocRef, guardian);
 
-  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
-  batch.set(memberDocRef, member, true);
+  const memberDocRef = build5Db().doc(COL.MEMBER, owner);
+  batch.update(memberDocRef, { spaces: { [space.uid]: { uid: space.uid, isMember: true } } });
 
   await batch.commit();
 
-  return (await spaceDocRef.get<Space>())!;
+  return (await spaceDocRef.get())!;
 };

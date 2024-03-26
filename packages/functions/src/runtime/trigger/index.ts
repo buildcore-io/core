@@ -17,60 +17,61 @@ import { WEN_FUNC_TRIGGER } from '../common';
 import { onCreate, onUpdate, onWrite } from './trigger';
 
 exports[WEN_FUNC_TRIGGER.onProposalWrite] = onWrite({
-  document: `${COL.PROPOSAL}/{docId}`,
+  col: COL.PROPOSAL,
   handler: onProposalWrite,
 });
 
 exports[WEN_FUNC_TRIGGER.onAwardUpdated] = onUpdate({
-  document: `${COL.AWARD}/{docId}`,
+  col: COL.AWARD,
   options: TRIGGER_SCALE[WEN_FUNC_TRIGGER.onAwardUpdated],
   handler: onAwardUpdated,
 });
 
 exports[WEN_FUNC_TRIGGER.onCollectionUpdated] = onUpdate({
-  document: `${COL.COLLECTION}/{docId}`,
+  col: COL.COLLECTION,
   options: TRIGGER_SCALE[WEN_FUNC_TRIGGER.onCollectionUpdated],
   handler: onCollectionUpdated,
 });
 
 exports[WEN_FUNC_TRIGGER.onTokenStatusUpdated] = onUpdate({
-  document: `${COL.TOKEN}/{docId}`,
+  col: COL.TOKEN,
   options: TRIGGER_SCALE[WEN_FUNC_TRIGGER.onTokenStatusUpdated],
   handler: onTokenStatusUpdated,
 });
 
 exports[WEN_FUNC_TRIGGER.onTokenTradeOrderWrite] = onWrite({
-  document: `${COL.TOKEN_MARKET}/{docId}`,
+  col: COL.TOKEN_MARKET,
   options: TRIGGER_SCALE[WEN_FUNC_TRIGGER.onTokenTradeOrderWrite],
   handler: onTokenTradeOrderWrite,
 });
 
 exports[WEN_FUNC_TRIGGER.onTokenPurchaseCreated] = onCreate({
-  document: `${COL.TOKEN_PURCHASE}/{docId}`,
+  col: COL.TOKEN_PURCHASE,
   options: TRIGGER_SCALE[WEN_FUNC_TRIGGER.onTokenPurchaseCreated],
   handler: onTokenPurchaseCreated,
 });
 
 exports[WEN_FUNC_TRIGGER.onNftWrite] = onWrite({
-  document: `${COL.NFT}/{docId}`,
+  col: COL.NFT,
   options: TRIGGER_SCALE[WEN_FUNC_TRIGGER.onNftWrite],
   handler: onNftWrite,
 });
 
 exports[WEN_FUNC_TRIGGER.onTransactionWrite] = onWrite({
-  document: `${COL.TRANSACTION}/{docId}`,
+  col: COL.TRANSACTION,
   options: TRIGGER_SCALE[WEN_FUNC_TRIGGER.onTransactionWrite],
   handler: onTransactionWrite,
 });
 
 exports[WEN_FUNC_TRIGGER.onMnemonicUpdated] = onUpdate({
-  document: `${COL.MNEMONIC}/{docId}`,
+  col: COL.MNEMONIC,
   options: TRIGGER_SCALE[WEN_FUNC_TRIGGER.onMnemonicUpdated],
   handler: onMnemonicUpdated,
 });
 
 exports[WEN_FUNC_TRIGGER.onCollectionStatsWrite] = onWrite({
-  document: `${COL.COLLECTION}/{docId}/${SUB_COL.STATS}/{subDocId}`,
+  col: COL.COLLECTION,
+  subCol: SUB_COL.STATS,
   options: TRIGGER_SCALE[WEN_FUNC_TRIGGER.onCollectionStatsWrite],
   handler: onCollectionStatsWrite,
 });
@@ -79,7 +80,7 @@ export const algolia = (isEmulatorEnv() ? [] : ALGOLIA_COLLECTIONS).reduce(
   (acc, act) => ({
     ...acc,
     [`${WEN_FUNC_TRIGGER.algolia}${act}`]: onWrite({
-      document: `${act}/{docId}`,
+      col: act,
       options: ALGOLIA_TRIGGER_SCALE[act],
       handler: algoliaTrigger,
     }),
@@ -92,7 +93,8 @@ const getMilestoneTrigger = (networks: Network[]) =>
     (acc, act) => ({
       ...acc,
       [`${WEN_FUNC_TRIGGER.onMilestoneTransactionWrite}${act}`]: onWrite({
-        document: `${getMilestoneCol(act)}/{docId}/${SUB_COL.TRANSACTIONS}/{subDocId}`,
+        col: getMilestoneCol(act),
+        subCol: SUB_COL.TRANSACTIONS,
         options: TRIGGER_SCALE[WEN_FUNC_TRIGGER.onMilestoneTransactionWrite],
         handler: handleMilestoneTransactionWrite(act),
       }),

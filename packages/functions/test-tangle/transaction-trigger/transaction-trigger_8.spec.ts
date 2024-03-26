@@ -51,7 +51,7 @@ describe('Transaction trigger spec', () => {
           void: false,
         },
       };
-      const docRef = build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+      const docRef = build5Db().doc(COL.TRANSACTION, billPayment.uid);
       return docRef.create(billPayment);
     });
     await Promise.all(promises);
@@ -59,9 +59,9 @@ describe('Transaction trigger spec', () => {
     await wait(async () => {
       const snap = await build5Db()
         .collection(COL.TRANSACTION)
-        .where('payload.sourceAddress', '==', sourceAddress.bech32)
-        .where('payload.walletReference.confirmed', '==', true)
-        .get<Transaction>();
+        .where('payload_sourceAddress', '==', sourceAddress.bech32)
+        .where('payload_walletReference_confirmed', '==', true)
+        .get();
       const countSum = snap.reduce(
         (acc, act) => acc + (act?.payload?.walletReference?.count || 0),
         0,

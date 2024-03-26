@@ -3,11 +3,9 @@ import {
   COL,
   MIN_IOTA_AMOUNT,
   Network,
-  Nft,
   NftPurchaseTangleRequest,
   NftStatus,
   TangleRequestType,
-  Transaction,
   TransactionType,
 } from '@build-5/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
@@ -21,7 +19,7 @@ describe('Minted nft trading', () => {
   it('Should buy 2 nft in parallel, and deposit in parallel', async () => {
     await helper.beforeEach(Network.RMS);
     const address = await helper.walletService!.getNewIotaAddressDetails();
-    requestFundsFromFaucet(Network.RMS, address.bech32, 5 * MIN_IOTA_AMOUNT);
+    await requestFundsFromFaucet(Network.RMS, address.bech32, 5 * MIN_IOTA_AMOUNT);
 
     let nft1 = await helper.createAndOrderNft();
     let nft2 = await helper.createAndOrderNft();
@@ -65,17 +63,17 @@ describe('Minted nft trading', () => {
     );
     await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
 
-    const nftDocRef1 = build5Db().doc(`${COL.NFT}/${nft1.uid}`);
-    const nftDocRef2 = build5Db().doc(`${COL.NFT}/${nft2.uid}`);
-    nft1 = (await nftDocRef1.get<Nft>())!;
-    nft2 = (await nftDocRef2.get<Nft>())!;
+    const nftDocRef1 = build5Db().doc(COL.NFT, nft1.uid);
+    const nftDocRef2 = build5Db().doc(COL.NFT, nft2.uid);
+    nft1 = (await nftDocRef1.get())!;
+    nft2 = (await nftDocRef2.get())!;
 
     const query = build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.WITHDRAW_NFT)
       .where('member', '==', address.bech32);
     await wait(async () => {
-      const snap = await query.get<Transaction>();
+      const snap = await query.get();
       return (
         snap.length === 2 &&
         snap[0]?.payload?.walletReference?.confirmed &&
@@ -95,8 +93,8 @@ describe('Minted nft trading', () => {
     );
 
     await wait(async () => {
-      nft1 = (await nftDocRef1.get<Nft>())!;
-      nft2 = (await nftDocRef2.get<Nft>())!;
+      nft1 = (await nftDocRef1.get())!;
+      nft2 = (await nftDocRef2.get())!;
       return nft1?.status === NftStatus.MINTED && nft2?.status === NftStatus.MINTED;
     });
   });

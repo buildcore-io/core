@@ -19,7 +19,7 @@ export const finalizeAuctions = async () => {
     .collection(COL.AUCTION)
     .where('auctionTo', '<=', dayjs().toDate())
     .where('active', '==', true)
-    .get<Auction>();
+    .get();
   const promises = snap.map((a) => {
     switch (a.type) {
       case AuctionType.NFT:
@@ -36,7 +36,7 @@ const finalizeNftAuction = (auction: string) =>
     const tranService = new TransactionService(transaction);
     const service = new AuctionFinalizeService(tranService);
     await service.markAsFinalized(auction);
-    tranService.submit();
+    await tranService.submit();
   });
 
 const finalizeOpenAuction = async (auction: Auction) => {
@@ -44,7 +44,7 @@ const finalizeOpenAuction = async (auction: Auction) => {
 
   let targetAddress = auction.targetAddress;
   if (!targetAddress) {
-    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${auction.createdBy}`);
+    const memberDocRef = build5Db().doc(COL.MEMBER, auction.createdBy!);
     const member = <Member>await memberDocRef.get();
     targetAddress = getAddress(member, auction.network);
   }
@@ -52,9 +52,9 @@ const finalizeOpenAuction = async (auction: Auction) => {
   const payments = await build5Db()
     .collection(COL.TRANSACTION)
     .where('type', '==', TransactionType.PAYMENT)
-    .where('payload.invalidPayment', '==', false)
-    .where('payload.auction', '==', auction.uid)
-    .get<Transaction>();
+    .where('payload_invalidPayment', '==', false)
+    .where('payload_auction', '==', auction.uid)
+    .get();
 
   for (const payment of payments) {
     const billPayment: Transaction = {
@@ -75,7 +75,7 @@ const finalizeOpenAuction = async (auction: Auction) => {
         auction: auction.uid,
       },
     };
-    const billPaymentDocRef = build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+    const billPaymentDocRef = build5Db().doc(COL.TRANSACTION, billPayment.uid);
     batch.create(billPaymentDocRef, billPayment);
   }
 

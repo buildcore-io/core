@@ -12,12 +12,11 @@ import {
 import dayjs from 'dayjs';
 import { head, set } from 'lodash';
 import { NotificationService } from '../../notification/notification';
+import { BaseAddressService } from '../address/common';
 import { HandlerParams } from '../base';
-import { TransactionService } from '../transaction-service';
+import { Action } from '../transaction-service';
 
-export class AuctionBidService {
-  constructor(readonly transactionService: TransactionService) {}
-
+export class AuctionBidService extends BaseAddressService {
   public handleRequest = async ({
     order,
     match,
@@ -26,8 +25,8 @@ export class AuctionBidService {
     build5Tran,
     owner,
   }: HandlerParams) => {
-    const auctionDocRef = build5Db().doc(`${COL.AUCTION}/${order.payload.auction!}`);
-    const auction = <Auction>await this.transactionService.get(auctionDocRef);
+    const auctionDocRef = build5Db().doc(COL.AUCTION, order.payload.auction!);
+    const auction = <Auction>await this.transaction.get(auctionDocRef);
 
     if (!auction.active) {
       await this.transactionService.processAsInvalid(tran, order, tranEntry, build5Tran);
@@ -72,34 +71,34 @@ export class AuctionBidService {
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.PAYMENT)
       .where('member', '==', invalidBid.bidder)
-      .where('payload.invalidPayment', '==', false)
-      .where('payload.auction', '==', auction.uid)
-      .get<Transaction>();
+      .where('payload_invalidPayment', '==', false)
+      .where('payload_auction', '==', auction.uid)
+      .get();
     for (const payment of payments) {
       await this.creditAsInvalidPayment(payment);
     }
 
-    const invalidBidderDocRef = build5Db().doc(`${COL.MEMBER}/${invalidBid.bidder}`);
-    const invalidBidder = <Member>await this.transactionService.get(invalidBidderDocRef);
+    const invalidBidderDocRef = build5Db().doc(COL.MEMBER, invalidBid.bidder);
+    const invalidBidder = <Member>await this.transaction.get(invalidBidderDocRef);
 
     const notification = NotificationService.prepareLostBid(
       invalidBidder,
       invalidBid.amount,
       auction.uid,
     );
-    const notificationDocRef = build5Db().doc(`${COL.NOTIFICATION}/${notification.uid}`);
-    this.transactionService.push({ ref: notificationDocRef, data: notification, action: 'set' });
+    const notificationDocRef = build5Db().doc(COL.NOTIFICATION, notification.uid);
+    this.transactionService.push({ ref: notificationDocRef, data: notification, action: Action.C });
   };
 
   private creditAsInvalidPayment = async (payment: Transaction) => {
-    const paymentDocRef = build5Db().doc(`${COL.TRANSACTION}/${payment.uid}`);
+    const paymentDocRef = build5Db().doc(COL.TRANSACTION, payment.uid);
     this.transactionService.push({
       ref: paymentDocRef,
-      data: { 'payload.invalidPayment': true },
-      action: 'update',
+      data: { payload_invalidPayment: true },
+      action: Action.U,
     });
     const paymentPayload = payment.payload;
-    set(payment, 'payload.invalidPayment', true);
+    set(payment, 'payload_invalidPayment', true);
     await this.transactionService.createCredit(TransactionPayloadType.INVALID_PAYMENT, payment, {
       msgId: paymentPayload.chainReference!,
       to: {
@@ -112,49 +111,58 @@ export class AuctionBidService {
   };
 
   private onAuctionHighestBidChange = async (order: Transaction, auction: Auction) => {
-    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${order.member!}`);
-    const member = <Member>await this.transactionService.get(memberDocRef);
+    const memberDocRef = build5Db().doc(COL.MEMBER, order.member!);
+    const member = <Member>await memberDocRef.get();
     const bidNotification = NotificationService.prepareBid(
       member,
       auction.auctionHighestBid!,
       auction.uid,
     );
-    const notificationDocRef = build5Db().doc(`${COL.NOTIFICATION}/${bidNotification.uid}`);
-    this.transactionService.push({ ref: notificationDocRef, data: bidNotification, action: 'set' });
+    const notificationDocRef = build5Db().doc(COL.NOTIFICATION, bidNotification.uid);
+    this.transactionService.push({
+      ref: notificationDocRef,
+      data: bidNotification,
+      action: Action.C,
+    });
   };
 
   private getAuctionUpdateData = (auction: Auction, bids: AuctionBid[]) => {
-    const auctionUpdateData = {
-      ...auction,
+    const uData = {
       bids,
       auctionHighestBidder: head(bids)?.bidder || '',
       auctionHighestBid: head(bids)?.amount || 0,
+      auctionTo: auction.auctionTo,
+      auctionLength: auction.auctionLength,
     };
     const auctionTTL = dayjs(auction.auctionTo!.toDate()).diff(dayjs());
     if (
       auction.auctionLength < (auction.extendedAuctionLength || 0) &&
       auctionTTL < (auction.extendAuctionWithin || 0)
     ) {
-      set(auctionUpdateData, 'auctionTo', auction.extendedAuctionTo || null);
-      set(auctionUpdateData, 'auctionLength', auction.extendedAuctionLength || null);
+      uData.auctionTo = auction.extendedAuctionTo!;
+      uData.auctionLength = auction.extendedAuctionLength || 0;
     }
 
-    const auctionDocRef = build5Db().doc(`${COL.AUCTION}/${auction.uid}`);
-    this.transactionService.push({ ref: auctionDocRef, data: auctionUpdateData, action: 'update' });
-    return auctionUpdateData as Auction;
+    const auctionDocRef = build5Db().doc(COL.AUCTION, auction.uid);
+    this.transactionService.push({
+      ref: auctionDocRef,
+      data: { ...uData, auctionTo: uData.auctionTo?.toDate(), bids: JSON.stringify(uData.bids) },
+      action: Action.U,
+    });
+    return { ...auction, ...uData } as Auction;
   };
 
   private updateNft = (auction: Auction) => {
     const nftUpdateData = {
-      auctionTo: auction.auctionTo,
+      auctionTo: auction.auctionTo?.toDate(),
       auctionLength: auction.auctionLength,
       auctionHighestBid: auction.auctionHighestBid,
       auctionHighestBidder: auction.auctionHighestBidder,
     };
     this.transactionService.push({
-      ref: build5Db().doc(`${COL.NFT}/${auction.nftId}`),
+      ref: build5Db().doc(COL.NFT, auction.nftId!),
       data: nftUpdateData,
-      action: 'update',
+      action: Action.U,
     });
   };
 }
@@ -197,7 +205,6 @@ const placeBid = (auction: Auction, order: string, bidder: string, amount: numbe
     bids.push({ bidder, amount, order });
     bids.sort((a, b) => b.amount - a.amount);
   }
-
   return {
     bids: bids.slice(0, auction.maxBids),
     invalidBid: head(bids.slice(auction.maxBids)),

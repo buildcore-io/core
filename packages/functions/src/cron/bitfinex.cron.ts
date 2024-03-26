@@ -1,6 +1,7 @@
 import { build5Db } from '@build-5/database';
 import { COL, TICKERS } from '@build-5/interfaces';
 import axios from 'axios';
+import { logger } from '../utils/logger';
 
 export const getLatestBitfinexPricesCron = async () => {
   try {
@@ -14,19 +15,12 @@ export const getLatestBitfinexPricesCron = async () => {
     ).data;
 
     if (data[0][1] > 0) {
-      await build5Db().collection(COL.TICKER).doc(TICKERS.SMRUSD).set({
-        uid: TICKERS.SMRUSD,
-        price: data[0][1],
-      });
+      await build5Db().doc(COL.TICKER, TICKERS.SMRUSD).upsert({ price: data[0][1] });
     }
-
     if (data[1][1] > 0) {
-      await build5Db().collection(COL.TICKER).doc(TICKERS.IOTAUSD).set({
-        uid: TICKERS.IOTAUSD,
-        price: data[1][1],
-      });
+      await build5Db().doc(COL.TICKER, TICKERS.IOTAUSD).upsert({ price: data[1][1] });
     }
   } catch (error) {
-    console.error('Failed to get latest prices. Try again in 5 minutes', error);
+    logger.error('Failed to get latest prices. Try again in 5 minutes', error);
   }
 };

@@ -19,19 +19,17 @@ describe('Collection minting', () => {
       await helper.createAndOrderNft(true);
       let nft = <Nft | undefined>await helper.createAndOrderNft();
       let collectionData = <Collection>(
-        await build5Db().doc(`${COL.COLLECTION}/${helper.collection}`).get()
+        await build5Db().doc(COL.COLLECTION, helper.collection).get()
       );
       expect(collectionData.total).toBe(2);
 
       await helper.mintCollection(unsoldMintingOptions);
 
-      collectionData = <Collection>(
-        await build5Db().doc(`${COL.COLLECTION}/${helper.collection}`).get()
-      );
+      collectionData = <Collection>await build5Db().doc(COL.COLLECTION, helper.collection).get();
       expect(collectionData.total).toBe(
         unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD ? 1 : 2,
       );
-      nft = <Nft | undefined>await build5Db().doc(`${COL.NFT}/${nft?.uid}`).get();
+      nft = <Nft | undefined>await build5Db().doc(COL.NFT, nft?.uid!).get();
       expect(nft === undefined).toBe(unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD);
     },
   );

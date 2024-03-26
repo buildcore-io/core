@@ -41,7 +41,7 @@ describe('Proposal approval via tangle request', () => {
         return snap.length === 2;
       });
 
-      const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposalUid}`);
+      const proposalDocRef = build5Db().doc(COL.PROPOSAL, proposalUid);
       const proposal = <Proposal>await proposalDocRef.get();
 
       expect(approve ? proposal.approved : proposal.rejected).toBe(true);

@@ -53,31 +53,23 @@ describe('Transaction trigger spec', () => {
       targetAddress.bech32,
     );
     const batch = build5Db().batch();
-    batch.create(build5Db().doc(`${COL.TRANSACTION}/${billPayment1.uid}`), billPayment1);
-    batch.create(build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`), credit);
-    batch.create(build5Db().doc(`${COL.TRANSACTION}/${billPayment2.uid}`), billPayment2);
+    batch.create(build5Db().doc(COL.TRANSACTION, billPayment1.uid), billPayment1);
+    batch.create(build5Db().doc(COL.TRANSACTION, credit.uid), credit);
+    batch.create(build5Db().doc(COL.TRANSACTION, billPayment2.uid), billPayment2);
     await batch.commit();
     await wait(async () => {
-      billPayment1 = <Transaction>(
-        await build5Db().doc(`${COL.TRANSACTION}/${billPayment1.uid}`).get()
-      );
-      billPayment2 = <Transaction>(
-        await build5Db().doc(`${COL.TRANSACTION}/${billPayment2.uid}`).get()
-      );
-      credit = <Transaction>await build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`).get();
+      billPayment1 = <Transaction>await build5Db().doc(COL.TRANSACTION, billPayment1.uid).get();
+      billPayment2 = <Transaction>await build5Db().doc(COL.TRANSACTION, billPayment2.uid).get();
+      credit = <Transaction>await build5Db().doc(COL.TRANSACTION, credit.uid).get();
       return (
         billPayment1?.payload?.walletReference?.confirmed &&
         billPayment2?.payload?.walletReference?.confirmed &&
         credit?.payload?.walletReference?.confirmed
       );
     });
-    billPayment1 = <Transaction>(
-      await build5Db().doc(`${COL.TRANSACTION}/${billPayment1.uid}`).get()
-    );
-    billPayment2 = <Transaction>(
-      await build5Db().doc(`${COL.TRANSACTION}/${billPayment2.uid}`).get()
-    );
-    credit = <Transaction>await build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`).get();
+    billPayment1 = <Transaction>await build5Db().doc(COL.TRANSACTION, billPayment1.uid).get();
+    billPayment2 = <Transaction>await build5Db().doc(COL.TRANSACTION, billPayment2.uid).get();
+    credit = <Transaction>await build5Db().doc(COL.TRANSACTION, credit.uid).get();
 
     expect(
       dayjs(billPayment1?.payload?.walletReference?.processedOn?.toDate()).isBefore(

@@ -1,16 +1,11 @@
 import { Bucket } from '@build-5/interfaces';
-import { Bucket as FBucket } from '@google-cloud/storage';
-import { Storage } from 'firebase-admin/storage';
-import { get } from 'lodash';
-import { FirebaseApp } from '../app/app';
+import { Bucket as FBucket, Storage } from '@google-cloud/storage';
 import { IBucket, IStorage } from './interfaces';
 
 export class FirebaseStorage implements IStorage {
-  private readonly storage: Storage;
+  private readonly storage = new Storage();
 
-  constructor(private readonly app: FirebaseApp) {
-    this.storage = this.app.getInstance().storage();
-  }
+  constructor() {}
 
   public bucket = (name: string) => new FirebaseBucket(this.storage, name as Bucket);
 }
@@ -29,7 +24,8 @@ export class FirebaseBucket implements IBucket {
 
   public upload = async (path: string, destination: string, metadata: Record<string, unknown>) => {
     const response = await this.bucket.upload(path, { destination, metadata });
-    return get(response[1], 'mediaLink', '');
+    const responseMetadata = response[0].metadata;
+    return responseMetadata.mediaLink!.replace(`generation=${responseMetadata.generation}&`, '');
   };
 
   public download = async (fileName: string, destination: string) => {

@@ -1,4 +1,4 @@
-import { ITransaction, build5Db } from '@build-5/database';
+import { ITransaction, PgNftUpdate, build5Db } from '@build-5/database';
 import {
   COL,
   Entity,
@@ -22,7 +22,7 @@ interface NftTransfer {
 
 interface NftTransferResponse {
   code: number;
-  nftUpdateData?: unknown;
+  nftUpdateData?: PgNftUpdate;
   order?: Transaction;
 }
 
@@ -35,8 +35,8 @@ export const createNftTransferData = async (
   const members: { [uid: string]: Member } = {};
 
   const getTarget = async (nft: Nft, transfer: NftTransfer) => {
-    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${transfer.target}`);
-    const member = members[transfer.target] || (await memberDocRef.get<Member>());
+    const memberDocRef = build5Db().doc(COL.MEMBER, transfer.target);
+    const member = members[transfer.target] || (await memberDocRef.get());
 
     if (member) {
       members[transfer.target] = member;
@@ -58,7 +58,7 @@ export const createNftTransferData = async (
       try {
         assertCanBeWithdrawn(nft, owner);
       } catch (error) {
-        return { [transfer.nft]: { code: get(error, 'details.code', 0) } };
+        return { [transfer.nft]: { code: get(error, 'eCode', 0) } };
       }
 
       const { targetAddress, withdraw } = await getTarget(nft, transfer);
@@ -91,7 +91,7 @@ export const createNftTransferData = async (
       }
 
       const { order, nftUpdateData } = createNftWithdrawOrder(project, nft, owner, targetAddress);
-      return { [transfer.nft]: { code: 200, nftUpdateData: nftUpdateData, order } };
+      return { [transfer.nft]: { code: 200, nftUpdateData, order } };
     },
   );
 
@@ -99,14 +99,14 @@ export const createNftTransferData = async (
 };
 
 const getNft = async (transaction: ITransaction, uidOrTangleId: string) => {
-  const nftDocRef = build5Db().doc(`${COL.NFT}/${uidOrTangleId}`);
-  const nft = await transaction.get<Nft>(nftDocRef);
+  const nftDocRef = build5Db().doc(COL.NFT, uidOrTangleId);
+  const nft = await transaction.get(nftDocRef);
   if (nft) {
     return nft;
   }
   const snap = await build5Db()
     .collection(COL.NFT)
-    .where('mintingData.nftId', '==', uidOrTangleId)
-    .get<Nft>();
+    .where('mintingData_nftId', '==', uidOrTangleId)
+    .get();
   return head(snap);
 };

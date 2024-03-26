@@ -2,18 +2,18 @@ import { build5Db } from '@build-5/database';
 import {
   Access,
   COL,
-  MediaStatus,
   MIN_IOTA_AMOUNT,
+  MediaStatus,
   Token,
   TokenStatus,
   Transaction,
   TransactionPayloadType,
   TransactionType,
+  WEN_FUNC,
 } from '@build-5/interfaces';
-import { importMintedToken } from '../../src/runtime/firebase/token/minting';
 import { getAddress } from '../../src/utils/address.utils';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
@@ -25,24 +25,24 @@ describe('Token import', () => {
   });
 
   it('Should migrate token', async () => {
-    mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, {
+    mockWalletReturnValue(helper.guardian.uid, {
       space: helper.importSpace.uid,
       tokenId: helper.token.mintingData?.tokenId,
       network: helper.network,
     });
-    const order = await testEnv.wrap(importMintedToken)({});
+    const order = await testEnv.wrap<Transaction>(WEN_FUNC.importMintedToken);
 
     const guardianBech32 = getAddress(helper.guardian, helper.network);
     const guardianAddress = await helper.walletService.getAddressDetails(guardianBech32);
     await requestFundsFromFaucet(helper.network, guardianBech32, 2 * MIN_IOTA_AMOUNT);
     await helper.walletService.send(
       guardianAddress,
-      order.payload.targetAddress,
+      order.payload.targetAddress!,
       2 * MIN_IOTA_AMOUNT,
       {},
     );
 
-    const migratedTokenDocRef = build5Db().doc(`${COL.TOKEN}/${helper.token.mintingData?.tokenId}`);
+    const migratedTokenDocRef = build5Db().doc(COL.TOKEN, helper.token.mintingData?.tokenId!);
     await wait(async () => (await migratedTokenDocRef.get()) !== undefined);
 
     const migratedToken = <Token>await migratedTokenDocRef.get();
@@ -83,17 +83,17 @@ describe('Token import', () => {
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.guardian.uid)
       .where('type', '==', TransactionType.CREDIT)
-      .where('payload.type', '==', TransactionPayloadType.IMPORT_TOKEN);
+      .where('payload_type', '==', TransactionPayloadType.IMPORT_TOKEN);
     await wait(async () => {
-      const snap = await creditQuery.get<Transaction>();
+      const snap = await creditQuery.get();
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
-    const snap = await creditQuery.get<Transaction>();
+    const snap = await creditQuery.get();
     expect(snap[0]?.payload.amount).toBe(2 * MIN_IOTA_AMOUNT);
 
     const payment = await build5Db()
-      .doc(`${COL.TRANSACTION}/${snap[0].payload.sourceTransaction![0]}`)
-      .get<Transaction>();
+      .doc(COL.TRANSACTION, snap[0].payload.sourceTransaction![0])
+      .get();
     expect(payment?.payload.invalidPayment).toBe(false);
   });
 });

@@ -13,19 +13,17 @@ const getAddressesSchema = Joi.object({
   createdAfter: Joi.number().min(0).max(MAX_MILLISECONDS).integer().required(),
 });
 
-export const getAddresses = async (url: string) => {
+export const getAddresses = async (url: string, isLive: boolean) => {
   const body = getQueryParams<GetAddressesRequest>(url, getAddressesSchema);
 
   const query = build5Db()
     .collection(COL.MNEMONIC)
     .where('network', '==', body.network)
+    .where('createdOn', '>', dayjs.unix(body.createdAfter).toDate())
     .orderBy('createdOn')
-    .startAfter(dayjs.unix(body.createdAfter).toDate())
     .limit(1000);
 
-  return queryToObservable<Mnemonic>(query).pipe(
-    map((mnemonics) => mnemonics.map(sanitizeMnemonic)),
-  );
+  return queryToObservable(query, isLive).pipe(map((mnemonics) => mnemonics.map(sanitizeMnemonic)));
 };
 
 const sanitizeMnemonic = (mnemonic: Mnemonic) => ({

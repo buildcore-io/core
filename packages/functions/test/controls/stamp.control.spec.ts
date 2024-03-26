@@ -6,27 +6,19 @@ import {
   SOON_PROJECT_ID,
   STAMP_COST_PER_MB,
   SUB_COL,
-  SpaceGuardian,
-  Stamp,
   Transaction,
   TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
+  WEN_FUNC,
 } from '@build-5/interfaces';
-import { stamp as stampFunc } from '../../src/runtime/firebase/stamp';
 import { EMPTY_ALIAS_ID } from '../../src/utils/token-minting-utils/alias.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { testEnv } from '../set-up';
-import { createMember, mockWalletReturnValue } from './common';
+import { mockWalletReturnValue, testEnv } from '../set-up';
 
 describe('Stamp control', () => {
-  let walletSpy: any;
   let member: string;
   let dowloadUrl: string;
-
-  beforeAll(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-  });
 
   beforeEach(async () => {
     const bucket = build5Storage().bucket(Bucket.DEV);
@@ -34,12 +26,12 @@ describe('Stamp control', () => {
     dowloadUrl = await bucket.upload('./test/puppy.jpeg', destination, {
       contentType: 'image/jpeg',
     });
-    member = await createMember(walletSpy);
+    member = await testEnv.createMember();
   });
 
   it('Should create stamp order', async () => {
-    mockWalletReturnValue(walletSpy, member, { network: Network.RMS, file: dowloadUrl });
-    const order = (await testEnv.wrap(stampFunc)({})) as Transaction;
+    mockWalletReturnValue(member, { network: Network.RMS, file: dowloadUrl });
+    const order = await testEnv.wrap<Transaction>(WEN_FUNC.stamp);
     expect(order.project).toBe(SOON_PROJECT_ID);
     expect(order.type).toBe(TransactionType.ORDER);
     expect(order.member).toBe(member);
@@ -51,10 +43,10 @@ describe('Stamp control', () => {
     expect(order.payload.stamp).toBeDefined();
     expect(order.payload.aliasId).toBe('');
     expect(order.payload.aliasOutputAmount).toBe(53700);
-    expect(order.payload.nftOutputAmount).toBe(107700);
+    expect(order.payload.nftOutputAmount).toBe(104500);
 
-    const stampDocRef = build5Db().doc(`${COL.STAMP}/${order.payload.stamp}`);
-    const stamp = await stampDocRef.get<Stamp>();
+    const stampDocRef = build5Db().doc(COL.STAMP, order.payload.stamp!);
+    const stamp = await stampDocRef.get();
     expect(stamp?.space).toBe(order.space);
     expect(stamp?.build5Url).toBe(dowloadUrl);
     expect(stamp?.originUri).toBe(dowloadUrl);
@@ -68,9 +60,8 @@ describe('Stamp control', () => {
     expect(stamp?.aliasId).toBe(EMPTY_ALIAS_ID);
     expect(stamp?.nftId).toBeUndefined();
 
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${order.space}`);
-    const guardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member);
-    const guardian = await guardianDocRef.get<SpaceGuardian>();
+    const guardianDocRef = build5Db().doc(COL.SPACE, order.space!, SUB_COL.GUARDIANS, member);
+    const guardian = await guardianDocRef.get();
     expect(guardian).toBeDefined();
   });
 });

@@ -1,13 +1,9 @@
 import { build5Db } from '@build-5/database';
 import {
   COL,
-  Collection,
   MIN_IOTA_AMOUNT,
   Network,
-  Nft,
-  Space,
   TangleRequestType,
-  Transaction,
   TransactionType,
 } from '@build-5/interfaces';
 import { BasicOutput, RegularTransactionEssence, TransactionPayload } from '@iota/sdk';
@@ -21,7 +17,7 @@ describe('Metadata nft', () => {
 
   it('Should mint metada nft', async () => {
     await helper.beforeEach(Network.ATOI);
-    const metadata = { mytest: 'mytest', asd: 'asdasdasd' };
+    const metadata = { mytest: 'mytest', name: 'asdasdasd' };
     const blockId = await helper.walletService.send(
       helper.memberAddress,
       helper.tangleOrder.payload.targetAddress!,
@@ -55,10 +51,10 @@ describe('Metadata nft', () => {
       .where('member', '==', helper.member)
       .where('type', '==', TransactionType.CREDIT);
     await wait(async () => {
-      const snap = await creditQuery.get<Transaction>();
+      const snap = await creditQuery.get();
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
-    const credit = (await creditQuery.get<Transaction>())[0];
+    const credit = (await creditQuery.get())[0];
     const block = await helper.walletService.client.getBlock(
       credit.payload.walletReference!.chainReference!,
     );
@@ -67,11 +63,9 @@ describe('Metadata nft', () => {
     const outputMetadata = getOutputMetadata(output);
 
     const nftQuery = build5Db().collection(COL.NFT).where('owner', '==', helper.member);
-    const nft = (await nftQuery.get<Nft>())[0];
-    const collection = await build5Db()
-      .doc(`${COL.COLLECTION}/${nft.collection}`)
-      .get<Collection>();
-    const space = await build5Db().doc(`${COL.SPACE}/${nft.space}`).get<Space>();
+    const nft = (await nftQuery.get())[0];
+    const collection = await build5Db().doc(COL.COLLECTION, nft.collection).get();
+    const space = await build5Db().doc(COL.SPACE, nft.space).get();
     expect(outputMetadata).toEqual({
       nftId: nft!.mintingData!.nftId,
       collectionId: collection!.mintingData!.nftId,

@@ -6,7 +6,6 @@ import {
   STAMP_COST_PER_MB,
   SUB_COL,
   Space,
-  SpaceGuardian,
   Stamp,
   TRANSACTION_AUTO_EXPIRY_MS,
   TangleResponse,
@@ -23,7 +22,7 @@ import { packBasicOutput } from '../../../../utils/basic-output.utils';
 import { downloadMediaAndPackCar } from '../../../../utils/car.utils';
 import { createNftOutput } from '../../../../utils/collection-minting-utils/nft.utils';
 import { getProject } from '../../../../utils/common.utils';
-import { dateToTimestamp } from '../../../../utils/dateTime.utils';
+import { dateToTimestamp, serverTime } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { getRandomBuild5Url, uriToUrl } from '../../../../utils/media.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
@@ -37,6 +36,7 @@ import { isStorageUrl } from '../../../joi/common';
 import { Wallet } from '../../../wallet/wallet';
 import { WalletService } from '../../../wallet/wallet.service';
 import { BaseTangleService, HandlerParams } from '../../base';
+import { Action } from '../../transaction-service';
 import { stampTangleSchema } from './StampTangleRequestSchema';
 
 export class StampTangleService extends BaseTangleService<TangleResponse> {
@@ -62,22 +62,27 @@ export class StampTangleService extends BaseTangleService<TangleResponse> {
     );
 
     if (!params.aliasId) {
-      const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
-      this.transactionService.push({ ref: spaceDocRef, data: space, action: 'set' });
+      const spaceDocRef = build5Db().doc(COL.SPACE, space.uid);
+      this.transactionService.push({ ref: spaceDocRef, data: space, action: Action.C });
 
-      const guardian = { uid: owner, parentId: space.uid, parentCol: COL.SPACE };
-      const guardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(owner);
-      this.transactionService.push({ ref: guardianDocRef, data: guardian, action: 'set' });
+      const guardian = {
+        uid: owner,
+        parentId: space.uid,
+        parentCol: COL.SPACE,
+        createdOn: serverTime(),
+      };
+      const guardianDocRef = build5Db().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, owner);
+      this.transactionService.push({ ref: guardianDocRef, data: guardian, action: Action.C });
 
-      const memberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner);
-      this.transactionService.push({ ref: memberDocRef, data: guardian, action: 'set' });
+      const memberDocRef = build5Db().doc(COL.SPACE, space.uid, SUB_COL.MEMBERS, owner);
+      this.transactionService.push({ ref: memberDocRef, data: guardian, action: Action.C });
     }
 
-    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
-    this.transactionService.push({ ref: orderDocRef, data: order, action: 'set' });
+    const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
+    this.transactionService.push({ ref: orderDocRef, data: order, action: Action.C });
 
-    const stampDocRef = build5Db().doc(`${COL.STAMP}/${stamp.uid}`);
-    this.transactionService.push({ ref: stampDocRef, data: stamp, action: 'set' });
+    const stampDocRef = build5Db().doc(COL.STAMP, stamp.uid);
+    this.transactionService.push({ ref: stampDocRef, data: stamp, action: Action.C });
 
     if (match.to.amount < order.payload.amount!) {
       return {
@@ -222,9 +227,8 @@ const getAliasOutputAmount = async (stamp: Stamp, space: Space, wallet: Wallet) 
   if (!space.alias?.address) {
     throw invalidArgument(WenError.not_alias_governor);
   }
-  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
-  const guardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(stamp.createdBy);
-  const guardian = await guardianDocRef.get<SpaceGuardian>();
+  const guardianDocRef = build5Db().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, stamp.createdBy);
+  const guardian = await guardianDocRef.get();
 
   if (!guardian) {
     throw invalidArgument(WenError.not_alias_governor);

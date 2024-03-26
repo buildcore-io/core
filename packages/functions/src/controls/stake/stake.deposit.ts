@@ -16,6 +16,6 @@ export const depositStakeControl = async ({
     params.type as StakeType,
     params.customMetadata,
   );
-  await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+  await build5Db().doc(COL.TRANSACTION, order.uid).create(order);
   return order;
 };

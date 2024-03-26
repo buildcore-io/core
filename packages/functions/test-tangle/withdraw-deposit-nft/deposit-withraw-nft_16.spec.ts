@@ -1,9 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { build5Db } from '@build-5/database';
-import { COL, MIN_IOTA_AMOUNT, Network, Transaction, TransactionType } from '@build-5/interfaces';
-import { depositNft } from '../../src/runtime/firebase/nft/index';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import {
+  COL,
+  MIN_IOTA_AMOUNT,
+  Network,
+  Transaction,
+  TransactionType,
+  WEN_FUNC,
+} from '@build-5/interfaces';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
@@ -19,8 +25,8 @@ describe('Collection minting', () => {
   });
 
   it('Should return credits when nft deposit order does not receive nft', async () => {
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, { network: helper.network });
-    const order = await testEnv.wrap(depositNft)({});
+    mockWalletReturnValue(helper.guardian!, { network: helper.network });
+    const order = await testEnv.wrap<Transaction>(WEN_FUNC.depositNft);
     await requestFundsFromFaucet(Network.RMS, order.payload.targetAddress, MIN_IOTA_AMOUNT);
 
     const query = build5Db()
@@ -28,7 +34,7 @@ describe('Collection minting', () => {
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.guardian!);
     await wait(async () => {
-      const snap = await query.get<Transaction>();
+      const snap = await query.get();
       return (
         snap.length === 1 &&
         snap[0].payload.walletReference?.confirmed &&

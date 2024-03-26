@@ -1,33 +1,27 @@
-import { build5Db } from '@build-5/database';
+import { build5Db, PgProposal, removeNulls } from '@build-5/database';
 import {
   ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE,
   BaseProposalAnswerValue,
   COL,
   MediaStatus,
-  Member,
-  Proposal,
   ProposalType,
   REMOVE_STAKE_REWARDS_THRESHOLD_PERCENTAGE,
-  Space,
-  SpaceGuardian,
-  SpaceMember,
   StakeRewardStatus,
   StakeType,
   SUB_COL,
-  TokenDistribution,
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { get, set } from 'lodash';
+import { get, head, set } from 'lodash';
 import { getStakeForType } from '../services/stake.service';
 import { downloadMediaAndPackCar } from '../utils/car.utils';
-import { dateToTimestamp } from '../utils/dateTime.utils';
 import { spaceToIpfsMetadata } from '../utils/space.utils';
 import { getTokenForSpace } from '../utils/token.utils';
-import { FirestoreDocEvent } from './common';
+import { PgDocEvent } from './common';
 
-export const onProposalWrite = async (event: FirestoreDocEvent<Proposal>) => {
+export const onProposalWrite = async (event: PgDocEvent<PgProposal>) => {
   const { prev, curr } = event;
+
   if (!curr) {
     return;
   }
@@ -54,50 +48,58 @@ export const onProposalWrite = async (event: FirestoreDocEvent<Proposal>) => {
   }
 };
 
-const isAddRemoveGuardianVote = (curr: Proposal) =>
-  [ProposalType.ADD_GUARDIAN, ProposalType.REMOVE_GUARDIAN].includes(curr.type);
+const isAddRemoveGuardianVote = (curr: PgProposal) =>
+  [ProposalType.ADD_GUARDIAN, ProposalType.REMOVE_GUARDIAN].includes(curr.type!);
 
-const voteThresholdReached = (prev: Proposal | undefined, curr: Proposal, threshold: number) => {
+const voteThresholdReached = (
+  prev: PgProposal | undefined,
+  curr: PgProposal,
+  threshold: number,
+) => {
+  const prevAnswers = prev?.results?.answers as Record<string, number> | undefined;
   const prevAnsweredPercentage =
-    ((prev?.results?.answers[BaseProposalAnswerValue.YES] || 0) * 100) /
-    (prev?.results?.total || 1);
+    ((prevAnswers?.[BaseProposalAnswerValue.YES] || 0) * 100) / Number(prev?.results?.total || 1);
+
+  const currAnswers = curr.results?.answers as Record<string, number> | undefined;
   const currAnsweredPercentage =
-    ((curr.results?.answers[BaseProposalAnswerValue.YES] || 0) * 100) / (curr.results?.total || 1);
+    ((currAnswers?.[BaseProposalAnswerValue.YES] || 0) * 100) / Number(curr.results?.total || 1);
   return prevAnsweredPercentage <= threshold && currAnsweredPercentage > threshold;
 };
 
-const onAddRemoveGuardianProposalApproved = async (proposal: Proposal) => {
-  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${proposal.space}`);
-  const guardianDocRef = spaceDocRef
-    .collection(SUB_COL.GUARDIANS)
-    .doc(proposal.settings.addRemoveGuardian!);
+const onAddRemoveGuardianProposalApproved = async (proposal: PgProposal) => {
+  const spaceDocRef = build5Db().doc(COL.SPACE, proposal.space!);
+  const guardianDocRef = build5Db().doc(
+    COL.SPACE,
+    proposal.space!,
+    SUB_COL.GUARDIANS,
+    proposal.settings_addRemoveGuardian!,
+  );
   const isAddGuardian = proposal.type === ProposalType.ADD_GUARDIAN;
 
   const batch = build5Db().batch();
   if (isAddGuardian) {
-    batch.set(guardianDocRef, {
-      uid: proposal.settings.addRemoveGuardian,
+    batch.upsert(guardianDocRef, {
       parentId: proposal.space,
-      parentCol: COL.SPACE,
     });
   } else {
     batch.delete(guardianDocRef);
   }
   batch.update(spaceDocRef, { totalGuardians: build5Db().inc(isAddGuardian ? 1 : -1) });
-  const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  const proposalDocRef = build5Db().doc(COL.PROPOSAL, proposal.uid);
   batch.update(proposalDocRef, {
-    'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's')),
+    settings_endDate: dayjs().subtract(1, 's').toDate(),
     completed: true,
   });
   await batch.commit();
 };
 
-const onEditSpaceProposalApproved = async (proposal: Proposal) => {
-  const spaceUpdateData = proposal.settings.spaceUpdateData!;
-  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${spaceUpdateData.uid}`);
+const onEditSpaceProposalApproved = async (proposal: PgProposal) => {
+  const spaceUpdateData = proposal.settings_spaceUpdateData!;
+  const spaceId = spaceUpdateData.uid! as string;
+  const spaceDocRef = build5Db().doc(COL.SPACE, spaceId);
 
   if (spaceUpdateData.bannerUrl) {
-    const space = (await spaceDocRef.get<Space>())!;
+    const space = (await spaceDocRef.get())!;
     const metadata = spaceToIpfsMetadata({ ...space, ...spaceUpdateData });
     const ipfs = await downloadMediaAndPackCar(
       space.uid,
@@ -111,36 +113,43 @@ const onEditSpaceProposalApproved = async (proposal: Proposal) => {
   }
 
   if (spaceUpdateData.open) {
-    const knockingMembersSnap = await spaceDocRef
-      .collection(SUB_COL.KNOCKING_MEMBERS)
-      .get<SpaceMember>();
+    const knockingMembersSnap = await build5Db()
+      .collection(COL.SPACE, spaceId, SUB_COL.KNOCKING_MEMBERS)
+      .get();
     const deleteKnockingMemberPromise = knockingMembersSnap.map((kMember) =>
-      spaceDocRef.collection(SUB_COL.KNOCKING_MEMBERS).doc(kMember.uid).delete(),
+      build5Db().doc(COL.SPACE, spaceId, SUB_COL.KNOCKING_MEMBERS, kMember.uid).delete(),
     );
     await Promise.all(deleteKnockingMemberPromise);
   }
 
   const { removedMembers, removedGuardians } =
     await removeMembersAndGuardiansThatDontHaveEnoughStakes(spaceUpdateData);
-  const updateData = spaceUpdateData.open
-    ? { ...spaceUpdateData, totalPendingMembers: 0 }
-    : spaceUpdateData;
-  const prevValidatedAddresses = get(updateData, 'prevValidatedAddresses');
-  if (prevValidatedAddresses) {
-    set(updateData, 'prevValidatedAddresses', build5Db().arrayUnion(prevValidatedAddresses));
-  }
-  await spaceDocRef.set(
-    {
-      ...updateData,
-      totalMembers: build5Db().inc(-removedMembers),
-      totalGuardians: build5Db().inc(-removedGuardians),
-    },
-    true,
+
+  const updateData = removeNulls(
+    spaceDocRef.converter.toPg(
+      spaceUpdateData.open
+        ? { ...spaceUpdateData, totalPendingMembers: 0 }
+        : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (spaceUpdateData as any),
+    ),
   );
+  const prevValidatedAddress = head(get(updateData, 'prevValidatedAddresses', []));
+  if (prevValidatedAddress) {
+    set(updateData, 'prevValidatedAddresses', build5Db().arrayUnion(prevValidatedAddress));
+  } else {
+    delete updateData.prevValidatedAddresses;
+  }
+
+  await spaceDocRef.upsert({
+    ...updateData,
+    totalMembers: build5Db().inc(-removedMembers),
+    totalGuardians: build5Db().inc(-removedGuardians),
+  });
+
   await build5Db()
-    .doc(`${COL.PROPOSAL}/${proposal.uid}`)
+    .doc(COL.PROPOSAL, proposal.uid)
     .update({
-      'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's')),
+      settings_endDate: dayjs().subtract(1, 's').toDate(),
       completed: true,
     });
 };
@@ -151,14 +160,16 @@ const removeMembersAndGuardiansThatDontHaveEnoughStakes = async (
   if (!updateData.tokenBased) {
     return { removedMembers: 0, removedGuardians: 0 };
   }
-  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${updateData.uid}`);
-  const space = (await spaceDocRef.get<Space>())!;
+  const spaceDocRef = build5Db().doc(COL.SPACE, updateData.uid! as string);
+  const space = (await spaceDocRef.get())!;
   const token = await getTokenForSpace(space.uid);
 
   let removedMembers = 0;
   let removedGuardians = 0;
 
-  const membersSnap = await spaceDocRef.collection(SUB_COL.MEMBERS).get<Member>();
+  const membersSnap = await build5Db()
+    .collection(COL.SPACE, updateData.uid! as string, SUB_COL.MEMBERS)
+    .get();
 
   for (const member of membersSnap) {
     if (space.totalMembers - removedMembers === 1) {
@@ -171,9 +182,16 @@ const removeMembersAndGuardiansThatDontHaveEnoughStakes = async (
     );
     if (!hasEnoughStaked) {
       removedMembers++;
-      await spaceDocRef.collection(SUB_COL.MEMBERS).doc(member.uid).delete();
-      const guardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(member.uid);
-      const guardian = await guardianDocRef.get<SpaceGuardian>();
+      await build5Db()
+        .doc(COL.SPACE, updateData.uid! as string, SUB_COL.MEMBERS, member.uid)
+        .delete();
+      const guardianDocRef = build5Db().doc(
+        COL.SPACE,
+        updateData.uid! as string,
+        SUB_COL.GUARDIANS,
+        member.uid,
+      );
+      const guardian = await guardianDocRef.get();
       if (guardian) {
         await guardianDocRef.delete();
         removedGuardians++;
@@ -185,26 +203,24 @@ const removeMembersAndGuardiansThatDontHaveEnoughStakes = async (
 };
 
 const memberHasEnoughStakedValues = async (token: string, member: string, minStaked: number) => {
-  const distributionDocRef = build5Db().doc(
-    `${COL.TOKEN}/${token}/${SUB_COL.DISTRIBUTION}/${member}`,
-  );
-  const distribution = await distributionDocRef.get<TokenDistribution>();
+  const distributionDocRef = build5Db().doc(COL.TOKEN, token, SUB_COL.DISTRIBUTION, member);
+  const distribution = await distributionDocRef.get();
   const stakedValue = getStakeForType(distribution, StakeType.DYNAMIC);
   return stakedValue > minStaked;
 };
 
-const onRemoveStakeRewardApporved = async (proposal: Proposal) => {
+const onRemoveStakeRewardApporved = async (proposal: PgProposal) => {
   const batch = build5Db().batch();
 
-  const stakeRewardIds = proposal.settings.stakeRewardIds || [];
-  stakeRewardIds.forEach((rewardId) => {
-    const docRef = build5Db().doc(`${COL.STAKE_REWARD}/${rewardId}`);
+  const stakeRewardIds = proposal.settings_stakeRewardIds || [];
+  for (const rewardId of stakeRewardIds) {
+    const docRef = build5Db().doc(COL.STAKE_REWARD, rewardId);
     batch.update(docRef, { status: StakeRewardStatus.DELETED });
-  });
+  }
 
-  const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  const proposalDocRef = build5Db().doc(COL.PROPOSAL, proposal.uid);
   batch.update(proposalDocRef, {
-    'settings.endDate': dateToTimestamp(dayjs().subtract(1, 's')),
+    settings_endDate: dayjs().subtract(1, 's').toDate(),
     completed: true,
   });
 

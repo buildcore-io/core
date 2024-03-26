@@ -8,7 +8,6 @@ import {
   ProposalType,
   SUB_COL,
   Space,
-  SpaceGuardian,
   Transaction,
   TransactionPayloadType,
   TransactionType,
@@ -19,6 +18,7 @@ import { getAddress } from '../../../utils/address.utils';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { BaseService, HandlerParams } from '../base';
+import { Action } from '../transaction-service';
 
 export class SpaceAddressService extends BaseService {
   public handleRequest = async ({ project, order, match }: HandlerParams) => {
@@ -30,13 +30,13 @@ export class SpaceAddressService extends BaseService {
     );
     this.transactionService.markAsReconciled(order, match.msgId);
 
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${order.space}`);
-    const space = await this.transactionService.get<Space>(spaceDocRef);
+    const spaceDocRef = build5Db().doc(COL.SPACE, order.space!);
+    const space = await this.transaction.get(spaceDocRef);
 
-    const ownerDocRef = build5Db().doc(`${COL.MEMBER}/${order.member}`);
-    const owner = <Member>await ownerDocRef.get();
+    const ownerDocRef = build5Db().doc(COL.MEMBER, order.member!);
+    const owner = <Member>await this.transaction.get(ownerDocRef);
 
-    const guardians = await spaceDocRef.collection(SUB_COL.GUARDIANS).get<SpaceGuardian>();
+    const guardians = await build5Db().collection(COL.SPACE, order.space!, SUB_COL.GUARDIANS).get();
     const proposal = createUpdateSpaceValidatedAddressProposal(
       project,
       order,
@@ -62,34 +62,37 @@ export class SpaceAddressService extends BaseService {
       linkedTransactions: [],
     };
 
-    const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
-    const memberPromisses = guardians.map((guardian) => {
-      proposalDocRef
-        .collection(SUB_COL.MEMBERS)
-        .doc(guardian.uid)
-        .set({
-          uid: guardian.uid,
+    for (const guardian of guardians) {
+      const memberDocRef = build5Db().doc(
+        COL.PROPOSAL,
+        proposal.uid,
+        SUB_COL.MEMBERS,
+        guardian.uid,
+      );
+      this.transactionService.push({
+        ref: memberDocRef,
+        data: {
           weight: 1,
           voted: guardian.uid === owner.uid,
           tranId: guardian.uid === owner.uid ? voteTransaction.uid : '',
-          parentId: proposal.uid,
-          parentCol: COL.PROPOSAL,
-          values: guardian.uid === owner.uid ? [{ [1]: 1 }] : [],
-        });
-    });
-    await Promise.all(memberPromisses);
+        },
+        action: Action.UPS,
+      });
+    }
 
-    const voteTransactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`);
-    this.transactionService.push({
-      ref: voteTransactionDocRef,
-      data: voteTransaction,
-      action: 'set',
-    });
+    const proposalDocRef = build5Db().doc(COL.PROPOSAL, proposal.uid);
 
     this.transactionService.push({
       ref: proposalDocRef,
       data: proposal,
-      action: 'set',
+      action: Action.C,
+    });
+
+    const voteTransactionDocRef = build5Db().doc(COL.TRANSACTION, voteTransaction.uid);
+    this.transactionService.push({
+      ref: voteTransactionDocRef,
+      data: voteTransaction,
+      action: Action.C,
     });
   };
 }
@@ -106,6 +109,7 @@ const createUpdateSpaceValidatedAddressProposal = (
     `${owner.name || owner.uid} wants to update the space's validated address. ` +
     `Request created on ${dayjs().format('MM/DD/YYYY')}. ` +
     `${UPDATE_SPACE_THRESHOLD_PERCENTAGE} % must agree for this action to proceed`;
+  const prevAddress = getAddress(space, order.network!);
   return {
     project,
     createdBy: owner.uid,
@@ -124,15 +128,13 @@ const createUpdateSpaceValidatedAddressProposal = (
       spaceUpdateData: {
         uid: space.uid,
         validatedAddress: { [order.network!]: validatedAddress },
-        prevValidatedAddresses: getAddress(space, order.network!),
+        prevValidatedAddresses: prevAddress ? [prevAddress] : [],
       },
     },
     questions: [
       {
         text: "Do you want to update the space's validate address?",
-        additionalInfo: `${order.network!.toUpperCase()}: ${validatedAddress} (previously: ${
-          getAddress(space, order.network!) || 'None'
-        })\n`,
+        additionalInfo: `${order.network!.toUpperCase()}: ${validatedAddress} (previously: ${getAddress(space, order.network!) || 'None'})\n`,
         answers: [
           {
             text: 'No',

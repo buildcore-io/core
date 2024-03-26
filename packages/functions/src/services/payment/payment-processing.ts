@@ -38,7 +38,7 @@ import { TokenMintedAirdropService } from './token/token-minted-airdrop.service'
 import { MintedTokenClaimService } from './token/token-minted-claim.service';
 import { TokenPurchaseService } from './token/token-purchase.service';
 import { TokenTradeService } from './token/token-trade.service';
-import { TransactionService } from './transaction-service';
+import { Action, TransactionService } from './transaction-service';
 import { VotingService } from './voting-service';
 
 export class ProcessingService {
@@ -77,8 +77,8 @@ export class ProcessingService {
     orderId: string,
     build5Tran: Transaction | undefined,
   ): Promise<void> {
-    const orderRef = build5Db().doc(`${COL.TRANSACTION}/${orderId}`);
-    const order = await this.tranService.transaction.get<Transaction>(orderRef);
+    const orderRef = build5Db().doc(COL.TRANSACTION, orderId);
+    const order = await this.transaction.get(orderRef);
 
     if (!order) {
       return;
@@ -103,7 +103,7 @@ export class ProcessingService {
         const type = tranEntry.nftOutput
           ? TransactionPayloadType.UNLOCK_NFT
           : TransactionPayloadType.UNLOCK_FUNDS;
-        await this.tranService.createUnlockTransaction(
+        this.tranService.createUnlockTransaction(
           undefined,
           order,
           tran,
@@ -138,7 +138,7 @@ export class ProcessingService {
           ...this.tranService.linkedTransactions,
         ],
       },
-      action: 'update',
+      action: Action.U,
     });
   }
 
@@ -204,9 +204,9 @@ export class ProcessingService {
     const snap = await build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.ORDER)
-      .where('payload.targetAddress', '==', address)
+      .where('payload_targetAddress', '==', address)
       .limit(1)
-      .get<Transaction>();
+      .get();
     return head(snap);
   };
 
@@ -214,7 +214,7 @@ export class ProcessingService {
     if (isEmpty(tran.build5TransactionId)) {
       return;
     }
-    const docRef = build5Db().doc(`${COL.TRANSACTION}/${tran.build5TransactionId}`);
-    return docRef.get<Transaction>();
+    const docRef = build5Db().doc(COL.TRANSACTION, tran.build5TransactionId!);
+    return docRef.get();
   };
 }

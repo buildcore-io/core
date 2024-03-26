@@ -1,5 +1,5 @@
 import { build5Db } from '@build-5/database';
-import { COL, Nft } from '@build-5/interfaces';
+import { COL } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 
 export const hidePlaceholderAfterSoldOutCron = async () => {
@@ -10,7 +10,7 @@ export const hidePlaceholderAfterSoldOutCron = async () => {
     .where('availableFrom', '==', null)
     .where('hidden', '==', false)
     .where('owner', '==', null)
-    .get<Nft>();
+    .get();
   for (const nft of snap) {
     if (
       nft.soldOn &&

@@ -230,6 +230,10 @@ export interface Nft extends BaseRecord {
    */
   mediaStatus?: MediaStatus;
   /**
+   * @hidden
+   */
+  mediaUploadErrorCount?: number;
+  /**
    * NFT Sold on
    */
   soldOn?: Timestamp;

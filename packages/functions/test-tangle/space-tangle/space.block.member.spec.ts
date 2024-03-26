@@ -6,11 +6,10 @@ import {
   SUB_COL,
   Space,
   TangleRequestType,
-  Transaction,
+  WEN_FUNC,
 } from '@build-5/interfaces';
-import { joinSpace } from '../../src/runtime/firebase/space';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
@@ -26,8 +25,8 @@ describe('Block space member', () => {
   });
 
   it('Should block member', async () => {
-    mockWalletReturnValue(helper.walletSpy, helper.member, { uid: helper.space.uid });
-    await testEnv.wrap(joinSpace)({});
+    mockWalletReturnValue(helper.member, { uid: helper.space.uid });
+    await testEnv.wrap(WEN_FUNC.joinSpace);
 
     await requestFundsFromFaucet(Network.RMS, helper.guardianAddress.bech32, MIN_IOTA_AMOUNT);
     await helper.walletService.send(
@@ -46,19 +45,21 @@ describe('Block space member', () => {
     );
 
     await wait(async () => {
-      const snap = await helper.guardianCreditQuery.get<Transaction>();
+      const snap = await helper.guardianCreditQuery.get();
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
 
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${helper.space.uid}`);
+    const spaceDocRef = build5Db().doc(COL.SPACE, helper.space.uid);
     helper.space = <Space>await spaceDocRef.get();
     expect(helper.space.totalMembers).toBe(1);
     expect(helper.space.totalGuardians).toBe(1);
 
-    const guardianCount = await spaceDocRef.collection(SUB_COL.GUARDIANS).count();
-    expect(guardianCount).toBe(1);
+    const guardians = await build5Db()
+      .collection(COL.SPACE, helper.space.uid, SUB_COL.GUARDIANS)
+      .get();
+    expect(guardians.length).toBe(1);
 
-    const memberCount = await spaceDocRef.collection(SUB_COL.MEMBERS).count();
-    expect(memberCount).toBe(1);
+    const members = await build5Db().collection(COL.SPACE, helper.space.uid, SUB_COL.MEMBERS).get();
+    expect(members.length).toBe(1);
   });
 });

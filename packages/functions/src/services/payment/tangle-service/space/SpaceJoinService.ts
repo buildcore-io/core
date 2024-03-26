@@ -6,7 +6,6 @@ import {
   StakeType,
   SUB_COL,
   TangleResponse,
-  TokenDistribution,
   WenError,
 } from '@build-5/interfaces';
 import { getProject } from '../../../../utils/common.utils';
@@ -16,45 +15,44 @@ import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getTokenForSpace } from '../../../../utils/token.utils';
 import { getStakeForType } from '../../../stake.service';
 import { BaseTangleService, HandlerParams } from '../../base';
+import { Action } from '../../transaction-service';
 import { joinSpaceSchema } from './SpaceJoinTangleRequestSchema';
 
 export class SpaceJoinService extends BaseTangleService<TangleResponse> {
   public handleRequest = async ({ order, owner, request }: HandlerParams) => {
     const params = await assertValidationAsync(joinSpaceSchema, request);
 
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
+    const spaceDocRef = build5Db().doc(COL.SPACE, params.uid);
     const space = <Space | undefined>await spaceDocRef.get();
     if (!space) {
       throw invalidArgument(WenError.space_does_not_exists);
     }
 
-    const {
-      space: spaceUpdateData,
-      spaceMember,
-      member,
-    } = await getJoinSpaceData(getProject(order), owner, space);
+    const { space: spaceUpdateData, spaceMember } = await getJoinSpaceData(
+      getProject(order),
+      owner,
+      space,
+    );
 
-    const joiningMemberDocRef = spaceDocRef
-      .collection(space.open || space.tokenBased ? SUB_COL.MEMBERS : SUB_COL.KNOCKING_MEMBERS)
-      .doc(owner);
+    const subCol = space.open || space.tokenBased ? SUB_COL.MEMBERS : SUB_COL.KNOCKING_MEMBERS;
+    const joiningMemberDocRef = build5Db().doc(COL.SPACE, params.uid, subCol, owner);
     this.transactionService.push({
       ref: joiningMemberDocRef,
       data: spaceMember,
-      action: 'set',
+      action: Action.C,
     });
 
     this.transactionService.push({
       ref: spaceDocRef,
       data: spaceUpdateData,
-      action: 'update',
+      action: Action.U,
     });
 
-    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
+    const memberDocRef = build5Db().doc(COL.MEMBER, owner);
     this.transactionService.push({
       ref: memberDocRef,
-      data: member,
-      action: 'set',
-      merge: true,
+      data: { spaces: { [space.uid]: { uid: space.uid, isMember: true } } },
+      action: Action.U,
     });
 
     return { status: 'success' };
@@ -62,21 +60,20 @@ export class SpaceJoinService extends BaseTangleService<TangleResponse> {
 }
 
 export const getJoinSpaceData = async (project: string, owner: string, space: Space) => {
-  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
-
-  const joinedMemberSnap = await spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner).get();
+  const joinedMemberSnap = await build5Db().doc(COL.SPACE, space.uid, SUB_COL.MEMBERS, owner).get();
   if (joinedMemberSnap) {
     throw invalidArgument(WenError.you_are_already_part_of_space);
   }
 
-  const blockedMemberSnap = await spaceDocRef.collection(SUB_COL.BLOCKED_MEMBERS).doc(owner).get();
+  const blockedMemberSnap = await build5Db()
+    .doc(COL.SPACE, space.uid, SUB_COL.BLOCKED_MEMBERS, owner)
+    .get();
   if (blockedMemberSnap) {
     throw invalidArgument(WenError.you_are_not_allowed_to_join_space);
   }
 
-  const knockingMemberSnap = await spaceDocRef
-    .collection(SUB_COL.KNOCKING_MEMBERS)
-    .doc(owner)
+  const knockingMemberSnap = await build5Db()
+    .doc(COL.SPACE, space.uid, SUB_COL.KNOCKING_MEMBERS, owner)
     .get();
   if (knockingMemberSnap) {
     throw invalidArgument(WenError.member_already_knocking);
@@ -105,9 +102,8 @@ export const getJoinSpaceData = async (project: string, owner: string, space: Sp
 
 const assertMemberHasEnoughStakedTokens = async (space: Space, member: string) => {
   const token = await getTokenForSpace(space.uid);
-  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token?.uid}`);
-  const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member);
-  const distribution = await distributionDocRef.get<TokenDistribution>();
+  const distributionDocRef = build5Db().doc(COL.TOKEN, token?.uid!, SUB_COL.DISTRIBUTION, member);
+  const distribution = await distributionDocRef.get();
   const stakeValue = getStakeForType(distribution, StakeType.DYNAMIC);
   if (stakeValue < (space.minStakedValue || 0)) {
     throw invalidArgument(WenError.not_enough_staked_tokens);

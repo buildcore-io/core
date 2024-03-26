@@ -22,8 +22,8 @@ describe('Nft bulk order', () => {
   });
 
   it('Should order 2 nfts with tangle order', async () => {
-    const { collection: col1, nft: nft1 } = await h.createColletionAndNft(h.member, h.space);
-    const { collection: col2, nft: nft2 } = await h.createColletionAndNft(h.member, h.space);
+    const { collection: col1, nft: nft1 } = await h.createCollectionAndNft(h.member, h.space);
+    const { collection: col2, nft: nft2 } = await h.createCollectionAndNft(h.member, h.space);
 
     await requestFundsFromFaucet(Network.ATOI, h.memberAddress.bech32, 2 * MIN_IOTA_AMOUNT);
     await h.walletService.send(
@@ -43,8 +43,8 @@ describe('Nft bulk order', () => {
       },
     );
 
-    const nft1DocRef = build5Db().doc(`${COL.NFT}/${nft1.uid}`);
-    const nft2DocRef = build5Db().doc(`${COL.NFT}/${nft2.uid}`);
+    const nft1DocRef = build5Db().doc(COL.NFT, nft1.uid);
+    const nft2DocRef = build5Db().doc(COL.NFT, nft2.uid);
 
     await wait(async () => {
       const nft1 = <Nft>await nft1DocRef.get();

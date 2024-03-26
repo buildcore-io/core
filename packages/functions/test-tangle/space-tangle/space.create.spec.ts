@@ -41,12 +41,12 @@ describe('Create space', () => {
     );
 
     await wait(async () => {
-      const snap = await helper.memberCreditQuery.get<Transaction>();
+      const snap = await helper.memberCreditQuery.get();
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
     const snap = await helper.memberCreditQuery.get();
     const credit = snap[0] as Transaction;
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${credit.payload.response!.space}`);
+    const spaceDocRef = build5Db().doc(COL.SPACE, credit.payload.response!.space as string);
     const space = <Space>await spaceDocRef.get();
     expect(space.name).toBe('Space A');
   });

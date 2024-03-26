@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { BaseRecord as PgBaseRecord, build5Db } from '@build-5/database';
 import {
   Access,
   BaseRecord,
@@ -6,7 +6,6 @@ import {
   Collection,
   MIN_AMOUNT_TO_TRANSFER,
   Nft,
-  ProjectAdmin,
   Restrictions,
   SOON_PROJECT_ID,
   SUB_COL,
@@ -69,11 +68,11 @@ export const getRestrictions = (collection?: Collection, nft?: Nft): Restriction
 };
 
 export const assertIsProjectAdmin = async (project: string, member: string) => {
-  const projectDocRef = build5Db().doc(`${COL.PROJECT}/${project}`);
-  const admin = await projectDocRef.collection(SUB_COL.ADMINS).doc(member).get<ProjectAdmin>();
+  const admin = await build5Db().doc(COL.PROJECT, project, SUB_COL.ADMINS, member).get();
   if (!admin) {
     throw invalidArgument(WenError.you_are_not_admin_of_project);
   }
 };
 
-export const getProject = (data: BaseRecord | undefined) => data?.project || SOON_PROJECT_ID;
+export const getProject = (data: BaseRecord | PgBaseRecord | undefined) =>
+  data?.project || SOON_PROJECT_ID;

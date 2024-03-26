@@ -39,6 +39,7 @@ jobs:
               --allow-unauthenticated \
               --timeout=600 \
               --ingress=internal-and-cloud-load-balancing \
+              --add-cloudsql-instances $GOOGLE_CLOUD_PROJECT:us-central1:$GOOGLE_CLOUD_PROJECT \
               --region=us-central1 \
 
   deploy_functions:

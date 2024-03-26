@@ -9,8 +9,12 @@ export const unblockMemberControl = async ({
 }: Context<SpaceMemberUpsertRequest>) => {
   await assertIsGuardian(params.uid, owner);
 
-  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
-  const blockedMemberDocRef = spaceDocRef.collection(SUB_COL.BLOCKED_MEMBERS).doc(params.member);
+  const blockedMemberDocRef = build5Db().doc(
+    COL.SPACE,
+    params.uid,
+    SUB_COL.BLOCKED_MEMBERS,
+    params.member,
+  );
   await blockedMemberDocRef.delete();
 
   return { status: 'success' };

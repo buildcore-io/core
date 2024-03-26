@@ -15,31 +15,25 @@ import {
   WenError,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { createCollection } from '../../src/runtime/firebase/collection/index';
 import * as wallet from '../../src/utils/wallet.utils';
-import { MEDIA, testEnv } from '../set-up';
-import { createBatchNft, createNft, updateUnsoldNft } from './../../src/runtime/firebase/nft/index';
-import { createMember, createSpace, expectThrow, mockWalletReturnValue } from './common';
-
-let walletSpy: any;
+import { MEDIA, mockWalletReturnValue, testEnv } from '../set-up';
+import { expectThrow } from './common';
 
 describe('Nft controll: ' + WEN_FUNC.createCollection, () => {
   let space: Space;
   let collection: Collection;
   let member: string;
-
   beforeEach(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    member = await createMember(walletSpy);
-    space = await createSpace(walletSpy, member);
-    mockWalletReturnValue(walletSpy, member, dummyCollection(space));
-    collection = await testEnv.wrap(createCollection)({});
+    member = await testEnv.createMember();
+    space = await testEnv.createSpace(member);
+    mockWalletReturnValue(member, dummyCollection(space));
+    collection = await testEnv.wrap<Collection>(WEN_FUNC.createCollection);
   });
 
   it('successfully create NFT', async () => {
     const nft = { media: MEDIA, ...dummyNft(collection.uid) };
-    mockWalletReturnValue(walletSpy, member, nft);
-    const cNft = await testEnv.wrap(createNft)({});
+    mockWalletReturnValue(member, nft);
+    const cNft = await testEnv.wrap<Nft>(WEN_FUNC.createNft);
     expect(cNft?.createdOn).toBeDefined();
     expect(cNft?.updatedOn).toBeDefined();
     expect(cNft?.status).toBe(NftStatus.PRE_MINTED);
@@ -47,66 +41,62 @@ describe('Nft controll: ' + WEN_FUNC.createCollection, () => {
 
   it('successfully create NFT with sale access', async () => {
     const nft = dummyNft(collection.uid, '', [member]);
-    mockWalletReturnValue(walletSpy, member, nft);
-    const cNft = await testEnv.wrap(createNft)({});
-
+    mockWalletReturnValue(member, nft);
+    const cNft = await testEnv.wrap<Nft>(WEN_FUNC.createNft);
     expect(cNft?.saleAccessMembers).toEqual([member]);
     expect(cNft?.saleAccess).toBe(NftAccess.MEMBERS);
     expect(cNft?.status).toBe(NftStatus.PRE_MINTED);
-
     const nfts = [
       dummyNft(collection.uid, '', [member]),
       dummyNft(collection.uid, '', [member]),
       dummyNft(collection.uid),
     ];
-    mockWalletReturnValue(walletSpy, member, nfts);
-    const cBatchNft = await testEnv.wrap(createBatchNft)({});
+    mockWalletReturnValue(member, nfts);
+    const cBatchNft = await testEnv.wrap<string[]>(WEN_FUNC.createBatchNft);
     expect(cBatchNft?.length).toBe(3);
-
     for (let i = 0; i < nfts.length; ++i) {
-      const docRef = build5Db().doc(`${COL.NFT}/${cBatchNft[i]}`);
+      const docRef = build5Db().doc(COL.NFT, cBatchNft[i]);
       const nft = <Nft>await docRef.get();
       expect(nft.saleAccessMembers).toEqual(i === nfts.length - 1 ? [] : [member]);
     }
   });
 
   it('successfully create NFT', async () => {
-    let nft = { media: 'asd', ...dummyNft(collection.uid) };
-    mockWalletReturnValue(walletSpy, member, nft);
-    await expectThrow(testEnv.wrap(createNft)({}), WenError.invalid_params.key);
-
+    let nft = { media: 'some-media-url', ...dummyNft(collection.uid) };
+    mockWalletReturnValue(member, nft);
+    await expectThrow(testEnv.wrap<Nft>(WEN_FUNC.createNft), WenError.invalid_params.key);
     nft = {
-      media: `https://firebasestorage.googleapis.com/v0/b/${Bucket.DEV}/o/`,
+      media: `https://storage.googleapis.com/download/storage/v1/b/${Bucket.DEV}/o`,
       ...dummyNft(collection.uid),
     };
-    mockWalletReturnValue(walletSpy, member, nft);
-    await expectThrow(testEnv.wrap(createNft)({}), WenError.invalid_params.key);
+    mockWalletReturnValue(member, nft);
+    await expectThrow(testEnv.wrap<Nft>(WEN_FUNC.createNft), WenError.invalid_params.key);
   });
 
   it('successfully batch create 2 NFT', async () => {
-    mockWalletReturnValue(walletSpy, member, [
-      dummyNft(collection.uid),
-      dummyNft(collection.uid, 'babbssa'),
-    ]);
-    const cBatchNft = await testEnv.wrap(createBatchNft)({});
+    mockWalletReturnValue(member, [dummyNft(collection.uid), dummyNft(collection.uid, 'babbssa')]);
+    const cBatchNft = await testEnv.wrap<string[]>(WEN_FUNC.createBatchNft);
     expect(cBatchNft?.length).toBe(2);
   });
 
   it('successfully create NFT to high buy price', async () => {
     const nft = { ...dummyNft(collection.uid), price: 1000 * 1000 * 1000 * 1000 * 1000 };
-    mockWalletReturnValue(walletSpy, member, nft);
-    await expectThrow(testEnv.wrap(createNft)({}), WenError.invalid_params.key);
+    mockWalletReturnValue(member, nft);
+    await expectThrow(testEnv.wrap<Nft>(WEN_FUNC.createNft), WenError.invalid_params.key);
   });
 
   it('successfully create NFT to high buy price - wrong collection', async () => {
     const nft = { ...dummyNft(collection.uid), collection: wallet.getRandomEthAddress() };
-    mockWalletReturnValue(walletSpy, member, nft);
-    await expectThrow(testEnv.wrap(createNft)({}), WenError.collection_does_not_exists.key);
+    mockWalletReturnValue(member, nft);
+    await expectThrow(
+      testEnv.wrap<Nft>(WEN_FUNC.createNft),
+      WenError.collection_does_not_exists.key,
+    );
   });
 
   it('successfully create NFT - validate space/type', async () => {
-    mockWalletReturnValue(walletSpy, member, dummyNft(collection.uid));
-    const cNft = await testEnv.wrap(createNft)({});
+    mockWalletReturnValue(member, dummyNft(collection.uid));
+    const cNft = await testEnv.wrap<Nft>(WEN_FUNC.createNft);
     expect(cNft?.createdOn).toBeDefined();
     expect(cNft?.updatedOn).toBeDefined();
     expect(cNft?.space).toBe(space.uid);
@@ -119,49 +109,51 @@ describe('Nft controll: ' + WEN_FUNC.updateUnsoldNft, () => {
   let space: Space;
   let collection: Collection;
   let member: string;
-
   beforeEach(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    member = await createMember(walletSpy);
-    space = await createSpace(walletSpy, member);
-    mockWalletReturnValue(walletSpy, member, dummyCollection(space));
-    collection = await testEnv.wrap(createCollection)({});
+    member = await testEnv.createMember();
+    space = await testEnv.createSpace(member);
+    mockWalletReturnValue(member, dummyCollection(space));
+    collection = await testEnv.wrap<Collection>(WEN_FUNC.createCollection);
   });
 
   it('Should update unsold nft price', async () => {
-    mockWalletReturnValue(walletSpy, member, { media: MEDIA, ...dummyNft(collection.uid) });
-    let nft = await testEnv.wrap(createNft)({});
+    mockWalletReturnValue(member, { media: MEDIA, ...dummyNft(collection.uid) });
+    let nft = await testEnv.wrap<Nft>(WEN_FUNC.createNft);
     expect(nft.price).toBe(10 * MIN_IOTA_AMOUNT);
 
-    mockWalletReturnValue(walletSpy, member, { uid: nft.uid, price: 50 * MIN_IOTA_AMOUNT });
-    nft = await testEnv.wrap(updateUnsoldNft)({});
+    mockWalletReturnValue(member, { uid: nft.uid, price: 50 * MIN_IOTA_AMOUNT });
+    nft = await testEnv.wrap<Nft>(WEN_FUNC.updateUnsoldNft);
     expect(nft.price).toBe(50 * MIN_IOTA_AMOUNT);
   });
 
   it('Should throw, nft can not be updated', async () => {
-    mockWalletReturnValue(walletSpy, member, { media: MEDIA, ...dummyNft(collection.uid) });
-    let nft = await testEnv.wrap(createNft)({});
+    mockWalletReturnValue(member, { media: MEDIA, ...dummyNft(collection.uid) });
+    let nft = await testEnv.wrap<Nft>(WEN_FUNC.createNft);
     expect(nft.price).toBe(10 * MIN_IOTA_AMOUNT);
 
-    mockWalletReturnValue(walletSpy, member, { uid: nft.uid, price: 50 * MIN_IOTA_AMOUNT });
+    await build5Db().doc(COL.NFT, nft.uid).update({ sold: true });
+    mockWalletReturnValue(member, {
+      uid: nft.uid,
+      price: 50 * MIN_IOTA_AMOUNT,
+    });
+    await expectThrow(testEnv.wrap<Nft>(WEN_FUNC.updateUnsoldNft), WenError.nft_already_sold.key);
 
-    await build5Db().doc(`${COL.NFT}/${nft.uid}`).update({ sold: true });
-    await expectThrow(testEnv.wrap(updateUnsoldNft)({}), WenError.nft_already_sold.key);
+    await build5Db().doc(COL.NFT, nft.uid).update({ hidden: true, sold: false });
+    mockWalletReturnValue(member, { uid: nft.uid, price: 50 * MIN_IOTA_AMOUNT });
+    await expectThrow(testEnv.wrap<Nft>(WEN_FUNC.updateUnsoldNft), WenError.hidden_nft.key);
 
-    await build5Db().doc(`${COL.NFT}/${nft.uid}`).update({ hidden: true, sold: false });
-    await expectThrow(testEnv.wrap(updateUnsoldNft)({}), WenError.hidden_nft.key);
-
-    await build5Db().doc(`${COL.NFT}/${nft.uid}`).update({ placeholderNft: true, hidden: false });
+    await build5Db().doc(COL.NFT, nft.uid).update({ placeholderNft: true, hidden: false });
+    mockWalletReturnValue(member, { uid: nft.uid, price: 50 * MIN_IOTA_AMOUNT });
     await expectThrow(
-      testEnv.wrap(updateUnsoldNft)({}),
+      testEnv.wrap<Nft>(WEN_FUNC.updateUnsoldNft),
       WenError.nft_placeholder_cant_be_updated.key,
     );
-    await build5Db().doc(`${COL.NFT}/${nft.uid}`).update({ placeholderNft: false });
+    await build5Db().doc(COL.NFT, nft.uid).update({ placeholderNft: false });
 
-    const tmpMember = await createMember(walletSpy);
-    mockWalletReturnValue(walletSpy, tmpMember, { uid: nft.uid, price: 50 * MIN_IOTA_AMOUNT });
+    const tmpMember = await testEnv.createMember();
+    mockWalletReturnValue(tmpMember, { uid: nft.uid, price: 50 * MIN_IOTA_AMOUNT });
     await expectThrow(
-      testEnv.wrap(updateUnsoldNft)({}),
+      testEnv.wrap<Nft>(WEN_FUNC.updateUnsoldNft),
       WenError.you_are_not_guardian_of_space.key,
     );
   });
@@ -189,6 +181,4 @@ const dummyNft = (collection: string, description = 'babba', saleAccessMembers: 
   price: 10 * 1000 * 1000,
   saleAccessMembers,
 });
-
-// TODO test invalid royalty amount
-// TODO add set new price once owned.
+// TODO test invalid royalty amount// TODO add set new price once owned.

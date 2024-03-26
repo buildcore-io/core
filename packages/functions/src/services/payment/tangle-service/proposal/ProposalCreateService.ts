@@ -16,6 +16,7 @@ import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getTokenForSpace } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { BaseTangleService, HandlerParams } from '../../base';
+import { Action } from '../../transaction-service';
 import { proposalCreateSchemaObject } from './ProposalCreateTangleRequestSchema';
 
 export class ProposalCreateService extends BaseTangleService<ProposalCreateTangleResponse> {
@@ -28,14 +29,19 @@ export class ProposalCreateService extends BaseTangleService<ProposalCreateTangl
 
     const { proposal, proposalOwner } = await createProposal(project, owner, { ...params });
 
-    const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
-    this.transactionService.push({ ref: proposalDocRef, data: proposal, action: 'set' });
+    const proposalDocRef = build5Db().doc(COL.PROPOSAL, proposal.uid);
+    this.transactionService.push({ ref: proposalDocRef, data: proposal, action: Action.C });
 
-    const proposalOwnerDocRef = proposalDocRef.collection(SUB_COL.OWNERS).doc(proposalOwner.uid);
+    const proposalOwnerDocRef = build5Db().doc(
+      COL.PROPOSAL,
+      proposal.uid,
+      SUB_COL.OWNERS,
+      proposalOwner.uid,
+    );
     this.transactionService.push({
       ref: proposalOwnerDocRef,
       data: proposalOwner,
-      action: 'set',
+      action: Action.C,
     });
 
     return { proposal: proposal?.uid };
@@ -47,9 +53,13 @@ export const createProposal = async (
   owner: string,
   params: Record<string, unknown>,
 ) => {
-  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.space}`);
-  const spaceMemberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner);
-  const spaceMember = await spaceMemberDocRef.get<SpaceMember>();
+  const spaceMemberDocRef = build5Db().doc(
+    COL.SPACE,
+    params.space! as string,
+    SUB_COL.MEMBERS,
+    owner,
+  );
+  const spaceMember = await spaceMemberDocRef.get();
   if (!spaceMember) {
     throw invalidArgument(WenError.you_are_not_part_of_space);
   }
@@ -98,16 +108,13 @@ export const createProposal = async (
 
 const createProposalMembersAndGetTotalWeight = async (project: string, proposal: Proposal) => {
   const subCol = proposal.settings.onlyGuardians ? SUB_COL.GUARDIANS : SUB_COL.MEMBERS;
-  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${proposal.space}`);
-  const spaceMembers = await spaceDocRef.collection(subCol).get<SpaceMember>();
+  const spaceMembers = await build5Db().collection(COL.SPACE, proposal.space, subCol).get();
 
   const promises = spaceMembers.map(async (spaceMember) => {
     const proposalMember = createProposalMember(project, proposal, spaceMember);
     if (proposalMember.weight || proposal.type === ProposalType.NATIVE) {
-      const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
-      await proposalDocRef
-        .collection(SUB_COL.MEMBERS)
-        .doc(proposalMember.uid)
+      await build5Db()
+        .doc(COL.PROPOSAL, proposal.uid, SUB_COL.MEMBERS, proposalMember.uid)
         .create(proposalMember);
     }
     return proposalMember.weight || 0;

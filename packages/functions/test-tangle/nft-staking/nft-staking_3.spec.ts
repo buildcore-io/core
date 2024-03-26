@@ -7,14 +7,14 @@ import {
   NftStake,
   StakeType,
   Transaction,
+  WEN_FUNC,
 } from '@build-5/interfaces';
 import { UnlockConditionType } from '@iota/sdk';
 import dayjs from 'dayjs';
-import { stakeNft } from '../../src/runtime/firebase/nft';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { Helper } from './Helper';
 
 describe('Stake nft', () => {
@@ -30,23 +30,23 @@ describe('Stake nft', () => {
 
   it('Should stake nft minted outside build-5', async () => {
     let nft = await helper.createAndOrderNft();
-    let nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
+    let nftDocRef = build5Db().doc(COL.NFT, nft.uid);
     await helper.mintCollection();
     await helper.withdrawNftAndAwait(nft.uid);
 
     nft = <Nft>await nftDocRef.get();
-    await build5Db().doc(`${COL.NFT}/${nft.uid}`).delete();
-    await build5Db().doc(`${COL.COLLECTION}/${nft.collection}`).delete();
+    await build5Db().doc(COL.NFT, nft.uid).delete();
+    await build5Db().doc(COL.COLLECTION, nft.collection).delete();
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
+    mockWalletReturnValue(helper.guardian!, {
       network: Network.RMS,
       weeks: 25,
       type: StakeType.DYNAMIC,
     });
-    let stakeNftOrder = await testEnv.wrap(stakeNft)({});
+    let stakeNftOrder = await testEnv.wrap<Transaction>(WEN_FUNC.stakeNft);
     await helper.sendNftToAddress(
       helper.guardianAddress!,
-      stakeNftOrder.payload.targetAddress,
+      stakeNftOrder.payload.targetAddress!,
       dateToTimestamp(dayjs().add(2, 'd')),
       nft.mintingData?.nftId,
     );
@@ -59,7 +59,7 @@ describe('Stake nft', () => {
       return snap.length === 1;
     });
 
-    nftDocRef = build5Db().doc(`${COL.NFT}/${nft.mintingData?.nftId}`);
+    nftDocRef = build5Db().doc(COL.NFT, nft.mintingData?.nftId!);
     nft = <Nft>await nftDocRef.get();
     const snap = await stakeQuery.get();
     const nftStake = snap[0] as NftStake;
@@ -80,11 +80,11 @@ describe('Stake nft', () => {
       output.unlockConditions.find((uc) => uc.type === UnlockConditionType.Timelock),
     ).toBeDefined();
 
-    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nftStake.collection}`);
+    const collectionDocRef = build5Db().doc(COL.COLLECTION, nftStake.collection);
     const collection = <Collection>await collectionDocRef.get();
     expect(collection.stakedNft).toBe(1);
 
-    const stakeNftOrderDocRef = build5Db().doc(`${COL.TRANSACTION}/${stakeNftOrder.uid}`);
+    const stakeNftOrderDocRef = build5Db().doc(COL.TRANSACTION, stakeNftOrder.uid);
     stakeNftOrder = <Transaction>await stakeNftOrderDocRef.get();
     expect(stakeNftOrder.payload.nft).toBe(nft.uid);
   });

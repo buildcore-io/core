@@ -1,14 +1,14 @@
-import { FunctionsErrorCode } from 'firebase-functions/v1/https';
-import * as functions from 'firebase-functions/v2';
-
 interface Error {
-  readonly key?: string;
+  key: string;
+  code: number;
 }
 
-const throwArgument = (type: FunctionsErrorCode, err: Error, append = '') =>
-  new functions.https.HttpsError(type, err.key + '. ' + append, err);
+export const invalidArgument = (err: Error, eMessage = '') => {
+  // eslint-disable-next-line no-throw-literal
+  throw { eCode: err.code, eKey: err.key, eMessage, status: 400 };
+};
 
-export const invalidArgument = (err: Error, append = '') =>
-  throwArgument('invalid-argument', err, append);
-
-export const unAuthenticated = (err: Error) => throwArgument('unauthenticated', err);
+export const unAuthenticated = (err: Error) => {
+  // eslint-disable-next-line no-throw-literal
+  throw { eCode: err.code, eKey: err.key, status: 401 };
+};
