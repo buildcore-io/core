@@ -1,7 +1,0 @@
-/dist
-/coverage
-**/src/**/files
-**/node_modules
-**/.angular
-.github
-.vscode
