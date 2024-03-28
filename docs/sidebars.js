@@ -29,7 +29,7 @@ const sidebars = {
           ],
         },
         {
-          'Auction API': [
+          'Auctions': [
             'how-to/auction/create',
             'how-to/auction/bid',
             'how-to/auction/get-by-id',
@@ -62,7 +62,7 @@ const sidebars = {
           ],
         },
         {
-          'NFT API': [
+          'NFTs': [
             'how-to/nft/create-collection',
             'how-to/nft/purchase',
             'how-to/nft/bulk-purchase',
@@ -71,17 +71,17 @@ const sidebars = {
           ],
         },
         {
-          'Swap': [
+          'Swaps': [
             'how-to/swap/create-swap',
           ]
         },
         {
-          'Stamp API': [
+          'Stamping': [
             'how-to/stamp/create-stamp',
           ],
         },
         {
-          'Token API': [
+          'Tokens': [
             'how-to/token/overview',
             {
               type: 'category',
@@ -117,33 +117,6 @@ const sidebars = {
               ],
             }
           ],
-        },
-        {
-          'NFT Trading API': ['how-to/nft-trading/overview'],
-        },
-        {
-          'NFT Staking API': ['how-to/nft-staking/overview'],
-        },
-        {
-          'Proposal API': ['how-to/proposal/overview'],
-        },
-        {
-          'Reputation API': ['how-to/reputation/overview'],
-        },
-        {
-          'Stake Reward API': ['how-to/stake-reward/overview'],
-        },
-        {
-          'Token Launchpad API': ['how-to/token-launchpad/overview'],
-        },
-        {
-          'Token Trading API': ['how-to/token-trading/overview'],
-        },
-        {
-          'Token Staking API': ['how-to/token-staking/overview'],
-        },
-        {
-          'Token Distribution API': ['how-to/token-distribution/overview'],
         },
         'how-to/get',
         'how-to/track-otrs'
