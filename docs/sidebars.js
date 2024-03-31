@@ -135,6 +135,7 @@ const sidebars = {
       collapsible: true,
       collapsed: false,
       items: [
+        'tutorials/nft-marketplace',
         {
           type: 'link',
           label: 'Digital Twin NFT',
