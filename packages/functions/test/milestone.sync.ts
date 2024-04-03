@@ -31,10 +31,17 @@ const saveBlock = async (blockId: string) => {
   }
 
   const block = await client.getBlock(blockId);
-  await admin
+  const milestonDocRef = admin
     .firestore()
     .collection(getMilestoneCol(Network.RMS))
-    .doc(metadata.referencedByMilestoneIndex + '')
+    .doc(metadata.referencedByMilestoneIndex + '');
+  if (!(await milestonDocRef.get()).exists) {
+    await milestonDocRef.set({
+      milestone: metadata.referencedByMilestoneIndex,
+      createdOn: dayjs().toDate(),
+    });
+  }
+  await milestonDocRef
     .collection(SUB_COL.TRANSACTIONS)
     .doc(blockId)
     .create({

@@ -496,7 +496,7 @@ export class TransactionService {
     return dateToTimestamp(dayjs.unix((expirationUc as ExpirationUnlockCondition).unixTime));
   };
 
-  public createUnlockTransaction = async (
+  public createUnlockTransaction = (
     payment: Transaction | undefined,
     order: Transaction,
     tran: MilestoneTransaction,
