@@ -31,10 +31,10 @@
 <br />
 <div align="center">
   <a href="https://github.com/build-5/core">
-    <img src="docs/static/img/logo.svg" alt="BUILD.5 logo" width="80" height="80">
+    <img src="docs/static/img/buildcore_logo.png" alt="BUILD.5 logo" width="80" height="80">
   </a>
 
-<h3 align="center">BUILD.5 Core</h3>
+<h3 align="center">Buildcore</h3>
 
   <p align="center">
     Your Enterprise ready web3 plug & play platform
@@ -77,7 +77,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Build.5 is your Enterprise ready web3 plug & play platform. This repo contains the back-end based on [serverless functions](./packages/functions/) and our easy to use [SDK](./packages/sdk/) for third parties.
+Buildcore is your Enterprise ready web3 plug & play platform. This repo contains the back-end based on [serverless functions](./packages/functions/) and our easy to use [SDK](./packages/sdk/) for third parties.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -131,7 +131,7 @@ For running the docs locally, please refer to the documentation [README](./docs/
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-The best way to get started with the SDK and interacting with Build.5 is [installing the SDK](https://www.npmjs.com/package/@build-5/sdk) and have a look at our [documentation](https://developer.build5.com).
+The best way to get started with the SDK and interacting with Buildcore is [installing the SDK](https://www.npmjs.com/package/@build-5/sdk) and have a look at our [documentation](https://developer.build5.com).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -171,7 +171,7 @@ Distributed under the Apache License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Build.5 - [@build5tech](https://twitter.com/build5tech) - hello@build5.com
+Buildcore - [@build5tech](https://twitter.com/build5tech) - hello@build5.com
 
 Project Link: [https://build5.com](https://build5.com)
 

@@ -11,26 +11,26 @@ type FeatureItem = {
 const FeatureList: FeatureItem[] = [
   {
     title: 'Easy to Use',
-    Svg: require('@site/static/img/logo.svg').default,
+    Svg: require('@site/static/img/buildcore_logo.png').default,
     description: (
       <>
-        Build.5 was developed to simplify dev.
+        Buildcore was developed to simplify dev.
       </>
     ),
   },
   {
     title: 'OTR makes your life easier',
-    Svg: require('@site/static/img/logo.svg').default,
+    Svg: require('@site/static/img/buildcore_logo.png').default,
     description: (
       <>
-        Build.5 lets you focus on your logic, and we&apos;ll do the chores. Go
+        Buildcore lets you focus on your logic, and we&apos;ll do the chores. Go
         try OTR today.
       </>
     ),
   },
   {
     title: 'Powered by Build5',
-    Svg: require('@site/static/img/logo.svg').default,
+    Svg: require('@site/static/img/buildcore_logo.png').default,
     description: (
       <>
         Extend or customize your application relying on the best tech.
@@ -39,7 +39,7 @@ const FeatureList: FeatureItem[] = [
   },
 ];
 
-function Feature({title, Svg, description}: FeatureItem) {
+function Feature({ title, Svg, description }: FeatureItem) {
   return (
     <div className={clsx('col col--4')}>
       <div className="text--center">

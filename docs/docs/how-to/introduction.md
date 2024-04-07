@@ -1,6 +1,6 @@
 ---
 title: 'Introduction'
-describtion: 'Learn about the BUILD.5 products and how to use them.'
+describtion: 'Learn about the Buildcore products and how to use them.'
 tags: ['products', 'api', 'blockchain', 'nft', 'digital twin', 'token', 'staking', 'trading', 'launchpad', 'staking', 'reputation', 'member', 'project', 'proposal', 'stake reward', 'token distribution', 'dao management']
 ---
 

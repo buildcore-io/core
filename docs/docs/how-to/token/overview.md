@@ -6,7 +6,7 @@ tags:
   - introduction
 ---
 
-Build.5 allows you to create your tokens, create public sales, allow trading, and more. The following How-Tos are split into two sections:
+Buildcore allows you to create your tokens, create public sales, allow trading, and more. The following How-Tos are split into two sections:
 
 ## Creation and Management
 

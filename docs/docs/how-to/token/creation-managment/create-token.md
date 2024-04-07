@@ -1,6 +1,6 @@
 ---
 title: Create a Token
-description: How to create a token on the build.5 platform
+description: How to create a token on the Buildcore platform
 tags:
   - how-to
   - create
