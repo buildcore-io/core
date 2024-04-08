@@ -3,7 +3,7 @@
 import codeImport from 'remark-code-import';
 
 const path = require('path');
-const {themes} = require('prism-react-renderer');
+const { themes } = require('prism-react-renderer');
 const lightTheme = themes.github;
 const darkTheme = themes.dracula;
 
@@ -51,11 +51,11 @@ const config = {
       'classic',
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
-        docs: { 
+        docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           remarkPlugins: [
-            [require('@docusaurus/remark-plugin-npm2yarn'), {sync: true}],
-            [codeImport, {rootDir: path.resolve('../.')}],
+            [require('@docusaurus/remark-plugin-npm2yarn'), { sync: true }],
+            [codeImport, { rootDir: path.resolve('../.') }],
           ],
         },
         blog: false,
