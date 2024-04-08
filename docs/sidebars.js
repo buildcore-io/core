@@ -128,7 +128,7 @@ const sidebars = {
       link: {
         type: 'generated-index',
         title: 'Tutorials',
-        description: 'List of tutorials for the BUILD.5 how-to.',
+        description: 'List of tutorials for the Buildcore how-to.',
         slug: '/tutorials',
         keywords: ['tutorials', 'api', 'blockchain', 'nft', 'digital twin', 'token', 'staking', 'trading', 'launchpad', 'staking', 'reputation', 'member', 'project', 'proposal', 'stake reward', 'token distribution', 'dao management'],
       },
