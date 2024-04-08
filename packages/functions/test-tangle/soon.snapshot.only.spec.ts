@@ -141,7 +141,7 @@ describe('Soon snapshot test', () => {
     expect(snapshot?.ethAddress).toBe('');
     expect(snapshot?.ethAddressVerified).toBe(false);
 
-    const ethAddress = walletUtils.getRandomEthAddress();
+    const ethAddress = '0x69252ebdc3b77624c6e640a81a086aaa720734d3';
     await wallet.send(address, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
       customMetadata: {
         request: { requestType: TangleRequestType.VERIFY_ETH_ADDRESS, ethAddress },
@@ -186,6 +186,52 @@ describe('Soon snapshot test', () => {
     expect(snapshot?.ethAddressVerified).toBe(true);
   });
 
+  it('Should get 100 token from vault, can not claim, not following', async () => {
+    const tokensPerMember = await soonSnapshot(build5App, tokenId, network);
+    expect(tokensPerMember[vaultAddress]).toBe(currentSoonTotal);
+    expect(tokensPerMember[address.bech32]).toBe(100);
+
+    let snapshot = await build5Db().doc(`${COL.SOON_SNAP}/${vaultAddress}`).get<SoonSnap>();
+    expect(snapshot?.uid).toBe(vaultAddress);
+    expect(snapshot?.count).toBe(currentSoonTotal);
+    expect(snapshot?.paidOut).toBe(0);
+    expect(snapshot?.ethAddress).toBe('');
+    expect(snapshot?.ethAddressVerified).toBe(false);
+
+    snapshot = await build5Db().doc(`${COL.SOON_SNAP}/${address.bech32}`).get<SoonSnap>();
+    expect(snapshot?.uid).toBe(address.bech32);
+    expect(snapshot?.count).toBe(100);
+    expect(snapshot?.paidOut).toBe(0);
+    expect(snapshot?.ethAddress).toBe('');
+    expect(snapshot?.ethAddressVerified).toBe(false);
+
+    const ethAddress = walletUtils.getRandomEthAddress();
+    await wallet.send(address, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
+      customMetadata: {
+        request: { requestType: TangleRequestType.VERIFY_ETH_ADDRESS, ethAddress },
+      },
+    });
+
+    const creditQuery = build5Db()
+      .collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST)
+      .where('member', '==', guardian);
+    await wait(async () => {
+      const snap = await creditQuery.get<Transaction>();
+      return snap.length === 1 && snap[0].payload.walletReference?.confirmed;
+    });
+    const credit = (await creditQuery.get<Transaction>())[0];
+    expect(credit.payload.response?.message).toBe('Must follow JustBuild');
+
+    const docRef = build5Db().doc(`${COL.SOON_SNAP}/${address.bech32}`);
+    snapshot = await docRef.get<SoonSnap>();
+    expect(snapshot?.uid).toBe(address.bech32);
+    expect(snapshot?.count).toBe(100);
+    expect(snapshot?.paidOut).toBe(0);
+    expect(snapshot?.ethAddress).toBe('');
+    expect(snapshot?.ethAddressVerified).toBe(false);
+  });
+
   it('Should send 50 to random user, keep 50', async () => {
     const blockId = await wallet.send(address, targetAddress.bech32, MIN_IOTA_AMOUNT / 2, {
       nativeTokens: [{ id: tokenId, amount: BigInt(50) }],
@@ -198,7 +244,7 @@ describe('Soon snapshot test', () => {
     expect(tokensPerMember[targetAddress.bech32]).toBe(50);
 
     await requestFundsFromFaucet(network, targetAddress.bech32, MIN_IOTA_AMOUNT);
-    const ethAddress = walletUtils.getRandomEthAddress();
+    const ethAddress = '0x69252ebdc3b77624c6e640a81a086aaa720734d3';
     await wallet.send(targetAddress, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
       customMetadata: {
         request: { requestType: TangleRequestType.VERIFY_ETH_ADDRESS, ethAddress },
@@ -478,8 +524,8 @@ describe('Soon snapshot test', () => {
   });
 
   it('Airdrop to member with no validated address', async () => {
-    const member = await createMember(walletSpy);
-    await build5Db().doc(`${COL.MEMBER}/${member}`).update({ validatedAddress: {} });
+    const member = '0x69252ebdc3b77624c6e640a81a086aaa720734d3';
+    await build5Db().doc(`${COL.MEMBER}/${member}`).set({ uid: member, validatedAddress: {} });
     const drops = [{ count: 10, recipient: member, vestingAt: dayjs().add(2, 'M').toDate() }];
 
     mockWalletReturnValue(walletSpy, guardian, { token: tokenId, drops });
