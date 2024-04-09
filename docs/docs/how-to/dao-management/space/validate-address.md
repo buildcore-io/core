@@ -12,3 +12,8 @@ To validate the address of a space, you must call [`validateAddress`](../../../r
 import ValidateAddress from '../../../_admonitions/_validate-address.md';
 
 <ValidateAddress/>
+
+## Full How-To Code
+
+```tsx file=../../../../../packages/sdk/examples/space/validate_address.ts
+```

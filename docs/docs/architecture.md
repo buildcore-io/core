@@ -1,6 +1,6 @@
 ---
 title: Architecture
-description: A description of the current and future architecture of build.5
+description: A description of the current and future architecture of Buildcore
 tags:
   - architecture
   - smart contracts
@@ -18,6 +18,6 @@ import InProgress from './_admonitions/_in-progress.md';
 
 :::info
 
-All core BUILD.5 logic will move primary into L1 SC and some to L2 SC
+All core Buildcore logic will move primary into L1 SC and some to L2 SC
 
 :::

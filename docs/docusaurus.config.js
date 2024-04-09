@@ -3,14 +3,14 @@
 import codeImport from 'remark-code-import';
 
 const path = require('path');
-const {themes} = require('prism-react-renderer');
+const { themes } = require('prism-react-renderer');
 const lightTheme = themes.github;
 const darkTheme = themes.dracula;
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'BUILD.5',
-  tagline: 'BUILD.5 Documentation',
+  title: 'Buildcore',
+  tagline: 'Buildcore Documentation',
   favicon: 'img/favicon.ico',
   // Set the production url of your site here
   url: 'https://developer.build5.com',
@@ -51,11 +51,11 @@ const config = {
       'classic',
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
-        docs: { 
+        docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           remarkPlugins: [
-            [require('@docusaurus/remark-plugin-npm2yarn'), {sync: true}],
-            [codeImport, {rootDir: path.resolve('../.')}],
+            [require('@docusaurus/remark-plugin-npm2yarn'), { sync: true }],
+            [codeImport, { rootDir: path.resolve('../.') }],
           ],
         },
         blog: false,
@@ -79,9 +79,8 @@ const config = {
       navbar: {
         title: '',
         logo: {
-          alt: 'Build5 Logo',
-          src: 'img/logo.svg',
-          srcDark: 'img/logo_dark.svg',
+          alt: 'Buildcore logo',
+          src: 'img/buildcore_logo.png',
         },
         items: [
           {
@@ -138,7 +137,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} BUILD.5. All Rights Reserved.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Buildcore. All Rights Reserved.`,
       },
       prism: {
         theme: lightTheme,

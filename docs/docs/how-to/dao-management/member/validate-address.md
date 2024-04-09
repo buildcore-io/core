@@ -12,3 +12,8 @@ To validate the address of a member, you must call [`validateAddress`](../../../
 import ValidateAddress from '../../../_admonitions/_validate-address.md';
 
 <ValidateAddress/>
+
+## Full How-To Code
+
+```tsx file=../../../../../packages/sdk/examples/member/update.ts
+```

@@ -24,12 +24,10 @@ const sidebars = {
       items: [
         'how-to/introduction',
         {
-          'Projects': [
-            'how-to/project/create-project',
-          ],
+          Projects: ['how-to/project/create-project'],
         },
         {
-          'Auction API': [
+          Auctions: [
             'how-to/auction/create',
             'how-to/auction/bid',
             'how-to/auction/get-by-id',
@@ -41,7 +39,7 @@ const sidebars = {
             {
               type: 'category',
               label: 'Member',
-              link: {type: 'doc', id: 'how-to/dao-management/member/overview'},
+              link: { type: 'doc', id: 'how-to/dao-management/member/overview' },
               items: [
                 'how-to/dao-management/member/create-member',
                 'how-to/dao-management/member/update-member',
@@ -52,7 +50,7 @@ const sidebars = {
             {
               type: 'category',
               label: 'Space',
-              link: {type: 'doc', id: 'how-to/dao-management/space/overview'},
+              link: { type: 'doc', id: 'how-to/dao-management/space/overview' },
               items: [
                 'how-to/dao-management/space/create-space',
                 'how-to/dao-management/space/update-space',
@@ -62,7 +60,7 @@ const sidebars = {
           ],
         },
         {
-          'NFT API': [
+          NFTs: [
             'how-to/nft/create-collection',
             'how-to/nft/purchase',
             'how-to/nft/bulk-purchase',
@@ -71,52 +69,51 @@ const sidebars = {
           ],
         },
         {
-          'Swap': [
-            'how-to/swap/create-swap',
-          ]
+          Swaps: ['how-to/swap/create-swap'],
         },
         {
-          'Stamp API': [
-            'how-to/stamp/create-stamp',
-          ],
+          Stamping: ['how-to/stamp/create-stamp'],
         },
         {
-          'NFT Trading API': ['how-to/nft-trading/overview'],
-        },
-        {
-          'NFT Staking API': ['how-to/nft-staking/overview'],
-        },
-        {
-          'Proposal API': ['how-to/proposal/overview'],
-        },
-        {
-          'Reputation API': ['how-to/reputation/overview'],
-        },
-        {
-          'Stake Reward API': ['how-to/stake-reward/overview'],
-        },
-        {
-          'Token API': [
+          Tokens: [
             'how-to/token/overview',
-            'how-to/token/create-token',
-            'how-to/token/trade-token',
-            'how-to/token/mint-token',
+            {
+              type: 'category',
+              label: 'Creation and Managment',
+              link: {
+                type: 'generated-index',
+                title: 'Token Creation and Managment',
+                description: 'List of token creation and managment how-to.',
+                slug: '/how-to/token/creation-managment',
+              },
+              items: [
+                'how-to/token/creation-managment/create-token',
+                'how-to/token/creation-managment/mint-token',
+                'how-to/token/creation-managment/cancel-public-sale',
+                'how-to/token/creation-managment/enable-trading',
+                'how-to/token/creation-managment/import-token',
+              ],
+            },
+            {
+              type: 'category',
+              label: 'Usage and Interaction',
+              link: {
+                type: 'generated-index',
+                title: 'Token Usage and Interaction',
+                description: 'List of token usage and interaction how-to.',
+                slug: '/how-to/token/usage-interaction',
+              },
+              items: [
+                'how-to/token/usage-interaction/trade-token',
+                'how-to/token/usage-interaction/credit-token',
+                'how-to/token/usage-interaction/claim-token',
+                'how-to/token/usage-interaction/stake-token',
+              ],
+            },
           ],
-        },
-        {
-          'Token Launchpad API': ['how-to/token-launchpad/overview'],
-        },
-        {
-          'Token Trading API': ['how-to/token-trading/overview'],
-        },
-        {
-          'Token Staking API': ['how-to/token-staking/overview'],
-        },
-        {
-          'Token Distribution API': ['how-to/token-distribution/overview'],
         },
         'how-to/get',
-        'how-to/track-otrs'
+        'how-to/track-otrs',
       ],
     },
     {
@@ -125,9 +122,27 @@ const sidebars = {
       link: {
         type: 'generated-index',
         title: 'Tutorials',
-        description: 'List of tutorials for the BUILD.5 how-to.',
+        description: 'List of tutorials for the Buildcore how-to.',
         slug: '/tutorials',
-        keywords: ['tutorials', 'api', 'blockchain', 'nft', 'digital twin', 'token', 'staking', 'trading', 'launchpad', 'staking', 'reputation', 'member', 'project', 'proposal', 'stake reward', 'token distribution', 'dao management'],
+        keywords: [
+          'tutorials',
+          'api',
+          'blockchain',
+          'nft',
+          'digital twin',
+          'token',
+          'staking',
+          'trading',
+          'launchpad',
+          'staking',
+          'reputation',
+          'member',
+          'project',
+          'proposal',
+          'stake reward',
+          'token distribution',
+          'dao management',
+        ],
       },
       collapsible: true,
       collapsed: false,
@@ -155,7 +170,7 @@ const sidebars = {
       collapsible: true,
       collapsed: true,
       items: [{ type: 'autogenerated', dirName: 'reference-api' }],
-    }
+    },
   ],
 };
 

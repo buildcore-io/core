@@ -1,6 +1,6 @@
 ---
 title: Getting started
-description: Learn about build.5 and its APIs
+description: Learn about Buildcore and its APIs
 tags:
   - APIs
   - OTR
@@ -11,7 +11,7 @@ import { Build5, SoonaverseApiKey } from '@site/../packages/sdk/src/https';
 import TabItem from '@theme/TabItem';
 import Tabs from '@theme/Tabs';
 
-Build.5 API provides various ways to interact with our platform. The recommended one is the [@build-5/sdk](https://www.npmjs.com/package/@build-5/sdk) which interacts through a REST API and our so called [OTRs](#otr) with the Build.5 platform.
+Buildcore API provides various ways to interact with our platform. The recommended one is the [@build-5/sdk](https://www.npmjs.com/package/@build-5/sdk) which interacts through a REST API and our so called [OTRs](#otr) with the Buildcore platform.
 
 ## SDK
 
@@ -22,7 +22,7 @@ npm i @build-5/sdk
 npm i @build-5/interfaces
 ```
 
-The sdk is split into two modules to interact with the Build.5 platform. `otr` and `https`. Checkout the following sections to lern more.
+The sdk is split into two modules to interact with the Buildcore platform. `otr` and `https`. Checkout the following sections to lern more.
 
 :::info 
 
@@ -32,19 +32,19 @@ To create Requests we recommend using the OTR method instead of POST requests an
 
 ## OTR
 
-On tangle requests are a secure and transparent way to interact with build.5 products. They are a way to send a request to a build.5 backend over the Tangle as a transaction. 
+On tangle requests are a secure and transparent way to interact with Buildcore products. They are a way to send a request to a Buildcore backend over the Tangle as a transaction. 
 The backend will then execute the request encoded in the OTR. All interactions can be verified on the Tangle.
 
 ```mermaid
 flowchart LR
-    A[BUILD.5 SDK] --> |DeepLink| B(Wallet) --> |OTR| C(Tangle)
+    A[Buildcore SDK] --> |DeepLink| B(Wallet) --> |OTR| C(Tangle)
     C --> |Observer| A
-    D[BUILD.5 Verse] <--> C
+    D[Buildcore Verse] <--> C
 ```
 As you see in the chart above, the workflow of working with OTR is the following:
 1) Prepare the OTR data with the SDK and create a Deeplink for the request.
 2) Clicking the Deeplink in for example a dApp frontend will open the specific wallet with a preconfigured transaction to create the OTR. The OTR is a transaction on the Tangle to a specific OTR Address with encoded metadata.
-3) The Build.5 Backend (a so called `Verse`) will monitor the tangle and check if OTRs where send to its (OTR-)Address. If so the request will be handled and if necessary assets or a response will be send back to the caller/wallet via Tangle.
+3) The Buildcore Backend (a so called `Verse`) will monitor the tangle and check if OTRs where send to its (OTR-)Address. If so the request will be handled and if necessary assets or a response will be send back to the caller/wallet via Tangle.
 4) The SDK can monitor the transaction with an [Observable](./reference-api/classes/Observable.md) object and check its status.
 
 ### Example
@@ -61,7 +61,7 @@ You can specify the environment you want to work in, by using the specific OTR A
 
 ## HTTPS
 
-The SDK also provides a wrapper for BUILD.5s API.
+The SDK also provides a wrapper for Buildcores API.
 
 :::info
 
@@ -71,16 +71,16 @@ We are in the process of migrating POST requests to OTR.
 
 ```mermaid
 flowchart LR
-    A[BUILD.5 SDK] --> |API POST| D[BUILD.5 Verse] --> |Address| A
+    A[Buildcore SDK] --> |API POST| D[Buildcore Verse] --> |Address| A
     A --> |Address| B
     C(Tangle) --> |Observer| A
     B(Wallet) --> |Transaction| C
     D <--> C
 ```
 As you see in the chart above, the workflow of working with HTTPS POST is the following:
-1) The SDK creates a POST request. This request has to be signed by either a web3 wallet like Metamask or Tanglepay. The response will contain specific Address for this request from the Build.5 backend (so called verse).
+1) The SDK creates a POST request. This request has to be signed by either a web3 wallet like Metamask or Tanglepay. The response will contain specific Address for this request from the Buildcore backend (so called verse).
 2) This Address can than be used by a wallet to send the needed funds/assets for the request.
-3) The Build.5 Verse will monitor the tangle and check if funds/assets where send to the Address. If so the request will be handled and if necessary assets or a response will be send back to the caller via Tangle.
+3) The Buildcore Verse will monitor the tangle and check if funds/assets where send to the Address. If so the request will be handled and if necessary assets or a response will be send back to the caller via Tangle.
 4) The SDK can monitor the transaction with an Observer and check its status.
 
 ### Example
