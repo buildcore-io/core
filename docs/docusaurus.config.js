@@ -13,7 +13,7 @@ const config = {
   tagline: 'Buildcore Documentation',
   favicon: 'img/favicon.ico',
   // Set the production url of your site here
-  url: 'https://developer.build5.com',
+  url: 'https://developer.buildcore.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
@@ -96,7 +96,7 @@ const config = {
             label: 'APIs',
           },
           {
-            href: 'https://build5.com/blog',
+            href: 'https://buildcore.io/blog',
             label: 'Blog',
             position: 'left',
           },
@@ -128,7 +128,7 @@ const config = {
             items: [
               {
                 label: 'Blog',
-                to: 'https://build5.com/blog',
+                to: 'https://buildcore.io/blog',
               },
               {
                 label: 'GitHub',
