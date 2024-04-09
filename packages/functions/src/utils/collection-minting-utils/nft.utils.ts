@@ -9,7 +9,6 @@ import {
   NftOutput,
   NftOutputBuilderParams,
   TimelockUnlockCondition,
-  Utils,
   utf8ToHex,
 } from '@iota/sdk';
 import dayjs from 'dayjs';
@@ -47,9 +46,6 @@ export const createNftOutput = async (
   if (vestingAt && vestingAt.isAfter(dayjs())) {
     params.unlockConditions.push(new TimelockUnlockCondition(vestingAt.unix()));
   }
-  const output = await wallet.client.buildNftOutput(params);
-  const rent = wallet.info.protocol.rentStructure;
-  params.amount = Utils.computeStorageDeposit(output, rent);
   return await wallet.client.buildNftOutput(params);
 };
 

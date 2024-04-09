@@ -93,8 +93,8 @@ import { removeStakeRewardControl } from '../../controls/stake/stake.reward.revo
 import { stampSchema } from '../../controls/stamp/StampRequestSchema';
 import { stampCreateControl } from '../../controls/stamp/stamp.create';
 import { swapCreateSchema } from '../../controls/swaps/SwapCreateRequestSchema';
-import { swapFundedSchema } from '../../controls/swaps/SwapSetFundedSchema';
 import { swapRejectSchema } from '../../controls/swaps/SwapRejectSchema';
+import { swapFundedSchema } from '../../controls/swaps/SwapSetFundedSchema';
 import { swapCreateControl } from '../../controls/swaps/swap.create.control';
 import { swapFundedControl } from '../../controls/swaps/swap.funded.control';
 import { swapRejectControl } from '../../controls/swaps/swap.reject.control';

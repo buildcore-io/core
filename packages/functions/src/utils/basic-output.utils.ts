@@ -156,8 +156,7 @@ export const subtractNativeTokens = async (
     .filter((n) => Number(n.amount) > 0);
 
   const output = await wallet.client.buildBasicOutput(params);
-  const rent = (await wallet.client.getInfo()).nodeInfo.protocol.rentStructure;
-  params.amount = Utils.computeStorageDeposit(output, rent);
+  params.amount = output.amount;
 
   return params;
 };
