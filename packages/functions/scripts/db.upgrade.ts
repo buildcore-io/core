@@ -1,3 +1,4 @@
+import { FirebaseApp } from '@build-5/database';
 import { COL } from '@build-5/interfaces';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
@@ -5,7 +6,6 @@ import admin from 'firebase-admin';
 import { getFirestore } from 'firebase-admin/firestore';
 import fs from 'fs';
 import { glob } from 'glob';
-import { FirebaseApp } from '@build-5/database';
 import serviceAccount from './serviceAccountKey.json';
 
 dotenv.config({ path: '../.env' });

@@ -91,6 +91,8 @@ describe('Soon snapshot test', () => {
     await Promise.all(snap.docs.map((d) => d.ref.delete()));
     snap = await db.collection(getMilestoneCol(network)).get();
     await Promise.all(snap.docs.map((d) => d.ref.delete()));
+    snap = await db.collection(COL.AIRDROP).get();
+    await Promise.all(snap.docs.map((d) => d.ref.delete()));
 
     currentSoonTotal = (await wallet.getBalance(vaultAddress)).nativeTokens[tokenId];
     currentSoonTotal -= 100;
@@ -573,6 +575,37 @@ describe('Soon snapshot test', () => {
     expect(snapshot?.paidOut).toBe(0);
     expect(snapshot?.ethAddress).toBe(member);
     expect(snapshot?.ethAddressVerified).toBe(true);
+  });
+
+  it('Airdrop to members 0x address', async () => {
+    const member = '0x69252ebdc3b77624c6e640a81a086aaa720734d3';
+    const tmp = await wallet.getNewIotaAddressDetails();
+    await build5Db()
+      .doc(`${COL.MEMBER}/${member}`)
+      .set({ uid: member, validatedAddress: { [Network.RMS]: tmp.bech32 } });
+    const drops = [{ count: 10, recipient: member, vestingAt: dayjs().add(2, 'M').toDate() }];
+
+    mockWalletReturnValue(walletSpy, guardian, { token: tokenId, drops });
+    let order = await testEnv.wrap(airdropMintedToken)({});
+    const blockId = await wallet.send(address, order.payload.targetAddress, 0, {
+      nativeTokens: [{ id: tokenId, amount: BigInt(10) }],
+    });
+    await MnemonicService.store(address.bech32, address.mnemonic);
+    await blockInDd(blockId);
+
+    await wait(async () => {
+      const snap = await build5Db()
+        .collection(COL.AIRDROP)
+        .where('member', '==', member)
+        .where('status', '==', TokenDropStatus.UNCLAIMED)
+        .get();
+      return snap.length === 1;
+    });
+
+    const tokensPerMember = await soonSnapshot(build5App, tokenId, network);
+    expect(tokensPerMember[vaultAddress]).toBe(currentSoonTotal);
+    expect(tokensPerMember[address.bech32]).toBe(90);
+    expect(tokensPerMember[tmp.bech32]).toBe(10);
   });
 });
 

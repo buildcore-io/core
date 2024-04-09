@@ -1,5 +1,5 @@
 import { FirebaseApp } from '@build-5/database';
-import { COL, Network, SUB_COL, TokenDrop, TokenDropStatus } from '@build-5/interfaces';
+import { COL, Member, Network, SUB_COL, TokenDrop, TokenDropStatus } from '@build-5/interfaces';
 import {
   Address,
   AddressType,
@@ -26,7 +26,7 @@ import { chunk, flatMap, head, last } from 'lodash';
 
 const consumedOutputs: Set<string> = new Set();
 
-const limit = 1000;
+const limit = 5000;
 
 let tokensPerAddress: { [key: string]: number } = {};
 
@@ -34,7 +34,7 @@ let SOON_TOKEN_ID =
   '0x0884298fe9b82504d26ddb873dbd234a344c120da3a4317d8063dbcf96d356aa9d0100000000';
 let NETWORK: Network.SMR | Network.RMS = Network.SMR;
 let MILESTONE_COL = COL.MILESTONE_SMR;
-let MIN_MILESTONE = 125439;
+let MIN_MILESTONE = 125438;
 
 export const soonSnapshot = async (
   app: FirebaseApp,
@@ -77,6 +77,7 @@ export const soonSnapshot = async (
 
 const createSoonSnapshot = async (db: admin.firestore.Firestore) => {
   let lastDoc: any = undefined;
+  let firstMilestone = '';
 
   do {
     let query = db.collection(MILESTONE_COL).orderBy('createdOn', 'desc').limit(limit);
@@ -86,6 +87,11 @@ const createSoonSnapshot = async (db: admin.firestore.Firestore) => {
 
     const milestoneSnapshot = await query.get();
     lastDoc = last(milestoneSnapshot.docs);
+    if (!firstMilestone) {
+      firstMilestone = head(milestoneSnapshot.docs)?.id || '';
+      console.log('Processing started from milestone ', firstMilestone);
+    }
+    console.log('Last milestone ', lastDoc?.id);
 
     const milestones = milestoneSnapshot.docs.map((d) => d.id);
     const transactions = await getTransactions(db, milestones);
@@ -125,15 +131,15 @@ const addressToMember = async (db: admin.firestore.Firestore, address: string, c
   for (const doc of airdropsSnap.docs) {
     const airdrop = doc.data() as TokenDrop;
 
-    const memberSnap = await db
-      .collection(COL.MEMBER)
-      .where(`validatedAddress.${NETWORK}`, '==', airdrop.member)
-      .limit(1)
-      .get();
-    const memberAddress =
-      head(memberSnap.docs)?.data().validatedAddress?.[NETWORK] || airdrop.member;
+    if (airdrop.member.startsWith('0x')) {
+      const memberSnap = await db.doc(`${COL.MEMBER}/${airdrop.member}`).get();
+      const member = memberSnap.data() as Member | undefined;
+      const memberAddress = member?.validatedAddress?.[NETWORK] || airdrop.member;
+      tokensPerMember[memberAddress] = (tokensPerMember[memberAddress] || 0) + airdrop.count;
+      continue;
+    }
 
-    tokensPerMember[memberAddress] = (tokensPerMember[memberAddress] || 0) + airdrop.count;
+    tokensPerMember[airdrop.member] = (tokensPerMember[airdrop.member] || 0) + airdrop.count;
   }
 
   if (airdropsSnap.size) {
@@ -144,7 +150,8 @@ const addressToMember = async (db: admin.firestore.Firestore, address: string, c
     .collection(COL.MEMBER)
     .where(`validatedAddress.${NETWORK}`, '==', address)
     .get();
-  const memberAddress = head(memberSnap.docs)?.data().validatedAddress?.[NETWORK] || address;
+  const member = head(memberSnap.docs)?.data() as Member | undefined;
+  const memberAddress = member?.validatedAddress?.[NETWORK] || address;
   tokensPerMember[memberAddress] = (tokensPerMember[memberAddress] || 0) + count;
 
   return tokensPerMember;
