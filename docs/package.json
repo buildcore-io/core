@@ -32,8 +32,8 @@
     "remark-code-import": "1.2.0"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.1.1",
-    "@docusaurus/tsconfig": "3.1.1",
+    "@docusaurus/module-type-aliases": "3.2.1",
+    "@docusaurus/tsconfig": "3.2.1",
     "docusaurus-plugin-typedoc": "^0.22.0",
     "typedoc": "^0.25.8",
     "typedoc-plugin-markdown": "^3.17.1",
