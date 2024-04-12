@@ -6,7 +6,6 @@ import {
   ImmutableAliasAddressUnlockCondition,
   MetadataFeature,
   SimpleTokenScheme,
-  Utils,
   utf8ToHex,
 } from '@iota/sdk';
 import { head } from 'lodash';
@@ -27,9 +26,6 @@ export const createFoundryOutput = async (
     unlockConditions: [new ImmutableAliasAddressUnlockCondition(new AliasAddress(alias.aliasId))],
     immutableFeatures: [new MetadataFeature(utf8ToHex(metadata))],
   };
-  const output = await wallet.client.buildFoundryOutput(params);
-  const rent = (await wallet.client.getInfo()).nodeInfo.protocol.rentStructure;
-  params.amount = Utils.computeStorageDeposit(output, rent);
   return await wallet.client.buildFoundryOutput(params);
 };
 

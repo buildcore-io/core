@@ -12,8 +12,7 @@ export interface SetTokenForSaleRequest {
    */
   autoProcessAt100Percent?: boolean;
   /**
-   * Length of the cool down period in milliseconds. Minimum 0, maximum 2678400000
-   * The cool down period is the timeframe in which you can still change the properties of your request.
+   * Length of the cool down period. Minimum 0, maximum 2678400000
    */
   coolDownLength: number;
   /**

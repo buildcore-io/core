@@ -1,6 +1,6 @@
 ---
 title: Import Token
-description: How to import a token minted outside of the build.5 platform
+description: How to import a token minted outside of the Buildcore platform
 tags:
   - how-to
   - import

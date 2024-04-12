@@ -6,7 +6,6 @@ import {
   IssuerFeature,
   StateControllerAddressUnlockCondition,
   UnlockConditionType,
-  Utils,
 } from '@iota/sdk';
 import { Wallet } from '../../services/wallet/wallet';
 import { AddressDetails } from '../../services/wallet/wallet.service';
@@ -26,9 +25,6 @@ export const createAliasOutput = async (wallet: Wallet, sourceAddress: AddressDe
       new GovernorAddressUnlockCondition(address),
     ],
   };
-  const output = await wallet.client.buildAliasOutput(params);
-  const info = (await wallet.client.getInfo()).nodeInfo;
-  params.amount = Utils.computeStorageDeposit(output, info.protocol.rentStructure);
   return await wallet.client.buildAliasOutput(params);
 };
 

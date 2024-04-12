@@ -103,6 +103,7 @@ export enum COL {
   DB_ROLL_FILES = '_db_roll_files',
 
   SWAP = 'swap',
+  SOON_SNAP = 'soon_snapshot',
 }
 
 export const enum SUB_COL {

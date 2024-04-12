@@ -20,6 +20,7 @@ import { TangleAuctionCreateService } from './auction/auction.create.service';
 import { AwardApproveParticipantService } from './award/award.approve.participant.service';
 import { AwardCreateService } from './award/award.create.service';
 import { AwardFundService } from './award/award.fund.service';
+import { VerifyEthForBuil5TangleService } from './build5/verify.eth.for.b5.service';
 import { MintMetadataNftService } from './metadataNft/mint-metadata-nft.service';
 import { NftDepositService } from './nft/nft-deposit.service';
 import { TangleNftPurchaseBulkService } from './nft/nft-purchase.bulk.service';
@@ -155,6 +156,8 @@ export class TangleRequestService extends BaseTangleService<TangleResponse> {
         return new SwapSetFundedTangleService(this.transactionService);
       case TangleRequestType.REJECT_SWAP:
         return new SwapRejectTangleService(this.transactionService);
+      case TangleRequestType.VERIFY_ETH_ADDRESS:
+        return new VerifyEthForBuil5TangleService(this.transactionService);
       default:
         throw invalidArgument(WenError.invalid_tangle_request_type);
     }
