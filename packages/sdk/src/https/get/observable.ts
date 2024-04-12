@@ -2,7 +2,13 @@
 import { API_RETRY_TIMEOUT } from '@build-5/interfaces';
 import { Observable as RxjsObservable, Subscriber, shareReplay } from 'rxjs';
 import { processObject, processObjectArray } from '../utils';
-const WebSocket = global.WebSocket || require('ws');
+
+let WebSocket: any;
+try {
+  WebSocket = global.WebSocket || require('ws');
+} catch (error) {
+  WebSocket = require('ws');
+}
 
 class Observable<T> extends RxjsObservable<T> {
   private observer: Subscriber<T> | undefined;

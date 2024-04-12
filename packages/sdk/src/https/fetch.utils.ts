@@ -1,21 +1,21 @@
 import { processObject, processObjectArray } from './utils';
 
 let isAppOnline = true;
+let isOnlineCheckInterval: NodeJS.Timeout | undefined = undefined;
 
-/**
- * Helper function to check online status
- */
-export const isOnlineCheckInterval = setInterval(async () => {
-  if (isAppOnline) {
+const startIsOnlineCheck = () => {
+  if (isOnlineCheckInterval) {
     return;
   }
-  try {
-    const response = await fetch('https://buildcore.io', { method: 'HEAD' });
-    isAppOnline = response.ok;
-  } catch {
-    isAppOnline = false;
-  }
-}, 1000);
+  isOnlineCheckInterval = setInterval(() => {
+    if (isAppOnline) {
+      return;
+    }
+    fetch('https://build5.com', { method: 'HEAD' })
+      .then((r) => (isAppOnline = r.ok))
+      .catch(() => (isAppOnline = false));
+  }, 1000);
+};
 
 /**
  * Promise based function to provide online status.
@@ -23,6 +23,7 @@ export const isOnlineCheckInterval = setInterval(async () => {
  * @returns
  */
 export const isOnline = () => {
+  startIsOnlineCheck();
   if (isAppOnline) {
     return Promise.resolve();
   }
