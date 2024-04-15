@@ -1,116 +1,12 @@
 name: Action | Deploy to WEN
 
-on:
-  push:
-    branches:
-      - develop
+on: pull_request
 
 jobs:
-  deploy_search:
-    runs-on: ubuntu-latest
-    environment: staging
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - id: 'auth'
-        uses: 'google-github-actions/auth@v1'
-        with:
-          credentials_json: '${{ secrets.SERVICE_ACCOUNT }}'
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v1'
-      - name: Set env vars
-        working-directory: packages/search
-        run: echo "$ENV_VARS" > .env
-        env:
-          ENV_VARS: ${{ secrets.ENV_VARS }}
-      - name: Build image
-        run: |
-            cp packages/search/Dockerfile .
-            gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/search
-      - name: Deploy
-        run: |
-            gcloud run deploy search \
-              --image gcr.io/$GOOGLE_CLOUD_PROJECT/search \
-              --min-instances=3 \
-              --memory=1Gi \
-              --cpu=1 \
-              --concurrency=1000 \
-              --allow-unauthenticated \
-              --timeout=600 \
-              --ingress=internal-and-cloud-load-balancing \
-              --region=us-central1 \
-  deploy_to_npm_as_next:
-    runs-on: ubuntu-latest
-    env:
-      NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: https://registry.npmjs.org/
-      - name: Init
-        run: |
-          LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
-          TIMESTAMP=$(date +%s)
-          npm version $LATEST_TAG.$TIMESTAMP --workspace packages/interfaces
-          npm version $LATEST_TAG.$TIMESTAMP --workspace packages/sdk
-          npm run build:sdk
-      - name: Deploy to npm as "upcoming" package
-        run: |
-          npm publish --workspace packages/interfaces --tag next --access public
-          cd packages/sdk/lib && npm publish --tag next --access public
-  deploy_functions:
-    runs-on: ubuntu-latest
-    environment: staging
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - id: 'auth'
-        uses: 'google-github-actions/auth@v1'
-        with:
-          credentials_json: '${{ secrets.SERVICE_ACCOUNT }}'
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v1'
-      - name: Set env vars
-        working-directory: packages/functions
-        run: echo "$ENV_VARS" > .env
-        env:
-          ENV_VARS: ${{ secrets.ENV_VARS }}
-      - name: Build and deploy
-        run: |
-            npm run build:functions
-            npm run create-deploy-script
-            chmod 777 ./deploy.sh
-            ./deploy.sh
-
-  deploy-firestore-indexes:
-    runs-on: ubuntu-latest
-    environment: staging
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - name: Deploy indexes
-        uses: w9jds/firebase-action@v12.8.0
-        with:
-          args: deploy --only firestore:indexes -f
-        env:
-          GCP_SA_KEY: ${{ secrets.SERVICE_ACCOUNT }}
-          PROJECT_ID: preview
-
   roll-firestore:
     runs-on: ubuntu-latest
     environment: staging
     timeout-minutes: 360
-    needs: [deploy_functions]
     defaults:
       run:
         working-directory: packages/functions
