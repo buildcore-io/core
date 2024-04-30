@@ -25,9 +25,7 @@ import admin from 'firebase-admin';
 import { chunk, flatMap, head, last } from 'lodash';
 
 const consumedOutputs: Set<string> = new Set();
-
 const limit = 5000;
-
 let tokensPerAddress: { [key: string]: number } = {};
 
 let SOON_TOKEN_ID =
