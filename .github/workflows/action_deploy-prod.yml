@@ -6,7 +6,7 @@ jobs:
   roll-firestore:
     runs-on: ubuntu-latest
     environment: production
-    timeout-minutes: 360
+    timeout-minutes: 720
     defaults:
       run:
         working-directory: packages/functions
