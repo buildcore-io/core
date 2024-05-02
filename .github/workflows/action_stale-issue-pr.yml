@@ -13,5 +13,6 @@ jobs:
           node-version: 20
       - id: 'auth'
         uses: 'google-github-actions/auth@v2'
+        working-directory: packages/functions
         with:
-          credentials_json: ./packages/functions/sa.json
+          credentials_json: sa.json
