@@ -122,10 +122,6 @@ export const enum SUB_COL {
   _API_KEY = '_api_key',
 }
 
-export const enum AWARD_COL {
-  OWNERS = 'owners',
-}
-
 /**
  * Accepted networks: Ethereum, Shimmer and IOTA.
  */

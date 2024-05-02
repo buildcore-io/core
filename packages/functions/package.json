@@ -68,6 +68,8 @@
   },
   "dependencies": {
     "@build-5/database": "*",
+    "@buildcore/database": "./buildcore-database-0.0.0.tgz",
+    "@buildcore/interfaces": "./buildcore-interfaces-0.0.0.tgz",
     "@build-5/interfaces": "*",
     "@ffmpeg-installer/ffmpeg": "1.1.0",
     "@ffprobe-installer/ffprobe": "2.1.2",
