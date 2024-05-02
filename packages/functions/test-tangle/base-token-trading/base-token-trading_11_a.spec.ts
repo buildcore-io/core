@@ -7,10 +7,10 @@ import {
   TokenTradeOrderType,
   Transaction,
   TransactionType,
+  WEN_FUNC,
 } from '@build-5/interfaces';
-import { tradeToken } from '../../src/runtime/firebase/token/trading';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
@@ -23,17 +23,15 @@ describe('Base token trading', () => {
   });
 
   it('Should not create royalty payments, zero percentage fee', async () => {
-    await build5Db()
-      .doc(`${COL.SYSTEM}/${SYSTEM_CONFIG_DOC_ID}`)
-      .set({ tokenTradingFeePercentage: 0 });
+    await build5Db().doc(COL.SYSTEM, SYSTEM_CONFIG_DOC_ID).upsert({ tokenTradingFeePercentage: 0 });
 
-    mockWalletReturnValue(helper.walletSpy, helper.seller!.uid, {
+    mockWalletReturnValue(helper.seller!.uid, {
       symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 2,
       type: TokenTradeOrderType.SELL,
     });
-    const sellOrder = await testEnv.wrap(tradeToken)({});
+    const sellOrder = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await requestFundsFromFaucet(
       helper.sourceNetwork,
       sellOrder.payload.targetAddress,
@@ -48,13 +46,13 @@ describe('Base token trading', () => {
       return snap.length === 1;
     });
 
-    mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
+    mockWalletReturnValue(helper.buyer!.uid, {
       symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 2,
       type: TokenTradeOrderType.BUY,
     });
-    const buyOrder = await testEnv.wrap(tradeToken)({});
+    const buyOrder = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await requestFundsFromFaucet(
       helper.targetNetwork,
       buyOrder.payload.targetAddress,
@@ -76,7 +74,7 @@ describe('Base token trading', () => {
       await build5Db()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
-        .where('payload.token', '==', helper.token!.uid)
+        .where('payload_token', '==', helper.token!.uid)
         .get()
     ).map((d) => <Transaction>d);
     expect(billPayments.length).toBe(2);

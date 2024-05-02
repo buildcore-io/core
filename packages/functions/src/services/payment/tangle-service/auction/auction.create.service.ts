@@ -15,6 +15,7 @@ import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { BaseTangleService, HandlerParams } from '../../base';
+import { Action } from '../../transaction-service';
 import { auctionCreateTangleSchema } from './AuctionCreateTangleRequestSchema';
 
 export class TangleAuctionCreateService extends BaseTangleService<AuctionCreateTangleResponse> {
@@ -25,13 +26,13 @@ export class TangleAuctionCreateService extends BaseTangleService<AuctionCreateT
   }: HandlerParams): Promise<AuctionCreateTangleResponse> => {
     const params = await assertValidationAsync(auctionCreateTangleSchema, request);
 
-    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
+    const memberDocRef = build5Db().doc(COL.MEMBER, owner);
     const member = <Member>await memberDocRef.get();
 
     const auction = getAuctionData(project, member, params);
-    const auctionDocRef = build5Db().doc(`${COL.AUCTION}/${auction.uid}`);
+    const auctionDocRef = build5Db().doc(COL.AUCTION, auction.uid);
 
-    this.transactionService.push({ ref: auctionDocRef, data: auction, action: 'set' });
+    this.transactionService.push({ ref: auctionDocRef, data: auction, action: Action.C });
 
     return { auction: auction.uid };
   };

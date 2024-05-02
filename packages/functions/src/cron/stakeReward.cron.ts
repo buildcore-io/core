@@ -1,93 +1,63 @@
-import { build5Db, getSnapshot } from '@build-5/database';
+import { build5Db } from '@build-5/database';
 import {
   COL,
   Entity,
   IgnoreWalletReason,
   SUB_COL,
   Space,
-  Stake,
   StakeReward,
   StakeRewardStatus,
   StakeType,
   Token,
-  TokenDistribution,
   TokenDrop,
   TokenDropStatus,
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { isEmpty, last } from 'lodash';
+import { isEmpty } from 'lodash';
 import { getProject } from '../utils/common.utils';
-import { serverTime } from '../utils/dateTime.utils';
+import { logger } from '../utils/logger';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 
 export const onStakeRewardExpired = async () => {
   const stakeRewards = await getDueStakeRewards();
 
   for (const stakeReward of stakeRewards) {
-    const stakeRewardDocRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+    const stakeRewardDocRef = build5Db().doc(COL.STAKE_REWARD, stakeReward.uid);
     await stakeRewardDocRef.update({ status: StakeRewardStatus.PROCESSED });
     try {
       const { totalAirdropped, totalStaked } = await executeStakeRewardDistribution(stakeReward);
       await stakeRewardDocRef.update({ totalStaked, totalAirdropped });
     } catch (error) {
-      console.error('Stake reward error', stakeReward.uid, error);
+      logger.error('Stake reward error', stakeReward.uid, error);
       await stakeRewardDocRef.update({ status: StakeRewardStatus.ERROR });
     }
   }
 };
 
 const executeStakeRewardDistribution = async (stakeReward: StakeReward) => {
-  const stakedPerMember = await getStakedPerMember(stakeReward);
+  const stakedPerMember = await build5Db().collection(COL.STAKE).getStakeSumPerMember(stakeReward);
   if (isEmpty(stakedPerMember)) {
     await build5Db()
-      .doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`)
+      .doc(COL.STAKE_REWARD, stakeReward.uid)
       .update({ status: StakeRewardStatus.PROCESSED_NO_STAKES });
     return { totalStaked: 0, totalAirdropped: 0 };
   }
 
   const totalStaked = Object.values(stakedPerMember).reduce((acc, act) => acc + act, 0);
 
-  const token = <Token>await build5Db().doc(`${COL.TOKEN}/${stakeReward.token}`).get();
+  const token = <Token>await build5Db().doc(COL.TOKEN, stakeReward.token).get();
   const totalAirdropped = await createAirdrops(token, stakeReward, totalStaked, stakedPerMember);
   return { totalStaked, totalAirdropped };
-};
-
-export const getStakedPerMember = async (stakeReward: StakeReward) => {
-  const stakedPerMember: { [key: string]: number } = {};
-  let lastDocId = '';
-  const rewardEndDate = stakeReward.endDate.toDate();
-  do {
-    const lastDoc = await getSnapshot(COL.STAKE, lastDocId);
-    const snap = await build5Db()
-      .collection(COL.STAKE)
-      .where('token', '==', stakeReward.token)
-      .where('type', '==', StakeType.DYNAMIC)
-      .where('expiresAt', '>=', stakeReward.startDate)
-      .orderBy('expiresAt')
-      .startAfter(lastDoc)
-      .limit(2000)
-      .select('createdOn', 'member', 'value')
-      .get<Stake>();
-    lastDocId = last(snap)?.uid || '';
-    snap.forEach((stake) => {
-      if (dayjs(stake.createdOn?.toDate()).isAfter(rewardEndDate)) {
-        return;
-      }
-      stakedPerMember[stake.member] = (stakedPerMember[stake.member] || 0) + stake.value;
-    });
-  } while (lastDocId);
-
-  return stakedPerMember;
 };
 
 const getDueStakeRewards = () =>
   build5Db()
     .collection(COL.STAKE_REWARD)
     .where('status', '==', StakeRewardStatus.UNPROCESSED)
-    .where('endDate', '<=', serverTime())
-    .get<StakeReward>();
+    .where('endDate', '<=', dayjs().toDate())
+    .get();
 
 const createAirdrops = async (
   token: Token,
@@ -95,7 +65,7 @@ const createAirdrops = async (
   totalStaked: number,
   stakedPerMember: { [key: string]: number },
 ) => {
-  const space = <Space>await build5Db().doc(`${COL.SPACE}/${token.space}`).get();
+  const space = <Space>await build5Db().doc(COL.SPACE, token.space!).get();
 
   const rewards = Object.entries(stakedPerMember)
     .map(([member, staked]) => ({
@@ -120,15 +90,16 @@ const createAirdrops = async (
     }
 
     const distributionDocRef = build5Db().doc(
-      `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${reward.member}`,
+      COL.TOKEN,
+      token.uid,
+      SUB_COL.DISTRIBUTION,
+      reward.member,
     );
-    const distribution = await distributionDocRef.get<TokenDistribution>();
+    const distribution = await distributionDocRef.get();
 
     if (distribution?.extraStakeRewards && distribution.extraStakeRewards > 0) {
       await distributionDocRef.update({
         parentId: token.uid,
-        parentCol: COL.TOKEN,
-        uid: reward.member,
         extraStakeRewards: build5Db().inc(-reward.value),
       });
 
@@ -154,7 +125,7 @@ const createAirdrops = async (
           stakeReward: stakeReward.uid,
         },
       };
-      await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
+      await build5Db().doc(COL.TRANSACTION, billPayment.uid).create(billPayment);
 
       const remainingExtra = distribution.extraStakeRewards - reward.value;
       if (remainingExtra >= 0) {
@@ -178,19 +149,13 @@ const createAirdrops = async (
       stakeType: StakeType.DYNAMIC,
     };
 
-    const airdropDocRef = build5Db().doc(`${COL.AIRDROP}/${airdrop.uid}`);
+    const airdropDocRef = build5Db().doc(COL.AIRDROP, airdrop.uid);
     batch.create(airdropDocRef, airdrop);
 
-    batch.set(
-      distributionDocRef,
-      {
-        parentId: token.uid,
-        parentCol: COL.TOKEN,
-        uid: reward.member,
-        stakeRewards: build5Db().inc(reward.value),
-      },
-      true,
-    );
+    batch.upsert(distributionDocRef, {
+      parentId: token.uid,
+      stakeRewards: build5Db().inc(reward.value),
+    });
     await batch.commit();
 
     return reward.value;

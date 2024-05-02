@@ -20,7 +20,7 @@ import { assertIsGuardian } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Context } from '../common';
 
-export const importMintedTokenControl = async ({
+export const importMintedTokenControl = ({
   owner,
   params,
   project,
@@ -28,7 +28,7 @@ export const importMintedTokenControl = async ({
   build5Db().runTransaction(async (transaction) => {
     await assertIsGuardian(params.space, owner);
 
-    const existingTokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.tokenId}`);
+    const existingTokenDocRef = build5Db().doc(COL.TOKEN, params.tokenId);
     const existingToken = await transaction.get(existingTokenDocRef);
     if (existingToken) {
       throw invalidArgument(WenError.token_already_exists_for_space);
@@ -60,7 +60,7 @@ export const importMintedTokenControl = async ({
         tokenId: params.tokenId,
       },
     };
-    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
-    transaction.create(orderDocRef, order);
+    const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
+    await transaction.create(orderDocRef, order);
     return order;
   });

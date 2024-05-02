@@ -1,8 +1,8 @@
 import { build5Db } from '@build-5/database';
 import {
   COL,
-  Member,
   Network,
+  SUB_COL,
   TRANSACTION_AUTO_EXPIRY_MS,
   Token,
   TokenMintRequest,
@@ -26,19 +26,14 @@ import {
   getVaultAndGuardianOutput,
   tokenToFoundryMetadata,
 } from '../../utils/token-minting-utils/foundry.utils';
-import { getOwnedTokenTotal } from '../../utils/token-minting-utils/member.utils';
-import {
-  assertIsTokenGuardian,
-  assertTokenStatus,
-  getUnclaimedAirdropTotalValue,
-} from '../../utils/token.utils';
+import { assertIsTokenGuardian, assertTokenStatus } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Context } from '../common';
 
 export const mintTokenControl = ({ owner, params, project }: Context<TokenMintRequest>) =>
   build5Db().runTransaction(async (transaction) => {
-    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
-    const token = await transaction.get<Token>(tokenDocRef);
+    const tokenDocRef = build5Db().doc(COL.TOKEN, params.token);
+    const token = await transaction.get(tokenDocRef);
     if (!token) {
       throw invalidArgument(WenError.invalid_params);
     }
@@ -50,14 +45,19 @@ export const mintTokenControl = ({ owner, params, project }: Context<TokenMintRe
     assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED]);
 
     await assertIsTokenGuardian(token, owner);
-    const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();
+    const member = await build5Db().doc(COL.MEMBER, owner).get();
     assertMemberHasValidAddress(member, params.network as Network);
 
     const wallet = await WalletService.newWallet(params.network as Network);
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
-    const totalDistributed =
-      (await getOwnedTokenTotal(token.uid)) + (await getUnclaimedAirdropTotalValue(token.uid));
+    const totalOwned = await build5Db()
+      .collection(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION)
+      .getTotalOwned();
+    const airdropTotal = await build5Db()
+      .collection(COL.AIRDROP)
+      .getUnclaimedAirdropTotalValue(token.uid);
+    const totalDistributed = totalOwned + airdropTotal;
     const storageDeposits = await getStorageDepositForMinting(
       token,
       totalDistributed,
@@ -85,8 +85,8 @@ export const mintTokenControl = ({ owner, params, project }: Context<TokenMintRe
         tokensInVault: totalDistributed,
       },
     };
-    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
-    transaction.create(orderDocRef, order);
+    const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
+    await transaction.create(orderDocRef, order);
     return order;
   });
 

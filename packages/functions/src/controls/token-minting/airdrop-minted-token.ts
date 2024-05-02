@@ -5,7 +5,6 @@ import {
   CreateAirdropsRequest,
   StakeType,
   TRANSACTION_AUTO_EXPIRY_MS,
-  Token,
   TokenDrop,
   TokenDropStatus,
   TokenStatus,
@@ -34,9 +33,9 @@ export const airdropMintedTokenControl = async ({
   owner,
   params,
 }: Context<CreateAirdropsRequest>) => {
-  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
   await build5Db().runTransaction(async (transaction) => {
-    const token = await transaction.get<Token>(tokenDocRef);
+    const tokenDocRef = build5Db().doc(COL.TOKEN, params.token);
+    const token = await transaction.get(tokenDocRef);
 
     if (!token) {
       throw invalidArgument(WenError.invalid_params);
@@ -46,7 +45,8 @@ export const airdropMintedTokenControl = async ({
     assertTokenApproved(token);
   });
 
-  const token = (await tokenDocRef.get<Token>())!;
+  const tokenDocRef = build5Db().doc(COL.TOKEN, params.token);
+  const token = (await tokenDocRef.get())!;
   const drops = params.drops;
 
   const totalDropped = drops.reduce((acc, act) => acc + act.count, 0);
@@ -97,12 +97,12 @@ export const airdropMintedTokenControl = async ({
   const chunks = chunk(airdrops, 500);
   for (const chunk of chunks) {
     const batch = build5Db().batch();
-    chunk.forEach((airdrop) => {
-      const docRef = build5Db().doc(`${COL.AIRDROP}/${airdrop.uid}`);
+    for (const airdrop of chunk) {
+      const docRef = build5Db().doc(COL.AIRDROP, airdrop.uid);
       batch.create(docRef, airdrop);
-    });
+    }
     await batch.commit();
   }
-  await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+  await build5Db().doc(COL.TRANSACTION, order.uid).create(order);
   return order;
 };

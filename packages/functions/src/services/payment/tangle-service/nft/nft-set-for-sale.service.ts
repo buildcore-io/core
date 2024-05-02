@@ -3,7 +3,6 @@ import {
   Auction,
   AuctionType,
   COL,
-  Collection,
   CollectionStatus,
   DEFAULT_NETWORK,
   EXTEND_AUCTION_WITHIN,
@@ -22,21 +21,22 @@ import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { BaseTangleService, HandlerParams } from '../../base';
+import { Action } from '../../transaction-service';
 import { setNftForSaleTangleSchema } from './NftSetForSaleTangleRequestSchema';
 
 export class TangleNftSetForSaleService extends BaseTangleService<TangleResponse> {
   public handleRequest = async ({ owner, request, project }: HandlerParams) => {
     const params = await assertValidationAsync(setNftForSaleTangleSchema, request);
-    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
-    const member = await memberDocRef.get<Member>();
+    const memberDocRef = build5Db().doc(COL.MEMBER, owner);
+    const member = await memberDocRef.get();
 
     const { nft, auction } = await getNftSetForSaleParams(member!, project, params);
-    const nftDocRef = build5Db().doc(`${COL.NFT}/${params.nft}`);
-    this.transactionService.push({ ref: nftDocRef, data: nft, action: 'update' });
+    const nftDocRef = build5Db().doc(COL.NFT, params.nft);
+    this.transactionService.push({ ref: nftDocRef, data: nft, action: Action.U });
 
     if (auction) {
-      const auctionDocRef = build5Db().doc(`${COL.AUCTION}/${auction.uid}`);
-      this.transactionService.push({ ref: auctionDocRef, data: auction, action: 'set' });
+      const auctionDocRef = build5Db().doc(COL.AUCTION, auction.uid);
+      this.transactionService.push({ ref: auctionDocRef, data: auction, action: Action.C });
     }
 
     return { status: 'success' };
@@ -48,8 +48,8 @@ export const getNftSetForSaleParams = async (
   project: string,
   params: NftSetForSaleRequest,
 ) => {
-  const nftDocRef = build5Db().doc(`${COL.NFT}/${params.nft}`);
-  const nft = await nftDocRef.get<Nft>();
+  const nftDocRef = build5Db().doc(COL.NFT, params.nft);
+  const nft = await nftDocRef.get();
   if (!nft) {
     throw invalidArgument(WenError.nft_does_not_exists);
   }
@@ -84,8 +84,8 @@ export const getNftSetForSaleParams = async (
     params.auctionFrom = dateToTimestamp(params.auctionFrom, true).toDate();
   }
 
-  const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nft.collection}`);
-  const collection = await collectionDocRef.get<Collection>();
+  const collectionDocRef = build5Db().doc(COL.COLLECTION, nft.collection);
+  const collection = await collectionDocRef.get();
   if (![CollectionStatus.PRE_MINTED, CollectionStatus.MINTED].includes(collection?.status!)) {
     throw invalidArgument(WenError.invalid_collection_status);
   }
@@ -96,7 +96,7 @@ export const getNftSetForSaleParams = async (
 
 const getNftUpdateData = (params: NftSetForSaleRequest) => {
   const update: Record<string, unknown> = {
-    saleAccess: params.access || NftAccess.OPEN,
+    saleAccess: (params.access || NftAccess.OPEN) as NftAccess,
     saleAccessMembers: params.accessMembers || [],
   };
 
@@ -137,7 +137,12 @@ const getNftUpdateData = (params: NftSetForSaleRequest) => {
   return update;
 };
 
-const getAuctionData = (project: string, owner: string, params: NftSetForSaleRequest, nft: Nft) => {
+const getAuctionData = (
+  project: string,
+  owner: string,
+  params: NftSetForSaleRequest,
+  nft: Nft,
+): Auction | undefined => {
   if (!params.auctionFrom) {
     return;
   }
@@ -165,7 +170,9 @@ const getAuctionData = (project: string, owner: string, params: NftSetForSaleReq
   if (params.extendedAuctionLength) {
     return {
       ...auction,
-      extendedAuctionTo: dayjs(params.auctionFrom).add(params.extendedAuctionLength).toDate(),
+      extendedAuctionTo: dateToTimestamp(
+        dayjs(params.auctionFrom).add(params.extendedAuctionLength),
+      ),
       extendedAuctionLength: params.extendedAuctionLength || 0,
       extendAuctionWithin: params.extendAuctionWithin || EXTEND_AUCTION_WITHIN,
     };

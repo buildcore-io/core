@@ -21,6 +21,7 @@ import { getProject } from '../../../utils/common.utils';
 import { serverTime } from '../../../utils/dateTime.utils';
 import { WalletService } from '../../wallet/wallet.service';
 import { BaseService, HandlerParams } from '../base';
+import { Action } from '../transaction-service';
 
 export class SpaceClaimService extends BaseService {
   public handleRequest = async ({ order, match }: HandlerParams) => {
@@ -31,13 +32,13 @@ export class SpaceClaimService extends BaseService {
       match,
     );
 
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${order.space}`);
-    const space = <Space>await this.transactionService.get(spaceDocRef);
+    const spaceDocRef = build5Db().doc(COL.SPACE, order.space!);
+    const space = <Space>await this.transaction.get(spaceDocRef);
     if (!space.collectionId || space.claimed) {
       return;
     }
 
-    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${space.collectionId}`);
+    const collectionDocRef = build5Db().doc(COL.COLLECTION, space.collectionId);
     const collection = <Collection>await collectionDocRef.get();
 
     const senderIsIssuer = await senderIsCollectionIssuer(order.network!, match.from, collection);
@@ -52,33 +53,43 @@ export class SpaceClaimService extends BaseService {
       parentCol: COL.SPACE,
       createdOn: serverTime(),
     };
-    const spaceGuardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(order.member!);
+    const spaceGuardianDocRef = build5Db().doc(
+      COL.SPACE,
+      order.space!,
+      SUB_COL.GUARDIANS,
+      order.member!,
+    );
     this.transactionService.push({
       ref: spaceGuardianDocRef,
       data: spaceMember,
-      action: 'set',
-      merge: true,
+      action: Action.C,
     });
-    const spaceMemberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(order.member!);
+    const spaceMemberDocRef = build5Db().doc(
+      COL.SPACE,
+      order.space!,
+      SUB_COL.MEMBERS,
+      order.member!,
+    );
     this.transactionService.push({
       ref: spaceMemberDocRef,
       data: spaceMember,
-      action: 'set',
-      merge: true,
+      action: Action.C,
     });
 
     this.transactionService.push({
       ref: spaceDocRef,
-      data: { totalMembers: build5Db().inc(1), totalGuardians: build5Db().inc(1), claimed: true },
-      action: 'update',
+      data: {
+        totalMembers: build5Db().inc(1),
+        totalGuardians: build5Db().inc(1),
+        claimed: true,
+      },
+      action: Action.U,
     });
 
-    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${order.member}`);
     this.transactionService.push({
-      ref: memberDocRef,
+      ref: build5Db().doc(COL.MEMBER, order.member!),
       data: { spaces: { [space.uid]: { uid: space.uid, isMember: true } } },
-      action: 'update',
-      merge: true,
+      action: Action.U,
     });
   };
 }

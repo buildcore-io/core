@@ -6,11 +6,9 @@
 export * from './AddressValidationTangleRequest';
 export * from './AuctionBidTangleRequest';
 export * from './AuctionCreateTangleRequest';
-export * from './NftBidTangleRequest';
 export * from './AwardAppParticipantTangleRequest';
 export * from './AwardCreateTangleRequest';
 export * from './AwardFundTangleRequest';
-export * from './VerifyEthForB5TangleRequest';
 export * from './MetadataNftTangleRequest';
 export * from './NftBidTangleRequest';
 export * from './NftPurchaseBulkTangleRequest';
@@ -31,4 +29,5 @@ export * from './SwapSetFundedTangleRequest';
 export * from './TokenClaimTangleRequest';
 export * from './TokenStakeTangleRequest';
 export * from './TokenTradeTangleRequest';
+export * from './VerifyEthForB5TangleRequest';
 export * from './responses';

@@ -55,11 +55,11 @@ export class Helper {
       .where('member', '==', this.address.bech32)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
     await wait(async () => {
-      const snap = await query.get<Transaction>();
+      const snap = await query.get();
       return snap.length === 1 && snap[0].payload.walletReference?.confirmed === true;
     });
 
-    const credit = (await query.get<Transaction>())[0];
+    const credit = (await query.get())[0];
     return credit.payload.response!;
   };
 }

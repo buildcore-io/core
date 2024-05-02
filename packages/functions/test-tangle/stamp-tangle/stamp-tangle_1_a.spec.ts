@@ -1,12 +1,5 @@
 import { build5Db } from '@build-5/database';
-import {
-  COL,
-  KEY_NAME_TANGLE,
-  MediaStatus,
-  Stamp,
-  Transaction,
-  TransactionType,
-} from '@build-5/interfaces';
+import { COL, KEY_NAME_TANGLE, MediaStatus, Stamp, TransactionType } from '@build-5/interfaces';
 import { NftOutput } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
@@ -23,7 +16,7 @@ describe('Stamp tangle test', () => {
   beforeEach(helper.beforeEach);
 
   it('Should create and mint stamp', async () => {
-    const fiftyDayCost = 2124 * 50 + 53700 + 108000;
+    const fiftyDayCost = 2124 * 50 + 53700 + 104500;
 
     await helper.wallet!.send(
       helper.address,
@@ -35,10 +28,10 @@ describe('Stamp tangle test', () => {
 
     const query = build5Db().collection(COL.STAMP).where('createdBy', '==', helper.address.bech32);
     await wait(async () => {
-      const snap = await query.get<Stamp>();
+      const snap = await query.get();
       return snap.length === 1 && snap[0].funded;
     });
-    let stamp = (await query.get<Stamp>())[0];
+    let stamp = (await query.get())[0];
     expect(stamp?.mediaStatus).toBe(MediaStatus.PENDING_UPLOAD);
     expect(stamp?.ipfsMedia).toBeDefined();
 
@@ -48,12 +41,12 @@ describe('Stamp tangle test', () => {
     expect(expiresBefore51Days).toBe(true);
 
     await uploadMediaToWeb3();
-    const stampDocRef = build5Db().doc(`${COL.STAMP}/${stamp.uid}`);
+    const stampDocRef = build5Db().doc(COL.STAMP, stamp.uid);
     await wait(async () => {
-      const stamp = await stampDocRef.get<Stamp>();
+      const stamp = await stampDocRef.get();
       return stamp?.mediaStatus === MediaStatus.UPLOADED;
     });
-    const uploadedMediaStamp = await stampDocRef.get<Stamp>();
+    const uploadedMediaStamp = await stampDocRef.get();
     expect(uploadedMediaStamp?.ipfsMedia).toBe(stamp?.ipfsMedia);
 
     await wait(async () => {
@@ -74,8 +67,8 @@ describe('Stamp tangle test', () => {
     const billPayment = await build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)
-      .where('payload.stamp', '==', stamp?.uid)
-      .get<Transaction>();
+      .where('payload_stamp', '==', stamp?.uid)
+      .get();
     expect(billPayment.length).toBe(1);
   });
 });

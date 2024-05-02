@@ -14,6 +14,7 @@ import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet.service';
 import { BaseTangleService, HandlerParams } from '../../base';
+import { Action } from '../../transaction-service';
 
 export class NftDepositService extends BaseTangleService<TangleResponse> {
   public handleRequest = async ({ owner, tran, tranEntry, ...params }: HandlerParams) => {
@@ -36,8 +37,8 @@ export class NftDepositService extends BaseTangleService<TangleResponse> {
         void: false,
       },
     };
-    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
-    this.transactionService.push({ ref: orderDocRef, data: order, action: 'set' });
+    const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
+    this.transactionService.push({ ref: orderDocRef, data: order, action: Action.C });
 
     this.transactionService.createUnlockTransaction(
       params.payment,

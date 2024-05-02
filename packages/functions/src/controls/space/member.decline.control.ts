@@ -9,14 +9,20 @@ export const declineMemberControl = async ({
 }: Context<SpaceMemberUpsertRequest>) => {
   await assertIsGuardian(params.uid, owner);
 
-  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
-  const knockingMemberDocRef = spaceDocRef.collection(SUB_COL.KNOCKING_MEMBERS).doc(params.member);
+  const knockingMemberDocRef = build5Db().doc(
+    COL.SPACE,
+    params.uid,
+    SUB_COL.KNOCKING_MEMBERS,
+    params.member,
+  );
 
   const knockingMemberDoc = await knockingMemberDocRef.get();
 
   const batch = build5Db().batch();
   batch.delete(knockingMemberDocRef);
-  batch.update(spaceDocRef, { totalPendingMembers: build5Db().inc(knockingMemberDoc ? -1 : 0) });
+  batch.update(build5Db().doc(COL.SPACE, params.uid), {
+    totalPendingMembers: build5Db().inc(knockingMemberDoc ? -1 : 0),
+  });
   await batch.commit();
 
   return { status: 'success' };

@@ -4,7 +4,6 @@ import {
   ClaimPreMintedAirdroppedTokensRequest,
   DEFAULT_NETWORK,
   TRANSACTION_AUTO_EXPIRY_MS,
-  Token,
   TokenStatus,
   Transaction,
   TransactionPayloadType,
@@ -27,8 +26,8 @@ export const claimAirdroppedTokenControl = async ({
   params,
   project,
 }: Context<ClaimPreMintedAirdroppedTokensRequest>): Promise<Transaction> => {
-  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
-  const token = await tokenDocRef.get<Token>();
+  const tokenDocRef = build5Db().doc(COL.TOKEN, params.token);
+  const token = await tokenDocRef.get();
   if (!token) {
     throw invalidArgument(WenError.invalid_params);
   }
@@ -36,7 +35,7 @@ export const claimAirdroppedTokenControl = async ({
   assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED]);
 
   const tranId = getRandomEthAddress();
-  const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${tranId}`);
+  const orderDocRef = build5Db().doc(COL.TRANSACTION, tranId);
 
   const wallet = await WalletService.newWallet();
   const targetAddress = await wallet.getNewIotaAddressDetails();
@@ -67,7 +66,7 @@ export const claimAirdroppedTokenControl = async ({
         quantity,
       },
     };
-    transaction.create(orderDocRef, order);
+    await transaction.create(orderDocRef, order);
   });
 
   return (await orderDocRef.get())!;

@@ -1,13 +1,10 @@
 import { build5Db } from '@build-5/database';
 import {
   COL,
-  Collection,
   MIN_IOTA_AMOUNT,
   Network,
-  Nft,
   Space,
   TangleRequestType,
-  Transaction,
   TransactionType,
 } from '@build-5/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
@@ -22,7 +19,7 @@ describe('Metadata nft', () => {
     async (network: Network) => {
       await helper.beforeEach(network);
 
-      const metadata = { mytest: 'mytest', asd: 'asdasdasd' };
+      const metadata = { mytest: 'mytest', name: 'asdasdasd' };
       await helper.walletService.send(
         helper.memberAddress,
         helper.tangleOrder.payload.targetAddress!,
@@ -56,12 +53,12 @@ describe('Metadata nft', () => {
         .where('member', '==', helper.member)
         .where('type', '==', TransactionType.CREDIT);
       await wait(async () => {
-        const snap = await creditQuery.get<Transaction>();
+        const snap = await creditQuery.get();
         return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
       });
-      const credit = (await creditQuery.get<Transaction>())[0];
+      const credit = (await creditQuery.get())[0];
 
-      const space = <Space>await build5Db().doc(`${COL.SPACE}/${credit.space}`).get();
+      const space = <Space>await build5Db().doc(COL.SPACE, credit.space!).get();
 
       await helper.walletService.send(
         helper.memberAddress,
@@ -84,24 +81,21 @@ describe('Metadata nft', () => {
       );
 
       await wait(async () => {
-        const snap = await creditQuery.get<Transaction>();
+        const snap = await creditQuery.get();
         return (
           snap.length === 2 &&
           snap.reduce((acc, act) => acc && (act.payload?.walletReference?.confirmed || false), true)
         );
       });
 
-      const nfts = await build5Db()
-        .collection(COL.NFT)
-        .where('owner', '==', helper.member)
-        .get<Nft>();
+      const nfts = await build5Db().collection(COL.NFT).where('owner', '==', helper.member).get();
       expect(nfts[0].collection).not.toBe(nfts[1].collection);
       expect(nfts[0].space).toBe(nfts[1].space);
 
       const collections = await build5Db()
         .collection(COL.COLLECTION)
         .where('space', '==', space.uid)
-        .get<Collection>();
+        .get();
       expect(collections.length).toBe(2);
     },
   );

@@ -1,5 +1,5 @@
 import { build5Db, build5Storage } from '@build-5/database';
-import { Bucket, COL, MIN_IOTA_AMOUNT, MediaStatus, Stamp } from '@build-5/interfaces';
+import { Bucket, COL, MIN_IOTA_AMOUNT, MediaStatus } from '@build-5/interfaces';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { EMPTY_ALIAS_ID } from '../../src/utils/token-minting-utils/alias.utils';
@@ -29,23 +29,23 @@ describe('Stamp tangle test', () => {
 
     const query = build5Db().collection(COL.STAMP).where('createdBy', '==', helper.address.bech32);
     await wait(async () => {
-      const snap = await query.get<Stamp>();
+      const snap = await query.get();
       return snap.length === 1 && snap[0].funded;
     });
-    const stamp = (await query.get<Stamp>())[0];
+    const stamp = (await query.get())[0];
     expect(stamp?.mediaStatus).toBe(MediaStatus.PENDING_UPLOAD);
     expect(stamp?.ipfsMedia).toBeDefined();
 
     await uploadMediaToWeb3();
     await wait(async () => {
-      const stamp = (await query.get<Stamp>())[0];
+      const stamp = (await query.get())[0];
       return stamp?.mediaStatus === MediaStatus.UPLOADED;
     });
-    const uploadedMediaStamp = (await query.get<Stamp>())[0];
+    const uploadedMediaStamp = (await query.get())[0];
     expect(uploadedMediaStamp?.ipfsMedia).toBe(stamp?.ipfsMedia);
 
     await wait(async () => {
-      const stamp = (await query.get<Stamp>())[0];
+      const stamp = (await query.get())[0];
       return stamp?.aliasId !== EMPTY_ALIAS_ID && stamp?.nftId !== undefined;
     });
   });

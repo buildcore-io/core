@@ -6,7 +6,7 @@ import { Context } from '../common';
 export const deactivateProjectControl = async ({ project, owner }: Context): Promise<Project> => {
   await assertIsProjectAdmin(project, owner);
 
-  const projectDocRef = build5Db().doc(`${COL.PROJECT}/${project}`);
+  const projectDocRef = build5Db().doc(COL.PROJECT, project);
   await projectDocRef.update({ deactivated: true });
-  return (await projectDocRef.get<Project>())!;
+  return (await projectDocRef.get())!;
 };

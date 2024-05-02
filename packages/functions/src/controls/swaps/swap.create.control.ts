@@ -14,7 +14,7 @@ export const swapCreateControl = async ({
   const wallet = await WalletService.newWallet(network);
   const targetAddress = await wallet.getNewIotaAddressDetails();
 
-  const ownerDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
+  const ownerDocRef = build5Db().doc(COL.MEMBER, owner);
   const ownerData = <Member>await ownerDocRef.get();
 
   assertMemberHasValidAddress(ownerData, params.network as Network);
@@ -29,9 +29,9 @@ export const swapCreateControl = async ({
   );
 
   const batch = build5Db().batch();
-  const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
+  const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
   batch.create(orderDocRef, order);
-  const swapDocRef = build5Db().doc(`${COL.SWAP}/${swap.uid}`);
+  const swapDocRef = build5Db().doc(COL.SWAP, swap.uid);
   batch.create(swapDocRef, swap);
   await batch.commit();
 

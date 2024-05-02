@@ -3,7 +3,6 @@ import {
   COL,
   StakeReward,
   StakeRewardStatus,
-  Token,
   TokenStakeRewardsRequest,
   WenError,
 } from '@build-5/interfaces';
@@ -19,8 +18,8 @@ export const stakeRewardControl = async ({
   params,
   project,
 }: Context<TokenStakeRewardsRequest>) => {
-  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
-  const token = await tokenDocRef.get<Token>();
+  const tokenDocRef = build5Db().doc(COL.TOKEN, params.token);
+  const token = await tokenDocRef.get();
   if (!token) {
     throw invalidArgument(WenError.token_does_not_exist);
   }
@@ -38,10 +37,10 @@ export const stakeRewardControl = async ({
   }));
 
   const batch = build5Db().batch();
-  stakeRewards.forEach((stakeReward) => {
-    const docRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+  for (const stakeReward of stakeRewards) {
+    const docRef = build5Db().doc(COL.STAKE_REWARD, stakeReward.uid);
     batch.create(docRef, stakeReward);
-  });
+  }
   await batch.commit();
 
   return stakeRewards;

@@ -8,10 +8,10 @@ import {
   TokenTradeOrder,
   Transaction,
   TransactionType,
+  WEN_FUNC,
 } from '@build-5/interfaces';
-import { cancelTradeOrder } from '../../src/runtime/firebase/token/trading';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { Helper } from './Helper';
 
@@ -37,13 +37,13 @@ describe('Token minting', () => {
     });
 
     const buy = <TokenTradeOrder>(await query.get())[0];
-    mockWalletReturnValue(helper.walletSpy, helper.buyer!, { uid: buy.uid });
-    await testEnv.wrap(cancelTradeOrder)({});
+    mockWalletReturnValue(helper.buyer!, { uid: buy.uid });
+    await testEnv.wrap<TokenTradeOrder>(WEN_FUNC.cancelTradeOrder);
 
     const billPaymentsQuery = build5Db()
       .collection(COL.TRANSACTION)
-      .where('member', 'in', [helper.seller, helper.buyer])
-      .where('type', '==', TransactionType.BILL_PAYMENT);
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .whereIn('member', [helper.seller, helper.buyer]);
     await wait(async () => {
       const snap = await billPaymentsQuery.get();
       return snap.length === 4;
@@ -55,7 +55,7 @@ describe('Token minting', () => {
     )!;
     expect(paymentToSeller.payload.amount).toBe(4727600);
     expect(paymentToSeller.payload.sourceAddress).toBe(buyOrder.payload.targetAddress);
-    expect(paymentToSeller.payload.storageReturn).toBeUndefined();
+    expect(paymentToSeller.payload.storageReturn).toEqual({});
 
     const royaltyOnePayment = billPayments.find((bp) => bp.payload.amount === 159300)!;
     expect(royaltyOnePayment.payload.storageReturn!.address).toBe(helper.sellerAddress!.bech32);

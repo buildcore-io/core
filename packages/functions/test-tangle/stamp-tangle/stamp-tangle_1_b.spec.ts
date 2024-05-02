@@ -5,7 +5,6 @@ import {
   MIN_IOTA_AMOUNT,
   MediaStatus,
   Stamp,
-  Transaction,
   TransactionType,
 } from '@build-5/interfaces';
 import { NftOutput } from '@iota/sdk';
@@ -34,10 +33,10 @@ describe('Stamp tangle test', () => {
 
     const query = build5Db().collection(COL.STAMP).where('createdBy', '==', helper.address.bech32);
     await wait(async () => {
-      const snap = await query.get<Stamp>();
+      const snap = await query.get();
       return snap.length === 1 && snap[0].funded;
     });
-    let stamp = (await query.get<Stamp>())[0];
+    let stamp = (await query.get())[0];
     expect(stamp?.mediaStatus).toBe(MediaStatus.PENDING_UPLOAD);
     expect(stamp?.ipfsMedia).toBeDefined();
 
@@ -47,12 +46,12 @@ describe('Stamp tangle test', () => {
     expect(expiresAfter30Days).toBe(true);
 
     await uploadMediaToWeb3();
-    const stampDocRef = build5Db().doc(`${COL.STAMP}/${stamp.uid}`);
+    const stampDocRef = build5Db().doc(COL.STAMP, stamp.uid);
     await wait(async () => {
-      const stamp = await stampDocRef.get<Stamp>();
+      const stamp = await stampDocRef.get();
       return stamp?.mediaStatus === MediaStatus.UPLOADED;
     });
-    const uploadedMediaStamp = await stampDocRef.get<Stamp>();
+    const uploadedMediaStamp = await stampDocRef.get();
     expect(uploadedMediaStamp?.ipfsMedia).toBe(stamp?.ipfsMedia);
 
     await wait(async () => {
@@ -73,8 +72,8 @@ describe('Stamp tangle test', () => {
     const billPayment = await build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)
-      .where('payload.stamp', '==', stamp?.uid)
-      .get<Transaction>();
+      .where('payload_stamp', '==', stamp?.uid)
+      .get();
     expect(billPayment.length).toBe(1);
   });
 });

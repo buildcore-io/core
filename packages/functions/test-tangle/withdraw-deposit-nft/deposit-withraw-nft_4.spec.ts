@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { build5Db } from '@build-5/database';
-import { COL, WenError } from '@build-5/interfaces';
-import { withdrawNft } from '../../src/runtime/firebase/nft/index';
-import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { COL, WEN_FUNC, WenError } from '@build-5/interfaces';
+import { expectThrow } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { Helper } from './Helper';
 
 describe('Collection minting', () => {
@@ -22,20 +21,20 @@ describe('Collection minting', () => {
     await helper.mintCollection();
 
     await helper.setAvailableForSale();
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, { nft: helper.nft!.uid });
-    await expectThrow(testEnv.wrap(withdrawNft)({}), WenError.nft_on_sale.key);
+    mockWalletReturnValue(helper.guardian!, { nft: helper.nft!.uid });
+    await expectThrow(testEnv.wrap(WEN_FUNC.withdrawNft), WenError.nft_on_sale.key);
 
-    await build5Db().doc(`${COL.NFT}/${helper.nft!.uid}`).update({
-      auctionFrom: null,
-      auctionTo: null,
-      auctionFloorPrice: null,
-      auctionLength: null,
-      auctionHighestBid: null,
-      auctionHighestBidder: null,
+    await build5Db().doc(COL.NFT, helper.nft!.uid).update({
+      auctionFrom: undefined,
+      auctionTo: undefined,
+      auctionFloorPrice: undefined,
+      auctionLength: undefined,
+      auctionHighestBid: undefined,
+      auctionHighestBidder: undefined,
     });
 
     await helper.setAvailableForAuction();
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, { nft: helper.nft!.uid });
-    await expectThrow(testEnv.wrap(withdrawNft)({}), WenError.nft_on_sale.key);
+    mockWalletReturnValue(helper.guardian!, { nft: helper.nft!.uid });
+    await expectThrow(testEnv.wrap(WEN_FUNC.withdrawNft), WenError.nft_on_sale.key);
   });
 });

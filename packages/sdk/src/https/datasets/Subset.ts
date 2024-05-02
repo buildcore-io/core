@@ -125,9 +125,9 @@ export class SubsetClass<T> extends BaseSubset<T> {
     const params: GetManyAdvancedRequest = {
       dataset: this.dataset,
       subset: this.subset,
-      fieldName: ['uid', 'parentCol'],
-      fieldValue: [subsetId, this.dataset],
-      operator: [Opr.EQUAL, Opr.EQUAL],
+      fieldName: ['uid'],
+      fieldValue: [subsetId],
+      operator: [Opr.EQUAL],
       startAfter,
       limit,
       orderBy,

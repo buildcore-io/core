@@ -7,12 +7,12 @@ import {
   NftStake,
   StakeType,
   Transaction,
+  WEN_FUNC,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { stakeNft } from '../../src/runtime/firebase/nft';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { Helper } from './Helper';
 
 describe('Stake nft', () => {
@@ -30,20 +30,20 @@ describe('Stake nft', () => {
     'Should stake nft',
     async (stakeType: StakeType) => {
       let nft = await helper.createAndOrderNft();
-      const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
+      const nftDocRef = build5Db().doc(COL.NFT, nft.uid);
       await helper.mintCollection();
       await helper.withdrawNftAndAwait(nft.uid);
 
-      mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
+      mockWalletReturnValue(helper.guardian!, {
         network: Network.RMS,
         weeks: 25,
         type: stakeType,
       });
-      let stakeNftOrder = await testEnv.wrap(stakeNft)({});
+      let stakeNftOrder = await testEnv.wrap<Transaction>(WEN_FUNC.stakeNft);
       nft = <Nft>await nftDocRef.get();
       await helper.sendNftToAddress(
         helper.guardianAddress!,
-        stakeNftOrder.payload.targetAddress,
+        stakeNftOrder.payload.targetAddress!,
         dateToTimestamp(dayjs().add(2, 'd')),
         nft.mintingData?.nftId,
       );
@@ -65,11 +65,11 @@ describe('Stake nft', () => {
       expect(nftStake.expirationProcessed).toBe(false);
       expect(nftStake.type).toBe(stakeType);
 
-      const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nftStake.collection}`);
+      const collectionDocRef = build5Db().doc(COL.COLLECTION, nftStake.collection);
       const collection = <Collection>await collectionDocRef.get();
       expect(collection.stakedNft).toBe(1);
 
-      const stakeNftOrderDocRef = build5Db().doc(`${COL.TRANSACTION}/${stakeNftOrder.uid}`);
+      const stakeNftOrderDocRef = build5Db().doc(COL.TRANSACTION, stakeNftOrder.uid);
       stakeNftOrder = <Transaction>await stakeNftOrderDocRef.get();
       expect(stakeNftOrder.payload.nft).toBe(nft.uid);
       expect(stakeNftOrder.payload.collection).toBe(nft.collection);

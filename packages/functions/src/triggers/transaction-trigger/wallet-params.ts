@@ -3,7 +3,6 @@ import {
   COL,
   IOTATangleTransaction,
   NativeToken,
-  Nft,
   Transaction,
   TransactionType,
 } from '@build-5/interfaces';
@@ -44,7 +43,7 @@ const getParams = async (transaction: Transaction) => {
     }
     if (payload.nft) {
       details.nft = payload.nft;
-      const nft = await build5Db().doc(`${COL.NFT}/${payload.nft}`).get<Nft>();
+      const nft = await build5Db().doc(COL.NFT, payload.nft).get();
       if (nft && nft.ipfsMedia) {
         details.ipfsMedia = 'ipfs://' + nft.ipfsMedia;
       }

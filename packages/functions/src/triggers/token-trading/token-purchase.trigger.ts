@@ -1,24 +1,20 @@
-import { build5Db } from '@build-5/database';
-import { COL, SUB_COL, TokenPurchase, TokenPurchaseAge } from '@build-5/interfaces';
-import { FirestoreDocEvent } from '../common';
+import { PgTokenPurchase, PgTokenStatsUpdate, build5Db } from '@build-5/database';
+import { COL, SUB_COL } from '@build-5/interfaces';
+import { PgDocEvent } from '../common';
 
-export const onTokenPurchaseCreated = async (event: FirestoreDocEvent<TokenPurchase>) => {
+export const onTokenPurchaseCreated = async (event: PgDocEvent<PgTokenPurchase>) => {
   const { curr } = event;
   if (!curr || !curr.token) {
     return;
   }
 
-  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${curr.token}`);
-  const statsDocRef = tokenDocRef.collection(SUB_COL.STATS).doc(curr.token);
-  const volume = Object.values(TokenPurchaseAge).reduce(
-    (acc, act) => ({ ...acc, [act]: build5Db().inc(curr.count) }),
-    {},
-  );
-  const statsData = {
+  const statsDocRef = build5Db().doc(COL.TOKEN, curr.token, SUB_COL.STATS, curr.token);
+  const statsData: PgTokenStatsUpdate = {
     parentId: curr.token,
-    parentCol: COL.TOKEN,
-    volumeTotal: build5Db().inc(curr.count),
-    volume,
+    volumeTotal: build5Db().inc(curr.count!),
+    volume_in24h: build5Db().inc(curr.count!),
+    volume_in48h: build5Db().inc(curr.count!),
+    volume_in7d: build5Db().inc(curr.count!),
   };
-  statsDocRef.set(statsData, true);
+  await statsDocRef.upsert(statsData);
 };

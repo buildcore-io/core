@@ -17,12 +17,10 @@ import {
 import { Wallet } from '../../src/services/wallet/wallet';
 import { getAddress } from '../../src/utils/address.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { createMember, getRandomSymbol, wait } from '../../test/controls/common';
-import { getWallet } from '../../test/set-up';
+import { getRandomSymbol, wait } from '../../test/controls/common';
+import { getWallet, testEnv } from '../../test/set-up';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
-
-let walletSpy: any;
 
 describe('Simple token trading', () => {
   let member: string;
@@ -35,8 +33,7 @@ describe('Simple token trading', () => {
   });
 
   beforeEach(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    member = await createMember(walletSpy);
+    member = await testEnv.createMember();
 
     token = <Token>{
       project: SOON_PROJECT_ID,
@@ -47,8 +44,8 @@ describe('Simple token trading', () => {
       status: TokenStatus.AVAILABLE,
       approved: true,
     };
-    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
-    await build5Db().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`).create({
+    await build5Db().doc(COL.TOKEN, token.uid).create(token);
+    await build5Db().doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, member).create({
       parentId: token.uid,
       parentCol: COL.TOKEN,
       tokenOwned: 100,
@@ -58,7 +55,7 @@ describe('Simple token trading', () => {
   });
 
   it('Should credit on simple token buy', async () => {
-    const memberData = <Member>await build5Db().doc(`${COL.MEMBER}/${member}`).get();
+    const memberData = <Member>await build5Db().doc(COL.MEMBER, member).get();
     const rmsAddress = await rmsWallet.getAddressDetails(getAddress(memberData, Network.RMS)!);
     await requestFundsFromFaucet(Network.RMS, rmsAddress.bech32, 5 * MIN_IOTA_AMOUNT);
 
@@ -78,10 +75,10 @@ describe('Simple token trading', () => {
       .where('member', '==', member)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
     await wait(async () => {
-      const snap = await query.get<Transaction>();
+      const snap = await query.get();
       return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
     });
-    const snap = await query.get<Transaction>();
+    const snap = await query.get();
     expect(snap.length).toBe(1);
     expect(snap[0]?.payload?.response).toEqual({
       code: WenError.token_in_invalid_status.code,
@@ -91,7 +88,7 @@ describe('Simple token trading', () => {
   });
 
   it('Should credit on simple token sell', async () => {
-    const memberData = <Member>await build5Db().doc(`${COL.MEMBER}/${member}`).get();
+    const memberData = <Member>await build5Db().doc(COL.MEMBER, member).get();
     const rmsAddress = await rmsWallet.getAddressDetails(getAddress(memberData, Network.RMS)!);
     await requestFundsFromFaucet(Network.RMS, rmsAddress.bech32, 5 * MIN_IOTA_AMOUNT);
 
@@ -111,10 +108,10 @@ describe('Simple token trading', () => {
       .where('member', '==', member)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
     await wait(async () => {
-      const snap = await query.get<Transaction>();
+      const snap = await query.get();
       return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
     });
-    const snap = await query.get<Transaction>();
+    const snap = await query.get();
     expect(snap.length).toBe(1);
     expect(snap[0]?.payload?.response).toEqual({
       code: WenError.token_in_invalid_status.code,
@@ -124,7 +121,7 @@ describe('Simple token trading', () => {
   });
 
   it('Should set member in case of invalid OTR payment', async () => {
-    const memberData = <Member>await build5Db().doc(`${COL.MEMBER}/${member}`).get();
+    const memberData = <Member>await build5Db().doc(COL.MEMBER, member).get();
     const rmsAddress = await rmsWallet.getAddressDetails(getAddress(memberData, Network.RMS)!);
     await requestFundsFromFaucet(Network.RMS, rmsAddress.bech32, 5 * MIN_IOTA_AMOUNT);
 

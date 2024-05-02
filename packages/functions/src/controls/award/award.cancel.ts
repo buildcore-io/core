@@ -10,8 +10,8 @@ export const cancelAwardControl = ({
   params,
 }: Context<AwardCancelRequest>): Promise<Award> =>
   build5Db().runTransaction(async (transaction) => {
-    const awardDocRef = build5Db().doc(`${COL.AWARD}/${params.uid}`);
-    const award = await transaction.get<Award>(awardDocRef);
+    const awardDocRef = build5Db().doc(COL.AWARD, params.uid);
+    const award = await transaction.get(awardDocRef);
 
     if (!award) {
       throw invalidArgument(WenError.award_does_not_exists);
@@ -26,7 +26,7 @@ export const cancelAwardControl = ({
     await assertIsGuardian(award.space, owner);
 
     const data = { uid: award.uid, completed: true };
-    transaction.update(awardDocRef, data);
+    await transaction.update(awardDocRef, data);
 
     return { ...award, ...data };
   });

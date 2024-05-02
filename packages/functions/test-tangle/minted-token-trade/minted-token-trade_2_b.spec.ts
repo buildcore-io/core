@@ -34,7 +34,7 @@ describe('Token minting', () => {
       .collection(COL.TOKEN_MARKET)
       .where('orderTransactionId', '==', buyOrder.uid);
     await wait(async () => {
-      const buySnap = await buyQuery.get<TokenTradeOrder>();
+      const buySnap = await buyQuery.get();
       return buySnap[0].fulfilled === 99;
     });
     let buy = (await buyQuery.get())[0] as TokenTradeOrder;
@@ -48,7 +48,7 @@ describe('Token minting', () => {
       .collection(COL.TOKEN_MARKET)
       .where('orderTransactionId', '==', buyOrder2.uid);
     await wait(async () => {
-      const buySnap = await buyQuery2.get<TokenTradeOrder>();
+      const buySnap = await buyQuery2.get();
       return buySnap[0].fulfilled === 1;
     });
 

@@ -42,8 +42,8 @@ export const airdropTokenControl = async ({
   const chunks = chunk(params.drops, 200);
   for (const chunk of chunks) {
     await build5Db().runTransaction(async (transaction) => {
-      const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
-      const token = await transaction.get<Token>(tokenDocRef);
+      const tokenDocRef = build5Db().doc(COL.TOKEN, params.token);
+      const token = await transaction.get(tokenDocRef);
 
       if (!token) {
         throw invalidArgument(WenError.token_does_not_exist);
@@ -59,7 +59,7 @@ export const airdropTokenControl = async ({
         throw invalidArgument(WenError.no_tokens_available_for_airdrop);
       }
 
-      transaction.update(tokenDocRef, { totalAirdropped: build5Db().inc(totalDropped) });
+      await transaction.update(tokenDocRef, { totalAirdropped: build5Db().inc(totalDropped) });
 
       for (const drop of chunk) {
         const airdrop: TokenDrop = {
@@ -72,22 +72,19 @@ export const airdropTokenControl = async ({
           count: drop.count,
           status: TokenDropStatus.UNCLAIMED,
         };
-        const docRef = build5Db().doc(`${COL.AIRDROP}/${airdrop.uid}`);
-        transaction.create(docRef, airdrop);
+        const docRef = build5Db().doc(COL.AIRDROP, airdrop.uid);
+        await transaction.create(docRef, airdrop);
 
-        const distributionDocRef = tokenDocRef
-          .collection(SUB_COL.DISTRIBUTION)
-          .doc(drop.recipient.toLowerCase());
-        transaction.set(
-          distributionDocRef,
-          {
-            parentId: token.uid,
-            parentCol: COL.TOKEN,
-            uid: drop.recipient.toLowerCase(),
-            totalUnclaimedAirdrop: build5Db().inc(drop.count),
-          },
-          true,
+        const distributionDocRef = build5Db().doc(
+          COL.TOKEN,
+          params.token,
+          SUB_COL.DISTRIBUTION,
+          drop.recipient.toLowerCase(),
         );
+        await transaction.upsert(distributionDocRef, {
+          parentId: token.uid,
+          totalUnclaimedAirdrop: build5Db().inc(drop.count),
+        });
       }
     });
   }

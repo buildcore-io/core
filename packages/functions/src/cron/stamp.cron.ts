@@ -7,12 +7,12 @@ import { getBucket } from '../utils/config.utils';
 export const updateExpiredStamp = async () => {
   let stamps: Stamp[] = [];
   do {
-    stamps = await query.get<Stamp>();
+    stamps = await query.get();
     const batch = build5Db().batch();
-    stamps.forEach((s) => {
-      const docRef = build5Db().doc(`${COL.STAMP}/${s.uid}`);
+    for (const s of stamps) {
+      const docRef = build5Db().doc(COL.STAMP, s.uid);
       batch.update(docRef, { expired: true });
-    });
+    }
     await batch.commit();
 
     const promises = stamps.map(async (s) => {

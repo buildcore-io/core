@@ -3,9 +3,9 @@ import { Network, getMilestoneCol } from '@build-5/interfaces';
 import { combineLatest, map } from 'rxjs';
 import { queryToObservable } from './common';
 
-export const getTopMilestones = async (_: string) => {
+export const getTopMilestones = async (_: string, isLive: boolean) => {
   const observables = Object.values(Network).map((network) =>
-    queryToObservable(networkToQuery(network)).pipe(map((r) => ({ [network]: r[0] }))),
+    queryToObservable(networkToQuery(network), isLive).pipe(map((r) => ({ [network]: r[0] }))),
   );
   return combineLatest(observables).pipe(map((r) => r.reduce((acc, act) => ({ ...acc, ...act }))));
 };

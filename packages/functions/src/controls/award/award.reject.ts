@@ -8,8 +8,8 @@ export const rejectAwardControl = async ({
   owner,
   params,
 }: Context<AwardRejectRequest>): Promise<Award> => {
-  const awardDocRef = build5Db().doc(`${COL.AWARD}/${params.uid}`);
-  const award = await awardDocRef.get<Award>();
+  const awardDocRef = build5Db().doc(COL.AWARD, params.uid);
+  const award = await awardDocRef.get();
   if (!award) {
     throw invalidArgument(WenError.award_does_not_exists);
   }

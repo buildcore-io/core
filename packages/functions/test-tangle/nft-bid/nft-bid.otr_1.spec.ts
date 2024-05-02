@@ -3,7 +3,6 @@ import {
   COL,
   MIN_IOTA_AMOUNT,
   Network,
-  Nft,
   NftBidTangleRequest,
   TangleRequestType,
   Transaction,
@@ -14,7 +13,6 @@ import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { finalizeAuctions } from '../../src/cron/auction.cron';
 import { Bech32AddressHelper } from '../../src/utils/bech32-address.helper';
-import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
@@ -50,15 +48,15 @@ describe('Nft otr bid', () => {
       },
     });
 
-    const nftDocRef = build5Db().doc(`${COL.NFT}/${helper.nft!.uid}`);
+    const nftDocRef = build5Db().doc(COL.NFT, helper.nft!.uid);
     await wait(async () => {
-      const nft = await nftDocRef.get<Nft>();
+      const nft = await nftDocRef.get();
       return !isEmpty(nft?.auctionHighestBidder);
     });
 
     await build5Db()
-      .doc(`${COL.AUCTION}/${helper.nft!.auction}`)
-      .update({ auctionTo: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
+      .doc(COL.AUCTION, helper.nft!.auction!)
+      .update({ auctionTo: dayjs().subtract(1, 'm').toDate() });
 
     await finalizeAuctions();
 
@@ -67,8 +65,8 @@ describe('Nft otr bid', () => {
         await build5Db()
           .collection(COL.TRANSACTION)
           .where('type', '==', TransactionType.WITHDRAW_NFT)
-          .where('payload.nft', '==', helper.nft!.uid)
-          .get<Transaction>()
+          .where('payload_nft', '==', helper.nft!.uid)
+          .get()
       )[0];
       return transaction?.payload?.walletReference?.confirmed;
     });

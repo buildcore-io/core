@@ -15,7 +15,7 @@ import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { retryWallet } from '../../src/cron/wallet.cron';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
-import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
+import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { wait } from '../../test/controls/common';
 import { getWallet } from '../../test/set-up';
@@ -51,20 +51,20 @@ describe('Transaction trigger spec', () => {
         ),
         ignoreWallet: true,
       };
-      await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
+      await build5Db().doc(COL.TRANSACTION, billPayment.uid).create(billPayment);
       await new Promise((r) => setTimeout(r, 1000));
 
       await build5Db()
-        .doc(`${COL.MNEMONIC}/${sourceAddress.bech32}`)
+        .doc(COL.MNEMONIC, sourceAddress.bech32)
         .update({ lockedBy: billPayment.uid, consumedOutputIds: outputIds });
       await build5Db()
-        .doc(`${COL.TRANSACTION}/${billPayment.uid}`)
+        .doc(COL.TRANSACTION, billPayment.uid)
         .update({
           ignoreWallet: false,
-          'payload.walletReference.confirmed': false,
-          'payload.walletReference.inProgress': true,
-          'payload.walletReference.count': MAX_WALLET_RETRY,
-          'payload.walletReference.processedOn': dateToTimestamp(dayjs().subtract(4, 'd').toDate()),
+          payload_walletReference_confirmed: false,
+          payload_walletReference_inProgress: true,
+          payload_walletReference_count: MAX_WALLET_RETRY,
+          payload_walletReference_processedOn: dayjs().subtract(4, 'd').toDate(),
         });
 
       let billPayment2 = dummyPayment(
@@ -73,17 +73,13 @@ describe('Transaction trigger spec', () => {
         sourceAddress.bech32,
         targetAddress.bech32,
       );
-      await build5Db().doc(`${COL.TRANSACTION}/${billPayment2.uid}`).create(billPayment2);
+      await build5Db().doc(COL.TRANSACTION, billPayment2.uid).create(billPayment2);
 
       await retryWallet();
 
       await wait(async () => {
-        const mnemonic = <Mnemonic>(
-          await build5Db().doc(`${COL.MNEMONIC}/${sourceAddress.bech32}`).get()
-        );
-        billPayment = <Transaction>(
-          await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()
-        );
+        const mnemonic = <Mnemonic>await build5Db().doc(COL.MNEMONIC, sourceAddress.bech32).get();
+        billPayment = <Transaction>await build5Db().doc(COL.TRANSACTION, billPayment.uid).get();
         return (
           !billPayment.payload?.walletReference?.inProgress &&
           !billPayment.payload?.walletReference?.confirmed &&
@@ -93,9 +89,7 @@ describe('Transaction trigger spec', () => {
       });
 
       await wait(async () => {
-        billPayment2 = <Transaction>(
-          await build5Db().doc(`${COL.TRANSACTION}/${billPayment2.uid}`).get()
-        );
+        billPayment2 = <Transaction>await build5Db().doc(COL.TRANSACTION, billPayment2.uid).get();
         return billPayment2.payload?.walletReference?.confirmed;
       });
     },

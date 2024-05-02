@@ -3,7 +3,7 @@ import { BaseRecord, NetworkAddress, Timestamp, ValidatedAddress } from './base'
 /**
  * Member Award Stats.
  */
-interface MemberAwardStat {
+export interface MemberAwardStat {
   /**
    * Token Symbol.
    */
@@ -27,7 +27,7 @@ interface MemberAwardStat {
 /**
  * Member Space Stats.
  */
-interface MemberSpaceStat {
+export interface MemberSpaceStat {
   /**
    * Space UID
    */

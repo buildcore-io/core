@@ -1,72 +1,58 @@
 import { build5Db } from '@build-5/database';
-import { COL, Member, Network, Proposal, Space, WenError } from '@build-5/interfaces';
+import { COL, Member, Network, Space, Transaction, WEN_FUNC, WenError } from '@build-5/interfaces';
 import { isEmpty } from 'lodash';
-import { validateAddress } from '../../src/runtime/firebase/address';
 import { getAddress } from '../../src/utils/address.utils';
-import * as wallet from '../../src/utils/wallet.utils';
-import { getWallet, testEnv } from '../set-up';
-import {
-  createMember,
-  createSpace,
-  expectThrow,
-  mockWalletReturnValue,
-  submitMilestoneFunc,
-  validateMemberAddressFunc,
-  validateSpaceAddressFunc,
-  wait,
-} from './common';
+import { getRandomEthAddress } from '../../src/utils/wallet.utils';
+import { getWallet, mockWalletReturnValue, testEnv } from '../set-up';
+import { expectThrow, submitMilestoneFunc, validateMemberAddressFunc, wait } from './common';
 
-const waitForAddressValidation = async (id: string, col: COL) => {
+const waitForAddressValidation = async (
+  id: string,
+  col: COL.SPACE | COL.MEMBER,
+  network = Network.RMS,
+) => {
   await wait(async () => {
-    const doc = await build5Db().doc(`${col}/${id}`).get<Record<string, unknown>>();
-    return !isEmpty(getAddress(doc, Network.IOTA));
+    const data = await build5Db().doc(col, id).get();
+    return !isEmpty(getAddress(data, network));
   });
 };
 
 describe('Address validation test', () => {
   let member: string;
-  let space: string;
-  let walletSpy: any;
+  let space: Space;
 
   beforeEach(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    member = await createMember(walletSpy);
-    await build5Db().doc(`${COL.MEMBER}/${member}`).update({ validatedAddress: {} });
-    space = (await createSpace(walletSpy, member)).uid;
-    await build5Db().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} });
+    member = await testEnv.createMember();
+    await build5Db().doc(COL.MEMBER, member).update({ rmsAddress: '' });
+    space = await testEnv.createSpace(member);
+    await build5Db().doc(COL.SPACE, space.uid).update({ rmsAddress: '', iotaAddress: '' });
   });
 
   it('Should validate member address', async () => {
-    const order = await validateMemberAddressFunc(walletSpy, member);
+    const order = await validateMemberAddressFunc(member, Network.RMS);
     await submitMilestoneFunc(order);
-    await waitForAddressValidation(member, COL.MEMBER);
+    await waitForAddressValidation(member, COL.MEMBER, Network.RMS);
   });
 
-  it.each([Network.RMS, Network.SMR])(
-    'Should throw, member id is address',
-    async (network: Network) => {
-      const wallet = await getWallet(network);
-      const address = await wallet.getNewIotaAddressDetails();
-      const memberDocRef = build5Db().doc(`${COL.MEMBER}/${address.bech32}`);
-      await memberDocRef.create({ uid: address.bech32 });
-      await expectThrow(
-        validateMemberAddressFunc(walletSpy, address.bech32, network),
-        WenError.can_not_change_validated_addess.key,
-      );
-    },
-  );
+  it('Should throw, member id is address', async () => {
+    const wallet = await getWallet(Network.RMS);
+    const address = await wallet.getNewIotaAddressDetails();
+    mockWalletReturnValue(member, { address: address.bech32 });
+    const member2 = await testEnv.wrap<Member>(WEN_FUNC.createMember);
+    const call = validateMemberAddressFunc(member2.uid, Network.RMS);
+    await expectThrow(call, WenError.can_not_change_validated_addess.key);
+  });
 
   it('Should validate space address', async () => {
-    let order = await validateSpaceAddressFunc(walletSpy, member, space);
+    mockWalletReturnValue(member, { space: space.uid });
+    let order = await testEnv.wrap<Transaction>(WEN_FUNC.validateAddress);
     const milestone = await submitMilestoneFunc(order);
-
-    const proposalQuery = build5Db().collection(COL.PROPOSAL).where('space', '==', space);
+    const proposalQuery = build5Db().collection(COL.PROPOSAL).where('space', '==', space.uid);
     await wait(async () => {
       const snap = await proposalQuery.get();
       return snap.length > 0;
     });
-
-    const snap = await proposalQuery.get<Proposal>();
+    const snap = await proposalQuery.get();
     const proposal = snap[0]!;
     expect(proposal.questions[0].text).toBe("Do you want to update the space's validate address?");
     expect(proposal.questions[0].additionalInfo).toBe(
@@ -75,11 +61,11 @@ describe('Address validation test', () => {
     expect((proposal.settings.spaceUpdateData!.validatedAddress as any)![Network.IOTA]).toBe(
       milestone.fromAdd,
     );
-    expect(proposal.settings.spaceUpdateData!.uid).toBe(space);
+    expect(proposal.settings.spaceUpdateData!.uid).toBe(space.uid);
 
-    await waitForAddressValidation(space, COL.SPACE);
-
-    order = await validateSpaceAddressFunc(walletSpy, member, space);
+    await waitForAddressValidation(space.uid, COL.SPACE, Network.IOTA);
+    mockWalletReturnValue(member, { space: space.uid });
+    order = await testEnv.wrap<Transaction>(WEN_FUNC.validateAddress);
     const milestone2 = await submitMilestoneFunc(order);
 
     await wait(async () => {
@@ -88,50 +74,56 @@ describe('Address validation test', () => {
     });
 
     await wait(async () => {
-      const spaceData = await build5Db().doc(`${COL.SPACE}/${space}`).get<Space>();
+      const spaceData = await build5Db().doc(COL.SPACE, space.uid).get();
       return getAddress(spaceData, order.network!) === milestone2.fromAdd;
     });
-    const spaceData = await build5Db().doc(`${COL.SPACE}/${space}`).get<Space>();
+    const spaceData = await build5Db().doc(COL.SPACE, space.uid).get();
     expect(spaceData?.prevValidatedAddresses).toEqual([milestone.fromAdd]);
   });
 
   it('Should throw, not guardian', async () => {
-    const randomMember = await createMember(walletSpy);
-    mockWalletReturnValue(walletSpy, randomMember, { space });
-    await expectThrow(
-      testEnv.wrap(validateAddress)({}),
-      WenError.you_are_not_guardian_of_space.key,
-    );
+    const randomMember = await testEnv.createMember();
+    mockWalletReturnValue(randomMember, { space: space.uid });
+    const call = testEnv.wrap<Transaction>(WEN_FUNC.validateAddress);
+    await expectThrow(call, WenError.you_are_not_guardian_of_space.key);
   });
 
   it('Should throw, member does not exist', async () => {
-    mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), { space });
-    await expectThrow(testEnv.wrap(validateAddress)({}), WenError.member_does_not_exists.key);
+    await build5Db().doc(COL.MEMBER, member).delete();
+    mockWalletReturnValue(member, { space: space.uid });
+    const call = testEnv.wrap<Transaction>(WEN_FUNC.validateAddress);
+    await expectThrow(call, WenError.member_does_not_exists.key);
   });
 
   it('Should throw, space does not exist', async () => {
-    mockWalletReturnValue(walletSpy, member, { space: wallet.getRandomEthAddress() });
-    await expectThrow(testEnv.wrap(validateAddress)({}), WenError.space_does_not_exists.key);
+    mockWalletReturnValue(member, {
+      network: Network.RMS,
+      space: getRandomEthAddress(),
+    });
+    const call = testEnv.wrap<Transaction>(WEN_FUNC.validateAddress);
+    await expectThrow(call, WenError.space_does_not_exists.key);
   });
 
   it('Should replace member address', async () => {
+    const network = Network.RMS;
     const validate = async () => {
-      const order = await validateMemberAddressFunc(walletSpy, member);
+      const order = await validateMemberAddressFunc(member, network);
       await submitMilestoneFunc(order);
     };
     await validate();
-    await waitForAddressValidation(member, COL.MEMBER);
 
-    const docRef = build5Db().doc(`${COL.MEMBER}/${member}`);
+    await waitForAddressValidation(member, COL.MEMBER, network);
+
+    const docRef = build5Db().doc(COL.MEMBER, member);
     const memberData = <Member>await docRef.get();
     await validate();
     await wait(async () => {
       const data = <Member>await docRef.get();
-      return getAddress(data, Network.IOTA) !== getAddress(memberData, Network.IOTA);
+      return getAddress(data, network) !== getAddress(memberData, network);
     });
 
     const updatedMemberData = <Member>await docRef.get();
     expect(updatedMemberData.prevValidatedAddresses?.length).toBe(1);
-    expect(updatedMemberData.prevValidatedAddresses![0]).toBe(getAddress(memberData, Network.IOTA));
+    expect(updatedMemberData.prevValidatedAddresses![0]).toBe(getAddress(memberData, network));
   });
 });

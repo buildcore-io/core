@@ -1,5 +1,5 @@
 import { Dataset } from '@build-5/interfaces';
-import { Build5, SoonaverseOtrAddress, https, otr, SoonaverseApiKey } from '@build-5/sdk';
+import { Build5, SoonaverseApiKey, SoonaverseOtrAddress, https, otr } from '@build-5/sdk';
 
 const collectionId = 'build5collectionid1';
 const nftId = 'build5nftid1';

@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { Dataset, GetByIdRequest, Subset } from '@build-5/interfaces';
+import { BaseRecord, IDocument, Update, build5Db } from '@build-5/database';
+import { COL, Dataset, GetByIdRequest, SUB_COL, Subset } from '@build-5/interfaces';
 import Joi from 'joi';
 import { map } from 'rxjs';
 import {
@@ -21,16 +21,17 @@ const getByIdSchema = Joi.object({
   subsetId: CommonJoi.uid(false, 7),
 });
 
-export const getById = async (url: string) => {
+export const getById = async (url: string, isLive: boolean) => {
   const body = getQueryParams<GetByIdRequest>(url, getByIdSchema);
 
-  const docPath =
-    body.subset && body.subsetId
-      ? `${body.dataset}/${body.setId}/${body.subset}/${body.subsetId}`
-      : `${body.dataset}/${body.setId}`;
-  const docRef = build5Db().doc(docPath);
+  const docRef = build5Db().doc(
+    body.dataset as unknown as COL,
+    body.setId,
+    body.subset as unknown as SUB_COL,
+    body.subsetId,
+  )! as unknown as IDocument<any, BaseRecord, Update>;
 
-  const observable = documentToObservable<Record<string, unknown>>(docRef).pipe(
+  const observable = documentToObservable(docRef, isLive).pipe(
     map((data) => {
       if (!data || isHiddenNft(body.dataset, data)) {
         return {};

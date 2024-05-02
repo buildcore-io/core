@@ -1,5 +1,5 @@
 import { build5Db } from '@build-5/database';
-import { COL, SpaceMember, SpaceMemberUpsertRequest, SUB_COL } from '@build-5/interfaces';
+import { COL, SpaceMemberUpsertRequest, SUB_COL } from '@build-5/interfaces';
 import { acceptSpaceMember } from '../../services/payment/tangle-service/space/SpaceAcceptMemberService';
 import { Context } from '../common';
 
@@ -10,17 +10,19 @@ export const acceptSpaceMemberControl = async ({
 }: Context<SpaceMemberUpsertRequest>) => {
   const { spaceMember, space } = await acceptSpaceMember(project, owner, params.uid, params.member);
 
-  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
-  const memberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(spaceMember.uid);
-  const knockingMemberDocRef = spaceDocRef
-    .collection(SUB_COL.KNOCKING_MEMBERS)
-    .doc(spaceMember.uid);
+  const memberDocRef = build5Db().doc(COL.SPACE, params.uid, SUB_COL.MEMBERS, spaceMember.uid);
+  const knockingMemberDocRef = build5Db().doc(
+    COL.SPACE,
+    params.uid,
+    SUB_COL.KNOCKING_MEMBERS,
+    spaceMember.uid,
+  );
 
   const batch = build5Db().batch();
-  batch.set(memberDocRef, spaceMember);
+  batch.upsert(memberDocRef, { ...spaceMember, createdOn: spaceMember.createdOn.toDate() });
   batch.delete(knockingMemberDocRef);
-  batch.update(spaceDocRef, space);
+  batch.update(build5Db().doc(COL.SPACE, params.uid), space);
   await batch.commit();
 
-  return await memberDocRef.get<SpaceMember>();
+  return await memberDocRef.get();
 };

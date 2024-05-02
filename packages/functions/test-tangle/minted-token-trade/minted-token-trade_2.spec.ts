@@ -29,8 +29,8 @@ describe('Token minting', () => {
 
     const billPaymentsQuery = build5Db()
       .collection(COL.TRANSACTION)
-      .where('member', 'in', [helper.seller, helper.buyer])
-      .where('type', '==', TransactionType.BILL_PAYMENT);
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .whereIn('member', [helper.seller, helper.buyer]);
     await wait(async () => {
       const snap = await billPaymentsQuery.get();
       return snap.length === 4;
@@ -43,7 +43,7 @@ describe('Token minting', () => {
 
     expect(paymentToSeller.payload.amount).toBe(9602600);
     expect(paymentToSeller.payload.sourceAddress).toBe(buyOrder.payload.targetAddress);
-    expect(paymentToSeller.payload.storageReturn).toBeUndefined();
+    expect(paymentToSeller.payload.storageReturn).toEqual({});
 
     const royaltyOnePayment = billPayments.find((bp) => bp.payload.amount === 271800)!;
     expect(royaltyOnePayment.payload.storageReturn!.address).toBe(helper.sellerAddress!.bech32);

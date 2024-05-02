@@ -8,11 +8,12 @@ import {
   TransactionType,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { get, head } from 'lodash';
+import { head } from 'lodash';
 import { getProject } from '../../utils/common.utils';
 import { getTokenForSpace } from '../../utils/token.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { BaseService, HandlerParams } from './base';
+import { Action } from './transaction-service';
 
 export class VotingService extends BaseService {
   public handleRequest = async ({ order, match }: HandlerParams) => {
@@ -22,8 +23,8 @@ export class VotingService extends BaseService {
     const nativeTokens = match.to.nativeTokens || [];
 
     const hasValidToken = head(nativeTokens)?.id === token?.mintingData?.tokenId;
-    const proposalId = get(order, 'payload.proposalId', '');
-    const values = get(order, 'payload.voteValues', []);
+    const proposalId = order.payload.proposalId || '';
+    const values = order.payload.voteValues || [];
     const customData = hasValidToken ? { proposalId, values } : undefined;
 
     const storageReturn = match.to.amount >= order.payload.amount! ? match.from : undefined;
@@ -47,10 +48,15 @@ export class VotingService extends BaseService {
       return;
     }
 
-    const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposalId}`);
+    const proposalDocRef = build5Db().doc(COL.PROPOSAL, proposalId);
     const proposal = <Proposal>await proposalDocRef.get();
 
-    const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(order.member!);
+    const proposalMemberDocRef = build5Db().doc(
+      COL.PROPOSAL,
+      proposalId,
+      SUB_COL.MEMBERS,
+      order.member!,
+    );
 
     const tokenAmount = Number(nativeTokens[0].amount);
     const weightMultiplier = getTokenVoteMultiplier(proposal, dayjs());
@@ -65,34 +71,29 @@ export class VotingService extends BaseService {
       values,
     );
 
+    const value = values[0].toString();
     this.transactionService.push({
       ref: proposalMemberDocRef,
       data: {
         voted: true,
-        voteTransactions: build5Db().inc(1),
+        parentId: proposalId,
         tranId: voteTransaction.uid,
-        weightPerAnswer: { [values[0]]: build5Db().inc(weight) },
-        values: build5Db().arrayUnion({
-          [values[0]]: weight,
-          voteTransaction: voteTransaction.uid,
-        }),
+        weight,
+        values: { [voteTransaction.uid]: { value, weight: build5Db().inc(weight) } },
       },
-      action: 'set',
-      merge: true,
+      action: Action.UPS,
     });
 
-    const data = {
-      results: {
-        total: build5Db().inc(weight),
-        voted: build5Db().inc(weight),
-        answers: { [`${values[0]}`]: build5Db().inc(weight) },
-      },
-    };
     this.transactionService.push({
       ref: proposalDocRef,
-      data,
-      action: 'set',
-      merge: true,
+      data: {
+        results: {
+          total: build5Db().inc(weight),
+          voted: build5Db().inc(weight),
+          answers: { [value]: build5Db().inc(weight) },
+        },
+      },
+      action: Action.U,
     });
   };
 
@@ -124,11 +125,10 @@ export class VotingService extends BaseService {
       linkedTransactions: [],
     };
 
-    const voteTransactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`);
     this.transactionService.push({
-      ref: voteTransactionDocRef,
+      ref: build5Db().doc(COL.TRANSACTION, voteTransaction.uid),
       data: voteTransaction,
-      action: 'set',
+      action: Action.C,
     });
     return voteTransaction;
   };

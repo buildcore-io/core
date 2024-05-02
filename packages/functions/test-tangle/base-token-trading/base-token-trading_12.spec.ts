@@ -48,7 +48,7 @@ describe('Base token trading', () => {
       const snap = await query.get();
       return snap.length > 0;
     });
-    const orderSnap = await query.get<TokenTradeOrder>();
+    const orderSnap = await query.get();
     const sellOrder = orderSnap[0];
     expect(sellOrder.owner).toBe(helper.seller!.uid);
     expect(sellOrder.price).toBe(1.5);

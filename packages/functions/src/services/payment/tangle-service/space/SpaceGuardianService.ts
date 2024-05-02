@@ -9,7 +9,6 @@ import {
   ProposalType,
   Space,
   SpaceGuardianUpsertTangleResponse,
-  SpaceMember,
   SUB_COL,
   TangleRequestType,
   Transaction,
@@ -24,6 +23,7 @@ import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { BaseTangleService, HandlerParams } from '../../base';
+import { Action } from '../../transaction-service';
 import { editSpaceMemberSchemaObject } from './SpaceEditMemberTangleRequestSchema';
 
 export class SpaceGuardianService extends BaseTangleService<SpaceGuardianUpsertTangleResponse> {
@@ -46,22 +46,20 @@ export class SpaceGuardianService extends BaseTangleService<SpaceGuardianUpsertT
       type,
     );
 
-    const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
-    const memberPromisses = members.map((member) => {
-      proposalDocRef.collection(SUB_COL.MEMBERS).doc(member.uid).set(member);
-    });
+    const memberPromisses = members.map((member) =>
+      build5Db().doc(COL.PROPOSAL, proposal.uid, SUB_COL.MEMBERS, member.uid).create(member),
+    );
     await Promise.all(memberPromisses);
 
-    const transactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`);
     this.transactionService.push({
-      ref: transactionDocRef,
+      ref: build5Db().doc(COL.TRANSACTION, voteTransaction.uid),
       data: voteTransaction,
-      action: 'set',
+      action: Action.C,
     });
     this.transactionService.push({
-      ref: proposalDocRef,
+      ref: build5Db().doc(COL.PROPOSAL, proposal.uid),
       data: proposal,
-      action: 'set',
+      action: Action.C,
     });
 
     return { proposal: proposal.uid };
@@ -77,18 +75,16 @@ export const addRemoveGuardian = async (
   const isAddGuardian = type === ProposalType.ADD_GUARDIAN;
   await assertIsGuardian(params.uid as string, owner);
 
-  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${params.uid}`);
-  const spaceMemberDoc = await spaceDocRef
-    .collection(SUB_COL.MEMBERS)
-    .doc(params.member as string)
+  const spaceDocRef = build5Db().doc(COL.SPACE, params.uid as string);
+  const spaceMemberDoc = await build5Db()
+    .doc(COL.SPACE, params.uid as string, SUB_COL.MEMBERS, params.member as string)
     .get();
   if (!spaceMemberDoc) {
     throw invalidArgument(WenError.member_is_not_part_of_the_space);
   }
 
-  const spaceGuardianMember = await spaceDocRef
-    .collection(SUB_COL.GUARDIANS)
-    .doc(params.member as string)
+  const spaceGuardianMember = await build5Db()
+    .doc(COL.SPACE, params.uid as string, SUB_COL.GUARDIANS, params.member as string)
     .get();
   if (isAddGuardian && spaceGuardianMember) {
     throw invalidArgument(WenError.member_is_already_guardian_of_space);
@@ -98,7 +94,7 @@ export const addRemoveGuardian = async (
 
   const ongoingProposalSnap = await build5Db()
     .collection(COL.PROPOSAL)
-    .where('settings.addRemoveGuardian', '==', params.member)
+    .where('settings_addRemoveGuardian', '==', params.member as string)
     .where('completed', '==', false)
     .get();
 
@@ -115,13 +111,14 @@ export const addRemoveGuardian = async (
     });
   }
 
-  const guardian = <Member>await build5Db().doc(`${COL.MEMBER}/${owner}`).get();
-  const member = <Member>await build5Db().doc(`${COL.MEMBER}/${params.member}`).get();
+  const guardian = <Member>await build5Db().doc(COL.MEMBER, owner).get();
+  const member = <Member>await build5Db()
+    .doc(COL.MEMBER, params.member as string)
+    .get();
   const guardians = await build5Db()
-    .doc(`${COL.SPACE}/${params.uid}`)
-    .collection(SUB_COL.GUARDIANS)
-    .get<SpaceMember>();
-  const space = await spaceDocRef.get<Space>();
+    .collection(COL.SPACE, params.uid as string, SUB_COL.GUARDIANS)
+    .get();
+  const space = await spaceDocRef.get();
   const proposal = getProposalData(
     project,
     guardian,
@@ -153,7 +150,7 @@ export const addRemoveGuardian = async (
     voted: guardian.uid === owner,
     tranId: guardian.uid === owner ? voteTransaction.uid : '',
     parentId: proposal.uid,
-    parentCol: COL.PROPOSAL,
+    parentCol: COL.SPACE,
     values: guardian.uid === owner ? [{ [1]: 1 }] : [],
   }));
 
@@ -169,9 +166,7 @@ const getProposalData = (
   guardiansCount: number,
 ): Proposal => {
   const additionalInfo =
-    `${owner.name || owner.uid} wants to ${isAddGuardian ? 'add' : 'remove'} ${
-      member.name
-    } as guardian. ` +
+    `${owner.name || owner.uid} wants to ${isAddGuardian ? 'add' : 'remove'} ${member.name} as guardian. ` +
     `Request created on ${dayjs().format('MM/DD/YYYY')}. ` +
     `${ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE} % must agree for this action to proceed`;
   return {

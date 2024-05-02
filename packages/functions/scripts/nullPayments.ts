@@ -9,8 +9,8 @@ initializeApp({
 
 const db = getFirestore();
 db.collection('transaction')
-  .where('payload.walletReference.chainReference', '==', null)
-  .where('payload.walletReference.error', '==', 'Error: You must specify some inputs')
+  .where('payload_walletReference.chainReference', '==', null)
+  .where('payload_walletReference.error', '==', 'Error: You must specify some inputs')
   .get()
   .then(async (ss) => {
     for (const t of ss.docs) {

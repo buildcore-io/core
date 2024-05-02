@@ -32,7 +32,10 @@ export interface ProposalMember extends BaseSubCollection {
   /**
    * Selected values.
    */
-  values?: number[];
+  values?: {
+    [x: number]: number;
+    voteTransaction?: string;
+  }[];
   /**
    * Created on.
    */
@@ -45,6 +48,10 @@ export interface ProposalMember extends BaseSubCollection {
    * Weight per answer.
    */
   weightPerAnswer?: { [key: number]: number };
+  /**
+   * Vote transaction uid
+   */
+  tranId?: string;
 }
 
 /**

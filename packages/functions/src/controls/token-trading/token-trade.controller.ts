@@ -2,7 +2,6 @@ import { build5Db } from '@build-5/database';
 import {
   COL,
   SUB_COL,
-  Token,
   TokenTradeOrderType,
   TradeTokenRequest,
   WenError,
@@ -19,10 +18,13 @@ export const tradeTokenControl = async ({
   project,
 }: Context<TradeTokenRequest>) => {
   let token = await getTokenBySymbol(params.symbol);
+  if (!token?.uid) {
+    throw invalidArgument(WenError.token_does_not_exist);
+  }
 
   return await build5Db().runTransaction(async (transaction) => {
-    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token?.uid}`);
-    token = await transaction.get<Token>(tokenDocRef);
+    const tokenDocRef = build5Db().doc(COL.TOKEN, token?.uid!);
+    token = await transaction.get(tokenDocRef);
     if (!token) {
       throw invalidArgument(WenError.token_does_not_exist);
     }
@@ -42,15 +44,13 @@ export const tradeTokenControl = async ({
       ip,
     );
     if (tradeOrder) {
-      const orderDocRef = build5Db().doc(`${COL.TOKEN_MARKET}/${tradeOrder.uid}`);
-      transaction.create(orderDocRef, tradeOrder);
-      const distributionDocRef = build5Db().doc(
-        `${COL.TOKEN}/${token?.uid}/${SUB_COL.DISTRIBUTION}/${owner}`,
-      );
-      transaction.update(distributionDocRef, distribution);
+      const orderDocRef = build5Db().doc(COL.TOKEN_MARKET, tradeOrder.uid);
+      await transaction.create(orderDocRef, tradeOrder);
+      const distributionDocRef = build5Db().doc(COL.TOKEN, token?.uid, SUB_COL.DISTRIBUTION, owner);
+      await transaction.update(distributionDocRef, distribution);
     } else {
-      const tranDocRef = build5Db().doc(`${COL.TRANSACTION}/${tradeOrderTransaction.uid}`);
-      transaction.create(tranDocRef, tradeOrderTransaction);
+      const tranDocRef = build5Db().doc(COL.TRANSACTION, tradeOrderTransaction.uid);
+      await transaction.create(tranDocRef, tradeOrderTransaction);
     }
     return tradeOrder || tradeOrderTransaction;
   });

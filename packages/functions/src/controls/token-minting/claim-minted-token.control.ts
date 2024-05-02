@@ -9,6 +9,6 @@ export const claimMintedTokenControl = async ({
   project,
 }: Context<ClaimAirdroppedTokensRequest>) => {
   const order = await createMintedTokenAirdropClaimOrder(project, owner, params.symbol);
-  await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+  await build5Db().doc(COL.TRANSACTION, order.uid).create(order);
   return order;
 };

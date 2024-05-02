@@ -24,6 +24,7 @@ import { assertValidationAsync } from '../../../../../utils/schema.utils';
 import { getTokenForSpace } from '../../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../../utils/wallet.utils';
 import { BaseTangleService, HandlerParams } from '../../../base';
+import { Action } from '../../../transaction-service';
 import { voteOnProposalSchemaObject } from './ProposalVoteTangleRequestSchema';
 import { executeSimpleVoting } from './simple.voting';
 import { voteWithStakedTokens } from './staked.token.voting';
@@ -73,7 +74,7 @@ export class ProposalVoteService extends BaseTangleService<ProposalVoteTangleRes
       return {};
     }
 
-    return await this.handleSimpleVoteRequest(getProject(order), proposal, proposalMember, [
+    return this.handleSimpleVoteRequest(getProject(order), proposal, proposalMember, [
       params.value,
     ]);
   };
@@ -89,12 +90,12 @@ export class ProposalVoteService extends BaseTangleService<ProposalVoteTangleRes
     milestoneTranEntry: MilestoneTransactionEntry,
   ) => {
     const order = await createVoteTransactionOrder(project, owner, proposal, values, token);
-    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
+    const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
 
     this.transactionService.push({
       ref: orderDocRef,
       data: order,
-      action: 'set',
+      action: Action.C,
     });
 
     this.transactionService.createUnlockTransaction(
@@ -107,38 +108,41 @@ export class ProposalVoteService extends BaseTangleService<ProposalVoteTangleRes
     );
   };
 
-  private handleSimpleVoteRequest = async (
+  private handleSimpleVoteRequest = (
     project: string,
     proposal: Proposal,
     proposalMember: ProposalMember,
     values: number[],
   ) => {
-    const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
-    const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(proposalMember.uid);
+    const proposalDocRef = build5Db().doc(COL.PROPOSAL, proposal.uid);
+    const proposalMemberDocRef = build5Db().doc(
+      COL.PROPOSAL,
+      proposal.uid,
+      SUB_COL.MEMBERS,
+      proposalMember.uid,
+    );
 
-    const voteData = await executeSimpleVoting(project, proposalMember, proposal, values);
+    const voteData = executeSimpleVoting(project, proposalMember, proposal, values);
 
-    this.transactionService.push({
-      ref: proposalDocRef,
-      data: voteData.proposal,
-      action: 'set',
-      merge: true,
-    });
+    if (voteData.proposal) {
+      this.transactionService.push({
+        ref: proposalDocRef,
+        data: voteData.proposal,
+        action: Action.U,
+      });
+    }
 
     this.transactionService.push({
       ref: proposalMemberDocRef,
       data: voteData.proposalMember,
-      action: 'set',
-      merge: true,
+      action: Action.U,
     });
 
-    const voteTransactionDocRef = build5Db().doc(
-      `${COL.TRANSACTION}/${voteData.voteTransaction.uid}`,
-    );
+    const voteTransactionDocRef = build5Db().doc(COL.TRANSACTION, voteData.voteTransaction.uid);
     this.transactionService.push({
       ref: voteTransactionDocRef,
       data: voteData.voteTransaction,
-      action: 'set',
+      action: Action.C,
     });
 
     return { status: 'success' };
@@ -146,8 +150,8 @@ export class ProposalVoteService extends BaseTangleService<ProposalVoteTangleRes
 }
 
 export const getProposal = async (proposalUid: string) => {
-  const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposalUid}`);
-  const proposal = await proposalDocRef.get<Proposal>();
+  const proposalDocRef = build5Db().doc(COL.PROPOSAL, proposalUid);
+  const proposal = await proposalDocRef.get();
   if (!proposal) {
     throw invalidArgument(WenError.proposal_does_not_exists);
   }
@@ -177,9 +181,8 @@ export const getProposal = async (proposalUid: string) => {
 };
 
 export const getProposalMember = async (owner: string, proposal: Proposal, value: number) => {
-  const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
-  const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(owner);
-  const proposalMember = await proposalMemberDocRef.get<ProposalMember>();
+  const proposalMemberDocRef = build5Db().doc(COL.PROPOSAL, proposal.uid, SUB_COL.MEMBERS, owner);
+  const proposalMember = await proposalMemberDocRef.get();
   if (!proposalMember) {
     throw invalidArgument(WenError.you_are_not_allowed_to_vote_on_this_proposal);
   }

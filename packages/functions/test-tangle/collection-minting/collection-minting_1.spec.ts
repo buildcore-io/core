@@ -1,7 +1,6 @@
-import { UnsoldMintingOptions, WenError } from '@build-5/interfaces';
-import { mintCollection } from '../../src/runtime/firebase/collection/index';
-import { expectThrow, mockWalletReturnValue } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { Transaction, UnsoldMintingOptions, WEN_FUNC, WenError } from '@build-5/interfaces';
+import { expectThrow } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { CollectionMintHelper } from './Helper';
 
 describe('Collection minting', () => {
@@ -16,21 +15,27 @@ describe('Collection minting', () => {
   });
 
   it('Should throw, no nfts', async () => {
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
+    mockWalletReturnValue(helper.guardian!, {
       collection: helper.collection,
       network: helper.network,
       unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE,
     });
-    await expectThrow(testEnv.wrap(mintCollection)({}), WenError.no_nfts_to_mint.key);
+    await expectThrow(
+      testEnv.wrap<Transaction>(WEN_FUNC.mintCollection),
+      WenError.no_nfts_to_mint.key,
+    );
   });
 
   it('Should throw, all nfts will be burned', async () => {
     await helper.createAndOrderNft();
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
+    mockWalletReturnValue(helper.guardian!, {
       collection: helper.collection,
       network: helper.network,
       unsoldMintingOptions: UnsoldMintingOptions.BURN_UNSOLD,
     });
-    await expectThrow(testEnv.wrap(mintCollection)({}), WenError.no_nfts_to_mint.key);
+    await expectThrow(
+      testEnv.wrap<Transaction>(WEN_FUNC.mintCollection),
+      WenError.no_nfts_to_mint.key,
+    );
   });
 });

@@ -46,9 +46,9 @@ export class AwardParticpateSubset extends SubsetClass<AwardParticipant> {
     const params: GetManyAdvancedRequest = {
       dataset: this.dataset,
       subset: this.subset,
-      fieldName: ['uid', 'parentCol', 'completed'],
-      fieldValue: [member, this.dataset, completed],
-      operator: [Opr.EQUAL, Opr.EQUAL, Opr.EQUAL],
+      fieldName: ['uid', 'completed'],
+      fieldValue: [member, completed],
+      operator: [Opr.EQUAL, Opr.EQUAL],
       startAfter,
       orderBy: ['createdOn'],
       orderByDir: ['desc'],

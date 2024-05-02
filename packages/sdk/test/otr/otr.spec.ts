@@ -1,6 +1,6 @@
 import { Dataset } from '@build-5/interfaces';
 import * as build5 from '../../src';
-import { SoonaverseApiKey, Build5 } from '../../src/https';
+import { Build5, SoonaverseApiKey } from '../../src/https';
 import { SoonaverseOtrAddress } from '../../src/otr';
 
 describe('', () => {

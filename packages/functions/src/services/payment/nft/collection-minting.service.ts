@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { PgCollectionUpdate, build5Db } from '@build-5/database';
 import {
   COL,
   Collection,
@@ -6,13 +6,13 @@ import {
   TransactionPayloadType,
   UnsoldMintingOptions,
 } from '@build-5/interfaces';
-import { get } from 'lodash';
 import { BaseService, HandlerParams } from '../base';
+import { Action } from '../transaction-service';
 
 export class CollectionMintingService extends BaseService {
   public handleRequest = async ({ order, match }: HandlerParams) => {
-    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${order.payload.collection}`);
-    const collection = <Collection>await this.transactionService.get(collectionDocRef);
+    const collectionDocRef = build5Db().doc(COL.COLLECTION, order.payload.collection!);
+    const collection = <Collection>await this.transaction.get(collectionDocRef);
 
     const payment = await this.transactionService.createPayment(order, match);
     if (collection.status !== CollectionStatus.PRE_MINTED) {
@@ -25,29 +25,29 @@ export class CollectionMintingService extends BaseService {
     }
     this.transactionService.markAsReconciled(order, match.msgId);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const data: any = {
-      'mintingData.mintingOrderId': order.uid,
-      'mintingData.network': order.network,
-      'mintingData.mintedBy': order.member,
-      'mintingData.unsoldMintingOptions': get(
-        order,
-        'payload.unsoldMintingOptions',
-        UnsoldMintingOptions.KEEP_PRICE,
-      ),
-      'mintingData.newPrice': get(order, 'payload.newPrice', 0),
-      'mintingData.aliasStorageDeposit': get(order, 'payload.aliasStorageDeposit', 0),
-      'mintingData.storageDeposit': get(order, 'payload.collectionStorageDeposit', 0),
-      'mintingData.nftsStorageDeposit': get(order, 'payload.nftsStorageDeposit', 0),
-      'mintingData.address': order.payload.targetAddress,
+    const collectionUpdateData: PgCollectionUpdate = {
+      mintingData_mintingOrderId: order.uid,
+      mintingData_network: order.network,
+      mintingData_mintedBy: order.member,
+      mintingData_unsoldMintingOptions:
+        order.payload.unsoldMintingOptions || UnsoldMintingOptions.KEEP_PRICE,
+      mintingData_newPrice: order.payload.newPrice || 0,
+      mintingData_aliasStorageDeposit: order.payload.aliasStorageDeposit || 0,
+      mintingData_storageDeposit: order.payload.collectionStorageDeposit || 0,
+      mintingData_nftsStorageDeposit: order.payload.nftsStorageDeposit || 0,
+      mintingData_address: order.payload.targetAddress,
       status: CollectionStatus.MINTING,
     };
 
-    // We have to set new default price on collection as well.
-    if (get(order, 'payload.newPrice', 0)) {
-      data.price = get(order, 'payload.newPrice', 0);
+    const newPrice = order.payload.newPrice || 0;
+    if (newPrice) {
+      collectionUpdateData.price = newPrice;
     }
 
-    this.transactionService.push({ ref: collectionDocRef, data, action: 'update' });
+    this.transactionService.push({
+      ref: collectionDocRef,
+      data: collectionUpdateData,
+      action: Action.U,
+    });
   };
 }

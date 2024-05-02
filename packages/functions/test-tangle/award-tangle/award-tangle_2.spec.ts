@@ -2,8 +2,8 @@ import { build5Db } from '@build-5/database';
 import {
   Award,
   COL,
-  Member,
   MIN_IOTA_AMOUNT,
+  Member,
   Network,
   Space,
   TangleRequestType,
@@ -16,14 +16,11 @@ import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
-import * as wallet from '../../src/utils/wallet.utils';
-import { createMember, createSpace, wait } from '../../test/controls/common';
-import { getWallet, MEDIA } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
 import { saveBaseToken } from './common';
-
-let walletSpy: any;
 
 describe('Award tangle request', () => {
   let guardian: string;
@@ -36,14 +33,13 @@ describe('Award tangle request', () => {
   const beforeEach = async (network: Network) => {
     tangleOrder = await getTangleOrder(network);
 
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
     walletService = await getWallet(network);
-    guardian = await createMember(walletSpy);
-    space = await createSpace(walletSpy, guardian);
+    guardian = await testEnv.createMember();
+    space = await testEnv.createSpace(guardian);
 
     token = await saveBaseToken(space.uid, guardian, network);
 
-    const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${guardian}`);
+    const guardianDocRef = build5Db().doc(COL.MEMBER, guardian);
     const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, network);
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
@@ -87,7 +83,7 @@ describe('Award tangle request', () => {
         credit.payload.response!.amount as number,
       );
 
-      const awardDocRef = build5Db().doc(`${COL.AWARD}/${credit.payload.response!.award}`);
+      const awardDocRef = build5Db().doc(COL.AWARD, credit.payload.response!.award! as string);
       await wait(async () => {
         const award = (await awardDocRef.get()) as Award;
         return award.funded;
@@ -117,10 +113,10 @@ describe('Award tangle request', () => {
       const snap = await creditQuery.get();
       return snap.length === 1;
     });
-    let snap = await creditQuery.get<Transaction>();
+    let snap = await creditQuery.get();
     let credit = snap[0] as Transaction;
     expect(credit.payload.amount).toBe(MIN_IOTA_AMOUNT);
-    const awardDocRef = build5Db().doc(`${COL.AWARD}/${credit.payload.response!.award}`);
+    const awardDocRef = build5Db().doc(COL.AWARD, credit.payload.response!.award as string);
 
     await walletService.send(guardianAddress, tangleOrder.payload.targetAddress!, MIN_IOTA_AMOUNT, {
       customMetadata: {
@@ -134,7 +130,7 @@ describe('Award tangle request', () => {
       const snap = await creditQuery.get();
       return snap.length === 2;
     });
-    snap = await creditQuery.get<Transaction>();
+    snap = await creditQuery.get();
     credit = snap.find((doc) => doc?.payload?.response?.award === undefined)!;
     await requestFundsFromFaucet(
       Network.RMS,

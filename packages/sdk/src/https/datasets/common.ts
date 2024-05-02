@@ -10,6 +10,8 @@ import { ProjectDataset } from './ProjectDataset';
 import { StakeDataset } from './StakeDataset';
 import { StakeRewardDataset } from './StakeRewardDataset';
 import { StampDataset } from './StampDataset';
+import { SubsetClass } from './Subset';
+import { SwapDataset } from './SwapDataset';
 import { TickerDataset } from './TickerDataset';
 import { TransactionDataset } from './TransactionDataset';
 import { AwardDataset } from './award/AwardDataset';
@@ -33,8 +35,6 @@ import { TokenDistributionSubset } from './token/TokenDistributionSubset';
 import { TokenMarketDataset } from './token/TokenMarketDataset';
 import { TokenPurchaseDataset } from './token/TokenPurchaseDataset';
 import { TokenStatsSubset } from './token/TokenStatsSubset';
-import { SubsetClass } from './Subset';
-import { SwapDataset } from './SwapDataset';
 
 // prettier-ignore
 export type DatasetType<T extends Dataset> = 

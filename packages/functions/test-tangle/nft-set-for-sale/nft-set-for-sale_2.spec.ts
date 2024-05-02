@@ -48,11 +48,11 @@ describe('Nft set for sale OTR', () => {
       .where('member', '==', address.bech32)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
     await wait(async () => {
-      const snap = await credit.get<Transaction>();
+      const snap = await credit.get();
       return snap.length === 1 && snap[0].payload?.walletReference?.confirmed;
     });
 
-    const snap = await credit.get<Transaction>();
+    const snap = await credit.get();
     expect(snap[0].payload.response!['code']).toBe(WenError.you_must_be_the_owner_of_nft.code);
   });
 });

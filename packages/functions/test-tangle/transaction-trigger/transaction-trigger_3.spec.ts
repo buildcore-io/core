@@ -60,7 +60,7 @@ describe('Transaction trigger spec', () => {
         void: false,
       },
     };
-    await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
+    await build5Db().doc(COL.TRANSACTION, billPayment.uid).create(billPayment);
 
     await wait(async () => {
       const { nativeTokens } = await wallet.getBalance(targetAddress.bech32);
@@ -72,9 +72,7 @@ describe('Transaction trigger spec', () => {
     });
 
     await wait(async () => {
-      billPayment = <Transaction>(
-        await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()
-      );
+      billPayment = <Transaction>await build5Db().doc(COL.TRANSACTION, billPayment.uid).get();
       return billPayment.payload?.walletReference?.confirmed;
     });
   });

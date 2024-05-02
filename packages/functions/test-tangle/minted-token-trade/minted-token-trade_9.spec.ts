@@ -7,11 +7,11 @@ import {
   TokenTradeOrderType,
   Transaction,
   TransactionType,
+  WEN_FUNC,
 } from '@build-5/interfaces';
-import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { packBasicOutput } from '../../src/utils/basic-output.utils';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { Helper, MINTED_TOKEN_ID, dummyTokenId, saveToken } from './Helper';
 
@@ -33,14 +33,14 @@ describe('Token minting', () => {
       helper.walletService!,
       dummyTokenId,
     );
-    mockWalletReturnValue(helper.walletSpy, helper.seller!, {
+    mockWalletReturnValue(helper.seller!, {
       symbol: dummyToken.symbol,
       count: 10,
       price: MIN_IOTA_AMOUNT,
       type: TokenTradeOrderType.SELL,
     });
-    const sellOrder = await testEnv.wrap(tradeToken)({});
-    await helper.walletService!.send(helper.sellerAddress!, sellOrder.payload.targetAddress, 0, {
+    const sellOrder = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
+    await helper.walletService!.send(helper.sellerAddress!, sellOrder.payload.targetAddress!, 0, {
       nativeTokens: [{ amount: BigInt(10), id: helper.token!.mintingData?.tokenId! }],
     });
 
@@ -56,7 +56,7 @@ describe('Token minting', () => {
     const credit = <Transaction>snap[0];
     const output = await packBasicOutput(
       helper.walletService!,
-      sellOrder.payload.targetAddress,
+      sellOrder.payload.targetAddress!,
       0,
       {
         nativeTokens: [{ amount: BigInt(10), id: helper.token!.mintingData?.tokenId! }],

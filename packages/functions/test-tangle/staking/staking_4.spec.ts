@@ -14,17 +14,17 @@ import {
   TokenDrop,
   Transaction,
   TransactionType,
+  WEN_FUNC,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { onStakeRewardExpired } from '../../src/cron/stakeReward.cron';
 import { retryWallet } from '../../src/cron/wallet.cron';
-import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
-import { createMember, mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 import { Helper } from './Helper';
@@ -56,7 +56,10 @@ describe('Stake reward test test', () => {
       true,
     );
     const distributionDocRef = build5Db().doc(
-      `${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${member}`,
+      COL.TOKEN,
+      helper.token!.uid,
+      SUB_COL.DISTRIBUTION,
+      member,
     );
     const distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.stakeRewards).toBe(count);
@@ -74,7 +77,7 @@ describe('Stake reward test test', () => {
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
     };
-    const stakeRewardDocRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+    const stakeRewardDocRef = build5Db().doc(COL.STAKE_REWARD, stakeReward.uid);
     await stakeRewardDocRef.create(stakeReward);
     await onStakeRewardExpired();
 
@@ -95,8 +98,8 @@ describe('Stake reward test test', () => {
     await helper.stakeAmount(1000, 26);
     await helper.validateStatsStakeAmount(1000, 1000, 1490, 1490, StakeType.DYNAMIC, 1);
 
-    const member2Uid = await createMember(helper.walletSpy);
-    const member2 = <Member>await build5Db().doc(`${COL.MEMBER}/${member2Uid}`).get();
+    const member2Uid = await testEnv.createMember();
+    const member2 = <Member>await build5Db().doc(COL.MEMBER, member2Uid).get();
     const member2Address = await helper.walletService?.getAddressDetails(
       getAddress(member2, helper.network)!,
     )!;
@@ -122,7 +125,7 @@ describe('Stake reward test test', () => {
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
     };
-    const stakeRewardDocRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+    const stakeRewardDocRef = build5Db().doc(COL.STAKE_REWARD, stakeReward.uid);
     await stakeRewardDocRef.create(stakeReward);
     await onStakeRewardExpired();
 
@@ -162,16 +165,16 @@ describe('Stake reward test test', () => {
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
     };
-    const stakeRewardDocRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+    const stakeRewardDocRef = build5Db().doc(COL.STAKE_REWARD, stakeReward.uid);
     await stakeRewardDocRef.create(stakeReward);
     await onStakeRewardExpired();
 
     await verifyMemberAirdrop(helper.member!.uid, 149);
 
-    mockWalletReturnValue(helper.walletSpy, helper.member!.uid, {
+    mockWalletReturnValue(helper.member!.uid, {
       symbol: helper.token!.symbol,
     });
-    const claimOrder = await testEnv.wrap(claimMintedTokenOrder)({});
+    const claimOrder = await testEnv.wrap<Transaction>(WEN_FUNC.claimMintedTokenOrder);
     await requestFundsFromFaucet(
       helper.network,
       claimOrder.payload.targetAddress,
@@ -189,7 +192,7 @@ describe('Stake reward test test', () => {
 
     await awaitTransactionConfirmationsForToken(helper.token?.uid!);
 
-    const member = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.member?.uid}`).get();
+    const member = <Member>await build5Db().doc(COL.MEMBER, helper.member?.uid!).get();
     for (const address of [helper.memberAddress?.bech32!, getAddress(member, Network.RMS)]) {
       const outputs = await helper.walletService!.getOutputs(address, [], false, true);
       const nativeTokens = Object.values(outputs).reduce(
@@ -200,7 +203,10 @@ describe('Stake reward test test', () => {
     }
 
     const distributionDocRef = build5Db().doc(
-      `${COL.TOKEN}/${helper.token?.uid}/${SUB_COL.DISTRIBUTION}/${helper.member?.uid}`,
+      COL.TOKEN,
+      helper.token?.uid!,
+      SUB_COL.DISTRIBUTION,
+      helper.member?.uid,
     );
     await wait(async () => {
       const distribution = <TokenDistribution>await distributionDocRef.get();
@@ -225,16 +231,16 @@ describe('Stake reward test test', () => {
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
     };
-    const stakeRewardDocRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+    const stakeRewardDocRef = build5Db().doc(COL.STAKE_REWARD, stakeReward.uid);
     await stakeRewardDocRef.create(stakeReward);
     await onStakeRewardExpired();
 
     await verifyMemberAirdrop(helper.member!.uid, 149);
 
-    mockWalletReturnValue(helper.walletSpy, helper.member!.uid, {
+    mockWalletReturnValue(helper.member!.uid, {
       symbol: helper.token!.symbol,
     });
-    const claimOrder = await testEnv.wrap(claimMintedTokenOrder)({});
+    const claimOrder = await testEnv.wrap<Transaction>(WEN_FUNC.claimMintedTokenOrder);
     await requestFundsFromFaucet(
       helper.network,
       claimOrder.payload.targetAddress,
@@ -247,7 +253,7 @@ describe('Stake reward test test', () => {
       .where('type', '==', TransactionType.BILL_PAYMENT);
     let failed: any;
     await wait(async () => {
-      const snap = await query.get<Transaction>();
+      const snap = await query.get();
       failed = snap.find((d) => d?.payload?.walletReference?.count === 5);
       return snap.length === 2 && failed !== undefined;
     });
@@ -267,17 +273,17 @@ describe('Stake reward test test', () => {
     });
 
     if (failed) {
-      const docRef = build5Db().doc(`${COL.TRANSACTION}/${failed.uid}`);
+      const docRef = build5Db().doc(COL.TRANSACTION, failed.uid);
       await docRef.update({
-        'payload.walletReference.count': 4,
-        'payload.walletReference.processedOn': dateToTimestamp(dayjs().subtract(1, 'h')),
+        payload_walletReference_count: 4,
+        payload_walletReference_processedOn: dayjs().subtract(1, 'h').toDate(),
       });
     }
     await retryWallet();
 
     await awaitTransactionConfirmationsForToken(helper.token?.uid!);
 
-    const member = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.member?.uid}`).get();
+    const member = <Member>await build5Db().doc(COL.MEMBER, helper.member?.uid!).get();
     for (const address of [helper.memberAddress?.bech32!, getAddress(member, Network.RMS)]) {
       const outputs = await helper.walletService!.getOutputs(address, [], false, true);
       const nativeTokens = Object.values(outputs).reduce(
@@ -303,17 +309,17 @@ describe('Stake reward test test', () => {
     await helper.stakeAmount(25, 26);
     const stake = await helper.stakeAmount(12, 26);
     await build5Db()
-      .doc(`${COL.STAKE}/${stake.uid}`)
+      .doc(COL.STAKE, stake.uid)
       .update({
-        createdOn: dateToTimestamp(dayjs().subtract(3, 'h')),
-        expiresAt: dateToTimestamp(dayjs().subtract(2, 'h')),
+        createdOn: dayjs().subtract(3, 'h').toDate(),
+        expiresAt: dayjs().subtract(2, 'h').toDate(),
       });
     const stake2 = await helper.stakeAmount(13, 26);
     await build5Db()
-      .doc(`${COL.STAKE}/${stake2.uid}`)
+      .doc(COL.STAKE, stake2.uid)
       .update({
-        createdOn: dateToTimestamp(dayjs().add(2, 'h')),
-        expiresAt: dateToTimestamp(dayjs().add(3, 'h')),
+        createdOn: dayjs().add(2, 'h').toDate(),
+        expiresAt: dayjs().add(3, 'h').toDate(),
       });
 
     let stakeReward: StakeReward = {
@@ -327,7 +333,7 @@ describe('Stake reward test test', () => {
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
     };
-    const stakeRewardDocRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+    const stakeRewardDocRef = build5Db().doc(COL.STAKE_REWARD, stakeReward.uid);
     await stakeRewardDocRef.create(stakeReward);
     await onStakeRewardExpired();
 
@@ -343,9 +349,12 @@ describe('Stake reward test test', () => {
 
   it('Should claim extras properly', async () => {
     const distributionDocRef = build5Db().doc(
-      `${COL.TOKEN}/${helper.token?.uid!}/${SUB_COL.DISTRIBUTION}/${helper.member?.uid}`,
+      COL.TOKEN,
+      helper.token?.uid!,
+      SUB_COL.DISTRIBUTION,
+      helper.member?.uid,
     );
-    await distributionDocRef.set({ extraStakeRewards: 400 }, true);
+    await distributionDocRef.upsert({ extraStakeRewards: 400 });
 
     const vaultAddress = await helper.walletService!.getAddressDetails(helper.space?.vaultAddress!);
     await requestFundsFromFaucet(helper.network, vaultAddress.bech32, MIN_IOTA_AMOUNT);
@@ -370,7 +379,7 @@ describe('Stake reward test test', () => {
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
     };
-    const stakeRewardDocRef = build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`);
+    const stakeRewardDocRef = build5Db().doc(COL.STAKE_REWARD, stakeReward.uid);
     await stakeRewardDocRef.create(stakeReward);
 
     const billPaymentQuery = build5Db()
@@ -380,12 +389,12 @@ describe('Stake reward test test', () => {
 
     // No reward, 149 reduction
     await onStakeRewardExpired();
-    let snap = await billPaymentQuery.get<Transaction>();
+    let snap = await billPaymentQuery.get();
     expect(snap.length).toBe(1);
     await stakeRewardDocRef.update({ status: StakeRewardStatus.UNPROCESSED });
     let distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.extraStakeRewards).toBe(251);
-    snap = await billPaymentQuery.get<Transaction>();
+    snap = await billPaymentQuery.get();
     expect(snap[0]?.payload.nativeTokens![0]?.amount).toBe(149);
 
     // No reward, 149 reduction

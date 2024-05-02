@@ -10,19 +10,19 @@ export const nftBidControl = async ({
   params,
   project,
 }: Context<NftBidRequest>): Promise<Transaction> => {
-  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
+  const memberDocRef = build5Db().doc(COL.MEMBER, owner);
   const member = await memberDocRef.get();
   if (!member) {
     throw invalidArgument(WenError.member_does_not_exists);
   }
 
-  const nftDocRef = build5Db().doc(`${COL.NFT}/${params.nft}`);
+  const nftDocRef = build5Db().doc(COL.NFT, params.nft);
   const nft = <Nft>await nftDocRef.get();
 
   const bidTransaction = await createBidOrder(project, owner, nft.auction || '', ip);
 
-  const transactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${bidTransaction.uid}`);
+  const transactionDocRef = build5Db().doc(COL.TRANSACTION, bidTransaction.uid);
   await transactionDocRef.create(bidTransaction);
 
-  return (await transactionDocRef.get<Transaction>())!;
+  return (await transactionDocRef.get())!;
 };

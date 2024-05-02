@@ -1,10 +1,11 @@
-import { build5Db, getSnapshot } from '@build-5/database';
+import { BaseRecord, IDocument, IQuery, Update, build5Db } from '@build-5/database';
 import {
   COL,
   Dataset,
   GetManyRequest,
   MAX_FIELD_NAME_LENGTH,
   MAX_FIELD_VALUE_LENGTH,
+  SUB_COL,
   Subset,
   WenError,
 } from '@build-5/interfaces';
@@ -15,6 +16,7 @@ import {
   CommonJoi,
   getQueryLimit,
   getQueryParams,
+  keyToPg,
   queryToObservable,
   shouldSetProjectFilter,
 } from './common';
@@ -47,21 +49,23 @@ const getManySchema = Joi.object({
   startAfter: CommonJoi.uid(false),
 });
 
-export const getMany = async (project: string, url: string) => {
+export const getMany = async (project: string, url: string, isLive: boolean) => {
   const body = getQueryParams<GetManyRequest>(url, getManySchema);
 
-  const baseCollectionPath =
-    body.subset && body.setId ? `${body.dataset}/${body.setId}/${body.subset}` : body.dataset;
   let query = build5Db()
-    .collection(baseCollectionPath as COL)
-    .limit(getQueryLimit(body.dataset));
+    .collection(body.dataset as unknown as COL, body.setId, body.subset as unknown as SUB_COL)!
+    .limit(getQueryLimit(body.dataset)) as unknown as IQuery<any, BaseRecord>;
 
   if (body.fieldName && body.fieldValue != null) {
     try {
       const filters = getFilters(body.fieldName, body.fieldValue);
       Object.entries(filters).forEach(([key, value]) => {
         const hasMany = value.length > 1;
-        query = query.where(key, hasMany ? 'in' : '==', hasMany ? value : value[0]);
+        if (hasMany) {
+          query = query.whereIn(keyToPg(key), value);
+          return;
+        }
+        query = query.where(keyToPg(key), '==', value[0]);
       });
     } catch (error) {
       throw { code: 400, message: get(error, 'details.key', 'unknown') };
@@ -69,11 +73,11 @@ export const getMany = async (project: string, url: string) => {
   }
 
   if (body.dataset === Dataset.NFT) {
-    query = query.where('hidden', '==', false);
+    query = query.where('hidden' as any, '==', false);
   }
 
   if (body.dataset === Dataset.TRANSACTION) {
-    query = query.where('isOrderType', '==', false);
+    query = query.where('isOrderType' as any, '==', false);
   }
 
   if (shouldSetProjectFilter(body.dataset, body.subset)) {
@@ -81,16 +85,19 @@ export const getMany = async (project: string, url: string) => {
   }
 
   if (body.startAfter) {
-    const startAfter = getSnapshot(
-      body.dataset,
+    const docRef = build5Db().doc(
+      body.dataset as unknown as COL,
       body.setId || body.startAfter,
-      body.subset,
+      body.subset as unknown as SUB_COL,
       body.startAfter,
-    );
-    query = query.startAfter(await startAfter);
+    )! as unknown as IDocument<any, BaseRecord, Update>;
+    const startAfter = await docRef.get();
+    if (startAfter) {
+      query = query.startAfter(startAfter);
+    }
   }
 
-  const observable = queryToObservable<Record<string, unknown>>(query).pipe(
+  const observable = queryToObservable(query, isLive).pipe(
     map((snap) => snap.filter((d) => !isEmpty(d)).map((d) => ({ id: d.uid, ...d }))),
   );
   return observable;

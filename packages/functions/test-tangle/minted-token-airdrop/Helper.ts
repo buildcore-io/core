@@ -14,28 +14,26 @@ import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { createMember, createSpace, getRandomSymbol } from '../../test/controls/common';
-import { MEDIA, getWallet } from '../../test/set-up';
+import { getRandomSymbol } from '../../test/controls/common';
+import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 
 export class Helper {
   public network = Network.RMS;
-  public space: Space | undefined;
-  public token: Token | undefined;
+  public space: Space = {} as any;
+  public token: Token = {} as any;
 
-  public guardian: string | undefined;
-  public member: string | undefined;
-  public walletService: Wallet | undefined;
-  public walletSpy: any;
+  public guardian = '';
+  public member = '';
+  public walletService: Wallet = {} as any;
 
   public berforeAll = async () => {
     this.walletService = await getWallet(this.network);
-    this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
   };
 
   public beforeEach = async () => {
-    this.guardian = await createMember(this.walletSpy);
-    this.member = await createMember(this.walletSpy);
-    this.space = await createSpace(this.walletSpy, this.guardian);
+    this.guardian = await testEnv.createMember();
+    this.member = await testEnv.createMember();
+    this.space = await testEnv.createSpace(this.guardian);
     this.token = (await saveToken(this.space.uid, this.guardian, this.walletService!)) as Token;
   };
 
@@ -76,8 +74,8 @@ export const saveToken = async (
     },
     access: 0,
     icon: MEDIA,
-  };
-  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  } as Token;
+  await build5Db().doc(COL.TOKEN, token.uid).create(token);
   return token;
 };
 

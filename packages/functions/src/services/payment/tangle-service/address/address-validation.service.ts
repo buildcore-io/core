@@ -2,7 +2,6 @@ import { build5Db } from '@build-5/database';
 import {
   COL,
   Network,
-  Space,
   TRANSACTION_AUTO_EXPIRY_MS,
   TangleResponse,
   Transaction,
@@ -21,6 +20,7 @@ import { assertIsGuardian } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet.service';
 import { BaseTangleService, HandlerParams } from '../../base';
+import { Action } from '../../transaction-service';
 import { validateAddressSchemaObject } from './AddressValidationTangleRequestSchema';
 
 export class TangleAddressValidationService extends BaseTangleService<TangleResponse> {
@@ -43,9 +43,9 @@ export class TangleAddressValidationService extends BaseTangleService<TangleResp
     set(order, 'payload.amount', tranEntry.amount);
 
     this.transactionService.push({
-      ref: build5Db().doc(`${COL.TRANSACTION}/${order.uid}`),
+      ref: build5Db().doc(COL.TRANSACTION, order.uid),
       data: order,
-      action: 'set',
+      action: Action.C,
     });
 
     this.transactionService.createUnlockTransaction(
@@ -67,8 +67,8 @@ export const createAddressValidationOrder = async (
   network: Network,
   spaceId?: string,
 ) => {
-  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${spaceId}`);
-  const space = spaceId ? <Space | undefined>await spaceDocRef.get() : undefined;
+  const spaceDocRef = build5Db().doc(COL.SPACE, spaceId!);
+  const space = spaceId ? await spaceDocRef.get() : undefined;
   if (spaceId && !space) {
     throw invalidArgument(WenError.space_does_not_exists);
   }

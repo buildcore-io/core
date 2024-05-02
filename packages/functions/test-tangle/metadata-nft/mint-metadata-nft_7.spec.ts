@@ -4,7 +4,6 @@ import {
   MIN_IOTA_AMOUNT,
   Network,
   TangleRequestType,
-  Transaction,
   TransactionType,
   WenError,
 } from '@build-5/interfaces';
@@ -21,7 +20,7 @@ describe('Metadata nft', () => {
     async (network: Network) => {
       await helper.beforeEach(network);
 
-      const metadata = { mytest: 'mytest', asd: 'asdasdasd' };
+      const metadata = { mytest: 'mytest', name: 'asdasdasd' };
       await helper.walletService.send(
         helper.memberAddress,
         helper.tangleOrder.payload.targetAddress!,
@@ -55,7 +54,7 @@ describe('Metadata nft', () => {
         .where('member', '==', helper.member)
         .where('type', '==', TransactionType.CREDIT);
       await wait(async () => {
-        const snap = await creditQuery.get<Transaction>();
+        const snap = await creditQuery.get();
         return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
       });
 
@@ -78,10 +77,10 @@ describe('Metadata nft', () => {
         .where('member', '==', helper.member)
         .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
       await wait(async () => {
-        const snap = await creditQuery.get<Transaction>();
+        const snap = await creditQuery.get();
         return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
       });
-      const snap = await creditQuery.get<Transaction>();
+      const snap = await creditQuery.get();
       expect((snap[0].payload.response as any).message).toBe(WenError.invalid_collection_id.key);
     },
   );

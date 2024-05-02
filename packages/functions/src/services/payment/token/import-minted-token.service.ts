@@ -29,15 +29,15 @@ import { isAliasGovernor } from '../../../utils/token-minting-utils/alias.utils'
 import { Wallet } from '../../wallet/wallet';
 import { WalletService } from '../../wallet/wallet.service';
 import { BaseService, HandlerParams } from '../base';
-import { TransactionMatch } from '../transaction-service';
+import { Action, TransactionMatch } from '../transaction-service';
 
 export class ImportMintedTokenService extends BaseService {
   public handleRequest = async ({ order, match }: HandlerParams) => {
     let error: { [key: string]: unknown } = {};
     try {
       const tokenId = order.payload.tokenId!;
-      const existingTokenDocRef = build5Db().doc(`${COL.TOKEN}/${tokenId}`);
-      const existingToken = await this.transactionService.get<Token>(existingTokenDocRef);
+      const existingTokenDocRef = build5Db().doc(COL.TOKEN, tokenId);
+      const existingToken = await this.transaction.get(existingTokenDocRef);
 
       if (existingToken) {
         throw WenError.token_does_not_exist;
@@ -99,8 +99,8 @@ export class ImportMintedTokenService extends BaseService {
         pricePerToken: 0,
         decimals: metadata.decimals,
       };
-      const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
-      this.transactionService.push({ ref: tokenDocRef, data: token, action: 'set' });
+      const tokenDocRef = build5Db().doc(COL.TOKEN, token.uid);
+      this.transactionService.push({ ref: tokenDocRef, data: token, action: Action.C });
     } catch (err) {
       error = {
         status: 'error',

@@ -10,7 +10,7 @@ export const auctionBidControl = async ({
   params,
   project,
 }: Context<AuctionBidRequest>): Promise<Transaction> => {
-  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
+  const memberDocRef = build5Db().doc(COL.MEMBER, owner);
   const member = await memberDocRef.get();
   if (!member) {
     throw invalidArgument(WenError.member_does_not_exists);
@@ -18,8 +18,8 @@ export const auctionBidControl = async ({
 
   const bidTransaction = await createBidOrder(project, owner, params.auction, ip);
 
-  const transactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${bidTransaction.uid}`);
+  const transactionDocRef = build5Db().doc(COL.TRANSACTION, bidTransaction.uid);
   await transactionDocRef.create(bidTransaction);
 
-  return (await transactionDocRef.get<Transaction>())!;
+  return (await transactionDocRef.get())!;
 };

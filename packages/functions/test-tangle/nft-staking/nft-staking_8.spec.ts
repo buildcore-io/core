@@ -8,11 +8,10 @@ import {
   StakeType,
   Transaction,
   TransactionType,
+  WEN_FUNC,
 } from '@build-5/interfaces';
-import { creditUnrefundable } from '../../src/runtime/firebase/credit';
-import { stakeNft } from '../../src/runtime/firebase/nft';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
@@ -29,20 +28,20 @@ describe('Stake nft', () => {
 
   it('Should not stake with storage dep', async () => {
     let nft = await helper.createAndOrderNft();
-    let nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
+    let nftDocRef = build5Db().doc(COL.NFT, nft.uid);
     await helper.mintCollection();
     nft = <Nft>await nftDocRef.get();
     await helper.withdrawNftAndAwait(nft.uid);
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
+    mockWalletReturnValue(helper.guardian!, {
       network: Network.RMS,
       weeks: 25,
       type: StakeType.DYNAMIC,
     });
-    const stakeNftOrder = await testEnv.wrap(stakeNft)({});
+    const stakeNftOrder = await testEnv.wrap<Transaction>(WEN_FUNC.stakeNft);
     await helper.sendNftToAddress(
       helper.guardianAddress!,
-      stakeNftOrder.payload.targetAddress,
+      stakeNftOrder.payload.targetAddress!,
       undefined,
       nft.mintingData?.nftId,
       MIN_IOTA_AMOUNT,
@@ -60,13 +59,13 @@ describe('Stake nft', () => {
         IgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION,
       );
     await wait(async () => {
-      const snap = await creditQuery.get<Transaction>();
+      const snap = await creditQuery.get();
       return snap.length === 1;
     });
 
-    const snap = await creditQuery.get<Transaction>();
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, { transaction: snap[0].uid });
-    const order = await testEnv.wrap(creditUnrefundable)({});
+    const snap = await creditQuery.get();
+    mockWalletReturnValue(helper.guardian!, { transaction: snap[0].uid });
+    const order = await testEnv.wrap<Transaction>(WEN_FUNC.creditUnrefundable);
     await requestFundsFromFaucet(Network.RMS, order.payload.targetAddress, order.payload.amount);
 
     creditQuery = build5Db()
@@ -74,7 +73,7 @@ describe('Stake nft', () => {
       .where('type', '==', TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED)
       .where('member', '==', helper.guardian);
     await wait(async () => {
-      const snap = await creditQuery.get<Transaction>();
+      const snap = await creditQuery.get();
       return snap.length === 1 && snap[0].payload.walletReference?.confirmed;
     });
 

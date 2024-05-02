@@ -1,20 +1,19 @@
 import { build5Db } from '@build-5/database';
 import {
   COL,
-  Dataset,
   GetTokenPrice,
   MIN_IOTA_AMOUNT,
   QUERY_MAX_LENGTH,
   QUERY_MIN_LENGTH,
-  Ticker,
   TICKERS,
+  Ticker,
   TokenTradeOrder,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
 } from '@build-5/interfaces';
 import Joi from 'joi';
 import { head } from 'lodash';
-import { combineLatest, map, Observable } from 'rxjs';
+import { Observable, combineLatest, map } from 'rxjs';
 import { CommonJoi, documentToObservable, getQueryParams, queryToObservable } from './common';
 
 const getTokenPriceSchema = Joi.object({
@@ -26,14 +25,14 @@ const getTokenPriceSchema = Joi.object({
     .required(),
 });
 
-const tickerDocRef = build5Db().doc(`${COL.TICKER}/${TICKERS.SMRUSD}`);
+const tickerDocRef = build5Db().doc(COL.TICKER, TICKERS.SMRUSD);
 
-export const getTokenPrice = async (url: string) => {
+export const getTokenPrice = async (url: string, isLive: boolean) => {
   const body = getQueryParams<GetTokenPrice>(url, getTokenPriceSchema);
 
-  const ticker = documentToObservable<Ticker>(tickerDocRef);
+  const ticker = documentToObservable(tickerDocRef, isLive);
   const tokens = Array.isArray(body.token) ? body.token : [body.token];
-  const observables = tokens.map((token) => getPriceForTokenLive(token, ticker));
+  const observables = tokens.map((token) => getPriceForTokenLive(token, ticker, isLive));
   const combined = combineLatest(observables).pipe(
     map((result) => (result.length === 1 ? result[0] : result)),
   );
@@ -41,9 +40,9 @@ export const getTokenPrice = async (url: string) => {
   return combined;
 };
 
-const getPriceForTokenLive = (token: string, ticker: Observable<Ticker>) => {
-  const lowestSell = queryToObservable<TokenTradeOrder>(lowestSellQuery(token));
-  const highestBuy = queryToObservable<TokenTradeOrder>(highestBuyQuery(token));
+const getPriceForTokenLive = (token: string, ticker: Observable<Ticker>, isLive: boolean) => {
+  const lowestSell = queryToObservable<TokenTradeOrder>(lowestSellQuery(token), isLive);
+  const highestBuy = queryToObservable<TokenTradeOrder>(highestBuyQuery(token), isLive);
   const combined = combineLatest([lowestSell, highestBuy, ticker]).pipe(
     map(([lowestSell, highestBuy, ticker]) => {
       const price = calculatePrice(lowestSell, highestBuy);
@@ -55,7 +54,7 @@ const getPriceForTokenLive = (token: string, ticker: Observable<Ticker>) => {
 
 const lowestSellQuery = (token: string) =>
   build5Db()
-    .collection(Dataset.TOKEN_MARKET)
+    .collection(COL.TOKEN_MARKET)
     .where('status', '==', TokenTradeOrderStatus.ACTIVE)
     .where('token', '==', token)
     .where('type', '==', TokenTradeOrderType.SELL)
@@ -64,12 +63,12 @@ const lowestSellQuery = (token: string) =>
 
 const highestBuyQuery = (token: string) =>
   build5Db()
-    .collection(Dataset.TOKEN_MARKET)
+    .collection(COL.TOKEN_MARKET)
     .where('status', '==', TokenTradeOrderStatus.ACTIVE)
     .where('token', '==', token)
     .where('type', '==', TokenTradeOrderType.BUY)
-    .orderBy('price')
-    .limitToLast(1);
+    .orderBy('price', 'desc')
+    .limit(1);
 
 const calculatePrice = (
   lowestSellOrders: TokenTradeOrder[],

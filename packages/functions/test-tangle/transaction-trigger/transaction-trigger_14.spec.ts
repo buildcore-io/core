@@ -12,7 +12,7 @@ import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { retryWallet } from '../../src/cron/wallet.cron';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
-import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
+import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { wait } from '../../test/controls/common';
 import { getWallet } from '../../test/set-up';
@@ -50,7 +50,7 @@ describe('Transaction trigger spec', () => {
         void: false,
       },
     };
-    const docRef = build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+    const docRef = build5Db().doc(COL.TRANSACTION, billPayment.uid);
     await docRef.create(billPayment);
 
     await wait(async () => {
@@ -65,21 +65,19 @@ describe('Transaction trigger spec', () => {
     let retryWalletResult = await retryWallet();
     expect(retryWalletResult.find((r) => r == billPayment.uid)).toBeUndefined();
     docRef.update({
-      'payload.walletReference.processedOn': dateToTimestamp(
-        dayjs().subtract(4, 'minute').toDate(),
-      ),
-      'payload.amount': MIN_IOTA_AMOUNT,
+      payload_walletReference_processedOn: dayjs().subtract(4, 'minute').toDate(),
+      payload_amount: MIN_IOTA_AMOUNT,
     });
 
     retryWalletResult = await retryWallet();
     expect(retryWalletResult.find((r) => r == billPayment.uid)).toBeDefined();
 
     await wait(async () => {
-      const data = await docRef.get<Transaction>();
+      const data = await docRef.get();
       return data?.payload?.walletReference?.confirmed;
     });
 
-    const billPaymentDocRef = build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+    const billPaymentDocRef = build5Db().doc(COL.TRANSACTION, billPayment.uid);
     await wait(async () => {
       billPayment = <Transaction>await billPaymentDocRef.get();
       return billPayment.payload?.walletReference?.confirmed;

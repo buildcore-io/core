@@ -79,7 +79,7 @@ export interface TransactionPayload {
   /**
    * A reference to the source order or payment
    */
-  sourceTransaction?: string | string[];
+  sourceTransaction?: string[];
   /**
    * Specifies the processing type
    */
@@ -310,6 +310,10 @@ export interface TransactionPayload {
    */
   legacyAwardFundRequestId?: NetworkAddress;
   /**
+   * Number of legacy awards being funded by this transaction
+   */
+  legacyAwardsBeeingFunded?: number;
+  /**
    * Length of the stake in weeks
    */
   weeks?: number;
@@ -494,5 +498,6 @@ export interface TransactionPayload {
    */
   nftOrders?: NftBulkOrder[];
 
+  outputId?: string;
   swap?: string;
 }

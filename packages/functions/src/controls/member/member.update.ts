@@ -1,20 +1,12 @@
 import { build5Db } from '@build-5/database';
-import {
-  COL,
-  Member,
-  MemberUpdateRequest,
-  Nft,
-  NftAvailable,
-  NftStatus,
-  WenError,
-} from '@build-5/interfaces';
+import { COL, MemberUpdateRequest, NftAvailable, NftStatus, WenError } from '@build-5/interfaces';
 import { invalidArgument } from '../../utils/error.utils';
 import { cleanupParams } from '../../utils/schema.utils';
 import { Context } from '../common';
 
 export const updateMemberControl = async ({ owner, params }: Context<MemberUpdateRequest>) => {
-  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
-  const member = await memberDocRef.get<Member>();
+  const memberDocRef = build5Db().doc(COL.MEMBER, owner);
+  const member = await memberDocRef.get();
   if (!member) {
     throw invalidArgument(WenError.member_does_not_exists);
   }
@@ -24,7 +16,7 @@ export const updateMemberControl = async ({ owner, params }: Context<MemberUpdat
       .collection(COL.MEMBER)
       .where('name', '==', params.name)
       .limit(1)
-      .get<Member>();
+      .get();
     if (members.length > 0) {
       throw invalidArgument(WenError.member_username_exists);
     }
@@ -36,26 +28,26 @@ export const updateMemberControl = async ({ owner, params }: Context<MemberUpdat
     const nft = await getNft(owner, params.avatarNft);
     params.avatar = nft.media;
 
-    const nftDocRef = build5Db().doc(`${COL.NFT}/${params.avatarNft}`);
+    const nftDocRef = build5Db().doc(COL.NFT, params.avatarNft);
     batch.update(nftDocRef, { setAsAvatar: true });
   } else if (Object.keys(params).includes('avatarNft')) {
     (params as Record<string, unknown>).avatar = null;
   }
 
   if (member.avatarNft && member.avatarNft !== params.avatarNft) {
-    const currentAvatarDocRef = build5Db().doc(`${COL.NFT}/${member.avatarNft}`);
+    const currentAvatarDocRef = build5Db().doc(COL.NFT, member.avatarNft);
     batch.update(currentAvatarDocRef, { setAsAvatar: false });
   }
 
   batch.update(memberDocRef, cleanupParams({ ...params }));
   await batch.commit();
 
-  return (await memberDocRef.get<Member>())!;
+  return (await memberDocRef.get())!;
 };
 
 const getNft = async (owner: string, nftId: string) => {
-  const nftDocRef = build5Db().doc(`${COL.NFT}/${nftId}`);
-  const nft = await nftDocRef.get<Nft>();
+  const nftDocRef = build5Db().doc(COL.NFT, nftId);
+  const nft = await nftDocRef.get();
   if (!nft) {
     throw invalidArgument(WenError.nft_does_not_exists);
   }

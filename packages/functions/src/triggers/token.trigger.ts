@@ -1,4 +1,4 @@
-import { IBatch, build5Db } from '@build-5/database';
+import { IBatch, PgToken, build5Db } from '@build-5/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -6,12 +6,11 @@ import {
   MIN_IOTA_AMOUNT,
   MediaStatus,
   Member,
+  Network,
   SUB_COL,
   Space,
-  Token,
   TokenDistribution,
   TokenStatus,
-  TokenTradeOrder,
   TokenTradeOrderStatus,
   Transaction,
   TransactionPayloadType,
@@ -23,6 +22,7 @@ import { WalletService } from '../services/wallet/wallet.service';
 import { getAddress } from '../utils/address.utils';
 import { downloadMediaAndPackCar, tokenToIpfsMetadata } from '../utils/car.utils';
 import { getProject, guardedRerun } from '../utils/common.utils';
+import { logger } from '../utils/logger';
 import { getRoyaltyFees } from '../utils/royalty.utils';
 import { cancelTradeOrderUtil } from '../utils/token-trade.utils';
 import {
@@ -33,9 +33,9 @@ import {
   orderDocRef,
 } from '../utils/token.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
-import { FirestoreDocEvent } from './common';
+import { PgDocEvent } from './common';
 
-export const onTokenStatusUpdated = async (event: FirestoreDocEvent<Token>) => {
+export const onTokenStatusUpdated = async (event: PgDocEvent<PgToken>) => {
   const { prev, curr } = event;
 
   if (prev?.status === TokenStatus.AVAILABLE && curr?.status === TokenStatus.PROCESSING) {
@@ -50,15 +50,15 @@ export const onTokenStatusUpdated = async (event: FirestoreDocEvent<Token>) => {
     return await mintToken(curr);
   }
 
-  if (prev?.mintingData?.tokensInVault && curr?.mintingData?.tokensInVault === 0) {
+  if (prev?.mintingData_tokensInVault && curr?.mintingData_tokensInVault === 0) {
     await onTokenVaultEmptied(curr);
   }
 };
 
-const getTokenCount = (token: Token, amount: number) => Math.floor(amount / token.pricePerToken);
+const getTokenCount = (token: PgToken, amount: number) => Math.floor(amount / token.pricePerToken!);
 
 const getBoughtByMember = (
-  token: Token,
+  token: PgToken,
   totalDeposit: number,
   totalSupply: number,
   totalBought: number,
@@ -88,13 +88,13 @@ const getTotalPaid = (pricePerToken: number, boughtByMember: number) => {
 
 const getMemberDistribution = (
   distribution: TokenDistribution,
-  token: Token,
+  token: PgToken,
   totalSupply: number,
   totalBought: number,
 ): TokenDistribution => {
   const totalDeposit = distribution.totalDeposit || 0;
   const boughtByMember = getBoughtByMember(token, totalDeposit, totalSupply, totalBought);
-  const totalPaid = getTotalPaid(token.pricePerToken, boughtByMember);
+  const totalPaid = getTotalPaid(token.pricePerToken!, boughtByMember);
   const refundedAmount = Number(bigDecimal.subtract(totalDeposit, totalPaid));
   return <TokenDistribution>{
     uid: distribution.uid,
@@ -113,7 +113,7 @@ const getFlooredDistribution = (distribution: TokenDistribution): TokenDistribut
 };
 
 const createBillAndRoyaltyPayment = async (
-  token: Token,
+  token: PgToken,
   distribution: TokenDistribution,
   payments: Transaction[],
   order: Transaction,
@@ -126,14 +126,14 @@ const createBillAndRoyaltyPayment = async (
   let balance =
     distribution.totalPaid +
     (distribution.refundedAmount! < MIN_IOTA_AMOUNT ? distribution.refundedAmount! : 0);
-  const member = <Member>await memberDocRef(distribution.uid!).get();
+  const member = <Member>await build5Db().doc(COL.MEMBER, distribution.uid!).get();
   const [royaltySpaceId, fee] = Object.entries(
     await getRoyaltyFees(balance, member.tokenPurchaseFeePercentage, true),
   )[0];
 
   let royaltyPayment: Transaction | undefined = undefined;
   if (fee >= MIN_IOTA_AMOUNT && balance - fee >= MIN_IOTA_AMOUNT) {
-    const royaltySpace = await build5Db().doc(`${COL.SPACE}/${royaltySpaceId}`).get<Space>();
+    const royaltySpace = await build5Db().doc(COL.SPACE, royaltySpaceId).get();
     const network = order.network || DEFAULT_NETWORK;
     royaltyPayment = {
       project: getProject(order),
@@ -159,7 +159,7 @@ const createBillAndRoyaltyPayment = async (
         tokenSymbol: token.symbol,
       },
     };
-    const royaltyPaymentDocRef = build5Db().doc(`${COL.TRANSACTION}/${royaltyPayment.uid}`);
+    const royaltyPaymentDocRef = build5Db().doc(COL.TRANSACTION, royaltyPayment.uid);
     batch.create(royaltyPaymentDocRef, royaltyPayment);
     balance -= fee;
   }
@@ -189,13 +189,13 @@ const createBillAndRoyaltyPayment = async (
       tokenSymbol: token.symbol,
     },
   };
-  const billPaymentDocRef = build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+  const billPaymentDocRef = build5Db().doc(COL.TRANSACTION, billPayment.uid);
   batch.create(billPaymentDocRef, billPayment);
   return { billPaymentId: billPayment.uid, royaltyBillPaymentId: royaltyPayment?.uid || '' };
 };
 
 const createCredit = async (
-  token: Token,
+  token: PgToken,
   distribution: TokenDistribution,
   payments: Transaction[],
   order: Transaction,
@@ -206,7 +206,7 @@ const createCredit = async (
   }
   const member = <Member>await memberDocRef(distribution.uid!).get();
   const tranId = getRandomEthAddress();
-  const docRef = build5Db().doc(`${COL.TRANSACTION}/${tranId}`);
+  const docRef = build5Db().doc(COL.TRANSACTION, tranId);
   const network = order.network || DEFAULT_NETWORK;
   const data: Transaction = {
     project: getProject(order),
@@ -234,16 +234,20 @@ const createCredit = async (
   return tranId;
 };
 
-const reconcileBuyer = (token: Token) => async (distribution: TokenDistribution) => {
+const reconcileBuyer = (token: PgToken) => async (distribution: TokenDistribution) => {
   const batch = build5Db().batch();
-  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
-  const distributionDoc = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(distribution.uid!);
+  const distributionDoc = build5Db().doc(
+    COL.TOKEN,
+    token.uid,
+    SUB_COL.DISTRIBUTION,
+    distribution.uid!,
+  );
 
-  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${token.space}`);
-  const space = (await spaceDocRef.get<Space>())!;
+  const spaceDocRef = build5Db().doc(COL.SPACE, token.space!);
+  const space = (await spaceDocRef.get())!;
 
   const order = <Transaction>await orderDocRef(distribution.uid!, token).get();
-  const payments = await allPaymentsQuery(distribution.uid!, token.uid).get<Transaction>();
+  const payments = await allPaymentsQuery(distribution.uid!, token.uid).get();
 
   const { billPaymentId, royaltyBillPaymentId } = await createBillAndRoyaltyPayment(
     token,
@@ -261,13 +265,17 @@ const reconcileBuyer = (token: Token) => async (distribution: TokenDistribution)
     batch,
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { stakeExpiry, ...rest } = distribution;
   batch.update(distributionDoc, {
-    ...distribution,
+    ...rest,
     tokenOwned: build5Db().inc(distribution.totalBought || 0),
     reconciled: true,
     billPaymentId,
     royaltyBillPaymentId,
     creditPaymentId,
+    mintedClaimedOn: distribution.mintedClaimedOn?.toDate(),
+    createdOn: distribution.createdOn?.toDate(),
   });
   await batch.commit();
 };
@@ -275,14 +283,14 @@ const reconcileBuyer = (token: Token) => async (distribution: TokenDistribution)
 const distributeLeftoverTokens = (
   distributions: TokenDistribution[],
   totalPublicSupply: number,
-  token: Token,
+  token: PgToken,
 ) => {
   let tokensLeft = totalPublicSupply - distributions.reduce((sum, p) => sum + p.totalBought!, 0);
   let i = 0;
   let sell = false;
   while (tokensLeft) {
     const distribution = { ...distributions[i] };
-    if (distribution.refundedAmount! >= token.pricePerToken) {
+    if (distribution.refundedAmount! >= token.pricePerToken!) {
       sell = true;
       tokensLeft--;
       distribution.refundedAmount = Number(
@@ -299,18 +307,17 @@ const distributeLeftoverTokens = (
   }
 };
 
-const cancelPublicSale = async (token: Token) => {
-  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
-  const distributions = await tokenDocRef
-    .collection(SUB_COL.DISTRIBUTION)
+const cancelPublicSale = async (token: PgToken) => {
+  const distributions = await build5Db()
+    .collection(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION)
     .where('totalDeposit', '>', 0)
-    .get<TokenDistribution>();
+    .get();
 
   const promises = distributions.map(async (distribution) => {
     const batch = build5Db().batch();
 
     const order = <Transaction>await orderDocRef(distribution.uid!, token).get();
-    const payments = await allPaymentsQuery(distribution.uid!, token.uid).get<Transaction>();
+    const payments = await allPaymentsQuery(distribution.uid!, token.uid).get();
     const creditPaymentId = await createCredit(
       token,
       { ...distribution, refundedAmount: distribution?.totalDeposit },
@@ -319,7 +326,12 @@ const cancelPublicSale = async (token: Token) => {
       batch,
     );
 
-    const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(distribution.uid!);
+    const distributionDocRef = build5Db().doc(
+      COL.TOKEN,
+      token.uid,
+      SUB_COL.DISTRIBUTION,
+      distribution.uid!,
+    );
     batch.update(distributionDocRef, { creditPaymentId, totalDeposit: 0 });
 
     await batch.commit();
@@ -330,19 +342,18 @@ const cancelPublicSale = async (token: Token) => {
     .filter((r) => r.status === 'rejected')
     .map((r) => String((<PromiseRejectedResult>r).reason));
   const status = isEmpty(errors) ? TokenStatus.AVAILABLE : TokenStatus.ERROR;
-  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ status });
+  await build5Db().doc(COL.TOKEN, token.uid).update({ status });
 
   if (status === TokenStatus.ERROR) {
-    console.error('Token processing error', token.uid, errors);
+    logger.error('Token processing error', token.uid, errors);
   }
 };
 
-const processTokenDistribution = async (token: Token) => {
-  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
-  const distributionsSnap = await tokenDocRef
-    .collection(SUB_COL.DISTRIBUTION)
+const processTokenDistribution = async (token: PgToken) => {
+  const distributionsSnap = await build5Db()
+    .collection(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION)
     .where('totalDeposit', '>', 0)
-    .get<TokenDistribution>();
+    .get();
   const totalBought = distributionsSnap.reduce(
     (sum, doc) => sum + getTokenCount(token, doc.totalDeposit || 0),
     0,
@@ -352,7 +363,7 @@ const processTokenDistribution = async (token: Token) => {
 
   const distributions = distributionsSnap
     .sort((a, b) => (b.totalDeposit || 0) - (a.totalDeposit || 0))
-    .map((d) => getMemberDistribution(<TokenDistribution>d, token, totalPublicSupply, totalBought));
+    .map((d) => getMemberDistribution(d, token, totalPublicSupply, totalBought));
 
   if (totalBought > totalPublicSupply) {
     distributeLeftoverTokens(distributions, totalPublicSupply, token);
@@ -364,59 +375,60 @@ const processTokenDistribution = async (token: Token) => {
     .filter((r) => r.status === 'rejected')
     .map((r) => String((<PromiseRejectedResult>r).reason));
   const status = isEmpty(errors) ? TokenStatus.PRE_MINTED : TokenStatus.ERROR;
-  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ status });
+  await build5Db().doc(COL.TOKEN, token.uid).update({ status });
 
   if (status === TokenStatus.ERROR) {
-    console.error('Token processing error', token.uid, errors);
+    logger.error('Token processing error', token.uid, errors);
   }
 };
 
-const mintToken = async (token: Token) => {
+const mintToken = async (token: PgToken) => {
   await cancelAllActiveSales(token!.uid);
   await setIpfsData(token);
 
+  const network = token.mintingData_network as Network;
   const order: Transaction = {
     project: getProject(token),
     type: TransactionType.MINT_TOKEN,
     uid: getRandomEthAddress(),
-    member: token.mintingData?.mintedBy,
+    member: token.mintingData_mintedBy!,
     space: token!.space,
-    network: token.mintingData?.network!,
+    network,
     payload: {
       type: TransactionPayloadType.MINT_ALIAS,
-      amount: token.mintingData?.aliasStorageDeposit,
-      sourceAddress: token.mintingData?.vaultAddress,
+      amount: token.mintingData_aliasStorageDeposit,
+      sourceAddress: token.mintingData_vaultAddress,
       token: token.uid,
     },
   };
-  await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+  await build5Db().doc(COL.TRANSACTION, order.uid).create(order);
 };
 
 const cancelAllActiveSales = async (token: string) => {
-  const runTransaction = () =>
+  const runTransactions = () =>
     build5Db().runTransaction(async (transaction) => {
       const snap = build5Db()
         .collection(COL.TOKEN_MARKET)
         .where('status', '==', TokenTradeOrderStatus.ACTIVE)
         .where('token', '==', token)
         .limit(150)
-        .get<TokenTradeOrder>();
-      const docRefs = (await snap).map((to) => build5Db().doc(`${COL.TOKEN_MARKET}/${to.uid}`));
-      const promises = (await transaction.getAll<TokenTradeOrder>(...docRefs))
+        .get();
+      const docRefs = (await snap).map((to) => build5Db().doc(COL.TOKEN_MARKET, to.uid));
+      const promises = (await transaction.getAll(...docRefs))
         .filter((d) => d && d.status === TokenTradeOrderStatus.ACTIVE)
         .map((d) =>
           cancelTradeOrderUtil(transaction, d!, TokenTradeOrderStatus.CANCELLED_MINTING_TOKEN),
         );
       return (await Promise.all(promises)).length;
     });
-  await guardedRerun(async () => (await runTransaction()) !== 0);
+  await guardedRerun(async () => (await runTransactions()) !== 0);
 };
 
-const setIpfsData = async (token: Token) => {
+const setIpfsData = async (token: PgToken) => {
   const metadata = tokenToIpfsMetadata(token);
   const ipfs = await downloadMediaAndPackCar(token.uid, token.icon!, metadata);
 
-  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({
+  await build5Db().doc(COL.TOKEN, token.uid).update({
     mediaStatus: MediaStatus.PENDING_UPLOAD,
     ipfsMedia: ipfs.ipfsMedia,
     ipfsMetadata: ipfs.ipfsMetadata,
@@ -424,32 +436,34 @@ const setIpfsData = async (token: Token) => {
   });
 };
 
-const onTokenVaultEmptied = async (token: Token) => {
-  const wallet = await WalletService.newWallet(token.mintingData?.network);
-  const { amount: vaultBalance } = await wallet.getBalance(token.mintingData?.vaultAddress!);
-  const minter = await build5Db().doc(`${COL.MEMBER}/${token.mintingData?.mintedBy}`).get<Member>();
+const onTokenVaultEmptied = async (token: PgToken) => {
+  const network = token.mintingData_network as Network;
+  const wallet = await WalletService.newWallet(network);
+  const { amount: vaultBalance } = await wallet.getBalance(token.mintingData_vaultAddress!);
+  const minter = await build5Db().doc(COL.MEMBER, token.mintingData_mintedBy!).get();
   const paymentsSnap = await build5Db()
     .collection(COL.TRANSACTION)
     .where('type', '==', TransactionType.PAYMENT)
-    .where('payload.sourceTransaction', 'array-contains', token.mintingData?.vaultAddress!)
-    .get<Transaction>();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .where('payload_sourceTransaction', 'array-contains', token.mintingData_vaultAddress! as any)
+    .get();
   const credit: Transaction = {
     project: getProject(token),
     type: TransactionType.CREDIT,
     uid: getRandomEthAddress(),
     space: token.space,
     member: minter!.uid,
-    network: token.mintingData?.network!,
+    network,
     payload: {
       type: TransactionPayloadType.TOKEN_VAULT_EMPTIED,
       dependsOnBillPayment: true,
       amount: Number(vaultBalance),
-      sourceAddress: token.mintingData?.vaultAddress!,
-      targetAddress: getAddress(minter, token.mintingData?.network!),
+      sourceAddress: token.mintingData_vaultAddress!,
+      targetAddress: getAddress(minter, network),
       sourceTransaction: paymentsSnap.map((p) => p.uid),
       token: token.uid,
       tokenSymbol: token.symbol,
     },
   };
-  await build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`).create(credit);
+  await build5Db().doc(COL.TRANSACTION, credit.uid).create(credit);
 };

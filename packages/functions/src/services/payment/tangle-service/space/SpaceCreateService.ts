@@ -1,8 +1,17 @@
 import { build5Db, build5Storage } from '@build-5/database';
-import { COL, MediaStatus, Network, SUB_COL, SpaceCreateTangleResponse } from '@build-5/interfaces';
-import { get, set } from 'lodash';
+import {
+  COL,
+  MediaStatus,
+  Network,
+  SUB_COL,
+  SpaceCreateTangleResponse,
+  SpaceGuardian,
+} from '@build-5/interfaces';
+import dayjs from 'dayjs';
+import { set } from 'lodash';
 import { downloadMediaAndPackCar } from '../../../../utils/car.utils';
 import { getBucket, isProdEnv } from '../../../../utils/config.utils';
+import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { migrateUriToSotrage, uriToUrl } from '../../../../utils/media.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { spaceToIpfsMetadata } from '../../../../utils/space.utils';
@@ -10,6 +19,7 @@ import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { isStorageUrl } from '../../../joi/common';
 import { WalletService } from '../../../wallet/wallet.service';
 import { BaseTangleService, HandlerParams } from '../../base';
+import { Action } from '../../transaction-service';
 import { createSpaceSchemaObject } from './SpaceCreateTangleRequestSchema';
 
 export class SpaceCreateService extends BaseTangleService<SpaceCreateTangleResponse> {
@@ -20,30 +30,30 @@ export class SpaceCreateService extends BaseTangleService<SpaceCreateTangleRespo
   }: HandlerParams): Promise<SpaceCreateTangleResponse> => {
     await assertValidationAsync(createSpaceSchemaObject, request);
 
-    const { space, guardian, member } = await getCreateSpaceData(project, owner, request);
+    const { space, guardian } = await getCreateSpaceData(project, owner, request);
 
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
-    this.transactionService.push({ ref: spaceDocRef, data: space, action: 'set' });
-
-    const spaceGuardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(owner);
     this.transactionService.push({
-      ref: spaceGuardianDocRef,
-      data: guardian,
-      action: 'set',
-    });
-    const spaceMemberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner);
-    this.transactionService.push({
-      ref: spaceMemberDocRef,
-      data: guardian,
-      action: 'set',
+      ref: build5Db().doc(COL.SPACE, space.uid),
+      data: space,
+      action: Action.C,
     });
 
-    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
+    this.transactionService.push({
+      ref: build5Db().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, owner),
+      data: guardian,
+      action: Action.C,
+    });
+    this.transactionService.push({
+      ref: build5Db().doc(COL.SPACE, space.uid, SUB_COL.MEMBERS, owner),
+      data: guardian,
+      action: Action.C,
+    });
+
+    const memberDocRef = build5Db().doc(COL.MEMBER, owner);
     this.transactionService.push({
       ref: memberDocRef,
-      data: member,
-      action: 'update',
-      merge: true,
+      data: { spaces: { [space.uid]: { uid: space.uid, isMember: true } } },
+      action: Action.U,
     });
 
     return { space: space.uid };
@@ -62,6 +72,7 @@ export const getCreateSpaceData = async (
     uid: getRandomEthAddress(),
     project,
     ...params,
+    bannerUrl: (params.bannerUrl as string) || '',
     createdBy: owner,
     open: params.open === false ? false : true,
     totalMembers: 1,
@@ -71,7 +82,7 @@ export const getCreateSpaceData = async (
     vaultAddress: vaultAddress.bech32,
   };
 
-  let bannerUrl = get(space, 'bannerUrl', '');
+  let bannerUrl = space.bannerUrl || '';
   if (bannerUrl) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const metadata = spaceToIpfsMetadata(space as any);
@@ -95,16 +106,16 @@ export const getCreateSpaceData = async (
     set(space, 'mediaStatus', MediaStatus.PENDING_UPLOAD);
   }
 
-  const guardian = {
+  const guardian: SpaceGuardian = {
     project,
     uid: owner,
     parentId: space.uid,
     parentCol: COL.SPACE,
+    createdOn: dateToTimestamp(dayjs()),
   };
 
   return {
     space: { ...space, guardians: { [owner]: guardian }, members: { [owner]: guardian } },
     guardian,
-    member: { spaces: { [space.uid]: { uid: space.uid, isMember: true } } },
   };
 };

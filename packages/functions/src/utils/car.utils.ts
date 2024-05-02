@@ -1,3 +1,4 @@
+import { PgCollection, PgNft, PgToken } from '@build-5/database';
 import { Collection, KEY_NAME_TANGLE, Nft, Token } from '@build-5/interfaces';
 import { CarReader } from '@ipld/car';
 import * as dagPb from '@ipld/dag-pb';
@@ -11,6 +12,7 @@ import { NFTStorage } from 'nft.storage';
 import os from 'os';
 import { propsToAttributes } from './collection-minting-utils/nft.prop.utils';
 import { getNftStorageToken } from './config.utils';
+import { logger } from './logger';
 import { downloadFile } from './media.utils';
 const MAX_BLOCK_SIZE = 1048576;
 
@@ -28,7 +30,7 @@ export const packCar = async (directory: string) => {
     const car = await CarReader.fromIterable(out);
     return { car, cid: root.toString() };
   } catch (error) {
-    console.error('Pack car error', error);
+    logger.error('Pack car error', error);
     throw error;
   } finally {
     await blockstore.close();
@@ -87,7 +89,7 @@ const toImportCandidate = (file: FileLike) => ({
   },
 });
 
-export const collectionToIpfsMetadata = (collection: Collection) => ({
+export const collectionToIpfsMetadata = (collection: Collection | PgCollection) => ({
   name: collection.name,
   description: collection.description,
   author: collection.createdBy,
@@ -97,7 +99,7 @@ export const collectionToIpfsMetadata = (collection: Collection) => ({
   uid: collection.uid,
 });
 
-export const nftToIpfsMetadata = (collection: Collection, nft: Nft) => {
+export const nftToIpfsMetadata = (collection: Collection, nft: Nft | PgNft) => {
   const props = propsToAttributes(nft.properties);
   const stats = propsToAttributes(nft.stats);
   return {
@@ -113,11 +115,11 @@ export const nftToIpfsMetadata = (collection: Collection, nft: Nft) => {
   };
 };
 
-export const tokenToIpfsMetadata = (token: Token) => ({
+export const tokenToIpfsMetadata = (token: Token | PgToken) => ({
   name: token.name,
   description: token.description || '',
   space: token.space,
   platform: KEY_NAME_TANGLE,
   uid: token.uid,
-  symbol: token.symbol.toUpperCase(),
+  symbol: token.symbol!.toUpperCase(),
 });

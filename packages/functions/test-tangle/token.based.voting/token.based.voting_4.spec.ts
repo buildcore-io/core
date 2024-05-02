@@ -1,10 +1,9 @@
 import { build5Db } from '@build-5/database';
-import { COL, Member, WenError } from '@build-5/interfaces';
+import { COL, Member, WEN_FUNC, WenError } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { voteOnProposal } from '../../src/runtime/firebase/proposal';
 import { getAddress } from '../../src/utils/address.utils';
-import { expectThrow, mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { expectThrow, wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { Helper } from './Helper';
 
 describe('Token based voting', () => {
@@ -21,18 +20,18 @@ describe('Token based voting', () => {
 
   it('Should throw, can only vote 24 hours before', async () => {
     await helper.updatePropoasalDates(dayjs().add(3, 'd'), dayjs().add(5, 'd'));
-    mockWalletReturnValue(helper.walletSpy, helper.guardian, {
+    mockWalletReturnValue(helper.guardian, {
       uid: helper.proposal!.uid,
       value: 1,
     });
-    await expectThrow(testEnv.wrap(voteOnProposal)({}), WenError.vote_is_no_longer_active.key);
+    await expectThrow(testEnv.wrap(WEN_FUNC.voteOnProposal), WenError.vote_is_no_longer_active.key);
   });
 
   it('Should vote, spend, other person votes with it', async () => {
     let voteTransactionOrder = await helper.voteOnProposal(1);
-    await helper.sendTokensToVote(voteTransactionOrder.payload.targetAddress);
+    await helper.sendTokensToVote(voteTransactionOrder.payload.targetAddress!);
     let credit = await helper.awaitVoteTransactionCreditIsConfirmed(
-      voteTransactionOrder.payload.targetAddress,
+      voteTransactionOrder.payload.targetAddress!,
     );
 
     let voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
@@ -43,7 +42,7 @@ describe('Token based voting', () => {
     await helper.updatePropoasalDates(dayjs().subtract(2, 'd'), dayjs().add(2, 'd'));
     await helper.updateVoteTranCreatedOn(voteTransaction.uid, dayjs().subtract(3, 'd'));
 
-    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${helper.member}`);
+    const memberDocRef = build5Db().doc(COL.MEMBER, helper.member);
     const member = <Member>await memberDocRef.get();
     const memberAddress = await helper.walletService!.getAddressDetails(
       getAddress(member, helper.network),
@@ -57,9 +56,9 @@ describe('Token based voting', () => {
     await helper.assertProposalMemberWeightsPerAnser(helper.guardian, 5, 1);
 
     voteTransactionOrder = await helper.voteOnProposal(1, false, helper.member);
-    await helper.sendTokensToVote(voteTransactionOrder.payload.targetAddress, 10, memberAddress);
+    await helper.sendTokensToVote(voteTransactionOrder.payload.targetAddress!, 10, memberAddress);
     credit = await helper.awaitVoteTransactionCreditIsConfirmed(
-      voteTransactionOrder.payload.targetAddress,
+      voteTransactionOrder.payload.targetAddress!,
     );
 
     voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
@@ -70,9 +69,9 @@ describe('Token based voting', () => {
 
   it('Should not reduce weight when voting after end date', async () => {
     const voteTransactionOrder = await helper.voteOnProposal(1);
-    await helper.sendTokensToVote(voteTransactionOrder.payload.targetAddress);
+    await helper.sendTokensToVote(voteTransactionOrder.payload.targetAddress!);
     const credit = await helper.awaitVoteTransactionCreditIsConfirmed(
-      voteTransactionOrder.payload.targetAddress,
+      voteTransactionOrder.payload.targetAddress!,
     );
 
     let voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);

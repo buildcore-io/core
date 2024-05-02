@@ -3,7 +3,6 @@ import {
   COL,
   MIN_IOTA_AMOUNT,
   Network,
-  Nft,
   NftAvailable,
   NftSetForSaleTangleRequest,
   TangleRequestType,
@@ -47,9 +46,9 @@ describe('Nft set for sale OTR', () => {
       },
     );
 
-    const nftDocRef = build5Db().doc(`${COL.NFT}/${helper.nft.uid}`);
+    const nftDocRef = build5Db().doc(COL.NFT, helper.nft.uid);
     await wait(async () => {
-      helper.nft = (await nftDocRef.get<Nft>())!;
+      helper.nft = (await nftDocRef.get())!;
       return helper.nft.available === NftAvailable.SALE;
     });
   });
@@ -74,9 +73,9 @@ describe('Nft set for sale OTR', () => {
       },
     );
 
-    const nftDocRef = build5Db().doc(`${COL.NFT}/${helper.nft.uid}`);
+    const nftDocRef = build5Db().doc(COL.NFT, helper.nft.uid);
     await wait(async () => {
-      helper.nft = (await nftDocRef.get<Nft>())!;
+      helper.nft = (await nftDocRef.get())!;
       return helper.nft.available === NftAvailable.AUCTION_AND_SALE;
     });
   });

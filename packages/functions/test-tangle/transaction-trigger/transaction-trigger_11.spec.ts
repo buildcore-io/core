@@ -45,7 +45,7 @@ describe('Transaction trigger spec', () => {
         sourceAddress.bech32,
         targetAddress.bech32,
       );
-      await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).create(billPayment);
+      await build5Db().doc(COL.TRANSACTION, billPayment.uid).create(billPayment);
 
       await wait(async () => {
         const mnemonic = await MnemonicService.getData(sourceAddress.bech32);
@@ -54,9 +54,7 @@ describe('Transaction trigger spec', () => {
 
       await wait(async () => {
         const mnemonic = await MnemonicService.getData(sourceAddress.bech32);
-        const payment = <Transaction>(
-          await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()
-        );
+        const payment = <Transaction>await build5Db().doc(COL.TRANSACTION, billPayment.uid).get();
         return (
           isEmpty(mnemonic.consumedOutputIds) &&
           payment?.payload?.walletReference?.confirmed &&

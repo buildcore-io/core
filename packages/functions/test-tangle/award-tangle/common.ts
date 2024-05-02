@@ -16,20 +16,20 @@ import { MEDIA } from '../../test/set-up';
 export const awaitAllTransactionsForAward = async (awardId: string) => {
   const baseTransQuery = build5Db()
     .collection(COL.TRANSACTION)
-    .where('payload.award', '==', awardId)
-    .where('type', 'in', [TransactionType.BILL_PAYMENT, TransactionType.CREDIT]);
+    .where('payload_award', '==', awardId)
+    .whereIn('type', [TransactionType.BILL_PAYMENT, TransactionType.CREDIT]);
   await allConfirmed(baseTransQuery);
 
   const nttQuery = build5Db()
     .collection(COL.TRANSACTION)
-    .where('payload.award', '==', awardId)
-    .where('payload.type', '==', TransactionPayloadType.BADGE);
+    .where('payload_award', '==', awardId)
+    .where('payload_type', '==', TransactionPayloadType.BADGE);
   await allConfirmed(nttQuery);
 };
 
-const allConfirmed = (query: IQuery) =>
+const allConfirmed = (query: IQuery<any, any>) =>
   wait(async () => {
-    const snap = await query.get<any>();
+    const snap = await query.get();
     const allConfirmed = snap.reduce(
       (acc, doc) => acc && doc?.payload?.walletReference?.confirmed,
       true,
@@ -54,7 +54,7 @@ export const saveBaseToken = async (space: string, guardian: string, network: Ne
     mintingData: {
       network,
     },
-  };
-  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
-  return token as Token;
+  } as Token;
+  await build5Db().doc(COL.TOKEN, token.uid).create(token);
+  return token;
 };

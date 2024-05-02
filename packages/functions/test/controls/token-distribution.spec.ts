@@ -15,26 +15,21 @@ import {
   Transaction,
   TransactionPayloadType,
   TransactionType,
+  WEN_FUNC,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
-import { orderToken } from '../../src/runtime/firebase/token/base';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { testEnv } from '../set-up';
+import { mockWalletReturnValue, testEnv } from '../set-up';
 import {
-  createMember,
   createRoyaltySpaces,
-  createSpace,
   getRandomSymbol,
-  mockWalletReturnValue,
   submitMilestoneFunc,
   tokenProcessed,
 } from './common';
-
-let walletSpy: any;
 
 interface Inputs {
   readonly totalDeposit: number[];
@@ -296,9 +291,9 @@ const scenarios = [
   custom,
 ];
 
-const submitTokenOrderFunc = async <T>(spy: string, address: NetworkAddress, params: T) => {
-  mockWalletReturnValue(spy, address, params);
-  const order = await testEnv.wrap(orderToken)({});
+const submitTokenOrderFunc = async <T>(address: NetworkAddress, params: T) => {
+  mockWalletReturnValue(address, params);
+  const order = await testEnv.wrap<Transaction>(WEN_FUNC.orderToken);
   expect(order?.createdOn).toBeDefined();
   return order;
 };
@@ -337,21 +332,20 @@ describe('Token trigger test', () => {
 
   beforeAll(async () => {
     await createRoyaltySpaces();
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    guardian = await createMember(walletSpy);
-    space = await createSpace(walletSpy, guardian);
+    guardian = await testEnv.createMember();
+    space = await testEnv.createSpace(guardian);
     const maxMembers = scenarios.reduce(
       (max, scenario) => Math.max(max, scenario.totalDeposit.length),
       0,
     );
-    const memberPromises = Array.from(Array(maxMembers)).map(() => createMember(walletSpy));
+    const memberPromises = Array.from(Array(maxMembers)).map(() => testEnv.createMember());
     members = await Promise.all(memberPromises);
   });
 
   beforeEach(async () => {
     await build5Db()
-      .doc(`${COL.SYSTEM}/${SYSTEM_CONFIG_DOC_ID}`)
-      .set({ tokenPurchaseFeePercentage: build5Db().deleteField() }, true);
+      .doc(COL.SYSTEM, SYSTEM_CONFIG_DOC_ID)
+      .upsert({ tokenPurchaseFeePercentage: undefined });
   });
 
   it.each(scenarios)('Should buy tokens', async (input: Inputs) => {
@@ -362,10 +356,9 @@ describe('Token trigger test', () => {
       input.publicPercentage,
       guardian,
     );
-    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).create(token);
-
+    await build5Db().doc(COL.TOKEN, token.uid).create(token);
     const orderPromises = Array.from(Array(input.totalDeposit.length)).map(async (_, i) => {
-      const order = await submitTokenOrderFunc(walletSpy, members[i], { token: token.uid });
+      const order = await submitTokenOrderFunc(members[i], { token: token.uid });
       await submitMilestoneFunc(
         order,
         Number(bigDecimal.multiply(input.totalDeposit[i], MIN_IOTA_AMOUNT)),
@@ -374,13 +367,13 @@ describe('Token trigger test', () => {
     });
 
     const orders = await Promise.all(orderPromises);
-    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.PROCESSING });
+    await build5Db().doc(COL.TOKEN, token.uid).update({ status: TokenStatus.PROCESSING });
     await tokenProcessed(token.uid, input.totalDeposit.length, true);
 
     for (let i = 0; i < input.totalDeposit.length; ++i) {
       const member = members[i];
       const distribution = <TokenDistribution>(
-        await build5Db().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`).get()
+        await build5Db().doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, member).get()
       );
       const refundedAmount = Number(bigDecimal.multiply(input.refundedAmount[i], MIN_IOTA_AMOUNT));
       expect(distribution.totalDeposit).toBe(
@@ -397,9 +390,7 @@ describe('Token trigger test', () => {
       }
 
       if (distribution.billPaymentId) {
-        const paymentDoc = await build5Db()
-          .doc(`${COL.TRANSACTION}/${distribution.billPaymentId}`)
-          .get<Transaction>();
+        const paymentDoc = await build5Db().doc(COL.TRANSACTION, distribution.billPaymentId).get();
         expect(paymentDoc !== undefined).toBe(true);
         const paidAmount = isEmpty(input.paymentAmount)
           ? input.totalPaid[i]
@@ -421,22 +412,20 @@ describe('Token trigger test', () => {
       if (supposedRoyaltyAmount < MIN_IOTA_AMOUNT) {
         expect(distribution.royaltyBillPaymentId).toBe('');
       } else {
-        const royaltySpace = <Space>(
-          await build5Db().doc(`${COL.SPACE}/${TOKEN_SALE_TEST.spaceone}`).get()
-        );
-        const royaltyPayment = <Transaction>(
-          await build5Db().doc(`${COL.TRANSACTION}/${distribution.royaltyBillPaymentId}`).get()
-        );
-        expect(royaltyPayment.payload.amount).toBe(Math.floor(supposedRoyaltyAmount));
-        expect(royaltyPayment.payload.targetAddress).toBe(
-          getAddress(royaltySpace, royaltyPayment.network!),
+        const royaltySpace = await build5Db().doc(COL.SPACE, TOKEN_SALE_TEST.spaceone).get();
+        const royaltyPayment = await build5Db()
+          .doc(COL.TRANSACTION, distribution.royaltyBillPaymentId!)
+          .get();
+        expect(royaltyPayment!.payload.amount).toBe(Math.floor(supposedRoyaltyAmount));
+        expect(royaltyPayment!.payload.targetAddress).toBe(
+          getAddress(royaltySpace, royaltyPayment!.network!),
         );
       }
 
       if (distribution.creditPaymentId) {
         const creditPaymentDoc = await build5Db()
-          .doc(`${COL.TRANSACTION}/${distribution.creditPaymentId}`)
-          .get<Transaction>();
+          .doc(COL.TRANSACTION, distribution.creditPaymentId)
+          .get();
         expect(creditPaymentDoc !== undefined).toBe(true);
         const creditAmount = isEmpty(input.creditAmount)
           ? input.refundedAmount[i]
@@ -444,7 +433,7 @@ describe('Token trigger test', () => {
         expect(creditPaymentDoc?.payload?.amount).toBe(
           Number(bigDecimal.multiply(creditAmount, MIN_IOTA_AMOUNT)),
         );
-        const memberData = <Member>await build5Db().doc(`${COL.MEMBER}/${member}`).get();
+        const memberData = <Member>await build5Db().doc(COL.MEMBER, member).get();
         expect(creditPaymentDoc?.payload?.sourceAddress).toBe(orders[i].payload?.targetAddress);
         expect(creditPaymentDoc?.payload?.targetAddress).toBe(getAddress(memberData, Network.IOTA));
       }
@@ -453,29 +442,29 @@ describe('Token trigger test', () => {
 
   it('Should refund everyone if public sale is set to zero', async () => {
     token = dummyToken(100, space, MIN_IOTA_AMOUNT, 10, guardian);
-    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).create(token);
+    await build5Db().doc(COL.TOKEN, token.uid).create(token);
 
     const totalDeposits = [2, 3];
 
     const orderPromises = totalDeposits.map(async (totalDeposit, i) => {
-      const order = await submitTokenOrderFunc(walletSpy, members[i], { token: token.uid });
+      const order = await submitTokenOrderFunc(members[i], { token: token.uid });
       await submitMilestoneFunc(order, Number(bigDecimal.multiply(totalDeposit, MIN_IOTA_AMOUNT)));
       return <Transaction>order;
     });
 
     await Promise.all(orderPromises);
     await build5Db()
-      .doc(`${COL.TOKEN}/${token.uid}`)
+      .doc(COL.TOKEN, token.uid)
       .update({
         status: TokenStatus.PROCESSING,
-        allocations: [{ title: 'Public sale', isPublicSale: true, percentage: 0 }],
+        allocations: JSON.stringify([{ title: 'Public sale', isPublicSale: true, percentage: 0 }]),
       });
     await tokenProcessed(token.uid, totalDeposits.length, true);
 
     for (let i = 0; i < totalDeposits.length; ++i) {
       const member = members[i];
       const distribution = <TokenDistribution>(
-        await build5Db().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`).get()
+        await build5Db().doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, member).get()
       );
       const refundedAmount = Number(bigDecimal.multiply(totalDeposits[i], MIN_IOTA_AMOUNT));
       expect(distribution.totalDeposit).toBe(
@@ -495,32 +484,29 @@ describe('Token trigger test', () => {
     { isMember: false, fee: 5 },
   ])('Custom fees', async ({ isMember, fee }: { isMember: boolean; fee: number }) => {
     if (isMember) {
-      await build5Db()
-        .doc(`${COL.MEMBER}/${members[0]}`)
-        .update({ tokenPurchaseFeePercentage: fee });
+      await build5Db().doc(COL.MEMBER, members[0]).update({ tokenPurchaseFeePercentage: fee });
     } else {
       await build5Db()
-        .doc(`${COL.SYSTEM}/${SYSTEM_CONFIG_DOC_ID}`)
-        .set({ tokenPurchaseFeePercentage: fee });
+        .doc(COL.SYSTEM, SYSTEM_CONFIG_DOC_ID)
+        .upsert({ tokenPurchaseFeePercentage: fee });
     }
 
     const totalPaid = 100 * MIN_IOTA_AMOUNT;
     token = dummyToken(100, space, MIN_IOTA_AMOUNT, 100, guardian);
-    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).create(token);
+    await build5Db().doc(COL.TOKEN, token.uid).create(token);
 
-    const order = await submitTokenOrderFunc(walletSpy, members[0], { token: token.uid });
+    const order = await submitTokenOrderFunc(members[0], { token: token.uid });
     await submitMilestoneFunc(order, totalPaid);
 
-    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.PROCESSING });
+    await build5Db().doc(COL.TOKEN, token.uid).update({ status: TokenStatus.PROCESSING });
     await tokenProcessed(token.uid, 1, true);
 
     const billPayments = await build5Db()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)
       .where('member', '==', members[0])
-      .where('payload.token', '==', token.uid)
-      .get<Transaction>();
-
+      .where('payload_token', '==', token.uid)
+      .get();
     const billPaymentToSpace = billPayments.find(
       (bp) => bp.payload.amount === totalPaid * (1 - fee / 100),
     );
@@ -535,8 +521,6 @@ describe('Token trigger test', () => {
       expect(billPayments.filter((bp) => bp.payload.royalty).length).toBe(0);
     }
 
-    await build5Db()
-      .doc(`${COL.MEMBER}/${members[0]}`)
-      .set({ tokenPurchaseFeePercentage: build5Db().deleteField() }, true);
+    await build5Db().doc(COL.MEMBER, members[0]).upsert({ tokenPurchaseFeePercentage: undefined });
   });
 });

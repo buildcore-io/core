@@ -8,11 +8,10 @@ import {
   TokenTradeOrderType,
   Transaction,
   TransactionType,
+  WEN_FUNC,
 } from '@build-5/interfaces';
-import { creditUnrefundable } from '../../src/runtime/firebase/credit/index';
-import { tradeToken } from '../../src/runtime/firebase/token/trading';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
@@ -28,13 +27,13 @@ describe('Token minting', () => {
   });
 
   it('Should credit sell order, storage deposit unlock condition', async () => {
-    mockWalletReturnValue(helper.walletSpy, helper.seller!, {
+    mockWalletReturnValue(helper.seller!, {
       symbol: helper.token!.symbol,
       count: 10,
       price: MIN_IOTA_AMOUNT,
       type: TokenTradeOrderType.SELL,
     });
-    const sellOrder: Transaction = await testEnv.wrap(tradeToken)({});
+    const sellOrder: Transaction = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await helper.walletService!.send(helper.sellerAddress!, sellOrder.payload.targetAddress!, 0, {
       nativeTokens: [{ amount: BigInt(10), id: helper.token!.mintingData?.tokenId! }],
       storageDepositReturnAddress: helper.sellerAddress?.bech32,
@@ -44,7 +43,7 @@ describe('Token minting', () => {
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.seller);
     await wait(async () => {
-      const snap = await query.get<Transaction>();
+      const snap = await query.get();
       return (
         snap.length === 1 &&
         snap[0]!.ignoreWalletReason ===
@@ -52,15 +51,15 @@ describe('Token minting', () => {
         snap[0]!.payload.targetAddress === helper.sellerAddress!.bech32
       );
     });
-    const snap = await query.get<Transaction>();
-    mockWalletReturnValue(helper.walletSpy, helper.seller!, {
+    const snap = await query.get();
+    mockWalletReturnValue(helper.seller!, {
       transaction: snap[0].uid,
     });
-    const order = await testEnv.wrap(creditUnrefundable)({});
+    const order = await testEnv.wrap<Transaction>(WEN_FUNC.creditUnrefundable);
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, order.payload.amount);
 
     await wait(async () => {
-      const snap = await query.get<Transaction>();
+      const snap = await query.get();
       return snap.length === 1 && snap[0]!.payload?.walletReference?.confirmed;
     });
     const creditStorageTran = <Transaction>(
@@ -72,7 +71,7 @@ describe('Token minting', () => {
           .get()
       )[0]
     );
-    const creditSnap = await query.get<Transaction>();
+    const creditSnap = await query.get();
     expect(creditSnap[0]!.payload?.walletReference?.chainReference).toBe(
       creditStorageTran.payload.walletReference?.chainReference,
     );
@@ -97,13 +96,13 @@ describe('Token minting', () => {
   });
 
   it('Shoult credit second unlock credit', async () => {
-    mockWalletReturnValue(helper.walletSpy, helper.seller!, {
+    mockWalletReturnValue(helper.seller!, {
       symbol: helper.token!.symbol,
       count: 10,
       price: MIN_IOTA_AMOUNT,
       type: TokenTradeOrderType.SELL,
     });
-    const sellOrder: Transaction = await testEnv.wrap(tradeToken)({});
+    const sellOrder: Transaction = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await helper.walletService!.send(helper.sellerAddress!, sellOrder.payload.targetAddress!, 0, {
       nativeTokens: [{ amount: BigInt(10), id: helper.token!.mintingData?.tokenId! }],
       storageDepositReturnAddress: helper.sellerAddress?.bech32,
@@ -113,7 +112,7 @@ describe('Token minting', () => {
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.seller);
     await wait(async () => {
-      const snap = await query.get<Transaction>();
+      const snap = await query.get();
       return (
         snap.length === 1 &&
         snap[0]!.ignoreWalletReason ===
@@ -121,12 +120,12 @@ describe('Token minting', () => {
         snap[0]!.payload.targetAddress === helper.sellerAddress!.bech32
       );
     });
-    const snap = await query.get<Transaction>();
-    mockWalletReturnValue(helper.walletSpy, helper.seller!, {
+    const snap = await query.get();
+    mockWalletReturnValue(helper.seller!, {
       transaction: snap[0].uid,
     });
-    const order = await testEnv.wrap(creditUnrefundable)({});
-    const order2 = await testEnv.wrap(creditUnrefundable)({});
+    const order = await testEnv.wrap<Transaction>(WEN_FUNC.creditUnrefundable);
+    const order2 = await testEnv.wrap<Transaction>(WEN_FUNC.creditUnrefundable);
 
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, order.payload.amount);
     await requestFundsFromFaucet(
@@ -144,9 +143,7 @@ describe('Token minting', () => {
       return snap.length == 2;
     });
 
-    const transaction = <Transaction>(
-      await build5Db().doc(`${COL.TRANSACTION}/${snap[0].uid}`).get()
-    );
+    const transaction = <Transaction>await build5Db().doc(COL.TRANSACTION, snap[0].uid).get();
     expect(transaction.payload.unlockedBy).toBeDefined();
   });
 });

@@ -2,8 +2,8 @@ import { build5Db } from '@build-5/database';
 import {
   Award,
   COL,
-  Member,
   MIN_IOTA_AMOUNT,
+  Member,
   NativeToken,
   Network,
   SOON_PROJECT_ID,
@@ -21,12 +21,10 @@ import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { createMember, createSpace, getRandomSymbol, wait } from '../../test/controls/common';
-import { getWallet, MEDIA } from '../../test/set-up';
+import { getRandomSymbol, wait } from '../../test/controls/common';
+import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
-
-let walletSpy: any;
 
 describe('Award tangle request', () => {
   let guardian: string;
@@ -39,14 +37,13 @@ describe('Award tangle request', () => {
   const beforeEach = async (network: Network) => {
     tangleOrder = await getTangleOrder(network);
 
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
     walletService = await getWallet(network);
-    guardian = await createMember(walletSpy);
-    space = await createSpace(walletSpy, guardian);
+    guardian = await testEnv.createMember();
+    space = await testEnv.createSpace(guardian);
 
     token = await saveToken(space.uid, guardian, network);
 
-    const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${guardian}`);
+    const guardianDocRef = build5Db().doc(COL.MEMBER, guardian);
     const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, network);
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
@@ -80,7 +77,7 @@ describe('Award tangle request', () => {
       let snap = await creditQuery.get();
       let credit = snap[0] as Transaction;
       expect(credit.payload.amount).toBe(MIN_IOTA_AMOUNT);
-      const awardDocRef = build5Db().doc(`${COL.AWARD}/${credit.payload.response!.award}`);
+      const awardDocRef = build5Db().doc(COL.AWARD, credit.payload.response!.award as string);
 
       await requestMintedTokenFromFaucet(
         walletService,
@@ -144,9 +141,9 @@ const saveToken = async (space: string, guardian: string, network: Network) => {
       network,
       tokenId: MINTED_TOKEN_ID,
     },
-  };
-  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
-  return token as Token;
+  } as Token;
+  await build5Db().doc(COL.TOKEN, token.uid).create(token);
+  return token;
 };
 
 export const VAULT_MNEMONIC =

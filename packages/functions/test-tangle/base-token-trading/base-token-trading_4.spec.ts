@@ -6,10 +6,10 @@ import {
   TokenTradeOrderType,
   Transaction,
   TransactionType,
+  WEN_FUNC,
 } from '@build-5/interfaces';
-import { tradeToken } from '../../src/runtime/firebase/token/trading';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
@@ -22,39 +22,39 @@ describe('Base token trading', () => {
   });
 
   it('Should fulfill buy with two sells', async () => {
-    mockWalletReturnValue(helper.walletSpy, helper.seller!.uid, {
+    mockWalletReturnValue(helper.seller!.uid, {
       symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 1,
       type: TokenTradeOrderType.SELL,
     });
-    const sellOrder = await testEnv.wrap(tradeToken)({});
+    const sellOrder = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await requestFundsFromFaucet(
       helper.sourceNetwork,
       sellOrder.payload.targetAddress,
       MIN_IOTA_AMOUNT,
     );
 
-    mockWalletReturnValue(helper.walletSpy, helper.seller!.uid, {
+    mockWalletReturnValue(helper.seller!.uid, {
       symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 1,
       type: TokenTradeOrderType.SELL,
     });
-    const sellOrder2 = await testEnv.wrap(tradeToken)({});
+    const sellOrder2 = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await requestFundsFromFaucet(
       helper.sourceNetwork,
       sellOrder2.payload.targetAddress,
       MIN_IOTA_AMOUNT,
     );
 
-    mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
+    mockWalletReturnValue(helper.buyer!.uid, {
       symbol: helper.token!.symbol,
       count: 2 * MIN_IOTA_AMOUNT,
       price: 1,
       type: TokenTradeOrderType.BUY,
     });
-    const buyOrder = await testEnv.wrap(tradeToken)({});
+    const buyOrder = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await requestFundsFromFaucet(
       helper.targetNetwork,
       buyOrder.payload.targetAddress,

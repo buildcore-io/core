@@ -33,9 +33,8 @@ import { packBasicOutput } from '../../src/utils/basic-output.utils';
 import { createUnlock, packEssence, submitBlock } from '../../src/utils/block.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { getRandomEthAddress } from '../../src/utils/wallet.utils';
-import { createMember, createSpace, getRandomSymbol } from '../../test/controls/common';
-import { MEDIA, getWallet } from '../../test/set-up';
+import { getRandomSymbol } from '../../test/controls/common';
+import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 
 export class Helper {
   public guardian: Member = {} as any;
@@ -44,19 +43,14 @@ export class Helper {
   public token: Token = {} as any;
   public walletService: Wallet = {} as any;
   public member: string = '';
-  public walletSpy: any = {} as any;
   public network = Network.RMS;
   public totalSupply = 1500;
 
-  public beforeEach = async () => {
-    this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
-  };
-
   public setup = async (approved = true, isPublicToken?: boolean) => {
-    const guardianId = await createMember(this.walletSpy);
-    this.member = await createMember(this.walletSpy);
-    this.guardian = <Member>await build5Db().doc(`${COL.MEMBER}/${guardianId}`).get();
-    this.space = await createSpace(this.walletSpy, this.guardian.uid);
+    const guardianId = await testEnv.createMember();
+    this.member = await testEnv.createMember();
+    this.guardian = <Member>await build5Db().doc(COL.MEMBER, guardianId).get();
+    this.space = await testEnv.createSpace(this.guardian.uid);
     this.token = await this.saveToken(
       this.space.uid,
       this.guardian.uid,
@@ -77,7 +71,7 @@ export class Helper {
     approved = true,
     isPublicToken = true,
   ) => {
-    const tokenId = getRandomEthAddress();
+    const tokenId = wallet.getRandomEthAddress();
     const token = {
       project: SOON_PROJECT_ID,
       symbol: getRandomSymbol(),
@@ -94,11 +88,11 @@ export class Helper {
       public: isPublicToken,
       approved,
       decimals: 5,
-    };
-    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+    } as Token;
+    await build5Db().doc(COL.TOKEN, token.uid).create(token);
     await build5Db()
-      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`)
-      .set({ tokenOwned: 1000 });
+      .doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, member)
+      .upsert({ tokenOwned: 1000 });
     return <Token>token;
   };
 
@@ -161,7 +155,7 @@ export class Helper {
     ];
 
     const blockId = await submitBlock(wallet, essence, unlocks);
-    await build5Db().doc(`blocks/${blockId}`).create({ blockId });
+    await testEnv.createBlock(blockId);
     return blockId;
   };
 }

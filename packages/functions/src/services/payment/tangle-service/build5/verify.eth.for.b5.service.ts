@@ -1,8 +1,9 @@
 import { build5Db } from '@build-5/database';
-import { COL, SoonSnap, TangleResponse } from '@build-5/interfaces';
+import { COL, TangleResponse } from '@build-5/interfaces';
 import axios from 'axios';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { BaseTangleService, HandlerParams } from '../../base';
+import { Action } from '../../transaction-service';
 import { verifyEthForB5TangleSchema } from './VerifyEthForB5TangleRequest';
 
 export class VerifyEthForBuil5TangleService extends BaseTangleService<TangleResponse> {
@@ -10,11 +11,11 @@ export class VerifyEthForBuil5TangleService extends BaseTangleService<TangleResp
     const params = await assertValidationAsync(verifyEthForB5TangleSchema, request);
     let ethAddress = params.ethAddress.toLowerCase();
 
-    let soonSnapDocRef = build5Db().doc(`${COL.SOON_SNAP}/${match.from}`);
-    let soonSnap = await this.transaction.get<SoonSnap>(soonSnapDocRef);
+    let soonSnapDocRef = build5Db().doc(COL.SOON_SNAP, match.from);
+    let soonSnap = await this.transaction.get(soonSnapDocRef);
     if (!soonSnap) {
-      soonSnapDocRef = build5Db().doc(`${COL.SOON_SNAP}/${ethAddress}`);
-      soonSnap = await this.transaction.get<SoonSnap>(soonSnapDocRef);
+      soonSnapDocRef = build5Db().doc(COL.SOON_SNAP, ethAddress);
+      soonSnap = await this.transaction.get(soonSnapDocRef);
     }
 
     ethAddress = soonSnap?.ethAddress || ethAddress;
@@ -30,11 +31,8 @@ export class VerifyEthForBuil5TangleService extends BaseTangleService<TangleResp
     if (!soonSnap.ethAddressVerified) {
       this.transactionService.push({
         ref: soonSnapDocRef,
-        data: {
-          ethAddress,
-          ethAddressVerified: true,
-        },
-        action: 'update',
+        data: { ethAddress, ethAddressVerified: true },
+        action: Action.U,
       });
     }
 

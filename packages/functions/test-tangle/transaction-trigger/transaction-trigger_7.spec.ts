@@ -53,23 +53,23 @@ describe('Transaction trigger spec', () => {
             void: false,
           },
         };
-        const docRef = build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+        const docRef = build5Db().doc(COL.TRANSACTION, billPayment.uid);
         return docRef.create(billPayment);
       });
       await Promise.all(promises);
 
       const query = build5Db()
         .collection(COL.TRANSACTION)
-        .where('payload.sourceAddress', '==', sourceAddress.bech32);
+        .where('payload_sourceAddress', '==', sourceAddress.bech32);
       await wait(async () => {
-        const snap = await query.get<Transaction>();
+        const snap = await query.get();
         const allConfirmed = snap.reduce(
           (acc, act) => acc && (act?.payload?.walletReference?.confirmed || false),
           true,
         );
         return snap.length === count && allConfirmed;
       });
-      const snap = await query.get<Transaction>();
+      const snap = await query.get();
       for (const doc of snap) {
         expect(doc?.payload?.walletReference?.count).toBe(1);
       }

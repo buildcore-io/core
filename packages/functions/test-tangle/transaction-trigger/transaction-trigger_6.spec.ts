@@ -48,10 +48,10 @@ describe('Transaction trigger spec', () => {
           void: false,
         },
       };
-      const docRef = build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+      const docRef = build5Db().doc(COL.TRANSACTION, billPayment.uid);
       await docRef.create(billPayment);
       await wait(async () => {
-        const doc = await docRef.get<Transaction>();
+        const doc = await docRef.get();
         return (
           doc?.payload?.walletReference?.confirmed === true &&
           !doc?.payload?.walletReference?.inProgress
@@ -59,9 +59,7 @@ describe('Transaction trigger spec', () => {
       });
 
       await wait(async () => {
-        billPayment = <Transaction>(
-          await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()
-        );
+        billPayment = <Transaction>await build5Db().doc(COL.TRANSACTION, billPayment.uid).get();
         return billPayment.payload?.walletReference?.confirmed;
       });
     },

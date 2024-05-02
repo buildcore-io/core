@@ -216,6 +216,10 @@ export interface Award extends BaseRecord {
    */
   readonly mediaStatus?: MediaStatus;
   /**
+   * @hidden
+   */
+  readonly mediaUploadErrorCount?: number;
+  /**
    * Is this legacy award?
    * @deprecated
    */

@@ -4,13 +4,14 @@ import {
   Collection,
   CollectionStatus,
   MediaStatus,
-  Nft,
   SOON_PROJECT_ID,
+  Transaction,
   UnsoldMintingOptions,
+  WEN_FUNC,
 } from '@build-5/interfaces';
-import { mintCollection } from '../../src/runtime/firebase/collection';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { MEDIA, testEnv } from '../../test/set-up';
+import { dateToTimestamp } from '../../src/utils/dateTime.utils';
+import { wait } from '../../test/controls/common';
+import { MEDIA, mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { CollectionMintHelper } from './Helper';
 
@@ -27,15 +28,19 @@ describe('Collection minting', () => {
 
   it('Should retry minting when prepare ipfs failed', async () => {
     const count = 5;
-    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${helper.collection}`);
+    const collectionDocRef = build5Db().doc(COL.COLLECTION, helper.collection!);
     await collectionDocRef.update({ total: count });
 
     const promises = Array.from(Array(count)).map(async () => {
       const nft = helper.createDummyNft(helper.collection!);
       await build5Db()
-        .doc(`${COL.NFT}/${nft.uid}`)
-        .create({ ...nft, project: SOON_PROJECT_ID });
-      return nft;
+        .doc(COL.NFT, nft.uid)
+        .create({
+          ...nft,
+          availableFrom: dateToTimestamp(nft.availableFrom),
+          project: SOON_PROJECT_ID,
+        } as any);
+      return (await build5Db().doc(COL.NFT, nft.uid).get())!;
     });
     const nfts = await Promise.all(promises);
 
@@ -45,11 +50,11 @@ describe('Collection minting', () => {
       unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE,
     };
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, request);
-    const collectionMintOrder = await testEnv.wrap(mintCollection)({});
+    mockWalletReturnValue(helper.guardian!, request);
+    const collectionMintOrder = await testEnv.wrap<Transaction>(WEN_FUNC.mintCollection);
     for (let i = 0; i < nfts.length; ++i) {
-      const docRef = build5Db().doc(`${COL.NFT}/${nfts[i].uid}`);
-      await docRef.update({ media: i > 2 ? 'asd' : MEDIA });
+      const docRef = build5Db().doc(COL.NFT, nfts[i].uid);
+      await docRef.update({ media: i > 2 ? 'name' : MEDIA });
     }
     await requestFundsFromFaucet(
       helper.network!,
@@ -65,18 +70,18 @@ describe('Collection minting', () => {
       const nfts = await nftQuery.get();
       return nfts.length === 3;
     });
-    const pendingUploadNfts = await nftQuery.limit(2).get<Nft>();
+    const pendingUploadNfts = await nftQuery.limit(2).get();
     for (const nft of pendingUploadNfts) {
-      const docRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
+      const docRef = build5Db().doc(COL.NFT, nft.uid);
       await docRef.update({ mediaStatus: MediaStatus.UPLOADED });
     }
-    await collectionDocRef.update({ 'mintingData.nftMediaToUpload': 3 });
+    await collectionDocRef.update({ mintingData_nftMediaToUpload: 3 });
     for (const nft of nfts) {
-      const docRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
+      const docRef = build5Db().doc(COL.NFT, nft.uid);
       await docRef.update({ media: MEDIA });
     }
 
-    await collectionDocRef.update({ status: 'asd' });
+    await collectionDocRef.update({ status: CollectionStatus.PRE_MINTED });
     await collectionDocRef.update({ status: CollectionStatus.MINTING });
     await wait(async () => {
       const data = <Collection>await collectionDocRef.get();

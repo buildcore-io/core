@@ -10,14 +10,14 @@ import {
   TokenTradeOrderType,
   Transaction,
   TransactionType,
+  WEN_FUNC,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { cancelExpiredSale } from '../../src/cron/token.cron';
-import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { Helper } from './Helper';
 
@@ -61,7 +61,7 @@ describe('Token minting', () => {
       }
 
       const member = <Member>await build5Db()
-        .doc(`${COL.MEMBER}/${type === TokenTradeOrderType.SELL ? helper.seller! : helper.buyer!}`)
+        .doc(COL.MEMBER, type === TokenTradeOrderType.SELL ? helper.seller! : helper.buyer!)
         .get();
 
       const tradeQuery = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', member.uid);
@@ -73,8 +73,8 @@ describe('Token minting', () => {
       expect(dayjs(trade.expiresAt.toDate()).isSame(dayjs(expiresAt.toDate()))).toBe(true);
 
       await build5Db()
-        .doc(`${COL.TOKEN_MARKET}/${trade.uid}`)
-        .update({ expiresAt: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
+        .doc(COL.TOKEN_MARKET, trade.uid)
+        .update({ expiresAt: dayjs().subtract(1, 'm').toDate() });
       await cancelExpiredSale();
 
       await wait(async () => {
@@ -82,7 +82,7 @@ describe('Token minting', () => {
           .collection(COL.TRANSACTION)
           .where('type', '==', TransactionType.CREDIT)
           .where('member', '==', member.uid)
-          .get<Transaction>();
+          .get();
         return (
           snap.length === 1 && snap[0]!.payload.targetAddress === getAddress(member, helper.network)
         );
@@ -94,16 +94,16 @@ describe('Token minting', () => {
     const date = dayjs().add(2, 'h').millisecond(0).toDate();
     const expiresAt = dateToTimestamp(date) as Timestamp;
 
-    mockWalletReturnValue(helper.walletSpy, helper.seller!, {
+    mockWalletReturnValue(helper.seller!, {
       symbol: helper.token!.symbol,
       count: 10,
       price: MIN_IOTA_AMOUNT,
       type: TokenTradeOrderType.SELL,
     });
-    const sellOrder: Transaction = await testEnv.wrap(tradeToken)({});
+    const sellOrder: Transaction = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await build5Db()
-      .doc(`${COL.TRANSACTION}/${sellOrder.uid}`)
-      .update({ 'payload.expiresOn': dateToTimestamp(dayjs().subtract(2, 'h').toDate()) });
+      .doc(COL.TRANSACTION, sellOrder.uid)
+      .update({ payload_expiresOn: dayjs().subtract(2, 'h').toDate() });
 
     await helper.walletService!.send(helper.sellerAddress!, sellOrder.payload.targetAddress!, 0, {
       nativeTokens: [{ amount: BigInt(10), id: helper.token!.mintingData?.tokenId! }],
@@ -120,7 +120,7 @@ describe('Token minting', () => {
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
         .where('member', '==', helper.seller)
-        .get<Transaction>();
+        .get();
       return (
         snap.length === 1 &&
         snap[0]!.payload.walletReference?.confirmed &&

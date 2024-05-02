@@ -10,7 +10,7 @@ export const isOnlineCheckInterval = setInterval(async () => {
     return;
   }
   try {
-    const response = await fetch('https://build5.com', { method: 'HEAD' });
+    const response = await fetch('https://buildcore.io', { method: 'HEAD' });
     isAppOnline = response.ok;
   } catch {
     isAppOnline = false;

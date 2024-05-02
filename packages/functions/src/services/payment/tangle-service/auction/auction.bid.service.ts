@@ -1,8 +1,9 @@
 import { build5Db } from '@build-5/database';
-import { COL, Nft, TangleResponse, TransactionPayloadType, WenError } from '@build-5/interfaces';
+import { COL, TangleResponse, TransactionPayloadType, WenError } from '@build-5/interfaces';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { BaseTangleService, HandlerParams } from '../../base';
+import { Action } from '../../transaction-service';
 import { auctionBidTangleSchema } from './AuctionBidTangleRequestSchema';
 import { nftBidSchema } from './NftBidTangleRequestSchema';
 import { createBidOrder } from './auction.bid.order';
@@ -19,8 +20,8 @@ export class TangleNftAuctionBidService extends BaseTangleService<TangleResponse
   }: HandlerParams) => {
     const params = await assertValidationAsync(nftBidSchema, request);
 
-    const nftDocRef = build5Db().doc(`${COL.NFT}/${params.nft}`);
-    const nft = await nftDocRef.get<Nft>();
+    const nftDocRef = build5Db().doc(COL.NFT, params.nft);
+    const nft = await nftDocRef.get();
 
     const order = await createBidOrder(project, owner, nft?.auction || '');
     order.payload.tanglePuchase = true;
@@ -31,10 +32,9 @@ export class TangleNftAuctionBidService extends BaseTangleService<TangleResponse
     }
 
     this.transactionService.push({
-      ref: build5Db().doc(`${COL.TRANSACTION}/${order.uid}`),
+      ref: build5Db().doc(COL.TRANSACTION, order.uid),
       data: order,
-      action: 'set',
-      merge: true,
+      action: Action.C,
     });
 
     this.transactionService.createUnlockTransaction(
@@ -69,10 +69,9 @@ export class TangleAuctionBidService extends BaseTangleService<TangleResponse> {
     }
 
     this.transactionService.push({
-      ref: build5Db().doc(`${COL.TRANSACTION}/${order.uid}`),
+      ref: build5Db().doc(COL.TRANSACTION, order.uid),
       data: order,
-      action: 'set',
-      merge: true,
+      action: Action.C,
     });
 
     this.transactionService.createUnlockTransaction(

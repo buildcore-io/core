@@ -5,7 +5,6 @@ import {
   SUB_COL,
   TRANSACTION_AUTO_EXPIRY_MS,
   TangleResponse,
-  TokenDistribution,
   TokenDrop,
   TokenDropStatus,
   TokenStatus,
@@ -26,6 +25,7 @@ import { getTokenBySymbol, getUnclaimedDrops } from '../../../../utils/token.uti
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet.service';
 import { BaseTangleService, HandlerParams } from '../../base';
+import { Action } from '../../transaction-service';
 import { tokenClaimSchema } from './TokenClaimTangleRequestSchema';
 
 export class TangleTokenClaimService extends BaseTangleService<TangleResponse> {
@@ -33,9 +33,9 @@ export class TangleTokenClaimService extends BaseTangleService<TangleResponse> {
     const params = await assertValidationAsync(tokenClaimSchema, request);
     const order = await createMintedTokenAirdropClaimOrder(project, owner, params.symbol);
     this.transactionService.push({
-      ref: build5Db().doc(`${COL.TRANSACTION}/${order.uid}`),
+      ref: build5Db().doc(COL.TRANSACTION, order.uid),
       data: order,
-      action: 'set',
+      action: Action.C,
     });
     return { amount: order.payload.amount!, address: order.payload.targetAddress! };
   };
@@ -55,7 +55,7 @@ export const createMintedTokenAirdropClaimOrder = async (
     throw invalidArgument(WenError.token_in_invalid_status);
   }
 
-  const member = <Member>await build5Db().doc(`${COL.MEMBER}/${owner}`).get();
+  const member = <Member>await build5Db().doc(COL.MEMBER, owner).get();
   assertMemberHasValidAddress(member, token.mintingData?.network!);
 
   const drops = await getClaimableDrops(token.uid, owner);
@@ -95,9 +95,8 @@ export const createMintedTokenAirdropClaimOrder = async (
 
 const getClaimableDrops = async (token: string, member: string) => {
   const airdops = await getUnclaimedDrops(token, member);
-  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token}`);
-  const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member);
-  const distribution = await distributionDocRef.get<TokenDistribution>();
+  const distributionDocRef = build5Db().doc(COL.TOKEN, token, SUB_COL.DISTRIBUTION, member);
+  const distribution = await distributionDocRef.get();
   if (distribution?.mintedClaimedOn || !distribution?.tokenOwned) {
     return airdops;
   }

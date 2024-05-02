@@ -2,23 +2,20 @@
 
 import {
   COL,
-  Member,
   MIN_IOTA_AMOUNT,
+  Member,
   SUB_COL,
   TokenDistribution,
   Transaction,
+  WEN_FUNC,
   WenError,
 } from '@build-5/interfaces';
 
 import { build5Db } from '@build-5/database';
 import dayjs from 'dayjs';
-import {
-  airdropMintedToken,
-  claimMintedTokenOrder,
-} from '../../src/runtime/firebase/token/minting';
 import { getAddress } from '../../src/utils/address.utils';
-import { expectThrow, mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { expectThrow, wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 import { Helper, VAULT_MNEMONIC } from './Helper';
 
@@ -34,7 +31,7 @@ describe('Minted token airdrop', () => {
   });
 
   it('Should airdrop and claim 600', async () => {
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
+    mockWalletReturnValue(helper.guardian!, {
       token: helper.token!.uid,
       drops: Array.from(Array(600)).map(() => ({
         count: 1,
@@ -42,13 +39,16 @@ describe('Minted token airdrop', () => {
         vestingAt: dayjs().add(1, 'y').toDate(),
       })),
     });
-    let order = await testEnv.wrap(airdropMintedToken)({});
+    let order = await testEnv.wrap<Transaction>(WEN_FUNC.airdropMintedToken);
     expect(order.payload.unclaimedAirdrops).toBe(600);
 
-    mockWalletReturnValue(helper.walletSpy, helper.member!, { symbol: helper.token!.symbol });
-    await expectThrow(testEnv.wrap(claimMintedTokenOrder)({}), WenError.no_tokens_to_claim.key);
+    mockWalletReturnValue(helper.member!, { symbol: helper.token!.symbol });
+    await expectThrow(
+      testEnv.wrap<Transaction>(WEN_FUNC.claimMintedTokenOrder),
+      WenError.no_tokens_to_claim.key,
+    );
 
-    const guardian = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.guardian}`).get();
+    const guardian = <Member>await build5Db().doc(COL.MEMBER, helper.guardian).get();
     const guardianAddress = await helper.walletService!.getAddressDetails(
       getAddress(guardian, helper.network),
     );
@@ -60,7 +60,7 @@ describe('Minted token airdrop', () => {
       VAULT_MNEMONIC,
       600,
     );
-    await helper.walletService!.send(guardianAddress, order.payload.targetAddress, 0, {
+    await helper.walletService!.send(guardianAddress, order.payload.targetAddress!, 0, {
       nativeTokens: [{ id: helper.token?.mintingData?.tokenId!, amount: BigInt(600) }],
     });
 
@@ -69,10 +69,10 @@ describe('Minted token airdrop', () => {
       return airdrops.length === 600;
     });
 
-    mockWalletReturnValue(helper.walletSpy, helper.member!, {
+    mockWalletReturnValue(helper.member!, {
       symbol: helper.token!.symbol,
     });
-    const claimOrder = await testEnv.wrap(claimMintedTokenOrder)({});
+    const claimOrder = await testEnv.wrap<Transaction>(WEN_FUNC.claimMintedTokenOrder);
     await requestFundsFromFaucet(
       helper.network,
       claimOrder.payload.targetAddress,
@@ -80,13 +80,16 @@ describe('Minted token airdrop', () => {
     );
 
     await wait(async () => {
-      const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
+      const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
       order = <Transaction>await orderDocRef.get();
       return order.payload.unclaimedAirdrops === 0;
     });
 
     const distributionDocRef = build5Db().doc(
-      `${COL.TOKEN}/${helper.token?.uid}/${SUB_COL.DISTRIBUTION}/${helper.member!}`,
+      COL.TOKEN,
+      helper.token?.uid,
+      SUB_COL.DISTRIBUTION,
+      helper.member!,
     );
     const distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.tokenOwned).toBe(600);

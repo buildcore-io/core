@@ -17,16 +17,16 @@ describe('Collection minting', () => {
     await helper.createAndOrderNft(true, true);
     let nft: Nft | undefined = await helper.createAndOrderNft();
     let placeholderNft = await helper.createAndOrderNft(true, false);
-    await build5Db().doc(`${COL.NFT}/${placeholderNft.uid}`).update({ placeholderNft: true });
+    await build5Db().doc(COL.NFT, placeholderNft.uid).update({ placeholderNft: true });
     await build5Db()
-      .doc(`${COL.COLLECTION}/${helper.collection}`)
+      .doc(COL.COLLECTION, helper.collection)
       .update({ total: build5Db().inc(-1) });
 
     await helper.mintCollection();
 
-    placeholderNft = <Nft>await build5Db().doc(`${COL.NFT}/${placeholderNft.uid}`).get();
+    placeholderNft = <Nft>await build5Db().doc(COL.NFT, placeholderNft.uid).get();
     expect(placeholderNft.hidden).toBe(false);
-    nft = <Nft | undefined>await build5Db().doc(`${COL.NFT}/${nft.uid}`).get();
+    nft = <Nft | undefined>await build5Db().doc(COL.NFT, nft.uid).get();
     expect(nft).toBeDefined();
   });
 });

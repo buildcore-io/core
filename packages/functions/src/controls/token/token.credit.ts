@@ -6,8 +6,6 @@ import {
   MIN_IOTA_AMOUNT,
   Member,
   SUB_COL,
-  Token,
-  TokenDistribution,
   TokenStatus,
   Transaction,
   TransactionPayloadType,
@@ -31,25 +29,28 @@ export const creditTokenControl = async ({
   params,
 }: Context<CreditTokenRequest>): Promise<Transaction> => {
   const tranId = getRandomEthAddress();
-  const creditTranDoc = build5Db().doc(`${COL.TRANSACTION}/${tranId}`);
+  const creditTranDoc = build5Db().doc(COL.TRANSACTION, tranId);
 
   await build5Db().runTransaction(async (transaction) => {
-    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
-    const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(owner);
-    const distribution = await transaction.get<TokenDistribution>(distributionDocRef);
+    const tokenDocRef = build5Db().doc(COL.TOKEN, params.token);
+    const distributionDocRef = build5Db().doc(COL.TOKEN, params.token, SUB_COL.DISTRIBUTION, owner);
+    const distribution = await transaction.get(distributionDocRef);
     if (!distribution || (distribution.totalDeposit || 0) < params.amount) {
       throw invalidArgument(WenError.not_enough_funds);
     }
-    const token = await tokenDocRef.get<Token>();
+    const token = await tokenDocRef.get();
     if (!token || !tokenIsInCoolDownPeriod(token) || token.status !== TokenStatus.AVAILABLE) {
       throw invalidArgument(WenError.token_not_in_cool_down_period);
     }
     const member = <Member>await memberDocRef(owner).get();
-    const orderDocRef = build5Db().doc(
-      `${COL.TRANSACTION}/${tokenOrderTransactionDocId(owner, token)}`,
-    );
-    const order = (await transaction.get<Transaction>(orderDocRef))!;
-    const payments = await transaction.getByQuery<Transaction>(allPaymentsQuery(owner, token.uid));
+    const orderDocRef = build5Db().doc(COL.TRANSACTION, tokenOrderTransactionDocId(owner, token));
+    const order = (await transaction.get(orderDocRef))!;
+
+    const payments = await build5Db()
+      .collection(COL.TRANSACTION)
+      .where('member', '==', owner)
+      .where('payload_token', '==', token.uid)
+      .get();
 
     const totalDepositLeft = (distribution.totalDeposit || 0) - params.amount;
     const refundAmount =
@@ -60,10 +61,10 @@ export const creditTokenControl = async ({
       totalDepositLeft || 0,
       token.pricePerToken,
     );
-    transaction.update(distributionDocRef, {
+    await transaction.update(distributionDocRef, {
       totalDeposit: build5Db().inc(-refundAmount),
     });
-    transaction.update(tokenDocRef, {
+    await transaction.update(tokenDocRef, {
       totalDeposit: build5Db().inc(-refundAmount),
       tokensOrdered: build5Db().inc(boughtByMemberDiff),
     });
@@ -87,14 +88,8 @@ export const creditTokenControl = async ({
         tokenSymbol: token.symbol,
       },
     };
-    transaction.set(creditTranDoc, creditTransaction);
+    await transaction.create(creditTranDoc, creditTransaction);
   });
 
   return (await creditTranDoc.get())!;
 };
-
-const allPaymentsQuery = (member: string, token: string) =>
-  build5Db()
-    .collection(COL.TRANSACTION)
-    .where('member', '==', member)
-    .where('payload.token', '==', token);

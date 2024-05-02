@@ -1,4 +1,4 @@
-import { IDocument, IQuery } from '@build-5/database';
+import { BaseRecord, IDocument, IQuery, PgTokenPurchase, Update } from '@build-5/database';
 import { Dataset, QUERY_MAX_LENGTH, Subset, TokenPurchase } from '@build-5/interfaces';
 import Joi from 'joi';
 import { head } from 'lodash';
@@ -25,41 +25,64 @@ const queryStrToParams = (url: string) => {
   );
 };
 
-export const isHiddenNft = (dataset: Dataset, data?: Record<string, unknown>) =>
+export const isHiddenNft = (dataset: Dataset, data?: any) =>
   dataset === Dataset.NFT && data?.hidden === true;
 
-export const queryToObservable = <T>(query: IQuery) =>
-  new Observable<T[]>((observer) => {
-    const unsubscribe = query.onSnapshot<T>(
-      (data) => {
-        observer.next(data);
-      },
-      (error) => {
-        observer.error(error);
-      },
-    );
-    return () => {
-      unsubscribe();
-    };
-  });
+export const queryToObservable = <C>(query: IQuery<C, BaseRecord>, isLive: boolean) => {
+  if (isLive) {
+    return new Observable<C[]>((obs) => {
+      const unsubscribe = query.onSnapshot(
+        (data) => {
+          obs.next(data);
+        },
+        (error) => {
+          obs.error(error);
+        },
+      );
+      return () => {
+        unsubscribe();
+      };
+    });
+  }
 
-export const documentToObservable = <T>(doc: IDocument) =>
-  new Observable<T>((observer) => {
-    const unsubscribe = doc.onSnapshot<T>(
-      (data) => {
-        observer.next(data);
-      },
-      (error) => {
-        observer.error(error);
-      },
-    );
-    return () => {
-      unsubscribe();
-    };
+  return new Observable<C[]>((obs) => {
+    query
+      .get()
+      .then((r) => obs.next(r))
+      .catch((err) => obs.error(err));
   });
+};
 
-export const getHeadPriceObs = (query: IQuery) =>
-  queryToObservable<TokenPurchase>(query).pipe(map((r) => head(r)?.price || 0));
+export const documentToObservable = <C, B extends BaseRecord, U extends Update>(
+  doc: IDocument<C, B, U>,
+  isLive: boolean,
+): Observable<C> => {
+  if (isLive) {
+    return new Observable<C>((observer) => {
+      const unsubscribe = doc.onSnapshot(
+        (data) => {
+          observer.next(data);
+        },
+        (error) => {
+          observer.error(error);
+        },
+      );
+      return () => {
+        unsubscribe();
+      };
+    });
+  }
+
+  return new Observable<C>((obs) => {
+    doc
+      .get()
+      .then((r) => obs.next(r))
+      .catch((err) => obs.error(err));
+  });
+};
+
+export const getHeadPriceObs = (query: IQuery<TokenPurchase, PgTokenPurchase>, isLive: boolean) =>
+  queryToObservable(query, isLive).pipe(map((r) => head(r)?.price || 0));
 
 // Used to be 42, changed to 5 to support milestone get and transactions subset
 export const minAddressLength = 5;
@@ -90,3 +113,7 @@ export const shouldSetProjectFilter = (dataset: Dataset, subset?: Subset): boole
     Dataset.MILESTONE_SMR,
     Dataset.TICKER,
   ].includes(dataset) && !subset;
+
+export const keyToPg = (key: string) => {
+  return key.replace(/\./g, '_') as any;
+};

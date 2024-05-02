@@ -8,10 +8,11 @@ import {
   TokenTradeOrder,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
+  Transaction,
+  WEN_FUNC,
 } from '@build-5/interfaces';
-import { tradeToken } from '../../src/runtime/firebase/token/trading';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsForManyFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
@@ -28,17 +29,19 @@ describe('Token minting', () => {
 
   it('Fulfill many buys with sell', async () => {
     const count = 15;
-    mockWalletReturnValue(helper.walletSpy, helper.buyer!, {
+    mockWalletReturnValue(helper.buyer!, {
       symbol: helper.token!.symbol,
       count: 1,
       price: MIN_IOTA_AMOUNT,
       type: TokenTradeOrderType.BUY,
     });
-    const promises = Array.from(Array(count)).map(() => testEnv.wrap(tradeToken)({}));
+    const promises = Array.from(Array(count)).map(() =>
+      testEnv.wrap<Transaction>(WEN_FUNC.tradeToken),
+    );
     const orders = await Promise.all(promises);
     await requestFundsForManyFromFaucet(
       Network.RMS,
-      orders.map((o) => ({ toAddress: o.payload.targetAddress, amount: o.payload.amount })),
+      orders.map((o) => ({ toAddress: o.payload.targetAddress!, amount: o.payload.amount! })),
     );
 
     const tradeQuery = build5Db()

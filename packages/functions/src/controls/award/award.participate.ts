@@ -1,6 +1,5 @@
 import { build5Db } from '@build-5/database';
 import {
-  Award,
   AwardParticipant,
   AwardParticpateRequest,
   COL,
@@ -17,8 +16,8 @@ export const awardParticipateControl = async ({
   params,
   project,
 }: Context<AwardParticpateRequest>): Promise<AwardParticipant> => {
-  const awardDocRef = build5Db().doc(`${COL.AWARD}/${params.uid}`);
-  const award = await awardDocRef.get<Award>();
+  const awardDocRef = build5Db().doc(COL.AWARD, params.uid);
+  const award = await awardDocRef.get();
   if (!award) {
     throw invalidArgument(WenError.award_does_not_exists);
   }
@@ -35,7 +34,9 @@ export const awardParticipateControl = async ({
     throw invalidArgument(WenError.award_is_no_longer_available);
   }
 
-  const awardParticipant = await awardDocRef.collection(SUB_COL.PARTICIPANTS).doc(owner).get();
+  const awardParticipant = await build5Db()
+    .doc(COL.AWARD, params.uid, SUB_COL.PARTICIPANTS, owner)
+    .get();
   if (awardParticipant) {
     throw invalidArgument(WenError.member_is_already_participant_of_space);
   }
@@ -51,6 +52,6 @@ export const awardParticipateControl = async ({
     tokenReward: 0,
     createdOn: dateToTimestamp(dayjs()),
   };
-  await awardDocRef.collection(SUB_COL.PARTICIPANTS).doc(owner).create(participant);
+  await build5Db().doc(COL.AWARD, params.uid, SUB_COL.PARTICIPANTS, owner).create(participant);
   return participant;
 };

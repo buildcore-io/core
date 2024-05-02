@@ -1,7 +1,0 @@
-{
-  "projects": {
-    "default": "soonaverse",
-    "preview": "soonaverse-test",
-    "dev": "soonaverse-dev"
-  }
-}

@@ -8,30 +8,25 @@ import {
   TokenStatus,
   Transaction,
   TransactionType,
+  WEN_FUNC,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
-import { cancelPublicSale, setTokenAvailableForSale } from '../../src/runtime/firebase/token/base';
-import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
 describe('Token minting', () => {
   const helper = new Helper();
 
-  beforeEach(async () => {
-    await helper.beforeEach();
-  });
-
   it('Should credit, token in public sale', async () => {
     await helper.setup();
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, {
+    mockWalletReturnValue(helper.guardian.uid, {
       token: helper.token.uid,
       network: helper.network,
     });
-    const order = await testEnv.wrap(mintTokenOrder)({});
+    const order = await testEnv.wrap<Transaction>(WEN_FUNC.mintTokenOrder);
 
     const publicTime = {
       saleStartDate: dayjs().add(2, 'd').toDate(),
@@ -39,11 +34,13 @@ describe('Token minting', () => {
       coolDownLength: 86400000,
     };
     await build5Db()
-      .doc(`${COL.TOKEN}/${helper.token.uid}`)
-      .update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] });
+      .doc(COL.TOKEN, helper.token.uid)
+      .update({
+        allocations: JSON.stringify([{ title: 'public', percentage: 100, isPublicSale: true }]),
+      });
     const updateData = { token: helper.token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };
-    mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, updateData);
-    await testEnv.wrap(setTokenAvailableForSale)({});
+    mockWalletReturnValue(helper.guardian.uid, updateData);
+    await testEnv.wrap(WEN_FUNC.setTokenAvailableForSale);
 
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, order.payload.amount);
 
@@ -62,11 +59,11 @@ describe('Token minting', () => {
   it('Should credit, token in public sale, cancel public sale then mint', async () => {
     await helper.setup();
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, {
+    mockWalletReturnValue(helper.guardian.uid, {
       token: helper.token.uid,
       network: helper.network,
     });
-    const order = await testEnv.wrap(mintTokenOrder)({});
+    const order = await testEnv.wrap<Transaction>(WEN_FUNC.mintTokenOrder);
 
     const publicTime = {
       saleStartDate: dayjs().add(2, 'd').toDate(),
@@ -74,11 +71,13 @@ describe('Token minting', () => {
       coolDownLength: 86400000,
     };
     await build5Db()
-      .doc(`${COL.TOKEN}/${helper.token.uid}`)
-      .update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] });
+      .doc(COL.TOKEN, helper.token.uid)
+      .update({
+        allocations: JSON.stringify([{ title: 'public', percentage: 100, isPublicSale: true }]),
+      });
     const updateData = { token: helper.token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };
-    mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, updateData);
-    await testEnv.wrap(setTokenAvailableForSale)({});
+    mockWalletReturnValue(helper.guardian.uid, updateData);
+    await testEnv.wrap(WEN_FUNC.setTokenAvailableForSale);
 
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, order.payload.amount);
 
@@ -93,12 +92,12 @@ describe('Token minting', () => {
     const credit = (await creditQuery.get()).map((d) => <Transaction>d)[0];
     expect(credit?.payload?.amount).toBe(order.payload.amount);
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, { token: helper.token.uid });
-    await testEnv.wrap(cancelPublicSale)({});
+    mockWalletReturnValue(helper.guardian.uid, { token: helper.token.uid });
+    await testEnv.wrap(WEN_FUNC.cancelPublicSale);
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, order.payload.amount);
 
     await wait(async () => {
-      const tokenData = <Token>await build5Db().doc(`${COL.TOKEN}/${helper.token.uid}`).get();
+      const tokenData = <Token>await build5Db().doc(COL.TOKEN, helper.token.uid).get();
       return tokenData.status === TokenStatus.MINTED;
     });
   });

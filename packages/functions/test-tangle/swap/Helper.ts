@@ -17,26 +17,18 @@ import {
   TransactionPayloadType,
   TransactionType,
   UnsoldMintingOptions,
+  WEN_FUNC,
 } from '@build-5/interfaces';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
-import { mintCollection } from '../../src/runtime/firebase/collection';
-import { createNft, openBid, orderNft, setForSaleNft } from '../../src/runtime/firebase/nft';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import * as wallet from '../../src/utils/wallet.utils';
-import {
-  createMember as createMemberTest,
-  createSpace,
-  mockWalletReturnValue,
-  submitMilestoneFunc,
-  wait,
-} from '../../test/controls/common';
-import { MEDIA, getWallet, testEnv } from '../../test/set-up';
+import { submitMilestoneFunc, wait } from '../../test/controls/common';
+import { MEDIA, getWallet, mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 
 export class Helper {
-  public spy: any = {} as any;
   public network = Network.RMS;
   public guardian: string = {} as any;
   public member: string = {} as any;
@@ -45,14 +37,13 @@ export class Helper {
   public space: Space = {} as any;
 
   public beforeAll = async () => {
-    this.spy = jest.spyOn(wallet, 'decodeAuth');
     this.wallet = await getWallet(this.network);
   };
 
   public beforeEach = async () => {
-    this.guardian = await createMemberTest(this.spy);
-    this.space = await createSpace(this.spy, this.guardian);
-    this.member = await createMemberTest(this.spy);
+    this.guardian = await testEnv.createMember();
+    this.space = await testEnv.createSpace(this.guardian);
+    this.member = await testEnv.createMember();
   };
 
   public createDummyNft = (collection: string, description = 'babba') => ({
@@ -106,14 +97,14 @@ export class Helper {
     if (unsoldMintingOptions === UnsoldMintingOptions.SET_NEW_PRICE) {
       set(request, 'price', price);
     }
-    mockWalletReturnValue(this.spy, this.guardian!, request);
-    const collectionMintOrder = await testEnv.wrap(mintCollection)({});
+    mockWalletReturnValue(this.guardian!, request);
+    const collectionMintOrder = await testEnv.wrap<Transaction>(WEN_FUNC.mintCollection);
     await requestFundsFromFaucet(
       this.network!,
       collectionMintOrder.payload.targetAddress,
       collectionMintOrder.payload.amount,
     );
-    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${this.collection}`);
+    const collectionDocRef = build5Db().doc(COL.COLLECTION, this.collection);
     await wait(async () => {
       const data = <Collection>await collectionDocRef.get();
       return data.status === CollectionStatus.MINTED;
@@ -130,7 +121,7 @@ export class Helper {
       await build5Db()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.MINT_COLLECTION)
-        .where('payload.type', '==', TransactionPayloadType.SEND_ALIAS_TO_GUARDIAN)
+        .where('payload_type', '==', TransactionPayloadType.SEND_ALIAS_TO_GUARDIAN)
         .where('member', '==', this.guardian)
         .get()
     ).map((d) => <Transaction>d);
@@ -144,34 +135,32 @@ export class Helper {
     delete nft.uid;
     delete nft.status;
     delete nft.placeholderNft;
-    mockWalletReturnValue(this.spy, this.guardian!, nft);
-    nft = await testEnv.wrap(createNft)({});
+    mockWalletReturnValue(this.guardian!, nft);
+    nft = await testEnv.wrap<Nft>(WEN_FUNC.createNft);
 
     if (buyAndAuctionId) {
       await build5Db()
-        .doc(`${COL.NFT}/${nft.uid}`)
+        .doc(COL.NFT, nft.uid)
         .update({ availableFrom: dayjs().subtract(1, 'h').toDate() });
 
-      mockWalletReturnValue(this.spy, this.guardian!, {
+      mockWalletReturnValue(this.guardian!, {
         collection: this.collection,
         nft: nft.uid,
       });
-      const order = await testEnv.wrap(orderNft)({});
+      const order = await testEnv.wrap<Transaction>(WEN_FUNC.orderNft);
       await submitMilestoneFunc(order);
 
-      mockWalletReturnValue(this.spy, this.guardian!, this.dummyAuctionData(nft.uid));
-      await testEnv.wrap(setForSaleNft)({});
-      await wait(
-        async () => (await build5Db().doc(`${COL.NFT}/${nft.uid}`).get<Nft>())?.available === 3,
-      );
+      mockWalletReturnValue(this.guardian!, this.dummyAuctionData(nft.uid));
+      await testEnv.wrap(WEN_FUNC.setForSaleNft);
+      await wait(async () => (await build5Db().doc(COL.NFT, nft.uid).get())?.available === 3);
 
       if (shouldBid) {
-        mockWalletReturnValue(this.spy, this.member!, { nft: nft.uid });
-        const bidOrder = await testEnv.wrap(openBid)({});
+        mockWalletReturnValue(this.member!, { nft: nft.uid });
+        const bidOrder = await testEnv.wrap<Transaction>(WEN_FUNC.openBid);
         await submitMilestoneFunc(bidOrder, 2 * MIN_IOTA_AMOUNT);
       }
     }
-    return <Nft>await build5Db().doc(`${COL.NFT}/${nft.uid}`).get();
+    return <Nft>await build5Db().doc(COL.NFT, nft.uid).get();
   };
 
   public dummyAuctionData = (uid: string) => ({
@@ -201,7 +190,7 @@ export class Helper {
         nftId,
       },
     };
-    await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+    await build5Db().doc(COL.TRANSACTION, order.uid).create(order);
     return order.uid;
   };
 }

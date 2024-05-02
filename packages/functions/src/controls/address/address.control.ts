@@ -3,7 +3,6 @@ import {
   AddressValidationRequest,
   COL,
   DEFAULT_NETWORK,
-  Member,
   Network,
   Transaction,
   WenError,
@@ -18,14 +17,15 @@ export const validateAddressControl = async ({
   project,
 }: Context<AddressValidationRequest>): Promise<Transaction> => {
   const network = (params.network as Network) || DEFAULT_NETWORK;
-  const member = await build5Db().doc(`${COL.MEMBER}/${owner}`).get<Member>();
+  const memberDocRef = build5Db().doc(COL.MEMBER, owner);
+  const member = await memberDocRef.get();
 
   if (!member) {
     throw invalidArgument(WenError.member_does_not_exists);
   }
 
-  const order = await createAddressValidationOrder(project, member.uid, network, params.space);
-  await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+  const order = await createAddressValidationOrder(project, owner, network, params.space);
+  await build5Db().doc(COL.TRANSACTION, order.uid).create(order);
 
   return order;
 };

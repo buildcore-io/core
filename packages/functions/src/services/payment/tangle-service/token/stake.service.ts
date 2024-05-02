@@ -20,6 +20,7 @@ import { getTokenBySymbol } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet.service';
 import { BaseTangleService, HandlerParams } from '../../base';
+import { Action } from '../../transaction-service';
 import { depositStakeSchemaObject } from './TokenStakeTangleRequestSchema';
 
 export class TangleStakeService extends BaseTangleService<TangleResponse> {
@@ -44,9 +45,9 @@ export class TangleStakeService extends BaseTangleService<TangleResponse> {
     set(order, 'payload.amount', tranEntry.amount);
 
     this.transactionService.push({
-      ref: build5Db().doc(`${COL.TRANSACTION}/${order.uid}`),
+      ref: build5Db().doc(COL.TRANSACTION, order.uid),
       data: order,
-      action: 'set',
+      action: Action.C,
     });
 
     this.transactionService.createUnlockTransaction(

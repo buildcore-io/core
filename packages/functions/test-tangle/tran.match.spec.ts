@@ -87,6 +87,6 @@ const saveOrder = async (wallet: Wallet) => {
       validationType: TransactionValidationType.ADDRESS,
     },
   };
-  await build5Db().doc(`${COL.TRANSACTION}/${data.uid}`).create(data);
+  await build5Db().doc(COL.TRANSACTION, data.uid).create(data);
   return data;
 };

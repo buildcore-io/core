@@ -7,10 +7,10 @@ import {
   StakeType,
   Transaction,
   TransactionType,
+  WEN_FUNC,
 } from '@build-5/interfaces';
-import { stakeNft } from '../../src/runtime/firebase/nft/index';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
@@ -26,12 +26,12 @@ describe('Collection minting', () => {
   });
 
   it('Should return credits when nft deposit order does not receive nft', async () => {
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
+    mockWalletReturnValue(helper.guardian!, {
       network: Network.RMS,
       weeks: 25,
       type: StakeType.DYNAMIC,
     });
-    const order = await testEnv.wrap(stakeNft)({});
+    const order = await testEnv.wrap<Transaction>(WEN_FUNC.stakeNft);
     await requestFundsFromFaucet(Network.RMS, order.payload.targetAddress, MIN_IOTA_AMOUNT);
 
     const query = build5Db()
@@ -39,7 +39,7 @@ describe('Collection minting', () => {
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.guardian!);
     await wait(async () => {
-      const snap = await query.get<Transaction>();
+      const snap = await query.get();
       return (
         snap.length === 1 &&
         snap[0].payload.walletReference?.confirmed &&
