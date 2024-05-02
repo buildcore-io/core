@@ -6,9 +6,9 @@ import { chunk, last } from 'lodash';
 import fs from 'fs'
 
 const collections: { [key: string]: SUB_COL[] } = {
-  [COL.MEMBER]: [],
-  [COL.AWARD]: [SUB_COL.OWNERS, SUB_COL.PARTICIPANTS],
-  [COL.COLLECTION]: [SUB_COL.STATS, SUB_COL.RANKS, SUB_COL.VOTES],
+  // [COL.MEMBER]: [],
+  // [COL.AWARD]: [SUB_COL.OWNERS, SUB_COL.PARTICIPANTS],
+  // [COL.COLLECTION]: [SUB_COL.STATS, SUB_COL.RANKS, SUB_COL.VOTES],
   [COL.NFT]: [],
   [COL.SPACE]: [
     SUB_COL.GUARDIANS,
@@ -50,7 +50,7 @@ export const migrateToPg = async (app: FirebaseApp) => {
   await pgDb().destroy();
 };
 
-const LIMIT = 1000 * 30;
+const LIMIT = 1000 * 10;
 
 const migrateColletion = async (firestore: Firestore, col: COL) => {
   let lastDoc: any = undefined;
@@ -72,7 +72,7 @@ const migrateColletion = async (firestore: Firestore, col: COL) => {
 
     const docRef = pgDb().doc(col, 'placeholder') as IDocument<any, any, Update>;
 
-    const promises = chunk(snap.docs, 105).map(async (ch) => {
+    const promises = chunk(snap.docs, 35).map(async (ch) => {
       try {
         const data = ch.map((doc) =>
           undefinedToNull(docRef.converter.toPg({ ...doc.data(), uid: doc.id })),
