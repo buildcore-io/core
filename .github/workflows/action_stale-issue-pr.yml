@@ -1,22 +1,17 @@
-name: Action | Mark stale issues and PR
+name: PG migration
 
-on:
-  schedule:
-  - cron: '34 22 * * *'
+on: pull_request
 
 jobs:
-  stale:
-
-    runs-on: ubuntu-latest
-    permissions:
-      issues: write
-      pull-requests: write
-
-    steps:
-    - uses: actions/stale@v5
+  deploy_search:
+  runs-on: ubuntu-latest
+  environment: staging
+  steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
       with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-        stale-issue-message: 'Stale issue, closing!'
-        stale-pr-message: 'Stale pull request, closing!'
-        stale-issue-label: 'no-issue-activity'
-        stale-pr-label: 'no-pr-activity'
+      node-version: 20
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v2'
+      with:
+      credentials_json: ./packages/functions/sa.json
