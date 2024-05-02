@@ -14,4 +14,4 @@ jobs:
       - id: 'auth'
         uses: 'google-github-actions/auth@v2'
         with:
-        credentials_json: ./packages/functions/sa.json
+          credentials_json: ./packages/functions/sa.json
