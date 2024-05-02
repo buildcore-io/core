@@ -20,7 +20,7 @@
 
 ### Documentation
 
-You can find more details, API, and other docs on [developer.buildcore.com](https://developer.buildcore.com/) website.
+You can find more details, API, and other docs on [developer.buildcore.io](https://developer.buildcore.io/) website.
 
 ### Installation
 
@@ -45,7 +45,7 @@ const member = await https(origin).createProject(<YourProjectApiKey>)
 console.log(member);
 ```
 
-📚[API Reference](https://developer.buildcore.com)
+📚[API Reference](https://developer.buildcore.io)
 
 ## Contributors
 

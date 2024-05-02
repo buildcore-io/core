@@ -38,7 +38,7 @@
   <p align="center">
     Your Enterprise ready web3 plug & play platform
     <br />
-    <a href="https://developer.buildcore.com/"><strong>Explore the docs »</strong></a>
+    <a href="https://developer.buildcore.io/"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://github.com/buildcore/core/issues/new?template=bug_report.md">Report Bug</a>
@@ -90,7 +90,7 @@ Buildcore is your Enterprise ready web3 plug & play platform. This repo contains
 
 ## Getting Started
 
-To build the project locally, follow these simple steps. If you are interested in using the SDK to interact with our services, please refer to the [SDK documentation](https://developer.buildcore.com/).
+To build the project locally, follow these simple steps. If you are interested in using the SDK to interact with our services, please refer to the [SDK documentation](https://developer.buildcore.io/).
 
 ### Prerequisites
 
@@ -123,7 +123,7 @@ For running the docs locally, please refer to the documentation [README](./docs/
 
 ## Usage
 
-The best way to get started with the SDK and interacting with Buildcore is [installing the SDK](https://www.npmjs.com/package/@buildcore/sdk) and have a look at our [documentation](https://developer.buildcore.com).
+The best way to get started with the SDK and interacting with Buildcore is [installing the SDK](https://www.npmjs.com/package/@buildcore/sdk) and have a look at our [documentation](https://developer.buildcore.io).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -160,9 +160,9 @@ Distributed under the Apache License. See `LICENSE` for more information.
 
 ## Contact
 
-Buildcore - [@buildcoretech](https://twitter.com/buildcoretech) - hello@buildcore.com
+Buildcore - [@buildcoretech](https://twitter.com/buildcoretech) - hello@buildcore.io
 
-Project Link: [https://buildcore.com](https://buildcore.com)
+Project Link: [https://buildcore.io](https://buildcore.io)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
