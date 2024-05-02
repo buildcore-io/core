@@ -7,13 +7,14 @@ tags:
   - token
 ---
 
-import DeepLink from '../../../_admonitions/_deep_link.md'
+import DeepLink from '../../../\_admonitions/\_deep_link.md'
 
 ## Example
 
-To claim a token from an airdrop, you must call [`claim`](../../../reference-api/classes/TokenOtrDataset.md#claimairdrops) on `dataset(Dataset.TOKEN)`. [`claim`](../../../reference-api/classes/TokenOtrDataset.md#claimairdrops) takes an object of type `Build5Request<`[`ClaimAirdroppedTokensTangleRequest`](../../../reference-api/interfaces/ClaimAirdroppedTokensTangleRequest.md)`>` as parameter.
+To claim a token from an airdrop, you must call [`claim`](../../../reference-api/classes/TokenOtrDataset.md#claimairdrops) on `dataset(Dataset.TOKEN)`. [`claim`](../../../reference-api/classes/TokenOtrDataset.md#claimairdrops) takes an object of type `BuildcoreRequest<`[`ClaimAirdroppedTokensTangleRequest`](../../../reference-api/interfaces/ClaimAirdroppedTokensTangleRequest.md)`>` as parameter.
 
 ```tsx file=../../../../../packages/sdk/examples/token/otr/claim.ts#L9-L11
+
 ```
 
 <DeepLink/>
@@ -21,4 +22,5 @@ To claim a token from an airdrop, you must call [`claim`](../../../reference-api
 ## Full How-To Code
 
 ```tsx file=../../../../../packages/sdk/examples/token/otr/claim.ts
+
 ```

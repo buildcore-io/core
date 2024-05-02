@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Collection,
@@ -11,7 +11,7 @@ import {
   NftStatus,
   SUB_COL,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { set } from 'lodash';
 import { hasStakedTokens } from '../../services/stake.service';
 import { assertSpaceHasValidAddress } from '../../utils/address.utils';
@@ -33,28 +33,28 @@ export const createCollectionControl = async ({
 
   const spaceUid = params.space || '';
   if (spaceUid) {
-    const spaceDocRef = build5Db().doc(COL.SPACE, spaceUid);
+    const spaceDocRef = database().doc(COL.SPACE, spaceUid);
     const space = await spaceDocRef.get();
     if (!space) {
       throw invalidArgument(WenError.space_does_not_exists);
     }
     assertSpaceHasValidAddress(space, DEFAULT_NETWORK);
 
-    const spaceMember = await build5Db().doc(COL.SPACE, spaceUid, SUB_COL.MEMBERS, owner).get();
+    const spaceMember = await database().doc(COL.SPACE, spaceUid, SUB_COL.MEMBERS, owner).get();
     if (!spaceMember) {
       throw invalidArgument(WenError.you_are_not_part_of_space);
     }
   }
 
   if (params.royaltiesSpace) {
-    const royaltySpace = await build5Db().doc(COL.SPACE, params.royaltiesSpace).get();
+    const royaltySpace = await database().doc(COL.SPACE, params.royaltiesSpace).get();
     if (!royaltySpace) {
       throw invalidArgument(WenError.space_does_not_exists);
     }
     assertSpaceHasValidAddress(royaltySpace, DEFAULT_NETWORK);
   }
 
-  const batch = build5Db().batch();
+  const batch = database().batch();
 
   const discounts = <DiscountLine[]>(params.discounts || []);
   const placeholderNftId = params.type !== CollectionType.CLASSIC ? getRandomEthAddress() : null;
@@ -78,7 +78,7 @@ export const createCollectionControl = async ({
   if (collection.availableFrom) {
     set(collection, 'availableFrom', dateToTimestamp(params.availableFrom, true));
   }
-  const collectionDocRef = build5Db().doc(COL.COLLECTION, collection.uid);
+  const collectionDocRef = database().doc(COL.COLLECTION, collection.uid);
   batch.create(collectionDocRef, collection as unknown as Collection);
 
   if (placeholderNftId) {
@@ -108,7 +108,7 @@ export const createCollectionControl = async ({
       createdBy: owner,
       status: NftStatus.PRE_MINTED,
     };
-    const placeholderNftDocRef = build5Db().doc(COL.NFT, placeholderNft.uid);
+    const placeholderNftDocRef = database().doc(COL.NFT, placeholderNft.uid);
     batch.create(placeholderNftDocRef, placeholderNft as unknown as Nft);
   }
   await batch.commit();

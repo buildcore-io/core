@@ -1,4 +1,4 @@
-import { build5Db, build5Storage } from '@build-5/database';
+import { database, storage } from '@buildcore/database';
 import {
   Access,
   COL,
@@ -8,7 +8,7 @@ import {
   Transaction,
   TransactionPayloadType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import {
   AliasAddress,
   AliasOutput,
@@ -36,7 +36,7 @@ export class ImportMintedTokenService extends BaseService {
     let error: { [key: string]: unknown } = {};
     try {
       const tokenId = order.payload.tokenId!;
-      const existingTokenDocRef = build5Db().doc(COL.TOKEN, tokenId);
+      const existingTokenDocRef = database().doc(COL.TOKEN, tokenId);
       const existingToken = await this.transaction.get(existingTokenDocRef);
 
       if (existingToken) {
@@ -53,7 +53,7 @@ export class ImportMintedTokenService extends BaseService {
             order.member!,
             tokenId,
             uriToUrl(metadata.logoUrl),
-            build5Storage().bucket(getBucket()),
+            storage().bucket(getBucket()),
           )
         : '';
 
@@ -99,7 +99,7 @@ export class ImportMintedTokenService extends BaseService {
         pricePerToken: 0,
         decimals: metadata.decimals,
       };
-      const tokenDocRef = build5Db().doc(COL.TOKEN, token.uid);
+      const tokenDocRef = database().doc(COL.TOKEN, token.uid);
       this.transactionService.push({ ref: tokenDocRef, data: token, action: Action.C });
     } catch (err) {
       error = {

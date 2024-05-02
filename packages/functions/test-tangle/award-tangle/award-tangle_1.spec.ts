@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Award,
   COL,
@@ -10,7 +10,7 @@ import {
   Token,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
@@ -45,7 +45,7 @@ describe('Award tangle request', () => {
 
     token = await saveBaseToken(space.uid, guardian, Network.RMS);
 
-    const guardianDocRef = build5Db().doc(COL.MEMBER, guardian);
+    const guardianDocRef = database().doc(COL.MEMBER, guardian);
     const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, network);
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
@@ -68,7 +68,7 @@ describe('Award tangle request', () => {
       },
     );
 
-    const creditQuery = build5Db()
+    const creditQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST)
       .where('member', '==', guardian);
@@ -80,7 +80,7 @@ describe('Award tangle request', () => {
     const credit = snap[0] as Transaction;
     expect(credit.payload.amount).toBe(5 * MIN_IOTA_AMOUNT);
 
-    const awardDocRef = build5Db().doc(COL.AWARD, credit.payload.response!.award! as string);
+    const awardDocRef = database().doc(COL.AWARD, credit.payload.response!.award! as string);
     const award = (await awardDocRef.get()) as Award;
     expect(award.uid).toBe(credit.payload.response!.award);
     expect(award.name).toBe(newAward.name);

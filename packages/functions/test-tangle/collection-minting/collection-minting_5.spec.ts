@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Collection,
@@ -7,7 +7,7 @@ import {
   TransactionType,
   UnsoldMintingOptions,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { isEqual } from 'lodash';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
@@ -68,7 +68,7 @@ describe('Collection minting', () => {
     );
     await Promise.all(promises);
 
-    const collectionDocRef = build5Db().doc(COL.COLLECTION, helper.collection);
+    const collectionDocRef = database().doc(COL.COLLECTION, helper.collection);
     let collection = <Collection>await collectionDocRef.get();
     await wait(async () => {
       collection = <Collection>await collectionDocRef.get();
@@ -76,7 +76,7 @@ describe('Collection minting', () => {
     });
     expect(collection.approved).toBe(true);
 
-    const creditQuery = build5Db()
+    const creditQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('payload_collection', '==', helper.collection);

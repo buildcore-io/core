@@ -5,9 +5,9 @@
 import * as commons from './common';
 
 export interface PgSoonSnapshot extends commons.BaseRecord {
-  count: number;
-  paidOut: number;
+  count?: number;
+  paidOut?: number;
   lastPaidOutOn?: Date;
-  ethAddress: string;
-  ethAddressVerified: boolean;
+  ethAddress?: string;
+  ethAddressVerified?: boolean;
 }

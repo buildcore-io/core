@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -9,7 +9,7 @@ import {
   Transaction,
   TransactionType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
@@ -55,7 +55,7 @@ describe('Nft set for auction OTR', () => {
     );
     await MnemonicService.store(helper.guardianAddress.bech32, helper.guardianAddress.mnemonic);
 
-    const nftDocRef = build5Db().doc(COL.NFT, helper.nft.uid);
+    const nftDocRef = database().doc(COL.NFT, helper.nft.uid);
     await wait(async () => {
       helper.nft = (await nftDocRef.get())!;
       return helper.nft.available === NftAvailable.AUCTION_AND_SALE;
@@ -77,7 +77,7 @@ describe('Nft set for auction OTR', () => {
     );
     await MnemonicService.store(helper.guardianAddress.bech32, helper.guardianAddress.mnemonic);
 
-    const credit = build5Db()
+    const credit = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.guardian)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);

@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -7,7 +7,7 @@ import {
   TangleRequestType,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
@@ -26,8 +26,8 @@ describe('Nft bulk order', () => {
   it('Should order 2 nfts, only one available', async () => {
     const { collection: col1, nft: nft1 } = await h.createCollectionAndNft(h.member, h.space);
     const { collection: col2, nft: nft2 } = await h.createCollectionAndNft(h.member, h.space);
-    const nft1DocRef = build5Db().doc(COL.NFT, nft1.uid);
-    const nft2DocRef = build5Db().doc(COL.NFT, nft2.uid);
+    const nft1DocRef = database().doc(COL.NFT, nft1.uid);
+    const nft2DocRef = database().doc(COL.NFT, nft2.uid);
     await nft2DocRef.update({ locked: true });
 
     await requestFundsFromFaucet(Network.ATOI, h.memberAddress.bech32, 2 * MIN_IOTA_AMOUNT);
@@ -49,7 +49,7 @@ describe('Nft bulk order', () => {
     );
     await MnemonicService.store(h.memberAddress.bech32, h.memberAddress.mnemonic);
 
-    let query = build5Db()
+    let query = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', h.member)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);

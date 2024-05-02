@@ -8,7 +8,7 @@
  */
 export interface ApproveProposalRequest {
   /**
-   * Build5 id of the proposal to be approved.
+   * Buildcore id of the proposal to be approved.
    */
   uid: string;
 }

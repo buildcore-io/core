@@ -1,4 +1,4 @@
-import { TangleRequestType, VerifyEthForB5TangleRequest } from '@build-5/interfaces';
+import { TangleRequestType, VerifyEthForB5TangleRequest } from '@buildcore/interfaces';
 import { CommonJoi, toJoiObject } from '../../../joi/common';
 import { baseTangleSchema } from '../common';
 

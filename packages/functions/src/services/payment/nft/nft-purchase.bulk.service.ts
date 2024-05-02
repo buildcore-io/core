@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Collection,
@@ -13,7 +13,7 @@ import {
   TransactionType,
   TransactionValidationType,
   getMilestoneCol,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { get } from 'lodash';
 import { getAddress } from '../../../utils/address.utils';
@@ -36,7 +36,7 @@ export class NftPurchaseBulkService extends BaseService {
     );
     const nftOrders = await Promise.all(promises);
 
-    const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
+    const orderDocRef = database().doc(COL.TRANSACTION, order.uid);
     this.transactionService.push({
       ref: orderDocRef,
       data: {
@@ -72,7 +72,7 @@ export class NftPurchaseBulkService extends BaseService {
         milestoneTransactionPath: `${getMilestoneCol(order.network!)}/${tran.milestone}/${SUB_COL.TRANSACTIONS}/${tran.uid}`,
       },
     };
-    const docRef = build5Db().doc(COL.TRANSACTION, transfer.uid);
+    const docRef = database().doc(COL.TRANSACTION, transfer.uid);
     this.transactionService.push({ ref: docRef, data: transfer, action: Action.C });
   };
 
@@ -85,13 +85,13 @@ export class NftPurchaseBulkService extends BaseService {
       return { ...nftOrder, targetAddress: '' };
     }
 
-    const nftDocRef = build5Db().doc(COL.NFT, nftOrder.nft);
+    const nftDocRef = database().doc(COL.NFT, nftOrder.nft);
     const nft = <Nft>await this.transaction.get(nftDocRef);
 
-    const collectionDocRef = build5Db().doc(COL.COLLECTION, nft.collection);
+    const collectionDocRef = database().doc(COL.COLLECTION, nft.collection);
     const collection = <Collection>await collectionDocRef.get();
 
-    const spaceDocRef = build5Db().doc(COL.SPACE, nft.space);
+    const spaceDocRef = database().doc(COL.SPACE, nft.space);
     const space = <Space>await spaceDocRef.get();
 
     let errorCode: number | undefined = undefined;
@@ -121,7 +121,7 @@ export class NftPurchaseBulkService extends BaseService {
     const nftPurchaseOrderId = getRandomEthAddress();
 
     this.transactionService.push({
-      ref: build5Db().doc(COL.NFT, nft.uid),
+      ref: database().doc(COL.NFT, nft.uid),
       data: { locked: true, lockedBy: order.uid },
       action: Action.U,
     });
@@ -156,7 +156,7 @@ export class NftPurchaseBulkService extends BaseService {
       },
       linkedTransactions: [],
     };
-    const docRef = build5Db().doc(COL.TRANSACTION, nftPurchaseOrder.uid);
+    const docRef = database().doc(COL.TRANSACTION, nftPurchaseOrder.uid);
     this.transactionService.push({ ref: docRef, data: nftPurchaseOrder, action: Action.C });
 
     return { ...nftOrder, targetAddress: targetAddress.bech32, error: errorCode };

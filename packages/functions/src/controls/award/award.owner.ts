@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { AwardAddOwnerRequest, AwardOwner, COL, SUB_COL, WenError } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { AwardAddOwnerRequest, AwardOwner, COL, SUB_COL, WenError } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
@@ -10,18 +10,18 @@ export const addOwnerControl = async ({
   params,
   project,
 }: Context<AwardAddOwnerRequest>): Promise<AwardOwner> => {
-  const awardDocRef = build5Db().doc(COL.AWARD, params.uid);
+  const awardDocRef = database().doc(COL.AWARD, params.uid);
   const award = await awardDocRef.get();
   if (!award) {
     throw invalidArgument(WenError.award_does_not_exists);
   }
 
-  const awardOwner = await build5Db().doc(COL.AWARD, params.uid, SUB_COL.OWNERS, owner).get();
+  const awardOwner = await database().doc(COL.AWARD, params.uid, SUB_COL.OWNERS, owner).get();
   if (!awardOwner) {
     throw invalidArgument(WenError.you_are_not_owner_of_the_award);
   }
 
-  const awardMember = await build5Db()
+  const awardMember = await database()
     .doc(COL.AWARD, params.uid, SUB_COL.OWNERS, params.member)
     .get();
   if (awardMember) {
@@ -35,6 +35,6 @@ export const addOwnerControl = async ({
     parentCol: COL.AWARD,
     createdOn: dateToTimestamp(dayjs()),
   };
-  await build5Db().doc(COL.AWARD, params.uid, SUB_COL.OWNERS, params.member).create(newOwner);
+  await database().doc(COL.AWARD, params.uid, SUB_COL.OWNERS, params.member).create(newOwner);
   return newOwner;
 };

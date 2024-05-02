@@ -1,4 +1,4 @@
-import { TokenMintRequest } from '@build-5/interfaces';
+import { TokenMintRequest } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 import { networks } from '../../utils/config.utils';
@@ -7,7 +7,7 @@ import { AVAILABLE_NETWORKS } from '../common';
 const availaibleNetworks = AVAILABLE_NETWORKS.filter((n) => networks.includes(n));
 
 export const mintTokenSchema = toJoiObject<TokenMintRequest>({
-  token: CommonJoi.uid().description('Build5 id of the token to mint.'),
+  token: CommonJoi.uid().description('Buildcore id of the token to mint.'),
   network: Joi.string()
     .equal(...availaibleNetworks)
     .required()

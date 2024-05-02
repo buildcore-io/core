@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   SOON_PROJECT_ID,
@@ -7,7 +7,7 @@ import {
   Token,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -24,7 +24,7 @@ describe('Stake reward controller', () => {
     space = await testEnv.createSpace(guardian);
 
     token = wallet.getRandomEthAddress();
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, token)
       .create({
         project: SOON_PROJECT_ID,
@@ -48,7 +48,7 @@ describe('Stake reward controller', () => {
   });
 
   it('Should throw, not guardian', async () => {
-    await build5Db().doc(COL.TOKEN, token).update({ space: wallet.getRandomEthAddress() });
+    await database().doc(COL.TOKEN, token).update({ space: wallet.getRandomEthAddress() });
     const items = [
       {
         startDate: dayjs().valueOf(),
@@ -79,7 +79,7 @@ describe('Stake reward controller', () => {
     expect(stakeRewards.length).toBe(2);
 
     for (let stakeReward of stakeRewards) {
-      stakeReward = (await build5Db().doc(COL.STAKE_REWARD, stakeReward.uid).get())!;
+      stakeReward = (await database().doc(COL.STAKE_REWARD, stakeReward.uid).get())!;
       expect(stakeReward.uid).toBeDefined();
       expect(stakeReward.token).toBe(token);
       expect(

@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, SwapStatus, TangleResponse } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, SwapStatus, TangleResponse } from '@buildcore/interfaces';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { BaseTangleService, HandlerParams } from '../../base';
 import { rejectSwap } from '../../swap/swap-service';
@@ -14,13 +14,13 @@ export class SwapRejectTangleService extends BaseTangleService<TangleResponse> {
   }: HandlerParams): Promise<TangleResponse> => {
     const params = await assertValidationAsync(swapRejectTangleSchema, request);
 
-    const swapDocRef = build5Db().doc(COL.SWAP, params.uid);
+    const swapDocRef = database().doc(COL.SWAP, params.uid);
     const swap = await this.transaction.get(swapDocRef);
 
     const credits = rejectSwap(project, owner, swap);
 
     for (const credit of credits) {
-      const docRef = build5Db().doc(COL.TRANSACTION, credit.uid);
+      const docRef = database().doc(COL.TRANSACTION, credit.uid);
       this.transactionService.push({ ref: docRef, data: credit, action: Action.C });
     }
 

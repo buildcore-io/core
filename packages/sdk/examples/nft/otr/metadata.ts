@@ -1,5 +1,5 @@
-import { Dataset } from '@build-5/interfaces';
-import { SoonaverseOtrAddress, otr } from '@build-5/sdk';
+import { Dataset } from '@buildcore/interfaces';
+import { SoonaverseOtrAddress, otr } from '@buildcore/sdk';
 
 async function main() {
   try {

@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Member,
@@ -7,7 +7,7 @@ import {
   Space,
   Token,
   TokenStatus,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
@@ -26,7 +26,7 @@ export class Helper {
     this.wallet = await getWallet(this.network);
 
     const guardianId = await testEnv.createMember();
-    this.guardian = <Member>await build5Db().doc(COL.MEMBER, guardianId).get();
+    this.guardian = <Member>await database().doc(COL.MEMBER, guardianId).get();
 
     this.space = await testEnv.createSpace(this.guardian.uid);
     this.token = await this.saveToken(
@@ -71,7 +71,7 @@ export class Helper {
       totalSupply: 10,
       icon: MEDIA,
     } as Token;
-    await build5Db().doc(COL.TOKEN, token.uid).create(token);
+    await database().doc(COL.TOKEN, token.uid).create(token);
     return token;
   };
 }

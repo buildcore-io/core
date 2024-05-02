@@ -8,7 +8,7 @@
  */
 export interface CancelTokenTradeOrderRequest {
   /**
-   * Build5 id of the trade order.
+   * Buildcore id of the trade order.
    */
   uid: string;
 }

@@ -1,4 +1,4 @@
-import { Award, AwardBadgeType, MediaStatus, Network } from '@build-5/interfaces';
+import { Award, AwardBadgeType, MediaStatus, Network } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgAward } from '../../models';
 import { removeNulls } from '../common';

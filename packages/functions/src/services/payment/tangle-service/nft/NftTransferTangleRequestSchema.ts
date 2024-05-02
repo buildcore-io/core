@@ -2,7 +2,7 @@ import {
   NFT_TRANSFER_LIMIT,
   NftTransferTangleRequest,
   TangleRequestType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import Joi from 'joi';
 import { nftTransferObject } from '../../../../controls/nft/NftTransferRequestSchema';
 import { toJoiObject } from '../../../joi/common';

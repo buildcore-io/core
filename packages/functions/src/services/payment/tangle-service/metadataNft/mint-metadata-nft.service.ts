@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MintMetadataNftRequest,
@@ -13,7 +13,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { AliasAddress, Ed25519Address, NftAddress, NftOutput } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
@@ -84,7 +84,7 @@ export class MintMetadataNftService extends BaseTangleService<TangleResponse> {
     }
 
     if (aliasId === EMPTY_ALIAS_ID) {
-      const spaceDocRef = build5Db().doc(COL.SPACE, space.uid);
+      const spaceDocRef = database().doc(COL.SPACE, space.uid);
       this.transactionService.push({ ref: spaceDocRef, data: space, action: Action.C });
 
       const guardian = {
@@ -93,10 +93,10 @@ export class MintMetadataNftService extends BaseTangleService<TangleResponse> {
         parentCol: COL.SPACE,
         createdOn: dateToTimestamp(dayjs()),
       };
-      const guardianDocRef = build5Db().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, owner);
+      const guardianDocRef = database().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, owner);
       this.transactionService.push({ ref: guardianDocRef, data: guardian, action: Action.C });
 
-      const memberDocRef = build5Db().doc(COL.SPACE, space.uid, SUB_COL.MEMBERS, owner);
+      const memberDocRef = database().doc(COL.SPACE, space.uid, SUB_COL.MEMBERS, owner);
       this.transactionService.push({ ref: memberDocRef, data: guardian, action: Action.C });
     }
 
@@ -125,7 +125,7 @@ export class MintMetadataNftService extends BaseTangleService<TangleResponse> {
         tag: match.msgId,
       },
     };
-    const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
+    const orderDocRef = database().doc(COL.TRANSACTION, order.uid);
     this.transactionService.push({ ref: orderDocRef, data: order, action: Action.C });
 
     this.transactionService.createUnlockTransaction(
@@ -180,7 +180,7 @@ const getAliasOutputAmount = async (owner: string, space: Space, wallet: Wallet)
   if (!space.alias?.address) {
     throw invalidArgument(WenError.not_alias_governor);
   }
-  const guardianDocRef = build5Db().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, owner);
+  const guardianDocRef = database().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, owner);
   const guardian = await guardianDocRef.get();
 
   if (!guardian) {

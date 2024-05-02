@@ -1,4 +1,4 @@
-import { build5Db, build5Storage } from '@build-5/database';
+import { database, storage } from '@buildcore/database';
 import {
   Award,
   AwardBadge,
@@ -13,7 +13,7 @@ import {
   Token,
   TokenStatus,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { isEmpty, set } from 'lodash';
 import { downloadMediaAndPackCar } from '../../../../utils/car.utils';
 import { getBucket } from '../../../../utils/config.utils';
@@ -41,7 +41,7 @@ export class AwardCreateService extends BaseTangleService<AwardCreateTangleRespo
     const params = await assertValidationAsync(awardCreateSchema, request);
     const { award, owner: awardOwner } = await createAward(project, owner, { ...params });
 
-    const awardDocRef = build5Db().doc(COL.AWARD, award.uid);
+    const awardDocRef = database().doc(COL.AWARD, award.uid);
     this.transactionService.push({
       ref: awardDocRef,
       data: award,
@@ -49,13 +49,13 @@ export class AwardCreateService extends BaseTangleService<AwardCreateTangleRespo
     });
 
     this.transactionService.push({
-      ref: build5Db().doc(COL.AWARD, award.uid, SUB_COL.OWNERS, owner),
+      ref: database().doc(COL.AWARD, award.uid, SUB_COL.OWNERS, owner),
       data: awardOwner,
       action: Action.C,
     });
 
     const order = await createAwardFundOrder(project, owner, award);
-    const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
+    const orderDocRef = database().doc(COL.TRANSACTION, order.uid);
     this.transactionService.push({ ref: orderDocRef, data: order, action: Action.C });
 
     const response = {
@@ -97,7 +97,7 @@ export const createAward = async (
   if (badge?.image) {
     let imageUrl = badge.image;
     if (!isStorageUrl(imageUrl)) {
-      const bucket = build5Storage().bucket(getBucket());
+      const bucket = storage().bucket(getBucket());
       imageUrl = await migrateUriToSotrage(COL.AWARD, owner, awardUid, uriToUrl(imageUrl), bucket);
       set(badge, 'image', imageUrl);
     }

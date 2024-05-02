@@ -1,4 +1,4 @@
-import { ProposalMember } from '@build-5/interfaces';
+import { ProposalMember } from '@buildcore/interfaces';
 import { SubsetClass } from '../Subset';
 
 /**

@@ -1,4 +1,4 @@
-import { Ticker } from '@build-5/interfaces';
+import { Ticker } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgTicker } from '../../models';
 

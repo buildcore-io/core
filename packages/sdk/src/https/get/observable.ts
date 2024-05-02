@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { API_RETRY_TIMEOUT } from '@build-5/interfaces';
+import { API_RETRY_TIMEOUT } from '@buildcore/interfaces';
 import { Observable as RxjsObservable, Subscriber, shareReplay } from 'rxjs';
 import { processObject, processObjectArray } from '../utils';
 const WebSocket = global.WebSocket || require('ws');

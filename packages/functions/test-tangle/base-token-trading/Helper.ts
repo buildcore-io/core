@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
-import { COL, Member, Network, SOON_PROJECT_ID, Token, TokenStatus } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, Member, Network, SOON_PROJECT_ID, Token, TokenStatus } from '@buildcore/interfaces';
 import { IotaWallet } from '../../src/services/wallet/IotaWalletService';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
@@ -26,7 +26,7 @@ export class Helper {
     const space = await testEnv.createSpace(guardian);
 
     const sellerId = await testEnv.createMember();
-    this.seller = <Member>await build5Db().doc(COL.MEMBER, sellerId).get();
+    this.seller = <Member>await database().doc(COL.MEMBER, sellerId).get();
 
     this.atoiWallet = (await getWallet(Network.ATOI)) as IotaWallet;
     this.rmsWallet = await getWallet(Network.RMS);
@@ -39,7 +39,7 @@ export class Helper {
     );
 
     const buyerId = await testEnv.createMember();
-    this.buyer = <Member>await build5Db().doc(COL.MEMBER, buyerId).get();
+    this.buyer = <Member>await database().doc(COL.MEMBER, buyerId).get();
 
     this.buyerValidateAddress[Network.ATOI] = await this.atoiWallet.getAddressDetails(
       this.buyer.validatedAddress![Network.ATOI],
@@ -70,7 +70,7 @@ export class Helper {
       },
       links: [] as URL[],
     } as Token;
-    await build5Db().doc(COL.TOKEN, token.uid).create(token);
+    await database().doc(COL.TOKEN, token.uid).create(token);
     return token;
   };
 }

@@ -23,11 +23,11 @@ export interface SwapCreateRequest {
    */
   network: 'iota' | 'smr' | 'atoi' | 'rms';
   /**
-   * List of requested Build5 NFT ids or NFT tangle ids
+   * List of requested Buildcore NFT ids or NFT tangle ids
    */
   nfts?: string[];
   /**
-   * Target member Build5 uid or tangle address
+   * Target member Buildcore uid or tangle address
    */
   recipient: string;
 }

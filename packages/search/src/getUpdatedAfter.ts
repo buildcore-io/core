@@ -1,4 +1,4 @@
-import { BaseRecord, ICollection, IDocument, Update, build5Db } from '@build-5/database';
+import { BaseRecord, ICollection, IDocument, Update, database } from '@buildcore/database';
 import {
   COL,
   Dataset,
@@ -6,7 +6,7 @@ import {
   MAX_MILLISECONDS,
   SUB_COL,
   Subset,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import Joi from 'joi';
 import { isEmpty } from 'lodash';
@@ -36,7 +36,7 @@ export const getUpdatedAfter = async (project: string, url: string, isLive: bool
 
   const updatedAfter = body.updatedAfter ? dayjs.unix(body.updatedAfter) : dayjs().subtract(1, 'h');
 
-  const collection = build5Db().collection(
+  const collection = database().collection(
     body.dataset as unknown as COL,
     body.setId,
     body.subset as unknown as SUB_COL,
@@ -59,7 +59,7 @@ export const getUpdatedAfter = async (project: string, url: string, isLive: bool
   }
 
   if (body.startAfter) {
-    const docRef = build5Db().doc(
+    const docRef = database().doc(
       body.dataset as unknown as COL,
       body.setId || body.startAfter,
       body.subset as unknown as SUB_COL,

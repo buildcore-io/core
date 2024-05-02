@@ -1,4 +1,4 @@
-import { StakeType, TokenDrop, TokenDropStatus } from '@build-5/interfaces';
+import { StakeType, TokenDrop, TokenDropStatus } from '@buildcore/interfaces';
 import { head } from 'lodash';
 import { ICollection } from '../../interfaces/collection';
 import { Converter } from '../../interfaces/common';

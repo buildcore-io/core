@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, MIN_IOTA_AMOUNT, Transaction, WEN_FUNC } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, MIN_IOTA_AMOUNT, Transaction, WEN_FUNC } from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
@@ -21,14 +21,14 @@ describe('Token import', () => {
     const order = await testEnv.wrap<Transaction>(WEN_FUNC.importMintedToken);
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, 2 * MIN_IOTA_AMOUNT);
 
-    const creditQuery = build5Db()
+    const creditQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.guardian.uid);
     await wait(async () => {
       const snap = (await creditQuery.get()).filter((s) => s.payload.response?.code === 2122);
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
-    const migratedTokenDocRef = build5Db().doc(COL.TOKEN, helper.token.mintingData?.tokenId!);
+    const migratedTokenDocRef = database().doc(COL.TOKEN, helper.token.mintingData?.tokenId!);
     expect((await migratedTokenDocRef.get()) !== undefined).toBe(false);
   });
 });

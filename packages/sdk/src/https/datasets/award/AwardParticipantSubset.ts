@@ -1,4 +1,4 @@
-import { AwardParticipant, GetManyAdvancedRequest, Opr } from '@build-5/interfaces';
+import { AwardParticipant, GetManyAdvancedRequest, Opr } from '@buildcore/interfaces';
 import { SubsetClass } from '../Subset';
 
 /**

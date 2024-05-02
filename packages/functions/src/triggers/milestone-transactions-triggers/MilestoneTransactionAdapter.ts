@@ -1,5 +1,5 @@
-import { MilestoneTransactions } from '@build-5/database';
-import { MilestoneTransaction, MilestoneTransactionEntry, Network } from '@build-5/interfaces';
+import { MilestoneTransactions } from '@buildcore/database';
+import { MilestoneTransaction, MilestoneTransactionEntry, Network } from '@buildcore/interfaces';
 import {
   BasicOutput,
   FeatureType,
@@ -68,7 +68,7 @@ export class MilestoneTransactionAdapter {
       fromAddresses.push(senderBech32);
     }
 
-    const build5TransactionId = getMilestoneTransactionId(data);
+    const buildcoreTransactionId = getMilestoneTransactionId(data);
 
     const consumedOutputIds = essence.inputs.map((i) => {
       const { transactionId, transactionOutputIndex } = i as UTXOInput;
@@ -84,7 +84,7 @@ export class MilestoneTransactionAdapter {
       fromAddresses,
       outputs: entries,
       processed: data.processed as boolean,
-      build5TransactionId: build5TransactionId || undefined,
+      buildcoreTransactionId: buildcoreTransactionId || undefined,
     };
   };
 }

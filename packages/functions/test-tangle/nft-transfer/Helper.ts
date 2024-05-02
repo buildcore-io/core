@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Access,
   COL,
@@ -18,7 +18,7 @@ import {
   TransactionType,
   UnsoldMintingOptions,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { Wallet } from '../../src/services/wallet/wallet';
@@ -57,7 +57,7 @@ export class Helper {
     );
     this.collection = (await testEnv.wrap<Collection>(WEN_FUNC.createCollection)).uid;
 
-    await build5Db().doc(COL.COLLECTION, this.collection).update({ approved: true });
+    await database().doc(COL.COLLECTION, this.collection).update({ approved: true });
   };
 
   public mintCollection = async (expiresAt?: Timestamp) => {
@@ -73,13 +73,13 @@ export class Helper {
       collectionMintOrder.payload.amount,
       expiresAt,
     );
-    const collectionDocRef = build5Db().doc(COL.COLLECTION, this.collection);
+    const collectionDocRef = database().doc(COL.COLLECTION, this.collection);
     await wait(async () => {
       const data = <Collection>await collectionDocRef.get();
       return data.status === CollectionStatus.MINTED;
     });
 
-    const nftDocRef = build5Db().doc(COL.NFT, this.nft?.uid);
+    const nftDocRef = database().doc(COL.NFT, this.nft?.uid);
     this.nft = <Nft>await nftDocRef.get();
   };
 
@@ -91,7 +91,7 @@ export class Helper {
     mockWalletReturnValue(this.guardian!, nft);
     nft = await testEnv.wrap<Nft>(WEN_FUNC.createNft);
 
-    await build5Db()
+    await database()
       .doc(COL.NFT, nft.uid)
       .update({ availableFrom: dayjs().subtract(1, 'h').toDate() });
     if (shouldOrder) {
@@ -103,7 +103,7 @@ export class Helper {
       await submitMilestoneFunc(order);
     }
 
-    this.nft = <Nft>await build5Db().doc(COL.NFT, nft.uid).get();
+    this.nft = <Nft>await database().doc(COL.NFT, nft.uid).get();
     return this.nft;
   };
 
@@ -112,7 +112,7 @@ export class Helper {
     mockWalletReturnValue(this.guardian!, this.dummyAuctionData(uid));
     await testEnv.wrap(WEN_FUNC.setForSaleNft);
     await wait(async () => {
-      const docRef = build5Db().doc(COL.NFT, uid);
+      const docRef = database().doc(COL.NFT, uid);
       this.nft = <Nft>await docRef.get();
       return this.nft.available === 3;
     });
@@ -122,7 +122,7 @@ export class Helper {
     mockWalletReturnValue(this.guardian!, this.dummySaleData(nftId));
     await testEnv.wrap(WEN_FUNC.setForSaleNft);
     await wait(async () => {
-      const nft = await build5Db().doc(COL.NFT, nftId).get();
+      const nft = await database().doc(COL.NFT, nftId).get();
       return nft?.available === 1;
     });
   };
@@ -188,7 +188,7 @@ export class Helper {
         nftId,
       },
     };
-    await build5Db().doc(COL.TRANSACTION, order.uid).create(order);
+    await database().doc(COL.TRANSACTION, order.uid).create(order);
     return order.uid;
   };
 }

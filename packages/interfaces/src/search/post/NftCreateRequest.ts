@@ -12,7 +12,7 @@ export interface NftCreateRequest {
    */
   availableFrom: Date;
   /**
-   * Build5 id of the collection for this nft.
+   * Buildcore id of the collection for this nft.
    */
   collection: string;
   /**

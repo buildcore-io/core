@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Member,
@@ -15,7 +15,7 @@ import {
   TransactionType,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { getAddress } from '../src/utils/address.utils';
 import { serverTime } from '../src/utils/dateTime.utils';
 import * as wallet from '../src/utils/wallet.utils';
@@ -32,7 +32,7 @@ describe('Trade base token controller', () => {
     await createRoyaltySpaces();
 
     const sellerId = await testEnv.createMember();
-    seller = <Member>await build5Db().doc(COL.MEMBER, sellerId).get();
+    seller = <Member>await database().doc(COL.MEMBER, sellerId).get();
 
     const guardian = await testEnv.createMember();
     const space = await testEnv.createSpace(guardian);
@@ -53,7 +53,7 @@ describe('Trade base token controller', () => {
     const tradeOrder = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await requestFundsFromFaucet(sourceNetwork, tradeOrder.payload.targetAddress, MIN_IOTA_AMOUNT);
 
-    const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', seller.uid);
+    const query = database().collection(COL.TOKEN_MARKET).where('owner', '==', seller.uid);
     await wait(async () => {
       const snap = await query.get();
       return snap.length !== 0;
@@ -71,7 +71,7 @@ describe('Trade base token controller', () => {
     const cancelled = await testEnv.wrap<TokenTradeOrder>(WEN_FUNC.cancelTradeOrder);
     expect(cancelled.status).toBe(TokenTradeOrderStatus.CANCELLED);
 
-    const creditSnap = await build5Db()
+    const creditSnap = await database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', seller.uid)
@@ -87,7 +87,7 @@ describe('Trade base token controller', () => {
   it.each([Network.ATOI, Network.RMS])(
     'Should throw, source address not verified',
     async (network: Network) => {
-      await build5Db()
+      await database()
         .doc(COL.MEMBER, seller.uid)
         .update({ [`${network}Address`]: undefined });
       mockWalletReturnValue(seller.uid, {
@@ -107,7 +107,7 @@ describe('Trade base token controller', () => {
     { sourceNetwork: Network.ATOI, targetNetwork: Network.RMS },
     { sourceNetwork: Network.RMS, targetNetwork: Network.ATOI },
   ])('Should throw, target address not verified', async ({ sourceNetwork, targetNetwork }) => {
-    await build5Db()
+    await database()
       .doc(COL.MEMBER, seller.uid)
       .update({ [`${targetNetwork}Address`]: undefined });
     mockWalletReturnValue(seller.uid, {
@@ -139,6 +139,6 @@ const saveToken = async (space: string, guardian: string) => {
     icon: MEDIA,
     mintingData: { network: Network.ATOI },
   } as Token;
-  await build5Db().doc(COL.TOKEN, token.uid).create(token);
+  await database().doc(COL.TOKEN, token.uid).create(token);
   return token;
 };

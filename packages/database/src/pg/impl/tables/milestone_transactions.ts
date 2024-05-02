@@ -1,4 +1,4 @@
-import { Timestamp } from '@build-5/interfaces';
+import { Timestamp } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgMilestoneTransactions } from '../../models';
 import { pgDateToTimestamp } from '../postgres';

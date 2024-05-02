@@ -1,4 +1,4 @@
-import { NftCreateRequest, ProposalType, WEN_FUNC } from '@build-5/interfaces';
+import { NftCreateRequest, ProposalType, WEN_FUNC } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { validateAddressSchemaObject } from '../../controls/address/AddressValidationRequestSchema';
 import { validateAddressControl } from '../../controls/address/address.control';

@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Network,
@@ -6,7 +6,7 @@ import {
   TransactionPayloadType,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { NftOutput } from '@iota/sdk';
 import { getOutputMetadata } from '../../src/utils/basic-output.utils';
 import { wait } from '../../test/controls/common';
@@ -28,7 +28,7 @@ describe('Metadata nft', () => {
 
     await requestFundsFromFaucet(network, order.payload.targetAddress!, order.payload.amount!);
 
-    const typeQuery = build5Db()
+    const typeQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', h.member)
       .where('type', '==', TransactionType.METADATA_NFT);
@@ -40,7 +40,7 @@ describe('Metadata nft', () => {
       );
     });
 
-    const addressQuery = build5Db()
+    const addressQuery = database()
       .collection(COL.NFT)
       .where('mintingData_address', '==', order.payload.targetAddress);
     await wait(async () => {
@@ -67,7 +67,7 @@ describe('Metadata nft', () => {
       updateOrder.payload.amount!,
     );
 
-    const typesQuery = build5Db()
+    const typesQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', h.member)
       .where('type', '==', TransactionType.METADATA_NFT)

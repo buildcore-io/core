@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   ImportMintedTokenRequest,
@@ -9,7 +9,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { WalletService } from '../../services/wallet/wallet.service';
@@ -25,10 +25,10 @@ export const importMintedTokenControl = ({
   params,
   project,
 }: Context<ImportMintedTokenRequest>) =>
-  build5Db().runTransaction(async (transaction) => {
+  database().runTransaction(async (transaction) => {
     await assertIsGuardian(params.space, owner);
 
-    const existingTokenDocRef = build5Db().doc(COL.TOKEN, params.tokenId);
+    const existingTokenDocRef = database().doc(COL.TOKEN, params.tokenId);
     const existingToken = await transaction.get(existingTokenDocRef);
     if (existingToken) {
       throw invalidArgument(WenError.token_already_exists_for_space);
@@ -60,7 +60,7 @@ export const importMintedTokenControl = ({
         tokenId: params.tokenId,
       },
     };
-    const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
+    const orderDocRef = database().doc(COL.TRANSACTION, order.uid);
     await transaction.create(orderDocRef, order);
     return order;
   });

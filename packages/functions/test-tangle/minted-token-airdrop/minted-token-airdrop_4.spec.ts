@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -14,7 +14,7 @@ import {
   Transaction,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { getAddress } from '../../src/utils/address.utils';
@@ -57,7 +57,7 @@ describe('Minted token airdrop tangle claim', () => {
     const airdropOrder = await testEnv.wrap<Transaction>(WEN_FUNC.airdropMintedToken);
     expect(airdropOrder.payload.unclaimedAirdrops).toBe(2);
 
-    const guardian = <Member>await build5Db().doc(COL.MEMBER, helper.guardian).get();
+    const guardian = <Member>await database().doc(COL.MEMBER, helper.guardian).get();
     const guardianAddress = await helper.walletService!.getAddressDetails(
       getAddress(guardian, helper.network),
     );
@@ -88,7 +88,7 @@ describe('Minted token airdrop tangle claim', () => {
       return airdrops.length === 2;
     });
 
-    const distributionDocRef = build5Db().doc(
+    const distributionDocRef = database().doc(
       COL.TOKEN,
       helper.token!.uid,
       SUB_COL.DISTRIBUTION,
@@ -97,7 +97,7 @@ describe('Minted token airdrop tangle claim', () => {
     let distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.totalUnclaimedAirdrop).toBe(2);
 
-    const member = <Member>await build5Db().doc(COL.MEMBER, helper.member).get();
+    const member = <Member>await database().doc(COL.MEMBER, helper.member).get();
     const memberAddress = await helper.walletService!.getAddressDetails(
       getAddress(member, helper.network),
     );
@@ -118,7 +118,7 @@ describe('Minted token airdrop tangle claim', () => {
     );
     await MnemonicService.store(memberAddress.bech32, memberAddress.mnemonic);
 
-    const orderQuery = build5Db()
+    const orderQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.member)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
@@ -137,7 +137,7 @@ describe('Minted token airdrop tangle claim', () => {
     );
 
     await wait(async () => {
-      const orderDocRef = build5Db().doc(COL.TRANSACTION, airdropOrder.uid);
+      const orderDocRef = database().doc(COL.TRANSACTION, airdropOrder.uid);
       const order = <Transaction>await orderDocRef.get();
       return order.payload.unclaimedAirdrops === 0;
     });

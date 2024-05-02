@@ -2,11 +2,11 @@ require('dotenv').config();
 export default {
   client: 'pg',
   connection: {
-    user: process.env.DB_USER,
-    password: process.env.DB_USER_PWD,
-    database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
-    port: Number(process.env.DB_PORT),
+    user: 'postgres',
+    password: 'postgres',
+    database: 'buildcore',
+    host: 'localhost',
+    port: 2345,
   },
   migrations: {
     directory: './migrations',

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MAX_WALLET_RETRY,
@@ -10,7 +10,7 @@ import {
   SOON_PROJECT_ID,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { retryWallet } from '../../src/cron/wallet.cron';
@@ -51,13 +51,13 @@ describe('Transaction trigger spec', () => {
         ),
         ignoreWallet: true,
       };
-      await build5Db().doc(COL.TRANSACTION, billPayment.uid).create(billPayment);
+      await database().doc(COL.TRANSACTION, billPayment.uid).create(billPayment);
       await new Promise((r) => setTimeout(r, 1000));
 
-      await build5Db()
+      await database()
         .doc(COL.MNEMONIC, sourceAddress.bech32)
         .update({ lockedBy: billPayment.uid, consumedOutputIds: outputIds });
-      await build5Db()
+      await database()
         .doc(COL.TRANSACTION, billPayment.uid)
         .update({
           ignoreWallet: false,
@@ -73,13 +73,13 @@ describe('Transaction trigger spec', () => {
         sourceAddress.bech32,
         targetAddress.bech32,
       );
-      await build5Db().doc(COL.TRANSACTION, billPayment2.uid).create(billPayment2);
+      await database().doc(COL.TRANSACTION, billPayment2.uid).create(billPayment2);
 
       await retryWallet();
 
       await wait(async () => {
-        const mnemonic = <Mnemonic>await build5Db().doc(COL.MNEMONIC, sourceAddress.bech32).get();
-        billPayment = <Transaction>await build5Db().doc(COL.TRANSACTION, billPayment.uid).get();
+        const mnemonic = <Mnemonic>await database().doc(COL.MNEMONIC, sourceAddress.bech32).get();
+        billPayment = <Transaction>await database().doc(COL.TRANSACTION, billPayment.uid).get();
         return (
           !billPayment.payload?.walletReference?.inProgress &&
           !billPayment.payload?.walletReference?.confirmed &&
@@ -89,7 +89,7 @@ describe('Transaction trigger spec', () => {
       });
 
       await wait(async () => {
-        billPayment2 = <Transaction>await build5Db().doc(COL.TRANSACTION, billPayment2.uid).get();
+        billPayment2 = <Transaction>await database().doc(COL.TRANSACTION, billPayment2.uid).get();
         return billPayment2.payload?.walletReference?.confirmed;
       });
     },

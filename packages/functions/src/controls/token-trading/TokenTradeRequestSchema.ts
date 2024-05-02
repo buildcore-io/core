@@ -1,4 +1,4 @@
-import { MIN_PRICE_PER_TOKEN, TokenTradeOrderType, TradeTokenRequest } from '@build-5/interfaces';
+import { MIN_PRICE_PER_TOKEN, TokenTradeOrderType, TradeTokenRequest } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 import { MAX_COUNT, MAX_PRICE, MIN_COUNT } from '../token/common';

@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -7,7 +7,7 @@ import {
   Transaction,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
@@ -33,8 +33,8 @@ describe('Nft bulk order', () => {
     mockWalletReturnValue(h.member, request);
     const order = await testEnv.wrap<Transaction>(WEN_FUNC.orderNftBulk);
 
-    const nft1DocRef = build5Db().doc(COL.NFT, nft1.uid);
-    const nft2DocRef = build5Db().doc(COL.NFT, nft2.uid);
+    const nft1DocRef = database().doc(COL.NFT, nft1.uid);
+    const nft2DocRef = database().doc(COL.NFT, nft2.uid);
     await nft2DocRef.update({ locked: true });
 
     await requestFundsFromFaucet(
@@ -48,7 +48,7 @@ describe('Nft bulk order', () => {
       return nft1.owner === h.member;
     });
 
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', h.member);

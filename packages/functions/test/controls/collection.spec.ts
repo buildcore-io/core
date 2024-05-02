@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Access,
   Bucket,
@@ -20,7 +20,7 @@ import {
   Vote,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { chunk, isEmpty, set } from 'lodash';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -112,7 +112,7 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
   });
 
   it('Should create collection, soon check', async () => {
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, soonTokenId, SUB_COL.DISTRIBUTION, member)
       .create({
         parentId: soonTokenId,
@@ -196,7 +196,7 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
     let collection = dummyCollection(space, 0.6) as unknown as Collection;
     mockWalletReturnValue(member, collection);
     collection = await testEnv.wrap<Collection>(WEN_FUNC.createCollection);
-    await build5Db().doc(COL.COLLECTION, collection.uid).update({ approved: true });
+    await database().doc(COL.COLLECTION, collection.uid).update({ approved: true });
     const dummyNft = () => ({
       name: 'Collection A',
       description: 'babba',
@@ -226,7 +226,7 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
     expect(uCollection?.price).toBe(15 * MIN_IOTA_AMOUNT);
     expect(uCollection?.availablePrice).toBe(15 * MIN_IOTA_AMOUNT);
     for (let i = 0; i < 4; ++i) {
-      const nftDocRef = build5Db().doc(COL.NFT, nfts[i].uid);
+      const nftDocRef = database().doc(COL.NFT, nfts[i].uid);
       const nft = <Nft>await nftDocRef.get();
       expect(nft.price).toBe(15 * MIN_IOTA_AMOUNT);
       expect(nft.availablePrice).toBe(15 * MIN_IOTA_AMOUNT);
@@ -238,7 +238,7 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
     const collection = dummyCollection(space, 0.6);
     mockWalletReturnValue(member, collection);
     const cCollection = await testEnv.wrap<Collection>(WEN_FUNC.createCollection);
-    await build5Db()
+    await database()
       .doc(COL.COLLECTION, cCollection.uid)
       .update({ status: CollectionStatus.MINTED });
     expect(cCollection?.access).toBe(Access.OPEN);
@@ -281,7 +281,7 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
     const collection = { ...dummyCollection(space, 0.6), type: CollectionType.SFT };
     mockWalletReturnValue(member, collection);
     const cCollection = await testEnv.wrap<Collection>(WEN_FUNC.createCollection);
-    await build5Db()
+    await database()
       .doc(COL.COLLECTION, cCollection.uid)
       .update({ status: CollectionStatus.MINTED });
     mockWalletReturnValue(member, {
@@ -318,7 +318,7 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
     const collection = dummyCollection(space, 0.6);
     mockWalletReturnValue(member, collection);
     const cCollection = await testEnv.wrap<Collection>(WEN_FUNC.createCollection);
-    await build5Db()
+    await database()
       .doc(COL.COLLECTION, cCollection.uid)
       .update({ status: CollectionStatus.MINTED });
     mockWalletReturnValue(member, {
@@ -383,7 +383,7 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
       testEnv.wrap<Collection>(WEN_FUNC.updateCollection),
       WenError.you_must_be_the_creator_of_this_collection.key,
     );
-    await build5Db().doc(COL.COLLECTION, cCollection?.uid).update({ approved: true });
+    await database().doc(COL.COLLECTION, cCollection?.uid).update({ approved: true });
     mockWalletReturnValue(secondGuardian, updateData);
     const uCollection = await testEnv.wrap<Collection>(WEN_FUNC.updateCollection);
     expect(uCollection?.uid).toBeDefined();
@@ -400,7 +400,7 @@ describe('Collection trigger test', () => {
       project: SOON_PROJECT_ID,
       uid: getRandomEthAddress(),
     };
-    await build5Db()
+    await database()
       .doc(COL.COLLECTION, collection.uid)
       .create({
         ...collection,
@@ -409,11 +409,11 @@ describe('Collection trigger test', () => {
     const nftIds = Array.from(Array(1000));
     const chunks = chunk(nftIds, 500);
     for (let chunkIndex = 0; chunkIndex < chunks.length; ++chunkIndex) {
-      const batch = build5Db().batch();
+      const batch = database().batch();
       const promises = chunks[chunkIndex].map(async (_, index) => {
         const id = getRandomEthAddress();
         const nft = dummyNft(chunkIndex * 500 + index, id, collection.uid);
-        batch.create(build5Db().doc(COL.NFT, id), {
+        batch.create(database().doc(COL.NFT, id), {
           ...nft,
           availableFrom: dateToTimestamp(nft.availableFrom),
           project: SOON_PROJECT_ID,
@@ -422,30 +422,30 @@ describe('Collection trigger test', () => {
       await Promise.all(promises);
       await batch.commit();
     }
-    await build5Db().doc(COL.COLLECTION, collection.uid).update({ approved: true });
+    await database().doc(COL.COLLECTION, collection.uid).update({ approved: true });
     await wait(async () => {
-      const snap = await build5Db()
+      const snap = await database()
         .collection(COL.NFT)
         .where('collection', '==', collection.uid)
         .get();
       const allHaveUpdated = snap.reduce((acc, act) => acc && act.approved, true);
       return allHaveUpdated;
     });
-    await build5Db().doc(COL.COLLECTION, collection.uid).update({ approved: false });
-    await build5Db().doc(COL.COLLECTION, collection.uid).update({ approved: true });
+    await database().doc(COL.COLLECTION, collection.uid).update({ approved: false });
+    await database().doc(COL.COLLECTION, collection.uid).update({ approved: true });
     await wait(async () => {
-      const snap = await build5Db()
+      const snap = await database()
         .collection(COL.NFT)
         .where('collection', '==', collection.uid)
         .get();
       const allHaveUpdated = snap.reduce((acc, act) => acc && act.approved, true);
       return allHaveUpdated;
     });
-    await build5Db()
+    await database()
       .doc(COL.COLLECTION, collection.uid)
       .update({ approved: false, rejected: true });
     await wait(async () => {
-      const snap = await build5Db()
+      const snap = await database()
         .collection(COL.NFT)
         .where('collection', '==', collection.uid)
         .get();
@@ -507,7 +507,7 @@ describe('Collection vote test', () => {
   });
   const validateStats = async (upvotes: number, downvotes: number, diff: number) => {
     await wait(async () => {
-      const statsDocRef = build5Db().doc(
+      const statsDocRef = database().doc(
         COL.COLLECTION,
         collection.uid,
         SUB_COL.STATS,
@@ -560,7 +560,7 @@ describe('Collection rank test', () => {
     space = await testEnv.createSpace(member);
     mockWalletReturnValue(member, dummyCollection(space, 0.6));
     collection = await testEnv.wrap<Collection>(WEN_FUNC.createCollection);
-    await build5Db()
+    await database()
       .doc(COL.SPACE, RANKING_TEST.collectionSpace, SUB_COL.GUARDIANS, member)
       .upsert({ parentId: RANKING_TEST.collectionSpace });
   });
@@ -598,7 +598,7 @@ describe('Collection rank test', () => {
   });
 
   it('Should throw, not space member', async () => {
-    await build5Db()
+    await database()
       .doc(COL.SPACE, RANKING_TEST.collectionSpace, SUB_COL.GUARDIANS, member)
       .delete();
     mockWalletReturnValue(member, {
@@ -613,8 +613,8 @@ describe('Collection rank test', () => {
   });
   const validateStats = async (count: number, sum: number) => {
     await wait(async () => {
-      const collectionDocRef = build5Db().doc(COL.COLLECTION, collection.uid);
-      const statsDocRef = build5Db().doc(
+      const collectionDocRef = database().doc(COL.COLLECTION, collection.uid);
+      const statsDocRef = database().doc(
         COL.COLLECTION,
         collection.uid,
         SUB_COL.STATS,
@@ -652,13 +652,13 @@ describe('Collection rank test', () => {
     await sendRank(-100);
     await validateStats(1, -100);
     const secondMember = await testEnv.createMember();
-    await build5Db()
+    await database()
       .doc(COL.SPACE, RANKING_TEST.collectionSpace, SUB_COL.GUARDIANS, secondMember)
       .upsert({ parentId: RANKING_TEST.collectionSpace });
     await sendRank(-50, secondMember);
     await validateStats(2, -150);
     await wait(async () => {
-      const doc = await build5Db().doc(COL.COLLECTION, collection.uid).get();
+      const doc = await database().doc(COL.COLLECTION, collection.uid).get();
       return !doc!.approved && doc!.rejected;
     });
   });
@@ -672,7 +672,7 @@ const saveToken = async (space: string) => {
     space,
     name: 'MyToken',
   };
-  const docRef = build5Db().doc(COL.TOKEN, token.uid);
+  const docRef = database().doc(COL.TOKEN, token.uid);
   await docRef.upsert(token);
   return <Token>await docRef.get();
 };

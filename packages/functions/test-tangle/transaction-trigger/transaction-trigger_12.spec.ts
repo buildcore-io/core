@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -8,7 +8,7 @@ import {
   SOON_PROJECT_ID,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { RegularTransactionEssence, TransactionPayload, UTXOInput, Utils } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
@@ -52,7 +52,7 @@ describe('Transaction trigger spec', () => {
           2 * MIN_IOTA_AMOUNT,
         ),
       };
-      const billPaymentDocRef = build5Db().doc(COL.TRANSACTION, billPayment.uid);
+      const billPaymentDocRef = database().doc(COL.TRANSACTION, billPayment.uid);
       await billPaymentDocRef.create(billPayment);
 
       await wait(async () => {

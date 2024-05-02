@@ -1,4 +1,4 @@
-import { COL, SUB_COL } from '@build-5/interfaces';
+import { COL, SUB_COL } from '@buildcore/interfaces';
 
 export enum WEN_FUNC_TRIGGER {
   onProposalWrite = 'onproposalwrite',

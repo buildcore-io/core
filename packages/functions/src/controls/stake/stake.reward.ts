@@ -1,11 +1,11 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   StakeReward,
   StakeRewardStatus,
   TokenStakeRewardsRequest,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
@@ -18,7 +18,7 @@ export const stakeRewardControl = async ({
   params,
   project,
 }: Context<TokenStakeRewardsRequest>) => {
-  const tokenDocRef = build5Db().doc(COL.TOKEN, params.token);
+  const tokenDocRef = database().doc(COL.TOKEN, params.token);
   const token = await tokenDocRef.get();
   if (!token) {
     throw invalidArgument(WenError.token_does_not_exist);
@@ -36,9 +36,9 @@ export const stakeRewardControl = async ({
     status: StakeRewardStatus.UNPROCESSED,
   }));
 
-  const batch = build5Db().batch();
+  const batch = database().batch();
   for (const stakeReward of stakeRewards) {
-    const docRef = build5Db().doc(COL.STAKE_REWARD, stakeReward.uid);
+    const docRef = database().doc(COL.STAKE_REWARD, stakeReward.uid);
     batch.create(docRef, stakeReward);
   }
   await batch.commit();

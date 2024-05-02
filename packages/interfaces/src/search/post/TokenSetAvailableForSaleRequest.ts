@@ -28,7 +28,7 @@ export interface SetTokenForSaleRequest {
    */
   saleStartDate: Date;
   /**
-   * Build5 id of the token.
+   * Buildcore id of the token.
    */
   token: string;
 }

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Member,
@@ -8,7 +8,7 @@ import {
   Transaction,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { isEqual } from 'lodash';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { getAddress } from '../../src/utils/address.utils';
@@ -33,11 +33,11 @@ describe('Collection minting', () => {
     const tmpAddress = await helper.walletService!.getNewIotaAddressDetails();
     await helper.updateGuardianAddress(tmpAddress.bech32);
 
-    const nftDocRef = build5Db().doc(COL.NFT, nft.uid);
+    const nftDocRef = database().doc(COL.NFT, nft.uid);
     const mintingData = (<Nft>await nftDocRef.get()).mintingData;
     mockWalletReturnValue(helper.guardian!, { nft: nft.uid });
     await testEnv.wrap(WEN_FUNC.withdrawNft);
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.WITHDRAW_NFT)
       .where('payload_nft', '==', nft.uid);
@@ -55,7 +55,7 @@ describe('Collection minting', () => {
     expect(isEqual(nft.mintingData, mintingData)).toBe(true);
 
     const wallet = await getWallet(helper.network);
-    const guardianData = <Member>await build5Db().doc(COL.MEMBER, helper.guardian!).get();
+    const guardianData = <Member>await database().doc(COL.MEMBER, helper.guardian!).get();
     const nftWallet = new NftWallet(wallet);
     let outputs = await nftWallet.getNftOutputs(
       undefined,
@@ -75,7 +75,7 @@ describe('Collection minting', () => {
       nft = <Nft>await nftDocRef.get();
       return nft.status === NftStatus.MINTED;
     });
-    depositOrder = <Transaction>await build5Db().doc(COL.TRANSACTION, depositOrder.uid).get();
+    depositOrder = <Transaction>await database().doc(COL.TRANSACTION, depositOrder.uid).get();
     expect(depositOrder.payload.nft).toBe(nft.uid);
     expect(nft.depositData?.storageDeposit).toBe(Number(Object.values(outputs)[0].amount));
     expect(nft.depositData?.address).toBe(depositOrder.payload.targetAddress);

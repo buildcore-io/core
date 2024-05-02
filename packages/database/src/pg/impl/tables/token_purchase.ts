@@ -4,7 +4,7 @@ import {
   TokenPurchaseAge,
   TokenStatus,
   TokenTradeOrderType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgTokenPurchase } from '../../models';
 import { removeNulls } from '../common';

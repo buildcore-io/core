@@ -1,4 +1,4 @@
-import { WenError } from '@build-5/interfaces';
+import { WenError } from '@buildcore/interfaces';
 import Joi, { AnySchema, ValidationResult } from 'joi';
 import { head } from 'lodash';
 import { isStorageUrl } from '../services/joi/common';

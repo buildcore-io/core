@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Access,
   COL,
@@ -13,7 +13,7 @@ import {
   Nft,
   Space,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
@@ -33,7 +33,7 @@ export class Helper {
     this.space = await testEnv.createSpace(this.member);
     this.walletService = await getWallet(Network.ATOI);
 
-    const memberData = <Member>await build5Db().doc(COL.MEMBER, this.member).get();
+    const memberData = <Member>await database().doc(COL.MEMBER, this.member).get();
     this.memberAddress = await this.walletService!.getAddressDetails(
       getAddress(memberData, Network.ATOI),
     );
@@ -48,7 +48,7 @@ export class Helper {
     const cCollection = await testEnv.wrap<Collection>(WEN_FUNC.createCollection);
     expect(cCollection?.uid).toBeDefined();
 
-    await build5Db().doc(COL.COLLECTION, cCollection?.uid).update({ approved: true });
+    await database().doc(COL.COLLECTION, cCollection?.uid).update({ approved: true });
     const collection = <Collection>cCollection;
 
     const nft = await this.createNft(address, collection);

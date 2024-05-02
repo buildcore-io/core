@@ -1,4 +1,4 @@
-import { PgTransaction, build5Db } from '@build-5/database';
+import { PgTransaction, database } from '@buildcore/database';
 import {
   COL,
   Member,
@@ -8,7 +8,7 @@ import {
   Transaction,
   TransactionPayloadType,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import {
   AliasOutput,
   FoundryOutput,
@@ -49,20 +49,20 @@ export const onTokenMintingUpdate = async (transaction: PgTransaction) => {
 const onAliasMinted = async (transaction: PgTransaction) => {
   const path = transaction.payload_walletReference_milestoneTransactionPath!;
   const { col, colId, subCol, subColId } = getPathParts(path);
-  const milestoneTransaction = (await build5Db().doc(col, colId, subCol, subColId).get())!;
+  const milestoneTransaction = (await database().doc(col, colId, subCol, subColId).get())!;
 
   const aliasOutputId = Utils.computeOutputId(
     Utils.transactionId(milestoneTransaction.payload as unknown as TransactionPayload),
     0,
   );
-  await build5Db()
+  await database()
     .doc(COL.TOKEN, transaction.payload_token!)
     .update({
       mintingData_aliasBlockId: milestoneTransaction.blockId as string,
       mintingData_aliasId: Utils.computeAliasId(aliasOutputId),
     });
 
-  const token = <Token>await build5Db().doc(COL.TOKEN, transaction.payload_token!).get();
+  const token = <Token>await database().doc(COL.TOKEN, transaction.payload_token!).get();
   const order: Transaction = {
     project: getProject(transaction),
     type: TransactionType.MINT_TOKEN,
@@ -80,13 +80,13 @@ const onAliasMinted = async (transaction: PgTransaction) => {
       token: transaction.payload_token,
     },
   };
-  await build5Db().doc(COL.TRANSACTION, order.uid).create(order);
+  await database().doc(COL.TRANSACTION, order.uid).create(order);
 };
 
 const onFoundryMinted = async (transaction: PgTransaction) => {
   const path = transaction.payload_walletReference_milestoneTransactionPath!;
   const { col, colId, subCol, subColId } = getPathParts(path);
-  const milestoneTransaction = (await build5Db().doc(col, colId, subCol, subColId).get())!;
+  const milestoneTransaction = (await database().doc(col, colId, subCol, subColId).get())!;
 
   const payload = milestoneTransaction.payload as unknown as TransactionPayload;
   const essence = payload.essence as RegularTransactionEssence;
@@ -102,7 +102,7 @@ const onFoundryMinted = async (transaction: PgTransaction) => {
   const meltedTokens = Number(tokenScheme.meltedTokens);
   const totalSupply = Number(tokenScheme.maximumSupply);
 
-  await build5Db()
+  await database()
     .doc(COL.TOKEN, transaction.payload_token!)
     .update({
       mintingData_blockId: milestoneTransaction.blockId as string,
@@ -111,8 +111,8 @@ const onFoundryMinted = async (transaction: PgTransaction) => {
       mintingData_circulatingSupply: totalSupply - meltedTokens,
     });
 
-  const token = <Token>await build5Db().doc(COL.TOKEN, transaction.payload_token!).get();
-  const member = <Member>await build5Db().doc(COL.MEMBER, token.mintingData?.mintedBy!).get();
+  const token = <Token>await database().doc(COL.TOKEN, transaction.payload_token!).get();
+  const member = <Member>await database().doc(COL.MEMBER, token.mintingData?.mintedBy!).get();
   const order: Transaction = {
     project: getProject(transaction),
     type: TransactionType.MINT_TOKEN,
@@ -128,11 +128,11 @@ const onFoundryMinted = async (transaction: PgTransaction) => {
       token: transaction.payload_token,
     },
   };
-  await build5Db().doc(COL.TRANSACTION, order.uid).create(order);
+  await database().doc(COL.TRANSACTION, order.uid).create(order);
 };
 
 const onAliasSendToGuardian = async (transaction: PgTransaction) => {
-  const tokenDocRef = build5Db().doc(COL.TOKEN, transaction.payload_token!);
+  const tokenDocRef = database().doc(COL.TOKEN, transaction.payload_token!);
   const token = <Token>await tokenDocRef.get();
   await tokenDocRef.update({
     mintingData_mintedOn: dayjs().toDate(),

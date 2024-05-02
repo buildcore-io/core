@@ -1,4 +1,4 @@
-import { AuctionCreateTangleRequest, TangleRequestType } from '@build-5/interfaces';
+import { AuctionCreateTangleRequest, TangleRequestType } from '@buildcore/interfaces';
 import { auctionCreateSchema } from '../../../../controls/auction/AuctionCreateRequestSchema';
 import { toJoiObject } from '../../../joi/common';
 import { baseTangleSchema } from '../common';

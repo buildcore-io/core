@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -7,7 +7,7 @@ import {
   SOON_PROJECT_ID,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { retryWallet } from '../../src/cron/wallet.cron';
@@ -50,7 +50,7 @@ describe('Transaction trigger spec', () => {
         void: false,
       },
     };
-    const docRef = build5Db().doc(COL.TRANSACTION, billPayment.uid);
+    const docRef = database().doc(COL.TRANSACTION, billPayment.uid);
     await docRef.create(billPayment);
 
     await wait(async () => {
@@ -77,7 +77,7 @@ describe('Transaction trigger spec', () => {
       return data?.payload?.walletReference?.confirmed;
     });
 
-    const billPaymentDocRef = build5Db().doc(COL.TRANSACTION, billPayment.uid);
+    const billPaymentDocRef = database().doc(COL.TRANSACTION, billPayment.uid);
     await wait(async () => {
       billPayment = <Transaction>await billPaymentDocRef.get();
       return billPayment.payload?.walletReference?.confirmed;

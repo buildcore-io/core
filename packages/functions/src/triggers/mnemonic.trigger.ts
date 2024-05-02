@@ -1,5 +1,5 @@
-import { PgMnemonic, build5Db } from '@build-5/database';
-import { COL, MAX_WALLET_RETRY, NetworkAddress } from '@build-5/interfaces';
+import { PgMnemonic, database } from '@buildcore/database';
+import { COL, MAX_WALLET_RETRY, NetworkAddress } from '@buildcore/interfaces';
 import { chunk, isEmpty } from 'lodash';
 import { PgDocEvent } from './common';
 import {
@@ -17,7 +17,7 @@ export const onMnemonicUpdated = async (event: PgDocEvent<PgMnemonic>) => {
   const tranId = await getUncofirmedTransactionsId(address);
 
   if (!isEmpty(tranId)) {
-    await build5Db()
+    await database()
       .doc(COL.TRANSACTION, tranId!)
       .update({ shouldRetry: true, payload_walletReference_inProgress: false });
   }
@@ -29,7 +29,7 @@ const TYPE_CHUNKS = chunk(DEFAULT_EXECUTABLE_TRANSACTIONS, 10).concat([
 
 const getUncofirmedTransactionsId = async (address: NetworkAddress) => {
   for (const types of TYPE_CHUNKS) {
-    const transactions = await build5Db()
+    const transactions = await database()
       .collection(COL.TRANSACTION)
       .where('payload_walletReference_confirmed', '==', false)
       .whereIn('type', types)

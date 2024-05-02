@@ -1,5 +1,5 @@
-import { IDocument, PgCollectionStatsUpdate, Update, build5Db } from '@build-5/database';
-import { COL, RankRequest, SUB_COL, WenError } from '@build-5/interfaces';
+import { IDocument, PgCollectionStatsUpdate, Update, database } from '@buildcore/database';
+import { COL, RankRequest, SUB_COL, WenError } from '@buildcore/interfaces';
 import { hasStakedTokens } from '../../services/stake.service';
 import { getRankingSpace } from '../../utils/config.utils';
 import { invalidArgument } from '../../utils/error.utils';
@@ -14,7 +14,7 @@ export const rankControl = async ({ owner, params, project }: Context<RankReques
 
   const col = params.collection === 'collection' ? COL.COLLECTION : COL.TOKEN;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const parentDocRef: IDocument<any, any, Update> = build5Db().doc(col, params.uid);
+  const parentDocRef: IDocument<any, any, Update> = database().doc(col, params.uid);
   const parent = await parentDocRef.get();
   if (!parent) {
     if (col === COL.COLLECTION) {
@@ -26,9 +26,9 @@ export const rankControl = async ({ owner, params, project }: Context<RankReques
   const rankingSpaceId = getRankingSpace(params.collection as COL);
   await assertIsGuardian(rankingSpaceId, owner);
 
-  const rankDocRef = build5Db().doc(col, params.uid, SUB_COL.RANKS, owner);
+  const rankDocRef = database().doc(col, params.uid, SUB_COL.RANKS, owner);
 
-  await build5Db().runTransaction(async (transaction) => {
+  await database().runTransaction(async (transaction) => {
     const parent = (await transaction.get(parentDocRef))!;
     const prevRank = await transaction.get(rankDocRef);
 
@@ -48,7 +48,7 @@ export const rankControl = async ({ owner, params, project }: Context<RankReques
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const statsDocRef: IDocument<any, any, PgCollectionStatsUpdate> = build5Db().doc(
+    const statsDocRef: IDocument<any, any, PgCollectionStatsUpdate> = database().doc(
       col,
       params.uid,
       SUB_COL.STATS,

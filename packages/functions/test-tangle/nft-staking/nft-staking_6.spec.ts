@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   KEY_NAME_TANGLE,
@@ -7,7 +7,7 @@ import {
   StakeType,
   Transaction,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { NftOutput, NftOutputBuilderParams, TagFeature, Utils, utf8ToHex } from '@iota/sdk';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
@@ -26,14 +26,14 @@ describe('Stake nft', () => {
 
   it.each([false, true])('Should stake with tag', async (migration: boolean) => {
     let nft = await helper.createAndOrderNft();
-    let nftDocRef = build5Db().doc(COL.NFT, nft.uid);
+    let nftDocRef = database().doc(COL.NFT, nft.uid);
     await helper.mintCollection();
     nft = <Nft>await nftDocRef.get();
     await helper.withdrawNftAndAwait(nft.uid);
 
     if (migration) {
       await nftDocRef.delete();
-      await build5Db().doc(COL.COLLECTION, nft.collection).delete();
+      await database().doc(COL.COLLECTION, nft.collection).delete();
     }
 
     mockWalletReturnValue(helper.guardian!, {
@@ -64,7 +64,7 @@ describe('Stake nft', () => {
       tag,
     );
 
-    const stakeQuery = build5Db()
+    const stakeQuery = database()
       .collection(COL.NFT_STAKE)
       .where('nft', '==', migration ? nft.mintingData?.nftId : nft.uid);
     await wait(async () => {

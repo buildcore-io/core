@@ -1,20 +1,20 @@
-import { build5Db } from '@build-5/database';
-import { COL, TangleResponse } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, TangleResponse } from '@buildcore/interfaces';
 import axios from 'axios';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { BaseTangleService, HandlerParams } from '../../base';
 import { Action } from '../../transaction-service';
 import { verifyEthForB5TangleSchema } from './VerifyEthForB5TangleRequest';
 
-export class VerifyEthForBuil5TangleService extends BaseTangleService<TangleResponse> {
+export class VerifyEthForBuilTokenTangleService extends BaseTangleService<TangleResponse> {
   public handleRequest = async ({ request, match }: HandlerParams): Promise<TangleResponse> => {
     const params = await assertValidationAsync(verifyEthForB5TangleSchema, request);
     let ethAddress = params.ethAddress.toLowerCase();
 
-    let soonSnapDocRef = build5Db().doc(COL.SOON_SNAP, match.from);
+    let soonSnapDocRef = database().doc(COL.SOON_SNAP, match.from);
     let soonSnap = await this.transaction.get(soonSnapDocRef);
     if (!soonSnap) {
-      soonSnapDocRef = build5Db().doc(COL.SOON_SNAP, ethAddress);
+      soonSnapDocRef = database().doc(COL.SOON_SNAP, ethAddress);
       soonSnap = await this.transaction.get(soonSnapDocRef);
     }
 

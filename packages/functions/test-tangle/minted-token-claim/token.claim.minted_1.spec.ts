@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
-import { COL, SUB_COL, Token, Transaction, TransactionType, WEN_FUNC } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, SUB_COL, Token, Transaction, TransactionType, WEN_FUNC } from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
@@ -16,7 +16,7 @@ describe('Token minting', () => {
   });
 
   it('Claim minted tokens by guardian', async () => {
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, helper.token.uid, SUB_COL.DISTRIBUTION, helper.guardian.uid)
       .upsert({ tokenOwned: 1 });
 
@@ -24,7 +24,7 @@ describe('Token minting', () => {
     const order = await testEnv.wrap<Transaction>(WEN_FUNC.claimMintedTokenOrder);
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, order.payload.amount);
 
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)
       .where('member', '==', helper.guardian.uid);
@@ -36,7 +36,7 @@ describe('Token minting', () => {
     expect(billPayment.payload.amount).toBe(order.payload.amount);
     expect(billPayment.payload.nativeTokens![0].amount).toBe(1);
 
-    const tokenData = <Token>await build5Db().doc(COL.TOKEN, helper.token.uid).get();
+    const tokenData = <Token>await database().doc(COL.TOKEN, helper.token.uid).get();
     expect(tokenData.mintingData?.tokensInVault).toBe(9);
 
     await awaitTransactionConfirmationsForToken(helper.token.uid);

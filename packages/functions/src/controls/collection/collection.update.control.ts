@@ -1,11 +1,11 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   CollectionStatus,
   NftStatus,
   UpdateCollectionRequest,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
@@ -21,7 +21,7 @@ export const updateCollectionControl = async ({
   owner,
   params: rawParams,
 }: Context<UidSchemaObject>) => {
-  const collectionDocRef = build5Db().doc(COL.COLLECTION, rawParams.uid);
+  const collectionDocRef = database().doc(COL.COLLECTION, rawParams.uid);
   const collection = await collectionDocRef.get();
   if (!collection) {
     throw invalidArgument(WenError.collection_does_not_exists);
@@ -31,7 +31,7 @@ export const updateCollectionControl = async ({
   const schema = isMinted ? updateMintedCollectionSchemaObject : updateCollectionSchemaObject;
   const { discounts, ...params } = await assertValidationAsync(schema, rawParams);
 
-  const member = await build5Db().doc(COL.MEMBER, owner).get();
+  const member = await database().doc(COL.MEMBER, owner).get();
   if (!member) {
     throw invalidArgument(WenError.member_does_not_exists);
   }
@@ -53,7 +53,7 @@ export const updateCollectionControl = async ({
 
   await assertIsCollectionGuardian(collection, owner);
 
-  const batch = build5Db().batch();
+  const batch = database().batch();
 
   const price = (params.price as number) || collection.price;
   const collectionUpdateData = {
@@ -80,7 +80,7 @@ export const updateCollectionControl = async ({
       space: collection.space,
       type: collection.type,
     };
-    const nftDocRef = build5Db().doc(COL.NFT, collection.placeholderNft);
+    const nftDocRef = database().doc(COL.NFT, collection.placeholderNft);
     batch.update(nftDocRef, data);
   }
   await batch.commit();
@@ -95,11 +95,11 @@ export const updateCollectionControl = async ({
   }
   if (!isEmpty(nftUpdateData)) {
     for (const status of [NftStatus.PRE_MINTED, NftStatus.MINTED]) {
-      await build5Db()
+      await database()
         .collection(COL.NFT)
         .update(nftUpdateData, { collection: collection.uid, isOwned: false, status: status });
     }
   }
 
-  return await build5Db().doc(COL.COLLECTION, params.uid).get();
+  return await database().doc(COL.COLLECTION, params.uid).get();
 };

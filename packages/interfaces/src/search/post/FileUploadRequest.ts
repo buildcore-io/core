@@ -8,7 +8,7 @@
  */
 export interface FileUploadRequest {
   /**
-   * Build5 id of the member.
+   * Buildcore id of the member.
    */
   member: string;
   /**

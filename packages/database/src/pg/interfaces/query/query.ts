@@ -1,4 +1,4 @@
-import { COL } from '@build-5/interfaces';
+import { COL } from '@buildcore/interfaces';
 import { Knex } from 'knex';
 import { get, some, uniq } from 'lodash';
 import { BaseRecord } from '../../models/common';

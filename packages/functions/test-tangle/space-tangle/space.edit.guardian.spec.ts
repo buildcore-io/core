@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -8,7 +8,7 @@ import {
   TangleRequestType,
   Transaction,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { addGuardianToSpace, wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
@@ -59,7 +59,7 @@ describe('Edit guardian space', () => {
       const credit = snap[0] as Transaction;
       const proposalId = credit.payload.response!.proposal as string;
 
-      const proposalDocRef = build5Db().doc(COL.PROPOSAL, proposalId);
+      const proposalDocRef = database().doc(COL.PROPOSAL, proposalId);
       const proposal = <Proposal>await proposalDocRef.get();
       expect(proposal.type).toBe(
         requestType === TangleRequestType.SPACE_ADD_GUARDIAN

@@ -1,11 +1,11 @@
-import { PgTransaction, build5Db } from '@build-5/database';
+import { PgTransaction, database } from '@buildcore/database';
 import {
   COL,
   Network,
   Transaction,
   TransactionPayloadType,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { TransactionPayload, Utils } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { getProject } from '../../utils/common.utils';
@@ -28,19 +28,19 @@ export const onStampMintUpdate = async (transaction: PgTransaction) => {
 const onAliasMinted = async (transaction: PgTransaction) => {
   const path = transaction.payload_walletReference_milestoneTransactionPath!;
   const { col, colId, subCol, subColId } = getPathParts(path);
-  const milestoneTransaction = (await build5Db().doc(col, colId, subCol, subColId).get())!;
+  const milestoneTransaction = (await database().doc(col, colId, subCol, subColId).get())!;
   const aliasOutputId = Utils.computeOutputId(
     Utils.transactionId(milestoneTransaction.payload as unknown as TransactionPayload),
     0,
   );
   const aliasId = Utils.computeAliasId(aliasOutputId);
 
-  const batch = build5Db().batch();
+  const batch = database().batch();
 
-  const stampDocRef = build5Db().doc(COL.STAMP, transaction.payload_stamp!);
+  const stampDocRef = database().doc(COL.STAMP, transaction.payload_stamp!);
   batch.update(stampDocRef, { aliasId });
 
-  const spaceDocRef = build5Db().doc(COL.SPACE, transaction.space!);
+  const spaceDocRef = database().doc(COL.SPACE, transaction.space!);
   batch.update(spaceDocRef, {
     name: `Space of alias: ${aliasId}`,
     alias_address: transaction.payload_targetAddress,
@@ -66,7 +66,7 @@ const onAliasMinted = async (transaction: PgTransaction) => {
       stamp: transaction.payload_stamp,
     },
   };
-  const orderDocRef = build5Db().doc(COL.TRANSACTION, mintNftOrder.uid);
+  const orderDocRef = database().doc(COL.TRANSACTION, mintNftOrder.uid);
   batch.create(orderDocRef, mintNftOrder);
 
   await batch.commit();
@@ -75,12 +75,12 @@ const onAliasMinted = async (transaction: PgTransaction) => {
 const onNftMinted = async (transaction: PgTransaction) => {
   const path = transaction.payload_walletReference_milestoneTransactionPath!;
   const { col, colId, subCol, subColId } = getPathParts(path);
-  const milestoneTransaction = (await build5Db().doc(col, colId, subCol, subColId).get())!;
+  const milestoneTransaction = (await database().doc(col, colId, subCol, subColId).get())!;
   const nftOutputId = Utils.computeOutputId(
     Utils.transactionId(milestoneTransaction.payload as unknown as TransactionPayload),
     1,
   );
   const nftId = Utils.computeNftId(nftOutputId);
-  const stampDocRef = build5Db().doc(COL.STAMP, transaction.payload_stamp!);
+  const stampDocRef = database().doc(COL.STAMP, transaction.payload_stamp!);
   await stampDocRef.update({ nftId });
 };

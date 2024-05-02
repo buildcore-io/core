@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, CollectionType, Nft, Transaction, WEN_FUNC } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, CollectionType, Nft, Transaction, WEN_FUNC } from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
@@ -42,7 +42,7 @@ describe('Nft bulk order', () => {
 
     await wait(async () => {
       const promises = order.payload.nftOrders!.map(async (nftOrder) => {
-        const docRef = build5Db().doc(COL.NFT, nftOrder.nft);
+        const docRef = database().doc(COL.NFT, nftOrder.nft);
         return <Nft>await docRef.get();
       });
       const nfts = await Promise.all(promises);

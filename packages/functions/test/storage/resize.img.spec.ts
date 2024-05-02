@@ -1,5 +1,5 @@
-import { build5Storage } from '@build-5/database';
-import { Bucket, ImageWidth } from '@build-5/interfaces';
+import { storage } from '@buildcore/database';
+import { Bucket, ImageWidth } from '@buildcore/interfaces';
 import axios from 'axios';
 import { WEN_STORAGE_TRIGGER } from '../../src/runtime/common';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -24,13 +24,13 @@ describe('Resize img test', () => {
     const extensions = Object.values(ImageWidth)
       .map((size) => `_jpeg_${size}X${size}.webp`)
       .concat('.jpeg');
-    const bucket = build5Storage().bucket(Bucket.DEV);
+    const bucket = storage().bucket(Bucket.DEV);
     await bucket.upload('./test/puppy.jpeg', name + '.jpeg', { contentType: 'image/jpeg' });
     await triggerResizer(name + '.jpeg', 'image/jpeg');
     for (const extension of extensions) {
       await wait(
         async () =>
-          await build5Storage()
+          await storage()
             .bucket(Bucket.DEV)
             .exists(name + extension),
       );
@@ -39,19 +39,18 @@ describe('Resize img test', () => {
 
   it('Should create video preview', async () => {
     const id = getRandomEthAddress();
-    const bucket = build5Storage().bucket(Bucket.DEV);
+    const bucket = storage().bucket(Bucket.DEV);
     const destination = `nft/test/${id}.mov`;
     await bucket.upload('./test/nft_video.mov', destination, { contentType: 'video/quicktime' });
     await triggerResizer(destination, 'video/quicktime');
     await wait(
-      async () =>
-        await build5Storage().bucket(Bucket.DEV).exists(`nft/test/${id}_mov_preview.webp`),
+      async () => await storage().bucket(Bucket.DEV).exists(`nft/test/${id}_mov_preview.webp`),
     );
   });
 
   it.each(['png', 'jpeg'])('Should not override', async (extension: string) => {
     const name = 'nft/test/image';
-    const bucket = build5Storage().bucket(Bucket.DEV);
+    const bucket = storage().bucket(Bucket.DEV);
     await bucket.upload('./test/puppy.jpeg', 'nft/test/image.' + extension, {
       contentType: 'image/' + extension,
     });
@@ -67,7 +66,7 @@ const verifyImagesExist = async (name: string, extensions: string[]) => {
   for (const extension of extensions) {
     await wait(
       async () =>
-        await build5Storage()
+        await storage()
           .bucket(Bucket.DEV)
           .exists(name + extension),
     );

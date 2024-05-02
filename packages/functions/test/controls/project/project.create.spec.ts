@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   ProjectBilling,
@@ -10,7 +10,7 @@ import {
   Transaction,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { AVAILABLE_NETWORKS } from '../../../src/controls/common';
 import * as wallet from '../../../src/utils/wallet.utils';
 import { mockWalletReturnValue, testEnv } from '../../set-up';
@@ -31,8 +31,8 @@ describe('Project create', () => {
       status: TokenStatus.AVAILABLE,
       approved: true,
     };
-    await build5Db().doc(COL.TOKEN, tokenId).upsert(tokenUpsert);
-    token = (await build5Db().doc(COL.TOKEN, tokenId).get())!;
+    await database().doc(COL.TOKEN, tokenId).upsert(tokenUpsert);
+    token = (await database().doc(COL.TOKEN, tokenId).get())!;
   });
 
   it('Should create volume based project', async () => {
@@ -47,14 +47,14 @@ describe('Project create', () => {
       WEN_FUNC.createProject,
     );
 
-    const projectDocRef = build5Db().doc(COL.PROJECT, newProject.uid);
+    const projectDocRef = database().doc(COL.PROJECT, newProject.uid);
     const project = await projectDocRef.get();
     expect(project?.name).toBe(dummyProject.name);
     expect(project?.contactEmail).toBe(dummyProject.contactEmail);
     expect(project?.deactivated).toBe(false);
     expect(project?.config?.billing).toBe(ProjectBilling.VOLUME_BASED);
 
-    const projectAdminDocRef = build5Db().doc(
+    const projectAdminDocRef = database().doc(
       COL.PROJECT,
       newProject.uid,
       SUB_COL.ADMINS,
@@ -67,7 +67,7 @@ describe('Project create', () => {
     const networks = Object.values(project!.otr!).map((o) => o.network);
     expect(networks.sort()).toEqual(AVAILABLE_NETWORKS.sort());
     for (const [uid, otr] of Object.entries(project?.otr!)) {
-      const docRef = build5Db().doc(COL.TRANSACTION, uid);
+      const docRef = database().doc(COL.TRANSACTION, uid);
       const otrOrder = <Transaction>await docRef.get();
       expect(otrOrder.uid).toBe(uid);
       expect(otrOrder.network).toBe(otr.network);
@@ -105,7 +105,7 @@ describe('Project create', () => {
     const { project: newProject } = await testEnv.wrap<ProjectCreateResponse>(
       WEN_FUNC.createProject,
     );
-    const projectDocRef = build5Db().doc(COL.PROJECT, newProject.uid);
+    const projectDocRef = database().doc(COL.PROJECT, newProject.uid);
     const project = await projectDocRef.get();
     expect(project?.name).toBe(dummyProject.name);
     expect(project?.contactEmail).toBe(dummyProject.contactEmail);
@@ -117,7 +117,7 @@ describe('Project create', () => {
     );
     expect(project?.config?.nativeTokenSymbol).toBe(dummyProject.config.nativeTokenSymbol);
     expect(project?.config?.nativeTokenUid).toBe(token.uid);
-    const projectAdminDocRef = build5Db().doc(
+    const projectAdminDocRef = database().doc(
       COL.PROJECT,
       newProject.uid,
       SUB_COL.ADMINS,
@@ -130,7 +130,7 @@ describe('Project create', () => {
     const networks = Object.values(project!.otr!).map((o) => o.network);
     expect(networks.sort()).toEqual(AVAILABLE_NETWORKS.sort());
     for (const [uid, otr] of Object.entries(project?.otr!)) {
-      const docRef = build5Db().doc(COL.TRANSACTION, uid);
+      const docRef = database().doc(COL.TRANSACTION, uid);
       const otrOrder = <Transaction>await docRef.get();
       expect(otrOrder.uid).toBe(uid);
       expect(otrOrder.network).toBe(otr.network);
@@ -155,7 +155,7 @@ describe('Project create', () => {
     const { project: newProject } = await testEnv.wrap<ProjectCreateResponse>(
       WEN_FUNC.createProject,
     );
-    const projectDocRef = build5Db().doc(COL.PROJECT, newProject.uid);
+    const projectDocRef = database().doc(COL.PROJECT, newProject.uid);
     const project = await projectDocRef.get();
     expect(project?.name).toBe(dummyProject.name);
     expect(project?.contactEmail).toBe(dummyProject.contactEmail);

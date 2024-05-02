@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Access,
   Bucket,
@@ -13,7 +13,7 @@ import {
   Space,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import * as wallet from '../../src/utils/wallet.utils';
 import { MEDIA, mockWalletReturnValue, testEnv } from '../set-up';
@@ -55,7 +55,7 @@ describe('Nft controll: ' + WEN_FUNC.createCollection, () => {
     const cBatchNft = await testEnv.wrap<string[]>(WEN_FUNC.createBatchNft);
     expect(cBatchNft?.length).toBe(3);
     for (let i = 0; i < nfts.length; ++i) {
-      const docRef = build5Db().doc(COL.NFT, cBatchNft[i]);
+      const docRef = database().doc(COL.NFT, cBatchNft[i]);
       const nft = <Nft>await docRef.get();
       expect(nft.saleAccessMembers).toEqual(i === nfts.length - 1 ? [] : [member]);
     }
@@ -131,24 +131,24 @@ describe('Nft controll: ' + WEN_FUNC.updateUnsoldNft, () => {
     let nft = await testEnv.wrap<Nft>(WEN_FUNC.createNft);
     expect(nft.price).toBe(10 * MIN_IOTA_AMOUNT);
 
-    await build5Db().doc(COL.NFT, nft.uid).update({ sold: true });
+    await database().doc(COL.NFT, nft.uid).update({ sold: true });
     mockWalletReturnValue(member, {
       uid: nft.uid,
       price: 50 * MIN_IOTA_AMOUNT,
     });
     await expectThrow(testEnv.wrap<Nft>(WEN_FUNC.updateUnsoldNft), WenError.nft_already_sold.key);
 
-    await build5Db().doc(COL.NFT, nft.uid).update({ hidden: true, sold: false });
+    await database().doc(COL.NFT, nft.uid).update({ hidden: true, sold: false });
     mockWalletReturnValue(member, { uid: nft.uid, price: 50 * MIN_IOTA_AMOUNT });
     await expectThrow(testEnv.wrap<Nft>(WEN_FUNC.updateUnsoldNft), WenError.hidden_nft.key);
 
-    await build5Db().doc(COL.NFT, nft.uid).update({ placeholderNft: true, hidden: false });
+    await database().doc(COL.NFT, nft.uid).update({ placeholderNft: true, hidden: false });
     mockWalletReturnValue(member, { uid: nft.uid, price: 50 * MIN_IOTA_AMOUNT });
     await expectThrow(
       testEnv.wrap<Nft>(WEN_FUNC.updateUnsoldNft),
       WenError.nft_placeholder_cant_be_updated.key,
     );
-    await build5Db().doc(COL.NFT, nft.uid).update({ placeholderNft: false });
+    await database().doc(COL.NFT, nft.uid).update({ placeholderNft: false });
 
     const tmpMember = await testEnv.createMember();
     mockWalletReturnValue(tmpMember, { uid: nft.uid, price: 50 * MIN_IOTA_AMOUNT });

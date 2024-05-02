@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -7,7 +7,7 @@ import {
   NftSetForSaleTangleRequest,
   TangleRequestType,
   Transaction,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
@@ -46,7 +46,7 @@ describe('Nft set for sale OTR', () => {
       },
     );
 
-    const nftDocRef = build5Db().doc(COL.NFT, helper.nft.uid);
+    const nftDocRef = database().doc(COL.NFT, helper.nft.uid);
     await wait(async () => {
       helper.nft = (await nftDocRef.get())!;
       return helper.nft.available === NftAvailable.SALE;
@@ -73,7 +73,7 @@ describe('Nft set for sale OTR', () => {
       },
     );
 
-    const nftDocRef = build5Db().doc(COL.NFT, helper.nft.uid);
+    const nftDocRef = database().doc(COL.NFT, helper.nft.uid);
     await wait(async () => {
       helper.nft = (await nftDocRef.get())!;
       return helper.nft.available === NftAvailable.AUCTION_AND_SALE;

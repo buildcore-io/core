@@ -150,12 +150,12 @@ const sidebars = {
         {
           type: 'link',
           label: 'Digital Twin NFT',
-          href: 'https://github.com/build-5/build5-otr-examples/edit/master/src/examples/metadata_nft/TUTORIAL.md',
+          href: 'https://github.com/buildcore/buildcore-otr-examples/edit/master/src/examples/metadata_nft/TUTORIAL.md',
         },
         {
           type: 'link',
           label: 'Crew3 to Reputation',
-          href: 'https://github.com/build-5/build5-otr-examples/blob/master/src/examples/crew3toAward/TUTORIAL.md',
+          href: 'https://github.com/buildcore/buildcore-otr-examples/blob/master/src/examples/crew3toAward/TUTORIAL.md',
         },
       ],
     },

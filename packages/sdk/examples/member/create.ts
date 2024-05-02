@@ -1,8 +1,8 @@
-import { Build5, https } from '@build-5/sdk';
+import { Buildcore, https } from '@buildcore/sdk';
 import { address } from '../utils/secret';
 
 async function main() {
-  const origin = Build5.TEST;
+  const origin = Buildcore.TEST;
   try {
     const response = await https(origin).createMember({
       address: address.bech32,

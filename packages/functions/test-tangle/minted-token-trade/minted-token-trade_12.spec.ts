@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -9,7 +9,7 @@ import {
   TokenTradeOrder,
   TokenTradeOrderStatus,
   Transaction,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { cancelExpiredSale } from '../../src/cron/token.cron';
 import { getAddress } from '../../src/utils/address.utils';
@@ -32,29 +32,29 @@ describe('Token minting', () => {
     await helper.createSellTradeOrder(5, MIN_IOTA_AMOUNT);
     await helper.createBuyOrder();
 
-    const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer);
+    const query = database().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer);
     await wait(async () => {
       const orders = (await query.get()).map((d) => <TokenTradeOrder>d);
       return orders.length === 1 && orders[0].fulfilled === 5;
     });
     let buy = <TokenTradeOrder>(await query.get())[0];
-    await build5Db()
+    await database()
       .doc(COL.TOKEN_MARKET, buy.uid)
       .update({ expiresAt: dayjs().subtract(1, 'd').toDate() });
 
     await cancelExpiredSale();
 
-    const buyQuery = build5Db().doc(COL.TOKEN_MARKET, buy.uid);
+    const buyQuery = database().doc(COL.TOKEN_MARKET, buy.uid);
     await wait(async () => {
       buy = <TokenTradeOrder>await buyQuery.get();
       return buy.status === TokenTradeOrderStatus.EXPIRED;
     });
 
     const credit = <Transaction>(
-      await build5Db().doc(COL.TRANSACTION, buy.creditTransactionId!).get()
+      await database().doc(COL.TRANSACTION, buy.creditTransactionId!).get()
     );
     expect(credit.member).toBe(helper.buyer);
-    const buyer = <Member>await build5Db().doc(COL.MEMBER, helper.buyer!).get();
+    const buyer = <Member>await database().doc(COL.MEMBER, helper.buyer!).get();
     expect(credit.payload.targetAddress).toBe(getAddress(buyer, Network.RMS));
     expect(credit.payload.amount).toBe(5 * MIN_IOTA_AMOUNT);
 

@@ -1,4 +1,4 @@
-import { BaseRecord, IDocument, IQuery, Update, build5Db } from '@build-5/database';
+import { BaseRecord, IDocument, IQuery, Update, database } from '@buildcore/database';
 import {
   COL,
   Dataset,
@@ -8,7 +8,7 @@ import {
   SUB_COL,
   Subset,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import Joi from 'joi';
 import { get, isEmpty } from 'lodash';
 import { map } from 'rxjs';
@@ -52,7 +52,7 @@ const getManySchema = Joi.object({
 export const getMany = async (project: string, url: string, isLive: boolean) => {
   const body = getQueryParams<GetManyRequest>(url, getManySchema);
 
-  let query = build5Db()
+  let query = database()
     .collection(body.dataset as unknown as COL, body.setId, body.subset as unknown as SUB_COL)!
     .limit(getQueryLimit(body.dataset)) as unknown as IQuery<any, BaseRecord>;
 
@@ -85,7 +85,7 @@ export const getMany = async (project: string, url: string, isLive: boolean) => 
   }
 
   if (body.startAfter) {
-    const docRef = build5Db().doc(
+    const docRef = database().doc(
       body.dataset as unknown as COL,
       body.setId || body.startAfter,
       body.subset as unknown as SUB_COL,

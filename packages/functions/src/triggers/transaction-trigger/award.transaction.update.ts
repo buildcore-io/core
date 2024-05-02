@@ -1,11 +1,11 @@
-import { PgTransaction, build5Db } from '@build-5/database';
+import { PgTransaction, database } from '@buildcore/database';
 import {
   COL,
   Network,
   Transaction,
   TransactionPayloadType,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { TransactionPayload, Utils } from '@iota/sdk';
 import { getProject } from '../../utils/common.utils';
 import { getPathParts } from '../../utils/milestone';
@@ -32,13 +32,13 @@ const onAliasMinted = async (transaction: PgTransaction) => {
   const { col, colId, subCol, subColId } = getPathParts(
     transaction.payload_walletReference_milestoneTransactionPath!,
   );
-  const milestoneTransaction = (await build5Db().doc(col, colId, subCol, subColId).get())!;
+  const milestoneTransaction = (await database().doc(col, colId, subCol, subColId).get())!;
   const aliasOutputId = Utils.computeOutputId(
     Utils.transactionId(milestoneTransaction.payload as unknown as TransactionPayload),
     0,
   );
 
-  const awardDocRef = build5Db().doc(COL.AWARD, transaction.payload_award!);
+  const awardDocRef = database().doc(COL.AWARD, transaction.payload_award!);
   await awardDocRef.update({
     aliasBlockId: milestoneTransaction.blockId as string,
     aliasId: Utils.computeAliasId(aliasOutputId),
@@ -57,20 +57,20 @@ const onAliasMinted = async (transaction: PgTransaction) => {
       award: transaction.payload_award,
     },
   };
-  await build5Db().doc(COL.TRANSACTION, order.uid).create(order);
+  await database().doc(COL.TRANSACTION, order.uid).create(order);
 };
 
 const onCollectionMinted = async (transaction: PgTransaction) => {
   const { col, colId, subCol, subColId } = getPathParts(
     transaction.payload_walletReference_milestoneTransactionPath!,
   );
-  const milestoneTransaction = (await build5Db().doc(col, colId, subCol, subColId).get())!;
+  const milestoneTransaction = (await database().doc(col, colId, subCol, subColId).get())!;
   const collectionOutputId = Utils.computeOutputId(
     Utils.transactionId(milestoneTransaction.payload as unknown as TransactionPayload),
     1,
   );
 
-  await build5Db()
+  await database()
     .doc(COL.AWARD, transaction.payload_award!)
     .update({
       collectionBlockId: milestoneTransaction.blockId as string,
@@ -81,6 +81,6 @@ const onCollectionMinted = async (transaction: PgTransaction) => {
 };
 
 const onBadgeMinted = (transaction: PgTransaction) =>
-  build5Db()
+  database()
     .doc(COL.AWARD, transaction.payload_award!)
-    .update({ badgesMinted: build5Db().inc(1) });
+    .update({ badgesMinted: database().inc(1) });

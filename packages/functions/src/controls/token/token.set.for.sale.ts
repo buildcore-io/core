@@ -1,11 +1,11 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   DEFAULT_NETWORK,
   SetTokenForSaleRequest,
   TokenStatus,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { assertSpaceHasValidAddress } from '../../utils/address.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
@@ -21,9 +21,9 @@ export const setTokenAvailableForSaleControl = async ({
   owner,
   params,
 }: Context<SetTokenForSaleRequest>) => {
-  const tokenDocRef = build5Db().doc(COL.TOKEN, params.token);
+  const tokenDocRef = database().doc(COL.TOKEN, params.token);
 
-  await build5Db().runTransaction(async (transaction) => {
+  await database().runTransaction(async (transaction) => {
     const token = await transaction.get(tokenDocRef);
 
     if (!token) {
@@ -34,7 +34,7 @@ export const setTokenAvailableForSaleControl = async ({
       throw invalidArgument(WenError.token_must_have_space);
     }
 
-    const spaceData = await build5Db().doc(COL.SPACE, token.space).get();
+    const spaceData = await database().doc(COL.SPACE, token.space).get();
     assertSpaceHasValidAddress(spaceData, DEFAULT_NETWORK);
 
     assertTokenApproved(token);

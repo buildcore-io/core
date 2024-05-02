@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Storage, IBucket } from '@build-5/database';
+import { IBucket, storage } from '@buildcore/database';
 import {
   Bucket,
   COL,
-  generateRandomFileName,
   IMAGE_CACHE_AGE,
   IPFS_GATEWAY,
   MAX_FILE_SIZE_BYTES,
   WenError,
-} from '@build-5/interfaces';
+  generateRandomFileName,
+} from '@buildcore/interfaces';
 import axios from 'axios';
 import { createHash, randomUUID } from 'crypto';
 import fs from 'fs';
@@ -37,9 +37,9 @@ export const migrateUriToSotrage = async (
       contentType,
       cacheControl: `public,max-age=${IMAGE_CACHE_AGE}`,
     });
-    const build5Url =
+    const buildcoreUrl =
       bucket.getName() === Bucket.DEV ? response : `https://${bucket.getName()}/${destination}`;
-    return build5Url;
+    return buildcoreUrl;
   } catch (error: any) {
     logger.error('migrateUriToSotrage - error', col, uid, error);
     throw error.code && error.key ? error : WenError.ipfs_retrieve;
@@ -87,8 +87,8 @@ export const uriToUrl = (uri: string) => {
   throw WenError.ipfs_retrieve;
 };
 
-export const getRandomBuild5Url = (owner: string, uid: string, extension: string) => {
-  const bucket = build5Storage().bucket(getBucket());
+export const getRandomBuildcoreUrl = (owner: string, uid: string, extension: string) => {
+  const bucket = storage().bucket(getBucket());
   const baseUrl = BUCKET_BASE_URLS[bucket.getName()];
 
   const isDev = bucket.getName() === Bucket.DEV;

@@ -37,7 +37,7 @@ import {
   TokenTradeOrder,
   Transaction,
   Vote,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { Knex } from 'knex';
 import { IBatch } from '../interfaces/batch';

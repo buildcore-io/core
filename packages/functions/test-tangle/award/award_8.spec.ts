@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Award,
   AwardApproveParticipantResponse,
@@ -11,7 +11,7 @@ import {
   Transaction,
   TransactionPayloadType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { wait } from '../../test/controls/common';
 import { MEDIA, mockWalletReturnValue, testEnv } from '../../test/set-up';
@@ -52,7 +52,7 @@ describe('Create award, base', () => {
     const order = await testEnv.wrap<Transaction>(WEN_FUNC.fundAward);
     await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount);
 
-    const awardDocRef = build5Db().doc(COL.AWARD, awardId);
+    const awardDocRef = database().doc(COL.AWARD, awardId);
     await wait(async () => {
       const award = <Award>await awardDocRef.get();
       return award.approved && award.funded;
@@ -69,7 +69,7 @@ describe('Create award, base', () => {
     });
     await Promise.all(approvePromises);
 
-    const nttQuery = build5Db()
+    const nttQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
       .where('payload_type', '==', TransactionPayloadType.BADGE);
@@ -78,7 +78,7 @@ describe('Create award, base', () => {
       return snap.length === 6;
     });
 
-    const memberDocRef = build5Db().doc(COL.MEMBER, member);
+    const memberDocRef = database().doc(COL.MEMBER, member);
     const memberData = <Member>await memberDocRef.get();
 
     assertMemberSpaceAwardStats(memberData, spaces[0].uid, tokens[0], 4, 2);

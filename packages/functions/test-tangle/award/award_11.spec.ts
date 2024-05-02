@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Award,
   COL,
@@ -13,7 +13,7 @@ import {
   TransactionPayloadType,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { NftOutput, TimelockUnlockCondition, UnlockConditionType } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { Wallet } from '../../src/services/wallet/wallet';
@@ -57,7 +57,7 @@ describe('Create award, base', () => {
     await requestFundsFromFaucet(network, address.bech32, order.payload.amount);
     await walletService.send(address, order.payload.targetAddress!, order.payload.amount!, {});
 
-    const awardDocRef = build5Db().doc(COL.AWARD, award.uid);
+    const awardDocRef = database().doc(COL.AWARD, award.uid);
     await wait(async () => {
       const award = <Award>await awardDocRef.get();
       return award.approved && award.funded;
@@ -75,15 +75,15 @@ describe('Create award, base', () => {
     mockWalletReturnValue(guardian, { award: award.uid, members: [member, member] });
     await testEnv.wrap(WEN_FUNC.approveParticipantAward);
 
-    const memberDocRef = build5Db().doc(COL.MEMBER, member);
+    const memberDocRef = database().doc(COL.MEMBER, member);
     const memberData = <Member>await memberDocRef.get();
     const memberBech32 = getAddress(memberData, network);
 
-    const distributionDocRef = build5Db().doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, member);
+    const distributionDocRef = database().doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, member);
     let distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.totalUnclaimedAirdrop).toBe(2 * MIN_IOTA_AMOUNT);
 
-    const nttQuery = build5Db()
+    const nttQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
       .where('payload_type', '==', TransactionPayloadType.BADGE);
@@ -100,7 +100,7 @@ describe('Create award, base', () => {
       claimOrder.payload.amount,
     );
 
-    const billPaymentQuery = build5Db()
+    const billPaymentQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
       .where('type', '==', TransactionType.BILL_PAYMENT);
@@ -136,7 +136,7 @@ describe('Create award, base', () => {
       expect(dayjs.unix(timelock.unixTime).isAfter(now.add(50 * 31557600000))).toBe(true);
     }
 
-    const burnAliasQuery = build5Db()
+    const burnAliasQuery = database()
       .collection(COL.TRANSACTION)
       .where('payload_type', '==', TransactionPayloadType.BURN_ALIAS)
       .where('member', '==', guardian);

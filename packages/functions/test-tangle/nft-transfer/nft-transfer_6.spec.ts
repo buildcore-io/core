@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, NftTransferRequest, TransactionType, WEN_FUNC } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, NftTransferRequest, TransactionType, WEN_FUNC } from '@buildcore/interfaces';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { Helper } from './Helper';
@@ -32,7 +32,7 @@ describe('Nft transfer', () => {
     expect(response[nft1.uid]).toBe(200);
     expect(response[nft2.uid]).toBe(2141);
 
-    const transfers = await build5Db()
+    const transfers = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', h.guardian)
       .where('type', '==', TransactionType.NFT_TRANSFER)

@@ -1,16 +1,16 @@
-import { build5Db, build5Storage } from '@build-5/database';
-import { COL, Stamp } from '@build-5/interfaces';
+import { database, storage } from '@buildcore/database';
+import { COL, Stamp } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
-import { getBuild5FromUri } from '../services/joi/common';
+import { getBuildcoreFromUri } from '../services/joi/common';
 import { getBucket } from '../utils/config.utils';
 
 export const updateExpiredStamp = async () => {
   let stamps: Stamp[] = [];
   do {
     stamps = await query.get();
-    const batch = build5Db().batch();
+    const batch = database().batch();
     for (const s of stamps) {
-      const docRef = build5Db().doc(COL.STAMP, s.uid);
+      const docRef = database().doc(COL.STAMP, s.uid);
       batch.update(docRef, { expired: true });
     }
     await batch.commit();
@@ -19,15 +19,15 @@ export const updateExpiredStamp = async () => {
       if (!s.funded) {
         return;
       }
-      const folder = getBuild5FromUri(s.build5Url);
-      const bucket = build5Storage().bucket(getBucket());
+      const folder = getBuildcoreFromUri(s.build5Url);
+      const bucket = storage().bucket(getBucket());
       await bucket.deleteDirectory(folder);
     });
     await Promise.all(promises);
   } while (stamps.length);
 };
 
-const query = build5Db()
+const query = database()
   .collection(COL.STAMP)
   .where('expiresAt', '<=', dayjs().toDate())
   .where('expired', '==', false)

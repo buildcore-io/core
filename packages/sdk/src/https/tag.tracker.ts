@@ -1,6 +1,6 @@
-import { Dataset, TangleResponse, Transaction, TransactionType } from '@build-5/interfaces';
+import { Dataset, TangleResponse, Transaction, TransactionType } from '@buildcore/interfaces';
 import { Observable as RxjsObservable, Subscriber, Subscription } from 'rxjs';
-import { Build5, SoonaverseApiKey, https } from '../https';
+import { Buildcore, SoonaverseApiKey, https } from '../https';
 import { TransactionDataset } from '../https/datasets/TransactionDataset';
 
 export interface TagTrackResult extends TangleResponse {
@@ -16,7 +16,7 @@ export class Observable extends RxjsObservable<TagTrackResult> {
   private transactionIds: string[] = [];
   private subs: { [key: string]: Subscription } = {};
 
-  constructor(origin: Build5, tag: string) {
+  constructor(origin: Buildcore, tag: string) {
     super((observer) => {
       this.observer = observer;
 

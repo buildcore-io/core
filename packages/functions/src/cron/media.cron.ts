@@ -1,4 +1,4 @@
-import { ICollection, PgToken, PgTokenUpdate, build5Db } from '@build-5/database';
+import { ICollection, PgToken, PgTokenUpdate, database } from '@buildcore/database';
 import {
   Award,
   COL,
@@ -9,7 +9,7 @@ import {
   Space,
   Stamp,
   Token,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { awardToIpfsMetadata } from '../services/payment/award/award-service';
 import {
   collectionToIpfsMetadata,
@@ -78,15 +78,15 @@ const uploadMedia = async <T>(
 };
 
 const uploadNftMedia = async (nft: Nft) => {
-  const nftDocRef = build5Db().doc(COL.NFT, nft.uid);
-  const collectionDocRef = build5Db().doc(COL.COLLECTION, nft.collection);
+  const nftDocRef = database().doc(COL.NFT, nft.uid);
+  const collectionDocRef = database().doc(COL.COLLECTION, nft.collection);
   const collection = (await collectionDocRef.get())!;
   const metadata = nftToIpfsMetadata(collection, nft);
   const { car, ...ipfs } = await downloadMediaAndPackCar(nft.uid, nft.media, metadata);
   await putCar(car);
 
-  const batch = build5Db().batch();
-  batch.update(collectionDocRef, { mintingData_nftMediaToUpload: build5Db().inc(-1) });
+  const batch = database().batch();
+  batch.update(collectionDocRef, { mintingData_nftMediaToUpload: database().inc(-1) });
 
   batch.update(nftDocRef, {
     mediaStatus: MediaStatus.UPLOADED,
@@ -98,7 +98,7 @@ const uploadNftMedia = async (nft: Nft) => {
 };
 
 const uploadTokenMedia = async (token: Token) => {
-  const tokenDocRef = build5Db().doc(COL.TOKEN, token.uid);
+  const tokenDocRef = database().doc(COL.TOKEN, token.uid);
   const metadata = tokenToIpfsMetadata(token);
   const { car, ...ipfs } = await downloadMediaAndPackCar(token.uid, token.icon!, metadata);
   await putCar(car);
@@ -111,7 +111,7 @@ const uploadTokenMedia = async (token: Token) => {
 };
 
 const uploadCollectionMedia = async (collection: Collection) => {
-  const collectionDocRef = build5Db().doc(COL.COLLECTION, collection.uid);
+  const collectionDocRef = database().doc(COL.COLLECTION, collection.uid);
   const metadata = collectionToIpfsMetadata(collection);
   const { car, ...ipfs } = await downloadMediaAndPackCar(
     collection.uid,
@@ -133,7 +133,7 @@ const uploadAwardMedia = async (award: Award) => {
     return;
   }
 
-  const awardDocRef = build5Db().doc(COL.AWARD, award.uid);
+  const awardDocRef = database().doc(COL.AWARD, award.uid);
   const metadata = awardToIpfsMetadata(award);
   const { car, ...ipfs } = await downloadMediaAndPackCar(award.uid, award.badge.image, metadata);
   await putCar(car);
@@ -147,7 +147,7 @@ const uploadAwardMedia = async (award: Award) => {
 };
 
 const uploadSpaceMedia = async (space: Space) => {
-  const spaceDocRef = build5Db().doc(COL.SPACE, space.uid);
+  const spaceDocRef = database().doc(COL.SPACE, space.uid);
   const metadata = spaceToIpfsMetadata(space);
   const { car, ...ipfs } = await downloadMediaAndPackCar(space.uid, space.bannerUrl!, metadata);
   await putCar(car);
@@ -160,7 +160,7 @@ const uploadSpaceMedia = async (space: Space) => {
 };
 
 const uploadStampMedia = async (stamp: Stamp) => {
-  const stampDocRef = build5Db().doc(COL.STAMP, stamp.uid);
+  const stampDocRef = database().doc(COL.STAMP, stamp.uid);
   const { car, ...ipfs } = await downloadMediaAndPackCar(stamp.uid, stamp.build5Url);
   await putCar(car);
   await stampDocRef.update({
@@ -171,7 +171,7 @@ const uploadStampMedia = async (stamp: Stamp) => {
 };
 
 const pendingUploadQuery = (col: ColWithMedia, batchSize: number) =>
-  (build5Db().collection(col) as ICollection<Token, PgToken, PgTokenUpdate>)
+  (database().collection(col) as ICollection<Token, PgToken, PgTokenUpdate>)
     .where('mediaStatus', '==', MediaStatus.PENDING_UPLOAD)
     .limit(batchSize);
 
@@ -182,13 +182,13 @@ const setMediaStatusToError = async (
   error: unknown,
 ) => {
   const data = {
-    mediaUploadErrorCount: build5Db().inc(1),
+    mediaUploadErrorCount: database().inc(1),
     mediaStatus: MediaStatus.PENDING_UPLOAD,
   };
   if (errorCount >= MAX_WALLET_RETRY) {
     data.mediaStatus = MediaStatus.ERROR;
     logger.error('Image upload error', col, uid, error);
   }
-  const docRef = build5Db().doc(col, uid);
+  const docRef = database().doc(col, uid);
   await docRef.update(data);
 };

@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Collection,
@@ -12,7 +12,7 @@ import {
   NftStatus,
   PropStats,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
@@ -42,7 +42,7 @@ export const createBatchNftControl = async ({
 };
 
 const getCollection = async (owner: string, collectionId: string) => {
-  const collectionDocRef = build5Db().doc(COL.COLLECTION, collectionId);
+  const collectionDocRef = database().doc(COL.COLLECTION, collectionId);
   const collection = await collectionDocRef.get();
   if (!collection) {
     throw invalidArgument(WenError.collection_does_not_exists);
@@ -139,15 +139,15 @@ const processOneCreateNft = async (
     totalTrades: 0,
     lastTradedOn: null,
   };
-  const batch = build5Db().batch();
-  const nftDocRef = build5Db().doc(COL.NFT, nft.uid);
+  const batch = database().batch();
+  const nftDocRef = database().doc(COL.NFT, nft.uid);
   batch.create(nftDocRef, nft);
 
-  const collectionDocRef = build5Db().doc(COL.COLLECTION, collection.uid);
-  batch.update(collectionDocRef, { total: build5Db().inc(1) });
+  const collectionDocRef = database().doc(COL.COLLECTION, collection.uid);
+  batch.update(collectionDocRef, { total: database().inc(1) });
 
   if (collection.placeholderNft) {
-    const placeholderNftDocRef = build5Db().doc(COL.NFT, collection.placeholderNft);
+    const placeholderNftDocRef = database().doc(COL.NFT, collection.placeholderNft);
     batch.update(placeholderNftDocRef, {
       sold: false,
       availableFrom: params.availableFrom,

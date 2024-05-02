@@ -1,4 +1,4 @@
-import { MediaStatus, Network, Stamp } from '@build-5/interfaces';
+import { MediaStatus, Network, Stamp } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgStamp } from '../../models';
 import { removeNulls } from '../common';
@@ -13,7 +13,7 @@ export class StampConverter implements Converter<Stamp, PgStamp> {
     createdBy: stamp.createdBy,
 
     space: stamp.space,
-    build5Url: stamp.build5Url,
+    buildcoreUrl: stamp.build5Url,
     originUri: stamp.originUri,
     checksum: stamp.checksum,
     extension: stamp.extension,
@@ -41,7 +41,7 @@ export class StampConverter implements Converter<Stamp, PgStamp> {
       createdBy: pg.createdBy || '',
 
       space: pg.space!,
-      build5Url: pg.build5Url!,
+      build5Url: pg.buildcoreUrl!,
       originUri: pg.originUri!,
       checksum: pg.checksum!,
       extension: pg.extension!,

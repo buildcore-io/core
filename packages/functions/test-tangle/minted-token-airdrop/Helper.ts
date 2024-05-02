@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Network,
@@ -9,7 +9,7 @@ import {
   TokenDrop,
   TokenDropStatus,
   TokenStatus,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
@@ -38,7 +38,7 @@ export class Helper {
   };
 
   public getAirdropsForMember = async (member: string, status = TokenDropStatus.UNCLAIMED) => {
-    const snap = await build5Db()
+    const snap = await database()
       .collection(COL.AIRDROP)
       .where('member', '==', member)
       .where('status', '==', status)
@@ -75,7 +75,7 @@ export const saveToken = async (
     access: 0,
     icon: MEDIA,
   } as Token;
-  await build5Db().doc(COL.TOKEN, token.uid).create(token);
+  await database().doc(COL.TOKEN, token.uid).create(token);
   return token;
 };
 

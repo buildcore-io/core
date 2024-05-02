@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -8,7 +8,7 @@ import {
   Transaction,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { packBasicOutput } from '../../src/utils/basic-output.utils';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
@@ -44,7 +44,7 @@ describe('Token minting', () => {
       nativeTokens: [{ amount: BigInt(10), id: helper.token!.mintingData?.tokenId! }],
     });
 
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.seller);
@@ -65,7 +65,7 @@ describe('Token minting', () => {
     expect(credit.payload.amount).toBe(Number(output.amount));
     expect(credit.payload.nativeTokens![0].id).toBe(MINTED_TOKEN_ID);
     expect(credit.payload.nativeTokens![0].amount).toBe(10);
-    const sellSnap = await build5Db()
+    const sellSnap = await database()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.seller)
       .get();

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { WEN_FUNC } from '@build-5/interfaces';
+import { WEN_FUNC } from '@buildcore/interfaces';
 import express from 'express';
 import { AnySchema, ValidationOptions } from 'joi';
 import { get } from 'lodash';

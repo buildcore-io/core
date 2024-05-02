@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, Collection, KEY_NAME_TANGLE, NetworkAddress, Nft } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, Collection, KEY_NAME_TANGLE, NetworkAddress, Nft } from '@buildcore/interfaces';
 import {
   Address,
   AddressUnlockCondition,
@@ -74,7 +74,7 @@ export const nftToMetadata = async (
 
     royalties: collection.royaltiesFee ? { [royaltySpaceAddress]: collection.royaltiesFee } : {},
 
-    build5Id: nft.uid,
+    originId: nft.uid,
   };
 };
 
@@ -91,17 +91,17 @@ export const collectionToMetadata = async (
     description: collection.description || '',
     issuerName: KEY_NAME_TANGLE,
     royalties: collection.royaltiesFee ? { [royaltySpaceAddress]: collection.royaltiesFee } : {},
-    build5Id: collection.uid,
+    originId: collection.uid,
   };
 };
 
 export const getNftByMintingId = async (nftId: string) => {
-  const snap = await build5Db().collection(COL.NFT).where('mintingData_nftId', '==', nftId).get();
+  const snap = await database().collection(COL.NFT).where('mintingData_nftId', '==', nftId).get();
   return head(snap);
 };
 
 export const getCollectionByMintingId = async (collectionId: string) => {
-  const snap = await build5Db()
+  const snap = await database()
     .collection(COL.COLLECTION)
     .where('mintingData_nftId', '==', collectionId)
     .get();

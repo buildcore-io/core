@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, DEFAULT_NETWORK, Network } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, DEFAULT_NETWORK, Network } from '@buildcore/interfaces';
 import { Client } from '@iota/sdk';
 import { getRandomIndex } from '../../utils/common.utils';
 import { logger } from '../../utils/logger';
@@ -69,6 +69,6 @@ export const setConsumedOutputIds = (
   consumedNftOutputIds: string[] = [],
   consumedAliasOutputIds: string[] = [],
 ) =>
-  build5Db()
+  database()
     .doc(COL.MNEMONIC, address)
     .update({ consumedOutputIds, consumedNftOutputIds, consumedAliasOutputIds });

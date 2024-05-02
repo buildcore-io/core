@@ -1,4 +1,4 @@
-import { MIN_IOTA_AMOUNT, WEN_FUNC, WenError } from '@build-5/interfaces';
+import { MIN_IOTA_AMOUNT, WEN_FUNC, WenError } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { expectThrow, wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';

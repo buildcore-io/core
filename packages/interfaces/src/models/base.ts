@@ -35,7 +35,7 @@ export class Timestamp {
 /**
  * Build 5 Request
  */
-export interface Build5Request<T> {
+export interface BuildcoreRequest<T> {
   /**
    * Network Address.
    */

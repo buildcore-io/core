@@ -37,7 +37,7 @@ export interface TokenStakeRewardsRequest {
    */
   items?: TokenStakeRewardRequest[];
   /**
-   * Build5 if of the token.
+   * Buildcore if of the token.
    */
   token: string;
 }

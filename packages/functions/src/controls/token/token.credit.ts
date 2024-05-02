@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   CreditTokenRequest,
@@ -11,7 +11,7 @@ import {
   TransactionPayloadType,
   TransactionType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { getAddress } from '../../utils/address.utils';
 import { invalidArgument } from '../../utils/error.utils';
 import {
@@ -29,11 +29,11 @@ export const creditTokenControl = async ({
   params,
 }: Context<CreditTokenRequest>): Promise<Transaction> => {
   const tranId = getRandomEthAddress();
-  const creditTranDoc = build5Db().doc(COL.TRANSACTION, tranId);
+  const creditTranDoc = database().doc(COL.TRANSACTION, tranId);
 
-  await build5Db().runTransaction(async (transaction) => {
-    const tokenDocRef = build5Db().doc(COL.TOKEN, params.token);
-    const distributionDocRef = build5Db().doc(COL.TOKEN, params.token, SUB_COL.DISTRIBUTION, owner);
+  await database().runTransaction(async (transaction) => {
+    const tokenDocRef = database().doc(COL.TOKEN, params.token);
+    const distributionDocRef = database().doc(COL.TOKEN, params.token, SUB_COL.DISTRIBUTION, owner);
     const distribution = await transaction.get(distributionDocRef);
     if (!distribution || (distribution.totalDeposit || 0) < params.amount) {
       throw invalidArgument(WenError.not_enough_funds);
@@ -43,10 +43,10 @@ export const creditTokenControl = async ({
       throw invalidArgument(WenError.token_not_in_cool_down_period);
     }
     const member = <Member>await memberDocRef(owner).get();
-    const orderDocRef = build5Db().doc(COL.TRANSACTION, tokenOrderTransactionDocId(owner, token));
+    const orderDocRef = database().doc(COL.TRANSACTION, tokenOrderTransactionDocId(owner, token));
     const order = (await transaction.get(orderDocRef))!;
 
-    const payments = await build5Db()
+    const payments = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', owner)
       .where('payload_token', '==', token.uid)
@@ -62,11 +62,11 @@ export const creditTokenControl = async ({
       token.pricePerToken,
     );
     await transaction.update(distributionDocRef, {
-      totalDeposit: build5Db().inc(-refundAmount),
+      totalDeposit: database().inc(-refundAmount),
     });
     await transaction.update(tokenDocRef, {
-      totalDeposit: build5Db().inc(-refundAmount),
-      tokensOrdered: build5Db().inc(boughtByMemberDiff),
+      totalDeposit: database().inc(-refundAmount),
+      tokensOrdered: database().inc(boughtByMemberDiff),
     });
 
     const creditTransaction: Transaction = {

@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -7,7 +7,7 @@ import {
   TangleRequestType,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { NftOutput } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
@@ -48,13 +48,13 @@ describe('Nft otr bid', () => {
       },
     });
 
-    const nftDocRef = build5Db().doc(COL.NFT, helper.nft!.uid);
+    const nftDocRef = database().doc(COL.NFT, helper.nft!.uid);
     await wait(async () => {
       const nft = await nftDocRef.get();
       return !isEmpty(nft?.auctionHighestBidder);
     });
 
-    await build5Db()
+    await database()
       .doc(COL.AUCTION, helper.nft!.auction!)
       .update({ auctionTo: dayjs().subtract(1, 'm').toDate() });
 
@@ -62,7 +62,7 @@ describe('Nft otr bid', () => {
 
     await wait(async () => {
       const transaction = (
-        await build5Db()
+        await database()
           .collection(COL.TRANSACTION)
           .where('type', '==', TransactionType.WITHDRAW_NFT)
           .where('payload_nft', '==', helper.nft!.uid)

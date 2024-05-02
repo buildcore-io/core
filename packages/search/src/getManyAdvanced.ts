@@ -4,8 +4,8 @@ import {
   IDocument,
   Update,
   WhereFilterOp,
-  build5Db,
-} from '@build-5/database';
+  database,
+} from '@buildcore/database';
 import {
   COL,
   Dataset,
@@ -18,7 +18,7 @@ import {
   Subset,
   TransactionType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import Joi from 'joi';
 import { get, isEmpty, isEqual } from 'lodash';
 import { map } from 'rxjs';
@@ -108,7 +108,7 @@ export const getManyAdvanced = async (project: string, url: string, isLive: bool
   }
 
   if (body.startAfter) {
-    const docRef = build5Db().doc(
+    const docRef = database().doc(
       body.dataset as unknown as COL,
       body.setId || body.startAfter,
       body.subset as unknown as SUB_COL,
@@ -152,7 +152,7 @@ const getFilters = (fieldNames?: string[], fieldValues?: unknown[], fieldOperato
 };
 
 const getBaseQuery = (dataset: Dataset, setId?: string, subset?: Subset) =>
-  build5Db().collection(
+  database().collection(
     dataset as unknown as COL,
     setId,
     subset as unknown as SUB_COL,

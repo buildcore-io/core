@@ -1,4 +1,4 @@
-import { Transaction } from '@build-5/interfaces';
+import { Transaction } from '@buildcore/interfaces';
 import {
   AliasOutput,
   AliasOutputBuilderParams,

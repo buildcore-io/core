@@ -1,4 +1,4 @@
-import { StakeReward, StakeRewardStatus } from '@build-5/interfaces';
+import { StakeReward, StakeRewardStatus } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgStakeReward } from '../../models';
 import { removeNulls } from '../common';

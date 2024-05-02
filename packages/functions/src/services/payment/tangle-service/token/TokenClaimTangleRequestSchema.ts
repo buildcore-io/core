@@ -1,4 +1,4 @@
-import { ClaimAirdroppedTokensTangleRequest, TangleRequestType } from '@build-5/interfaces';
+import { ClaimAirdroppedTokensTangleRequest, TangleRequestType } from '@buildcore/interfaces';
 import { CommonJoi, toJoiObject } from '../../../joi/common';
 import { baseTangleSchema } from '../common';
 

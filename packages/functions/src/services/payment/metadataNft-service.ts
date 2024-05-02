@@ -1,4 +1,4 @@
-import { PgTransaction, build5Db } from '@build-5/database';
+import { PgTransaction, database } from '@buildcore/database';
 import {
   Access,
   COL,
@@ -14,7 +14,7 @@ import {
   Transaction,
   TransactionPayloadType,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { get } from 'lodash';
 import {
   getCollectionByMintingId,
@@ -55,7 +55,7 @@ export class MetadataNftService extends BaseService {
         },
       };
       this.transactionService.push({
-        ref: build5Db().doc(COL.TRANSACTION, mintAlias.uid),
+        ref: database().doc(COL.TRANSACTION, mintAlias.uid),
         data: mintAlias,
         action: Action.C,
       });
@@ -64,14 +64,14 @@ export class MetadataNftService extends BaseService {
 
     if (!collectionId) {
       const collection = createMetadataCollection(getProject(order), order.space!);
-      const collectionDocRef = build5Db().doc(COL.COLLECTION, collection.uid);
+      const collectionDocRef = database().doc(COL.COLLECTION, collection.uid);
       this.transactionService.push({
         ref: collectionDocRef,
         data: collection as Collection,
         action: Action.C,
       });
 
-      const space = await build5Db().doc(COL.SPACE, order.space!).get();
+      const space = await database().doc(COL.SPACE, order.space!).get();
       const mintCollectionOrder = createMintMetadataCollectionOrder(
         order,
         collection.uid,
@@ -79,7 +79,7 @@ export class MetadataNftService extends BaseService {
         order.uid,
         space?.alias?.address!,
       );
-      const orderDocRef = build5Db().doc(COL.TRANSACTION, mintCollectionOrder.uid);
+      const orderDocRef = database().doc(COL.TRANSACTION, mintCollectionOrder.uid);
       this.transactionService.push({
         ref: orderDocRef,
         data: mintCollectionOrder,
@@ -99,11 +99,11 @@ export class MetadataNftService extends BaseService {
           order.payload.metadata || {},
         );
     if (!nftId) {
-      const nftDocRef = build5Db().doc(COL.NFT, nft.uid);
+      const nftDocRef = database().doc(COL.NFT, nft.uid);
       this.transactionService.push({ ref: nftDocRef, data: nft, action: Action.C });
     }
 
-    const space = await build5Db().doc(COL.SPACE, order.space!).get();
+    const space = await database().doc(COL.SPACE, order.space!).get();
 
     const mintNftOrder = createMintMetadataNftOrder(
       order,
@@ -112,7 +112,7 @@ export class MetadataNftService extends BaseService {
       order.payload.collectionId || '',
       order.uid,
     );
-    const orderDocRef = build5Db().doc(COL.TRANSACTION, mintNftOrder.uid);
+    const orderDocRef = database().doc(COL.TRANSACTION, mintNftOrder.uid);
     this.transactionService.push({ ref: orderDocRef, data: mintNftOrder, action: Action.C });
     return;
   };

@@ -1,4 +1,4 @@
-import { IDocument, PgAuction, PgAuctionUpdate, build5Db } from '@build-5/database';
+import { IDocument, PgAuction, PgAuctionUpdate, database } from '@buildcore/database';
 import {
   Auction,
   COL,
@@ -7,7 +7,7 @@ import {
   Space,
   Transaction,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { mockWalletReturnValue, testEnv } from '../../set-up';
 import { submitMilestoneFunc } from '../common';
@@ -32,8 +32,8 @@ export class Helper {
       ...customAuctionParams,
     });
     const auc = await testEnv.wrap<Auction>(WEN_FUNC.createauction);
-    this.auction = (await build5Db().doc(COL.AUCTION, auc.uid).get())!;
-    this.auctionDocRef = build5Db().doc(COL.AUCTION, this.auction.uid);
+    this.auction = (await database().doc(COL.AUCTION, auc.uid).get())!;
+    this.auctionDocRef = database().doc(COL.AUCTION, this.auction.uid);
   };
 
   public bidOnAuction = async (memberId: string, amount: number) => {

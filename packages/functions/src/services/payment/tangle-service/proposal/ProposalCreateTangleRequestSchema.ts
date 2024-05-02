@@ -1,4 +1,4 @@
-import { ProposalCreateTangleRequest, TangleRequestType } from '@build-5/interfaces';
+import { ProposalCreateTangleRequest, TangleRequestType } from '@buildcore/interfaces';
 import { createProposalSchema } from '../../../../controls/proposal/ProposalCreateRequestSchema';
 import { toJoiObject } from '../../../joi/common';
 import { baseTangleSchema } from '../common';

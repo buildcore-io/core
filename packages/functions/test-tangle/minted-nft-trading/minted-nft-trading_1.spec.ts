@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -10,7 +10,7 @@ import {
   TransactionType,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { NftOutput } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
@@ -33,7 +33,7 @@ describe('Minted nft trading', () => {
 
     await helper.setAvailableForAuction();
 
-    const nftDocRef = build5Db().doc(COL.NFT, helper.nft!.uid);
+    const nftDocRef = database().doc(COL.NFT, helper.nft!.uid);
 
     mockWalletReturnValue(helper.member!, { nft: helper.nft!.uid });
     await expectThrow(
@@ -69,7 +69,7 @@ describe('Minted nft trading', () => {
       const nft = <Nft>await nftDocRef.get();
 
       const payment = (
-        await build5Db()
+        await database()
           .collection(COL.TRANSACTION)
           .where('type', '==', TransactionType.PAYMENT)
           .where('payload_sourceTransaction', 'array-contains', bidOrder2.uid as any)
@@ -78,7 +78,7 @@ describe('Minted nft trading', () => {
       return nft.auctionHighestBidder === payment?.member;
     });
 
-    await build5Db()
+    await database()
       .doc(COL.AUCTION, helper.nft!.auction!)
       .update({ auctionTo: dayjs().subtract(1, 'm').toDate() });
 
@@ -97,7 +97,7 @@ describe('Minted nft trading', () => {
 
     await wait(async () => {
       const transaction = (
-        await build5Db()
+        await database()
           .collection(COL.TRANSACTION)
           .where('type', '==', TransactionType.WITHDRAW_NFT)
           .where('payload_nft', '==', helper.nft!.uid)
@@ -112,7 +112,7 @@ describe('Minted nft trading', () => {
       )
     ).output;
     const ownerAddress = Bech32AddressHelper.bech32FromUnlockConditions(output as NftOutput, 'rms');
-    const member = <Member>await build5Db().doc(COL.MEMBER, helper.member).get();
+    const member = <Member>await database().doc(COL.MEMBER, helper.member).get();
     expect(ownerAddress).toBe(getAddress(member, Network.RMS));
   });
 });

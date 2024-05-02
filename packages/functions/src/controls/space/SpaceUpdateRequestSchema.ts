@@ -1,4 +1,4 @@
-import { MAX_TOTAL_TOKEN_SUPPLY, SpaceUpdateRequest } from '@build-5/interfaces';
+import { MAX_TOTAL_TOKEN_SUPPLY, SpaceUpdateRequest } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 import { createSpaceSchema } from './SpaceCreateRequestSchema';
@@ -7,7 +7,7 @@ const MIN_STAKE_VALUE = 1;
 const MAX_STAKE_VALUE = MAX_TOTAL_TOKEN_SUPPLY;
 export const updateSpaceSchema = toJoiObject<SpaceUpdateRequest>({
   ...createSpaceSchema,
-  uid: CommonJoi.uid().description('Build5 id of the space.'),
+  uid: CommonJoi.uid().description('Buildcore id of the space.'),
   tokenBased: Joi.boolean()
     .allow(false, true)
     .optional()

@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -7,7 +7,7 @@ import {
   TangleRequestType,
   Transaction,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
@@ -28,7 +28,7 @@ describe('Join space', () => {
     mockWalletReturnValue(helper.member, { uid: helper.space.uid });
     await testEnv.wrap(WEN_FUNC.joinSpace);
 
-    const spaceDocRef = build5Db().doc(COL.SPACE, helper.space.uid);
+    const spaceDocRef = database().doc(COL.SPACE, helper.space.uid);
     helper.space = <Space>await spaceDocRef.get();
     expect(helper.space.totalMembers).toBe(2);
 

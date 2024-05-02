@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Collection,
@@ -11,7 +11,7 @@ import {
   TransactionType,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { getAddress } from '../../src/utils/address.utils';
 import { expectThrow, wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
@@ -52,7 +52,7 @@ describe('Swap control test', () => {
     });
     const swapOrder = await testEnv.wrap<Transaction>(WEN_FUNC.createSwap);
 
-    const swapDocRef = build5Db().doc(COL.SWAP, swapOrder.payload.swap!);
+    const swapDocRef = database().doc(COL.SWAP, swapOrder.payload.swap!);
     let swap = <Swap>await swapDocRef.get();
 
     await requestFundsFromFaucet(h.network, swapOrder.payload.targetAddress!, MIN_IOTA_AMOUNT);
@@ -61,7 +61,7 @@ describe('Swap control test', () => {
       return swap.bidOutputs?.length === 1;
     });
 
-    const guardianDocRef = build5Db().doc(COL.MEMBER, h.guardian);
+    const guardianDocRef = database().doc(COL.MEMBER, h.guardian);
     const guardianData = <Member>await guardianDocRef.get();
     const sourceAddress = await h.wallet.getAddressDetails(getAddress(guardianData, h.network));
     await wait(async () => {
@@ -69,7 +69,7 @@ describe('Swap control test', () => {
       return result.items.length === 2;
     });
     for (const nftUid of nfts) {
-      const docRef = build5Db().doc(COL.NFT, nftUid);
+      const docRef = database().doc(COL.NFT, nftUid);
       const nft = <Nft>await docRef.get();
       await h.sendNftToAddress(sourceAddress, swap.address, nft.mintingData?.nftId!);
     }
@@ -91,7 +91,7 @@ describe('Swap control test', () => {
     swap = <Swap>await swapDocRef.get();
     expect(swap.status).toBe(SwapStatus.FULFILLED);
 
-    let query = build5Db()
+    let query = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', h.member)
       .where('type', '==', TransactionType.BILL_PAYMENT)
@@ -101,7 +101,7 @@ describe('Swap control test', () => {
       return snap.length === 1 && (snap[0].payload.walletReference?.confirmed || false);
     });
 
-    query = build5Db()
+    query = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', h.member)
       .where('type', '==', TransactionType.WITHDRAW_NFT)
@@ -115,14 +115,14 @@ describe('Swap control test', () => {
       );
     });
 
-    const memberDocRef = build5Db().doc(COL.MEMBER, h.member);
+    const memberDocRef = database().doc(COL.MEMBER, h.member);
     const member = <Member>await memberDocRef.get();
     const response = await h.wallet.client.nftOutputIds([
       { address: getAddress(member, h.network) },
     ]);
     expect(response.items.length).toBe(2);
 
-    query = build5Db()
+    query = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', h.guardian)
       .where('type', '==', TransactionType.BILL_PAYMENT)

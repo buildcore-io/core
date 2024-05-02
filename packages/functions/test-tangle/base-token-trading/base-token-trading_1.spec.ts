@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -12,7 +12,7 @@ import {
   TransactionPayloadType,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { getAddress } from '../../src/utils/address.utils';
@@ -57,7 +57,7 @@ describe('Base token trading', () => {
       2 * MIN_IOTA_AMOUNT,
     );
 
-    const sellQuery = build5Db()
+    const sellQuery = database()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.seller!.uid);
     await wait(async () => {
@@ -68,7 +68,7 @@ describe('Base token trading', () => {
     const sell = <TokenTradeOrder>(await sellQuery.get())[0];
     expect(sell.tokenStatus).toBe(TokenStatus.BASE);
 
-    const buyQuery = build5Db()
+    const buyQuery = database()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.buyer!.uid);
     await wait(async () => {
@@ -78,7 +78,7 @@ describe('Base token trading', () => {
     const buy = <TokenTradeOrder>(await buyQuery.get())[0];
     expect(buy.tokenStatus).toBe(TokenStatus.BASE);
 
-    const purchaseQuery = build5Db()
+    const purchaseQuery = database()
       .collection(COL.TOKEN_PURCHASE)
       .where('sell', '==', sell.uid)
       .where('buy', '==', buy.uid);
@@ -96,7 +96,7 @@ describe('Base token trading', () => {
     expect(purchase.sellerTier).toBe(0);
     expect(purchase.sellerTokenTradingFeePercentage).toBeUndefined();
 
-    const sellerBillPaymentsSnap = await build5Db()
+    const sellerBillPaymentsSnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller!.uid)
       .where('type', '==', TransactionType.BILL_PAYMENT)
@@ -122,14 +122,14 @@ describe('Base token trading', () => {
       expect(sellerBillPayment.payload.tokenSymbol).toBe(helper.token!.symbol);
       expect(sellerBillPayment.payload.type).toBe(TransactionPayloadType.BASE_TOKEN_TRADE);
     });
-    const sellerCreditSnap = await build5Db()
+    const sellerCreditSnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller!.uid)
       .where('type', '==', TransactionType.CREDIT)
       .get();
     expect(sellerCreditSnap.length).toBe(0);
 
-    const buyerBillPaymentsSnap = await build5Db()
+    const buyerBillPaymentsSnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer!.uid)
       .where('type', '==', TransactionType.BILL_PAYMENT)
@@ -172,7 +172,7 @@ describe('Base token trading', () => {
           bp.payload.targetAddress === getAddress(helper.seller, helper.targetNetwork),
       ),
     ).toBeDefined();
-    const buyerCreditnap = await build5Db()
+    const buyerCreditnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer!.uid)
       .where('type', '==', TransactionType.CREDIT)
@@ -208,7 +208,7 @@ describe('Base token trading', () => {
       expiresAt,
     );
 
-    const buyQuery = build5Db()
+    const buyQuery = database()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.buyer!.uid);
     await wait(async () => {
@@ -251,7 +251,7 @@ describe('Base token trading', () => {
       expiresAt,
     );
 
-    const buyQuery = build5Db()
+    const buyQuery = database()
       .collection(COL.TOKEN_MARKET)
       .where('type', '==', TokenTradeOrderType.BUY)
       .where('owner', '==', helper.buyer?.uid);
@@ -264,7 +264,7 @@ describe('Base token trading', () => {
     expect(buy.count).toBe(MIN_IOTA_AMOUNT);
     expect(buy.fulfilled).toBe(MIN_IOTA_AMOUNT);
 
-    const credit = await build5Db()
+    const credit = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer?.uid)
       .where('payload_type', '==', TransactionPayloadType.TOKEN_TRADE_FULLFILLMENT)

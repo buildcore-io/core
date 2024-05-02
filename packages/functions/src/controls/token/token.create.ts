@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Access,
   COL,
@@ -7,7 +7,7 @@ import {
   TokenCreateRequest,
   TokenStatus,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { hasStakedTokens } from '../../services/stake.service';
 import { isProdEnv } from '../../utils/config.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
@@ -29,7 +29,7 @@ export const createTokenControl = async ({
 
   const space = params.space || '';
   if (space) {
-    const tokens = await build5Db().collection(COL.TOKEN).where('space', '==', space).get();
+    const tokens = await database().collection(COL.TOKEN).where('space', '==', space).get();
     const nonOrAllRejected = tokens.reduce(
       (acc, token) => acc && !token.approved && token.rejected,
       true,
@@ -40,7 +40,7 @@ export const createTokenControl = async ({
     await assertIsGuardian(space, owner);
   }
 
-  const symbolSnapshot = await build5Db()
+  const symbolSnapshot = await database()
     .collection(COL.TOKEN)
     .where('symbol', '==', params.symbol)
     .where('rejected', '==', false)
@@ -88,6 +88,6 @@ export const createTokenControl = async ({
     ipfsMedia: '',
     ipfsMetadata: '',
   };
-  await build5Db().doc(COL.TOKEN, tokenUid).create(data);
-  return (await build5Db().doc(COL.TOKEN, tokenUid).get())!;
+  await database().doc(COL.TOKEN, tokenUid).create(data);
+  return (await database().doc(COL.TOKEN, tokenUid).get())!;
 };

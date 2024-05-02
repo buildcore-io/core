@@ -62,7 +62,7 @@ export interface AwardCreateRequest {
    */
   network: 'iota' | 'smr' | 'atoi' | 'rms';
   /**
-   * Build5 id of the space
+   * Buildcore id of the space
    */
   space: string;
 }

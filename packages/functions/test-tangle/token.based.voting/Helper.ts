@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -16,7 +16,7 @@ import {
   Transaction,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
@@ -54,13 +54,13 @@ export class Helper {
     this.proposal = dummyProposal(this.space.uid);
     delete (this.proposal as any).completed;
 
-    const guardianDocRef = build5Db().doc(COL.MEMBER, this.guardian);
+    const guardianDocRef = database().doc(COL.MEMBER, this.guardian);
     const guardianData = await guardianDocRef.get();
     const guardianAddressBech = getAddress(guardianData, this.network);
     this.guardianAddress = await this.walletService!.getAddressDetails(guardianAddressBech);
 
     this.tokenId = wallet.getRandomEthAddress();
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, this.tokenId)
       .create({
         project: SOON_PROJECT_ID,
@@ -106,7 +106,7 @@ export class Helper {
   public awaitVoteTransactionCreditIsConfirmed = async (
     voteTransactionOrderTargetAddress: NetworkAddress,
   ) => {
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('payload_sourceAddress', '==', voteTransactionOrderTargetAddress)
       .where('type', '==', TransactionType.CREDIT);
@@ -119,7 +119,7 @@ export class Helper {
   };
 
   public getVoteTransactionForCredit = async (creditId: string) => {
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('payload_creditId', '==', creditId)
       .where('type', '==', TransactionType.VOTE);
@@ -128,20 +128,20 @@ export class Helper {
   };
 
   public updatePropoasalDates = (startDate: dayjs.Dayjs, endDate: dayjs.Dayjs) =>
-    build5Db().doc(COL.PROPOSAL, this.proposal!.uid).upsert({
+    database().doc(COL.PROPOSAL, this.proposal!.uid).upsert({
       settings_startDate: startDate.toDate(),
       settings_endDate: endDate.toDate(),
     });
 
   public updateVoteTranCreatedOn = (voteTransactionId: string, createdOn: dayjs.Dayjs) =>
-    build5Db().doc(COL.TRANSACTION, voteTransactionId).update({ createdOn: createdOn.toDate() });
+    database().doc(COL.TRANSACTION, voteTransactionId).update({ createdOn: createdOn.toDate() });
 
   public assertProposalWeights = async (
     total: number,
     voted: number,
     proposalId = this.proposal!.uid,
   ) => {
-    const proposalDocRef = build5Db().doc(COL.PROPOSAL, proposalId);
+    const proposalDocRef = database().doc(COL.PROPOSAL, proposalId);
     const proposal = <Proposal>await proposalDocRef.get();
     expect(+proposal.results?.total.toFixed(0)).toBe(total);
     expect(+proposal.results?.voted.toFixed(0)).toBe(voted);
@@ -153,7 +153,7 @@ export class Helper {
     answer: number,
     proposalId = this.proposal!.uid,
   ) => {
-    const proposalMemberDocRef = build5Db().doc(COL.PROPOSAL, proposalId, SUB_COL.MEMBERS, member);
+    const proposalMemberDocRef = database().doc(COL.PROPOSAL, proposalId, SUB_COL.MEMBERS, member);
     const proposalMember = <ProposalMember>await proposalMemberDocRef.get();
     expect(+proposalMember.weightPerAnswer![answer].toFixed(0)).toBe(weight);
   };
@@ -183,12 +183,12 @@ export class Helper {
       uid: wallet.getRandomEthAddress(),
       token: this.tokenId,
     } as Stake;
-    const docRef = build5Db().doc(COL.STAKE, stake.uid);
+    const docRef = database().doc(COL.STAKE, stake.uid);
     await docRef.create(stake);
   };
 
   public getTransaction = async (uid: string) => {
-    const docRef = build5Db().doc(COL.TRANSACTION, uid);
+    const docRef = database().doc(COL.TRANSACTION, uid);
     return <Transaction>await docRef.get();
   };
 }

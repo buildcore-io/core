@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Network,
@@ -8,7 +8,7 @@ import {
   Transaction,
   ValidatedAddress,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { get, isEmpty } from 'lodash';
 import { getOutputMetadata } from '../../../utils/basic-output.utils';
 import { invalidArgument } from '../../../utils/error.utils';
@@ -21,7 +21,7 @@ import { TangleAuctionCreateService } from './auction/auction.create.service';
 import { AwardApproveParticipantService } from './award/award.approve.participant.service';
 import { AwardCreateService } from './award/award.create.service';
 import { AwardFundService } from './award/award.fund.service';
-import { VerifyEthForBuil5TangleService } from './build5/verify.eth.for.b5.service';
+import { VerifyEthForBuilTokenTangleService } from './buildcore-token/verify.eth.for.buildtoken.service';
 import { MintMetadataNftService } from './metadataNft/mint-metadata-nft.service';
 import { NftDepositService } from './nft/nft-deposit.service';
 import { TangleNftPurchaseBulkService } from './nft/nft-purchase.bulk.service';
@@ -158,20 +158,20 @@ export class TangleRequestService extends BaseTangleService<TangleResponse> {
       case TangleRequestType.REJECT_SWAP:
         return new SwapRejectTangleService(this.transactionService);
       case TangleRequestType.VERIFY_ETH_ADDRESS:
-        return new VerifyEthForBuil5TangleService(this.transactionService);
+        return new VerifyEthForBuilTokenTangleService(this.transactionService);
       default:
         throw invalidArgument(WenError.invalid_tangle_request_type);
     }
   };
 
   private getOwner = async (senderAddress: NetworkAddress, network: Network) => {
-    const docRef = build5Db().doc(COL.MEMBER, senderAddress);
+    const docRef = database().doc(COL.MEMBER, senderAddress);
     const member = await docRef.get();
     if (member) {
       return senderAddress;
     }
 
-    const snap = await build5Db()
+    const snap = await database()
       .collection(COL.MEMBER)
       .where(`${network}Address`, '==', senderAddress)
       .limit(2)

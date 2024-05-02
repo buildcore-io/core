@@ -1,4 +1,4 @@
-import { build5Db, ITransaction } from '@build-5/database';
+import { database, ITransaction } from '@buildcore/database';
 import {
   COL,
   ProjectBilling,
@@ -6,17 +6,17 @@ import {
   StakeType,
   SUB_COL,
   TokenDistribution,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { getProject } from '../utils/common.utils';
 import { getTokenSaleConfig } from '../utils/config.utils';
 
 export const hasStakedTokens = async (projectId: string, member: string, type?: StakeType) => {
-  const projectDocRef = build5Db().doc(COL.PROJECT, projectId);
+  const projectDocRef = database().doc(COL.PROJECT, projectId);
   const project = (await projectDocRef.get())!;
   if (project.config?.billing !== ProjectBilling.TOKEN_BASED) {
     return true;
   }
-  const distributionDocRef = build5Db().doc(
+  const distributionDocRef = database().doc(
     COL.TOKEN,
     project.config.nativeTokenUid!,
     SUB_COL.DISTRIBUTION,
@@ -65,7 +65,7 @@ export const onStakeExpired = async (transaction: ITransaction, stake: Stake) =>
 };
 
 const getTokenDistribution = async (transaction: ITransaction, token: string, member: string) => {
-  const distirbutionDocRef = build5Db().doc(COL.TOKEN, token, SUB_COL.DISTRIBUTION, member);
+  const distirbutionDocRef = database().doc(COL.TOKEN, token, SUB_COL.DISTRIBUTION, member);
   return await transaction.get(distirbutionDocRef);
 };
 
@@ -76,7 +76,7 @@ const updateMemberTokenDiscountPercentage = async (
   member: string,
   stakeValueDiff: number,
 ) => {
-  const projectDocRef = build5Db().doc(COL.PROJECT, projectId);
+  const projectDocRef = database().doc(COL.PROJECT, projectId);
   const project = await projectDocRef.get();
   const stakeValue = getStakeForType(distribution, StakeType.DYNAMIC) + stakeValueDiff;
 
@@ -87,7 +87,7 @@ const updateMemberTokenDiscountPercentage = async (
   const discount = (project?.config?.tokenTradingFeeDiscountPercentage || [])[tier] / 100;
   const tokenTradingFeePercentage = getTokenSaleConfig.percentage * (1 - discount);
 
-  const memberDocRef = build5Db().doc(COL.MEMBER, member);
+  const memberDocRef = database().doc(COL.MEMBER, member);
   await transaction.update(memberDocRef, { tokenTradingFeePercentage });
 };
 
@@ -106,12 +106,12 @@ const updateStakingMembersStats = async (
   type: StakeType,
   stakeValueDiff: number,
 ) => {
-  const tokenStatsDocRef = build5Db().doc(COL.TOKEN, token, SUB_COL.STATS, token);
+  const tokenStatsDocRef = database().doc(COL.TOKEN, token, SUB_COL.STATS, token);
 
   const prevStakedAmount = getStakeForType(distribution, type);
   if (!prevStakedAmount) {
     await transaction.upsert(tokenStatsDocRef, {
-      [`stakes_${type}_stakingMembersCount`]: build5Db().inc(1),
+      [`stakes_${type}_stakingMembersCount`]: database().inc(1),
     });
     return;
   }
@@ -119,7 +119,7 @@ const updateStakingMembersStats = async (
   const currentStakedAmount = prevStakedAmount + stakeValueDiff;
   if (!currentStakedAmount) {
     await transaction.upsert(tokenStatsDocRef, {
-      [`stakes_${type}_stakingMembersCount`]: build5Db().inc(-1),
+      [`stakes_${type}_stakingMembersCount`]: database().inc(-1),
     });
     return;
   }
@@ -130,24 +130,24 @@ const removeMemberFromSpace = async (
   distribution: TokenDistribution | undefined,
   stake: Stake,
 ) => {
-  const spaceDocRef = build5Db().doc(COL.SPACE, stake.space);
+  const spaceDocRef = database().doc(COL.SPACE, stake.space);
   const space = (await spaceDocRef.get())!;
   const stakedValue = getStakeForType(distribution, stake.type) - stake.value;
   if (!space.tokenBased || stakedValue >= (space.minStakedValue || 0)) {
     return;
   }
 
-  const guardianDocRef = build5Db().doc(COL.SPACE, stake.space, SUB_COL.GUARDIANS, stake.member);
+  const guardianDocRef = database().doc(COL.SPACE, stake.space, SUB_COL.GUARDIANS, stake.member);
   const isGuardian = (await spaceDocRef.get()) !== undefined;
   if (isGuardian && space.totalGuardians > 1) {
     await transaction.delete(guardianDocRef);
   }
   if (space.totalMembers > 1) {
-    const memberDocRef = build5Db().doc(COL.SPACE, stake.space, SUB_COL.MEMBERS, stake.member);
+    const memberDocRef = database().doc(COL.SPACE, stake.space, SUB_COL.MEMBERS, stake.member);
     await transaction.delete(memberDocRef);
   }
   await transaction.update(spaceDocRef, {
-    totalGuardians: build5Db().inc(isGuardian && space.totalGuardians > 1 ? -1 : 0),
-    totalMembers: build5Db().inc(space.totalMembers > 1 ? -1 : 0),
+    totalGuardians: database().inc(isGuardian && space.totalGuardians > 1 ? -1 : 0),
+    totalMembers: database().inc(space.totalMembers > 1 ? -1 : 0),
   });
 };

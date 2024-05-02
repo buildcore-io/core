@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, Member, MIN_IOTA_AMOUNT, Stake, StakeType } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, Member, MIN_IOTA_AMOUNT, Stake, StakeType } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';
 import { setProdTiers, setTestTiers, wait } from '../../test/controls/common';
@@ -20,13 +20,13 @@ describe('Staking test', () => {
 
   const validateMemberTradingFee = async (expected: number) => {
     await wait(async () => {
-      helper.member = <Member>await build5Db().doc(COL.MEMBER, helper.member?.uid!).get();
+      helper.member = <Member>await database().doc(COL.MEMBER, helper.member?.uid!).get();
       return (helper.member.tokenTradingFeePercentage || 0) === expected;
     });
   };
 
   const expireStakeAndValidateFee = async (stake: Stake, expectedFee: number) => {
-    await build5Db()
+    await database()
       .doc(COL.STAKE, stake.uid)
       .update({ expiresAt: dayjs().subtract(1, 'm').toDate() });
     await removeExpiredStakesFromSpace();

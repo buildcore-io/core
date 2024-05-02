@@ -16,7 +16,7 @@ export interface CreateAirdropsRequest {
      */
     count: number;
     /**
-     * Build5 id or wallet address of the recipient
+     * Buildcore id or wallet address of the recipient
      */
     recipient: string;
     /**
@@ -29,7 +29,7 @@ export interface CreateAirdropsRequest {
     vestingAt: Date;
   }[];
   /**
-   * Build5 id of the token
+   * Buildcore id of the token
    */
   token: string;
 }

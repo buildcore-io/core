@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -8,7 +8,7 @@ import {
   Transaction,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { expectThrow } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
@@ -27,7 +27,7 @@ describe('Token minting', () => {
 
   it('Should create sell order, not approved, but public', async () => {
     // Should throw at sell, not approved, not public
-    await build5Db().doc(COL.TOKEN, helper.token!.uid).update({ approved: false, public: false });
+    await database().doc(COL.TOKEN, helper.token!.uid).update({ approved: false, public: false });
     mockWalletReturnValue(helper.seller!, {
       symbol: helper.token!.symbol,
       count: 10,
@@ -40,7 +40,7 @@ describe('Token minting', () => {
     );
 
     // Should throw at buy, not approved, not public
-    await build5Db().doc(COL.TOKEN, helper.token!.uid).update({ approved: false, public: false });
+    await database().doc(COL.TOKEN, helper.token!.uid).update({ approved: false, public: false });
     mockWalletReturnValue(helper.buyer!, {
       symbol: helper.token!.symbol,
       count: 5,
@@ -53,7 +53,7 @@ describe('Token minting', () => {
     );
 
     // Should create sell order, not approved, but public
-    await build5Db().doc(COL.TOKEN, helper.token!.uid).update({ approved: false, public: true });
+    await database().doc(COL.TOKEN, helper.token!.uid).update({ approved: false, public: true });
     mockWalletReturnValue(helper.seller!, {
       symbol: helper.token!.symbol,
       count: 10,
@@ -63,7 +63,7 @@ describe('Token minting', () => {
     expect(await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken)).toBeDefined();
 
     // Should create buy order, not approved, but public'
-    await build5Db().doc(COL.TOKEN, helper.token!.uid).update({ approved: false, public: true });
+    await database().doc(COL.TOKEN, helper.token!.uid).update({ approved: false, public: true });
     mockWalletReturnValue(helper.seller!, {
       symbol: helper.token!.symbol,
       count: 10,

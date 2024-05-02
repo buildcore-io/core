@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   CreateAirdropsRequest,
@@ -9,7 +9,7 @@ import {
   TokenDropStatus,
   TokenStatus,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { chunk } from 'lodash';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
@@ -41,8 +41,8 @@ export const airdropTokenControl = async ({
 }: Context<CreateAirdropsRequest>) => {
   const chunks = chunk(params.drops, 200);
   for (const chunk of chunks) {
-    await build5Db().runTransaction(async (transaction) => {
-      const tokenDocRef = build5Db().doc(COL.TOKEN, params.token);
+    await database().runTransaction(async (transaction) => {
+      const tokenDocRef = database().doc(COL.TOKEN, params.token);
       const token = await transaction.get(tokenDocRef);
 
       if (!token) {
@@ -59,7 +59,7 @@ export const airdropTokenControl = async ({
         throw invalidArgument(WenError.no_tokens_available_for_airdrop);
       }
 
-      await transaction.update(tokenDocRef, { totalAirdropped: build5Db().inc(totalDropped) });
+      await transaction.update(tokenDocRef, { totalAirdropped: database().inc(totalDropped) });
 
       for (const drop of chunk) {
         const airdrop: TokenDrop = {
@@ -72,10 +72,10 @@ export const airdropTokenControl = async ({
           count: drop.count,
           status: TokenDropStatus.UNCLAIMED,
         };
-        const docRef = build5Db().doc(COL.AIRDROP, airdrop.uid);
+        const docRef = database().doc(COL.AIRDROP, airdrop.uid);
         await transaction.create(docRef, airdrop);
 
-        const distributionDocRef = build5Db().doc(
+        const distributionDocRef = database().doc(
           COL.TOKEN,
           params.token,
           SUB_COL.DISTRIBUTION,
@@ -83,7 +83,7 @@ export const airdropTokenControl = async ({
         );
         await transaction.upsert(distributionDocRef, {
           parentId: token.uid,
-          totalUnclaimedAirdrop: build5Db().inc(drop.count),
+          totalUnclaimedAirdrop: database().inc(drop.count),
         });
       }
     });

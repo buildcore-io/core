@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Member,
@@ -10,7 +10,7 @@ import {
   TransactionType,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { getAddress } from '../../src/utils/address.utils';
 import { expectThrow, wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
@@ -30,13 +30,13 @@ describe('Token minting', () => {
     const order = await testEnv.wrap<Transaction>(WEN_FUNC.mintTokenOrder);
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, order.payload.amount);
 
-    const tokenDocRef = build5Db().doc(COL.TOKEN, helper.token.uid);
+    const tokenDocRef = database().doc(COL.TOKEN, helper.token.uid);
     await wait(async () => {
       helper.token = <Token>await tokenDocRef.get();
       return helper.token.status === TokenStatus.MINTED;
     });
 
-    const guardianData = <Member>await build5Db().doc(COL.MEMBER, helper.guardian.uid).get();
+    const guardianData = <Member>await database().doc(COL.MEMBER, helper.guardian.uid).get();
     const guardianAddress = getAddress(guardianData, helper.network);
     await wait(async () => {
       const { nativeTokens } = await helper.walletService.getBalance(guardianAddress);
@@ -56,7 +56,7 @@ describe('Token minting', () => {
 
   it('Should create order, not approved but public', async () => {
     await helper.setup();
-    await build5Db().doc(COL.TOKEN, helper.token.uid).update({ approved: false, public: true });
+    await database().doc(COL.TOKEN, helper.token.uid).update({ approved: false, public: true });
     mockWalletReturnValue(helper.guardian.uid, {
       token: helper.token.uid,
       network: helper.network,
@@ -67,7 +67,7 @@ describe('Token minting', () => {
 
   it('Should throw, member has no valid address', async () => {
     await helper.setup();
-    await build5Db()
+    await database()
       .doc(COL.MEMBER, helper.guardian.uid)
       .update({ smrAddress: '', rmsAddress: '', iotaAddress: '', atoiAddress: '' });
     mockWalletReturnValue(helper.guardian.uid, {
@@ -92,7 +92,7 @@ describe('Token minting', () => {
 
   it('Should throw, already minted', async () => {
     await helper.setup();
-    await build5Db().doc(COL.TOKEN, helper.token.uid).update({ status: TokenStatus.MINTED });
+    await database().doc(COL.TOKEN, helper.token.uid).update({ status: TokenStatus.MINTED });
     mockWalletReturnValue(helper.guardian.uid, {
       token: helper.token.uid,
       network: helper.network,
@@ -119,13 +119,13 @@ describe('Token minting', () => {
       order2.payload.amount,
     );
 
-    const tokenDocRef = build5Db().doc(COL.TOKEN, helper.token.uid);
+    const tokenDocRef = database().doc(COL.TOKEN, helper.token.uid);
     await wait(async () => {
       const snap = await tokenDocRef.get();
       return snap?.status === TokenStatus.MINTED;
     });
     await wait(async () => {
-      const snap = await build5Db()
+      const snap = await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
         .where('member', '==', helper.guardian.uid)

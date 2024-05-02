@@ -1,4 +1,4 @@
-import { Auction, AuctionBid, AuctionType, Network } from '@build-5/interfaces';
+import { Auction, AuctionBid, AuctionType, Network } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgAuction } from '../../models';
 import { removeNulls } from '../common';

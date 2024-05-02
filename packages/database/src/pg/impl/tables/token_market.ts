@@ -4,7 +4,7 @@ import {
   TokenTradeOrder,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgTokenMarket } from '../../models';
 import { removeNulls } from '../common';

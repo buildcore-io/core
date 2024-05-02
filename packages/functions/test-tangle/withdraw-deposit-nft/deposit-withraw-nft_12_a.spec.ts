@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -8,7 +8,7 @@ import {
   TransactionType,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import {
   Ed25519Address,
   NftAddress,
@@ -44,7 +44,7 @@ describe('Collection minting', () => {
 
   it('Should throw, nft not irc27', async () => {
     await mintAndDeposit({ collectionName: 'test-collection' }, { name: 'test' });
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.guardian)
       .where('type', '==', TransactionType.CREDIT_NFT);

@@ -1,7 +1,7 @@
 {
-  "name": "@build-5/search",
+  "name": "@buildcore/search",
   "version": "0.0.0",
-  "description": "Build5 search",
+  "description": "Buildcore search",
   "license": "Apache-2.0",
   "main": "lib/index.js",
   "directories": {
@@ -16,8 +16,8 @@
     "start": "npm run build && export GOOGLE_APPLICATION_CREDENTIALS=\"./sa.json\" && node lib/index.js"
   },
   "dependencies": {
-    "@build-5/database": "*",
-    "@build-5/interfaces": "*",
+    "@buildcore/database": "*",
+    "@buildcore/interfaces": "*",
     "@iota/sdk": "1.1.5",
     "cors": "2.8.5",
     "dayjs": "1.11.10",

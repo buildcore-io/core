@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, SpaceMemberUpsertRequest, SUB_COL } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, SpaceMemberUpsertRequest, SUB_COL } from '@buildcore/interfaces';
 import { getBlockMemberUpdateData } from '../../services/payment/tangle-service/space/SpaceBlockMemberService';
 import { Context } from '../common';
 
@@ -16,21 +16,21 @@ export const blockMemberControl = async ({
     member,
   );
 
-  const blockedMemberDocRef = build5Db().doc(
+  const blockedMemberDocRef = database().doc(
     COL.SPACE,
     params.uid,
     SUB_COL.BLOCKED_MEMBERS,
     member,
   );
 
-  const batch = build5Db().batch();
+  const batch = database().batch();
   batch.upsert(blockedMemberDocRef, {
     ...blockedMember,
     createdOn: blockedMember.createdOn.toDate(),
   });
-  batch.delete(build5Db().doc(COL.SPACE, params.uid, SUB_COL.MEMBERS, member));
-  batch.delete(build5Db().doc(COL.SPACE, params.uid, SUB_COL.KNOCKING_MEMBERS, member));
-  batch.update(build5Db().doc(COL.SPACE, params.uid), space);
+  batch.delete(database().doc(COL.SPACE, params.uid, SUB_COL.MEMBERS, member));
+  batch.delete(database().doc(COL.SPACE, params.uid, SUB_COL.KNOCKING_MEMBERS, member));
+  batch.update(database().doc(COL.SPACE, params.uid), space);
   await batch.commit();
 
   return await blockedMemberDocRef.get();

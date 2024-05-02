@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
-import { COL, Nft, NftStatus, WEN_FUNC, WenError } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, Nft, NftStatus, WEN_FUNC, WenError } from '@buildcore/interfaces';
 import { expectThrow } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { Helper } from './Helper';
@@ -32,7 +32,7 @@ describe('Collection minting', () => {
     mockWalletReturnValue(helper.guardian!, { nft: helper.nft!.uid });
     await testEnv.wrap(WEN_FUNC.withdrawNft);
 
-    const nftDocRef = build5Db().doc(COL.NFT, helper.nft?.uid!);
+    const nftDocRef = database().doc(COL.NFT, helper.nft?.uid!);
     const nft = <Nft>await nftDocRef.get();
     expect(nft.status).toBe(NftStatus.WITHDRAWN);
   });

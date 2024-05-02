@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Award,
   AwardBadgeType,
@@ -10,7 +10,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
@@ -29,7 +29,7 @@ export class AwardFundService extends BaseTangleService<TangleResponse> {
 
     const award = await getAwardForFunding(owner, params.uid);
     const order = await createAwardFundOrder(project, owner, award);
-    const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
+    const orderDocRef = database().doc(COL.TRANSACTION, order.uid);
     this.transactionService.push({ ref: orderDocRef, data: order, action: Action.C });
 
     const response = {
@@ -83,7 +83,7 @@ export const createAwardFundOrder = async (
 };
 
 export const getAwardForFunding = async (owner: string, awardId: string) => {
-  const awardDocRef = build5Db().doc(COL.AWARD, awardId);
+  const awardDocRef = database().doc(COL.AWARD, awardId);
   const award = await awardDocRef.get();
 
   if (!award) {

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
-import { COL, Transaction, TransactionType, WEN_FUNC } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, Transaction, TransactionType, WEN_FUNC } from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { Helper } from './Helper';
@@ -39,7 +39,7 @@ describe('Collection minting', () => {
     await Promise.all(promises);
 
     await wait(async () => {
-      const snap = await build5Db()
+      const snap = await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT_NFT)
         .where('member', '==', helper.guardian)

@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Rank,
@@ -10,7 +10,7 @@ import {
   TokenStats,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import * as wallet from '../../../src/utils/wallet.utils';
 import { MEDIA, mockWalletReturnValue, testEnv } from '../../set-up';
 import {
@@ -52,7 +52,7 @@ describe('Token rank test', () => {
     mockWalletReturnValue(member, dummyToken(space.uid));
     token = await testEnv.wrap(WEN_FUNC.createToken);
 
-    await build5Db().doc(COL.SPACE, RANKING_TEST.tokenSpace, SUB_COL.GUARDIANS, member).upsert({
+    await database().doc(COL.SPACE, RANKING_TEST.tokenSpace, SUB_COL.GUARDIANS, member).upsert({
       parentId: RANKING_TEST.tokenSpace,
     });
   });
@@ -89,7 +89,7 @@ describe('Token rank test', () => {
   });
 
   it('Should throw, not space member', async () => {
-    await build5Db().doc(COL.SPACE, RANKING_TEST.tokenSpace, SUB_COL.GUARDIANS, member).delete();
+    await database().doc(COL.SPACE, RANKING_TEST.tokenSpace, SUB_COL.GUARDIANS, member).delete();
 
     mockWalletReturnValue(member, {
       collection: COL.TOKEN,
@@ -104,14 +104,14 @@ describe('Token rank test', () => {
 
   const validateStats = async (count: number, sum: number) => {
     await wait(async () => {
-      const statsDocRef = build5Db().doc(COL.TOKEN, token.uid, SUB_COL.STATS, token.uid);
+      const statsDocRef = database().doc(COL.TOKEN, token.uid, SUB_COL.STATS, token.uid);
       const stats = <TokenStats | undefined>await statsDocRef.get();
       const statsAreCorrect =
         stats?.ranks?.count === count &&
         stats?.ranks?.sum === sum &&
         stats?.ranks?.avg === Number((stats?.ranks?.sum! / stats?.ranks?.count!).toFixed(3));
 
-      const tokenDocRef = build5Db().doc(COL.TOKEN, token.uid);
+      const tokenDocRef = database().doc(COL.TOKEN, token.uid);
       token = <Token>await tokenDocRef.get();
       return (
         statsAreCorrect &&

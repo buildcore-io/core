@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -8,7 +8,7 @@ import {
   Transaction,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { isEmpty } from 'lodash';
 import { getAddress } from '../../src/utils/address.utils';
 import { wait } from '../../test/controls/common';
@@ -38,7 +38,7 @@ describe('Base token trading', () => {
       MIN_IOTA_AMOUNT,
     );
 
-    const sellQuery = build5Db()
+    const sellQuery = database()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.seller!.uid);
     await wait(async () => {
@@ -61,7 +61,7 @@ describe('Base token trading', () => {
 
     const sell = <TokenTradeOrder>(await sellQuery.get())[0];
 
-    const buyQuery = build5Db()
+    const buyQuery = database()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.buyer!.uid);
     await wait(async () => {
@@ -70,7 +70,7 @@ describe('Base token trading', () => {
     });
     let buy = <TokenTradeOrder>(await buyQuery.get())[0];
 
-    const purchaseQuery = build5Db()
+    const purchaseQuery = database()
       .collection(COL.TOKEN_PURCHASE)
       .where('sell', '==', sell.uid)
       .where('buy', '==', buy.uid);
@@ -85,7 +85,7 @@ describe('Base token trading', () => {
     expect(purchase.sourceNetwork).toBe(helper.sourceNetwork);
     expect(purchase.targetNetwork).toBe(helper.targetNetwork);
 
-    const sellerBillPaymentsSnap = await build5Db()
+    const sellerBillPaymentsSnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller!.uid)
       .where('type', '==', TransactionType.BILL_PAYMENT)
@@ -106,7 +106,7 @@ describe('Base token trading', () => {
           bp.payload.targetAddress === getAddress(helper.buyer, helper.sourceNetwork),
       ),
     ).toBeDefined();
-    const sellerCreditnap = await build5Db()
+    const sellerCreditnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller!.uid)
       .where('type', '==', TransactionType.CREDIT)
@@ -114,7 +114,7 @@ describe('Base token trading', () => {
     const sellerCredit = sellerCreditnap.map((d) => d as Transaction);
     expect(sellerCredit.length).toBe(0);
 
-    const buyerBillPaymentsSnap = await build5Db()
+    const buyerBillPaymentsSnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer!.uid)
       .where('type', '==', TransactionType.BILL_PAYMENT)
@@ -152,7 +152,7 @@ describe('Base token trading', () => {
           bp.payload.targetAddress === getAddress(helper.seller, helper.targetNetwork),
       ),
     ).toBeDefined();
-    const buyerCreditnap = await build5Db()
+    const buyerCreditnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer!.uid)
       .where('type', '==', TransactionType.CREDIT)

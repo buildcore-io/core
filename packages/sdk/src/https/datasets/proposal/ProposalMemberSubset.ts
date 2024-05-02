@@ -1,4 +1,4 @@
-import { GetManyAdvancedRequest, Opr, ProposalMember } from '@build-5/interfaces';
+import { GetManyAdvancedRequest, Opr, ProposalMember } from '@buildcore/interfaces';
 import { SubsetClass } from '../Subset';
 
 /**

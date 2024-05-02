@@ -1,5 +1,5 @@
-import { PgCollection, PgNft, PgToken } from '@build-5/database';
-import { Collection, KEY_NAME_TANGLE, Nft, Token } from '@build-5/interfaces';
+import { PgCollection, PgNft, PgToken } from '@buildcore/database';
+import { Collection, KEY_NAME_TANGLE, Nft, Token } from '@buildcore/interfaces';
 import { CarReader } from '@ipld/car';
 import * as dagPb from '@ipld/dag-pb';
 import { randomUUID } from 'crypto';

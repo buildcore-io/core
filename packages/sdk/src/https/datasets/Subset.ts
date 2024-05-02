@@ -7,9 +7,9 @@ import {
   GetUpdatedAfterRequest,
   Opr,
   Subset,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { Observable, from, switchMap } from 'rxjs';
-import { Build5 } from '..';
+import { Buildcore } from '..';
 import { toQueryParams, wrappedFetch } from '../fetch.utils';
 import GetByIdGrouped from '../get/GetByIdGrouped';
 import GetByIdGroupedLive from '../get/GetByIdGroupedLive';
@@ -17,7 +17,7 @@ import { fetchLive } from '../get/observable';
 
 export abstract class BaseSubset<T> {
   constructor(
-    protected readonly origin: Build5,
+    protected readonly origin: Buildcore,
     protected readonly apiKey: string,
     protected readonly dataset: Dataset,
   ) {}
@@ -30,7 +30,7 @@ export abstract class BaseSubset<T> {
 
 export class SubsetClass<T> extends BaseSubset<T> {
   constructor(
-    origin: Build5,
+    origin: Buildcore,
     apiKey: string,
     dataset: Dataset,
     protected readonly setId: string,
@@ -142,7 +142,7 @@ export class SubsetClass<T> extends BaseSubset<T> {
 
 class ExactSubset<T> {
   constructor(
-    private readonly origin: Build5,
+    private readonly origin: Buildcore,
     private readonly apiKey: string,
     private readonly dataset: Dataset,
     private readonly setId: string,

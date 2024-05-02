@@ -1,17 +1,17 @@
-import { PgCollectionUpdate, build5Db } from '@build-5/database';
+import { PgCollectionUpdate, database } from '@buildcore/database';
 import {
   COL,
   Collection,
   CollectionStatus,
   TransactionPayloadType,
   UnsoldMintingOptions,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { BaseService, HandlerParams } from '../base';
 import { Action } from '../transaction-service';
 
 export class CollectionMintingService extends BaseService {
   public handleRequest = async ({ order, match }: HandlerParams) => {
-    const collectionDocRef = build5Db().doc(COL.COLLECTION, order.payload.collection!);
+    const collectionDocRef = database().doc(COL.COLLECTION, order.payload.collection!);
     const collection = <Collection>await this.transaction.get(collectionDocRef);
 
     const payment = await this.transactionService.createPayment(order, match);

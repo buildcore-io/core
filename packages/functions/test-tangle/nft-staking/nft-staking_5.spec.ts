@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Award,
   COL,
@@ -8,7 +8,7 @@ import {
   Transaction,
   TransactionPayloadType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { wait } from '../../test/controls/common';
 import { MEDIA, mockWalletReturnValue, testEnv } from '../../test/set-up';
@@ -36,7 +36,7 @@ describe('Stake nft', () => {
     const order = await testEnv.wrap<Transaction>(WEN_FUNC.fundAward);
     await requestFundsFromFaucet(Network.RMS, order.payload.targetAddress, order.payload.amount);
 
-    const awardDocRef = build5Db().doc(COL.AWARD, award.uid);
+    const awardDocRef = database().doc(COL.AWARD, award.uid);
     await wait(async () => {
       award = <Award>await awardDocRef.get();
       return award.approved && award.funded;
@@ -48,7 +48,7 @@ describe('Stake nft', () => {
     });
     await testEnv.wrap(WEN_FUNC.approveParticipantAward);
 
-    const nttQuery = build5Db()
+    const nttQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.guardian!)
       .where('payload_type', '==', TransactionPayloadType.BADGE);
@@ -71,13 +71,13 @@ describe('Stake nft', () => {
       MIN_IOTA_AMOUNT,
     );
 
-    const stakeQuery = build5Db().collection(COL.NFT_STAKE).where('member', '==', helper.guardian);
+    const stakeQuery = database().collection(COL.NFT_STAKE).where('member', '==', helper.guardian);
     await wait(async () => {
       const snap = await stakeQuery.get();
       return snap.length === 1;
     });
 
-    const nftQuery = build5Db().collection(COL.NFT).where('space', '==', helper.space?.uid);
+    const nftQuery = database().collection(COL.NFT).where('space', '==', helper.space?.uid);
     const nftSnap = await nftQuery.get();
     expect(nftSnap.length).toBe(1);
     expect(nftSnap[0]?.space).toBe(award.space);

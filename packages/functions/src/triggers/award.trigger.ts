@@ -1,4 +1,4 @@
-import { PgAward, build5Db } from '@build-5/database';
+import { PgAward, database } from '@buildcore/database';
 import {
   AwardBadgeType,
   COL,
@@ -6,7 +6,7 @@ import {
   Transaction,
   TransactionPayloadType,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { head } from 'lodash';
 import { getProject } from '../utils/common.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
@@ -41,11 +41,11 @@ export const onAwardUpdated = async (event: PgDocEvent<PgAward>) => {
         award: curr.uid,
       },
     };
-    await build5Db().doc(COL.TRANSACTION, burnAlias.uid).create(burnAlias);
+    await database().doc(COL.TRANSACTION, burnAlias.uid).create(burnAlias);
 
     const remainingBadges = curr.badge_total! - curr.issued!;
     if (curr.badge_type === AwardBadgeType.BASE && remainingBadges) {
-      const tokenDocRef = build5Db().doc(COL.TOKEN, curr.badge_tokenUid!);
+      const tokenDocRef = database().doc(COL.TOKEN, curr.badge_tokenUid!);
       const token = (await tokenDocRef.get())!;
       const baseTokenCredit: Transaction = {
         project: getProject(curr),
@@ -66,7 +66,7 @@ export const onAwardUpdated = async (event: PgDocEvent<PgAward>) => {
           tokenSymbol: token.symbol,
         },
       };
-      await build5Db().doc(COL.TRANSACTION, baseTokenCredit.uid).create(baseTokenCredit);
+      await database().doc(COL.TRANSACTION, baseTokenCredit.uid).create(baseTokenCredit);
     }
   }
 
@@ -79,7 +79,7 @@ export const onAwardUpdated = async (event: PgDocEvent<PgAward>) => {
     const targetAddress = await getReturnAddress(curr);
     const remainingBadges = curr.badge_total! - curr.issued!;
 
-    const tokenDocRef = build5Db().doc(COL.TOKEN, curr.badge_tokenUid!);
+    const tokenDocRef = database().doc(COL.TOKEN, curr.badge_tokenUid!);
     const token = (await tokenDocRef.get())!;
 
     const nativeTokensCredit: Transaction = {
@@ -109,7 +109,7 @@ export const onAwardUpdated = async (event: PgDocEvent<PgAward>) => {
         tokenSymbol: token.symbol,
       },
     };
-    await build5Db().doc(COL.TRANSACTION, nativeTokensCredit.uid).create(nativeTokensCredit);
+    await database().doc(COL.TRANSACTION, nativeTokensCredit.uid).create(nativeTokensCredit);
   }
 };
 
@@ -117,7 +117,7 @@ const getReturnAddress = async (award: PgAward) => {
   if (award.fundingAddress) {
     return award.fundingAddress;
   }
-  const snap = await build5Db()
+  const snap = await database()
     .collection(COL.TRANSACTION)
     .where('type', '==', TransactionType.PAYMENT)
     .where('payload_targetAddress', '==', award.address)

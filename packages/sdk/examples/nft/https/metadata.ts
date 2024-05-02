@@ -1,10 +1,10 @@
-import { Dataset, Network } from '@build-5/interfaces';
-import { Build5, SoonaverseApiKey, https } from '@build-5/sdk';
+import { Dataset, Network } from '@buildcore/interfaces';
+import { Buildcore, SoonaverseApiKey, https } from '@buildcore/sdk';
 import { address } from '../../utils/secret';
 import { wait, walletSign } from '../../utils/utils';
 
 async function main() {
-  const origin = Build5.TEST;
+  const origin = Buildcore.TEST;
 
   const member = await https(origin).createMember({
     address: address.bech32,

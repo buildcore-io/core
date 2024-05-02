@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, GetAvgPriceRequest, QUERY_MAX_LENGTH, QUERY_MIN_LENGTH } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, GetAvgPriceRequest, QUERY_MAX_LENGTH, QUERY_MIN_LENGTH } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { combineLatest, map } from 'rxjs';
 import { CommonJoi, getHeadPriceObs, getQueryParams } from './common';
@@ -35,21 +35,21 @@ const getAvgLive = (token: string, isLive: boolean) => {
 
 const purchaseQuery = (token: string, lowest?: boolean) => {
   if (lowest === undefined) {
-    return build5Db()
+    return database()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', token)
       .orderBy('createdOn', 'desc')
       .limit(1);
   }
   if (lowest) {
-    return build5Db()
+    return database()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', token)
       .where('in7d', '==', true)
       .orderBy('price', 'asc')
       .limit(1);
   }
-  return build5Db()
+  return database()
     .collection(COL.TOKEN_PURCHASE)
     .where('token', '==', token)
     .where('in7d', '==', true)

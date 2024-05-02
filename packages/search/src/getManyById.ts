@@ -1,4 +1,4 @@
-import { BaseRecord, IDocument, Update, build5Db } from '@build-5/database';
+import { BaseRecord, IDocument, Update, database } from '@buildcore/database';
 import {
   COL,
   Dataset,
@@ -6,7 +6,7 @@ import {
   QUERY_MAX_LENGTH,
   SUB_COL,
   Subset,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import Joi from 'joi';
 import { combineLatest, map } from 'rxjs';
 import {
@@ -42,14 +42,14 @@ export const getManyById = async (url: string, isLive: boolean) => {
 const getQueries = (body: GetManyByIdRequest) =>
   body.setIds.map((setId, i) => {
     if (body.subset && body.subsetIds?.[i]) {
-      return build5Db().doc(
+      return database().doc(
         body.dataset as unknown as COL,
         setId,
         body.subset as unknown as SUB_COL,
         body.subsetIds[i],
       )! as unknown as IDocument<any, BaseRecord, Update>;
     }
-    return build5Db().doc(body.dataset as unknown as COL, setId)! as IDocument<
+    return database().doc(body.dataset as unknown as COL, setId)! as IDocument<
       any,
       BaseRecord,
       Update

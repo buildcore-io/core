@@ -8,7 +8,7 @@
  */
 export interface EnableTokenTradingRequest {
   /**
-   * Build5 id of the token.
+   * Buildcore id of the token.
    */
   uid: string;
 }

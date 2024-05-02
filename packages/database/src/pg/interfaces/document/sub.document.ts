@@ -1,4 +1,4 @@
-import { COL, SUB_COL } from '@build-5/interfaces';
+import { COL, SUB_COL } from '@buildcore/interfaces';
 import { Knex } from 'knex';
 import { BaseRecord } from '../../models/common';
 import { Update } from '../../models/common_update';

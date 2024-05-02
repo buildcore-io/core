@@ -1,4 +1,4 @@
-import { IQuery, ITransaction, PgTokenMarket, build5Db } from '@build-5/database';
+import { IQuery, ITransaction, PgTokenMarket, database } from '@buildcore/database';
 import {
   COL,
   Token,
@@ -7,7 +7,7 @@ import {
   TokenTradeOrder,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { cloneDeep } from 'lodash';
@@ -41,7 +41,7 @@ type PostMatchAction = (
 export const TOKEN_TRADE_ORDER_FETCH_LIMIT = 20;
 
 export const matchTradeOrder = async (tradeOrder: PgTokenMarket) => {
-  const token = (await build5Db().doc(COL.TOKEN, tradeOrder.token!).get())!;
+  const token = (await database().doc(COL.TOKEN, tradeOrder.token!).get())!;
 
   const query = getQuery(token);
   const matcher = getMatcher(token);
@@ -62,8 +62,8 @@ const runTradeOrderMatching = (
   tradeOrderId: string,
   invertedPrice = true,
 ) =>
-  build5Db().runTransaction(async (transaction) => {
-    const tradeOrderDocRef = build5Db().doc(COL.TOKEN_MARKET, tradeOrderId);
+  database().runTransaction(async (transaction) => {
+    const tradeOrderDocRef = database().doc(COL.TOKEN_MARKET, tradeOrderId);
     const tradeOrder = (await transaction.get(tradeOrderDocRef))!;
     if (tradeOrder.status !== TokenTradeOrderStatus.ACTIVE) {
       return 0;
@@ -101,18 +101,18 @@ const runTradeOrderMatching = (
       }
       const sell = updateTrade(prevSell, purchase);
       const buy = updateTrade(prevBuy, purchase, buyerCreditId);
-      const docRef = build5Db().doc(COL.TOKEN_MARKET, trade!.uid);
+      const docRef = database().doc(COL.TOKEN_MARKET, trade!.uid);
       await transaction.update(docRef, toPgTrade(isSell ? buy : sell));
 
       if (postMatchActions) {
         await postMatchActions(transaction, prevBuy, buy, prevSell, sell);
       }
 
-      const purchaseDocRef = build5Db().doc(COL.TOKEN_PURCHASE, purchase.uid);
+      const purchaseDocRef = database().doc(COL.TOKEN_PURCHASE, purchase.uid);
       await transaction.create(purchaseDocRef, purchase);
       update = isSell ? sell : buy;
     }
-    await transaction.update(build5Db().doc(COL.TOKEN_MARKET, tradeOrder.uid), toPgTrade(update));
+    await transaction.update(database().doc(COL.TOKEN_MARKET, tradeOrder.uid), toPgTrade(update));
     return update.status === TokenTradeOrderStatus.SETTLED ? 0 : docs.length;
   });
 
@@ -172,7 +172,7 @@ const getPostMatchActions = (token: Token) => {
 const getSimpleTokenQuery = (trade: TokenTradeOrder) => {
   const type =
     trade.type === TokenTradeOrderType.BUY ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY;
-  return build5Db()
+  return database()
     .collection(COL.TOKEN_MARKET)
     .where('type', '==', type)
     .where('token', '==', trade.token)
@@ -183,7 +183,7 @@ const getSimpleTokenQuery = (trade: TokenTradeOrder) => {
 };
 
 const getBaseTokenTradeQuery = (trade: TokenTradeOrder) =>
-  build5Db()
+  database()
     .collection(COL.TOKEN_MARKET)
     .where('sourceNetwork', '==', trade.targetNetwork)
     .where('token', '==', trade.token)
@@ -193,7 +193,7 @@ const getBaseTokenTradeQuery = (trade: TokenTradeOrder) =>
     .orderBy('createdOn');
 
 const getTradesSorted = async (transaction: ITransaction, unsortedTrades: TokenTradeOrder[]) => {
-  const unsortedTradesDocs = unsortedTrades.map((ut) => build5Db().doc(COL.TOKEN_MARKET, ut.uid));
+  const unsortedTradesDocs = unsortedTrades.map((ut) => database().doc(COL.TOKEN_MARKET, ut.uid));
   const trades = await transaction.getAll(...unsortedTradesDocs);
   return trades.sort((a, b) => {
     const price = a?.type === TokenTradeOrderType.SELL ? a.price - b!.price : b!.price - a!.price;

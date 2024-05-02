@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Network,
@@ -9,7 +9,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
 import { generateRandomAmount } from '../../../../utils/common.utils';
@@ -43,7 +43,7 @@ export class TangleAddressValidationService extends BaseTangleService<TangleResp
     set(order, 'payload.amount', tranEntry.amount);
 
     this.transactionService.push({
-      ref: build5Db().doc(COL.TRANSACTION, order.uid),
+      ref: database().doc(COL.TRANSACTION, order.uid),
       data: order,
       action: Action.C,
     });
@@ -67,7 +67,7 @@ export const createAddressValidationOrder = async (
   network: Network,
   spaceId?: string,
 ) => {
-  const spaceDocRef = build5Db().doc(COL.SPACE, spaceId!);
+  const spaceDocRef = database().doc(COL.SPACE, spaceId!);
   const space = spaceId ? await spaceDocRef.get() : undefined;
   if (spaceId && !space) {
     throw invalidArgument(WenError.space_does_not_exists);

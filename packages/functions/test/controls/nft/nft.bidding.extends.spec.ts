@@ -1,5 +1,5 @@
-import { IDocument, PgNft, PgNftUpdate, build5Db } from '@build-5/database';
-import { Auction, COL, MIN_IOTA_AMOUNT, Nft, WEN_FUNC, WenError } from '@build-5/interfaces';
+import { IDocument, PgNft, PgNftUpdate, database } from '@buildcore/database';
+import { Auction, COL, MIN_IOTA_AMOUNT, Nft, WEN_FUNC, WenError } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
 import { dateToTimestamp } from '../../../src/utils/dateTime.utils';
@@ -25,7 +25,7 @@ describe('Nft bidding with extended auction', () => {
     extendAuctionWithin && set(auctionData, 'extendAuctionWithin', extendAuctionWithin);
     mockWalletReturnValue(h.member, auctionData);
     await testEnv.wrap(WEN_FUNC.setForSaleNft);
-    nftDocRef = build5Db().doc(COL.NFT, h.nft.uid);
+    nftDocRef = database().doc(COL.NFT, h.nft.uid);
     await wait(async () => {
       h.nft = <Nft>await nftDocRef.get();
       return h.nft.available === 3;
@@ -47,14 +47,14 @@ describe('Nft bidding with extended auction', () => {
     expect(auctionExtendedDate.isSame(expectedAuctionExtendedToDate)).toBe(true);
     expect(h.nft.extendedAuctionLength).toBe(60000 * 10);
     await h.bidNft(h.members[0], MIN_IOTA_AMOUNT);
-    h.nft = <Nft>await build5Db().doc(COL.NFT, h.nft.uid).get();
+    h.nft = <Nft>await database().doc(COL.NFT, h.nft.uid).get();
     expect(h.nft.auctionHighestBidder).toBe(h.members[0]);
     h.nft = <Nft>await nftDocRef.get();
     auctionToDate = dayjs(h.nft.auctionTo?.toDate());
     auctionExtendedDate = dayjs(h.nft.extendedAuctionTo?.toDate());
     expect(auctionToDate.isSame(expectedAuctionExtendedToDate)).toBe(true);
     expect(h.nft.auctionLength).toBe(h.nft.extendedAuctionLength);
-    const auctionDocRef = build5Db().doc(COL.AUCTION, h.nft.auction!);
+    const auctionDocRef = database().doc(COL.AUCTION, h.nft.auction!);
     const auction = <Auction>await auctionDocRef.get();
     auctionToDate = dayjs(auction.auctionTo?.toDate());
     auctionExtendedDate = dayjs(auction.extendedAuctionTo?.toDate());
@@ -83,7 +83,7 @@ describe('Nft bidding with extended auction', () => {
     auctionToDate = dayjs(h.nft.auctionTo?.toDate());
     expect(auctionToDate.isSame(expectedAuctionToDate)).toBe(true);
     expect(h.nft.auctionLength).toBe(60000 * 6);
-    const auctionDocRef = build5Db().doc(COL.AUCTION, h.nft.auction!);
+    const auctionDocRef = database().doc(COL.AUCTION, h.nft.auction!);
     const auction = <Auction>await auctionDocRef.get();
     auctionToDate = dayjs(auction.auctionTo?.toDate());
     expect(auctionToDate.isSame(expectedAuctionToDate)).toBe(true);

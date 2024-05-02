@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   IgnoreWalletReason,
@@ -9,7 +9,7 @@ import {
   Transaction,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
@@ -38,7 +38,7 @@ describe('Token minting', () => {
       nativeTokens: [{ amount: BigInt(10), id: helper.token!.mintingData?.tokenId! }],
       storageDepositReturnAddress: helper.sellerAddress?.bech32,
     });
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.seller);
@@ -64,7 +64,7 @@ describe('Token minting', () => {
     });
     const creditStorageTran = <Transaction>(
       (
-        await build5Db()
+        await database()
           .collection(COL.TRANSACTION)
           .where('type', '==', TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED)
           .where('member', '==', helper.seller)
@@ -107,7 +107,7 @@ describe('Token minting', () => {
       nativeTokens: [{ amount: BigInt(10), id: helper.token!.mintingData?.tokenId! }],
       storageDepositReturnAddress: helper.sellerAddress?.bech32,
     });
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.seller);
@@ -135,7 +135,7 @@ describe('Token minting', () => {
     );
 
     await wait(async () => {
-      const snap = await build5Db()
+      const snap = await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
         .where('member', '==', helper.seller)
@@ -143,7 +143,7 @@ describe('Token minting', () => {
       return snap.length == 2;
     });
 
-    const transaction = <Transaction>await build5Db().doc(COL.TRANSACTION, snap[0].uid).get();
+    const transaction = <Transaction>await database().doc(COL.TRANSACTION, snap[0].uid).get();
     expect(transaction.payload.unlockedBy).toBeDefined();
   });
 });

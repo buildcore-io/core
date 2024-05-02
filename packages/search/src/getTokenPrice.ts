@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   GetTokenPrice,
@@ -10,7 +10,7 @@ import {
   TokenTradeOrder,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import Joi from 'joi';
 import { head } from 'lodash';
 import { Observable, combineLatest, map } from 'rxjs';
@@ -25,7 +25,7 @@ const getTokenPriceSchema = Joi.object({
     .required(),
 });
 
-const tickerDocRef = build5Db().doc(COL.TICKER, TICKERS.SMRUSD);
+const tickerDocRef = database().doc(COL.TICKER, TICKERS.SMRUSD);
 
 export const getTokenPrice = async (url: string, isLive: boolean) => {
   const body = getQueryParams<GetTokenPrice>(url, getTokenPriceSchema);
@@ -53,7 +53,7 @@ const getPriceForTokenLive = (token: string, ticker: Observable<Ticker>, isLive:
 };
 
 const lowestSellQuery = (token: string) =>
-  build5Db()
+  database()
     .collection(COL.TOKEN_MARKET)
     .where('status', '==', TokenTradeOrderStatus.ACTIVE)
     .where('token', '==', token)
@@ -62,7 +62,7 @@ const lowestSellQuery = (token: string) =>
     .limit(1);
 
 const highestBuyQuery = (token: string) =>
-  build5Db()
+  database()
     .collection(COL.TOKEN_MARKET)
     .where('status', '==', TokenTradeOrderStatus.ACTIVE)
     .where('token', '==', token)

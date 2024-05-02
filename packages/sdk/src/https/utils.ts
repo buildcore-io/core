@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Timestamp } from '@build-5/interfaces';
+import { Timestamp } from '@buildcore/interfaces';
 import { isEqual } from 'lodash';
 
 export const processObjectArray = <T>(array: any[]) =>

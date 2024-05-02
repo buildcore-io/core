@@ -1,4 +1,4 @@
-import { COL, Network, SUB_COL, Transaction, getMilestoneCol } from '@build-5/interfaces';
+import { COL, Network, SUB_COL, Transaction, getMilestoneCol } from '@buildcore/interfaces';
 import { Client } from '@iota/sdk';
 import dayjs from 'dayjs';
 import * as admin from 'firebase-admin';

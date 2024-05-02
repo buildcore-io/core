@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Auction,
   COL,
@@ -9,7 +9,7 @@ import {
   NotificationType,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { finalizeAuctions } from '../../../src/cron/auction.cron';
 import { mockWalletReturnValue, testEnv } from '../../set-up';
@@ -24,7 +24,7 @@ describe('Should finalize bidding', () => {
     mockWalletReturnValue(h.member, dummyAuctionData(h.nft.uid));
     await testEnv.wrap(WEN_FUNC.setForSaleNft);
     await wait(async () => {
-      const docRef = build5Db().doc(COL.NFT, h.nft.uid);
+      const docRef = database().doc(COL.NFT, h.nft.uid);
       h.nft = <Nft>await docRef.get();
       return h.nft.available === 3;
     });
@@ -32,7 +32,7 @@ describe('Should finalize bidding', () => {
 
   it.each([true, false])('Should bid and finalize it', async (noRoyaltySpace: boolean) => {
     if (noRoyaltySpace) {
-      await build5Db()
+      await database()
         .doc(COL.COLLECTION, h.collection.uid)
         .update({ royaltiesSpace: '', royaltiesFee: 0 });
     }
@@ -46,13 +46,13 @@ describe('Should finalize bidding', () => {
       saleAccess: h.nft.saleAccess || undefined,
       saleAccessMembers: h.nft.saleAccessMembers || [],
     });
-    const nftDocRef = build5Db().doc(COL.NFT, h.nft.uid);
+    const nftDocRef = database().doc(COL.NFT, h.nft.uid);
     h.nft = <Nft>await nftDocRef.get();
     expect(h.nft.auctionHighestBidder).toBe(h.members[0]);
-    const collectionDocRef = build5Db().doc(COL.COLLECTION, h.nft.collection);
+    const collectionDocRef = database().doc(COL.COLLECTION, h.nft.collection);
     h.collection = <Collection>await collectionDocRef.get();
     expect(h.collection.nftsOnAuction).toBe(1);
-    const auctionDocRef = build5Db().doc(COL.AUCTION, h.nft.auction!);
+    const auctionDocRef = database().doc(COL.AUCTION, h.nft.auction!);
     await auctionDocRef.update({ auctionTo: dayjs().subtract(1, 'minute').toDate() });
     await finalizeAuctions();
     await wait(async () => {
@@ -63,7 +63,7 @@ describe('Should finalize bidding', () => {
     expect(h.nft.auctionFrom).toBeUndefined();
     expect(h.nft.auctionTo).toBeUndefined();
     expect(h.nft.auction).toBeUndefined();
-    const snap = await build5Db()
+    const snap = await database()
       .collection(COL.NOTIFICATION)
       .where('member', '==', h.members[0])
       .where('type', '==', NotificationType.WIN_BID)
@@ -76,7 +76,7 @@ describe('Should finalize bidding', () => {
     h.nft = <Nft>await nftDocRef.get();
     expect(h.nft.lastTradedOn).toBeDefined();
     expect(h.nft.totalTrades).toBe(2);
-    const billPayments = await build5Db()
+    const billPayments = await database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)
       .where('payload_nft', '==', h.nft.uid)
@@ -89,10 +89,10 @@ describe('Should finalize bidding', () => {
   });
 
   it('Should finalize it, no bids', async () => {
-    const auctionDocRef = build5Db().doc(COL.AUCTION, h.nft.auction!);
+    const auctionDocRef = database().doc(COL.AUCTION, h.nft.auction!);
     await auctionDocRef.update({ auctionTo: dayjs().subtract(1, 'minute').toDate() });
     await finalizeAuctions();
-    const nftDocRef = build5Db().doc(COL.NFT, h.nft.uid);
+    const nftDocRef = database().doc(COL.NFT, h.nft.uid);
     await wait(async () => {
       h.nft = <Nft>await nftDocRef.get();
       return h.nft.available === NftAvailable.SALE;

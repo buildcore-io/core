@@ -7,7 +7,7 @@ import * as commons from './common_update';
 
 export interface PgStampUpdate extends commons.BaseRecordUpdate {
   space?: string | null;
-  build5Url?: string | null;
+  buildcoreUrl?: string | null;
   originUri?: string | null;
   checksum?: string | null;
   extension?: string | null;

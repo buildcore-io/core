@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
   Transaction,
   TransactionPayloadType,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { Helper } from './Helper';
@@ -27,7 +27,7 @@ describe('Token minting', () => {
     const sellOrder = await helper.createSellTradeOrder();
     const buyOrder = await helper.createBuyOrder(10, 2 * MIN_IOTA_AMOUNT);
 
-    const billPaymentsQuery = build5Db()
+    const billPaymentsQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)
       .whereIn('member', [helper.seller, helper.buyer]);
@@ -65,7 +65,7 @@ describe('Token minting', () => {
     expect(paymentToBuyer.payload.storageReturn!.amount).toBe(53800);
     expect(paymentToBuyer.payload.storageReturn!.address).toBe(helper.sellerAddress?.bech32);
 
-    const sellerCreditSnap = await build5Db()
+    const sellerCreditSnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller)
       .where('type', '==', TransactionType.CREDIT)
@@ -74,7 +74,7 @@ describe('Token minting', () => {
     const sellerCredit = sellerCreditSnap.map((d) => d as Transaction)[0];
     expect(sellerCredit.payload.amount).toBe(49600);
 
-    const buyerCreditSnap = await build5Db()
+    const buyerCreditSnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer)
       .where('type', '==', TransactionType.CREDIT)

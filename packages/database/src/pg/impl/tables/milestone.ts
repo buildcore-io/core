@@ -1,4 +1,4 @@
-import { Milestone } from '@build-5/interfaces';
+import { Milestone } from '@buildcore/interfaces';
 import { get } from 'lodash';
 import { Converter } from '../../interfaces/common';
 import { PgMilestone } from '../../models';

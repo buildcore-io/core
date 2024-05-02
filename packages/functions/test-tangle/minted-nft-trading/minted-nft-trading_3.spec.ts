@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Collection,
@@ -8,7 +8,7 @@ import {
   UnsoldMintingOptions,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { expectThrow, wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
@@ -34,7 +34,7 @@ describe('Minted nft trading', () => {
     );
 
     await wait(async () => {
-      const collection = <Collection>await build5Db().doc(COL.COLLECTION, helper.collection).get();
+      const collection = <Collection>await database().doc(COL.COLLECTION, helper.collection).get();
       return collection.status === CollectionStatus.MINTING;
     });
 

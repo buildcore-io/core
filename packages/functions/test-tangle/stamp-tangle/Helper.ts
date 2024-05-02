@@ -1,4 +1,4 @@
-import { build5Db, build5Storage } from '@build-5/database';
+import { database, storage } from '@buildcore/database';
 import {
   Bucket,
   COL,
@@ -8,7 +8,7 @@ import {
   TangleRequestType,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import crypto from 'crypto';
 import fs from 'fs';
 import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
@@ -33,7 +33,7 @@ export class Helper {
   };
 
   public beforeEach = async () => {
-    const bucket = build5Storage().bucket(Bucket.DEV);
+    const bucket = storage().bucket(Bucket.DEV);
     const destination = `nft/${getRandomEthAddress()}/image.jpeg`;
     this.dowloadUrl = await bucket.upload('./test/puppy.jpeg', destination, {
       contentType: 'image/jpeg',
@@ -50,7 +50,7 @@ export class Helper {
   };
 
   public getCreditResponse = async () => {
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', this.address.bech32)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);

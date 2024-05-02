@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -10,7 +10,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { assertHasAccess } from '../../services/validators/access';
 import { WalletService } from '../../services/wallet/wallet.service';
@@ -28,11 +28,11 @@ export const orderTokenControl = async ({
   params,
   project,
 }: Context<OrderTokenRequest>) => {
-  const memberDocRef = build5Db().doc(COL.MEMBER, owner);
+  const memberDocRef = database().doc(COL.MEMBER, owner);
   const member = await memberDocRef.get();
   assertMemberHasValidAddress(member, DEFAULT_NETWORK);
 
-  const token = await build5Db().doc(COL.TOKEN, params.token).get();
+  const token = await database().doc(COL.TOKEN, params.token).get();
   if (!token) {
     throw invalidArgument(WenError.invalid_params);
   }
@@ -46,7 +46,7 @@ export const orderTokenControl = async ({
   }
 
   const tranId = tokenOrderTransactionDocId(owner, token);
-  const space = await build5Db().doc(COL.SPACE, token.space!).get();
+  const space = await database().doc(COL.SPACE, token.space!).get();
 
   await assertHasAccess(
     space!.uid,
@@ -59,9 +59,9 @@ export const orderTokenControl = async ({
   const network = DEFAULT_NETWORK;
   const newWallet = await WalletService.newWallet(network);
   const targetAddress = await newWallet.getNewIotaAddressDetails();
-  const orderDoc = build5Db().doc(COL.TRANSACTION, tranId);
+  const orderDoc = database().doc(COL.TRANSACTION, tranId);
 
-  await build5Db().runTransaction(async (transaction) => {
+  await database().runTransaction(async (transaction) => {
     const order = await transaction.get(orderDoc);
     if (!order) {
       const data: Transaction = {

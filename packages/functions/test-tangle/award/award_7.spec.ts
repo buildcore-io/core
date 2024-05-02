@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Award,
   COL,
@@ -11,7 +11,7 @@ import {
   Transaction,
   TransactionPayloadType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { NftOutput } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
@@ -50,7 +50,7 @@ describe('Create award, base', () => {
     mockWalletReturnValue(guardian, awardRequest(space.uid, token.symbol));
     award = await testEnv.wrap(WEN_FUNC.createAward);
 
-    const guardianDocRef = build5Db().doc(COL.MEMBER, guardian);
+    const guardianDocRef = database().doc(COL.MEMBER, guardian);
     const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, network);
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
@@ -73,7 +73,7 @@ describe('Create award, base', () => {
     });
     await MnemonicService.store(guardianAddress.bech32, guardianAddress.mnemonic);
 
-    const awardDocRef = build5Db().doc(COL.AWARD, award.uid);
+    const awardDocRef = database().doc(COL.AWARD, award.uid);
     await wait(async () => {
       award = <Award>await awardDocRef.get();
       return award.approved && award.funded;
@@ -82,11 +82,11 @@ describe('Create award, base', () => {
     mockWalletReturnValue(guardian, { award: award.uid, members: [member, member] });
     await testEnv.wrap(WEN_FUNC.approveParticipantAward);
 
-    const memberDocRef = build5Db().doc(COL.MEMBER, member);
+    const memberDocRef = database().doc(COL.MEMBER, member);
     const memberData = <Member>await memberDocRef.get();
     const memberBech32 = getAddress(memberData, network);
 
-    const nttQuery = build5Db()
+    const nttQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
       .where('payload_type', '==', TransactionPayloadType.BADGE);
@@ -100,7 +100,7 @@ describe('Create award, base', () => {
       return response.items.length === 2;
     });
 
-    const spaceDocRef = build5Db().doc(COL.SPACE, space.uid);
+    const spaceDocRef = database().doc(COL.SPACE, space.uid);
     space = <Space>await spaceDocRef.get();
     expect(space.ipfsMedia).toBeDefined();
 
@@ -114,7 +114,7 @@ describe('Create award, base', () => {
     expect(collectionMetadata.name).toBe('award');
     expect(collectionMetadata.description).toBe('awarddesc');
     expect(collectionMetadata.issuerName).toBe('BUILD.5');
-    expect(collectionMetadata.build5Id).toBe(award.uid);
+    expect(collectionMetadata.originId).toBe(award.uid);
 
     const nttItems = (await walletService.client.nftOutputIds([{ address: memberBech32 }])).items;
     const promises = nttItems.map(
@@ -137,7 +137,7 @@ describe('Create award, base', () => {
       expect(nttMetadata.collectionId).toBe(award.collectionId);
       expect(nttMetadata.collectionName).toBe('award');
 
-      const transactionDocRef = build5Db().doc(COL.TRANSACTION, nttMetadata.build5Id);
+      const transactionDocRef = database().doc(COL.TRANSACTION, nttMetadata.originId);
       const transaction = <Transaction>await transactionDocRef.get();
       expect(getAttributeValue(nttMetadata, 'award')).toBe(award.uid);
       expect(getAttributeValue(nttMetadata, 'tokenReward')).toBe(5);
@@ -191,7 +191,7 @@ const saveToken = async (space: string, guardian: string) => {
       tokenId: MINTED_TOKEN_ID,
     },
   } as Token;
-  await build5Db().doc(COL.TOKEN, token.uid).create(token);
+  await database().doc(COL.TOKEN, token.uid).create(token);
   return token;
 };
 

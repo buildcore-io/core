@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Award,
   COL,
@@ -13,7 +13,7 @@ import {
   TransactionPayloadType,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { processExpiredAwards } from '../../src/cron/award.cron';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
@@ -57,7 +57,7 @@ describe('Create award, native', () => {
     mockWalletReturnValue(member, awardRequest(space.uid, token.symbol));
     award = await testEnv.wrap(WEN_FUNC.createAward);
 
-    const guardianDocRef = build5Db().doc(COL.MEMBER, guardian);
+    const guardianDocRef = database().doc(COL.MEMBER, guardian);
     const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, network);
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
@@ -80,7 +80,7 @@ describe('Create award, native', () => {
     });
     await MnemonicService.store(guardianAddress.bech32, guardianAddress.mnemonic);
 
-    const awardDocRef = build5Db().doc(COL.AWARD, award.uid);
+    const awardDocRef = database().doc(COL.AWARD, award.uid);
     await wait(async () => {
       const award = <Award>await awardDocRef.get();
       return award.approved && award.funded;
@@ -106,7 +106,7 @@ describe('Create award, native', () => {
       await processExpiredAwards();
     }
 
-    const nttQuery = build5Db()
+    const nttQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
       .where('payload_type', '==', TransactionPayloadType.BADGE);
@@ -117,7 +117,7 @@ describe('Create award, native', () => {
 
     await awaitAllTransactionsForAward(award.uid);
 
-    const memberDocRef = build5Db().doc(COL.MEMBER, member);
+    const memberDocRef = database().doc(COL.MEMBER, member);
     const memberData = <Member>await memberDocRef.get();
     const memberBech32 = getAddress(memberData, network);
     await wait(async () => {
@@ -125,7 +125,7 @@ describe('Create award, native', () => {
       return response.items.length === 1;
     });
 
-    const airdropQuery = build5Db().collection(COL.AIRDROP).where('member', '==', member);
+    const airdropQuery = database().collection(COL.AIRDROP).where('member', '==', member);
     let airdropSnap = await airdropQuery.get();
     expect(airdropSnap.length).toBe(1);
 
@@ -151,7 +151,7 @@ describe('Create award, native', () => {
     const nativeToken = output.nativeTokens?.find((nt) => nt.id === MINTED_TOKEN_ID);
     expect(Number(nativeToken?.amount)).toBe(5);
 
-    const creditQuery = build5Db()
+    const creditQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', guardian);
@@ -164,7 +164,7 @@ describe('Create award, native', () => {
     expect(credit.payload.tokenSymbol).toBe(token.symbol);
     expect(credit.payload.type).toBe(TransactionPayloadType.AWARD_COMPLETED);
 
-    const burnAliasQuery = build5Db()
+    const burnAliasQuery = database()
       .collection(COL.TRANSACTION)
       .where('payload_type', '==', TransactionPayloadType.BURN_ALIAS)
       .where('member', '==', guardian);
@@ -214,7 +214,7 @@ const saveToken = async (space: string, guardian: string) => {
     },
     links: [] as URL[],
   } as Token;
-  await build5Db().doc(COL.TOKEN, token.uid).create(token);
+  await database().doc(COL.TOKEN, token.uid).create(token);
   return token;
 };
 

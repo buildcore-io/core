@@ -1,17 +1,17 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   CancelTokenTradeOrderRequest,
   TokenTradeOrderStatus,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { invalidArgument } from '../../utils/error.utils';
 import { cancelTradeOrderUtil } from '../../utils/token-trade.utils';
 import { Context } from '../common';
 
 export const cancelTradeOrderControl = ({ owner, params }: Context<CancelTokenTradeOrderRequest>) =>
-  build5Db().runTransaction(async (transaction) => {
-    const tradeOrderDocRef = build5Db().doc(COL.TOKEN_MARKET, params.uid);
+  database().runTransaction(async (transaction) => {
+    const tradeOrderDocRef = database().doc(COL.TOKEN_MARKET, params.uid);
     const tradeOrder = await transaction.get(tradeOrderDocRef);
     if (tradeOrder?.owner !== owner || tradeOrder.status !== TokenTradeOrderStatus.ACTIVE) {
       throw invalidArgument(WenError.invalid_params);

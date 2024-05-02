@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, TangleResponse, TransactionPayloadType, WenError } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, TangleResponse, TransactionPayloadType, WenError } from '@buildcore/interfaces';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { BaseTangleService, HandlerParams } from '../../base';
@@ -20,7 +20,7 @@ export class TangleNftAuctionBidService extends BaseTangleService<TangleResponse
   }: HandlerParams) => {
     const params = await assertValidationAsync(nftBidSchema, request);
 
-    const nftDocRef = build5Db().doc(COL.NFT, params.nft);
+    const nftDocRef = database().doc(COL.NFT, params.nft);
     const nft = await nftDocRef.get();
 
     const order = await createBidOrder(project, owner, nft?.auction || '');
@@ -32,7 +32,7 @@ export class TangleNftAuctionBidService extends BaseTangleService<TangleResponse
     }
 
     this.transactionService.push({
-      ref: build5Db().doc(COL.TRANSACTION, order.uid),
+      ref: database().doc(COL.TRANSACTION, order.uid),
       data: order,
       action: Action.C,
     });
@@ -69,7 +69,7 @@ export class TangleAuctionBidService extends BaseTangleService<TangleResponse> {
     }
 
     this.transactionService.push({
-      ref: build5Db().doc(COL.TRANSACTION, order.uid),
+      ref: database().doc(COL.TRANSACTION, order.uid),
       data: order,
       action: Action.C,
     });

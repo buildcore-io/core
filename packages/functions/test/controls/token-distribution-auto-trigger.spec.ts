@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Member,
@@ -14,7 +14,7 @@ import {
   Transaction,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
@@ -129,7 +129,7 @@ describe('Token trigger test', () => {
       input.publicPercentage,
       guardian,
     );
-    await build5Db().doc(COL.TOKEN, token.uid).create(token);
+    await database().doc(COL.TOKEN, token.uid).create(token);
 
     const orderPromises = input.totalDeposit.map(async (_, i) => {
       const order = await submitTokenOrderFunc(members[i], { token: token.uid });
@@ -144,7 +144,7 @@ describe('Token trigger test', () => {
 
     await tokenProcessed(token.uid, input.totalDeposit.length, true);
 
-    const tokenData = <Token>await build5Db().doc(COL.TOKEN, token.uid).get();
+    const tokenData = <Token>await database().doc(COL.TOKEN, token.uid).get();
     expect(tokenData.tokensOrdered).toBe(
       input.totalDeposit.reduce(
         (sum, act) => sum + (act * MIN_IOTA_AMOUNT) / tokenData.pricePerToken,
@@ -155,7 +155,7 @@ describe('Token trigger test', () => {
     for (let i = 0; i < input.totalDeposit.length; ++i) {
       const member = members[i];
       const distribution = <TokenDistribution>(
-        await build5Db().doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, member).get()
+        await database().doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, member).get()
       );
       const refundedAmount = Number(bigDecimal.multiply(input.refundedAmount[i], MIN_IOTA_AMOUNT));
       expect(distribution.totalDeposit).toBe(
@@ -171,7 +171,7 @@ describe('Token trigger test', () => {
         expect(distribution.billPaymentId).toBeDefined();
       }
       if (distribution.billPaymentId) {
-        const paymentDoc = await build5Db().doc(COL.TRANSACTION, distribution.billPaymentId).get();
+        const paymentDoc = await database().doc(COL.TRANSACTION, distribution.billPaymentId).get();
         expect(paymentDoc !== undefined).toBe(true);
         const paidAmount = isEmpty(input.paymentAmount)
           ? input.totalPaid[i]
@@ -183,7 +183,7 @@ describe('Token trigger test', () => {
         expect(paymentDoc?.payload?.targetAddress).toBe(getAddress(space, Network.IOTA));
       }
       if (distribution.creditPaymentId) {
-        const creditPaymentDoc = await build5Db()
+        const creditPaymentDoc = await database()
           .doc(COL.TRANSACTION, distribution.creditPaymentId)
           .get();
         expect(creditPaymentDoc !== undefined).toBe(true);
@@ -193,7 +193,7 @@ describe('Token trigger test', () => {
         expect(creditPaymentDoc?.payload?.amount).toBe(
           Number(bigDecimal.multiply(creditAmount, MIN_IOTA_AMOUNT)),
         );
-        const memberData = <Member>await build5Db().doc(COL.MEMBER, member).get();
+        const memberData = <Member>await database().doc(COL.MEMBER, member).get();
         expect(creditPaymentDoc?.payload?.sourceAddress).toBe(orders[i].payload?.targetAddress);
         expect(creditPaymentDoc?.payload?.targetAddress).toBe(getAddress(memberData, Network.IOTA));
       }
@@ -203,7 +203,7 @@ describe('Token trigger test', () => {
   it('Should should create two and credit third', async () => {
     members.push(await testEnv.createMember());
     token = dummyToken(10, space, MIN_IOTA_AMOUNT, 100, guardian);
-    await build5Db().doc(COL.TOKEN, token.uid).create(token);
+    await database().doc(COL.TOKEN, token.uid).create(token);
 
     const orderPromises = members
       .map(() => 7)
@@ -219,10 +219,10 @@ describe('Token trigger test', () => {
     await Promise.all(orderPromises);
     await tokenProcessed(token.uid, 2, true);
 
-    const tokenData = <Token>await build5Db().doc(COL.TOKEN, token.uid).get();
+    const tokenData = <Token>await database().doc(COL.TOKEN, token.uid).get();
     expect(tokenData.tokensOrdered).toBe(14);
 
-    const distributions = await build5Db()
+    const distributions = await database()
       .collection(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION)
       .get();
     expect(distributions.length).toBe(2);
@@ -233,7 +233,7 @@ describe('Token trigger test', () => {
       expect(d.tokenOwned).toBe(5);
     });
 
-    const credit = await build5Db()
+    const credit = await database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('payload_amount', '==', 7 * MIN_IOTA_AMOUNT)

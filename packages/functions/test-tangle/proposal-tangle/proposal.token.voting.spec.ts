@@ -1,11 +1,11 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
   TangleRequestType,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
@@ -48,7 +48,7 @@ describe('Create proposal via tangle request', () => {
     );
     await MnemonicService.store(helper.guardianAddress.bech32, helper.guardianAddress.mnemonic);
 
-    const orderQuery = build5Db()
+    const orderQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.VOTE)
       .where('member', '==', helper.guardian);

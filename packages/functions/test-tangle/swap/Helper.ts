@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Access,
   COL,
@@ -18,7 +18,7 @@ import {
   TransactionType,
   UnsoldMintingOptions,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
 import { Wallet } from '../../src/services/wallet/wallet';
@@ -104,7 +104,7 @@ export class Helper {
       collectionMintOrder.payload.targetAddress,
       collectionMintOrder.payload.amount,
     );
-    const collectionDocRef = build5Db().doc(COL.COLLECTION, this.collection);
+    const collectionDocRef = database().doc(COL.COLLECTION, this.collection);
     await wait(async () => {
       const data = <Collection>await collectionDocRef.get();
       return data.status === CollectionStatus.MINTED;
@@ -118,7 +118,7 @@ export class Helper {
     expect(collectionData.mintingData?.nftsToMint).toBe(0);
 
     const ownerChangeTran = (
-      await build5Db()
+      await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.MINT_COLLECTION)
         .where('payload_type', '==', TransactionPayloadType.SEND_ALIAS_TO_GUARDIAN)
@@ -139,7 +139,7 @@ export class Helper {
     nft = await testEnv.wrap<Nft>(WEN_FUNC.createNft);
 
     if (buyAndAuctionId) {
-      await build5Db()
+      await database()
         .doc(COL.NFT, nft.uid)
         .update({ availableFrom: dayjs().subtract(1, 'h').toDate() });
 
@@ -152,7 +152,7 @@ export class Helper {
 
       mockWalletReturnValue(this.guardian!, this.dummyAuctionData(nft.uid));
       await testEnv.wrap(WEN_FUNC.setForSaleNft);
-      await wait(async () => (await build5Db().doc(COL.NFT, nft.uid).get())?.available === 3);
+      await wait(async () => (await database().doc(COL.NFT, nft.uid).get())?.available === 3);
 
       if (shouldBid) {
         mockWalletReturnValue(this.member!, { nft: nft.uid });
@@ -160,7 +160,7 @@ export class Helper {
         await submitMilestoneFunc(bidOrder, 2 * MIN_IOTA_AMOUNT);
       }
     }
-    return <Nft>await build5Db().doc(COL.NFT, nft.uid).get();
+    return <Nft>await database().doc(COL.NFT, nft.uid).get();
   };
 
   public dummyAuctionData = (uid: string) => ({
@@ -190,7 +190,7 @@ export class Helper {
         nftId,
       },
     };
-    await build5Db().doc(COL.TRANSACTION, order.uid).create(order);
+    await database().doc(COL.TRANSACTION, order.uid).create(order);
     return order.uid;
   };
 }

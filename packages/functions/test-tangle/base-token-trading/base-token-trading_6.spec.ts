@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -6,7 +6,7 @@ import {
   TokenTradeOrderType,
   Transaction,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
@@ -48,7 +48,7 @@ describe('Base token trading', () => {
     );
 
     await wait(async () => {
-      const snap = await build5Db()
+      const snap = await database()
         .collection(COL.TOKEN_MARKET)
         .where('owner', '==', helper.buyer!.uid)
         .get();
@@ -68,7 +68,7 @@ describe('Base token trading', () => {
       sellOrder.payload.amount,
     );
 
-    const purchaseQuery = build5Db()
+    const purchaseQuery = database()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {

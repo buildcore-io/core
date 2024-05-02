@@ -1,4 +1,4 @@
-import { COL, ProjectApiKey } from '@build-5/interfaces';
+import { COL, ProjectApiKey } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgProjectApiKey } from '../../models';
 import { removeNulls } from '../common';

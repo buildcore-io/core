@@ -1,5 +1,5 @@
-import { BaseRecord } from '@build-5/database';
-import { COL, SUB_COL } from '@build-5/interfaces';
+import { BaseRecord } from '@buildcore/database';
+import { COL, SUB_COL } from '@buildcore/interfaces';
 
 export interface PgDocEvent<T extends BaseRecord> {
   prev: T;

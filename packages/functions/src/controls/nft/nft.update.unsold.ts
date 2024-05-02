@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, Nft, NftUpdateUnsoldRequest, WenError } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, Nft, NftUpdateUnsoldRequest, WenError } from '@buildcore/interfaces';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { Context } from '../common';
@@ -8,8 +8,8 @@ export const updateUnsoldNftControl = ({
   owner,
   params,
 }: Context<NftUpdateUnsoldRequest>): Promise<Nft> =>
-  build5Db().runTransaction(async (transaction) => {
-    const nftDocRef = build5Db().doc(COL.NFT, params.uid);
+  database().runTransaction(async (transaction) => {
+    const nftDocRef = database().doc(COL.NFT, params.uid);
     const nft = await transaction.get(nftDocRef);
     if (!nft) {
       throw invalidArgument(WenError.nft_does_not_exists);

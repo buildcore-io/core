@@ -1,4 +1,4 @@
-import { Timestamp as ITimestamp } from '@build-5/interfaces';
+import { Timestamp as ITimestamp } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 
 export const dateToTimestamp = (d: dayjs.ConfigType, onlyDownToMinutes = false) => {

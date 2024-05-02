@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   TRANSACTION_AUTO_EXPIRY_MS,
@@ -7,7 +7,7 @@ import {
   TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { getProject } from '../../../../utils/common.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
@@ -37,7 +37,7 @@ export class NftDepositService extends BaseTangleService<TangleResponse> {
         void: false,
       },
     };
-    const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
+    const orderDocRef = database().doc(COL.TRANSACTION, order.uid);
     this.transactionService.push({ ref: orderDocRef, data: order, action: Action.C });
 
     this.transactionService.createUnlockTransaction(

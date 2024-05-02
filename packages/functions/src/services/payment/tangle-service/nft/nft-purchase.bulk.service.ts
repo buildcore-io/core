@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Collection,
@@ -12,7 +12,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { Dictionary, flatten, get, groupBy, isEmpty, uniq } from 'lodash';
 import { getNftByMintingId } from '../../../../utils/collection-minting-utils/nft.utils';
@@ -60,7 +60,7 @@ export class TangleNftPurchaseBulkService extends BaseTangleService<TangleRespon
     order.payload.disableWithdraw = params.disableWithdraw || false;
 
     this.transactionService.push({
-      ref: build5Db().doc(COL.TRANSACTION, order.uid),
+      ref: database().doc(COL.TRANSACTION, order.uid),
       data: order,
       action: Action.C,
     });
@@ -196,7 +196,7 @@ const getNfts = async (collectionId: string, nftIds: (string | undefined)[]) => 
 };
 
 const getNft = async (nftId: string) => {
-  const docRef = build5Db().doc(COL.NFT, nftId);
+  const docRef = database().doc(COL.NFT, nftId);
   const nft = (await getNftByMintingId(nftId)) || (await docRef.get());
   if (nft) {
     return nft;

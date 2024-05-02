@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -7,7 +7,7 @@ import {
   NftBidTangleRequest,
   TangleRequestType,
   Transaction,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { finalizeAuctions } from '../../src/cron/auction.cron';
@@ -47,20 +47,20 @@ describe('Nft otr bid', () => {
       },
     });
 
-    const nftDocRef = build5Db().doc(COL.NFT, helper.nft!.uid);
+    const nftDocRef = database().doc(COL.NFT, helper.nft!.uid);
     await wait(async () => {
       const nft = await nftDocRef.get();
       return !isEmpty(nft?.auctionHighestBidder);
     });
 
-    await build5Db()
+    await database()
       .doc(COL.AUCTION, helper.nft!.auction!)
       .update({ auctionTo: dayjs().subtract(1, 'm').toDate() });
 
     await finalizeAuctions();
 
     await wait(async () => {
-      const nft = <Nft>await build5Db().doc(COL.NFT, helper.nft!.uid).get();
+      const nft = <Nft>await database().doc(COL.NFT, helper.nft!.uid).get();
       return nft.owner === address.bech32;
     });
   });

@@ -1,9 +1,9 @@
-import { ProposalVoteRequest } from '@build-5/interfaces';
+import { ProposalVoteRequest } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 
 export const voteOnProposalSchema = {
-  uid: CommonJoi.uid().description('Build5 id of the proposal to vote on.'),
+  uid: CommonJoi.uid().description('Buildcore id of the proposal to vote on.'),
   value: Joi.number().required().description('Value of the vote.'),
   voteWithStakedTokes: Joi.bool()
     .optional()

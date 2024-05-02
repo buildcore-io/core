@@ -1,6 +1,12 @@
-import { COL, MIN_IOTA_AMOUNT, Network, TangleRequestType, Transaction } from '@build-5/interfaces';
+import {
+  COL,
+  MIN_IOTA_AMOUNT,
+  Network,
+  TangleRequestType,
+  Transaction,
+} from '@buildcore/interfaces';
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import { wait } from '../../test/controls/common';
 import { awaitTransactionConfirmationsForToken, getTangleOrder } from '../common';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
@@ -68,7 +74,7 @@ describe('Minted toke trading tangle request', () => {
       },
     );
 
-    const queryBySeller = build5Db()
+    const queryBySeller = database()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.seller);
     await wait(async () => {
@@ -77,14 +83,14 @@ describe('Minted toke trading tangle request', () => {
     });
     const sell = (await queryBySeller.get())[0]!;
 
-    const queryByOwner = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer);
+    const queryByOwner = database().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer);
     await wait(async () => {
       const snap = await queryByOwner.get();
       return snap.length > 0;
     });
     const buy = (await queryByOwner.get())[0]!;
 
-    const queryByTrade = build5Db()
+    const queryByTrade = database()
       .collection(COL.TOKEN_PURCHASE)
       .where('sell', '==', sell.uid)
       .where('buy', '==', buy.uid);

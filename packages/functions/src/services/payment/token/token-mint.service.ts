@@ -1,12 +1,12 @@
-import { build5Db } from '@build-5/database';
-import { COL, Token, TokenStatus, TransactionPayloadType } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, Token, TokenStatus, TransactionPayloadType } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { BaseService, HandlerParams } from '../base';
 import { Action } from '../transaction-service';
 
 export class TokenMintService extends BaseService {
   public handleRequest = async ({ order, match }: HandlerParams) => {
-    const tokenDocRef = build5Db().doc(COL.TOKEN, order.payload.token!);
+    const tokenDocRef = database().doc(COL.TOKEN, order.payload.token!);
     const token = <Token>await this.transaction.get(tokenDocRef);
 
     const payment = await this.transactionService.createPayment(order, match);

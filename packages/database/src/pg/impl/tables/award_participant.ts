@@ -1,4 +1,4 @@
-import { AwardParticipant, COL } from '@build-5/interfaces';
+import { AwardParticipant, COL } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgAwardParticipants } from '../../models';
 import { removeNulls } from '../common';

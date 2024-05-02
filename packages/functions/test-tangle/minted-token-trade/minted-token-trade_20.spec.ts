@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   IgnoreWalletReason,
@@ -10,7 +10,7 @@ import {
   Transaction,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { wait } from '../../test/controls/common';
@@ -44,7 +44,7 @@ describe('Token minting', () => {
         returnAddressBech32: helper.sellerAddress?.bech32!,
       },
     });
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.seller);
@@ -61,7 +61,7 @@ describe('Token minting', () => {
     const snap = await query.get();
     mockWalletReturnValue(helper.seller!, { transaction: snap[0].uid });
     let order = await testEnv.wrap<Transaction>(WEN_FUNC.creditUnrefundable);
-    order = (await build5Db().doc(COL.TRANSACTION, order.uid).get())!;
+    order = (await database().doc(COL.TRANSACTION, order.uid).get())!;
 
     const expiresOn = order.payload.expiresOn!;
     const isEarlier = dayjs(expiresOn.toDate()).isBefore(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS));

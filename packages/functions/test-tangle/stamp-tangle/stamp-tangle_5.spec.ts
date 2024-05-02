@@ -1,5 +1,5 @@
-import { build5Db, build5Storage } from '@build-5/database';
-import { Bucket, COL, MIN_IOTA_AMOUNT, MediaStatus } from '@build-5/interfaces';
+import { database, storage } from '@buildcore/database';
+import { Bucket, COL, MIN_IOTA_AMOUNT, MediaStatus } from '@buildcore/interfaces';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { EMPTY_ALIAS_ID } from '../../src/utils/token-minting-utils/alias.utils';
@@ -13,7 +13,7 @@ describe('Stamp tangle test', () => {
   beforeEach(helper.beforeEach);
 
   it('Should create and mint stamp with zip file', async () => {
-    const bucket = build5Storage().bucket(Bucket.DEV);
+    const bucket = storage().bucket(Bucket.DEV);
     const destination = 'nft/test/image.zip';
     const dowloadUrl = await bucket.upload('./test/puppy.zip', destination, {
       contentType: 'application/zip',
@@ -27,7 +27,7 @@ describe('Stamp tangle test', () => {
     );
     await MnemonicService.store(helper.address.bech32, helper.address.mnemonic);
 
-    const query = build5Db().collection(COL.STAMP).where('createdBy', '==', helper.address.bech32);
+    const query = database().collection(COL.STAMP).where('createdBy', '==', helper.address.bech32);
     await wait(async () => {
       const snap = await query.get();
       return snap.length === 1 && snap[0].funded;

@@ -1,4 +1,4 @@
-import { COL, SUB_COL } from '@build-5/interfaces';
+import { COL, SUB_COL } from '@buildcore/interfaces';
 import type { Knex } from 'knex';
 import { baseRecord, baseSubCollection, createTable } from './20240129091246_common';
 

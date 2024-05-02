@@ -12,7 +12,7 @@ export interface SwapRejectTangleRequest {
    */
   requestType: 'REJECT_SWAP';
   /**
-   * Build5 UID of the swap
+   * Buildcore UID of the swap
    */
   uid: string;
 }

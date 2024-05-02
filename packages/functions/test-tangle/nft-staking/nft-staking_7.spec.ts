@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Network,
@@ -7,7 +7,7 @@ import {
   Transaction,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { Helper } from './Helper';
@@ -25,7 +25,7 @@ describe('Stake nft', () => {
 
   it('Should credit twice', async () => {
     let nft = await helper.createAndOrderNft();
-    let nftDocRef = build5Db().doc(COL.NFT, nft.uid);
+    let nftDocRef = database().doc(COL.NFT, nft.uid);
     await helper.mintCollection();
     nft = <Nft>await nftDocRef.get();
     await helper.withdrawNftAndAwait(nft.uid);
@@ -43,7 +43,7 @@ describe('Stake nft', () => {
       nft.mintingData?.nftId,
     );
 
-    const creditQuery = build5Db()
+    const creditQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_NFT)
       .where('member', '==', helper.guardian);

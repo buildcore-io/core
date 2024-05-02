@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -7,7 +7,7 @@ import {
   NetworkAddress,
   TransactionPayloadType,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { HandlerParams } from '../base';
 import { BaseAddressService } from './common';
 
@@ -31,7 +31,7 @@ export class MemberAddressService extends BaseAddressService {
   };
 
   private claimBadges = async (member: string, memberAddress: NetworkAddress, network: Network) => {
-    const snap = await build5Db()
+    const snap = await database()
       .collection(COL.TRANSACTION)
       .where('network', '==', network)
       .where('type', '==', TransactionType.AWARD)
@@ -48,8 +48,8 @@ export class MemberAddressService extends BaseAddressService {
 }
 
 const updateBadgeTransaction = (transactionId: string, memberAddress: NetworkAddress) =>
-  build5Db().runTransaction(async (transaction) => {
-    const badgeDocRef = build5Db().doc(COL.TRANSACTION, transactionId);
+  database().runTransaction(async (transaction) => {
+    const badgeDocRef = database().doc(COL.TRANSACTION, transactionId);
     const badge = await transaction.get(badgeDocRef);
     if (badge?.ignoreWallet) {
       const data = {

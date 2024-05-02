@@ -1,4 +1,4 @@
-import { COL, RankRequest } from '@build-5/interfaces';
+import { COL, RankRequest } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 import { RANK_CONFIG } from '../../utils/config.utils';
@@ -7,8 +7,8 @@ export const rankSchema = toJoiObject<RankRequest>({
   collection: Joi.string()
     .equal(COL.COLLECTION, COL.TOKEN)
     .required()
-    .description('Build5 collection name to rank.'),
-  uid: CommonJoi.uid().description('Build5 id of the entity to rank.'),
+    .description('Buildcore collection name to rank.'),
+  uid: CommonJoi.uid().description('Buildcore id of the entity to rank.'),
   rank: Joi.number()
     .integer()
     .min(RANK_CONFIG.MIN_RANK)

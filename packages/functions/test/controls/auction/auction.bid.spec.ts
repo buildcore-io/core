@@ -1,4 +1,4 @@
-import { IQuery, build5Db } from '@build-5/database';
+import { IQuery, database } from '@buildcore/database';
 import {
   Auction,
   AuctionType,
@@ -6,7 +6,7 @@ import {
   MIN_IOTA_AMOUNT,
   Network,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { finalizeAuctions } from '../../../src/cron/auction.cron';
 import { getAddress } from '../../../src/utils/address.utils';
@@ -68,7 +68,7 @@ describe('Open auction bid', () => {
     expect(h.auction.auctionHighestBidder).toBe(h.members[2]);
     expect(h.auction.auctionHighestBid).toBe(5 * MIN_IOTA_AMOUNT);
 
-    const credits = await build5Db()
+    const credits = await database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .whereIn('member', h.members)
@@ -81,16 +81,16 @@ describe('Open auction bid', () => {
     await h.bidOnAuction(h.members[0], 2 * MIN_IOTA_AMOUNT);
     await h.bidOnAuction(h.members[0], 3 * MIN_IOTA_AMOUNT);
 
-    const auctionDocRef = build5Db().doc(COL.AUCTION, h.auction.uid);
+    const auctionDocRef = database().doc(COL.AUCTION, h.auction.uid);
     await auctionDocRef.update({ auctionTo: dayjs().subtract(1, 'minute').toDate() });
 
     await finalizeAuctions();
 
-    const memberDocRef = build5Db().doc(COL.MEMBER, h.member);
+    const memberDocRef = database().doc(COL.MEMBER, h.member);
     const member = await memberDocRef.get();
     const address = getAddress(member, h.auction.network);
 
-    const billPayments = await build5Db()
+    const billPayments = await database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)
       .where('member', '==', h.members[0])
@@ -112,12 +112,12 @@ describe('Open auction bid', () => {
     await h.bidOnAuction(h.members[0], 2 * MIN_IOTA_AMOUNT);
     await h.bidOnAuction(h.members[0], 3 * MIN_IOTA_AMOUNT);
 
-    const auctionDocRef = build5Db().doc(COL.AUCTION, h.auction.uid);
+    const auctionDocRef = database().doc(COL.AUCTION, h.auction.uid);
     await auctionDocRef.update({ auctionTo: dayjs().subtract(1, 'minute').toDate() });
 
     await finalizeAuctions();
 
-    const billPayments = await build5Db()
+    const billPayments = await database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)
       .where('member', '==', h.members[0])
@@ -131,7 +131,7 @@ describe('Open auction bid', () => {
   });
 
   it('Should finalize open auction, no bids', async () => {
-    const auctionDocRef = build5Db().doc(COL.AUCTION, h.auction.uid);
+    const auctionDocRef = database().doc(COL.AUCTION, h.auction.uid);
     await auctionDocRef.update({ auctionTo: dayjs().subtract(1, 'minute').toDate() });
     await finalizeAuctions();
   });
@@ -145,12 +145,12 @@ describe('Open auction bid', () => {
   it('Should bid when custom bid increment, topUpBased', async () => {
     await h.createAuction(dayjs(), { minimalBidIncrement: 1.5 * MIN_IOTA_AMOUNT });
 
-    const validPaymentsQuery = build5Db()
+    const validPaymentsQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.PAYMENT)
       .where('member', '==', h.members[0])
       .where('payload_invalidPayment', '==', false);
-    const invalidPaymentsQuery = build5Db()
+    const invalidPaymentsQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.PAYMENT)
       .where('member', '==', h.members[0])
@@ -183,12 +183,12 @@ describe('Open auction bid', () => {
       topUpBased: false,
     });
 
-    const validPaymentsQuery = build5Db()
+    const validPaymentsQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.PAYMENT)
       .where('member', '==', h.members[0])
       .where('payload_invalidPayment', '==', false);
-    const invalidPaymentsQuery = build5Db()
+    const invalidPaymentsQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.PAYMENT)
       .where('member', '==', h.members[0])

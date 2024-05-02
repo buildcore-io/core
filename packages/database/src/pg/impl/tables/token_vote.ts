@@ -1,4 +1,4 @@
-import { COL, Vote } from '@build-5/interfaces';
+import { COL, Vote } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgTokenVotes } from '../../models';
 import { removeNulls } from '../common';

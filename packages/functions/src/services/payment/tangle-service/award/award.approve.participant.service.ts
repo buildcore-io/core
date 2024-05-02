@@ -1,4 +1,4 @@
-import { ITransaction, PgMemberUpdate, build5Db } from '@build-5/database';
+import { ITransaction, PgMemberUpdate, database } from '@buildcore/database';
 import {
   ApiError,
   AwardApproveParticipantTangleResponse,
@@ -15,7 +15,7 @@ import {
   TransactionPayloadType,
   TransactionType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { get, head, isEmpty, set } from 'lodash';
 import { getAddress } from '../../../../utils/address.utils';
@@ -40,7 +40,7 @@ export class AwardApproveParticipantService extends BaseTangleService<AwardAppro
 
     for (const member of params.members.map((m) => m.toLowerCase())) {
       try {
-        const badge = await build5Db().runTransaction(
+        const badge = await database().runTransaction(
           approveAwardParticipant(project, owner, params.award, member),
         );
         badges[badge.uid] = member;
@@ -59,7 +59,7 @@ export class AwardApproveParticipantService extends BaseTangleService<AwardAppro
 export const approveAwardParticipant =
   (project: string, owner: string, awardId: string, uidOrAddress: NetworkAddress) =>
   async (transaction: ITransaction) => {
-    const awardDocRef = build5Db().doc(COL.AWARD, awardId);
+    const awardDocRef = database().doc(COL.AWARD, awardId);
     const award = await transaction.get(awardDocRef);
 
     if (!award) {
@@ -80,7 +80,7 @@ export const approveAwardParticipant =
     const memberId = member?.uid || uidOrAddress;
     const memberAddress = getTargetAddres(member, award.network, uidOrAddress);
 
-    const participantDocRef = build5Db().doc(COL.AWARD, awardId, SUB_COL.PARTICIPANTS, memberId);
+    const participantDocRef = database().doc(COL.AWARD, awardId, SUB_COL.PARTICIPANTS, memberId);
     const participant = await transaction.get(participantDocRef);
 
     const count = (award.issued || 0) + 1;
@@ -90,8 +90,8 @@ export const approveAwardParticipant =
     const participantUpdateData = {
       parentId: award.uid,
       completed: true,
-      count: build5Db().inc(1),
-      tokenReward: build5Db().inc(award.badge.tokenReward),
+      count: database().inc(1),
+      tokenReward: database().inc(award.badge.tokenReward),
     };
     if (!participant) {
       set(participantUpdateData, 'project', project);
@@ -120,11 +120,11 @@ export const approveAwardParticipant =
         void: false,
       },
     };
-    const badgeTransactionDocRef = build5Db().doc(COL.TRANSACTION, badgeTransaction.uid);
+    const badgeTransactionDocRef = database().doc(COL.TRANSACTION, badgeTransaction.uid);
     await transaction.create(badgeTransactionDocRef, badgeTransaction);
 
     const memberUpdateData: PgMemberUpdate = {
-      awardsCompleted: build5Db().inc(1),
+      awardsCompleted: database().inc(1),
 
       spaces: {
         [award.space]: {
@@ -135,16 +135,16 @@ export const approveAwardParticipant =
           awardStat: {
             [award.badge.tokenUid]: {
               tokenSymbol: award.badge.tokenSymbol,
-              badges: build5Db().arrayUnion(badgeTransaction.uid),
-              completed: build5Db().inc(1),
+              badges: database().arrayUnion(badgeTransaction.uid),
+              completed: database().inc(1),
             },
           },
 
-          awardsCompleted: build5Db().inc(1),
+          awardsCompleted: database().inc(1),
         },
       },
     };
-    const memberDocRef = build5Db().doc(COL.MEMBER, memberId);
+    const memberDocRef = database().doc(COL.MEMBER, memberId);
     await transaction.update(memberDocRef, memberUpdateData);
 
     if (award.badge.tokenReward) {
@@ -161,15 +161,15 @@ export const approveAwardParticipant =
         sourceAddress: award.address,
         isBaseToken: award.badge.type === AwardBadgeType.BASE,
       };
-      const airdropDocRef = build5Db().doc(COL.AIRDROP, airdrop.uid);
+      const airdropDocRef = database().doc(COL.AIRDROP, airdrop.uid);
       await transaction.create(airdropDocRef, airdrop);
 
       const distribution = {
         parentId: airdrop.token,
         uid: memberId,
-        totalUnclaimedAirdrop: build5Db().inc(airdrop.count),
+        totalUnclaimedAirdrop: database().inc(airdrop.count),
       };
-      const distributionDocRef = build5Db().doc(
+      const distributionDocRef = database().doc(
         COL.TOKEN,
         airdrop.token,
         SUB_COL.DISTRIBUTION,
@@ -181,12 +181,12 @@ export const approveAwardParticipant =
   };
 
 const getMember = async (network: Network, uidOrAddress: NetworkAddress) => {
-  const memberDocRef = build5Db().doc(COL.MEMBER, uidOrAddress);
+  const memberDocRef = database().doc(COL.MEMBER, uidOrAddress);
   const member = await memberDocRef.get();
   if (member) {
     return member;
   }
-  const members = await build5Db()
+  const members = await database()
     .collection(COL.MEMBER)
     .where(`${network}Address`, '==', uidOrAddress)
     .limit(1)

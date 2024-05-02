@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, Member, Network, WEN_FUNC, WenError } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, Member, Network, WEN_FUNC, WenError } from '@buildcore/interfaces';
 import { CoinType, utf8ToHex } from '@iota/sdk';
 import jwt from 'jsonwebtoken';
 import { get } from 'lodash';
@@ -55,7 +55,7 @@ describe('Pub key test', () => {
     const wallet = await getWallet(network);
     const address = await wallet.getNewIotaAddressDetails();
     const nonce = getRandomNonce();
-    const userDocRef = build5Db().doc(COL.MEMBER, address.bech32);
+    const userDocRef = database().doc(COL.MEMBER, address.bech32);
     await userDocRef.create({ uid: address.bech32, nonce });
     const secretManager = getSecretManager(address.mnemonic);
     const signature = await secretManager.signEd25519(utf8ToHex(nonce), {
@@ -80,7 +80,7 @@ describe('Pub key test', () => {
       const wallet = await getWallet(network);
       const address = await wallet.getNewIotaAddressDetails();
       const nonce = getRandomNonce();
-      const userDocRef = build5Db().doc(COL.MEMBER, address.bech32);
+      const userDocRef = database().doc(COL.MEMBER, address.bech32);
       await userDocRef.create({ uid: address.bech32, nonce });
       const secretManager = getSecretManager(address.mnemonic);
       const signature = await secretManager.signEd25519(utf8ToHex(nonce), {
@@ -104,7 +104,7 @@ describe('Pub key test', () => {
     const wallet = await getWallet(network);
     const address = await wallet.getNewIotaAddressDetails();
     const nonce = getRandomNonce();
-    const userDocRef = build5Db().doc(COL.MEMBER, address.bech32);
+    const userDocRef = database().doc(COL.MEMBER, address.bech32);
     await userDocRef.create({ uid: address.bech32, nonce });
     const secretManager = getSecretManager(address.mnemonic);
     const signature = await secretManager.signEd25519(utf8ToHex(nonce), {
@@ -133,7 +133,7 @@ describe('Pub key test', () => {
     const wallet = await getWallet(Network.RMS);
     const address = await wallet.getNewIotaAddressDetails();
     const nonce = getRandomNonce();
-    const userDocRef = build5Db().doc(COL.MEMBER, address.bech32);
+    const userDocRef = database().doc(COL.MEMBER, address.bech32);
     await userDocRef.create({ uid: address.bech32, nonce });
     const secretManager = getSecretManager(address.mnemonic);
     const signature = await secretManager.signEd25519(utf8ToHex(nonce), {

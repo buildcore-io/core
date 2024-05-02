@@ -12,11 +12,11 @@ export interface NftTransferRequest {
    */
   transfers: {
     /**
-     * Build5 id or tangle id of the nft.
+     * Buildcore id or tangle id of the nft.
      */
     nft: string;
     /**
-     * Build5 id of a member or a tangle address.
+     * Buildcore id of a member or a tangle address.
      */
     target: string;
     /**

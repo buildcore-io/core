@@ -1,5 +1,5 @@
 require('dotenv').config({ path: (__dirname + '/.env').replace('test/', '') });
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Network,
@@ -7,7 +7,7 @@ import {
   SendToManyTargets,
   Space,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { CoinType, utf8ToHex } from '@iota/sdk';
 import axios from 'axios';
 import { generateCustomTokenControl } from '../src/controls/auth/auth.control';
@@ -55,7 +55,7 @@ export const testEnv = {
         body: mockk.body || {},
       };
       if (!request.customToken) {
-        const memberDocRef = build5Db().doc(COL.MEMBER, mockk.address);
+        const memberDocRef = database().doc(COL.MEMBER, mockk.address);
         const member = await memberDocRef.get();
         const mnemonic = await MnemonicService.get(mockk.address);
         const secretManager = getSecretManager(mnemonic);
@@ -112,7 +112,7 @@ export const testEnv = {
       addresses[`${network}Address`] = address.bech32;
     });
     await Promise.all(promises);
-    await build5Db().doc(COL.MEMBER, owner).update(addresses);
+    await database().doc(COL.MEMBER, owner).update(addresses);
     return owner;
   },
 
@@ -127,12 +127,12 @@ export const testEnv = {
       addresses[`${network}Address`] = address.bech32;
     });
     await Promise.all(promises);
-    await build5Db().doc(COL.SPACE, space.uid).update(addresses);
-    return (await build5Db().doc(COL.SPACE, space.uid).get())!;
+    await database().doc(COL.SPACE, space.uid).update(addresses);
+    return (await database().doc(COL.SPACE, space.uid).get())!;
   },
 
   createBlock: async (blockId: string) => {
-    await build5Db().getCon()('blocks').insert({ blockId });
+    await database().getCon()('blocks').insert({ blockId });
   },
 };
 
@@ -159,7 +159,7 @@ class TestWallet extends Wallet {
     outputToConsume?: string | undefined,
   ) => {
     const blockId = await this.wallet.send(from, toAddress, amount, params, outputToConsume);
-    await build5Db().getCon()('blocks').insert({ blockId });
+    await database().getCon()('blocks').insert({ blockId });
     return blockId;
   };
 
@@ -169,7 +169,7 @@ class TestWallet extends Wallet {
     params: WalletParams,
   ) => {
     const blockId = await this.wallet.sendToMany(from, targets, params);
-    await build5Db().getCon()('blocks').insert({ blockId });
+    await database().getCon()('blocks').insert({ blockId });
     return blockId;
   };
 }

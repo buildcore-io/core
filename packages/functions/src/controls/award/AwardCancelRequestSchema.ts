@@ -1,8 +1,8 @@
-import { AwardCancelRequest } from '@build-5/interfaces';
+import { AwardCancelRequest } from '@buildcore/interfaces';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 
 export const awardCancelSchema = toJoiObject<AwardCancelRequest>({
-  uid: CommonJoi.uid().description('Build5 id of the award.'),
+  uid: CommonJoi.uid().description('Buildcore id of the award.'),
 })
   .description('Request object to cancel an award')
   .meta({

@@ -1,10 +1,10 @@
-import { Network, ProjectCreateResponse } from '@build-5/interfaces';
-import { Build5, https } from '@build-5/sdk';
+import { Network, ProjectCreateResponse } from '@buildcore/interfaces';
+import { Buildcore, https } from '@buildcore/sdk';
 import { address } from './utils/secret';
 import { walletSign } from './utils/utils';
 
 async function main() {
-  const origin = Build5.TEST;
+  const origin = Buildcore.TEST;
   let responseProject: ProjectCreateResponse;
   let userSign = await walletSign(address.bech32, address);
   try {

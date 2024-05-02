@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -6,7 +6,7 @@ import {
   Space,
   TangleRequestType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
@@ -24,7 +24,7 @@ describe('Block space member', () => {
   });
 
   it('Should block member', async () => {
-    const spaceDocRef = build5Db().doc(COL.SPACE, helper.space.uid);
+    const spaceDocRef = database().doc(COL.SPACE, helper.space.uid);
     await spaceDocRef.update({ open: false });
 
     mockWalletReturnValue(helper.member, { uid: helper.space.uid });

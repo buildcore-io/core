@@ -1,4 +1,4 @@
-import { ITransaction, build5Db } from '@build-5/database';
+import { ITransaction, database } from '@buildcore/database';
 import {
   Auction,
   AuctionType,
@@ -9,7 +9,7 @@ import {
   Transaction,
   TransactionType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { invalidArgument } from '../../../utils/error.utils';
 import { NotificationService } from '../../notification/notification';
 import { BaseNftService } from '../nft/common';
@@ -22,7 +22,7 @@ export class AuctionFinalizeService {
   }
 
   public markAsFinalized = async (auctionId: string) => {
-    const auctionDocRef = build5Db().doc(COL.AUCTION, auctionId);
+    const auctionDocRef = database().doc(COL.AUCTION, auctionId);
     const auction = <Auction>await this.transaction.get(auctionDocRef);
     if (!auction.active) {
       throw invalidArgument(WenError.auction_not_active);
@@ -30,14 +30,14 @@ export class AuctionFinalizeService {
 
     this.transactionService.push({ ref: auctionDocRef, data: { active: false }, action: Action.U });
 
-    const payments = await build5Db()
+    const payments = await database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.PAYMENT)
       .where('payload_invalidPayment', '==', false)
       .where('payload_auction', '==', auction.uid)
       .get();
     for (const payment of payments) {
-      const orderDocRef = build5Db().doc(COL.TRANSACTION, payment.payload.sourceTransaction![0]);
+      const orderDocRef = database().doc(COL.TRANSACTION, payment.payload.sourceTransaction![0]);
       const order = <Transaction>await orderDocRef.get();
       this.transactionService.createBillPayment(order, payment);
     }
@@ -49,7 +49,7 @@ export class AuctionFinalizeService {
   };
 
   private finalizeNftAuction = async (auction: Auction) => {
-    const nftDocRef = build5Db().doc(COL.NFT, auction.nftId!);
+    const nftDocRef = database().doc(COL.NFT, auction.nftId!);
     const nft = <Nft>await this.transaction.get(nftDocRef);
 
     if (!auction.auctionHighestBidder) {
@@ -71,13 +71,13 @@ export class AuctionFinalizeService {
       return;
     }
 
-    const orderDocRef = build5Db().doc(COL.TRANSACTION, auction.bids[0].order);
+    const orderDocRef = database().doc(COL.TRANSACTION, auction.bids[0].order);
     const order = <Transaction>await orderDocRef.get();
 
     const nftService = new BaseNftService(this.transactionService);
     await nftService.setNftOwner(order, auction.auctionHighestBid!);
 
-    const memberDocRef = build5Db().collection(COL.MEMBER).doc(order!.member!);
+    const memberDocRef = database().collection(COL.MEMBER).doc(order!.member!);
     const member = <Member>await memberDocRef.get();
 
     const notification = NotificationService.prepareWinBid(
@@ -86,7 +86,7 @@ export class AuctionFinalizeService {
       auction.uid,
     );
     this.transactionService.push({
-      ref: build5Db().doc(COL.NOTIFICATION, notification.uid),
+      ref: database().doc(COL.NOTIFICATION, notification.uid),
       data: notification,
       action: Action.C,
     });

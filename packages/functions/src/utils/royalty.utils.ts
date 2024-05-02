@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, SYSTEM_CONFIG_DOC_ID } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, SYSTEM_CONFIG_DOC_ID } from '@buildcore/interfaces';
 import bigDecimal from 'js-big-decimal';
 import {
   getRoyaltyPercentage,
@@ -38,7 +38,7 @@ const getTokenPurchaseFeePercentage = async (
   if (memberFeePercentage !== undefined) {
     return memberFeePercentage;
   }
-  const systemConfig = await build5Db().doc(COL.SYSTEM, SYSTEM_CONFIG_DOC_ID).get();
+  const systemConfig = await database().doc(COL.SYSTEM, SYSTEM_CONFIG_DOC_ID).get();
   const systemPercentage = isTokenPurchase
     ? systemConfig?.tokenPurchaseFeePercentage
     : systemConfig?.tokenTradingFeePercentage;

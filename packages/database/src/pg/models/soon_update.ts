@@ -6,9 +6,9 @@ import { Increment } from '../interfaces/common';
 import * as commons from './common_update';
 
 export interface PgSoonSnapshotUpdate extends commons.BaseRecordUpdate {
-  count?: number | Increment;
-  paidOut?: number | Increment;
+  count?: number | null | Increment;
+  paidOut?: number | null | Increment;
   lastPaidOutOn?: Date | null;
-  ethAddress?: string;
-  ethAddressVerified?: boolean;
+  ethAddress?: string | null;
+  ethAddressVerified?: boolean | null;
 }

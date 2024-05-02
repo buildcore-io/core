@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Proposal,
@@ -9,7 +9,7 @@ import {
   SUB_COL,
   TokenStatus,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
@@ -29,10 +29,10 @@ export class ProposalCreateService extends BaseTangleService<ProposalCreateTangl
 
     const { proposal, proposalOwner } = await createProposal(project, owner, { ...params });
 
-    const proposalDocRef = build5Db().doc(COL.PROPOSAL, proposal.uid);
+    const proposalDocRef = database().doc(COL.PROPOSAL, proposal.uid);
     this.transactionService.push({ ref: proposalDocRef, data: proposal, action: Action.C });
 
-    const proposalOwnerDocRef = build5Db().doc(
+    const proposalOwnerDocRef = database().doc(
       COL.PROPOSAL,
       proposal.uid,
       SUB_COL.OWNERS,
@@ -53,7 +53,7 @@ export const createProposal = async (
   owner: string,
   params: Record<string, unknown>,
 ) => {
-  const spaceMemberDocRef = build5Db().doc(
+  const spaceMemberDocRef = database().doc(
     COL.SPACE,
     params.space! as string,
     SUB_COL.MEMBERS,
@@ -108,12 +108,12 @@ export const createProposal = async (
 
 const createProposalMembersAndGetTotalWeight = async (project: string, proposal: Proposal) => {
   const subCol = proposal.settings.onlyGuardians ? SUB_COL.GUARDIANS : SUB_COL.MEMBERS;
-  const spaceMembers = await build5Db().collection(COL.SPACE, proposal.space, subCol).get();
+  const spaceMembers = await database().collection(COL.SPACE, proposal.space, subCol).get();
 
   const promises = spaceMembers.map(async (spaceMember) => {
     const proposalMember = createProposalMember(project, proposal, spaceMember);
     if (proposalMember.weight || proposal.type === ProposalType.NATIVE) {
-      await build5Db()
+      await database()
         .doc(COL.PROPOSAL, proposal.uid, SUB_COL.MEMBERS, proposalMember.uid)
         .create(proposalMember);
     }

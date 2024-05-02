@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, Space, SUB_COL, TangleResponse, WenError } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, Space, SUB_COL, TangleResponse, WenError } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { getProject } from '../../../../utils/common.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
@@ -22,8 +22,8 @@ export class SpaceBlockMemberService extends BaseTangleService<TangleResponse> {
       member,
     );
 
-    const spaceDocRef = build5Db().doc(COL.SPACE, params.uid);
-    const blockedMemberDocRef = build5Db().doc(
+    const spaceDocRef = database().doc(COL.SPACE, params.uid);
+    const blockedMemberDocRef = database().doc(
       COL.SPACE,
       params.uid,
       SUB_COL.BLOCKED_MEMBERS,
@@ -37,13 +37,13 @@ export class SpaceBlockMemberService extends BaseTangleService<TangleResponse> {
     });
 
     this.transactionService.push({
-      ref: build5Db().doc(COL.SPACE, params.uid, SUB_COL.MEMBERS, member),
+      ref: database().doc(COL.SPACE, params.uid, SUB_COL.MEMBERS, member),
       data: undefined,
       action: Action.D,
     });
 
     this.transactionService.push({
-      ref: build5Db().doc(COL.SPACE, params.uid, SUB_COL.KNOCKING_MEMBERS, member),
+      ref: database().doc(COL.SPACE, params.uid, SUB_COL.KNOCKING_MEMBERS, member),
       data: undefined,
       action: Action.D,
     });
@@ -64,18 +64,18 @@ export const getBlockMemberUpdateData = async (
   spaceId: string,
   member: string,
 ) => {
-  const spaceDocRef = build5Db().doc(COL.SPACE, spaceId);
+  const spaceDocRef = database().doc(COL.SPACE, spaceId);
   await assertIsGuardian(spaceId, owner);
 
-  const spaceMember = await build5Db().doc(COL.SPACE, spaceId, SUB_COL.MEMBERS, member).get();
-  const knockingMember = await build5Db()
+  const spaceMember = await database().doc(COL.SPACE, spaceId, SUB_COL.MEMBERS, member).get();
+  const knockingMember = await database()
     .doc(COL.SPACE, spaceId, SUB_COL.KNOCKING_MEMBERS, member)
     .get();
   if (!spaceMember && !knockingMember) {
     throw invalidArgument(WenError.member_is_not_part_of_the_space);
   }
 
-  const blockedMemberDocRef = build5Db().doc(COL.SPACE, spaceId, SUB_COL.BLOCKED_MEMBERS, member);
+  const blockedMemberDocRef = database().doc(COL.SPACE, spaceId, SUB_COL.BLOCKED_MEMBERS, member);
   const blockedMemberDoc = await blockedMemberDocRef.get();
   if (blockedMemberDoc) {
     throw invalidArgument(WenError.member_is_already_blocked);
@@ -86,7 +86,7 @@ export const getBlockMemberUpdateData = async (
     throw invalidArgument(WenError.at_least_one_member_must_be_in_the_space);
   }
 
-  const guardian = await build5Db().doc(COL.SPACE, spaceId, SUB_COL.GUARDIANS, member).get();
+  const guardian = await database().doc(COL.SPACE, spaceId, SUB_COL.GUARDIANS, member).get();
   if (guardian) {
     throw invalidArgument(WenError.can_not_block_guardian);
   }
@@ -99,8 +99,8 @@ export const getBlockMemberUpdateData = async (
     createdOn: dateToTimestamp(dayjs()),
   };
   const spaceUpdateData = {
-    totalMembers: build5Db().inc(spaceMember ? -1 : 0),
-    totalPendingMembers: build5Db().inc(knockingMember ? -1 : 0),
+    totalMembers: database().inc(spaceMember ? -1 : 0),
+    totalPendingMembers: database().inc(knockingMember ? -1 : 0),
   };
   return { blockedMember, space: spaceUpdateData };
 };

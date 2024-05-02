@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
-import { COL, Member, Nft, Transaction, TransactionType, WEN_FUNC } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, Member, Nft, Transaction, TransactionType, WEN_FUNC } from '@buildcore/interfaces';
 import { getAddress } from '../../src/utils/address.utils';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
@@ -23,7 +23,7 @@ describe('Collection minting', () => {
 
     mockWalletReturnValue(helper.guardian!, { nft: helper.nft!.uid });
     await testEnv.wrap(WEN_FUNC.withdrawNft);
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.WITHDRAW_NFT)
       .where('payload_nft', '==', helper.nft!.uid);
@@ -32,9 +32,9 @@ describe('Collection minting', () => {
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
 
-    await build5Db().doc(COL.COLLECTION, helper.collection!).update({ approved: false });
+    await database().doc(COL.COLLECTION, helper.collection!).update({ approved: false });
 
-    const guardianData = <Member>await build5Db().doc(COL.MEMBER, helper.guardian!).get();
+    const guardianData = <Member>await database().doc(COL.MEMBER, helper.guardian!).get();
     mockWalletReturnValue(helper.guardian!, { network: helper.network });
     const depositOrder = await testEnv.wrap<Transaction>(WEN_FUNC.depositNft);
     const sourceAddress = await helper.walletService?.getAddressDetails(
@@ -42,7 +42,7 @@ describe('Collection minting', () => {
     );
     await helper.sendNftToAddress(sourceAddress!, depositOrder.payload.targetAddress!);
 
-    const creditNftQuery = build5Db()
+    const creditNftQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_NFT)
       .where('member', '==', helper.guardian);
@@ -51,7 +51,7 @@ describe('Collection minting', () => {
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
 
-    const nft = <Nft>await build5Db().doc(COL.NFT, helper.nft!.uid).get();
+    const nft = <Nft>await database().doc(COL.NFT, helper.nft!.uid).get();
     const creditNftTransaction = (await creditNftQuery.get())[0] as Transaction;
     expect(creditNftTransaction.payload.nftId).toBe(nft.mintingData?.nftId);
   });

@@ -1,4 +1,4 @@
-import { IDocument, Update, build5Db } from '@build-5/database';
+import { IDocument, Update, database } from '@buildcore/database';
 import {
   Auction,
   AuctionType,
@@ -9,7 +9,7 @@ import {
   TangleRequestType,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
@@ -39,7 +39,7 @@ describe('Auction tangle test', () => {
     member = await testEnv.createMember();
     space = await testEnv.createSpace(member);
 
-    const memberDocRef = build5Db().doc(COL.MEMBER, member);
+    const memberDocRef = database().doc(COL.MEMBER, member);
     const memberData = await memberDocRef.get();
     const bech32 = getAddress(memberData, Network.RMS);
     memberAddress = await w.getAddressDetails(bech32);
@@ -55,7 +55,7 @@ describe('Auction tangle test', () => {
     });
     await MnemonicService.store(bech32, memberAddress.mnemonic);
 
-    const creaditQuery = build5Db()
+    const creaditQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
@@ -67,7 +67,7 @@ describe('Auction tangle test', () => {
     const credits = await creaditQuery.get();
     expect(credits[0].payload.response?.auction).toBeDefined();
 
-    auctionDocRef = build5Db().doc(COL.AUCTION, credits[0].payload.response?.auction! as string);
+    auctionDocRef = database().doc(COL.AUCTION, credits[0].payload.response?.auction! as string);
     auction = <Auction>await auctionDocRef.get();
   });
 

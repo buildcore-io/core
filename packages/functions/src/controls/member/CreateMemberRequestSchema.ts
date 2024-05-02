@@ -1,4 +1,4 @@
-import { CreateMemberRequest } from '@build-5/interfaces';
+import { CreateMemberRequest } from '@buildcore/interfaces';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 
 export const createMemberSchema = toJoiObject<CreateMemberRequest>({

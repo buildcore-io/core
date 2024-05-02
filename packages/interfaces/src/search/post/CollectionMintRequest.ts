@@ -8,7 +8,7 @@
  */
 export interface CollectionMintRequest {
   /**
-   * Build5 id of the collection to mint.
+   * Buildcore id of the collection to mint.
    */
   collection: string;
   /**

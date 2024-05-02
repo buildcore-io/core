@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
-import { COL, Transaction, TransactionType, WEN_FUNC } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, Transaction, TransactionType, WEN_FUNC } from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { Helper } from './Helper';
@@ -25,7 +25,7 @@ describe('Collection minting', () => {
     const depositOrder = await testEnv.wrap<Transaction>(WEN_FUNC.depositNft);
     await helper.sendNftToAddress(helper.guardianAddress!, depositOrder.payload.targetAddress!);
 
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.guardian)
       .where('type', '==', TransactionType.CREDIT_NFT);

@@ -1,4 +1,4 @@
-import { StampTangleRequest, TangleRequestType } from '@build-5/interfaces';
+import { StampTangleRequest, TangleRequestType } from '@buildcore/interfaces';
 import { DatasetClass, OtrRequest } from './common';
 
 /**

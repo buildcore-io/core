@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Proposal,
@@ -6,7 +6,7 @@ import {
   Transaction,
   TransactionPayloadType,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { head } from 'lodash';
 import { getProject } from '../../utils/common.utils';
@@ -48,10 +48,10 @@ export class VotingService extends BaseService {
       return;
     }
 
-    const proposalDocRef = build5Db().doc(COL.PROPOSAL, proposalId);
+    const proposalDocRef = database().doc(COL.PROPOSAL, proposalId);
     const proposal = <Proposal>await proposalDocRef.get();
 
-    const proposalMemberDocRef = build5Db().doc(
+    const proposalMemberDocRef = database().doc(
       COL.PROPOSAL,
       proposalId,
       SUB_COL.MEMBERS,
@@ -79,7 +79,7 @@ export class VotingService extends BaseService {
         parentId: proposalId,
         tranId: voteTransaction.uid,
         weight,
-        values: { [voteTransaction.uid]: { value, weight: build5Db().inc(weight) } },
+        values: { [voteTransaction.uid]: { value, weight: database().inc(weight) } },
       },
       action: Action.UPS,
     });
@@ -88,9 +88,9 @@ export class VotingService extends BaseService {
       ref: proposalDocRef,
       data: {
         results: {
-          total: build5Db().inc(weight),
-          voted: build5Db().inc(weight),
-          answers: { [value]: build5Db().inc(weight) },
+          total: database().inc(weight),
+          voted: database().inc(weight),
+          answers: { [value]: database().inc(weight) },
         },
       },
       action: Action.U,
@@ -126,7 +126,7 @@ export class VotingService extends BaseService {
     };
 
     this.transactionService.push({
-      ref: build5Db().doc(COL.TRANSACTION, voteTransaction.uid),
+      ref: database().doc(COL.TRANSACTION, voteTransaction.uid),
       data: voteTransaction,
       action: Action.C,
     });

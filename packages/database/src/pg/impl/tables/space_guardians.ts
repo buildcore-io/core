@@ -1,4 +1,4 @@
-import { COL, SpaceGuardian } from '@build-5/interfaces';
+import { COL, SpaceGuardian } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgSpaceGuardians } from '../../models';
 import { removeNulls } from '../common';

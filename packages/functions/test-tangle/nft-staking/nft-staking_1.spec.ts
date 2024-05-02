@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Collection,
@@ -8,7 +8,7 @@ import {
   StakeType,
   Transaction,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { wait } from '../../test/controls/common';
@@ -30,7 +30,7 @@ describe('Stake nft', () => {
     'Should stake nft',
     async (stakeType: StakeType) => {
       let nft = await helper.createAndOrderNft();
-      const nftDocRef = build5Db().doc(COL.NFT, nft.uid);
+      const nftDocRef = database().doc(COL.NFT, nft.uid);
       await helper.mintCollection();
       await helper.withdrawNftAndAwait(nft.uid);
 
@@ -48,7 +48,7 @@ describe('Stake nft', () => {
         nft.mintingData?.nftId,
       );
 
-      const stakeQuery = build5Db().collection(COL.NFT_STAKE).where('nft', '==', nft.uid);
+      const stakeQuery = database().collection(COL.NFT_STAKE).where('nft', '==', nft.uid);
       await wait(async () => {
         const snap = await stakeQuery.get();
         return snap.length === 1;
@@ -65,11 +65,11 @@ describe('Stake nft', () => {
       expect(nftStake.expirationProcessed).toBe(false);
       expect(nftStake.type).toBe(stakeType);
 
-      const collectionDocRef = build5Db().doc(COL.COLLECTION, nftStake.collection);
+      const collectionDocRef = database().doc(COL.COLLECTION, nftStake.collection);
       const collection = <Collection>await collectionDocRef.get();
       expect(collection.stakedNft).toBe(1);
 
-      const stakeNftOrderDocRef = build5Db().doc(COL.TRANSACTION, stakeNftOrder.uid);
+      const stakeNftOrderDocRef = database().doc(COL.TRANSACTION, stakeNftOrder.uid);
       stakeNftOrder = <Transaction>await stakeNftOrderDocRef.get();
       expect(stakeNftOrder.payload.nft).toBe(nft.uid);
       expect(stakeNftOrder.payload.collection).toBe(nft.collection);

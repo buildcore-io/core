@@ -1,4 +1,4 @@
-import { NativeToken, Network, Swap, SwapOutput, SwapStatus } from '@build-5/interfaces';
+import { NativeToken, Network, Swap, SwapOutput, SwapStatus } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgSwap } from '../../models';
 import { removeNulls } from '../common';

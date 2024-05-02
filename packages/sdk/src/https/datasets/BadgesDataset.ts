@@ -1,4 +1,4 @@
-import { Badge, Dataset } from '@build-5/interfaces';
+import { Badge, Dataset } from '@buildcore/interfaces';
 import { DatasetClass } from './Dataset';
 
 /**

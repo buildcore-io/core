@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { Award, AwardCancelRequest, COL, WenError } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { Award, AwardCancelRequest, COL, WenError } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
@@ -9,8 +9,8 @@ export const cancelAwardControl = ({
   owner,
   params,
 }: Context<AwardCancelRequest>): Promise<Award> =>
-  build5Db().runTransaction(async (transaction) => {
-    const awardDocRef = build5Db().doc(COL.AWARD, params.uid);
+  database().runTransaction(async (transaction) => {
+    const awardDocRef = database().doc(COL.AWARD, params.uid);
     const award = await transaction.get(awardDocRef);
 
     if (!award) {

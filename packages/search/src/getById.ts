@@ -1,5 +1,5 @@
-import { BaseRecord, IDocument, Update, build5Db } from '@build-5/database';
-import { COL, Dataset, GetByIdRequest, SUB_COL, Subset } from '@build-5/interfaces';
+import { BaseRecord, IDocument, Update, database } from '@buildcore/database';
+import { COL, Dataset, GetByIdRequest, SUB_COL, Subset } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { map } from 'rxjs';
 import {
@@ -24,7 +24,7 @@ const getByIdSchema = Joi.object({
 export const getById = async (url: string, isLive: boolean) => {
   const body = getQueryParams<GetByIdRequest>(url, getByIdSchema);
 
-  const docRef = build5Db().doc(
+  const docRef = database().doc(
     body.dataset as unknown as COL,
     body.setId,
     body.subset as unknown as SUB_COL,

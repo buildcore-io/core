@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Network,
@@ -12,7 +12,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { Utils } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { Wallet } from '../../services/wallet/wallet';
@@ -31,8 +31,8 @@ import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Context } from '../common';
 
 export const mintTokenControl = ({ owner, params, project }: Context<TokenMintRequest>) =>
-  build5Db().runTransaction(async (transaction) => {
-    const tokenDocRef = build5Db().doc(COL.TOKEN, params.token);
+  database().runTransaction(async (transaction) => {
+    const tokenDocRef = database().doc(COL.TOKEN, params.token);
     const token = await transaction.get(tokenDocRef);
     if (!token) {
       throw invalidArgument(WenError.invalid_params);
@@ -45,16 +45,16 @@ export const mintTokenControl = ({ owner, params, project }: Context<TokenMintRe
     assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED]);
 
     await assertIsTokenGuardian(token, owner);
-    const member = await build5Db().doc(COL.MEMBER, owner).get();
+    const member = await database().doc(COL.MEMBER, owner).get();
     assertMemberHasValidAddress(member, params.network as Network);
 
     const wallet = await WalletService.newWallet(params.network as Network);
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
-    const totalOwned = await build5Db()
+    const totalOwned = await database()
       .collection(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION)
       .getTotalOwned();
-    const airdropTotal = await build5Db()
+    const airdropTotal = await database()
       .collection(COL.AIRDROP)
       .getUnclaimedAirdropTotalValue(token.uid);
     const totalDistributed = totalOwned + airdropTotal;
@@ -85,7 +85,7 @@ export const mintTokenControl = ({ owner, params, project }: Context<TokenMintRe
         tokensInVault: totalDistributed,
       },
     };
-    const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
+    const orderDocRef = database().doc(COL.TRANSACTION, order.uid);
     await transaction.create(orderDocRef, order);
     return order;
   });

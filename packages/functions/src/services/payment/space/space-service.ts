@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Collection,
@@ -7,7 +7,7 @@ import {
   Space,
   SpaceMember,
   TransactionPayloadType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import {
   AliasOutput,
   FeatureType,
@@ -32,13 +32,13 @@ export class SpaceClaimService extends BaseService {
       match,
     );
 
-    const spaceDocRef = build5Db().doc(COL.SPACE, order.space!);
+    const spaceDocRef = database().doc(COL.SPACE, order.space!);
     const space = <Space>await this.transaction.get(spaceDocRef);
     if (!space.collectionId || space.claimed) {
       return;
     }
 
-    const collectionDocRef = build5Db().doc(COL.COLLECTION, space.collectionId);
+    const collectionDocRef = database().doc(COL.COLLECTION, space.collectionId);
     const collection = <Collection>await collectionDocRef.get();
 
     const senderIsIssuer = await senderIsCollectionIssuer(order.network!, match.from, collection);
@@ -53,7 +53,7 @@ export class SpaceClaimService extends BaseService {
       parentCol: COL.SPACE,
       createdOn: serverTime(),
     };
-    const spaceGuardianDocRef = build5Db().doc(
+    const spaceGuardianDocRef = database().doc(
       COL.SPACE,
       order.space!,
       SUB_COL.GUARDIANS,
@@ -64,7 +64,7 @@ export class SpaceClaimService extends BaseService {
       data: spaceMember,
       action: Action.C,
     });
-    const spaceMemberDocRef = build5Db().doc(
+    const spaceMemberDocRef = database().doc(
       COL.SPACE,
       order.space!,
       SUB_COL.MEMBERS,
@@ -79,15 +79,15 @@ export class SpaceClaimService extends BaseService {
     this.transactionService.push({
       ref: spaceDocRef,
       data: {
-        totalMembers: build5Db().inc(1),
-        totalGuardians: build5Db().inc(1),
+        totalMembers: database().inc(1),
+        totalGuardians: database().inc(1),
         claimed: true,
       },
       action: Action.U,
     });
 
     this.transactionService.push({
-      ref: build5Db().doc(COL.MEMBER, order.member!),
+      ref: database().doc(COL.MEMBER, order.member!),
       data: { spaces: { [space.uid]: { uid: space.uid, isMember: true } } },
       action: Action.U,
     });

@@ -48,7 +48,7 @@ export interface SpaceUpdateRequest {
    */
   twitter?: string | null | '';
   /**
-   * Build5 id of the space.
+   * Buildcore id of the space.
    */
   uid: string;
 }

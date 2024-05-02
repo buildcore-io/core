@@ -9,14 +9,14 @@ import {
   AwardParticipant,
   AwardParticpateRequest,
   AwardRejectRequest,
-  Build5Request,
+  BuildcoreRequest,
   Dataset,
   GetManyAdvancedRequest,
   Opr,
   Subset,
   Transaction,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { switchMap } from 'rxjs';
 import { DatasetClass } from '../Dataset';
 import { SubsetType } from '../common';
@@ -28,50 +28,50 @@ export class AwardDataset<D extends Dataset> extends DatasetClass<D, Award> {
   /**
    * Create Award
    *
-   * @param req Use {@link Build5Request} with data based on {@link AwardCreateRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link AwardCreateRequest}
    * @returns
    */
-  create = (req: Build5Request<AwardCreateRequest>) =>
+  create = (req: BuildcoreRequest<AwardCreateRequest>) =>
     this.sendRequest(WEN_FUNC.createAward)<AwardCreateRequest, Award>(req);
   /**
    * Fund award with native or base token.
    *
-   * @param req Use {@link Build5Request} with data based on {@link AwardFundRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link AwardFundRequest}
    * @returns
    */
-  fund = (req: Build5Request<AwardFundRequest>) =>
+  fund = (req: BuildcoreRequest<AwardFundRequest>) =>
     this.sendRequest(WEN_FUNC.fundAward)<AwardFundRequest, Transaction>(req);
   /**
    * Reject award
    *
-   * @param req Use {@link Build5Request} with data based on {@link AwardRejectRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link AwardRejectRequest}
    * @returns
    */
-  reject = (req: Build5Request<AwardRejectRequest>) =>
+  reject = (req: BuildcoreRequest<AwardRejectRequest>) =>
     this.sendRequest(WEN_FUNC.rejectAward)<AwardRejectRequest, Award>(req);
   /**
    * Add owner of the award. This grants the ability to manage it.
    *
-   * @param req Use {@link Build5Request} with data based on {@link AwardAddOwnerRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link AwardAddOwnerRequest}
    * @returns
    */
-  addOwner = (req: Build5Request<AwardAddOwnerRequest>) =>
+  addOwner = (req: BuildcoreRequest<AwardAddOwnerRequest>) =>
     this.sendRequest(WEN_FUNC.addOwnerAward)<AwardAddOwnerRequest, Award>(req);
   /**
    * Participate in the award to receive badge and tokens.
    *
-   * @param req Use {@link Build5Request} with data based on {@link AwardParticpateRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link AwardParticpateRequest}
    * @returns
    */
-  participate = (req: Build5Request<AwardParticpateRequest>) =>
+  participate = (req: BuildcoreRequest<AwardParticpateRequest>) =>
     this.sendRequest(WEN_FUNC.participateAward)<AwardParticpateRequest, AwardParticipant>(req);
   /**
    * Approve participants and distribute them with token and NFT
    *
-   * @param req Use {@link Build5Request} with data based on {@link AwardApproveParticipantRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link AwardApproveParticipantRequest}
    * @returns
    */
-  approveParticipant = (req: Build5Request<AwardApproveParticipantRequest>) =>
+  approveParticipant = (req: BuildcoreRequest<AwardApproveParticipantRequest>) =>
     this.sendRequest(WEN_FUNC.approveParticipantAward)<
       AwardApproveParticipantRequest,
       AwardApproveParticipantResponse
@@ -79,10 +79,10 @@ export class AwardDataset<D extends Dataset> extends DatasetClass<D, Award> {
   /**
    * Cancel ongoing award and get refunded with remaining tokens.
    *
-   * @param req Use {@link Build5Request} with data based on {@link AwardCancelRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link AwardCancelRequest}
    * @returns
    */
-  cancel = (req: Build5Request<AwardCancelRequest>) =>
+  cancel = (req: BuildcoreRequest<AwardCancelRequest>) =>
     this.sendRequest(WEN_FUNC.cancelAward)<AwardCancelRequest, Award>(req);
   /**
    * Helper GET function to get "active" awards per space. Returns observable with continues updates via Websocket.

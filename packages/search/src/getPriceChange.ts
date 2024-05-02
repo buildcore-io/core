@@ -1,11 +1,11 @@
-import { IQuery, PgTokenPurchase, build5Db } from '@build-5/database';
+import { IQuery, PgTokenPurchase, database } from '@buildcore/database';
 import {
   COL,
   GetPriceChangeRequest,
   QUERY_MAX_LENGTH,
   QUERY_MIN_LENGTH,
   TokenPurchase,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import Joi from 'joi';
 import { combineLatest, map } from 'rxjs';
@@ -57,7 +57,7 @@ const getVWAPForDates = (
 
 const purchaseQueryToday = (token: string, lowest?: boolean) => {
   if (lowest === undefined) {
-    return build5Db()
+    return database()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', token)
       .where('createdOn', '>=', dayjs().subtract(1, 'd').toDate())
@@ -65,14 +65,14 @@ const purchaseQueryToday = (token: string, lowest?: boolean) => {
       .limit(1);
   }
   if (lowest) {
-    return build5Db()
+    return database()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', token)
       .where('in24h', '==', true)
       .orderBy('price')
       .limit(1);
   }
-  return build5Db()
+  return database()
     .collection(COL.TOKEN_PURCHASE)
     .where('token', '==', token)
     .where('in24h', '==', true)
@@ -82,7 +82,7 @@ const purchaseQueryToday = (token: string, lowest?: boolean) => {
 
 const purchaseQueryYesterday = (token: string, lowest?: boolean) => {
   if (lowest === undefined) {
-    return build5Db()
+    return database()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', token)
       .where('createdOn', '<', dayjs().subtract(1, 'd').toDate())
@@ -91,7 +91,7 @@ const purchaseQueryYesterday = (token: string, lowest?: boolean) => {
       .limit(1);
   }
   if (lowest) {
-    return build5Db()
+    return database()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', token)
       .where('in48h', '==', true)
@@ -100,7 +100,7 @@ const purchaseQueryYesterday = (token: string, lowest?: boolean) => {
       .limit(1);
   }
 
-  return build5Db()
+  return database()
     .collection(COL.TOKEN_PURCHASE)
     .where('token', '==', token)
     .where('in48h', '==', true)

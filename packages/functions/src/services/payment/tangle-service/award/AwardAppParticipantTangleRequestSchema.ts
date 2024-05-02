@@ -1,4 +1,4 @@
-import { AwardApproveParticipantTangleRequest, TangleRequestType } from '@build-5/interfaces';
+import { AwardApproveParticipantTangleRequest, TangleRequestType } from '@buildcore/interfaces';
 import { approveAwardParticipantSchema } from '../../../../controls/award/AwardApproveParticipantRequestSchema';
 import { toJoiObject } from '../../../joi/common';
 import { baseTangleSchema } from '../common';

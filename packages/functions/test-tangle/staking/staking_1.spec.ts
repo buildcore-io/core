@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   calcStakedMultiplier,
   COL,
@@ -10,7 +10,7 @@ import {
   TransactionType,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { UnlockConditionType } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { removeExpiredStakesFromSpace } from '../../src/cron/stake.cron';
@@ -87,7 +87,7 @@ describe('Staking test', () => {
   ])('Should set stake amount and remove it once expired', async ({ expiration, type }) => {
     const secondGuardian = await testEnv.createMember();
     await addGuardianToSpace(helper.space?.uid!, secondGuardian);
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, helper.token?.uid!, SUB_COL.DISTRIBUTION, secondGuardian)
       .upsert({
         parentId: helper.token?.uid!,
@@ -104,7 +104,7 @@ describe('Staking test', () => {
     await helper.validateMemberStakeAmount(10, 10, 14, 14, type);
     await helper.assertDistributionStakeExpiry(stake1);
 
-    const spaceDocRef = build5Db().doc(COL.SPACE, helper.space?.uid!);
+    const spaceDocRef = database().doc(COL.SPACE, helper.space?.uid!);
     await spaceDocRef.update({ tokenBased: true, minStakedValue: 10 });
 
     const stake2 = await helper.stakeAmount(20, 26, expiresAt, type);
@@ -186,13 +186,13 @@ describe('Staking test', () => {
     );
     await wait(
       async () => {
-        const snap = await build5Db()
+        const snap = await database()
           .collection(COL.TRANSACTION)
           .where('type', '==', TransactionType.UNLOCK)
           .where('member', '==', helper.member?.uid)
           .get();
         if (snap.length) {
-          await build5Db()
+          await database()
             .doc(COL.TRANSACTION, order.uid)
             .update({ payload_expiresOn: dayjs().subtract(1, 'd').toDate() });
         }
@@ -202,7 +202,7 @@ describe('Staking test', () => {
       100,
     );
 
-    const creditQuery = build5Db()
+    const creditQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.member?.uid);

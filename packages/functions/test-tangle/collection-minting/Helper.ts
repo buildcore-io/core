@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Access,
   COL,
@@ -18,7 +18,7 @@ import {
   TransactionType,
   UnsoldMintingOptions,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { FeatureType, MetadataFeature, NftOutput, hexToUtf8 } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
@@ -65,7 +65,7 @@ export class CollectionMintHelper {
     mockWalletReturnValue(this.guardian!, nft);
     nft = <Nft>await testEnv.wrap<Nft>(WEN_FUNC.createNft);
 
-    await build5Db()
+    await database()
       .doc(COL.NFT, nft.uid)
       .update({ availableFrom: dayjs().subtract(1, 'h').toDate() });
 
@@ -74,7 +74,7 @@ export class CollectionMintHelper {
       nft: nft.uid,
     });
     await testEnv.wrap<Transaction>(WEN_FUNC.orderNft);
-    return <Nft>await build5Db().doc(COL.NFT, nft.uid).get();
+    return <Nft>await database().doc(COL.NFT, nft.uid).get();
   };
 
   public createAndOrderNft = async (buyAndAuctionId = false, shouldBid = false) => {
@@ -86,7 +86,7 @@ export class CollectionMintHelper {
     nft = await testEnv.wrap<Nft>(WEN_FUNC.createNft);
 
     if (buyAndAuctionId) {
-      await build5Db()
+      await database()
         .doc(COL.NFT, nft.uid)
         .update({ availableFrom: dayjs().subtract(1, 'h').toDate() });
 
@@ -99,7 +99,7 @@ export class CollectionMintHelper {
 
       mockWalletReturnValue(this.guardian!, this.dummyAuctionData(nft.uid));
       await testEnv.wrap(WEN_FUNC.setForSaleNft);
-      await wait(async () => (await build5Db().doc(COL.NFT, nft.uid).get())?.available === 3);
+      await wait(async () => (await database().doc(COL.NFT, nft.uid).get())?.available === 3);
 
       if (shouldBid) {
         mockWalletReturnValue(this.member!, { nft: nft.uid });
@@ -107,7 +107,7 @@ export class CollectionMintHelper {
         await submitMilestoneFunc(bidOrder, 2 * MIN_IOTA_AMOUNT);
       }
     }
-    return <Nft>await build5Db().doc(COL.NFT, nft.uid).get();
+    return <Nft>await database().doc(COL.NFT, nft.uid).get();
   };
 
   public mintCollection = async (
@@ -129,7 +129,7 @@ export class CollectionMintHelper {
       collectionMintOrder.payload.targetAddress,
       collectionMintOrder.payload.amount,
     );
-    const collectionDocRef = build5Db().doc(COL.COLLECTION, this.collection);
+    const collectionDocRef = database().doc(COL.COLLECTION, this.collection);
     await wait(async () => {
       const data = <Collection>await collectionDocRef.get();
       return data.status === CollectionStatus.MINTED;
@@ -143,7 +143,7 @@ export class CollectionMintHelper {
     expect(collectionData.mintingData?.nftsToMint).toBe(0);
 
     const ownerChangeTran = (
-      await build5Db()
+      await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.MINT_COLLECTION)
         .where('payload_type', '==', TransactionPayloadType.SEND_ALIAS_TO_GUARDIAN)
@@ -157,7 +157,7 @@ export class CollectionMintHelper {
 
   public lockCollectionConfirmed = async () => {
     const lockTran = (
-      await build5Db()
+      await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.MINT_COLLECTION)
         .where('payload_type', '==', TransactionPayloadType.LOCK_COLLECTION)

@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   ProposalType,
@@ -7,7 +7,7 @@ import {
   TokenStatus,
   Transaction,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import {
   getProposal,
   getProposalMember,
@@ -34,28 +34,28 @@ export const voteOnProposalControl = async ({
     }
 
     if (params.voteWithStakedTokes) {
-      const voteTransaction = await build5Db().runTransaction((transaction) =>
+      const voteTransaction = await database().runTransaction((transaction) =>
         voteWithStakedTokens(project, transaction, owner, proposal, [params.value]),
       );
       return voteTransaction;
     }
 
     const order = await createVoteTransactionOrder(project, owner, proposal, [params.value], token);
-    const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
+    const orderDocRef = database().doc(COL.TRANSACTION, order.uid);
     await orderDocRef.create(order);
 
     return (await orderDocRef.get())!;
   }
 
   const voteData = executeSimpleVoting(project, proposalMember, proposal, [params.value]);
-  const batch = build5Db().batch();
+  const batch = database().batch();
 
   if (voteData.proposal) {
-    const proposalDocRef = build5Db().doc(COL.PROPOSAL, proposal.uid);
+    const proposalDocRef = database().doc(COL.PROPOSAL, proposal.uid);
     batch.update(proposalDocRef, voteData.proposal);
   }
 
-  const proposalMemberDocRef = build5Db().doc(
+  const proposalMemberDocRef = database().doc(
     COL.PROPOSAL,
     proposal.uid,
     SUB_COL.MEMBERS,
@@ -63,7 +63,7 @@ export const voteOnProposalControl = async ({
   );
   batch.update(proposalMemberDocRef, voteData.proposalMember);
 
-  const voteTransactionDocRef = build5Db().doc(COL.TRANSACTION, voteData.voteTransaction.uid);
+  const voteTransactionDocRef = database().doc(COL.TRANSACTION, voteData.voteTransaction.uid);
   batch.create(voteTransactionDocRef, voteData.voteTransaction);
 
   await batch.commit();

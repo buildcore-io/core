@@ -24,7 +24,7 @@ export interface MilestoneTransaction extends Base {
   consumedOutputIds: string[];
   outputs: MilestoneTransactionEntry[];
   processed: boolean;
-  build5TransactionId?: string;
+  buildcoreTransactionId?: string;
 }
 
 /**

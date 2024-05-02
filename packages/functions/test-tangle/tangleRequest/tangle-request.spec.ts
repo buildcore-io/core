@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Member,
@@ -12,7 +12,7 @@ import {
   Transaction,
   TransactionType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
@@ -41,14 +41,14 @@ describe('Tangle request spec', () => {
     const space = await testEnv.createSpace(member);
     token = await saveToken(space.uid, member);
 
-    const memberData = <Member>await build5Db().doc(COL.MEMBER, member).get();
+    const memberData = <Member>await database().doc(COL.MEMBER, member).get();
     rmsAddress = await rmsWallet.getAddressDetails(getAddress(memberData, Network.RMS)!);
     await requestFundsFromFaucet(Network.RMS, rmsAddress.bech32, 10 * MIN_IOTA_AMOUNT);
   });
 
   it('Should return amount, multiple users with same address', async () => {
     const member2 = await testEnv.createMember();
-    await build5Db().doc(COL.MEMBER, member2).upsert({ rmsAddress: rmsAddress.bech32 });
+    await database().doc(COL.MEMBER, member2).upsert({ rmsAddress: rmsAddress.bech32 });
 
     await rmsWallet.send(rmsAddress, tangleOrder.payload.targetAddress!, 5 * MIN_IOTA_AMOUNT, {
       customMetadata: {
@@ -61,7 +61,7 @@ describe('Tangle request spec', () => {
       },
     });
 
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', rmsAddress.bech32)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
@@ -95,7 +95,7 @@ describe('Tangle request spec', () => {
     });
     await MnemonicService.store(address.bech32, address.mnemonic);
 
-    const query = build5Db()
+    const query = database()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', address.bech32)
       .where('type', '==', TokenTradeOrderType.BUY);
@@ -105,9 +105,9 @@ describe('Tangle request spec', () => {
     });
 
     const member2 = await testEnv.createMember();
-    await build5Db().doc(COL.MEMBER, member2).upsert({ rmsAddress: rmsAddress.bech32 });
+    await database().doc(COL.MEMBER, member2).upsert({ rmsAddress: rmsAddress.bech32 });
     const member3 = await testEnv.createMember();
-    await build5Db().doc(COL.MEMBER, member3).upsert({ rmsAddress: rmsAddress.bech32 });
+    await database().doc(COL.MEMBER, member3).upsert({ rmsAddress: rmsAddress.bech32 });
 
     await rmsWallet.send(address, tangleOrder.payload.targetAddress!, 0.2 * MIN_IOTA_AMOUNT, {
       customMetadata: {
@@ -140,7 +140,7 @@ describe('Tangle request spec', () => {
       },
     }));
     await rmsWallet.sendToMany(rmsAddress, requests, {});
-    const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', member);
+    const query = database().collection(COL.TOKEN_MARKET).where('owner', '==', member);
     await wait(async () => {
       const snap = await query.get();
       return snap.length === 10;
@@ -152,7 +152,7 @@ describe('Tangle request spec', () => {
       customMetadata: { request: { requestType: 'wrong_request' } },
     });
 
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
@@ -188,6 +188,6 @@ const saveToken = async (space: string, guardian: string) => {
       network: Network.RMS,
     },
   } as Token;
-  await build5Db().doc(COL.TOKEN, token.uid).create(token);
+  await database().doc(COL.TOKEN, token.uid).create(token);
   return token as Token;
 };

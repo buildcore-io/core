@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -8,7 +8,7 @@ import {
   Transaction,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, soonTokenId, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
@@ -23,8 +23,8 @@ describe('Base token trading', () => {
   });
 
   it('Should not create royalty payments, zero percentage fee', async () => {
-    await build5Db().doc(COL.MEMBER, helper.seller!.uid).update({ tokenTradingFeePercentage: 0 });
-    await build5Db()
+    await database().doc(COL.MEMBER, helper.seller!.uid).update({ tokenTradingFeePercentage: 0 });
+    await database()
       .doc(COL.TOKEN, soonTokenId, SUB_COL.DISTRIBUTION, helper.seller?.uid!)
       .upsert({ stakes_dynamic_value: 15000 * MIN_IOTA_AMOUNT });
 
@@ -41,7 +41,7 @@ describe('Base token trading', () => {
       MIN_IOTA_AMOUNT,
     );
 
-    const tradesQuery = build5Db()
+    const tradesQuery = database()
       .collection(COL.TOKEN_MARKET)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {
@@ -62,7 +62,7 @@ describe('Base token trading', () => {
       2 * MIN_IOTA_AMOUNT,
     );
 
-    const purchaseQuery = build5Db()
+    const purchaseQuery = database()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {
@@ -76,7 +76,7 @@ describe('Base token trading', () => {
     expect(purchase.sellerTokenTradingFeePercentage).toBe(0);
 
     const billPayments = (
-      await build5Db()
+      await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
         .where('payload_token', '==', helper.token!.uid)
@@ -98,7 +98,7 @@ describe('Base token trading', () => {
   });
 
   it('Should create royalty payments only with dust', async () => {
-    await build5Db().doc(COL.MEMBER, helper.seller!.uid).update({ tokenTradingFeePercentage: 0 });
+    await database().doc(COL.MEMBER, helper.seller!.uid).update({ tokenTradingFeePercentage: 0 });
     mockWalletReturnValue(helper.seller!.uid, {
       symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
@@ -112,7 +112,7 @@ describe('Base token trading', () => {
       MIN_IOTA_AMOUNT,
     );
 
-    const tradesQuery = build5Db()
+    const tradesQuery = database()
       .collection(COL.TOKEN_MARKET)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {
@@ -133,7 +133,7 @@ describe('Base token trading', () => {
       2.001 * MIN_IOTA_AMOUNT,
     );
 
-    const purchaseQuery = build5Db()
+    const purchaseQuery = database()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {
@@ -145,7 +145,7 @@ describe('Base token trading', () => {
     expect(purchase.price).toBe(2);
 
     const billPayments = (
-      await build5Db()
+      await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
         .where('payload_token', '==', helper.token!.uid)
@@ -167,7 +167,7 @@ describe('Base token trading', () => {
   });
 
   it('Should create royalty payments for different percentage', async () => {
-    await build5Db().doc(COL.MEMBER, helper.seller!.uid).update({ tokenTradingFeePercentage: 1 });
+    await database().doc(COL.MEMBER, helper.seller!.uid).update({ tokenTradingFeePercentage: 1 });
     mockWalletReturnValue(helper.seller!.uid, {
       symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
@@ -181,7 +181,7 @@ describe('Base token trading', () => {
       MIN_IOTA_AMOUNT,
     );
 
-    const tradesQuery = build5Db()
+    const tradesQuery = database()
       .collection(COL.TOKEN_MARKET)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {
@@ -202,7 +202,7 @@ describe('Base token trading', () => {
       2 * MIN_IOTA_AMOUNT,
     );
 
-    const purchaseQuery = build5Db()
+    const purchaseQuery = database()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {
@@ -214,7 +214,7 @@ describe('Base token trading', () => {
     expect(purchase.price).toBe(2);
 
     const billPayments = (
-      await build5Db()
+      await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
         .where('payload_token', '==', helper.token!.uid)

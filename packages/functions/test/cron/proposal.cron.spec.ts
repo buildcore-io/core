@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, ProposalType, SOON_PROJECT_ID } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, ProposalType, SOON_PROJECT_ID } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { markExpiredProposalCompleted } from '../../src/cron/proposal.cron';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
@@ -10,7 +10,7 @@ describe('Set proposal completed', () => {
     const member = getRandomEthAddress();
     const count = 600;
     const ids = Array.from(Array(count)).map(() => getRandomEthAddress());
-    let batch = build5Db().batch();
+    let batch = database().batch();
     for (let i = 0; i < count; ++i) {
       const proposal = {
         name: 'proposal',
@@ -27,22 +27,22 @@ describe('Set proposal completed', () => {
         createdBy: member,
         completed: i < 550,
       };
-      const docRef = build5Db().doc(COL.PROPOSAL, proposal.uid);
+      const docRef = database().doc(COL.PROPOSAL, proposal.uid);
       batch.create(docRef, proposal);
       if (i > 0 && i % 499 === 0) {
         await batch.commit();
-        batch = build5Db().batch();
+        batch = database().batch();
       }
     }
     await batch.commit();
     await markExpiredProposalCompleted();
-    const completed = await build5Db()
+    const completed = await database()
       .collection(COL.PROPOSAL)
       .where('createdBy', '==', member)
       .where('completed', '==', true)
       .get();
     expect(completed.length).toBe(550);
-    const inProgress = await build5Db()
+    const inProgress = await database()
       .collection(COL.PROPOSAL)
       .where('createdBy', '==', member)
       .where('completed', '==', false)

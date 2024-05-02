@@ -1,4 +1,4 @@
-import { COL, SUB_COL } from '@build-5/interfaces';
+import { COL, SUB_COL } from '@buildcore/interfaces';
 
 export const getPathParts = (path: string) => {
   const [col, colId, subCol, subColId] = path.split('/');

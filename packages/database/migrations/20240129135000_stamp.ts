@@ -1,4 +1,4 @@
-import { COL } from '@build-5/interfaces';
+import { COL } from '@buildcore/interfaces';
 import type { Knex } from 'knex';
 import { baseRecord, createTable } from './20240129091246_common';
 
@@ -7,7 +7,7 @@ export async function up(knex: Knex): Promise<void> {
     baseRecord(knex, table);
 
     table.string('space');
-    table.string('build5Url');
+    table.string('buildcoreUrl');
     table.text('originUri');
     table.string('checksum');
     table.string('extension');

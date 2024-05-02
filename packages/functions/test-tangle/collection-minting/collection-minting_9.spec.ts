@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, Transaction, UnsoldMintingOptions, WEN_FUNC, WenError } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, Transaction, UnsoldMintingOptions, WEN_FUNC, WenError } from '@buildcore/interfaces';
 import { expectThrow } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { CollectionMintHelper } from './Helper';
@@ -16,7 +16,7 @@ describe('Collection minting', () => {
   });
 
   it('Should throw, member has no valid address', async () => {
-    await build5Db()
+    await database()
       .doc(COL.MEMBER, helper.guardian)
       .update({ rmsAddress: '', smrAddress: '', iotaAddress: '', atoiAddress: '' });
     mockWalletReturnValue(helper.guardian!, {
@@ -31,7 +31,7 @@ describe('Collection minting', () => {
   });
 
   it('Should throw, space has no valid address', async () => {
-    await build5Db()
+    await database()
       .doc(COL.SPACE, helper.space!.uid)
       .update({ rmsAddress: '', smrAddress: '', iotaAddress: '', atoiAddress: '' });
     mockWalletReturnValue(helper.guardian!, {
@@ -46,7 +46,7 @@ describe('Collection minting', () => {
   });
 
   it('Should throw, royalty space has no valid address', async () => {
-    await build5Db()
+    await database()
       .doc(COL.SPACE, helper.royaltySpace!.uid)
       .update({ rmsAddress: '', smrAddress: '', iotaAddress: '', atoiAddress: '' });
     mockWalletReturnValue(helper.guardian!, {

@@ -4,7 +4,7 @@ import {
   SetTokenForSaleRequest,
   TRANSACTION_AUTO_EXPIRY_MS,
   TRANSACTION_MAX_EXPIRY_MS,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
@@ -14,7 +14,7 @@ import { MAX_PRICE } from './common';
 const MIN_COOL_DOWN = 0;
 
 export const setAvailableForSaleSchema = toJoiObject<SetTokenForSaleRequest>({
-  token: CommonJoi.uid().description('Build5 id of the token.'),
+  token: CommonJoi.uid().description('Buildcore id of the token.'),
   saleStartDate: Joi.date()
     .greater(
       dayjs()

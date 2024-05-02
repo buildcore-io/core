@@ -1,4 +1,4 @@
-import { Bucket } from '@build-5/interfaces';
+import { Bucket } from '@buildcore/interfaces';
 import Joi, { SchemaMap } from 'joi';
 import { isEmpty } from 'lodash';
 import { isEmulatorEnv, isProdEnv } from '../../utils/config.utils';
@@ -48,7 +48,7 @@ const startsWithBaseUrl = (url: string) => {
   return url.startsWith(BUCKET_BASE_URLS[Bucket.TEST]);
 };
 
-export const getBuild5FromUri = (url: string) =>
+export const getBuildcoreFromUri = (url: string) =>
   Object.values(BUCKET_BASE_URLS)
     .reduce((acc, act) => acc.replace(act, ''), url)
     .replace(/%2F/g, '/')

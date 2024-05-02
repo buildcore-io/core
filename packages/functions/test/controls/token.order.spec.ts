@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Access,
   COL,
@@ -13,7 +13,7 @@ import {
   Transaction,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { orderTokenControl } from '../../src/controls/token/token.order';
 import { serverTime } from '../../src/utils/dateTime.utils';
@@ -34,7 +34,7 @@ const submitCreditTokenFunc = async <T>(address: NetworkAddress, params: T) => {
   return order;
 };
 const assertOrderedTokensCount = async (tokenId: string, expected: number) => {
-  const token = <Token>await build5Db().doc(COL.TOKEN, tokenId).get();
+  const token = <Token>await database().doc(COL.TOKEN, tokenId).get();
   expect(token.tokensOrdered).toBe(expected);
 };
 
@@ -75,14 +75,14 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
       access: Access.OPEN,
       decimals: 6,
     };
-    await build5Db().doc(COL.TOKEN, tokenId).upsert(tokenUpsert);
-    token = (await build5Db().doc(COL.TOKEN, tokenId).get())!;
+    await database().doc(COL.TOKEN, tokenId).upsert(tokenUpsert);
+    token = (await database().doc(COL.TOKEN, tokenId).get())!;
   });
 
   it('Should create token order', async () => {
     const order = await submitTokenOrderFunc(member, { token: token.uid });
     await submitMilestoneFunc(order);
-    const distribution = await build5Db()
+    const distribution = await database()
       .doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, member)
       .get();
     expect(distribution?.totalDeposit).toBe(MIN_IOTA_AMOUNT);
@@ -94,7 +94,7 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
     await submitMilestoneFunc(order);
     const order2 = await submitTokenOrderFunc(member, { token: token.uid });
     await submitMilestoneFunc(order2);
-    const distribution = await build5Db()
+    const distribution = await database()
       .doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, member)
       .get();
     expect(distribution?.totalDeposit).toBe(MIN_IOTA_AMOUNT * 2);
@@ -106,22 +106,22 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
       const order = await submitTokenOrderFunc(member, { token: token.uid });
       await submitMilestoneFunc(order);
     }
-    const distribution = await build5Db()
+    const distribution = await database()
       .doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, member)
       .get();
     expect(distribution?.totalDeposit).toBe(MIN_IOTA_AMOUNT * 2);
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, token.uid)
       .update({
         saleStartDate: dayjs().subtract(3, 'd').toDate(),
         coolDownEnd: dayjs().add(1, 'd').toDate(),
       });
     await submitCreditTokenFunc(member, { token: token.uid, amount: MIN_IOTA_AMOUNT });
-    const updatedDistribution = await build5Db()
+    const updatedDistribution = await database()
       .doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, member)
       .get();
     expect(updatedDistribution?.totalDeposit).toBe(MIN_IOTA_AMOUNT);
-    const updatedToken = await build5Db().doc(COL.TOKEN, token.uid).get();
+    const updatedToken = await database().doc(COL.TOKEN, token.uid).get();
     expect(updatedToken?.totalDeposit).toBe(MIN_IOTA_AMOUNT);
     await assertOrderedTokensCount(token.uid, 1);
   });
@@ -129,22 +129,22 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
   it('Should create token order and should credit all amount', async () => {
     const order = await submitTokenOrderFunc(member, { token: token.uid });
     await submitMilestoneFunc(order);
-    const distribution = await build5Db()
+    const distribution = await database()
       .doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, member)
       .get();
     expect(distribution?.totalDeposit).toBe(MIN_IOTA_AMOUNT);
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, token.uid)
       .update({
         saleStartDate: dayjs().subtract(3, 'd').toDate(),
         coolDownEnd: dayjs().add(1, 'd').toDate(),
       });
     await submitCreditTokenFunc(member, { token: token.uid, amount: MIN_IOTA_AMOUNT });
-    const updatedDistribution = await build5Db()
+    const updatedDistribution = await database()
       .doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, member)
       .get();
     expect(updatedDistribution?.totalDeposit).toBe(0);
-    const updatedToken = await build5Db().doc(COL.TOKEN, token.uid).get();
+    const updatedToken = await database().doc(COL.TOKEN, token.uid).get();
     expect(updatedToken?.totalDeposit).toBe(0);
     await assertOrderedTokensCount(token.uid, 0);
   });
@@ -152,7 +152,7 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
   it('Should create token order and should fail credit, not in cool down period', async () => {
     const order = await submitTokenOrderFunc(member, { token: token.uid });
     await submitMilestoneFunc(order);
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, token.uid)
       .update({
         saleStartDate: dayjs().subtract(3, 'd').toDate(),
@@ -168,7 +168,7 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
   it('Should throw, amount too much to refund', async () => {
     const order = await submitTokenOrderFunc(member, { token: token.uid });
     await submitMilestoneFunc(order);
-    const distribution = await build5Db()
+    const distribution = await database()
       .doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, member)
       .get();
     expect(distribution?.totalDeposit).toBe(token.pricePerToken);
@@ -182,7 +182,7 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
   it('Should throw, amount too much to refund after second credit', async () => {
     const order = await submitTokenOrderFunc(member, { token: token.uid });
     await submitMilestoneFunc(order);
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, token.uid)
       .update({
         saleStartDate: dayjs().subtract(3, 'd').toDate(),
@@ -201,7 +201,7 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
   });
 
   it('Should allow only for members', async () => {
-    await build5Db().doc(COL.TOKEN, token.uid).update({ access: Access.MEMBERS_ONLY });
+    await database().doc(COL.TOKEN, token.uid).update({ access: Access.MEMBERS_ONLY });
     mockWalletReturnValue(member, { token: token.uid });
     await testEnv.wrap<Transaction>(WEN_FUNC.orderToken);
     const newMember = await testEnv.createMember();
@@ -213,7 +213,7 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
   });
 
   it('Should allow only for guardians', async () => {
-    await build5Db().doc(COL.TOKEN, token.uid).update({ access: Access.GUARDIANS_ONLY });
+    await database().doc(COL.TOKEN, token.uid).update({ access: Access.GUARDIANS_ONLY });
     const newMember = await testEnv.createMember();
     mockWalletReturnValue(newMember, { uid: space.uid });
     await testEnv.wrap(WEN_FUNC.joinSpace);
@@ -228,7 +228,7 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
   });
 
   it('Should throw, no badge so can not access', async () => {
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, token.uid)
       .update({
         access: Access.MEMBERS_WITH_BADGE,
@@ -243,7 +243,7 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
   });
 
   it('Should throw, no nft so can not access', async () => {
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, token.uid)
       .update({
         access: Access.MEMBERS_WITH_NFT_FROM_COLLECTION,
@@ -260,11 +260,11 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
   it('Should create token order and should credit, not leave less then MIN amount', async () => {
     const order = await submitTokenOrderFunc(member, { token: token.uid });
     await submitMilestoneFunc(order, 1.5 * MIN_IOTA_AMOUNT);
-    const distribution = await build5Db()
+    const distribution = await database()
       .doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, member)
       .get();
     expect(distribution?.totalDeposit).toBe(1.5 * MIN_IOTA_AMOUNT);
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, token.uid)
       .update({
         saleStartDate: dayjs().subtract(3, 'd').toDate(),
@@ -286,7 +286,7 @@ describe('Token controller: ' + WEN_FUNC.orderToken, () => {
     const promises = amounts.map(deposit);
     await Promise.all(promises);
     const distribution = <TokenDistribution>(
-      await build5Db().doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, member).get()
+      await database().doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, member).get()
     );
     expect(distribution.totalDeposit).toBe(total);
     await assertOrderedTokensCount(token.uid, total / MIN_IOTA_AMOUNT);

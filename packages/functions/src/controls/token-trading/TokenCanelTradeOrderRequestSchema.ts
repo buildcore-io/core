@@ -1,8 +1,8 @@
-import { CancelTokenTradeOrderRequest } from '@build-5/interfaces';
+import { CancelTokenTradeOrderRequest } from '@buildcore/interfaces';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 
 export const cancelTradeOrderSchema = toJoiObject<CancelTokenTradeOrderRequest>({
-  uid: CommonJoi.uid().description('Build5 id of the trade order.'),
+  uid: CommonJoi.uid().description('Buildcore id of the trade order.'),
 })
   .description('Request object to cancel a token trade order.')
   .meta({

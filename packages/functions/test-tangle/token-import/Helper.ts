@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Member,
@@ -9,7 +9,7 @@ import {
   TokenStatus,
   Transaction,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
@@ -33,7 +33,7 @@ export class Helper {
   public beforeEach = async () => {
     const guardianId = await testEnv.createMember();
     this.member = await testEnv.createMember();
-    this.guardian = <Member>await build5Db().doc(COL.MEMBER, guardianId).get();
+    this.guardian = <Member>await database().doc(COL.MEMBER, guardianId).get();
     this.space = await testEnv.createSpace(this.guardian.uid);
     this.importSpace = await testEnv.createSpace(this.guardian.uid);
     this.token = await this.saveToken(this.space.uid, this.guardian.uid, this.member);
@@ -49,7 +49,7 @@ export class Helper {
     const order = await testEnv.wrap<Transaction>(WEN_FUNC.mintTokenOrder);
     await requestFundsFromFaucet(this.network, order.payload.targetAddress, order.payload.amount);
 
-    const tokenDocRef = build5Db().doc(COL.TOKEN, this.token.uid);
+    const tokenDocRef = database().doc(COL.TOKEN, this.token.uid);
     await wait(async () => {
       this.token = <Token>await tokenDocRef.get();
       return this.token.status === TokenStatus.MINTED;
@@ -76,8 +76,8 @@ export class Helper {
       icon: MEDIA,
       decimals: 4,
     } as Token;
-    await build5Db().doc(COL.TOKEN, token.uid).create(token);
-    await build5Db()
+    await database().doc(COL.TOKEN, token.uid).create(token);
+    await database()
       .doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, member)
       .upsert({ tokenOwned: 1000 });
     return <Token>token;

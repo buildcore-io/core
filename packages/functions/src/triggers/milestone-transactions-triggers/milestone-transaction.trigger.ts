@@ -1,5 +1,5 @@
-import { PgMilestoneTransactions, build5Db } from '@build-5/database';
-import { COL, Network, SUB_COL } from '@build-5/interfaces';
+import { PgMilestoneTransactions, database } from '@buildcore/database';
+import { COL, Network, SUB_COL } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { ProcessingService } from '../../services/payment/payment-processing';
 import { logger } from '../../utils/logger';
@@ -18,8 +18,8 @@ export const handleMilestoneTransactionWrite =
     }
     const path = `${event.col}/${event.subColId}/${event.subCol!}/${event.uid}`;
     try {
-      return build5Db().runTransaction(async (transaction) => {
-        const docRef = build5Db().doc(
+      return database().runTransaction(async (transaction) => {
+        const docRef = database().doc(
           event.col as COL.MILESTONE,
           event.subColId!,
           event.subCol! as SUB_COL.TRANSACTIONS,

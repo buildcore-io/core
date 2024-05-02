@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -7,7 +7,7 @@ import {
   TangleRequestType,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
@@ -46,7 +46,7 @@ describe('Nft bulk order', () => {
     );
     await MnemonicService.store(h.memberAddress.bech32, h.memberAddress.mnemonic);
 
-    let query = build5Db()
+    let query = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', h.member)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
@@ -55,8 +55,8 @@ describe('Nft bulk order', () => {
       return snap.length === 1 && snap[0].payload.walletReference?.confirmed;
     });
 
-    const nft1DocRef = build5Db().doc(COL.NFT, nft1.uid);
-    const nft2DocRef = build5Db().doc(COL.NFT, nft2.uid);
+    const nft1DocRef = database().doc(COL.NFT, nft1.uid);
+    const nft2DocRef = database().doc(COL.NFT, nft2.uid);
     await nft2DocRef.update({ locked: true });
 
     const credit = (await query.get())[0];
@@ -72,7 +72,7 @@ describe('Nft bulk order', () => {
       return nft1.owner === h.member;
     });
 
-    query = build5Db()
+    query = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', h.member);

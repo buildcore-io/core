@@ -1,5 +1,5 @@
-import { PgNft, build5Db } from '@build-5/database';
-import { COL, MediaStatus, NftAvailable } from '@build-5/interfaces';
+import { PgNft, database } from '@buildcore/database';
+import { COL, MediaStatus, NftAvailable } from '@buildcore/interfaces';
 import { downloadMediaAndPackCar, nftToIpfsMetadata } from '../utils/car.utils';
 import { PgDocEvent } from './common';
 
@@ -35,14 +35,14 @@ export const onNftWrite = async (event: PgDocEvent<PgNft>) => {
     );
     const availableNfts = getAvailableNftsChange(prevAvailability, currAvailability, prev?.owner);
 
-    const collectionDocRef = build5Db().doc(COL.COLLECTION, curr.collection!);
+    const collectionDocRef = database().doc(COL.COLLECTION, curr.collection!);
     await collectionDocRef.update({
-      nftsOnSale: build5Db().inc(nftsOnSale),
-      nftsOnAuction: build5Db().inc(nftsOnAuction),
-      availableNfts: build5Db().inc(availableNfts),
+      nftsOnSale: database().inc(nftsOnSale),
+      nftsOnAuction: database().inc(nftsOnAuction),
+      availableNfts: database().inc(availableNfts),
     });
 
-    const docRef = build5Db().doc(COL.NFT, curr.uid);
+    const docRef = database().doc(COL.NFT, curr.uid);
     await docRef.update({ available: currAvailability });
   }
 
@@ -52,9 +52,9 @@ export const onNftWrite = async (event: PgDocEvent<PgNft>) => {
 };
 
 const prepareNftMedia = async (nft: PgNft) => {
-  const collectionDocRef = build5Db().doc(COL.COLLECTION, nft.collection!);
-  const nftDocRef = build5Db().doc(COL.NFT, nft.uid);
-  const batch = build5Db().batch();
+  const collectionDocRef = database().doc(COL.COLLECTION, nft.collection!);
+  const nftDocRef = database().doc(COL.NFT, nft.uid);
+  const batch = database().batch();
 
   if (nft.ipfsRoot) {
     batch.update(nftDocRef, { mediaStatus: MediaStatus.PENDING_UPLOAD });
@@ -70,7 +70,7 @@ const prepareNftMedia = async (nft: PgNft) => {
     });
   }
 
-  batch.update(collectionDocRef, { mintingData_nftMediaToPrepare: build5Db().inc(-1) });
+  batch.update(collectionDocRef, { mintingData_nftMediaToPrepare: database().inc(-1) });
   await batch.commit();
 };
 

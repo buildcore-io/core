@@ -1,4 +1,4 @@
-import { Proposal, ProposalMember, ProposalQuestion, ProposalType } from '@build-5/interfaces';
+import { Proposal, ProposalMember, ProposalQuestion, ProposalType } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgProposal } from '../../models';
 import { removeNulls } from '../common';

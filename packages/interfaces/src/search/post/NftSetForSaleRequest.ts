@@ -44,7 +44,7 @@ export interface NftSetForSaleRequest {
    */
   minimalBidIncrement?: number;
   /**
-   * Build5 id of the nft.
+   * Buildcore id of the nft.
    */
   nft: string;
   /**

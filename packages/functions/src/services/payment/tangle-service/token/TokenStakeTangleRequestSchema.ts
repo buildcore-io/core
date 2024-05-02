@@ -1,4 +1,4 @@
-import { TangleRequestType, TokenStakeTangleRequest } from '@build-5/interfaces';
+import { TangleRequestType, TokenStakeTangleRequest } from '@buildcore/interfaces';
 import { depositStakeSchema } from '../../../../controls/stake/StakeTokenRequestSchema';
 import { toJoiObject } from '../../../joi/common';
 import { baseTangleSchema } from '../common';

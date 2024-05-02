@@ -1,4 +1,4 @@
-import { PropStats } from '@build-5/interfaces';
+import { PropStats } from '@buildcore/interfaces';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const propsToAttributes = (props: PropStats | Record<string, any> | undefined) =>

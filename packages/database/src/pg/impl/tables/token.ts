@@ -5,7 +5,7 @@ import {
   Token,
   TokenAllocation,
   TokenStatus,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgToken } from '../../models';
 import { removeNulls } from '../common';
