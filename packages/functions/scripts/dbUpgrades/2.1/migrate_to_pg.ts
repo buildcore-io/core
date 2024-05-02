@@ -48,7 +48,6 @@ export const migrateToPg = async (app: FirebaseApp) => {
     await migrateColletion(firestore, col as COL);
   });
   await Promise.all(promises);
-
   console.log('Migration done');
   await pgDb().destroy();
 };
@@ -75,7 +74,7 @@ const migrateColletion = async (firestore: Firestore, col: COL) => {
 
     const docRef = pgDb().doc(col, 'placeholder') as IDocument<any, any, Update>;
 
-    const promises = chunk(snap.docs, 130).map(async (ch) => {
+    const promises = chunk(snap.docs, 150).map(async (ch) => {
       try {
         const data = ch.map((doc) =>
           undefinedToNull(docRef.converter.toPg({ ...doc.data(), uid: doc.id })),
