@@ -9,19 +9,21 @@ const collections: { [key: string]: SUB_COL[] } = {
   // [COL.MEMBER]: [],
   // [COL.AWARD]: [SUB_COL.OWNERS, SUB_COL.PARTICIPANTS],
   // [COL.COLLECTION]: [SUB_COL.STATS, SUB_COL.RANKS, SUB_COL.VOTES],
-  [COL.NFT]: [],
-  [COL.SPACE]: [
-    SUB_COL.GUARDIANS,
-    SUB_COL.MEMBERS,
-    SUB_COL.BLOCKED_MEMBERS,
-    SUB_COL.KNOCKING_MEMBERS,
-  ],
-  [COL.PROPOSAL]: [SUB_COL.OWNERS, SUB_COL.MEMBERS],
-  [COL.NOTIFICATION]: [],
-  [COL.MILESTONE]: [SUB_COL.TRANSACTIONS],
-  [COL.MILESTONE_RMS]: [SUB_COL.TRANSACTIONS],
-  [COL.MILESTONE_SMR]: [SUB_COL.TRANSACTIONS],
-  [COL.TRANSACTION]: [],
+  // [COL.NFT]: [],
+  // [COL.SPACE]: [
+  //   SUB_COL.GUARDIANS,
+  //   SUB_COL.MEMBERS,
+  //   SUB_COL.BLOCKED_MEMBERS,
+  //   SUB_COL.KNOCKING_MEMBERS,
+  // ],
+  // [COL.PROPOSAL]: [SUB_COL.OWNERS, SUB_COL.MEMBERS],
+  // [COL.NOTIFICATION]: [],
+
+  // [COL.MILESTONE]: [SUB_COL.TRANSACTIONS],
+  // [COL.MILESTONE_RMS]: [SUB_COL.TRANSACTIONS],
+  // [COL.MILESTONE_SMR]: [SUB_COL.TRANSACTIONS],
+  // [COL.TRANSACTION]: [],
+
   [COL.TOKEN]: [SUB_COL.STATS, SUB_COL.RANKS, SUB_COL.VOTES, SUB_COL.DISTRIBUTION],
   [COL.TOKEN_MARKET]: [],
   [COL.TOKEN_PURCHASE]: [],
@@ -50,7 +52,7 @@ export const migrateToPg = async (app: FirebaseApp) => {
   await pgDb().destroy();
 };
 
-const LIMIT = 1000 * 10;
+const LIMIT = 1000;
 
 const migrateColletion = async (firestore: Firestore, col: COL) => {
   let lastDoc: any = undefined;
@@ -72,7 +74,7 @@ const migrateColletion = async (firestore: Firestore, col: COL) => {
 
     const docRef = pgDb().doc(col, 'placeholder') as IDocument<any, any, Update>;
 
-    const promises = chunk(snap.docs, 35).map(async (ch) => {
+    const promises = chunk(snap.docs, 4).map(async (ch) => {
       try {
         const data = ch.map((doc) =>
           undefinedToNull(docRef.converter.toPg({ ...doc.data(), uid: doc.id })),
@@ -104,7 +106,7 @@ const awaitAll = async (writes: Promise<any>[], lastDoc: string) => {
 
 const migrateSubDocs = async (firestore: Firestore, col: COL, colId: string, subCol: SUB_COL) => {
   const snap = await firestore.collection(`${col}/${colId}/${subCol}`).get();
-  console.log('Size', col, colId, subCol, snap.size);
+  // console.log('Size', col, colId, subCol, snap.size);
 
   const promises = chunk(snap.docs, 200).map(async (ch) => {
     const data = ch.map((doc) => {
