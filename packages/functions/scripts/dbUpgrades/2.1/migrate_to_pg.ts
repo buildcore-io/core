@@ -72,7 +72,7 @@ const migrateColletion = async (firestore: Firestore, col: COL) => {
 
     const docRef = pgDb().doc(col, 'placeholder') as IDocument<any, any, Update>;
 
-    const promises = chunk(snap.docs, 170).map(async (ch) => {
+    const promises = chunk(snap.docs, 105).map(async (ch) => {
       try {
         const data = ch.map((doc) =>
           undefinedToNull(docRef.converter.toPg({ ...doc.data(), uid: doc.id })),
