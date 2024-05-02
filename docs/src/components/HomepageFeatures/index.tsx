@@ -12,30 +12,19 @@ const FeatureList: FeatureItem[] = [
   {
     title: 'Easy to Use',
     Svg: require('@site/static/img/buildcore_logo.png').default,
-    description: (
-      <>
-        Buildcore was developed to simplify dev.
-      </>
-    ),
+    description: <>Buildcore was developed to simplify dev.</>,
   },
   {
     title: 'OTR makes your life easier',
     Svg: require('@site/static/img/buildcore_logo.png').default,
     description: (
-      <>
-        Buildcore lets you focus on your logic, and we&apos;ll do the chores. Go
-        try OTR today.
-      </>
+      <>Buildcore lets you focus on your logic, and we&apos;ll do the chores. Go try OTR today.</>
     ),
   },
   {
-    title: 'Powered by Build5',
+    title: 'Powered by Buildcore',
     Svg: require('@site/static/img/buildcore_logo.png').default,
-    description: (
-      <>
-        Extend or customize your application relying on the best tech.
-      </>
-    ),
+    description: <>Extend or customize your application relying on the best tech.</>,
   },
 ];
 

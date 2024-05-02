@@ -1,4 +1,4 @@
-import { COL, ProjectAdmin } from '@build-5/interfaces';
+import { COL, ProjectAdmin } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgProjectAdmins } from '../../models';
 import { removeNulls } from '../common';

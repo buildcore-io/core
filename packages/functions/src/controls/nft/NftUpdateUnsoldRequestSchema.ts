@@ -1,9 +1,9 @@
-import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftUpdateUnsoldRequest } from '@build-5/interfaces';
+import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftUpdateUnsoldRequest } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 
 export const updateUnsoldNftSchema = toJoiObject<NftUpdateUnsoldRequest>({
-  uid: CommonJoi.uid().description('Build5 id of the nft to update'),
+  uid: CommonJoi.uid().description('Buildcore id of the nft to update'),
   price: Joi.number()
     .min(MIN_IOTA_AMOUNT)
     .max(MAX_IOTA_AMOUNT)

@@ -1,10 +1,10 @@
-import { AddressValidationRequest } from '@build-5/interfaces';
+import { AddressValidationRequest } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 import { networks } from '../../utils/config.utils';
 
 export const validateAddressSchema = {
-  space: CommonJoi.uid(false).optional().description('Build5 id of the space'),
+  space: CommonJoi.uid(false).optional().description('Buildcore id of the space'),
   network: Joi.string()
     .equal(...networks)
     .optional()

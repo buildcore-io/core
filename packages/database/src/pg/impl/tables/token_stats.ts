@@ -1,4 +1,4 @@
-import { COL, StakeType, TokenPurchaseAge, TokenStats } from '@build-5/interfaces';
+import { COL, StakeType, TokenPurchaseAge, TokenStats } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgTokenStats } from '../../models';
 import { removeNulls } from '../common';

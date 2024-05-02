@@ -1,4 +1,4 @@
-import { NftTransferRequest, WEN_FUNC } from '@build-5/interfaces';
+import { NftTransferRequest, WEN_FUNC } from '@buildcore/interfaces';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { Helper } from './Helper';
 

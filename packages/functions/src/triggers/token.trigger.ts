@@ -1,4 +1,4 @@
-import { IBatch, PgToken, build5Db } from '@build-5/database';
+import { IBatch, PgToken, database } from '@buildcore/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -15,7 +15,7 @@ import {
   Transaction,
   TransactionPayloadType,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
 import { WalletService } from '../services/wallet/wallet.service';
@@ -126,14 +126,14 @@ const createBillAndRoyaltyPayment = async (
   let balance =
     distribution.totalPaid +
     (distribution.refundedAmount! < MIN_IOTA_AMOUNT ? distribution.refundedAmount! : 0);
-  const member = <Member>await build5Db().doc(COL.MEMBER, distribution.uid!).get();
+  const member = <Member>await database().doc(COL.MEMBER, distribution.uid!).get();
   const [royaltySpaceId, fee] = Object.entries(
     await getRoyaltyFees(balance, member.tokenPurchaseFeePercentage, true),
   )[0];
 
   let royaltyPayment: Transaction | undefined = undefined;
   if (fee >= MIN_IOTA_AMOUNT && balance - fee >= MIN_IOTA_AMOUNT) {
-    const royaltySpace = await build5Db().doc(COL.SPACE, royaltySpaceId).get();
+    const royaltySpace = await database().doc(COL.SPACE, royaltySpaceId).get();
     const network = order.network || DEFAULT_NETWORK;
     royaltyPayment = {
       project: getProject(order),
@@ -159,7 +159,7 @@ const createBillAndRoyaltyPayment = async (
         tokenSymbol: token.symbol,
       },
     };
-    const royaltyPaymentDocRef = build5Db().doc(COL.TRANSACTION, royaltyPayment.uid);
+    const royaltyPaymentDocRef = database().doc(COL.TRANSACTION, royaltyPayment.uid);
     batch.create(royaltyPaymentDocRef, royaltyPayment);
     balance -= fee;
   }
@@ -189,7 +189,7 @@ const createBillAndRoyaltyPayment = async (
       tokenSymbol: token.symbol,
     },
   };
-  const billPaymentDocRef = build5Db().doc(COL.TRANSACTION, billPayment.uid);
+  const billPaymentDocRef = database().doc(COL.TRANSACTION, billPayment.uid);
   batch.create(billPaymentDocRef, billPayment);
   return { billPaymentId: billPayment.uid, royaltyBillPaymentId: royaltyPayment?.uid || '' };
 };
@@ -206,7 +206,7 @@ const createCredit = async (
   }
   const member = <Member>await memberDocRef(distribution.uid!).get();
   const tranId = getRandomEthAddress();
-  const docRef = build5Db().doc(COL.TRANSACTION, tranId);
+  const docRef = database().doc(COL.TRANSACTION, tranId);
   const network = order.network || DEFAULT_NETWORK;
   const data: Transaction = {
     project: getProject(order),
@@ -235,15 +235,15 @@ const createCredit = async (
 };
 
 const reconcileBuyer = (token: PgToken) => async (distribution: TokenDistribution) => {
-  const batch = build5Db().batch();
-  const distributionDoc = build5Db().doc(
+  const batch = database().batch();
+  const distributionDoc = database().doc(
     COL.TOKEN,
     token.uid,
     SUB_COL.DISTRIBUTION,
     distribution.uid!,
   );
 
-  const spaceDocRef = build5Db().doc(COL.SPACE, token.space!);
+  const spaceDocRef = database().doc(COL.SPACE, token.space!);
   const space = (await spaceDocRef.get())!;
 
   const order = <Transaction>await orderDocRef(distribution.uid!, token).get();
@@ -269,7 +269,7 @@ const reconcileBuyer = (token: PgToken) => async (distribution: TokenDistributio
   const { stakeExpiry, ...rest } = distribution;
   batch.update(distributionDoc, {
     ...rest,
-    tokenOwned: build5Db().inc(distribution.totalBought || 0),
+    tokenOwned: database().inc(distribution.totalBought || 0),
     reconciled: true,
     billPaymentId,
     royaltyBillPaymentId,
@@ -308,13 +308,13 @@ const distributeLeftoverTokens = (
 };
 
 const cancelPublicSale = async (token: PgToken) => {
-  const distributions = await build5Db()
+  const distributions = await database()
     .collection(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION)
     .where('totalDeposit', '>', 0)
     .get();
 
   const promises = distributions.map(async (distribution) => {
-    const batch = build5Db().batch();
+    const batch = database().batch();
 
     const order = <Transaction>await orderDocRef(distribution.uid!, token).get();
     const payments = await allPaymentsQuery(distribution.uid!, token.uid).get();
@@ -326,7 +326,7 @@ const cancelPublicSale = async (token: PgToken) => {
       batch,
     );
 
-    const distributionDocRef = build5Db().doc(
+    const distributionDocRef = database().doc(
       COL.TOKEN,
       token.uid,
       SUB_COL.DISTRIBUTION,
@@ -342,7 +342,7 @@ const cancelPublicSale = async (token: PgToken) => {
     .filter((r) => r.status === 'rejected')
     .map((r) => String((<PromiseRejectedResult>r).reason));
   const status = isEmpty(errors) ? TokenStatus.AVAILABLE : TokenStatus.ERROR;
-  await build5Db().doc(COL.TOKEN, token.uid).update({ status });
+  await database().doc(COL.TOKEN, token.uid).update({ status });
 
   if (status === TokenStatus.ERROR) {
     logger.error('Token processing error', token.uid, errors);
@@ -350,7 +350,7 @@ const cancelPublicSale = async (token: PgToken) => {
 };
 
 const processTokenDistribution = async (token: PgToken) => {
-  const distributionsSnap = await build5Db()
+  const distributionsSnap = await database()
     .collection(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION)
     .where('totalDeposit', '>', 0)
     .get();
@@ -375,7 +375,7 @@ const processTokenDistribution = async (token: PgToken) => {
     .filter((r) => r.status === 'rejected')
     .map((r) => String((<PromiseRejectedResult>r).reason));
   const status = isEmpty(errors) ? TokenStatus.PRE_MINTED : TokenStatus.ERROR;
-  await build5Db().doc(COL.TOKEN, token.uid).update({ status });
+  await database().doc(COL.TOKEN, token.uid).update({ status });
 
   if (status === TokenStatus.ERROR) {
     logger.error('Token processing error', token.uid, errors);
@@ -401,19 +401,19 @@ const mintToken = async (token: PgToken) => {
       token: token.uid,
     },
   };
-  await build5Db().doc(COL.TRANSACTION, order.uid).create(order);
+  await database().doc(COL.TRANSACTION, order.uid).create(order);
 };
 
 const cancelAllActiveSales = async (token: string) => {
   const runTransactions = () =>
-    build5Db().runTransaction(async (transaction) => {
-      const snap = build5Db()
+    database().runTransaction(async (transaction) => {
+      const snap = database()
         .collection(COL.TOKEN_MARKET)
         .where('status', '==', TokenTradeOrderStatus.ACTIVE)
         .where('token', '==', token)
         .limit(150)
         .get();
-      const docRefs = (await snap).map((to) => build5Db().doc(COL.TOKEN_MARKET, to.uid));
+      const docRefs = (await snap).map((to) => database().doc(COL.TOKEN_MARKET, to.uid));
       const promises = (await transaction.getAll(...docRefs))
         .filter((d) => d && d.status === TokenTradeOrderStatus.ACTIVE)
         .map((d) =>
@@ -428,7 +428,7 @@ const setIpfsData = async (token: PgToken) => {
   const metadata = tokenToIpfsMetadata(token);
   const ipfs = await downloadMediaAndPackCar(token.uid, token.icon!, metadata);
 
-  await build5Db().doc(COL.TOKEN, token.uid).update({
+  await database().doc(COL.TOKEN, token.uid).update({
     mediaStatus: MediaStatus.PENDING_UPLOAD,
     ipfsMedia: ipfs.ipfsMedia,
     ipfsMetadata: ipfs.ipfsMetadata,
@@ -440,8 +440,8 @@ const onTokenVaultEmptied = async (token: PgToken) => {
   const network = token.mintingData_network as Network;
   const wallet = await WalletService.newWallet(network);
   const { amount: vaultBalance } = await wallet.getBalance(token.mintingData_vaultAddress!);
-  const minter = await build5Db().doc(COL.MEMBER, token.mintingData_mintedBy!).get();
-  const paymentsSnap = await build5Db()
+  const minter = await database().doc(COL.MEMBER, token.mintingData_mintedBy!).get();
+  const paymentsSnap = await database()
     .collection(COL.TRANSACTION)
     .where('type', '==', TransactionType.PAYMENT)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -465,5 +465,5 @@ const onTokenVaultEmptied = async (token: PgToken) => {
       tokenSymbol: token.symbol,
     },
   };
-  await build5Db().doc(COL.TRANSACTION, credit.uid).create(credit);
+  await database().doc(COL.TRANSACTION, credit.uid).create(credit);
 };

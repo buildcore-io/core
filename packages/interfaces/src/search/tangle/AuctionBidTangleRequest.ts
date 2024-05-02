@@ -8,7 +8,7 @@
  */
 export interface AuctionBidTangleRequest {
   /**
-   * Build5 id of the auction to bid on.
+   * Buildcore id of the auction to bid on.
    */
   auction: string;
   /**

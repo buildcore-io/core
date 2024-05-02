@@ -1,4 +1,4 @@
-import { Timestamp } from '@build-5/interfaces';
+import { Timestamp } from '@buildcore/interfaces';
 import { isNull, isUndefined } from 'lodash';
 
 export const removeNulls = <T>(data: T) => {

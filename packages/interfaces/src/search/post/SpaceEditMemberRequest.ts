@@ -8,11 +8,11 @@
  */
 export interface SpaceMemberUpsertRequest {
   /**
-   * Build5 id of the member
+   * Buildcore id of the member
    */
   member: string;
   /**
-   * Build5 id of the space
+   * Buildcore id of the space
    */
   uid: string;
 }

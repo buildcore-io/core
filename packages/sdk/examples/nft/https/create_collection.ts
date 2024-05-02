@@ -1,12 +1,12 @@
-import { Dataset, Network } from '@build-5/interfaces';
-import { Build5, SoonaverseApiKey, https } from '@build-5/sdk';
+import { Dataset, Network } from '@buildcore/interfaces';
+import { Buildcore, SoonaverseApiKey, https } from '@buildcore/sdk';
 import { address } from '../../utils/secret';
 import { walletSign } from '../../utils/utils';
 
 async function main() {
   let userSign = await walletSign(address.bech32, address);
   try {
-    const projectAPIKey = SoonaverseApiKey[Build5.TEST];
+    const projectAPIKey = SoonaverseApiKey[Buildcore.TEST];
 
     console.log('Create NFT Collection under your project...');
     const collectionName = Math.random()
@@ -15,7 +15,7 @@ async function main() {
       .replace(/[0-9]/g, '')
       .toUpperCase();
     const dateNow = Date.now();
-    const collection = await https(Build5.TEST)
+    const collection = await https(Buildcore.TEST)
       .project(projectAPIKey)
       .dataset(Dataset.COLLECTION)
       .create(<any>{
@@ -62,7 +62,7 @@ async function main() {
       });
     }
     userSign = await walletSign(address.bech32, address);
-    const nfts = await https(Build5.TEST)
+    const nfts = await https(Buildcore.TEST)
       .project(projectAPIKey)
       .dataset(Dataset.NFT)
       .createBatch({

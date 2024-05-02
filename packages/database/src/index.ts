@@ -1,2 +1,2 @@
-export * from './pg/index';
-export * from './storage/index';
+export * from './pg';
+export * from './storage';

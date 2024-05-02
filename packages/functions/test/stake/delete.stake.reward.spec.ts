@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Proposal,
@@ -10,7 +10,7 @@ import {
   Token,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -31,7 +31,7 @@ describe('Delete stake reward', () => {
     await addGuardianToSpace(space.uid, member);
 
     token = wallet.getRandomEthAddress();
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, token)
       .create({
         project: SOON_PROJECT_ID,
@@ -65,14 +65,14 @@ describe('Delete stake reward', () => {
       },
     ];
     for (const stakeReward of stakeRewards) {
-      await build5Db().doc(COL.STAKE_REWARD, stakeReward.uid).create(stakeReward);
+      await database().doc(COL.STAKE_REWARD, stakeReward.uid).create(stakeReward);
     }
     return stakeRewards;
   };
 
   const getStakeRewards = async (stakeRewardIds: string[]) => {
     const promises = stakeRewardIds.map(async (stakeRewardId) => {
-      const docRef = build5Db().doc(COL.STAKE_REWARD, stakeRewardId);
+      const docRef = database().doc(COL.STAKE_REWARD, stakeRewardId);
       return <StakeReward>await docRef.get();
     });
     return await Promise.all(promises);
@@ -83,7 +83,7 @@ describe('Delete stake reward', () => {
     const stakeRewardIds = stakeRewards.map((reward) => reward.uid);
     mockWalletReturnValue(guardian, { stakeRewardIds });
     let proposal = await testEnv.wrap<Proposal>(WEN_FUNC.removeStakeReward);
-    proposal = (await build5Db().doc(COL.PROPOSAL, proposal.uid).get())!;
+    proposal = (await database().doc(COL.PROPOSAL, proposal.uid).get())!;
     expect(proposal.settings.stakeRewardIds!.sort()).toEqual(stakeRewardIds.sort());
     expect(
       dayjs(proposal.settings.endDate.toDate()).isSame(dayjs(stakeRewards[1].startDate.toDate())),
@@ -121,7 +121,7 @@ describe('Delete stake reward', () => {
       return allDeleted;
     });
 
-    proposal = <Proposal>await build5Db().doc(COL.PROPOSAL, proposal.uid).get();
+    proposal = <Proposal>await database().doc(COL.PROPOSAL, proposal.uid).get();
     expect(dayjs(proposal.settings.endDate.toDate()).isBefore(dayjs())).toBe(true);
   });
 
@@ -138,7 +138,7 @@ describe('Delete stake reward', () => {
 
   it('Should throw, multiple tokens', async () => {
     const stakeRewards = await createStakeRewards();
-    await build5Db().doc(COL.STAKE_REWARD, stakeRewards[0].uid).update({ token: 'name' });
+    await database().doc(COL.STAKE_REWARD, stakeRewards[0].uid).update({ token: 'name' });
     const stakeRewardIds = stakeRewards.map((reward) => reward.uid);
     mockWalletReturnValue(guardian, { stakeRewardIds });
     await expectThrow(testEnv.wrap(WEN_FUNC.removeStakeReward), WenError.invalid_params.key);
@@ -156,7 +156,7 @@ describe('Delete stake reward', () => {
 
   it('Should throw, stake reward expired', async () => {
     const stakeRewards = await createStakeRewards();
-    const docRef = build5Db().doc(COL.STAKE_REWARD, stakeRewards[1].uid);
+    const docRef = database().doc(COL.STAKE_REWARD, stakeRewards[1].uid);
     await docRef.update({ startDate: dayjs().subtract(1, 'm').toDate() });
 
     const stakeRewardIds = stakeRewards.map((reward) => reward.uid);

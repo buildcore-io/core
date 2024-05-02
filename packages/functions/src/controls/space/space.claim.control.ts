@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   SpaceClaimRequest,
@@ -8,7 +8,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { WalletService } from '../../services/wallet/wallet.service';
 import { generateRandomAmount } from '../../utils/common.utils';
@@ -18,7 +18,7 @@ import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { Context } from '../common';
 
 export const claimSpaceControl = async ({ owner, params, project }: Context<SpaceClaimRequest>) => {
-  const spaceDocRef = build5Db().doc(COL.SPACE, params.uid);
+  const spaceDocRef = database().doc(COL.SPACE, params.uid);
   const space = await spaceDocRef.get();
   if (!space) {
     throw invalidArgument(WenError.space_does_not_exists);
@@ -26,7 +26,7 @@ export const claimSpaceControl = async ({ owner, params, project }: Context<Spac
   if (!space.collectionId || space.claimed) {
     throw invalidArgument(WenError.space_not_claimable);
   }
-  const collectionDocRef = build5Db().doc(COL.COLLECTION, space.collectionId);
+  const collectionDocRef = database().doc(COL.COLLECTION, space.collectionId);
   const collection = await collectionDocRef.get();
   if (!collection) {
     throw invalidArgument(WenError.collection_does_not_exists);
@@ -53,7 +53,7 @@ export const claimSpaceControl = async ({ owner, params, project }: Context<Spac
     },
     linkedTransactions: [],
   };
-  const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
+  const orderDocRef = database().doc(COL.TRANSACTION, order.uid);
   await orderDocRef.create(order);
 
   return order;

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -19,7 +19,7 @@ import {
   TransactionPayloadType,
   WEN_FUNC,
   calcStakedMultiplier,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
@@ -52,13 +52,13 @@ export class Helper {
 
   public beforeEach = async () => {
     const memberId = await testEnv.createMember();
-    this.member = <Member>await build5Db().doc(COL.MEMBER, memberId).get();
+    this.member = <Member>await database().doc(COL.MEMBER, memberId).get();
     this.memberAddress = await this.walletService?.getNewIotaAddressDetails();
 
     this.space = await testEnv.createSpace(memberId);
     this.token = await this.saveToken(this.space!.uid, this.member!.uid);
     this.tokenStats = <TokenStats>(
-      await build5Db().doc(COL.TOKEN, this.token.uid, SUB_COL.STATS, this.token.uid).get()
+      await database().doc(COL.TOKEN, this.token.uid, SUB_COL.STATS, this.token.uid).get()
     );
     await requestFundsFromFaucet(this.network, this.memberAddress!.bech32, 10 * MIN_IOTA_AMOUNT);
     await requestMintedTokenFromFaucet(
@@ -91,7 +91,7 @@ export class Helper {
       access: 0,
       icon: MEDIA,
     } as Token;
-    await build5Db().doc(COL.TOKEN, token.uid).create(token);
+    await database().doc(COL.TOKEN, token.uid).create(token);
     return token;
   };
 
@@ -103,7 +103,7 @@ export class Helper {
     customMetadata?: { [key: string]: string },
     memberUid?: string,
   ) => {
-    const member = <Member>await build5Db()
+    const member = <Member>await database()
       .doc(COL.MEMBER, memberUid || this.member?.uid!)
       .get();
 
@@ -127,7 +127,7 @@ export class Helper {
       nativeTokens: [{ id: this.MINTED_TOKEN_ID, amount: BigInt(amount) }],
     });
     await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
-    const query = build5Db().collection(COL.STAKE).where('orderId', '==', order.uid);
+    const query = database().collection(COL.STAKE).where('orderId', '==', order.uid);
     await wait(async () => {
       const snap = await query.get();
       return snap.length == 1;
@@ -143,7 +143,7 @@ export class Helper {
 
     await wait(async () => {
       const currTokenStats = <TokenStats | undefined>(
-        await build5Db().doc(COL.TOKEN, this.token?.uid!, SUB_COL.STATS, this.token?.uid).get()
+        await database().doc(COL.TOKEN, this.token?.uid!, SUB_COL.STATS, this.token?.uid).get()
       );
       return (
         (currTokenStats?.stakes || {})[type || StakeType.DYNAMIC]?.totalAmount !==
@@ -151,7 +151,7 @@ export class Helper {
       );
     });
 
-    const billPaymentDocRef = build5Db().doc(COL.TRANSACTION, stake.billPaymentId);
+    const billPaymentDocRef = database().doc(COL.TRANSACTION, stake.billPaymentId);
     await wait(async () => {
       const billPayment = <Transaction>await billPaymentDocRef.get();
       return billPayment.payload.walletReference?.confirmed;
@@ -175,7 +175,7 @@ export class Helper {
     membersCount: number,
   ) => {
     this.tokenStats = <TokenStats>(
-      await build5Db().doc(COL.TOKEN, this.token!.uid, SUB_COL.STATS, this.token?.uid).get()
+      await database().doc(COL.TOKEN, this.token!.uid, SUB_COL.STATS, this.token?.uid).get()
     );
     expect(this.tokenStats.stakes![type].amount).toBe(stakeAmount);
     expect(this.tokenStats.stakes![type].totalAmount).toBe(stakeTotalAmount);
@@ -192,7 +192,7 @@ export class Helper {
     type: StakeType,
     member?: string,
   ) => {
-    const distribution = <TokenDistribution>await build5Db()
+    const distribution = <TokenDistribution>await database()
       .doc(COL.TOKEN, this.token!.uid, SUB_COL.DISTRIBUTION, member || this.member!.uid)
       .get();
     expect(distribution.stakes![type].amount).toBe(stakeAmount);
@@ -202,7 +202,7 @@ export class Helper {
   };
 
   public assertDistributionStakeExpiry = async (stake: Stake) => {
-    const distributionDocRef = build5Db().doc(
+    const distributionDocRef = database().doc(
       COL.TOKEN,
       this.token?.uid!,
       SUB_COL.DISTRIBUTION,
@@ -213,8 +213,8 @@ export class Helper {
   };
 
   public updateStakeExpiresAt = async (stake: Stake, expiresAt: dayjs.Dayjs) => {
-    await build5Db().doc(COL.STAKE, stake.uid).update({ expiresAt: expiresAt.toDate() });
-    const distributionDocRef = build5Db().doc(
+    await database().doc(COL.STAKE, stake.uid).update({ expiresAt: expiresAt.toDate() });
+    const distributionDocRef = database().doc(
       COL.TOKEN,
       this.token?.uid!,
       SUB_COL.DISTRIBUTION,
@@ -232,7 +232,7 @@ export class Helper {
   };
 
   public assertStakeExpiryCleared = async (type: StakeType) => {
-    const distributionDocRef = build5Db().doc(
+    const distributionDocRef = database().doc(
       COL.TOKEN,
       this.token?.uid!,
       SUB_COL.DISTRIBUTION,

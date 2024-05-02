@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Project,
@@ -7,7 +7,7 @@ import {
   SUB_COL,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { mockWalletReturnValue, testEnv } from '../../set-up';
 import { expectThrow } from '../common';
 
@@ -28,14 +28,14 @@ describe('Project create', () => {
       WEN_FUNC.createProject,
     );
     project = newProject;
-    const apiKey = await build5Db().collection(COL.PROJECT, newProject.uid, SUB_COL._API_KEY).get();
+    const apiKey = await database().collection(COL.PROJECT, newProject.uid, SUB_COL._API_KEY).get();
     token = apiKey[0].token;
   });
 
   it('Should deactivate project', async () => {
     mockWalletReturnValue(guardian, {}, undefined, token);
     await testEnv.wrap(WEN_FUNC.deactivateProject);
-    const projectDocRef = build5Db().doc(COL.PROJECT, project.uid);
+    const projectDocRef = database().doc(COL.PROJECT, project.uid);
     const projectData = await projectDocRef.get();
     expect(projectData?.deactivated).toBe(true);
   });

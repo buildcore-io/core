@@ -12,7 +12,7 @@ export interface AddressValidationTangleRequest {
    */
   requestType: 'ADDRESS_VALIDATION';
   /**
-   * Build5 id of the space
+   * Buildcore id of the space
    */
   space?: string;
 }

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -9,7 +9,7 @@ import {
   TokenTradeOrder,
   TokenTradeOrderStatus,
   Transaction,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { cancelExpiredSale } from '../../src/cron/token.cron';
 import { getAddress } from '../../src/utils/address.utils';
@@ -32,29 +32,29 @@ describe('Token minting', () => {
     await helper.createBuyOrder(5, MIN_IOTA_AMOUNT);
     await helper.createSellTradeOrder();
 
-    const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', helper.seller);
+    const query = database().collection(COL.TOKEN_MARKET).where('owner', '==', helper.seller);
     await wait(async () => {
       const orders = (await query.get()).map((d) => <TokenTradeOrder>d);
       return orders.length === 1 && orders[0].fulfilled === 5;
     });
     let sell = <TokenTradeOrder>(await query.get())[0];
-    await build5Db()
+    await database()
       .doc(COL.TOKEN_MARKET, sell.uid)
       .update({ expiresAt: dayjs().subtract(1, 'd').toDate() });
 
     await cancelExpiredSale();
 
-    const sellQuery = build5Db().doc(COL.TOKEN_MARKET, sell.uid);
+    const sellQuery = database().doc(COL.TOKEN_MARKET, sell.uid);
     await wait(async () => {
       sell = <TokenTradeOrder>await sellQuery.get();
       return sell.status === TokenTradeOrderStatus.EXPIRED;
     });
 
     const credit = <Transaction>(
-      await build5Db().doc(COL.TRANSACTION, sell.creditTransactionId!).get()
+      await database().doc(COL.TRANSACTION, sell.creditTransactionId!).get()
     );
     expect(credit.member).toBe(helper.seller);
-    const seller = <Member>await build5Db().doc(COL.MEMBER, helper.seller!).get();
+    const seller = <Member>await database().doc(COL.MEMBER, helper.seller!).get();
     expect(credit.payload.targetAddress).toBe(getAddress(seller, Network.RMS));
     expect(credit.payload.amount).toBe(49600);
     expect(credit.payload.nativeTokens![0].amount).toBe(5);

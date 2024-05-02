@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, Member, WEN_FUNC, WenError } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, Member, WEN_FUNC, WenError } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { getAddress } from '../../src/utils/address.utils';
 import { expectThrow, wait } from '../../test/controls/common';
@@ -42,7 +42,7 @@ describe('Token based voting', () => {
     await helper.updatePropoasalDates(dayjs().subtract(2, 'd'), dayjs().add(2, 'd'));
     await helper.updateVoteTranCreatedOn(voteTransaction.uid, dayjs().subtract(3, 'd'));
 
-    const memberDocRef = build5Db().doc(COL.MEMBER, helper.member);
+    const memberDocRef = database().doc(COL.MEMBER, helper.member);
     const member = <Member>await memberDocRef.get();
     const memberAddress = await helper.walletService!.getAddressDetails(
       getAddress(member, helper.network),

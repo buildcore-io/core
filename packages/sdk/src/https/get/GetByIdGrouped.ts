@@ -1,4 +1,4 @@
-import { API_RETRY_TIMEOUT } from '@build-5/interfaces';
+import { API_RETRY_TIMEOUT } from '@buildcore/interfaces';
 import { flatten, get } from 'lodash';
 import { wrappedFetch } from '../fetch.utils';
 import { AbstractGetByIdGrouped, BATCH_MAX_SIZE, Request } from './common';

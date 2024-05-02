@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Access,
   Categories,
@@ -14,7 +14,7 @@ import {
   Space,
   Transaction,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
@@ -39,7 +39,7 @@ export class Helper {
 
   public beforeEach = async (collectionType = CollectionType.CLASSIC) => {
     this.guardian = await testEnv.createMember();
-    const guardianDocRef = build5Db().doc(COL.MEMBER, this.guardian);
+    const guardianDocRef = database().doc(COL.MEMBER, this.guardian);
     const guardianData = await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, this.network);
     this.guardianAddress = await this.walletService.getAddressDetails(guardianBech32);
@@ -53,7 +53,7 @@ export class Helper {
     );
     this.collection = (await testEnv.wrap<Collection>(WEN_FUNC.createCollection)).uid;
 
-    await build5Db().doc(COL.COLLECTION, this.collection).update({ approved: true });
+    await database().doc(COL.COLLECTION, this.collection).update({ approved: true });
   };
 
   public createAndOrderNft = async (shouldOrder = true) => {
@@ -64,7 +64,7 @@ export class Helper {
     mockWalletReturnValue(this.guardian!, nft);
     nft = await testEnv.wrap<Nft>(WEN_FUNC.createNft);
 
-    await build5Db()
+    await database()
       .doc(COL.NFT, nft.uid)
       .update({ availableFrom: dayjs().subtract(1, 'h').toDate() });
     if (shouldOrder) {
@@ -76,7 +76,7 @@ export class Helper {
       await submitMilestoneFunc(order);
     }
 
-    this.nft = <Nft>await build5Db().doc(COL.NFT, nft.uid).get();
+    this.nft = <Nft>await database().doc(COL.NFT, nft.uid).get();
     return this.nft;
   };
 

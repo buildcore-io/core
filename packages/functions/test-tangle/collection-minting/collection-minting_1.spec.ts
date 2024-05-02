@@ -1,4 +1,4 @@
-import { Transaction, UnsoldMintingOptions, WEN_FUNC, WenError } from '@build-5/interfaces';
+import { Transaction, UnsoldMintingOptions, WEN_FUNC, WenError } from '@buildcore/interfaces';
 import { expectThrow } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { CollectionMintHelper } from './Helper';

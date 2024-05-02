@@ -1,11 +1,11 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   IOTATangleTransaction,
   NativeToken,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { WalletParams } from '../../services/wallet/wallet';
 import { isProdEnv } from '../../utils/config.utils';
 
@@ -43,7 +43,7 @@ const getParams = async (transaction: Transaction) => {
     }
     if (payload.nft) {
       details.nft = payload.nft;
-      const nft = await build5Db().doc(COL.NFT, payload.nft).get();
+      const nft = await database().doc(COL.NFT, payload.nft).get();
       if (nft && nft.ipfsMedia) {
         details.ipfsMedia = 'ipfs://' + nft.ipfsMedia;
       }

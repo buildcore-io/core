@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -8,7 +8,7 @@ import {
   TangleRequestType,
   TokenDistribution,
   Transaction,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
@@ -54,10 +54,10 @@ describe('Stake reward test test', () => {
           },
         },
       });
-      await build5Db().doc(COL.MNEMONIC, tmp.bech32).update({ consumedOutputIds: [] });
+      await database().doc(COL.MNEMONIC, tmp.bech32).update({ consumedOutputIds: [] });
 
       await wait(async () => {
-        const distributionDocRef = build5Db().doc(
+        const distributionDocRef = database().doc(
           COL.TOKEN,
           helper.token!.uid,
           SUB_COL.DISTRIBUTION,

@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   BaseProposalAnswerValue,
   COL,
@@ -14,7 +14,7 @@ import {
   TransactionType,
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { get, startCase } from 'lodash';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
@@ -30,7 +30,7 @@ export const updateSpaceControl = async ({
   params,
   project,
 }: Context<SpaceUpdateRequest>) => {
-  const spaceDocRef = build5Db().doc(COL.SPACE, params.uid);
+  const spaceDocRef = database().doc(COL.SPACE, params.uid);
   const space = await spaceDocRef.get();
 
   if (!space) {
@@ -54,9 +54,9 @@ export const updateSpaceControl = async ({
     throw invalidArgument(WenError.ongoing_proposal);
   }
 
-  const guardianDocRef = build5Db().doc(COL.MEMBER, owner);
+  const guardianDocRef = database().doc(COL.MEMBER, owner);
   const guardian = await guardianDocRef.get();
-  const guardians = await build5Db().collection(COL.SPACE, params.uid, SUB_COL.GUARDIANS).get();
+  const guardians = await database().collection(COL.SPACE, params.uid, SUB_COL.GUARDIANS).get();
 
   const proposal = createUpdateSpaceProposal(
     project,
@@ -83,9 +83,9 @@ export const updateSpaceControl = async ({
     linkedTransactions: [],
   };
 
-  const proposalDocRef = build5Db().doc(COL.PROPOSAL, proposal.uid);
+  const proposalDocRef = database().doc(COL.PROPOSAL, proposal.uid);
   const memberPromisses = guardians.map((guardian) => {
-    build5Db()
+    database()
       .doc(COL.PROPOSAL, proposal.uid, SUB_COL.MEMBERS, guardian.uid)
       .create({
         uid: guardian.uid,
@@ -99,7 +99,7 @@ export const updateSpaceControl = async ({
   });
   await Promise.all(memberPromisses);
 
-  await build5Db().doc(COL.TRANSACTION, voteTransaction.uid).create(voteTransaction);
+  await database().doc(COL.TRANSACTION, voteTransaction.uid).create(voteTransaction);
 
   await proposalDocRef.create(proposal);
 

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   CreateAirdropsRequest,
@@ -13,7 +13,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
 import { WalletService } from '../../services/wallet/wallet.service';
@@ -33,8 +33,8 @@ export const airdropMintedTokenControl = async ({
   owner,
   params,
 }: Context<CreateAirdropsRequest>) => {
-  await build5Db().runTransaction(async (transaction) => {
-    const tokenDocRef = build5Db().doc(COL.TOKEN, params.token);
+  await database().runTransaction(async (transaction) => {
+    const tokenDocRef = database().doc(COL.TOKEN, params.token);
     const token = await transaction.get(tokenDocRef);
 
     if (!token) {
@@ -45,7 +45,7 @@ export const airdropMintedTokenControl = async ({
     assertTokenApproved(token);
   });
 
-  const tokenDocRef = build5Db().doc(COL.TOKEN, params.token);
+  const tokenDocRef = database().doc(COL.TOKEN, params.token);
   const token = (await tokenDocRef.get())!;
   const drops = params.drops;
 
@@ -96,13 +96,13 @@ export const airdropMintedTokenControl = async ({
 
   const chunks = chunk(airdrops, 500);
   for (const chunk of chunks) {
-    const batch = build5Db().batch();
+    const batch = database().batch();
     for (const airdrop of chunk) {
-      const docRef = build5Db().doc(COL.AIRDROP, airdrop.uid);
+      const docRef = database().doc(COL.AIRDROP, airdrop.uid);
       batch.create(docRef, airdrop);
     }
     await batch.commit();
   }
-  await build5Db().doc(COL.TRANSACTION, order.uid).create(order);
+  await database().doc(COL.TRANSACTION, order.uid).create(order);
   return order;
 };

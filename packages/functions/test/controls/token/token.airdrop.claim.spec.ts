@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Access,
   COL,
@@ -14,7 +14,7 @@ import {
   TransactionType,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { MEDIA, mockWalletReturnValue, testEnv } from '../../set-up';
 import { expectThrow, getRandomSymbol, submitMilestoneFunc, wait } from '../common';
@@ -58,7 +58,7 @@ describe('Claim airdropped token test', () => {
     ];
     mockWalletReturnValue(guardian, dummyTokenData);
     token = await testEnv.wrap<Token>(WEN_FUNC.createToken);
-    await build5Db().doc(COL.TOKEN, token.uid).update({ approved: true });
+    await database().doc(COL.TOKEN, token.uid).update({ approved: true });
   });
 
   const airdrop = async () => {
@@ -76,20 +76,20 @@ describe('Claim airdropped token test', () => {
     const order = await testEnv.wrap<Transaction>(WEN_FUNC.claimAirdroppedToken);
     await submitMilestoneFunc(order);
 
-    const orderTran = <Transaction>await build5Db().doc(COL.TRANSACTION, order.uid).get();
+    const orderTran = <Transaction>await database().doc(COL.TRANSACTION, order.uid).get();
     expect(orderTran.member).toBe(guardian);
     expect(orderTran.payload.type).toBe(TransactionPayloadType.TOKEN_AIRDROP);
 
     await waitAllClaimed(token.uid);
 
-    const paymentsSnap = await build5Db()
+    const paymentsSnap = await database()
       .collection(COL.TRANSACTION)
       .where('payload_sourceTransaction', 'array-contains', orderTran.uid! as any)
       .get();
     const types = paymentsSnap.map((d) => d.type).sort();
     expect(types).toEqual([TransactionType.BILL_PAYMENT, TransactionType.PAYMENT]);
 
-    const distirbutionDocRef = build5Db().doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, guardian);
+    const distirbutionDocRef = database().doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, guardian);
     const distribution = await distirbutionDocRef.get();
     expect(distribution?.tokenClaimed).toBe(450);
     expect(distribution?.tokenOwned).toBe(450);
@@ -106,13 +106,13 @@ describe('Claim airdropped token test', () => {
     const order = await testEnv.wrap<Transaction>(WEN_FUNC.claimAirdroppedToken);
     await submitMilestoneFunc(order);
 
-    const orderTran = <Transaction>await build5Db().doc(COL.TRANSACTION, order.uid).get();
+    const orderTran = <Transaction>await database().doc(COL.TRANSACTION, order.uid).get();
     expect(orderTran.member).toBe(guardian);
     expect(orderTran.payload.type).toBe(TransactionPayloadType.TOKEN_AIRDROP);
 
     await waitAllClaimed(token.uid);
 
-    const paymentsSnap = await build5Db()
+    const paymentsSnap = await database()
       .collection(COL.TRANSACTION)
       .where('payload_sourceTransaction', 'array-contains', orderTran.uid as any)
       .get();
@@ -122,7 +122,7 @@ describe('Claim airdropped token test', () => {
       TransactionType.BILL_PAYMENT,
       TransactionType.PAYMENT,
     ]);
-    const distirbutionDocRef = build5Db().doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, guardian);
+    const distirbutionDocRef = database().doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, guardian);
     const distribution = await distirbutionDocRef.get();
     expect(distribution?.tokenClaimed).toBe(900);
     expect(distribution?.tokenOwned).toBe(900);
@@ -143,17 +143,17 @@ describe('Claim airdropped token test', () => {
     mockWalletReturnValue(guardian, { token: token.uid });
     const order = await testEnv.wrap<Transaction>(WEN_FUNC.claimAirdroppedToken);
     await submitMilestoneFunc(order);
-    const orderTran = <Transaction>await build5Db().doc(COL.TRANSACTION, order.uid).get();
+    const orderTran = <Transaction>await database().doc(COL.TRANSACTION, order.uid).get();
     expect(orderTran.member).toBe(guardian);
     expect(orderTran.payload.type).toBe(TransactionPayloadType.TOKEN_AIRDROP);
     await waitAllClaimed(token.uid, 1);
-    const paymentsSnap = await build5Db()
+    const paymentsSnap = await database()
       .collection(COL.TRANSACTION)
       .where('payload_sourceTransaction', 'array-contains', orderTran.uid as any)
       .get();
     const types = paymentsSnap.map((d) => d.type).sort();
     expect(types).toEqual([TransactionType.BILL_PAYMENT, TransactionType.PAYMENT]);
-    const distirbutionDocRef = build5Db().doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, guardian);
+    const distirbutionDocRef = database().doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, guardian);
     const distribution = await distirbutionDocRef.get();
     expect(distribution?.tokenClaimed).toBe(450);
     expect(distribution?.tokenOwned).toBe(450);
@@ -171,18 +171,18 @@ describe('Claim airdropped token test', () => {
     const promises = [claimToken(), claimToken()];
     await Promise.all(promises);
     await waitAllClaimed(token.uid);
-    const distirbutionDocRef = build5Db().doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, guardian);
+    const distirbutionDocRef = database().doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, guardian);
     const distribution = await distirbutionDocRef.get();
     expect(distribution?.tokenClaimed).toBe(450);
     expect(distribution?.tokenOwned).toBe(450);
-    const creditSnap = await build5Db()
+    const creditSnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', guardian)
       .where('type', '==', TransactionType.CREDIT)
       .where('payload_token', '==', token.uid)
       .get();
     expect(creditSnap.length).toBe(2);
-    const billPaymentSnap = await build5Db()
+    const billPaymentSnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', guardian)
       .where('type', '==', TransactionType.BILL_PAYMENT)
@@ -196,7 +196,7 @@ describe('Claim airdropped token test', () => {
   });
 
   it('Should throw, token is minted', async () => {
-    await build5Db().doc(COL.TOKEN, token.uid).update({ status: TokenStatus.MINTED });
+    await database().doc(COL.TOKEN, token.uid).update({ status: TokenStatus.MINTED });
     mockWalletReturnValue(guardian, { token: token.uid });
     await expectThrow(
       testEnv.wrap(WEN_FUNC.claimAirdroppedToken),
@@ -220,7 +220,7 @@ describe('Claim airdropped token test', () => {
     mockWalletReturnValue(guardian, { token: token.uid });
     const order = await testEnv.wrap<Transaction>(WEN_FUNC.claimAirdroppedToken);
     await submitMilestoneFunc(order);
-    const orderTran = <Transaction>await build5Db().doc(COL.TRANSACTION, order.uid).get();
+    const orderTran = <Transaction>await database().doc(COL.TRANSACTION, order.uid).get();
     expect(orderTran.member).toBe(guardian);
     expect(orderTran.payload.type).toBe(TransactionPayloadType.TOKEN_AIRDROP);
     await waitAllClaimed(token.uid, 700);
@@ -228,6 +228,6 @@ describe('Claim airdropped token test', () => {
 });
 
 const getAirdropsForToken = async (token: string) => {
-  const snap = await build5Db().collection(COL.AIRDROP).where('token', '==', token).get();
+  const snap = await database().collection(COL.AIRDROP).where('token', '==', token).get();
   return snap.map((d) => d as TokenDrop);
 };

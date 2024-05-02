@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE,
   COL,
@@ -15,7 +15,7 @@ import {
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { tail } from 'lodash';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -87,7 +87,7 @@ describe('SpaceController: ' + WEN_FUNC.updateSpace, () => {
       twitter: 'asdasd',
       discord: 'adamkun1233',
     };
-    const owner = <Member>await build5Db().doc(COL.MEMBER, guardian).get();
+    const owner = <Member>await database().doc(COL.MEMBER, guardian).get();
     mockWalletReturnValue(guardian, updateParams);
     const proposal = await testEnv.wrap<Proposal>(WEN_FUNC.updateSpace);
     expect(proposal.type).toBe(ProposalType.EDIT_SPACE);
@@ -102,12 +102,12 @@ describe('SpaceController: ' + WEN_FUNC.updateSpace, () => {
     );
     expect(proposal.name).toBe('Edit space');
     // TODO - I'm running out of time and need to release this.    // expect(proposal.questions[0].additionalInfo).toBe(    //   'Changes requested.<br />' +    //     'Name: abc (previously: Space A)<br />' +    //     'Discord: adamkun1233 (previously: None)<br />' +    //     'Github: sadas (previously: None)<br />' +    //     'Twitter: asdasd (previously: None)<br />',    // );
-    space = <Space>await build5Db().doc(COL.SPACE, space.uid).get();
+    space = <Space>await database().doc(COL.SPACE, space.uid).get();
     const updatedOn = space.updatedOn;
     mockWalletReturnValue(member, { uid: proposal.uid, value: 1 });
     await testEnv.wrap(WEN_FUNC.voteOnProposal);
     await wait(async () => {
-      space = <Space>await build5Db().doc(COL.SPACE, space.uid).get();
+      space = <Space>await database().doc(COL.SPACE, space.uid).get();
       return dayjs(updatedOn?.toDate()).isBefore(dayjs(space.updatedOn?.toDate()));
     });
     expect(space.name).toBe(updateParams.name);
@@ -143,7 +143,7 @@ describe('SpaceController: ' + WEN_FUNC.updateSpace, () => {
     mockWalletReturnValue(member, { uid: proposal.uid, value: 1 });
     await testEnv.wrap(WEN_FUNC.voteOnProposal);
     await wait(async () => {
-      space = <Space>await build5Db().doc(COL.SPACE, space.uid).get();
+      space = <Space>await database().doc(COL.SPACE, space.uid).get();
       return space.name === 'new name';
     });
   });
@@ -163,7 +163,7 @@ describe('SpaceController: member management', () => {
 
   it('successfully join space', async () => {
     await joinSpaceFunc(member, space.uid);
-    const memberDocRef = build5Db().doc(COL.MEMBER, member);
+    const memberDocRef = database().doc(COL.MEMBER, member);
     const memberData = <Member>await memberDocRef.get();
     expect((memberData.spaces || {})[space.uid].isMember).toBe(true);
   });
@@ -182,7 +182,7 @@ describe('SpaceController: member management', () => {
     const lSpace = await testEnv.wrap<{ status: string }>(WEN_FUNC.leaveSpace);
     expect(lSpace).toBeDefined();
     expect(lSpace.status).toEqual('success');
-    const memberDocRef = build5Db().doc(COL.MEMBER, member);
+    const memberDocRef = database().doc(COL.MEMBER, member);
     const memberData = <Member>await memberDocRef.get();
     expect((memberData.spaces || {})[space.uid].isMember).toBe(false);
   });
@@ -234,17 +234,17 @@ describe('SpaceController: member management', () => {
     const blockMemberResult = await testEnv.wrap(WEN_FUNC.blockMemberSpace);
     assertCreatedOnAndId(blockMemberResult, member);
 
-    const spaceDocRef = build5Db().doc(COL.SPACE, space.uid);
+    const spaceDocRef = database().doc(COL.SPACE, space.uid);
     space = <Space>await spaceDocRef.get();
     expect(space.totalGuardians).toBe(1);
     expect(space.totalMembers).toBe(1);
 
-    const guardianCount = await build5Db()
+    const guardianCount = await database()
       .collection(COL.SPACE, space.uid, SUB_COL.GUARDIANS)
       .count();
     expect(guardianCount).toBe(1);
 
-    const memberCount = await build5Db().collection(COL.SPACE, space.uid, SUB_COL.MEMBERS).count();
+    const memberCount = await database().collection(COL.SPACE, space.uid, SUB_COL.MEMBERS).count();
     expect(memberCount).toBe(1);
   });
 
@@ -255,8 +255,8 @@ describe('SpaceController: member management', () => {
     const bMember = await testEnv.wrap(WEN_FUNC.blockMemberSpace);
     assertCreatedOnAndId(bMember, member);
 
-    const spaceDocRef = build5Db().doc(COL.SPACE, space.uid);
-    const blockedDocRef = build5Db().doc(COL.SPACE, space.uid, SUB_COL.BLOCKED_MEMBERS, member);
+    const spaceDocRef = database().doc(COL.SPACE, space.uid);
+    const blockedDocRef = database().doc(COL.SPACE, space.uid, SUB_COL.BLOCKED_MEMBERS, member);
     let blocked = await blockedDocRef.get();
     expect(blocked).toBeDefined();
 
@@ -269,12 +269,12 @@ describe('SpaceController: member management', () => {
     expect(space.totalGuardians).toBe(1);
     expect(space.totalMembers).toBe(1);
 
-    const guardianCount = await build5Db()
+    const guardianCount = await database()
       .collection(COL.SPACE, space.uid, SUB_COL.GUARDIANS)
       .count();
     expect(guardianCount).toBe(1);
 
-    const memberCount = await build5Db().collection(COL.SPACE, space.uid, SUB_COL.MEMBERS).count();
+    const memberCount = await database().collection(COL.SPACE, space.uid, SUB_COL.MEMBERS).count();
     expect(memberCount).toBe(1);
 
     blocked = await blockedDocRef.get();
@@ -312,7 +312,7 @@ describe('SpaceController: member management', () => {
       guardian = await testEnv.createMember();
       member = await testEnv.createMember();
       space = await testEnv.createSpace(guardian);
-      await build5Db().doc(COL.SPACE, space.uid).update({ open: false });
+      await database().doc(COL.SPACE, space.uid).update({ open: false });
     });
 
     it('successfully join space', async () => {
@@ -345,7 +345,7 @@ describe('SpaceController: member management', () => {
       mockWalletReturnValue(guardian2, { uid: proposal.uid, value: 1 });
       await testEnv.wrap(WEN_FUNC.voteOnProposal);
       await wait(async () => {
-        space = <Space>await build5Db().doc(COL.SPACE, space.uid).get();
+        space = <Space>await database().doc(COL.SPACE, space.uid).get();
         return space.name === name;
       });
       mockWalletReturnValue(guardian, { uid: space.uid, member });
@@ -363,7 +363,7 @@ describe('SpaceController: member management', () => {
       mockWalletReturnValue(guardian2, { uid: proposal.uid, value: 1 });
       await testEnv.wrap(WEN_FUNC.voteOnProposal);
       await wait(async () => {
-        space = <Space>await build5Db().doc(COL.SPACE, space.uid).get();
+        space = <Space>await database().doc(COL.SPACE, space.uid).get();
         return space.name === name;
       });
 
@@ -447,8 +447,8 @@ describe('Add guardian', () => {
       type === ProposalType.ADD_GUARDIAN ? WEN_FUNC.addGuardianSpace : WEN_FUNC.removeGuardianSpace;
     mockWalletReturnValue(guardians[0], { uid: space.uid, member });
     const proposal = await testEnv.wrap<Proposal>(wenFunc);
-    const guardianData = <Member>await build5Db().doc(COL.MEMBER, guardians[0]).get();
-    const memberData = <Member>await build5Db().doc(COL.MEMBER, member).get();
+    const guardianData = <Member>await database().doc(COL.MEMBER, guardians[0]).get();
+    const memberData = <Member>await database().doc(COL.MEMBER, member).get();
     expect(proposal.type).toBe(type);
     expect(proposal.approved).toBe(true);
     expect(proposal.results?.total).toBe(resultTotal);
@@ -460,7 +460,7 @@ describe('Add guardian', () => {
         `${ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE} % must agree for this action to proceed`,
     );
     expect(proposal.name).toBe(`${type === ProposalType.ADD_GUARDIAN ? 'Add' : 'Remove'} guardian`);
-    const voteTransaction = await build5Db()
+    const voteTransaction = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', guardians[0])
       .where('type', '==', TransactionType.VOTE)
@@ -468,7 +468,7 @@ describe('Add guardian', () => {
       .get();
     expect(voteTransaction.length).toBe(1);
     const proposalMember = <ProposalMember>(
-      await build5Db().doc(COL.PROPOSAL, proposal.uid, SUB_COL.MEMBERS, guardians[0]).get()
+      await database().doc(COL.PROPOSAL, proposal.uid, SUB_COL.MEMBERS, guardians[0]).get()
     );
     expect(proposalMember.voted).toBe(true);
     expect((proposalMember as any).tranId).toBe(voteTransaction[0]?.uid);
@@ -487,9 +487,9 @@ describe('Add guardian', () => {
     await testEnv.wrap(WEN_FUNC.voteOnProposal);
 
     await wait(async () => {
-      const spaceDocRef = build5Db().doc(COL.SPACE, space.uid);
+      const spaceDocRef = database().doc(COL.SPACE, space.uid);
       space = <Space>await spaceDocRef.get();
-      const guardian = await build5Db().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, member).get();
+      const guardian = await database().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, member).get();
       return space.totalGuardians === guardianCount + 1 && guardian !== undefined;
     });
     mockWalletReturnValue(guardians[0], { uid: proposal.uid, value: 0 });
@@ -500,9 +500,9 @@ describe('Add guardian', () => {
     mockWalletReturnValue(guardians[2], { uid: removeProposal.uid, value: 1 });
     await testEnv.wrap(WEN_FUNC.voteOnProposal);
     await wait(async () => {
-      const spaceDocRef = build5Db().doc(COL.SPACE, space.uid);
+      const spaceDocRef = database().doc(COL.SPACE, space.uid);
       space = <Space>await spaceDocRef.get();
-      const guardian = await build5Db().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, member).get();
+      const guardian = await database().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, member).get();
       return space.totalGuardians === guardianCount && guardian === undefined;
     });
     mockWalletReturnValue(guardians[0], { uid: removeProposal.uid, value: 0 });
@@ -525,9 +525,9 @@ describe('Add guardian', () => {
     await testEnv.wrap(WEN_FUNC.voteOnProposal);
 
     await wait(async () => {
-      const spaceDocRef = build5Db().doc(COL.SPACE, space.uid);
+      const spaceDocRef = database().doc(COL.SPACE, space.uid);
       space = <Space>await spaceDocRef.get();
-      const guardian = await build5Db().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, member).get();
+      const guardian = await database().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, member).get();
       return space.totalGuardians === guardianCount + 1 && guardian !== undefined;
     });
 
@@ -544,9 +544,9 @@ describe('Add guardian', () => {
     await testEnv.wrap<SpaceMember>(WEN_FUNC.joinSpace);
     await createProposal(ProposalType.ADD_GUARDIAN, 1);
     await wait(async () => {
-      const spaceDocRef = build5Db().doc(COL.SPACE, space.uid);
+      const spaceDocRef = database().doc(COL.SPACE, space.uid);
       space = <Space>await spaceDocRef.get();
-      const guardian = await build5Db().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, member).get();
+      const guardian = await database().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, member).get();
       return space.totalGuardians === 2 && guardian !== undefined;
     });
   });
@@ -559,9 +559,9 @@ describe('Add guardian', () => {
     mockWalletReturnValue(guardians[1], { uid: proposal.uid, value: 1 });
     await testEnv.wrap(WEN_FUNC.voteOnProposal);
     await wait(async () => {
-      const spaceDocRef = build5Db().doc(COL.SPACE, space.uid);
+      const spaceDocRef = database().doc(COL.SPACE, space.uid);
       space = <Space>await spaceDocRef.get();
-      const guardian = await build5Db().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, member).get();
+      const guardian = await database().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, member).get();
       return space.totalGuardians === guardianCount + 1 && guardian !== undefined;
     });
     await expectThrow(
@@ -581,9 +581,9 @@ describe('Add guardian', () => {
     await testEnv.wrap(WEN_FUNC.voteOnProposal);
 
     await wait(async () => {
-      const spaceDocRef = build5Db().doc(COL.SPACE, space.uid);
+      const spaceDocRef = database().doc(COL.SPACE, space.uid);
       space = <Space>await spaceDocRef.get();
-      const guardian = await build5Db().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, member).get();
+      const guardian = await database().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, member).get();
       return space.totalGuardians === guardianCount && guardian === undefined;
     });
 
@@ -593,9 +593,9 @@ describe('Add guardian', () => {
     mockWalletReturnValue(guardians[1], { uid: proposal.uid, value: 1 });
     await testEnv.wrap(WEN_FUNC.voteOnProposal);
     await wait(async () => {
-      const spaceDocRef = build5Db().doc(COL.SPACE, space.uid);
+      const spaceDocRef = database().doc(COL.SPACE, space.uid);
       space = <Space>await spaceDocRef.get();
-      const guardian = await build5Db().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, member).get();
+      const guardian = await database().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, member).get();
       return space.totalGuardians === guardianCount + 1 && guardian !== undefined;
     });
   });
@@ -615,7 +615,7 @@ describe('Token based space', () => {
     space = await testEnv.createSpace(guardian);
     await addGuardianToSpace(space.uid, guardian2);
     token = wallet.getRandomEthAddress();
-    await build5Db().doc(COL.TOKEN, token).upsert({
+    await database().doc(COL.TOKEN, token).upsert({
       project: SOON_PROJECT_ID,
       status: TokenStatus.MINTED,
       space: space.uid,
@@ -627,7 +627,7 @@ describe('Token based space', () => {
 
   it('Should make space token based, can not update access further but can update others', async () => {
     await wait(async () => {
-      space = <Space>await build5Db().doc(COL.SPACE, space.uid).get();
+      space = <Space>await database().doc(COL.SPACE, space.uid).get();
       return space.totalGuardians === 2 && space.totalMembers === 3;
     });
     const updateParams = { uid: space?.uid, tokenBased: true, minStakedValue: 100 };
@@ -636,7 +636,7 @@ describe('Token based space', () => {
     mockWalletReturnValue(guardian2, { uid: proposal.uid, value: 1 });
     await testEnv.wrap(WEN_FUNC.voteOnProposal);
     await wait(async () => {
-      space = <Space>await build5Db().doc(COL.SPACE, space.uid).get();
+      space = <Space>await database().doc(COL.SPACE, space.uid).get();
       return space.tokenBased === true && space.minStakedValue === updateParams.minStakedValue;
     });
     expect(space.totalGuardians).toBe(1);
@@ -662,7 +662,7 @@ describe('Token based space', () => {
     mockWalletReturnValue(guardian2, { uid: proposal2.uid, value: 1 });
     await testEnv.wrap(WEN_FUNC.voteOnProposal);
     await wait(async () => {
-      space = <Space>await build5Db().doc(COL.SPACE, space.uid).get();
+      space = <Space>await database().doc(COL.SPACE, space.uid).get();
       return space.name === name;
     });
   });
@@ -676,25 +676,25 @@ describe('Token based space', () => {
     await testEnv.wrap(WEN_FUNC.voteOnProposal);
 
     await wait(async () => {
-      space = <Space>await build5Db().doc(COL.SPACE, space.uid).get();
+      space = <Space>await database().doc(COL.SPACE, space.uid).get();
       return space.tokenBased === true && space.minStakedValue === updateParams.minStakedValue;
     });
 
     const newMember = await testEnv.createMember();
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, token, SUB_COL.DISTRIBUTION, newMember)
       .upsert({ stakes_dynamic_value: 200 });
     mockWalletReturnValue(newMember, { uid: space?.uid });
     await testEnv.wrap<SpaceMember>(WEN_FUNC.joinSpace);
 
     await wait(async () => {
-      space = <Space>await build5Db().doc(COL.SPACE, space.uid).get();
+      space = <Space>await database().doc(COL.SPACE, space.uid).get();
       return space.totalMembers === 2 && space.totalGuardians === 1;
     });
   });
 
   it('Should not remove member as it has enough stakes', async () => {
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, token, SUB_COL.DISTRIBUTION, member)
       .upsert({ stakes_dynamic_value: 200 });
     const updateParams = { uid: space?.uid, tokenBased: true, minStakedValue: 100 };
@@ -706,7 +706,7 @@ describe('Token based space', () => {
     await testEnv.wrap(WEN_FUNC.voteOnProposal);
 
     await wait(async () => {
-      space = <Space>await build5Db().doc(COL.SPACE, space.uid).get();
+      space = <Space>await database().doc(COL.SPACE, space.uid).get();
       return space.tokenBased === true && space.minStakedValue === updateParams.minStakedValue;
     });
 
@@ -715,10 +715,10 @@ describe('Token based space', () => {
   });
 
   it('Should not remove guardians as they have enough stakes', async () => {
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, token, SUB_COL.DISTRIBUTION, guardian)
       .upsert({ stakes_dynamic_value: 200 });
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, token, SUB_COL.DISTRIBUTION, guardian2)
       .upsert({ stakes_dynamic_value: 200 });
     const updateParams = { uid: space?.uid, tokenBased: true, minStakedValue: 100 };
@@ -729,7 +729,7 @@ describe('Token based space', () => {
     mockWalletReturnValue(guardian2, { uid: proposal.uid, value: 1 });
     await testEnv.wrap(WEN_FUNC.voteOnProposal);
     await wait(async () => {
-      space = <Space>await build5Db().doc(COL.SPACE, space.uid).get();
+      space = <Space>await database().doc(COL.SPACE, space.uid).get();
       return space.tokenBased === true && space.minStakedValue === updateParams.minStakedValue;
     });
 

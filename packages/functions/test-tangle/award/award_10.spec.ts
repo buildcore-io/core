@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Award,
   COL,
@@ -9,7 +9,7 @@ import {
   TokenStatus,
   Transaction,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
@@ -49,7 +49,7 @@ describe('Create award, native', () => {
     mockWalletReturnValue(member, awardRequest(space.uid, token.symbol));
     award = await testEnv.wrap(WEN_FUNC.createAward);
 
-    const guardianDocRef = build5Db().doc(COL.MEMBER, guardian);
+    const guardianDocRef = database().doc(COL.MEMBER, guardian);
     const guardianData = await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, network);
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
@@ -72,7 +72,7 @@ describe('Create award, native', () => {
     });
     await MnemonicService.store(guardianAddress.bech32, guardianAddress.mnemonic);
 
-    const awardDocRef = build5Db().doc(COL.AWARD, award.uid);
+    const awardDocRef = database().doc(COL.AWARD, award.uid);
     await wait(async () => {
       const award = <Award>await awardDocRef.get();
       return award.approved && award.funded;
@@ -84,7 +84,7 @@ describe('Create award, native', () => {
     });
     await testEnv.wrap(WEN_FUNC.approveParticipantAward);
 
-    const snap = await build5Db().collection(COL.AIRDROP).where('member', '==', member).get();
+    const snap = await database().collection(COL.AIRDROP).where('member', '==', member).get();
     expect(snap.length).toBe(1);
   });
 });
@@ -125,7 +125,7 @@ const saveToken = async (space: string, guardian: string) => {
       tokenId: MINTED_TOKEN_ID,
     },
   } as Token;
-  await build5Db().doc(COL.TOKEN, token.uid).create(token);
+  await database().doc(COL.TOKEN, token.uid).create(token);
   return token;
 };
 

@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -7,7 +7,7 @@ import {
   Transaction,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
@@ -61,7 +61,7 @@ describe('Base token trading', () => {
       MIN_IOTA_AMOUNT,
     );
 
-    const sellQuery = build5Db()
+    const sellQuery = database()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.seller!.uid);
     await wait(async () => {
@@ -70,7 +70,7 @@ describe('Base token trading', () => {
     });
     const sell = <TokenTradeOrder>(await sellQuery.get())[0];
 
-    const buyQuery = build5Db()
+    const buyQuery = database()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.buyer!.uid);
     await wait(async () => {
@@ -78,27 +78,27 @@ describe('Base token trading', () => {
       return snap.length === 2;
     });
 
-    const purchaseQuery = build5Db().collection(COL.TOKEN_PURCHASE).where('sell', '==', sell.uid);
+    const purchaseQuery = database().collection(COL.TOKEN_PURCHASE).where('sell', '==', sell.uid);
     await wait(async () => {
       const snap = await purchaseQuery.get();
       return snap.length === 2;
     });
 
-    const sellerBillPaymentsSnap = await build5Db()
+    const sellerBillPaymentsSnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller!.uid)
       .where('type', '==', TransactionType.BILL_PAYMENT)
       .get();
     const sellerBillPayments = sellerBillPaymentsSnap.map((d) => d as Transaction);
     expect(sellerBillPayments.filter((p) => p.payload.amount === MIN_IOTA_AMOUNT).length).toBe(2);
-    const sellerCreditnap = await build5Db()
+    const sellerCreditnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller!.uid)
       .where('type', '==', TransactionType.CREDIT)
       .get();
     expect(sellerCreditnap.length).toBe(0);
 
-    const buyerBillPaymentsSnap = await build5Db()
+    const buyerBillPaymentsSnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer!.uid)
       .where('type', '==', TransactionType.BILL_PAYMENT)
@@ -116,7 +116,7 @@ describe('Base token trading', () => {
         (bp) => bp.payload.amount === 49300 && bp.payload.storageReturn!.amount === 46800,
       ).length,
     ).toBe(2);
-    const buyerCreditnap = await build5Db()
+    const buyerCreditnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer!.uid)
       .where('type', '==', TransactionType.CREDIT)

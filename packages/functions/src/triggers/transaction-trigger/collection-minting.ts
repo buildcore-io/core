@@ -1,4 +1,4 @@
-import { PgTransaction, build5Db } from '@build-5/database';
+import { PgTransaction, database } from '@buildcore/database';
 import {
   COL,
   Collection,
@@ -8,7 +8,7 @@ import {
   Transaction,
   TransactionPayloadType,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { TransactionPayload, Utils } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { getAddress } from '../../utils/address.utils';
@@ -50,13 +50,13 @@ const onCollectionAliasMinted = async (transaction: PgTransaction) => {
   const { col, colId, subCol, subColId } = getPathParts(
     transaction.payload_walletReference_milestoneTransactionPath!,
   );
-  const milestoneTransaction = (await build5Db().doc(col, colId, subCol, subColId).get())!;
+  const milestoneTransaction = (await database().doc(col, colId, subCol, subColId).get())!;
 
   const aliasOutputId = Utils.computeOutputId(
     Utils.transactionId(milestoneTransaction.payload as unknown as TransactionPayload),
     0,
   );
-  await build5Db()
+  await database()
     .doc(COL.COLLECTION, transaction.payload_collection!)
     .update({
       mintingData_aliasBlockId: milestoneTransaction.blockId as string,
@@ -78,19 +78,19 @@ const onCollectionAliasMinted = async (transaction: PgTransaction) => {
       collection: transaction.payload_collection,
     },
   };
-  await build5Db().doc(COL.TRANSACTION, order.uid).create(order);
+  await database().doc(COL.TRANSACTION, order.uid).create(order);
 };
 
 const onCollectionMinted = async (transaction: PgTransaction) => {
   const { col, colId, subCol, subColId } = getPathParts(
     transaction.payload_walletReference_milestoneTransactionPath!,
   );
-  const milestoneTransaction = (await build5Db().doc(col, colId, subCol, subColId).get())!;
+  const milestoneTransaction = (await database().doc(col, colId, subCol, subColId).get())!;
   const collectionOutputId = Utils.computeOutputId(
     Utils.transactionId(milestoneTransaction.payload as unknown as TransactionPayload),
     1,
   );
-  const collectionDocRef = build5Db().doc(COL.COLLECTION, transaction.payload_collection!);
+  const collectionDocRef = database().doc(COL.COLLECTION, transaction.payload_collection!);
   const collection = (await collectionDocRef.get())!;
   await saveCollectionMintingData(
     transaction,
@@ -99,7 +99,7 @@ const onCollectionMinted = async (transaction: PgTransaction) => {
   );
   if (collection.mintingData?.nftsToMint) {
     const order = createMintNftsTransaction(transaction);
-    await build5Db().doc(COL.TRANSACTION, order.uid).create(order);
+    await database().doc(COL.TRANSACTION, order.uid).create(order);
   }
 };
 
@@ -108,7 +108,7 @@ const saveCollectionMintingData = (
   blockId: string,
   collectionOutputId: string,
 ) =>
-  build5Db()
+  database()
     .doc(COL.COLLECTION, transaction.payload_collection!)
     .update({
       mintingData_blockId: blockId,
@@ -117,26 +117,26 @@ const saveCollectionMintingData = (
     });
 
 const onNftMintSuccess = async (transaction: PgTransaction) => {
-  const batch = build5Db().batch();
+  const batch = database().batch();
 
-  const collectionDocRef = build5Db().doc(COL.COLLECTION, transaction.payload_collection!);
+  const collectionDocRef = database().doc(COL.COLLECTION, transaction.payload_collection!);
   const collection = <Collection>await collectionDocRef.get();
 
   batch.update(collectionDocRef, {
-    mintingData_nftsToMint: build5Db().inc(-transaction.payload_nfts!.length),
+    mintingData_nftsToMint: database().inc(-transaction.payload_nfts!.length),
   });
 
   const { col, colId, subCol, subColId } = getPathParts(
     transaction.payload_walletReference_milestoneTransactionPath!,
   );
-  const milestoneTransaction = (await build5Db().doc(col, colId, subCol, subColId).get())!;
+  const milestoneTransaction = (await database().doc(col, colId, subCol, subColId).get())!;
   for (let i = 0; i < transaction.payload_nfts!.length; ++i) {
     const nftId = transaction.payload_nfts![i];
     const outputId = Utils.computeOutputId(
       Utils.transactionId(milestoneTransaction.payload as unknown as TransactionPayload),
       i + 2,
     );
-    const docRef = build5Db().doc(COL.NFT, nftId);
+    const docRef = database().doc(COL.NFT, nftId);
 
     batch.update(docRef, {
       mintingData_network: transaction.network,
@@ -150,7 +150,7 @@ const onNftMintSuccess = async (transaction: PgTransaction) => {
 
   if (collection.mintingData?.nftsToMint! - transaction.payload_nfts!.length > 0) {
     const order = createMintNftsTransaction(transaction);
-    const docRef = build5Db().doc(COL.TRANSACTION, order.uid);
+    const docRef = database().doc(COL.TRANSACTION, order.uid);
     batch.create(docRef, order);
   }
 
@@ -172,7 +172,7 @@ const createMintNftsTransaction = (transaction: PgTransaction): Transaction => (
 });
 
 const onCollectionLocked = async (transaction: PgTransaction) => {
-  const member = (await build5Db().doc(COL.MEMBER, transaction.member!).get())!;
+  const member = (await database().doc(COL.MEMBER, transaction.member!).get())!;
   const network = transaction.network as Network;
   const order: Transaction = {
     project: getProject(transaction),
@@ -189,10 +189,10 @@ const onCollectionLocked = async (transaction: PgTransaction) => {
       collection: transaction.payload_collection,
     },
   };
-  await build5Db().doc(COL.TRANSACTION, order.uid).create(order);
+  await database().doc(COL.TRANSACTION, order.uid).create(order);
 };
 
 const onCollectionAliasTransfered = (transaction: PgTransaction) =>
-  build5Db()
+  database()
     .doc(COL.COLLECTION, transaction.payload_collection!)
     .update({ status: CollectionStatus.MINTED, approved: true });

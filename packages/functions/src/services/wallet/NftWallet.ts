@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Award,
   COL,
@@ -11,7 +11,7 @@ import {
   Space,
   Stamp,
   Transaction,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import {
   AddressUnlockCondition,
   AliasAddress,
@@ -106,7 +106,7 @@ export class NftWallet {
     }
     nextAliasOutput.stateIndex!++;
 
-    const collectionDocRef = build5Db().doc(COL.COLLECTION, transaction.payload.collection!);
+    const collectionDocRef = database().doc(COL.COLLECTION, transaction.payload.collection!);
     const collection = <Collection>await collectionDocRef.get();
 
     const collectionMetadata = await this.getCollectionMetadata(transaction.network!, collection);
@@ -155,7 +155,7 @@ export class NftWallet {
     if (collection.type === CollectionType.METADATA) {
       return { immutableMetadata: '', mutableMetadata: '' };
     }
-    const royaltySpaceDocRef = build5Db().doc(COL.SPACE, collection.royaltiesSpace || '');
+    const royaltySpaceDocRef = database().doc(COL.SPACE, collection.royaltiesSpace || '');
     const royaltySpace = await royaltySpaceDocRef.get();
     const royaltySpaceAddress = getAddress(royaltySpace, network);
     const collectionMetadata = await collectionToMetadata(collection, royaltySpaceAddress);
@@ -183,11 +183,11 @@ export class NftWallet {
     nextAliasOutput.aliasId = Utils.computeAliasId(aliasOutputId);
     nextAliasOutput.stateIndex!++;
 
-    const awardDocRef = build5Db().doc(COL.AWARD, transaction.payload.award!);
+    const awardDocRef = database().doc(COL.AWARD, transaction.payload.award!);
     const award = <Award>await awardDocRef.get();
 
     const issuerAddress = new AliasAddress(Utils.computeAliasId(aliasOutputId));
-    const spaceDocRef = build5Db().doc(COL.SPACE, award.space);
+    const spaceDocRef = database().doc(COL.SPACE, award.space);
     const space = <Space>await spaceDocRef.get();
     const metadata = await awardToCollectionMetadata(award, space);
     const collectionOutput = await createNftOutput(
@@ -249,9 +249,9 @@ export class NftWallet {
         : collectionOutput.nftId;
 
     const collection = <Collection>(
-      await build5Db().doc(COL.COLLECTION, transaction.payload.collection!).get()
+      await database().doc(COL.COLLECTION, transaction.payload.collection!).get()
     );
-    const royaltySpaceDocRef = build5Db().doc(COL.SPACE, collection.royaltiesSpace || '');
+    const royaltySpaceDocRef = database().doc(COL.SPACE, collection.royaltiesSpace || '');
     const royaltySpace = await royaltySpaceDocRef.get();
     const royaltySpaceAddress = getAddress(royaltySpace, transaction.network!);
 
@@ -289,15 +289,15 @@ export class NftWallet {
           params,
         );
         blockId = await submitBlock(this.wallet, essence, unlocks);
-        const batch = build5Db().batch();
+        const batch = database().batch();
         for (let i = 0; i < nftOutputsToMint.length; ++i) {
-          batch.update(build5Db().doc(COL.NFT, nfts[i].uid), {
+          batch.update(database().doc(COL.NFT, nfts[i].uid), {
             mintingData_address: nftMintAddresses[i].bech32,
             mintingData_storageDeposit: Number(nftOutputsToMint[i].amount),
           });
         }
 
-        const transactionDocRef = build5Db().doc(COL.TRANSACTION, transaction.uid);
+        const transactionDocRef = database().doc(COL.TRANSACTION, transaction.uid);
         batch.update(transactionDocRef, {
           payload_amount: nftOutputsToMint.reduce((acc, act) => acc + Number(act.amount), 0),
           payload_nfts: nfts.slice(0, nftsToMint).map((nft) => nft.uid),
@@ -351,7 +351,7 @@ export class NftWallet {
         ? Utils.computeNftId(collectionOutputId)
         : collectionOutput.nftId;
 
-    const awardDocRef = build5Db().doc(COL.AWARD, transaction.payload.award!);
+    const awardDocRef = database().doc(COL.AWARD, transaction.payload.award!);
     const award = <Award>await awardDocRef.get();
 
     const issuerAddress = new NftAddress(collectionNftId);
@@ -436,7 +436,7 @@ export class NftWallet {
       nextCollectionOutput.nftId = Utils.computeNftId(collectionOutputId);
     }
 
-    const order = await build5Db().doc(COL.TRANSACTION, transaction.payload.orderId!).get();
+    const order = await database().doc(COL.TRANSACTION, transaction.payload.orderId!).get();
     const issuerAddress = new NftAddress(transaction.payload.collectionId!);
     const ownerAddress = Utils.parseBech32Address(transaction.payload.targetAddress!);
     const mutableMetadata = JSON.stringify(get(order, 'payload.metadata', {}));
@@ -514,7 +514,7 @@ export class NftWallet {
     }
     nextAliasOutput.stateIndex!++;
 
-    const stampDocRef = build5Db().doc(COL.STAMP, transaction.payload.stamp!);
+    const stampDocRef = database().doc(COL.STAMP, transaction.payload.stamp!);
     const stamp = <Stamp>await stampDocRef.get();
 
     const issuerAddress = new AliasAddress(nextAliasOutput.aliasId);
@@ -587,7 +587,7 @@ export class NftWallet {
     const collectionOutputId = await this.client.nftOutputId(transaction.payload.collectionId!);
     const collectionOutput = (await this.client.getOutput(collectionOutputId)).output as NftOutput;
 
-    const nft = <Nft>await build5Db().doc(COL.NFT, transaction.payload.nft!).get();
+    const nft = <Nft>await database().doc(COL.NFT, transaction.payload.nft!).get();
     const nftOwnerAddressBech = nft.mintingData?.address || nft.depositData?.address!;
     const nftOwnerAddress = await this.wallet.getAddressDetails(nftOwnerAddressBech);
     const nftOutputId = await this.client.nftOutputId(nft.mintingData?.nftId!);
@@ -609,7 +609,7 @@ export class NftWallet {
       nextCollectionOutput.nftId = Utils.computeNftId(collectionOutputId);
     }
 
-    const order = await build5Db().doc(COL.TRANSACTION, transaction.payload.orderId!).get();
+    const order = await database().doc(COL.TRANSACTION, transaction.payload.orderId!).get();
     const mutableMetadata = JSON.stringify(get(order, 'payload.metadata', {}));
     const nextNftOutput: NftOutputBuilderParams = cloneDeep(nftOutput);
     if (nextNftOutput.nftId === EMPTY_NFT_ID) {
@@ -845,7 +845,7 @@ const getNftMintingAddress = (nfts: Nft[], wallet: Wallet) => {
 };
 
 const getPreMintedNfts = (collection: string, limit = 100) =>
-  build5Db()
+  database()
     .collection(COL.NFT)
     .where('collection', '==', collection)
     .where('status', '==', NftStatus.PRE_MINTED)

@@ -1,5 +1,5 @@
-import { FirebaseApp } from '@build-5/database';
-import { COL } from '@build-5/interfaces';
+import { FirebaseApp } from '@buildcore/database';
+import { COL } from '@buildcore/interfaces';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 import admin from 'firebase-admin';

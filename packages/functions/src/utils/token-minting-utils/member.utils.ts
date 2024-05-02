@@ -1,4 +1,4 @@
-import { Token, TokenDrop } from '@build-5/interfaces';
+import { Token, TokenDrop } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { Wallet } from '../../services/wallet/wallet';
 import { packBasicOutput } from '../basic-output.utils';

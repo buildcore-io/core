@@ -1,4 +1,4 @@
-import { COL, CollectionStats } from '@build-5/interfaces';
+import { COL, CollectionStats } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgCollectionStats } from '../../models';
 import { removeNulls } from '../common';

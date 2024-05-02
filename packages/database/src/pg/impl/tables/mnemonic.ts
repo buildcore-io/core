@@ -1,4 +1,4 @@
-import { Mnemonic, Network } from '@build-5/interfaces';
+import { Mnemonic, Network } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgMnemonic } from '../../models';
 import { removeNulls } from '../common';

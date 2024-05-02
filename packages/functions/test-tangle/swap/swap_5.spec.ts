@@ -1,11 +1,11 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
   SwapStatus,
   TangleRequestType,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
@@ -43,7 +43,7 @@ describe('Swap control test', () => {
     });
     await MnemonicService.store(address.bech32, address.mnemonic, h.network);
 
-    const creditQuery = build5Db()
+    const creditQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', address.bech32)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST)
@@ -75,7 +75,7 @@ describe('Swap control test', () => {
     await h.wallet.send(address, swapAddress, MIN_IOTA_AMOUNT, {});
     await MnemonicService.store(address.bech32, address.mnemonic, h.network);
 
-    const swapDocRef = build5Db().doc(COL.SWAP, swapUid);
+    const swapDocRef = database().doc(COL.SWAP, swapUid);
     await wait(async () => {
       const swap = await swapDocRef.get();
       return swap?.bidOutputs?.length === 1;

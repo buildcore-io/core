@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MAX_TOTAL_TOKEN_SUPPLY,
@@ -8,7 +8,7 @@ import {
   TokenTradeOrderStatus,
   TokenTradeOrderType,
   Transaction,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
@@ -43,7 +43,7 @@ describe('Minted toke trading tangle request', () => {
       },
     });
 
-    const buyQuery = build5Db()
+    const buyQuery = database()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', tmp.bech32)
       .where('type', '==', TokenTradeOrderType.BUY);
@@ -58,7 +58,7 @@ describe('Minted toke trading tangle request', () => {
     expect(buyOrder.balance).toBe(MIN_IOTA_AMOUNT);
     expect(buyOrder.status).toBe(TokenTradeOrderStatus.ACTIVE);
 
-    const sellOrders = await build5Db()
+    const sellOrders = await database()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.seller)
       .where('type', '==', TokenTradeOrderType.SELL)

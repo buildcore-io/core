@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Award,
   COL,
@@ -11,7 +11,7 @@ import {
   TransactionPayloadType,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { wait } from '../../test/controls/common';
@@ -47,14 +47,14 @@ describe('Award', () => {
     const order = await testEnv.wrap<Transaction>(WEN_FUNC.fundAward);
     await requestFundsFromFaucet(network, order.payload.targetAddress, order.payload.amount);
 
-    const awardDocRef = build5Db().doc(COL.AWARD, award.uid);
+    const awardDocRef = database().doc(COL.AWARD, award.uid);
     await wait(async () => {
       const award = <Award>await awardDocRef.get();
       return award.approved && award.funded;
     });
 
     const tmp = await testEnv.createMember();
-    await build5Db().doc(COL.MEMBER, tmp).update({ rmsAddress: '' });
+    await database().doc(COL.MEMBER, tmp).update({ rmsAddress: '' });
     mockWalletReturnValue(guardian, {
       award: award.uid,
       members: [tmp, tmp],
@@ -81,7 +81,7 @@ describe('Award', () => {
       return response.items.length === 2;
     });
 
-    const airdropQuery = build5Db().collection(COL.AIRDROP).where('member', '==', tmp);
+    const airdropQuery = database().collection(COL.AIRDROP).where('member', '==', tmp);
     let airdropSnap = await airdropQuery.get();
     expect(airdropSnap.length).toBe(2);
 
@@ -109,7 +109,7 @@ describe('Award', () => {
       );
     });
 
-    const billPaymentQuery = build5Db()
+    const billPaymentQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', tmp)
       .where('type', '==', TransactionType.BILL_PAYMENT);

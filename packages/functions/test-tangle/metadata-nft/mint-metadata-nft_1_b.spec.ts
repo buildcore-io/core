@@ -1,11 +1,11 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
   Network,
   TangleRequestType,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { BasicOutput, RegularTransactionEssence, TransactionPayload } from '@iota/sdk';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { getOutputMetadata } from '../../src/utils/basic-output.utils';
@@ -37,7 +37,7 @@ describe('Metadata nft', () => {
       helper.network,
     );
 
-    const mintMetadataNftQuery = build5Db()
+    const mintMetadataNftQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.member)
       .where('type', '==', TransactionType.METADATA_NFT);
@@ -46,7 +46,7 @@ describe('Metadata nft', () => {
       return snap.length === 3;
     });
 
-    const creditQuery = build5Db()
+    const creditQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.member)
       .where('type', '==', TransactionType.CREDIT);
@@ -62,10 +62,10 @@ describe('Metadata nft', () => {
     const output = (payload.essence as RegularTransactionEssence).outputs[0] as BasicOutput;
     const outputMetadata = getOutputMetadata(output);
 
-    const nftQuery = build5Db().collection(COL.NFT).where('owner', '==', helper.member);
+    const nftQuery = database().collection(COL.NFT).where('owner', '==', helper.member);
     const nft = (await nftQuery.get())[0];
-    const collection = await build5Db().doc(COL.COLLECTION, nft.collection).get();
-    const space = await build5Db().doc(COL.SPACE, nft.space).get();
+    const collection = await database().doc(COL.COLLECTION, nft.collection).get();
+    const space = await database().doc(COL.SPACE, nft.space).get();
     expect(outputMetadata).toEqual({
       nftId: nft!.mintingData!.nftId,
       collectionId: collection!.mintingData!.nftId,

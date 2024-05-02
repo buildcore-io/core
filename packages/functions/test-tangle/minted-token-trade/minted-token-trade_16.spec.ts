@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -9,7 +9,7 @@ import {
   Transaction,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
@@ -44,7 +44,7 @@ describe('Token minting', () => {
       },
     );
     await wait(async () => {
-      const snap = await build5Db()
+      const snap = await database()
         .collection(COL.TOKEN_MARKET)
         .where('orderTransactionId', '==', sellOrder.uid)
         .get();
@@ -58,7 +58,7 @@ describe('Token minting', () => {
 
     const sell = <TokenTradeOrder>(
       (
-        await build5Db()
+        await database()
           .collection(COL.TOKEN_MARKET)
           .where('orderTransactionId', '==', sellOrder.uid)
           .get()
@@ -68,7 +68,7 @@ describe('Token minting', () => {
     mockWalletReturnValue(helper.seller!, { uid: sell.uid });
     await testEnv.wrap<TokenTradeOrder>(WEN_FUNC.cancelTradeOrder);
 
-    const sellerCreditSnap = await build5Db()
+    const sellerCreditSnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller)
       .where('type', '==', TransactionType.CREDIT)
@@ -99,7 +99,7 @@ describe('Token minting', () => {
       },
     );
     await wait(async () => {
-      const snap = await build5Db()
+      const snap = await database()
         .collection(COL.TOKEN_MARKET)
         .where('orderTransactionId', '==', sellOrder.uid)
         .get();
@@ -112,14 +112,14 @@ describe('Token minting', () => {
     );
 
     await wait(async () => {
-      const snap = await build5Db()
+      const snap = await database()
         .collection(COL.TOKEN_PURCHASE)
         .where('token', '==', helper.token!.uid)
         .get();
       return snap.length === 1;
     });
 
-    const sellerCreditSnap = await build5Db()
+    const sellerCreditSnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller)
       .where('type', '==', TransactionType.CREDIT)

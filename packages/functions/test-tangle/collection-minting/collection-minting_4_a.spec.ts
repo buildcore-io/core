@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Collection,
@@ -11,7 +11,7 @@ import {
   Space,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { getAddress } from '../../src/utils/address.utils';
 import { CollectionMintHelper, getNftMetadata } from './Helper';
 
@@ -31,15 +31,15 @@ describe('Collection minting', () => {
     await helper.createAndOrderNft(true);
     await helper.createAndOrderNft(true, true);
     let placeholderNft = await helper.createAndOrderNft(true, false);
-    await build5Db().doc(COL.NFT, placeholderNft.uid).update({ placeholderNft: true });
-    await build5Db()
+    await database().doc(COL.NFT, placeholderNft.uid).update({ placeholderNft: true });
+    await database()
       .doc(COL.COLLECTION, helper.collection)
-      .update({ total: build5Db().inc(-1) });
+      .update({ total: database().inc(-1) });
 
     await helper.mintCollection();
 
     const bidCredit = (
-      await build5Db()
+      await database()
         .collection(COL.TRANSACTION)
         .where('payload_collection', '==', helper.collection)
         .where('type', '==', TransactionType.CREDIT)
@@ -48,7 +48,7 @@ describe('Collection minting', () => {
     expect(bidCredit.length).toBe(1);
     expect(bidCredit[0].payload.amount).toBe(2 * MIN_IOTA_AMOUNT);
 
-    const nftsQuery = build5Db()
+    const nftsQuery = database()
       .collection(COL.NFT)
       .where('collection', '==', helper.collection)
       .where('placeholderNft', '==', false);
@@ -67,8 +67,8 @@ describe('Collection minting', () => {
     );
     expect(allCancelled).toBe(true);
 
-    const collection = <Collection>await build5Db().doc(COL.COLLECTION, helper.collection).get();
-    const royaltySpace = <Space>await build5Db().doc(COL.SPACE, collection.royaltiesSpace!).get();
+    const collection = <Collection>await database().doc(COL.COLLECTION, helper.collection).get();
+    const royaltySpace = <Space>await database().doc(COL.SPACE, collection.royaltiesSpace!).get();
 
     const collectionOutput = await helper.nftWallet!.getNftOutputs(
       collection.mintingData?.nftId,
@@ -85,7 +85,7 @@ describe('Collection minting', () => {
     expect(collectionMetadata.royalties[getAddress(royaltySpace, Network.RMS)]).toBe(
       collection.royaltiesFee,
     );
-    expect(collectionMetadata.build5Id).toBe(collection.uid);
+    expect(collectionMetadata.originId).toBe(collection.uid);
 
     for (const nft of nfts) {
       const nftOutputs = await helper.nftWallet!.getNftOutputs(nft.mintingData?.nftId, undefined);
@@ -103,10 +103,10 @@ describe('Collection minting', () => {
       expect(metadata.royalties[getAddress(royaltySpace, Network.RMS)]).toBe(
         collection.royaltiesFee,
       );
-      expect(metadata.build5Id).toBe(nft.uid);
+      expect(metadata.originId).toBe(nft.uid);
     }
 
-    placeholderNft = <Nft>await build5Db().doc(COL.NFT, placeholderNft.uid).get();
+    placeholderNft = <Nft>await database().doc(COL.NFT, placeholderNft.uid).get();
     expect(placeholderNft.status).toBe(NftStatus.PRE_MINTED);
   });
 });

@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   IgnoreWalletReason,
@@ -8,7 +8,7 @@ import {
   TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { Wallet } from '../src/services/wallet/wallet';
 import { AddressDetails } from '../src/services/wallet/wallet.service';
 import { generateRandomAmount } from '../src/utils/common.utils';
@@ -37,7 +37,7 @@ describe('Transaction match', () => {
     await wallet.send(address, order.payload.targetAddress!, order.payload.amount!, {
       vestingAt: serverTime(),
     });
-    const creditSnapQuery = build5Db()
+    const creditSnapQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', order.member)
       .where('type', '==', TransactionType.CREDIT);
@@ -54,7 +54,7 @@ describe('Transaction match', () => {
     await wallet.send(address, order.payload.targetAddress!, order.payload.amount!, {
       storageDepositReturnAddress: address.bech32,
     });
-    const creditSnapQuery = build5Db()
+    const creditSnapQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', order.member)
       .where('type', '==', TransactionType.CREDIT);
@@ -87,6 +87,6 @@ const saveOrder = async (wallet: Wallet) => {
       validationType: TransactionValidationType.ADDRESS,
     },
   };
-  await build5Db().doc(COL.TRANSACTION, data.uid).create(data);
+  await database().doc(COL.TRANSACTION, data.uid).create(data);
   return data;
 };

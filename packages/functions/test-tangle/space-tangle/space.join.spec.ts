@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -8,7 +8,7 @@ import {
   SpaceMember,
   TangleRequestType,
   Transaction,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
@@ -48,11 +48,11 @@ describe('Join space', () => {
     const credit = snap[0] as Transaction;
     expect(credit.payload.response!.status).toBe('success');
 
-    const spaceDocRef = build5Db().doc(COL.SPACE, helper.space.uid);
+    const spaceDocRef = database().doc(COL.SPACE, helper.space.uid);
     helper.space = <Space>await spaceDocRef.get();
     expect(helper.space.totalMembers).toBe(2);
 
-    const spaceMemberDocRef = build5Db().doc(
+    const spaceMemberDocRef = database().doc(
       COL.SPACE,
       helper.space.uid,
       SUB_COL.MEMBERS,

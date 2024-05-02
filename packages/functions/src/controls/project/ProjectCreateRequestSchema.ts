@@ -1,4 +1,4 @@
-import { ProjectBilling, ProjectCreateRequest } from '@build-5/interfaces';
+import { ProjectBilling, ProjectCreateRequest } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 

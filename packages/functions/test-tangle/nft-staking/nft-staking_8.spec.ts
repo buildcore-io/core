@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   IgnoreWalletReason,
@@ -9,7 +9,7 @@ import {
   Transaction,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
@@ -28,7 +28,7 @@ describe('Stake nft', () => {
 
   it('Should not stake with storage dep', async () => {
     let nft = await helper.createAndOrderNft();
-    let nftDocRef = build5Db().doc(COL.NFT, nft.uid);
+    let nftDocRef = database().doc(COL.NFT, nft.uid);
     await helper.mintCollection();
     nft = <Nft>await nftDocRef.get();
     await helper.withdrawNftAndAwait(nft.uid);
@@ -49,7 +49,7 @@ describe('Stake nft', () => {
       true,
     );
 
-    let creditQuery = build5Db()
+    let creditQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_NFT)
       .where('member', '==', helper.guardian)
@@ -68,7 +68,7 @@ describe('Stake nft', () => {
     const order = await testEnv.wrap<Transaction>(WEN_FUNC.creditUnrefundable);
     await requestFundsFromFaucet(Network.RMS, order.payload.targetAddress, order.payload.amount);
 
-    creditQuery = build5Db()
+    creditQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED)
       .where('member', '==', helper.guardian);
@@ -77,7 +77,7 @@ describe('Stake nft', () => {
       return snap.length === 1 && snap[0].payload.walletReference?.confirmed;
     });
 
-    const nftStakes = await build5Db()
+    const nftStakes = await database()
       .collection(COL.NFT_STAKE)
       .where('member', '==', helper.guardian)
       .get();

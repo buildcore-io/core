@@ -1,4 +1,4 @@
-import { AwardOwner, COL } from '@build-5/interfaces';
+import { AwardOwner, COL } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgAwardOwners } from '../../models';
 import { removeNulls } from '../common';

@@ -1,4 +1,4 @@
-import { ClaimAirdroppedTokensRequest } from '@build-5/interfaces';
+import { ClaimAirdroppedTokensRequest } from '@buildcore/interfaces';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 
 export const symbolSchema = toJoiObject<ClaimAirdroppedTokensRequest>({

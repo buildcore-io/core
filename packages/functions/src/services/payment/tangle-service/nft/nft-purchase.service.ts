@@ -1,4 +1,4 @@
-import { PgNftUpdate, build5Db } from '@build-5/database';
+import { PgNftUpdate, database } from '@buildcore/database';
 import {
   COL,
   Collection,
@@ -22,7 +22,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { getAddress } from '../../../../utils/address.utils';
@@ -64,7 +64,7 @@ export class TangleNftPurchaseService extends BaseTangleService<TangleResponse> 
     order.payload.disableWithdraw = params.disableWithdraw || false;
 
     this.transactionService.push({
-      ref: build5Db().doc(COL.TRANSACTION, order.uid),
+      ref: database().doc(COL.TRANSACTION, order.uid),
       data: order,
       action: Action.C,
     });
@@ -159,7 +159,7 @@ export const createNftPuchaseOrder = async (
 };
 
 export const getCollection = async (id: string) => {
-  const collectionDocRef = build5Db().doc(COL.COLLECTION, id);
+  const collectionDocRef = database().doc(COL.COLLECTION, id);
   const collection = await collectionDocRef.get();
   if (!collection) {
     throw invalidArgument(WenError.collection_does_not_exists);
@@ -172,13 +172,13 @@ export const getCollection = async (id: string) => {
 };
 
 export const getMember = async (id: string) => {
-  const memberDocRef = build5Db().doc(COL.MEMBER, id);
+  const memberDocRef = database().doc(COL.MEMBER, id);
   return <Member>await memberDocRef.get();
 };
 
 const getNft = async (collection: Collection, nftId: string | undefined) => {
   if (nftId) {
-    const docRef = build5Db().doc(COL.NFT, nftId);
+    const docRef = database().doc(COL.NFT, nftId);
     const nft = (await getNftByMintingId(nftId)) || (await docRef.get());
     if (nft) {
       return nft;
@@ -206,7 +206,7 @@ const getNft = async (collection: Collection, nftId: string | undefined) => {
 };
 
 export const getNftAbove = (collection: Collection, position: number, limit = 1) =>
-  build5Db()
+  database()
     .collection(COL.NFT)
     .where('sold', '==', false)
     .where('locked', '==', false)
@@ -218,7 +218,7 @@ export const getNftAbove = (collection: Collection, position: number, limit = 1)
     .get();
 
 export const getNftBelow = (collection: Collection, position: number, limit = 1) =>
-  build5Db()
+  database()
     .collection(COL.NFT)
     .where('sold', '==', false)
     .where('locked', '==', false)
@@ -292,7 +292,7 @@ export const assertUserHasAccess = (space: Space, collection: Collection, owner:
   );
 
 export const assertUserHasOnlyOneNft = async (collection: Collection, owner: string) => {
-  const snap = await build5Db()
+  const snap = await database()
     .collection(COL.TRANSACTION)
     .where('member', '==', owner)
     .where('type', '==', TransactionType.BILL_PAYMENT)
@@ -305,7 +305,7 @@ export const assertUserHasOnlyOneNft = async (collection: Collection, owner: str
 };
 
 export const assertNoOrderInProgress = async (owner: string) => {
-  const orderInProgress = await build5Db()
+  const orderInProgress = await database()
     .collection(COL.TRANSACTION)
     .where('payload_reconciled', '==', false)
     .where('payload_type', '==', TransactionPayloadType.NFT_PURCHASE)
@@ -344,8 +344,8 @@ export const getDiscount = (collection: Collection, member: Member) => {
 };
 
 export const lockNft = (nftId: string, orderId: string) =>
-  build5Db().runTransaction(async (transaction) => {
-    const docRef = build5Db().doc(COL.NFT, nftId);
+  database().runTransaction(async (transaction) => {
+    const docRef = database().doc(COL.NFT, nftId);
     const nft = <Nft>await transaction.get(docRef);
     if (nft.locked) {
       throw invalidArgument(WenError.nft_locked_for_sale);

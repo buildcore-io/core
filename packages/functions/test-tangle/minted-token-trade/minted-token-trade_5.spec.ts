@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   CreditPaymentReason,
@@ -8,7 +8,7 @@ import {
   TokenTradeOrder,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { Helper } from './Helper';
@@ -27,12 +27,12 @@ describe('Token minting', () => {
   it('Create and cancel buy', async () => {
     await helper.createBuyOrder();
 
-    const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer);
+    const query = database().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer);
     const buy = <TokenTradeOrder>(await query.get())[0];
     mockWalletReturnValue(helper.buyer!, { uid: buy.uid });
     await testEnv.wrap<TokenTradeOrder>(WEN_FUNC.cancelTradeOrder);
 
-    const buyerCreditnap = await build5Db()
+    const buyerCreditnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer)
       .where('type', '==', TransactionType.CREDIT)

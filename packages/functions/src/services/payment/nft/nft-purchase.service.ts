@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Auction,
   COL,
@@ -7,18 +7,24 @@ import {
   Transaction,
   TransactionPayloadType,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { BaseService, HandlerParams } from '../base';
 import { Action } from '../transaction-service';
 import { BaseNftService } from './common';
 
 export class NftPurchaseService extends BaseService {
-  public handleRequest = async ({ order, match, tran, tranEntry, build5Tran }: HandlerParams) => {
-    const nftDocRef = build5Db().doc(COL.NFT, order.payload.nft!);
+  public handleRequest = async ({
+    order,
+    match,
+    tran,
+    tranEntry,
+    buildcoreTran,
+  }: HandlerParams) => {
+    const nftDocRef = database().doc(COL.NFT, order.payload.nft!);
     const nft = <Nft>await this.transaction.get(nftDocRef);
 
     if (nft.availableFrom === null) {
-      await this.transactionService.processAsInvalid(tran, order, tranEntry, build5Tran);
+      await this.transactionService.processAsInvalid(tran, order, tranEntry, buildcoreTran);
       return;
     }
 
@@ -44,7 +50,7 @@ export class NftPurchaseService extends BaseService {
   };
 
   public creditBids = async (auctionId: string) => {
-    const auctionDocRef = build5Db().doc(COL.AUCTION, auctionId);
+    const auctionDocRef = database().doc(COL.AUCTION, auctionId);
     const auction = <Auction>await this.transaction.get(auctionDocRef);
     this.transactionService.push({
       ref: auctionDocRef,
@@ -53,7 +59,7 @@ export class NftPurchaseService extends BaseService {
     });
 
     for (const bid of auction.bids) {
-      const payments = await build5Db()
+      const payments = await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.PAYMENT)
         .where('member', '==', bid.bidder)
@@ -74,7 +80,7 @@ export class NftPurchaseService extends BaseService {
   };
 
   public markAsVoid = async (transaction: Transaction): Promise<void> => {
-    const tranDocRef = build5Db().doc(COL.TRANSACTION, transaction.uid);
+    const tranDocRef = database().doc(COL.TRANSACTION, transaction.uid);
 
     const setVoid = () => {
       this.transactionService.push({
@@ -89,7 +95,7 @@ export class NftPurchaseService extends BaseService {
         setVoid();
 
         this.transactionService.push({
-          ref: build5Db().doc(COL.NFT, transaction.payload.nft),
+          ref: database().doc(COL.NFT, transaction.payload.nft),
           data: { locked: false, lockedBy: null },
           action: Action.U,
         });
@@ -99,7 +105,7 @@ export class NftPurchaseService extends BaseService {
         transaction.payload.type === TransactionPayloadType.AUCTION_BID ||
         transaction.payload.type === TransactionPayloadType.NFT_BID
       ) {
-        const payments = await build5Db()
+        const payments = await database()
           .collection(COL.TRANSACTION)
           .where('payload_invalidPayment', '==', false)
           // eslint-disable-next-line @typescript-eslint/no-explicit-any

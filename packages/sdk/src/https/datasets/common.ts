@@ -1,4 +1,4 @@
-import { Dataset, Subset } from '@build-5/interfaces';
+import { Dataset, Subset } from '@buildcore/interfaces';
 import { AuctionDataset } from './AuctionDataset';
 import { BadgesDataset } from './BadgesDataset';
 import { DatasetClass } from './Dataset';

@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, SUB_COL, TangleResponse, WenError } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, SUB_COL, TangleResponse, WenError } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { getProject } from '../../../../utils/common.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
@@ -21,13 +21,13 @@ export class SpaceAcceptMemberService extends BaseTangleService<TangleResponse> 
       params.member,
     );
 
-    const spaceMemberDocRef = build5Db().doc(
+    const spaceMemberDocRef = database().doc(
       COL.SPACE,
       params.uid,
       SUB_COL.MEMBERS,
       spaceMember.uid,
     );
-    const knockingMemberDocRef = build5Db().doc(
+    const knockingMemberDocRef = database().doc(
       COL.SPACE,
       params.uid,
       SUB_COL.KNOCKING_MEMBERS,
@@ -41,7 +41,7 @@ export class SpaceAcceptMemberService extends BaseTangleService<TangleResponse> 
     });
     this.transactionService.push({ ref: knockingMemberDocRef, data: undefined, action: Action.D });
     this.transactionService.push({
-      ref: build5Db().doc(COL.SPACE, params.uid),
+      ref: database().doc(COL.SPACE, params.uid),
       data: space,
       action: Action.U,
     });
@@ -58,8 +58,8 @@ export const acceptSpaceMember = async (
 ) => {
   await assertIsGuardian(spaceId, owner);
 
-  const spaceDocRef = build5Db().doc(COL.SPACE, spaceId);
-  const knockingMember = await build5Db()
+  const spaceDocRef = database().doc(COL.SPACE, spaceId);
+  const knockingMember = await database()
     .doc(COL.SPACE, spaceId, SUB_COL.KNOCKING_MEMBERS, member)
     .get();
   if (!knockingMember) {
@@ -76,8 +76,8 @@ export const acceptSpaceMember = async (
   };
 
   const spaceUpdateData = {
-    totalMembers: build5Db().inc(1),
-    totalPendingMembers: build5Db().inc(-1),
+    totalMembers: database().inc(1),
+    totalPendingMembers: database().inc(-1),
   };
 
   return { spaceMember, space: spaceUpdateData };

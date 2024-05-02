@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   NetworkAddress,
@@ -10,7 +10,7 @@ import {
   Vote,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { getRandomEthAddress } from '../../../src/utils/wallet.utils';
 import { MEDIA, mockWalletReturnValue, testEnv } from '../../set-up';
 import { expectThrow, getRandomSymbol, setProdTiers, setTestTiers, wait } from '../common';
@@ -72,7 +72,7 @@ describe('Token vote test', () => {
 
   const validateStats = async (upvotes: number, downvotes: number, diff: number) => {
     await wait(async () => {
-      const statsDocRef = build5Db().doc(COL.TOKEN, token.uid, SUB_COL.STATS, token.uid);
+      const statsDocRef = database().doc(COL.TOKEN, token.uid, SUB_COL.STATS, token.uid);
       const stats = <TokenStats | undefined>await statsDocRef.get();
       return (
         stats?.votes?.upvotes === upvotes &&

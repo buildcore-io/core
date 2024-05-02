@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -6,7 +6,7 @@ import {
   TangleRequestType,
   TransactionType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { wait } from '../../test/controls/common';
@@ -39,7 +39,7 @@ describe('Metadata nft', () => {
         helper.network,
       );
 
-      const mintMetadataNftQuery = build5Db()
+      const mintMetadataNftQuery = database()
         .collection(COL.TRANSACTION)
         .where('member', '==', helper.member)
         .where('type', '==', TransactionType.METADATA_NFT);
@@ -48,7 +48,7 @@ describe('Metadata nft', () => {
         return snap.length === 3;
       });
 
-      let creditQuery = build5Db()
+      let creditQuery = database()
         .collection(COL.TRANSACTION)
         .where('member', '==', helper.member)
         .where('type', '==', TransactionType.CREDIT);
@@ -77,7 +77,7 @@ describe('Metadata nft', () => {
         helper.network,
       );
 
-      creditQuery = build5Db()
+      creditQuery = database()
         .collection(COL.TRANSACTION)
         .where('member', '==', helper.member)
         .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);

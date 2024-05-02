@@ -1,4 +1,4 @@
-import { Stake, StakeReward, StakeType } from '@build-5/interfaces';
+import { Stake, StakeReward, StakeType } from '@buildcore/interfaces';
 import { ICollection } from '../../interfaces/collection';
 import { Converter } from '../../interfaces/common';
 import { PgStake } from '../../models';

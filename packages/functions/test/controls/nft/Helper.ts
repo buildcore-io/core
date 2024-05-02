@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Access,
   COL,
@@ -11,7 +11,7 @@ import {
   Space,
   Transaction,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { MEDIA, mockWalletReturnValue, testEnv } from '../../set-up';
 import { submitMilestoneFunc, wait } from '../common';
@@ -44,9 +44,9 @@ export class Helper {
     mockWalletReturnValue(this.member, dummyCol);
     this.collection = await testEnv.wrap<Collection>(WEN_FUNC.createCollection);
 
-    await build5Db().doc(COL.COLLECTION, this.collection.uid).update({ approved: true });
+    await database().doc(COL.COLLECTION, this.collection.uid).update({ approved: true });
     this.nft = await this.createNft();
-    const collectionDocRef = build5Db().doc(COL.COLLECTION, this.collection.uid);
+    const collectionDocRef = database().doc(COL.COLLECTION, this.collection.uid);
     await wait(async () => {
       this.collection = <Collection>await collectionDocRef.get();
       return this.collection.availableNfts === 1;

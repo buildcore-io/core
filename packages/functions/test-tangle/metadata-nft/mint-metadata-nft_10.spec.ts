@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Collection,
@@ -6,7 +6,7 @@ import {
   Transaction,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { NftOutput } from '@iota/sdk';
 import { getOutputMetadata } from '../../src/utils/basic-output.utils';
 import { wait } from '../../test/controls/common';
@@ -28,7 +28,7 @@ describe('Metadata nft', () => {
 
     await requestFundsFromFaucet(network, order.payload.targetAddress!, order.payload.amount!);
 
-    const typeQuery = build5Db()
+    const typeQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', h.member)
       .where('type', '==', TransactionType.METADATA_NFT);
@@ -40,7 +40,7 @@ describe('Metadata nft', () => {
       );
     });
 
-    let addressQuery = build5Db()
+    let addressQuery = database()
       .collection(COL.NFT)
       .where('mintingData_address', '==', order.payload.targetAddress);
     await wait(async () => {
@@ -55,7 +55,7 @@ describe('Metadata nft', () => {
     let outputMetadata = getOutputMetadata(nftOutput);
     expect(outputMetadata).toEqual(metadata);
 
-    const collectionDocRef = build5Db().doc(COL.COLLECTION, nft.collection);
+    const collectionDocRef = database().doc(COL.COLLECTION, nft.collection);
     const collection = <Collection>await collectionDocRef.get();
 
     mockWalletReturnValue(h.member, {
@@ -70,7 +70,7 @@ describe('Metadata nft', () => {
       secondOrder.payload.amount!,
     );
 
-    addressQuery = build5Db()
+    addressQuery = database()
       .collection(COL.NFT)
       .where('mintingData_address', '==', secondOrder.payload.targetAddress);
     await wait(async () => {

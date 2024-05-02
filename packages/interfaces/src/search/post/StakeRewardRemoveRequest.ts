@@ -8,7 +8,7 @@
  */
 export interface TokenStakeRewardsRemoveRequest {
   /**
-   * Build5 ids of the rewards to be removed
+   * Buildcore ids of the rewards to be removed
    */
   stakeRewardIds: string[];
 }

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -9,7 +9,7 @@ import {
   TokenPurchase,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { head } from 'lodash';
 import { wait } from '../../test/controls/common';
 import { soonTokenId } from '../../test/set-up';
@@ -31,12 +31,12 @@ describe('Token minting', () => {
     'Should not create royalty payments, zero percentage',
     async (isMember: boolean) => {
       if (isMember) {
-        await build5Db().doc(COL.MEMBER, helper.seller!).update({ tokenTradingFeePercentage: 0 });
-        await build5Db()
+        await database().doc(COL.MEMBER, helper.seller!).update({ tokenTradingFeePercentage: 0 });
+        await database()
           .doc(COL.TOKEN, soonTokenId, SUB_COL.DISTRIBUTION, helper.seller!)
           .upsert({ stakes_dynamic_value: 15000 * MIN_IOTA_AMOUNT });
       } else {
-        await build5Db()
+        await database()
           .doc(COL.SYSTEM, SYSTEM_CONFIG_DOC_ID)
           .upsert({ tokenTradingFeePercentage: 0 });
       }
@@ -44,7 +44,7 @@ describe('Token minting', () => {
       await helper.createSellTradeOrder(20, MIN_IOTA_AMOUNT);
       await helper.createBuyOrder(20, MIN_IOTA_AMOUNT);
 
-      const purchaseQuery = build5Db()
+      const purchaseQuery = database()
         .collection(COL.TOKEN_PURCHASE)
         .where('token', '==', helper.token!.uid);
       await wait(async () => {
@@ -61,7 +61,7 @@ describe('Token minting', () => {
       }
 
       const billPayments = (
-        await build5Db()
+        await database()
           .collection(COL.TRANSACTION)
           .where('type', '==', TransactionType.BILL_PAYMENT)
           .where('payload_token', '==', helper.token!.uid)
@@ -84,11 +84,11 @@ describe('Token minting', () => {
   );
 
   it('Should create royalty payments for different percentage', async () => {
-    await build5Db().doc(COL.MEMBER, helper.seller).update({ tokenTradingFeePercentage: 1 });
+    await database().doc(COL.MEMBER, helper.seller).update({ tokenTradingFeePercentage: 1 });
     await helper.createSellTradeOrder(20, MIN_IOTA_AMOUNT);
     await helper.createBuyOrder(20, MIN_IOTA_AMOUNT);
 
-    const purchaseQuery = build5Db()
+    const purchaseQuery = database()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {
@@ -102,7 +102,7 @@ describe('Token minting', () => {
     expect(purchase.sellerTokenTradingFeePercentage).toBe(1);
 
     const billPayments = (
-      await build5Db()
+      await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
         .where('payload_token', '==', helper.token!.uid)
@@ -139,11 +139,11 @@ describe('Token minting', () => {
   });
 
   it('Should not create royalty payments as percentage is zero, but send dust', async () => {
-    await build5Db().doc(COL.MEMBER, helper.seller).update({ tokenTradingFeePercentage: 0 });
+    await database().doc(COL.MEMBER, helper.seller).update({ tokenTradingFeePercentage: 0 });
     await helper.createSellTradeOrder(20, MIN_IOTA_AMOUNT);
     await helper.createBuyOrder(20, MIN_IOTA_AMOUNT + 0.1);
 
-    const purchaseQuery = build5Db()
+    const purchaseQuery = database()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {
@@ -156,7 +156,7 @@ describe('Token minting', () => {
     expect(purchase.price).toBe(MIN_IOTA_AMOUNT);
 
     const billPayments = (
-      await build5Db()
+      await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
         .where('payload_token', '==', helper.token!.uid)

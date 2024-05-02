@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, Proposal, ProposalMember, SUB_COL, WEN_FUNC } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, Proposal, ProposalMember, SUB_COL, WEN_FUNC } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
@@ -15,7 +15,7 @@ describe('Staked oken based voting', () => {
   beforeEach(async () => {
     await helper.beforeEach();
 
-    const distributionDocRef = build5Db().doc(
+    const distributionDocRef = database().doc(
       COL.TOKEN,
       helper.tokenId,
       SUB_COL.DISTRIBUTION,
@@ -31,14 +31,14 @@ describe('Staked oken based voting', () => {
     expect(Math.floor(voteTransaction.payload.weight!)).toBeGreaterThanOrEqual(149);
     expect(Math.floor(voteTransaction.payload.weight!)).toBeLessThanOrEqual(150);
 
-    const proposalDocRef = build5Db().doc(COL.PROPOSAL, helper.proposal!.uid);
+    const proposalDocRef = database().doc(COL.PROPOSAL, helper.proposal!.uid);
     const proposal = <Proposal>await proposalDocRef.get();
     expect(Math.floor(proposal.results?.total)).toBeGreaterThanOrEqual(149);
     expect(Math.floor(proposal.results?.total)).toBeLessThanOrEqual(150);
     expect(Math.floor(proposal.results?.voted)).toBeGreaterThanOrEqual(149);
     expect(Math.floor(proposal.results?.voted)).toBeLessThanOrEqual(150);
 
-    const proposalMemberDocRef = build5Db().doc(
+    const proposalMemberDocRef = database().doc(
       COL.PROPOSAL,
       helper.proposal!.uid,
       SUB_COL.MEMBERS,

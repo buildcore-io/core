@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Storage } from '@build-5/database';
-import { Bucket, FileUploadRequest, WenError, generateRandomFileName } from '@build-5/interfaces';
+import { storage } from '@buildcore/database';
+import { Bucket, FileUploadRequest, WenError, generateRandomFileName } from '@buildcore/interfaces';
 import busboy from 'busboy';
 import fs from 'fs';
 import jwt from 'jsonwebtoken';
@@ -26,7 +26,7 @@ export const uploadFileControl = async ({ headers, rawBody }: Context<FileUpload
 
   const destination = `${member}/${uid}/${generateRandomFileName()}.${ext}`;
   const bucketName = getBucket();
-  const bucket = build5Storage().bucket(bucketName);
+  const bucket = storage().bucket(bucketName);
   const dowloadUrl = await bucket.upload(params.filePath as string, destination, {});
 
   fs.rmSync(workdir, { recursive: true, force: true });

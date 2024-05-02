@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Access,
   COL,
@@ -10,7 +10,7 @@ import {
   TransactionPayloadType,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { getAddress } from '../../src/utils/address.utils';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
@@ -42,7 +42,7 @@ describe('Token import', () => {
       {},
     );
 
-    const migratedTokenDocRef = build5Db().doc(COL.TOKEN, helper.token.mintingData?.tokenId!);
+    const migratedTokenDocRef = database().doc(COL.TOKEN, helper.token.mintingData?.tokenId!);
     await wait(async () => (await migratedTokenDocRef.get()) !== undefined);
 
     const migratedToken = <Token>await migratedTokenDocRef.get();
@@ -79,7 +79,7 @@ describe('Token import', () => {
     expect(migratedToken.mediaStatus).toBe(MediaStatus.PENDING_UPLOAD);
     expect(migratedToken.tradingDisabled).toBe(true);
 
-    const creditQuery = build5Db()
+    const creditQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.guardian.uid)
       .where('type', '==', TransactionType.CREDIT)
@@ -91,7 +91,7 @@ describe('Token import', () => {
     const snap = await creditQuery.get();
     expect(snap[0]?.payload.amount).toBe(2 * MIN_IOTA_AMOUNT);
 
-    const payment = await build5Db()
+    const payment = await database()
       .doc(COL.TRANSACTION, snap[0].payload.sourceTransaction![0])
       .get();
     expect(payment?.payload.invalidPayment).toBe(false);

@@ -8,7 +8,7 @@
  */
 export interface RejectProposalRequest {
   /**
-   * Build5 id of the proposal to be rejected.
+   * Buildcore id of the proposal to be rejected.
    */
   uid: string;
 }

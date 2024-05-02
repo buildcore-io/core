@@ -1,10 +1,10 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import axios from 'axios';
 import { tangleClients } from '../src/services/wallet/wallet.service';
 import { wallets } from './set-up';
 
 afterAll(async () => {
-  await build5Db().destroy();
+  await database().destroy();
   for (const client of Object.values(wallets)) {
     await client.client.destroy();
   }

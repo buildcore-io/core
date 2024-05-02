@@ -1,4 +1,4 @@
-import { ITransaction, build5Db } from '@build-5/database';
+import { ITransaction, database } from '@buildcore/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -15,7 +15,7 @@ import {
   Transaction,
   TransactionPayloadType,
   getNetworkPair,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { head, set } from 'lodash';
@@ -51,7 +51,7 @@ export class TokenService {
     match: TransactionMatch,
   ) {
     const payment = await this.transactionService.createPayment(order, match);
-    const tokenDocRef = build5Db().doc(COL.TOKEN, order.payload.token!);
+    const tokenDocRef = database().doc(COL.TOKEN, order.payload.token!);
     const token = <Token>await tokenDocRef.get();
     const tokensSent = (tranOutput.nativeTokens || []).reduce(
       (acc, act) => (act.id === token.mintingData?.tokenId ? acc + Number(act.amount) : acc),
@@ -68,14 +68,14 @@ export class TokenService {
       return;
     }
 
-    const snap = await build5Db()
+    const snap = await database()
       .collection(COL.AIRDROP)
       .where('orderId', '==', order.uid)
       .where('status', '==', TokenDropStatus.DEPOSIT_NEEDED)
       .get();
 
     for (const airdrop of snap) {
-      const distributionDocRef = build5Db().doc(
+      const distributionDocRef = database().doc(
         COL.TOKEN,
         airdrop.token,
         SUB_COL.DISTRIBUTION,
@@ -84,16 +84,16 @@ export class TokenService {
 
       await this.transaction.upsert(distributionDocRef, {
         parentId: airdrop.token,
-        totalUnclaimedAirdrop: build5Db().inc(airdrop.count),
+        totalUnclaimedAirdrop: database().inc(airdrop.count),
       });
-      const docRef = build5Db().doc(COL.AIRDROP, airdrop.uid);
+      const docRef = database().doc(COL.AIRDROP, airdrop.uid);
       await this.transaction.update(docRef, { status: TokenDropStatus.UNCLAIMED });
     }
 
     this.transactionService.markAsReconciled(order, match.msgId);
 
     this.transactionService.push({
-      ref: build5Db().doc(COL.TRANSACTION, order.uid),
+      ref: database().doc(COL.TRANSACTION, order.uid),
       data: { payload_amount: tranOutput.amount },
       action: Action.U,
     });
@@ -103,7 +103,7 @@ export class TokenService {
     order: Transaction,
     tran: MilestoneTransactionEntry,
     match: TransactionMatch,
-    build5Transaction?: Transaction,
+    buildcoreTransaction?: Transaction,
   ) {
     const payment = await this.transactionService.createPayment(order, match);
 
@@ -122,7 +122,7 @@ export class TokenService {
     this.transactionService.markAsReconciled(order, match.msgId);
 
     await this.createDistributionDocRef(order.payload.token!, order.member!);
-    const token = <Token>await build5Db().doc(COL.TOKEN, order.payload.token!).get();
+    const token = <Token>await database().doc(COL.TOKEN, order.payload.token!).get();
     const network = order.network || DEFAULT_NETWORK;
     const data = <TokenTradeOrder>{
       uid: getRandomEthAddress(),
@@ -142,7 +142,7 @@ export class TokenService {
       orderTransactionId: order.uid,
       paymentTransactionId: payment.uid,
       expiresAt:
-        build5Transaction?.payload?.expiresOn ||
+        buildcoreTransaction?.payload?.expiresOn ||
         dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms')),
       sourceNetwork: network,
       targetNetwork: token.status === TokenStatus.BASE ? getNetworkPair(network) : network,
@@ -151,14 +151,14 @@ export class TokenService {
       set(data, 'targetAddress', order.payload.tokenTradeOderTargetAddress);
     }
 
-    const ref = build5Db().doc(COL.TOKEN_MARKET, data.uid);
+    const ref = database().doc(COL.TOKEN_MARKET, data.uid);
     this.transactionService.push({ ref, data, action: Action.C });
 
     if (
       order.payload.type === TransactionPayloadType.SELL_TOKEN &&
       token.status === TokenStatus.MINTED
     ) {
-      const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
+      const orderDocRef = database().doc(COL.TRANSACTION, order.uid);
       this.transactionService.push({
         ref: orderDocRef,
         data: { payload_amount: match.to.amount },
@@ -172,8 +172,8 @@ export class TokenService {
     tran: TransactionMatch,
     payment: Transaction,
   ) {
-    const tokenRef = build5Db().doc(COL.TOKEN, order.payload.token!);
-    const distributionRef = build5Db().doc(
+    const tokenRef = database().doc(COL.TOKEN, order.payload.token!);
+    const distributionRef = database().doc(
       COL.TOKEN,
       order.payload.token!,
       SUB_COL.DISTRIBUTION,
@@ -201,8 +201,8 @@ export class TokenService {
     );
 
     const tokenUpdateData = {
-      totalDeposit: build5Db().inc(tran.to.amount),
-      tokensOrdered: build5Db().inc(boughtByMemberDiff),
+      totalDeposit: database().inc(tran.to.amount),
+      tokensOrdered: database().inc(boughtByMemberDiff),
     };
     const tokensOrdered = Number(bigDecimal.add(token.tokensOrdered, boughtByMemberDiff));
     const totalPublicSupply = getTotalPublicSupply(token);
@@ -219,7 +219,7 @@ export class TokenService {
     this.transactionService.push({
       ref: distributionRef,
       data: {
-        totalDeposit: build5Db().inc(tran.to.amount),
+        totalDeposit: database().inc(tran.to.amount),
         parentId: order.payload.token,
       },
       action: Action.UPS,
@@ -227,7 +227,7 @@ export class TokenService {
   }
 
   private createDistributionDocRef = async (token: string, member: string) => {
-    const distributionDocRef = build5Db().doc(COL.TOKEN, token, SUB_COL.DISTRIBUTION, member);
+    const distributionDocRef = database().doc(COL.TOKEN, token, SUB_COL.DISTRIBUTION, member);
     const distributionDoc = await this.transaction.get(distributionDocRef);
     if (!distributionDoc) {
       const data = { uid: member, parentId: token, parentCol: COL.TOKEN };

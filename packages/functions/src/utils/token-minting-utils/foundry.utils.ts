@@ -1,4 +1,4 @@
-import { KEY_NAME_TANGLE, Token } from '@build-5/interfaces';
+import { KEY_NAME_TANGLE, Token } from '@buildcore/interfaces';
 import {
   AliasAddress,
   AliasOutput,
@@ -63,7 +63,7 @@ export const tokenToFoundryMetadata = async (token: Token) => {
     url: head(token.links) || '',
     logoUrl: 'ipfs://' + (token.ipfsMedia || PLACEHOLDER_CID),
     issuerName: KEY_NAME_TANGLE,
-    build5Id: token.uid,
+    originId: token.uid,
     symbol: token.symbol.toUpperCase(),
     decimals: token.decimals,
   };

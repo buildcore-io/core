@@ -8,7 +8,7 @@ import {
   NftStatus,
   PropStats,
   UnsoldMintingOptions,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgNft } from '../../models';
 import { removeNulls } from '../common';

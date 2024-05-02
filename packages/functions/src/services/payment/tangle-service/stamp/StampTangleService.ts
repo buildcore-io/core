@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   KEY_NAME_TANGLE,
@@ -14,7 +14,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { AliasAddress, Ed25519Address } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
@@ -24,7 +24,7 @@ import { createNftOutput } from '../../../../utils/collection-minting-utils/nft.
 import { getProject } from '../../../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../../../utils/dateTime.utils';
 import { invalidArgument } from '../../../../utils/error.utils';
-import { getRandomBuild5Url, uriToUrl } from '../../../../utils/media.utils';
+import { getRandomBuildcoreUrl, uriToUrl } from '../../../../utils/media.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { getSpaceByAliasId } from '../../../../utils/space.utils';
 import {
@@ -62,7 +62,7 @@ export class StampTangleService extends BaseTangleService<TangleResponse> {
     );
 
     if (!params.aliasId) {
-      const spaceDocRef = build5Db().doc(COL.SPACE, space.uid);
+      const spaceDocRef = database().doc(COL.SPACE, space.uid);
       this.transactionService.push({ ref: spaceDocRef, data: space, action: Action.C });
 
       const guardian = {
@@ -71,17 +71,17 @@ export class StampTangleService extends BaseTangleService<TangleResponse> {
         parentCol: COL.SPACE,
         createdOn: serverTime(),
       };
-      const guardianDocRef = build5Db().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, owner);
+      const guardianDocRef = database().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, owner);
       this.transactionService.push({ ref: guardianDocRef, data: guardian, action: Action.C });
 
-      const memberDocRef = build5Db().doc(COL.SPACE, space.uid, SUB_COL.MEMBERS, owner);
+      const memberDocRef = database().doc(COL.SPACE, space.uid, SUB_COL.MEMBERS, owner);
       this.transactionService.push({ ref: memberDocRef, data: guardian, action: Action.C });
     }
 
-    const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
+    const orderDocRef = database().doc(COL.TRANSACTION, order.uid);
     this.transactionService.push({ ref: orderDocRef, data: order, action: Action.C });
 
-    const stampDocRef = build5Db().doc(COL.STAMP, stamp.uid);
+    const stampDocRef = database().doc(COL.STAMP, stamp.uid);
     this.transactionService.push({ ref: stampDocRef, data: stamp, action: Action.C });
 
     if (match.to.amount < order.payload.amount!) {
@@ -227,7 +227,7 @@ const getAliasOutputAmount = async (stamp: Stamp, space: Space, wallet: Wallet) 
   if (!space.alias?.address) {
     throw invalidArgument(WenError.not_alias_governor);
   }
-  const guardianDocRef = build5Db().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, stamp.createdBy);
+  const guardianDocRef = database().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, stamp.createdBy);
   const guardian = await guardianDocRef.get();
 
   if (!guardian) {
@@ -253,10 +253,11 @@ const getNftOutputAmount = async (stamp: Stamp, aliasId: string, wallet: Wallet)
 export const stampToNftMetadata = (stamp: Stamp) => ({
   originUri: stamp.originUri,
   uri: 'ipfs://' + stamp.ipfsMedia,
-  build5Url: stamp.build5Url || getRandomBuild5Url(stamp.createdBy!, stamp.uid, stamp.extension),
+  buildcoreUrl:
+    stamp.build5Url || getRandomBuildcoreUrl(stamp.createdBy!, stamp.uid, stamp.extension),
   checksum: stamp.checksum,
   issuerName: KEY_NAME_TANGLE,
-  build5Id: stamp.uid,
+  originId: stamp.uid,
 });
 
 export const getStampDailyCost = (stamp: Stamp) =>

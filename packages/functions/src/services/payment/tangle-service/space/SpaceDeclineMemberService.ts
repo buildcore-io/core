@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, SUB_COL, TangleResponse } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, SUB_COL, TangleResponse } from '@buildcore/interfaces';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
 import { BaseTangleService, HandlerParams } from '../../base';
@@ -12,8 +12,8 @@ export class SpaceDeclineMemberService extends BaseTangleService<TangleResponse>
 
     await assertIsGuardian(params.uid, owner);
 
-    const spaceDocRef = build5Db().doc(COL.SPACE, params.uid);
-    const knockingMemberDocRef = build5Db().doc(
+    const spaceDocRef = database().doc(COL.SPACE, params.uid);
+    const knockingMemberDocRef = database().doc(
       COL.SPACE,
       params.uid,
       SUB_COL.KNOCKING_MEMBERS,
@@ -26,7 +26,7 @@ export class SpaceDeclineMemberService extends BaseTangleService<TangleResponse>
 
     this.transactionService.push({
       ref: spaceDocRef,
-      data: { totalPendingMembers: build5Db().inc(knockingMember ? -1 : 0) },
+      data: { totalPendingMembers: database().inc(knockingMember ? -1 : 0) },
       action: Action.U,
     });
 

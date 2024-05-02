@@ -1,4 +1,4 @@
-import { Member, Notification, NotificationType } from '@build-5/interfaces';
+import { Member, Notification, NotificationType } from '@buildcore/interfaces';
 import { serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 

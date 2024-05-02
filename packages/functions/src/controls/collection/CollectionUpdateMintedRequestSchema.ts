@@ -3,7 +3,7 @@ import {
   MAX_IOTA_AMOUNT,
   MIN_IOTA_AMOUNT,
   UpdateMintedCollectionRequest,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import Joi from 'joi';
 import { uniq } from 'lodash';
@@ -18,7 +18,7 @@ const MAX_DISCOUNT_AMOUNT = 1;
 export const availableFromMinMinutes = 10;
 
 export const updateMintedCollectionSchema = {
-  uid: CommonJoi.uid().description('Build5 id of the collection.'),
+  uid: CommonJoi.uid().description('Buildcore id of the collection.'),
   discounts: Joi.array()
     .items(
       Joi.object()
@@ -65,7 +65,7 @@ export const updateMintedCollectionSchema = {
       otherwise: Joi.forbidden(),
     })
     .description(
-      'Build5 id of awards. If set, only members having the specified awards can access this collection.',
+      'Buildcore id of awards. If set, only members having the specified awards can access this collection.',
     ),
   accessCollections: Joi.array()
     .when('access', {
@@ -74,7 +74,7 @@ export const updateMintedCollectionSchema = {
       otherwise: Joi.forbidden(),
     })
     .description(
-      'Build5 id of collections. If set, only members owning NFTs from the specified collection can access this collection.',
+      'Buildcore id of collections. If set, only members owning NFTs from the specified collection can access this collection.',
     ),
   price: Joi.number()
     .min(MIN_IOTA_AMOUNT)

@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, Member, Network, WEN_FUNC, WenError } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, Member, Network, WEN_FUNC, WenError } from '@buildcore/interfaces';
 import { Bip32Path, Ed25519 } from '@iota/crypto.js';
 import { Bip32Path as Bip32PathNext, Ed25519 as Ed25519Next } from '@iota/crypto.js-next';
 import { Bech32Helper, ED25519_ADDRESS_TYPE, Ed25519Address, Ed25519Seed } from '@iota/iota.js';
@@ -20,7 +20,7 @@ describe('Legacy Pub key test', () => {
   it.each([Network.RMS, Network.SMR])('Should validate SMR pub key', async (network: Network) => {
     const address = getSmrAddress(network);
     const nonce = getRandomNonce();
-    const userDocRef = build5Db().doc(COL.MEMBER, address.bech32);
+    const userDocRef = database().doc(COL.MEMBER, address.bech32);
     await userDocRef.create({ uid: address.bech32, nonce });
     const signature = Ed25519Next.sign(
       address.keyPair.privateKey,
@@ -42,7 +42,7 @@ describe('Legacy Pub key test', () => {
   it('Should validate IOTA pub key', async () => {
     const address = await getIotaAddress(Network.IOTA);
     const nonce = getRandomNonce();
-    const userDocRef = build5Db().doc(COL.MEMBER, address.bech32);
+    const userDocRef = database().doc(COL.MEMBER, address.bech32);
     await userDocRef.create({ uid: address.bech32, nonce });
     const signature = Ed25519.sign(
       address.keyPair.privateKey,
@@ -67,7 +67,7 @@ describe('Legacy Pub key test', () => {
   it.each([Network.RMS, Network.SMR])('Should throw wrong pub key', async (network: Network) => {
     const address = getSmrAddress(network);
     const nonce = getRandomNonce();
-    const userDocRef = build5Db().doc(COL.MEMBER, address.bech32);
+    const userDocRef = database().doc(COL.MEMBER, address.bech32);
     await userDocRef.create({ uid: address.bech32, nonce });
     const signature = Ed25519Next.sign(
       address.keyPair.privateKey,
@@ -90,7 +90,7 @@ describe('Legacy Pub key test', () => {
   it('Should update nonce when public key sign in', async () => {
     const address = getSmrAddress(Network.RMS);
     const nonce = getRandomNonce();
-    const userDocRef = build5Db().doc(COL.MEMBER, address.bech32);
+    const userDocRef = database().doc(COL.MEMBER, address.bech32);
     await userDocRef.create({ uid: address.bech32, nonce });
     const signature = Ed25519Next.sign(
       address.keyPair.privateKey,

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   KEY_NAME_TANGLE,
@@ -11,7 +11,7 @@ import {
   TransactionPayloadType,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { FoundryOutput } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { isEqual } from 'lodash';
@@ -41,7 +41,7 @@ describe('Token minting', () => {
       expiresAt,
     );
 
-    const tokenDocRef = build5Db().doc(COL.TOKEN, helper.token.uid);
+    const tokenDocRef = database().doc(COL.TOKEN, helper.token.uid);
     await wait(async () => {
       const snap = await tokenDocRef.get();
       return snap?.status === TokenStatus.MINTED;
@@ -71,7 +71,7 @@ describe('Token minting', () => {
       );
       return Number(Object.values(nativeTokens)[0]) === 1000;
     });
-    const guardianData = <Member>await build5Db().doc(COL.MEMBER, helper.guardian.uid).get();
+    const guardianData = <Member>await database().doc(COL.MEMBER, helper.guardian.uid).get();
     await wait(async () => {
       const { nativeTokens } = await helper.walletService.getBalance(
         getAddress(guardianData, helper.network),
@@ -89,7 +89,7 @@ describe('Token minting', () => {
     });
 
     const mintTransactions = (
-      await build5Db()
+      await database()
         .collection(COL.TRANSACTION)
         .where('payload_token', '==', helper.token.uid)
         .where('type', '==', TransactionType.MINT_TOKEN)
@@ -122,7 +122,7 @@ describe('Token minting', () => {
     expect(metadata.name).toBe(helper.token.name);
     expect(metadata.logoUrl).toBeDefined();
     expect(metadata.issuerName).toBe(KEY_NAME_TANGLE);
-    expect(metadata.build5Id).toBe(helper.token.uid);
+    expect(metadata.originId).toBe(helper.token.uid);
     expect(metadata.symbol).toBe(helper.token.symbol.toUpperCase());
     expect(metadata.decimals).toBe(5);
   });

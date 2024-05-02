@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   ClaimPreMintedAirdroppedTokensRequest,
@@ -10,7 +10,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { WalletService } from '../../services/wallet/wallet.service';
@@ -26,7 +26,7 @@ export const claimAirdroppedTokenControl = async ({
   params,
   project,
 }: Context<ClaimPreMintedAirdroppedTokensRequest>): Promise<Transaction> => {
-  const tokenDocRef = build5Db().doc(COL.TOKEN, params.token);
+  const tokenDocRef = database().doc(COL.TOKEN, params.token);
   const token = await tokenDocRef.get();
   if (!token) {
     throw invalidArgument(WenError.invalid_params);
@@ -35,12 +35,12 @@ export const claimAirdroppedTokenControl = async ({
   assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED]);
 
   const tranId = getRandomEthAddress();
-  const orderDocRef = build5Db().doc(COL.TRANSACTION, tranId);
+  const orderDocRef = database().doc(COL.TRANSACTION, tranId);
 
   const wallet = await WalletService.newWallet();
   const targetAddress = await wallet.getNewIotaAddressDetails();
 
-  await build5Db().runTransaction(async (transaction) => {
+  await database().runTransaction(async (transaction) => {
     const claimableDrops = await getUnclaimedDrops(params.token, owner);
     if (isEmpty(claimableDrops)) {
       throw invalidArgument(WenError.no_airdrop_to_claim);

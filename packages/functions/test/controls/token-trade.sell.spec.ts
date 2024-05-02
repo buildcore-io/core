@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -14,7 +14,7 @@ import {
   Transaction,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { tradeTokenControl } from '../../src/controls/token-trading/token-trade.controller';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -38,9 +38,9 @@ describe('Trade controller, sell token', () => {
       approved: true,
       space: space.uid,
     };
-    await build5Db().doc(COL.TOKEN, tokenId).upsert(upserToken);
-    token = (await build5Db().doc(COL.TOKEN, tokenId).get())!;
-    await build5Db()
+    await database().doc(COL.TOKEN, tokenId).upsert(upserToken);
+    token = (await database().doc(COL.TOKEN, tokenId).get())!;
+    await database()
       .doc(COL.TOKEN, tokenId, SUB_COL.DISTRIBUTION, memberAddress)
       .upsert({ tokenOwned: 10 });
   });
@@ -57,12 +57,12 @@ describe('Trade controller, sell token', () => {
     expect(sell.count).toBe(5);
     expect(sell.price).toBe(MIN_IOTA_AMOUNT);
     expect(sell.tokenStatus).toBe(TokenStatus.AVAILABLE);
-    const distribution = await build5Db()
+    const distribution = await database()
       .doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, memberAddress)
       .get();
     expect(distribution?.lockedForSale).toBe(5);
     await wait(async () => {
-      const doc = <TokenTradeOrder>await build5Db().doc(COL.TOKEN_MARKET, sell.uid).get();
+      const doc = <TokenTradeOrder>await database().doc(COL.TOKEN_MARKET, sell.uid).get();
       return (
         doc.updatedOn !== undefined &&
         dayjs(doc.updatedOn.toDate()).isAfter(doc.createdOn!.toDate())
@@ -72,7 +72,7 @@ describe('Trade controller, sell token', () => {
     mockWalletReturnValue(memberAddress, cancelRequest);
     const cancelled = await testEnv.wrap<TokenTradeOrder>(WEN_FUNC.cancelTradeOrder);
     expect(cancelled.status).toBe(TokenTradeOrderStatus.CANCELLED);
-    const cancelledDistribution = await build5Db()
+    const cancelledDistribution = await database()
       .doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, memberAddress)
       .get();
     expect(cancelledDistribution?.lockedForSale).toBe(0);
@@ -145,7 +145,7 @@ describe('Trade controller, sell token', () => {
     const cancelRequest = { uid: sell.uid };
     mockWalletReturnValue(memberAddress, cancelRequest);
     await testEnv.wrap<TokenTradeOrder>(WEN_FUNC.cancelTradeOrder);
-    const distribution = await build5Db()
+    const distribution = await database()
       .doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, memberAddress)
       .get();
     expect(distribution?.lockedForSale).toBe(5);
@@ -160,7 +160,7 @@ describe('Trade controller, sell token', () => {
   });
 
   it('Should update sale lock properly', async () => {
-    const distDocRef = build5Db().doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, memberAddress);
+    const distDocRef = database().doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, memberAddress);
     const count = 3;
     const sells = [] as any[];
     for (let i = 0; i < count; ++i) {
@@ -188,7 +188,7 @@ describe('Trade controller, sell token', () => {
   });
 
   it('Should throw, token not approved', async () => {
-    await build5Db().doc(COL.TOKEN, token.uid).update({ approved: false });
+    await database().doc(COL.TOKEN, token.uid).update({ approved: false });
 
     mockWalletReturnValue(memberAddress, {
       symbol: token.symbol,
@@ -248,7 +248,7 @@ describe('Trade controller, sell token', () => {
   });
 
   it('Should fail first, tading disabled, then succeeed', async () => {
-    await build5Db().doc(COL.TOKEN, token.uid).update({ tradingDisabled: true, public: true });
+    await database().doc(COL.TOKEN, token.uid).update({ tradingDisabled: true, public: true });
     const request = {
       symbol: token.symbol,
       price: MIN_IOTA_AMOUNT,

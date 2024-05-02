@@ -1,5 +1,9 @@
-import { ITransaction } from '@build-5/database';
-import { MilestoneTransaction, MilestoneTransactionEntry, Transaction } from '@build-5/interfaces';
+import { ITransaction } from '@buildcore/database';
+import {
+  MilestoneTransaction,
+  MilestoneTransactionEntry,
+  Transaction,
+} from '@buildcore/interfaces';
 import { TransactionMatch, TransactionService } from './transaction-service';
 
 export interface HandlerParams {
@@ -12,7 +16,7 @@ export interface HandlerParams {
   payment: Transaction | undefined;
 
   order: Transaction;
-  build5Tran: Transaction | undefined;
+  buildcoreTran: Transaction | undefined;
 
   project: string;
 

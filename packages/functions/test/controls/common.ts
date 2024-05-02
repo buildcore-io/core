@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -12,7 +12,7 @@ import {
   TransactionType,
   WEN_FUNC,
   getMilestoneCol,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { TransactionPayload, UTXOInput, Utils } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { createSpaceControl } from '../../src/controls/space/space.create.control';
@@ -49,7 +49,7 @@ export const submitMilestoneFunc = async (order: Transaction, customAmount?: num
   const milestoneCol = getMilestoneCol(network);
   const nextMilestone = Math.floor(Math.random() * MIN_IOTA_AMOUNT).toString();
   const defTranId = getRandomEthAddress();
-  const tranDocRef = build5Db().doc(milestoneCol, nextMilestone, SUB_COL.TRANSACTIONS, defTranId);
+  const tranDocRef = database().doc(milestoneCol, nextMilestone, SUB_COL.TRANSACTIONS, defTranId);
   await tranDocRef.upsert({
     createdOn: dayjs().toDate(),
     blockId: getRandomEthAddress(),
@@ -67,7 +67,7 @@ export const milestoneProcessed = async (
 ) => {
   for (let attempt = 0; attempt < 400; ++attempt) {
     await new Promise((r) => setTimeout(r, 500));
-    const milestoneTranDocRef = build5Db().doc(
+    const milestoneTranDocRef = database().doc(
       getMilestoneCol(network),
       nextMilestone,
       SUB_COL.TRANSACTIONS,
@@ -96,7 +96,7 @@ export const wait = async (
 };
 
 export const setProdTiers = async () => {
-  const soonProjDocRef = build5Db().doc(COL.PROJECT, SOON_PROJECT_ID);
+  const soonProjDocRef = database().doc(COL.PROJECT, SOON_PROJECT_ID);
   const soonProject = {
     config_tiers: [0, 10, 4000, 6000, 15000].map((v) => v * MIN_IOTA_AMOUNT),
     config_tokenTradingFeeDiscountPercentage: [0, 25, 50, 75, 100],
@@ -105,7 +105,7 @@ export const setProdTiers = async () => {
 };
 
 export const setTestTiers = async () => {
-  const soonProjDocRef = build5Db().doc(COL.PROJECT, SOON_PROJECT_ID);
+  const soonProjDocRef = database().doc(COL.PROJECT, SOON_PROJECT_ID);
   const soonProject = {
     config_tiers: [0, 0, 0, 0, 0].map((v) => v * MIN_IOTA_AMOUNT),
     config_tokenTradingFeeDiscountPercentage: [0, 0, 0, 0, 0],
@@ -133,15 +133,15 @@ export const expectThrow = async <C>(call: Promise<C>, error: string, message = 
 };
 
 export const addGuardianToSpace = async (space: string, member: string) => {
-  const guardianDocRef = build5Db().doc(COL.SPACE, space, SUB_COL.GUARDIANS, member);
+  const guardianDocRef = database().doc(COL.SPACE, space, SUB_COL.GUARDIANS, member);
   const guardian = await guardianDocRef.get();
   if (guardian) {
     return;
   }
   await guardianDocRef.upsert({ parentId: space });
-  await build5Db()
+  await database()
     .doc(COL.SPACE, space)
-    .update({ totalGuardians: build5Db().inc(1), totalMembers: build5Db().inc(1) });
+    .update({ totalGuardians: database().inc(1), totalMembers: database().inc(1) });
 };
 
 export const createRoyaltySpaces = async () => {
@@ -149,7 +149,7 @@ export const createRoyaltySpaces = async () => {
   const spaceOneId = TOKEN_SALE_TEST.spaceone;
   const spaceTwoId = TOKEN_SALE_TEST.spacetwo;
   const spaceIdSpy = jest.spyOn(wallet, 'getRandomEthAddress');
-  const spaceOneDoc = build5Db().doc(COL.SPACE, spaceOneId);
+  const spaceOneDoc = database().doc(COL.SPACE, spaceOneId);
   if (!(await spaceOneDoc.get())) {
     spaceIdSpy.mockReturnValue(spaceOneId);
     mockWalletReturnValue(guardian, { name: 'Space A', bannerUrl: MEDIA });
@@ -163,7 +163,7 @@ export const createRoyaltySpaces = async () => {
     await Promise.all(promises);
     await spaceOneDoc.update(addresses);
   }
-  const spaceTwoDoc = build5Db().doc(COL.SPACE, spaceTwoId);
+  const spaceTwoDoc = database().doc(COL.SPACE, spaceTwoId);
   if (!(await spaceTwoDoc.get())) {
     spaceIdSpy.mockReturnValue(spaceTwoId);
     mockWalletReturnValue(guardian, { name: 'Space A', bannerUrl: MEDIA });
@@ -181,19 +181,19 @@ export const createRoyaltySpaces = async () => {
 };
 
 export const removeGuardianFromSpace = async (space: string, member: string) => {
-  const spaceDocRef = build5Db().doc(COL.SPACE, space);
-  const guardianDocRef = build5Db().doc(COL.SPACE, space, SUB_COL.GUARDIANS, member);
+  const spaceDocRef = database().doc(COL.SPACE, space);
+  const guardianDocRef = database().doc(COL.SPACE, space, SUB_COL.GUARDIANS, member);
   await guardianDocRef.delete();
   await spaceDocRef.update({
-    totalGuardians: build5Db().inc(-1),
-    totalMembers: build5Db().inc(-1),
+    totalGuardians: database().inc(-1),
+    totalMembers: database().inc(-1),
   });
 };
 
 export const tokenProcessed = (tokenId: string, distributionLength: number, reconciled: boolean) =>
   wait(async () => {
-    const doc = await build5Db().doc(COL.TOKEN, tokenId).get();
-    const distributionsSnap = await build5Db()
+    const doc = await database().doc(COL.TOKEN, tokenId).get();
+    const distributionsSnap = await database()
       .collection(COL.TOKEN, tokenId, SUB_COL.DISTRIBUTION)
       .get();
     const distributionsOk = distributionsSnap.reduce(

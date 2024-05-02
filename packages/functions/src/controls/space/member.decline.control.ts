@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, SUB_COL, SpaceMemberUpsertRequest } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, SUB_COL, SpaceMemberUpsertRequest } from '@buildcore/interfaces';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { Context } from '../common';
 
@@ -9,7 +9,7 @@ export const declineMemberControl = async ({
 }: Context<SpaceMemberUpsertRequest>) => {
   await assertIsGuardian(params.uid, owner);
 
-  const knockingMemberDocRef = build5Db().doc(
+  const knockingMemberDocRef = database().doc(
     COL.SPACE,
     params.uid,
     SUB_COL.KNOCKING_MEMBERS,
@@ -18,10 +18,10 @@ export const declineMemberControl = async ({
 
   const knockingMemberDoc = await knockingMemberDocRef.get();
 
-  const batch = build5Db().batch();
+  const batch = database().batch();
   batch.delete(knockingMemberDocRef);
-  batch.update(build5Db().doc(COL.SPACE, params.uid), {
-    totalPendingMembers: build5Db().inc(knockingMemberDoc ? -1 : 0),
+  batch.update(database().doc(COL.SPACE, params.uid), {
+    totalPendingMembers: database().inc(knockingMemberDoc ? -1 : 0),
   });
   await batch.commit();
 

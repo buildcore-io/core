@@ -190,6 +190,8 @@ const getType = (udt: string, defaultValue: string, isUpdate = false) => {
       return 'PostgresInterval';
     case '_text':
       return 'string[]';
+    default:
+      return 'unknown';
   }
 };
 

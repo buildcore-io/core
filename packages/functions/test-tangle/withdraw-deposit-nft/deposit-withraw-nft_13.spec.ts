@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
-import { COL, MIN_IOTA_AMOUNT, Network, Nft, Transaction, WEN_FUNC } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, MIN_IOTA_AMOUNT, Network, Nft, Transaction, WEN_FUNC } from '@buildcore/interfaces';
 import {
   Ed25519Address,
   NftAddress,
@@ -48,7 +48,7 @@ describe('Collection minting', () => {
         description: 'test',
       },
     );
-    const query = build5Db().collection(COL.NFT).where('owner', '==', helper.guardian);
+    const query = database().collection(COL.NFT).where('owner', '==', helper.guardian);
     await wait(async () => {
       const snap = await query.get();
       return snap.length === 1;
@@ -69,7 +69,7 @@ describe('Collection minting', () => {
         description: 'test',
       },
     );
-    const query = build5Db().collection(COL.NFT).where('owner', '==', helper.guardian);
+    const query = database().collection(COL.NFT).where('owner', '==', helper.guardian);
     await wait(async () => {
       const snap = await query.get();
       return snap.length === 1;

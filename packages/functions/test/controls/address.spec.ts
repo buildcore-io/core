@@ -1,5 +1,13 @@
-import { build5Db } from '@build-5/database';
-import { COL, Member, Network, Space, Transaction, WEN_FUNC, WenError } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import {
+  COL,
+  Member,
+  Network,
+  Space,
+  Transaction,
+  WEN_FUNC,
+  WenError,
+} from '@buildcore/interfaces';
 import { isEmpty } from 'lodash';
 import { getAddress } from '../../src/utils/address.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -12,7 +20,7 @@ const waitForAddressValidation = async (
   network = Network.RMS,
 ) => {
   await wait(async () => {
-    const data = await build5Db().doc(col, id).get();
+    const data = await database().doc(col, id).get();
     return !isEmpty(getAddress(data, network));
   });
 };
@@ -23,9 +31,9 @@ describe('Address validation test', () => {
 
   beforeEach(async () => {
     member = await testEnv.createMember();
-    await build5Db().doc(COL.MEMBER, member).update({ rmsAddress: '' });
+    await database().doc(COL.MEMBER, member).update({ rmsAddress: '' });
     space = await testEnv.createSpace(member);
-    await build5Db().doc(COL.SPACE, space.uid).update({ rmsAddress: '', iotaAddress: '' });
+    await database().doc(COL.SPACE, space.uid).update({ rmsAddress: '', iotaAddress: '' });
   });
 
   it('Should validate member address', async () => {
@@ -47,7 +55,7 @@ describe('Address validation test', () => {
     mockWalletReturnValue(member, { space: space.uid });
     let order = await testEnv.wrap<Transaction>(WEN_FUNC.validateAddress);
     const milestone = await submitMilestoneFunc(order);
-    const proposalQuery = build5Db().collection(COL.PROPOSAL).where('space', '==', space.uid);
+    const proposalQuery = database().collection(COL.PROPOSAL).where('space', '==', space.uid);
     await wait(async () => {
       const snap = await proposalQuery.get();
       return snap.length > 0;
@@ -74,10 +82,10 @@ describe('Address validation test', () => {
     });
 
     await wait(async () => {
-      const spaceData = await build5Db().doc(COL.SPACE, space.uid).get();
+      const spaceData = await database().doc(COL.SPACE, space.uid).get();
       return getAddress(spaceData, order.network!) === milestone2.fromAdd;
     });
-    const spaceData = await build5Db().doc(COL.SPACE, space.uid).get();
+    const spaceData = await database().doc(COL.SPACE, space.uid).get();
     expect(spaceData?.prevValidatedAddresses).toEqual([milestone.fromAdd]);
   });
 
@@ -89,7 +97,7 @@ describe('Address validation test', () => {
   });
 
   it('Should throw, member does not exist', async () => {
-    await build5Db().doc(COL.MEMBER, member).delete();
+    await database().doc(COL.MEMBER, member).delete();
     mockWalletReturnValue(member, { space: space.uid });
     const call = testEnv.wrap<Transaction>(WEN_FUNC.validateAddress);
     await expectThrow(call, WenError.member_does_not_exists.key);
@@ -114,7 +122,7 @@ describe('Address validation test', () => {
 
     await waitForAddressValidation(member, COL.MEMBER, network);
 
-    const docRef = build5Db().doc(COL.MEMBER, member);
+    const docRef = database().doc(COL.MEMBER, member);
     const memberData = <Member>await docRef.get();
     await validate();
     await wait(async () => {

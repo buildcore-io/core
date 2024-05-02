@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
-import { COL, Collection, CollectionStatus, Nft, WEN_FUNC } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, Collection, CollectionStatus, Nft, WEN_FUNC } from '@buildcore/interfaces';
 import { NftOutput } from '@iota/sdk';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
@@ -25,7 +25,7 @@ describe('Collection minting', () => {
     let nft = await helper.createAndOrderNft();
     await helper.mintCollection();
 
-    const collectionDocRef = build5Db().doc(COL.COLLECTION, helper.collection);
+    const collectionDocRef = database().doc(COL.COLLECTION, helper.collection);
 
     await wait(async () => {
       const collection = await collectionDocRef.get();
@@ -39,7 +39,7 @@ describe('Collection minting', () => {
     const collectionMetadata = getNftMetadata(collectionOutput as NftOutput);
     expect(collectionMetadata.royalties).toEqual({});
 
-    const nftDocRef = build5Db().doc(COL.NFT, nft.uid);
+    const nftDocRef = database().doc(COL.NFT, nft.uid);
     nft = <Nft>await nftDocRef.get();
     const nftOutputId = await client.nftOutputId(nft.mintingData?.nftId!);
     const nftOutput = (await client.getOutput(nftOutputId)).output;

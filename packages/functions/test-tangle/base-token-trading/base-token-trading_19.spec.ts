@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, MIN_IOTA_AMOUNT, Network, TangleRequestType } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, MIN_IOTA_AMOUNT, Network, TangleRequestType } from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
@@ -25,7 +25,7 @@ describe('Base token trading', () => {
       },
     });
 
-    const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', h.buyer?.uid);
+    const query = database().collection(COL.TOKEN_MARKET).where('owner', '==', h.buyer?.uid);
     await wait(async () => {
       const snap = await query.get();
       return snap.length === 1;

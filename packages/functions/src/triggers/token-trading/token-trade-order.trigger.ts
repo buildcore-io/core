@@ -1,5 +1,5 @@
-import { build5Db, PgTokenMarket } from '@build-5/database';
-import { COL, Member, ProjectBilling, StakeType, SUB_COL } from '@build-5/interfaces';
+import { database, PgTokenMarket } from '@buildcore/database';
+import { COL, Member, ProjectBilling, StakeType, SUB_COL } from '@buildcore/interfaces';
 import { getStakeForType, getTier } from '../../services/stake.service';
 import { PgDocEvent } from '../common';
 import { matchTradeOrder } from './match-token';
@@ -16,11 +16,11 @@ export const onTokenTradeOrderWrite = async (event: PgDocEvent<PgTokenMarket>) =
 };
 
 export const getMemberTier = async (projectId: string, member: Member) => {
-  const project = await build5Db().doc(COL.PROJECT, projectId).get();
+  const project = await database().doc(COL.PROJECT, projectId).get();
   if (project?.config?.billing !== ProjectBilling.TOKEN_BASED) {
     return 0;
   }
-  const distributionDocRef = build5Db().doc(
+  const distributionDocRef = database().doc(
     COL.TOKEN,
     project.config.nativeTokenUid!,
     SUB_COL.DISTRIBUTION,

@@ -1,4 +1,4 @@
-import { SoonSnap } from '@build-5/interfaces';
+import { SoonSnap } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgSoonSnapshot } from '../../models';
 import { removeNulls } from '../common';
@@ -27,10 +27,10 @@ export class SoonSnapshotConverter implements Converter<SoonSnap, PgSoonSnapshot
       updatedOn: pgDateToTimestamp(pg.updatedOn),
       createdBy: pg.createdBy || '',
 
-      count: pg.count,
-      paidOut: pg.paidOut,
+      count: pg.count || 0,
+      paidOut: pg.paidOut || 0,
       lastPaidOutOn: pgDateToTimestamp(pg.lastPaidOutOn),
-      ethAddress: pg.ethAddress,
-      ethAddressVerified: pg.ethAddressVerified,
+      ethAddress: pg.ethAddress || '',
+      ethAddressVerified: pg.ethAddressVerified || false,
     });
 }

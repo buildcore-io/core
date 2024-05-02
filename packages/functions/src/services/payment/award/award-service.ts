@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Award,
   AwardBadgeType,
@@ -10,7 +10,7 @@ import {
   Transaction,
   TransactionPayloadType,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { AliasAddress, Ed25519Address, NftAddress } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
@@ -29,7 +29,7 @@ export class AwardFundService extends BaseService {
   public handleRequest = async ({ order, match }: HandlerParams) => {
     const payment = await this.transactionService.createPayment(order, match);
 
-    const awardDocRef = build5Db().doc(COL.AWARD, order.payload.award!);
+    const awardDocRef = database().doc(COL.AWARD, order.payload.award!);
     const award = <Award>await this.transaction.get(awardDocRef);
 
     if (award.funded) {
@@ -85,7 +85,7 @@ export class AwardFundService extends BaseService {
         award: award.uid,
       },
     };
-    const mintAliasTranDocRef = build5Db().doc(COL.TRANSACTION, mintAliasOrder.uid);
+    const mintAliasTranDocRef = database().doc(COL.TRANSACTION, mintAliasOrder.uid);
     this.transactionService.push({
       ref: mintAliasTranDocRef,
       data: mintAliasOrder,
@@ -93,13 +93,13 @@ export class AwardFundService extends BaseService {
     });
 
     if (order.payload.legacyAwardFundRequestId) {
-      const legacyAwardFundRequesDocRef = build5Db().doc(
+      const legacyAwardFundRequesDocRef = database().doc(
         COL.TRANSACTION,
         order.payload.legacyAwardFundRequestId,
       );
       this.transactionService.push({
         ref: legacyAwardFundRequesDocRef,
-        data: { payload_legacyAwardsBeeingFunded: build5Db().inc(-1) },
+        data: { payload_legacyAwardsBeeingFunded: database().inc(-1) },
         action: Action.U,
       });
     }
@@ -114,7 +114,7 @@ export const awardToCollectionMetadata = async (award: Award, space: Space) => (
   name: award.name,
   description: award.description || '',
   issuerName: KEY_NAME_TANGLE,
-  build5Id: award.uid,
+  originId: award.uid,
 });
 
 export const awardBadgeToNttMetadata = async (
@@ -137,7 +137,7 @@ export const awardBadgeToNttMetadata = async (
     collectionId,
     collectionName: award.name || '',
 
-    build5Id: badgeTransactionId,
+    originId: badgeTransactionId,
 
     attributes: [
       { trait_type: 'award', value: award.uid },
@@ -179,7 +179,7 @@ export const getAwardgStorageDeposits = async (award: Award, token: Token, walle
 
   const collectioIssuerAddress = new AliasAddress(aliasOutput.aliasId);
 
-  const spaceDocRef = build5Db().doc(COL.SPACE, award.space);
+  const spaceDocRef = database().doc(COL.SPACE, award.space);
   const space = <Space>await spaceDocRef.get();
 
   const collectionMetadata = await awardToCollectionMetadata(award, space);

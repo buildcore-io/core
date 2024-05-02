@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { Proposal, ProposalMember } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { Proposal, ProposalMember } from '@buildcore/interfaces';
 import { head } from 'lodash';
 import { createVoteTransaction } from './ProposalVoteService';
 
@@ -36,12 +36,12 @@ const getProposalUpdateDataAfterVote = (
   }
   const data = {
     results: {
-      voted: build5Db().inc(proposalMember.voted ? 0 : weight),
-      answers: { [`${values[0]}`]: build5Db().inc(weight) },
+      voted: database().inc(proposalMember.voted ? 0 : weight),
+      answers: { [`${values[0]}`]: database().inc(weight) },
     },
   };
   if (prevAnswer) {
-    data.results.answers[prevAnswer] = build5Db().inc(-weight);
+    data.results.answers[prevAnswer] = database().inc(-weight);
   }
   return data;
 };

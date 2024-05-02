@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -7,7 +7,7 @@ import {
   Transaction,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
@@ -48,7 +48,7 @@ describe('Base token trading', () => {
       2 * (MIN_IOTA_AMOUNT + 1),
     );
 
-    const tradesQuery = build5Db()
+    const tradesQuery = database()
       .collection(COL.TOKEN_MARKET)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {
@@ -58,7 +58,7 @@ describe('Base token trading', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    const purchase = await build5Db()
+    const purchase = await database()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', helper.token!.uid)
       .get();
@@ -68,7 +68,7 @@ describe('Base token trading', () => {
   });
 
   it('Should send dust to space', async () => {
-    const tradesQuery = build5Db()
+    const tradesQuery = database()
       .collection(COL.TOKEN_MARKET)
       .where('token', '==', helper.token!.uid);
     mockWalletReturnValue(helper.seller!.uid, {
@@ -102,7 +102,7 @@ describe('Base token trading', () => {
       2.001 * MIN_IOTA_AMOUNT,
     );
 
-    const purchaseQuery = build5Db()
+    const purchaseQuery = database()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {
@@ -114,7 +114,7 @@ describe('Base token trading', () => {
     expect(purchase.price).toBe(2);
 
     const billPayments = (
-      await build5Db()
+      await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
         .where('payload_token', '==', helper.token!.uid)

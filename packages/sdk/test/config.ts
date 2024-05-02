@@ -1,4 +1,4 @@
-import { Build5 } from '../src/https';
+import { Buildcore } from '../src/https';
 
 export interface AddressDetails {
   bech32: string;
@@ -20,9 +20,9 @@ export const address_secondary: AddressDetails = {
   bech32: 'rms1qzlwy7z5f7vchqxed7c8mw7c9g8aj780nx5anlh4sxkdau358cfx2tt0zw2',
 };
 
-export const Build5Local = 'http://127.0.0.1:5001/soonaverse-dev/us-central1' as Build5;
-export const Build5LocalApi = 'http://localhost:8080' as Build5;
-export const Build5LocalKey =
+export const BuildcoreLocal = 'http://127.0.0.1:5001/soonaverse-dev/us-central1' as Buildcore;
+export const BuildcoreLocalApi = 'http://localhost:8080' as Buildcore;
+export const BuildcoreLocalKey =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9qZWN0IjoiMHg0NjIyM2VkZDQxNTc2MzVkZmM2Mzk5MTU1NjA5ZjMwMWRlY2JmZDg4IiwiaWF0IjoxNjk5MjgyMTQxfQ.Bd0IZNdtc3ne--CC1Bk5qDgWl4NojAsX64K1rCj-5Co';
-export const Build5LocalApiKey =
+export const BuildcoreLocalApiKey =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIweDU1MWZkMmM3YzdiZjM1NmJhYzE5NDU4N2RhYjJmY2Q0NjQyMDA1NGIiLCJwcm9qZWN0IjoiMHg0NjIyM2VkZDQxNTc2MzVkZmM2Mzk5MTU1NjA5ZjMwMWRlY2JmZDg4IiwiaWF0IjoxNjk1ODUyNTk2fQ.WT9L4H9eDdFfJZMrfxTKhEq4PojNWSGNv_CbmlG9sJg';

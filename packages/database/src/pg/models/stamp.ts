@@ -6,7 +6,7 @@ import * as commons from './common';
 
 export interface PgStamp extends commons.BaseRecord {
   space?: string;
-  build5Url?: string;
+  buildcoreUrl?: string;
   originUri?: string;
   checksum?: string;
   extension?: string;

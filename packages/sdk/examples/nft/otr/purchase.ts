@@ -1,10 +1,10 @@
-import { Dataset } from '@build-5/interfaces';
-import { Build5, SoonaverseApiKey, SoonaverseOtrAddress, https, otr } from '@build-5/sdk';
+import { Dataset } from '@buildcore/interfaces';
+import { Buildcore, SoonaverseApiKey, SoonaverseOtrAddress, https, otr } from '@buildcore/sdk';
 
-const collectionId = 'build5collectionid1';
-const nftId = 'build5nftid1';
+const collectionId = 'collectionid1';
+const nftId = 'nftid1';
 
-const origin = Build5.TEST;
+const origin = Buildcore.TEST;
 // @ts-ignore
 const otrAddress = SoonaverseOtrAddress[origin];
 
@@ -22,7 +22,7 @@ async function main() {
   );
 
   const tag = otrRequest.getTag(fireflyDeeplink);
-  const obs = https(Build5.TEST).project(SoonaverseApiKey[Build5.TEST]).trackByTag(tag);
+  const obs = https(Buildcore.TEST).project(SoonaverseApiKey[Buildcore.TEST]).trackByTag(tag);
   console.log('Listen to payment progress:');
   obs.subscribe((n) => console.log('- update: ', n));
 }

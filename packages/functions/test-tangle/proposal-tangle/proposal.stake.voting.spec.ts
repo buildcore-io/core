@@ -1,11 +1,11 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
   TangleRequestType,
   Transaction,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { wait } from '../../test/controls/common';
@@ -58,7 +58,7 @@ describe('Create proposal via tangle request', () => {
     const credit = snap.find((c) => !isEmpty(c?.payload?.response?.voteTransaction))!;
     expect(credit.payload.amount).toBe(MIN_IOTA_AMOUNT);
 
-    const voteTransactionDocRef = build5Db().doc(
+    const voteTransactionDocRef = database().doc(
       COL.TRANSACTION,
       credit.payload.response!.voteTransaction,
     );

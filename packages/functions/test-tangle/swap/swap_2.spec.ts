@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -7,7 +7,7 @@ import {
   Transaction,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
@@ -46,7 +46,7 @@ describe('Swap control test', () => {
     });
     const swapOrder = await testEnv.wrap<Transaction>(WEN_FUNC.createSwap);
 
-    const swapDocRef = build5Db().doc(COL.SWAP, swapOrder.payload.swap!);
+    const swapDocRef = database().doc(COL.SWAP, swapOrder.payload.swap!);
     let swap = <Swap>await swapDocRef.get();
 
     await requestFundsFromFaucet(h.network, swapOrder.payload.targetAddress!, MIN_IOTA_AMOUNT);
@@ -92,7 +92,7 @@ describe('Swap control test', () => {
       return swap.status === SwapStatus.FULFILLED;
     });
 
-    let query = build5Db()
+    let query = database()
       .collection(COL.TRANSACTION)
       .where('payload_swap', '==', swap.uid)
       .where('type', '==', TransactionType.BILL_PAYMENT);
@@ -104,7 +104,7 @@ describe('Swap control test', () => {
       );
     });
 
-    query = build5Db()
+    query = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', h.member)
       .where('type', '==', TransactionType.BILL_PAYMENT);
@@ -114,7 +114,7 @@ describe('Swap control test', () => {
     expect(billPayments[0].payload.nativeTokens).toEqual([]);
     expect(billPayments[0].payload.nftId).toBeUndefined();
 
-    query = build5Db()
+    query = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', h.guardian)
       .where('type', '==', TransactionType.BILL_PAYMENT);

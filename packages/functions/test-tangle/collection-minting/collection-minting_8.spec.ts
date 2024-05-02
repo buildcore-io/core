@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Collection,
@@ -8,7 +8,7 @@ import {
   UnsoldMintingOptions,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { expectThrow } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { CollectionMintHelper } from './Helper';
@@ -27,10 +27,10 @@ describe('Collection minting', () => {
   it.each([CollectionType.GENERATED, CollectionType.SFT, CollectionType.CLASSIC])(
     'Should set owner to guardian',
     async (type: CollectionType) => {
-      await build5Db().doc(COL.COLLECTION, helper.collection).update({ type });
+      await database().doc(COL.COLLECTION, helper.collection).update({ type });
       let nft = <Nft | undefined>await helper.createAndOrderNft();
       let collectionData = <Collection>(
-        await build5Db().doc(COL.COLLECTION, helper.collection).get()
+        await database().doc(COL.COLLECTION, helper.collection).get()
       );
       expect(collectionData.total).toBe(1);
       expect(collectionData.sold).toBe(0);
@@ -49,9 +49,9 @@ describe('Collection minting', () => {
       }
       await helper.mintCollection(UnsoldMintingOptions.TAKE_OWNERSHIP);
 
-      collectionData = <Collection>await build5Db().doc(COL.COLLECTION, helper.collection).get();
+      collectionData = <Collection>await database().doc(COL.COLLECTION, helper.collection).get();
       expect(collectionData.total).toBe(1);
-      nft = <Nft>await build5Db().doc(COL.NFT, nft?.uid!).get();
+      nft = <Nft>await database().doc(COL.NFT, nft?.uid!).get();
       expect(nft.isOwned).toBe(true);
       expect(nft.owner).toBe(helper.guardian);
       expect(nft.sold).toBe(true);

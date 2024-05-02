@@ -1,9 +1,9 @@
-import { build5Db } from '@build-5/database';
-import { COL } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 
 export const hidePlaceholderAfterSoldOutCron = async () => {
-  const snap = await build5Db()
+  const snap = await database()
     .collection(COL.NFT)
     .where('sold', '==', true)
     .where('placeholderNft', '==', true)
@@ -17,7 +17,7 @@ export const hidePlaceholderAfterSoldOutCron = async () => {
       nft.soldOn.toDate() &&
       dayjs(nft.soldOn.toDate()).isBefore(dayjs().add(24, 'hours'))
     ) {
-      await build5Db().collection(COL.NFT).doc(nft.uid).update({
+      await database().collection(COL.NFT).doc(nft.uid).update({
         hidden: true,
       });
     }

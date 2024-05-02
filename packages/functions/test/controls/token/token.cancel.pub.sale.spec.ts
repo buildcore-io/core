@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Access,
   COL,
@@ -14,7 +14,7 @@ import {
   TransactionPayloadType,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { dateToTimestamp, serverTime } from '../../../src/utils/dateTime.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
@@ -32,8 +32,8 @@ const setAvailableOrderAndCancelSale = async (
   memberAddress: NetworkAddress,
   miotas: number,
 ) => {
-  const tokenDocRef = build5Db().doc(COL.TOKEN, token.uid);
-  const distributionDocRef = build5Db().doc(
+  const tokenDocRef = database().doc(COL.TOKEN, token.uid);
+  const distributionDocRef = database().doc(
     COL.TOKEN,
     token.uid,
     SUB_COL.DISTRIBUTION,
@@ -92,12 +92,12 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
       termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
       access: Access.OPEN,
     };
-    await build5Db().doc(COL.TOKEN, tokenId).upsert(tokenUpsert);
-    token = (await build5Db().doc(COL.TOKEN, tokenId).get())!;
+    await database().doc(COL.TOKEN, tokenId).upsert(tokenUpsert);
+    token = (await database().doc(COL.TOKEN, tokenId).get())!;
   });
 
   it('Should cancel public sale and refund buyers twice', async () => {
-    const distributionDocRef = build5Db().doc(
+    const distributionDocRef = database().doc(
       COL.TOKEN,
       token.uid,
       SUB_COL.DISTRIBUTION,
@@ -107,7 +107,7 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
     await setAvailableOrderAndCancelSale(token, memberAddress, 6);
     const distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.totalDeposit).toBe(0);
-    const creditDocs = await build5Db()
+    const creditDocs = await database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('payload_type', '==', TransactionPayloadType.TOKEN_PURCHASE)
@@ -120,7 +120,7 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
   });
 
   it('Should cancel public sale and refund buyers twice, then finish sale', async () => {
-    const distributionDocRef = build5Db().doc(
+    const distributionDocRef = database().doc(
       COL.TOKEN,
       token.uid,
       SUB_COL.DISTRIBUTION,
@@ -130,7 +130,7 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
     await setAvailableOrderAndCancelSale(token, memberAddress, 6);
     let distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.totalDeposit).toBe(0);
-    const creditDocs = await build5Db()
+    const creditDocs = await database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('payload_type', '==', TransactionPayloadType.TOKEN_PURCHASE)
@@ -140,7 +140,7 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
       5 * MIN_IOTA_AMOUNT,
       6 * MIN_IOTA_AMOUNT,
     ]);
-    const tokenDocRef = build5Db().doc(COL.TOKEN, token.uid);
+    const tokenDocRef = database().doc(COL.TOKEN, token.uid);
     await tokenDocRef.update({
       saleLength: 86400000 * 2,
       saleStartDate: dayjs().subtract(1, 'd').toDate(),
@@ -165,7 +165,7 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
       saleLength: 86400000 * 2,
       coolDownLength: 86400000,
     };
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, token.uid)
       .update({
         allocations: JSON.stringify([{ title: 'public', percentage: 100, isPublicSale: true }]),
@@ -174,14 +174,14 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
     const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };
     mockWalletReturnValue(memberAddress, updateData);
     const result = await testEnv.wrap<Token>(WEN_FUNC.setTokenAvailableForSale);
-    token = await build5Db().doc(COL.TOKEN, result.uid).get();
+    token = await database().doc(COL.TOKEN, result.uid).get();
     expect(token.saleStartDate!.toDate()).toEqual(
       dateToTimestamp(dayjs(publicTime.saleStartDate), true).toDate(),
     );
     mockWalletReturnValue(memberAddress, { token: token.uid });
     await testEnv.wrap(WEN_FUNC.cancelPublicSale);
     await wait(async () => {
-      const tokenData = <Token>await build5Db().doc(COL.TOKEN, token.uid).get();
+      const tokenData = <Token>await database().doc(COL.TOKEN, token.uid).get();
       return tokenData.status === TokenStatus.AVAILABLE;
     });
   });

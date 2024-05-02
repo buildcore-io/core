@@ -1,4 +1,4 @@
-import { ITransaction, build5Db } from '@build-5/database';
+import { ITransaction, database } from '@buildcore/database';
 import {
   COL,
   CreditPaymentReason,
@@ -12,20 +12,20 @@ import {
   Transaction,
   TransactionPayloadType,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import bigDecimal from 'js-big-decimal';
 import { getAddress } from './address.utils';
 import { getProject } from './common.utils';
 import { getRandomEthAddress } from './wallet.utils';
 
 export const creditBuyer = async (transaction: ITransaction, buy: TokenTradeOrder) => {
-  const memberDocRef = build5Db().doc(COL.MEMBER, buy.owner);
+  const memberDocRef = database().doc(COL.MEMBER, buy.owner);
   const member = (await memberDocRef.get())!;
 
-  const tokenDocRef = build5Db().doc(COL.TOKEN, buy.token);
+  const tokenDocRef = database().doc(COL.TOKEN, buy.token);
   const token = (await tokenDocRef.get())!;
 
-  const orderDocRef = build5Db().doc(COL.TRANSACTION, buy.orderTransactionId!);
+  const orderDocRef = database().doc(COL.TRANSACTION, buy.orderTransactionId!);
   const order = (await orderDocRef.get())!;
 
   const network = order.network || DEFAULT_NETWORK;
@@ -49,10 +49,10 @@ export const creditBuyer = async (transaction: ITransaction, buy: TokenTradeOrde
       tokenSymbol: token.symbol,
     },
   };
-  const creditDocRef = build5Db().doc(COL.TRANSACTION, credit.uid);
+  const creditDocRef = database().doc(COL.TRANSACTION, credit.uid);
   await transaction.create(creditDocRef, credit);
 
-  const tradeOrderDocRef = build5Db().doc(COL.TOKEN_MARKET, buy.uid);
+  const tradeOrderDocRef = database().doc(COL.TOKEN_MARKET, buy.uid);
   await transaction.update(tradeOrderDocRef, { creditTransactionId: credit.uid });
 };
 
@@ -61,10 +61,10 @@ const creditBaseTokenSale = async (
   token: Token,
   sale: TokenTradeOrder,
 ) => {
-  const orderDocRef = build5Db().doc(COL.TRANSACTION, sale.orderTransactionId!);
+  const orderDocRef = database().doc(COL.TRANSACTION, sale.orderTransactionId!);
   const order = (await orderDocRef.get())!;
 
-  const memberDocRef = build5Db().doc(COL.MEMBER, sale.owner);
+  const memberDocRef = database().doc(COL.MEMBER, sale.owner);
   const member = await memberDocRef.get();
   const network = order.network || DEFAULT_NETWORK;
   const data: Transaction = {
@@ -87,10 +87,10 @@ const creditBaseTokenSale = async (
       tokenSymbol: token.symbol,
     },
   };
-  const creditDocRef = build5Db().doc(COL.TRANSACTION, data.uid);
+  const creditDocRef = database().doc(COL.TRANSACTION, data.uid);
   await transaction.create(creditDocRef, data);
 
-  const tradeDocRef = build5Db().doc(COL.TOKEN_MARKET, sale.uid);
+  const tradeDocRef = database().doc(COL.TOKEN_MARKET, sale.uid);
   await transaction.update(tradeDocRef, {
     creditTransactionId: data.uid,
     balance: 0,
@@ -102,13 +102,13 @@ export const cancelTradeOrderUtil = async (
   tradeOrder: TokenTradeOrder,
   forcedStatus?: TokenTradeOrderStatus,
 ) => {
-  const saleDocRef = build5Db().doc(COL.TOKEN_MARKET, tradeOrder.uid);
+  const saleDocRef = database().doc(COL.TOKEN_MARKET, tradeOrder.uid);
   const status =
     forcedStatus ||
     (tradeOrder.fulfilled === 0
       ? TokenTradeOrderStatus.CANCELLED
       : TokenTradeOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED);
-  const tokenDocRef = build5Db().doc(COL.TOKEN, tradeOrder.token);
+  const tokenDocRef = database().doc(COL.TOKEN, tradeOrder.token);
   const token = (await tokenDocRef.get())!;
 
   if (token.status === TokenStatus.BASE) {
@@ -117,7 +117,7 @@ export const cancelTradeOrderUtil = async (
     if (token.status === TokenStatus.MINTED) {
       await cancelMintedSell(transaction, tradeOrder, token);
     } else {
-      const distributionDocRef = build5Db().doc(
+      const distributionDocRef = database().doc(
         COL.TOKEN,
         tradeOrder.token,
         SUB_COL.DISTRIBUTION,
@@ -125,7 +125,7 @@ export const cancelTradeOrderUtil = async (
       );
       const leftForSale = bigDecimal.subtract(tradeOrder.count, tradeOrder.fulfilled);
       await transaction.update(distributionDocRef, {
-        lockedForSale: build5Db().inc(-Number(leftForSale)),
+        lockedForSale: database().inc(-Number(leftForSale)),
       });
     }
   } else {
@@ -136,10 +136,10 @@ export const cancelTradeOrderUtil = async (
 };
 
 const cancelMintedSell = async (transaction: ITransaction, sell: TokenTradeOrder, token: Token) => {
-  const orderDocRef = build5Db().doc(COL.TRANSACTION, sell.orderTransactionId!);
+  const orderDocRef = database().doc(COL.TRANSACTION, sell.orderTransactionId!);
   const order = (await orderDocRef.get())!;
 
-  const sellerDocRef = build5Db().doc(COL.MEMBER, sell.owner);
+  const sellerDocRef = database().doc(COL.MEMBER, sell.owner);
   const seller = await sellerDocRef.get();
 
   const tokensLeft = sell.count - sell.fulfilled;
@@ -165,9 +165,9 @@ const cancelMintedSell = async (transaction: ITransaction, sell: TokenTradeOrder
       tokenSymbol: token.symbol,
     },
   };
-  const creditDocRef = build5Db().doc(COL.TRANSACTION, data.uid);
+  const creditDocRef = database().doc(COL.TRANSACTION, data.uid);
   await transaction.create(creditDocRef, data);
 
-  const tradeOrderDocRef = build5Db().doc(COL.TOKEN_MARKET, sell.uid);
+  const tradeOrderDocRef = database().doc(COL.TOKEN_MARKET, sell.uid);
   await transaction.update(tradeOrderDocRef, { creditTransactionId: data.uid });
 };

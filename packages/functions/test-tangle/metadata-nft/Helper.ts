@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, MIN_IOTA_AMOUNT, Network, Space, Token, Transaction } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, MIN_IOTA_AMOUNT, Network, Space, Token, Transaction } from '@buildcore/interfaces';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
@@ -25,7 +25,7 @@ export class Helper {
 
     this.tangleOrder = await getTangleOrder(this.network);
 
-    const memberData = await build5Db().doc(COL.MEMBER, this.member).get();
+    const memberData = await database().doc(COL.MEMBER, this.member).get();
     const memberAddress = getAddress(memberData, this.network);
     this.memberAddress = await this.walletService.getAddressDetails(memberAddress);
     await requestFundsFromFaucet(this.network, memberAddress, 10 * MIN_IOTA_AMOUNT);

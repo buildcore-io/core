@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -6,7 +6,7 @@ import {
   TangleRequestType,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { getAddress } from '../../src/utils/address.utils';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
@@ -33,7 +33,7 @@ describe('Nft transfer', () => {
 
     const targetAddress = await h.walletService.getNewIotaAddressDetails();
 
-    const guardianDocRef = build5Db().doc(COL.MEMBER, h.guardian);
+    const guardianDocRef = database().doc(COL.MEMBER, h.guardian);
     const guardian = await guardianDocRef.get();
     const bech32 = getAddress(guardian, Network.RMS);
     const address = await h.walletService.getAddressDetails(bech32);
@@ -52,7 +52,7 @@ describe('Nft transfer', () => {
       },
     });
 
-    let query = build5Db()
+    let query = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', h.guardian)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
@@ -64,7 +64,7 @@ describe('Nft transfer', () => {
     expect(credit.payload.response![nft1.uid]).toBe(200);
     expect(credit.payload.response![nft2.uid]).toBe(200);
 
-    query = build5Db()
+    query = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', h.guardian)
       .where('type', '==', TransactionType.WITHDRAW_NFT);

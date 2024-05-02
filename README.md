@@ -1,5 +1,7 @@
 <!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
+
 <a name="readme-top"></a>
+
 <!--
 *** Thanks for checking out the Best-README-Template. If you have a suggestion
 *** that would make this better, please fork the repo and create a pull request
@@ -7,8 +9,6 @@
 *** Don't forget to give the project a star!
 *** Thanks again! Now go create something AMAZING! :D
 -->
-
-
 
 <!-- PROJECT SHIELDS -->
 <!--
@@ -18,6 +18,7 @@
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
+
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
@@ -25,12 +26,10 @@
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
-
-
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/build-5/core">
+  <a href="https://github.com/buildcore/core">
     <img src="docs/static/img/buildcore_logo.png" alt="BUILD.5 logo" width="80" height="80">
   </a>
 
@@ -39,12 +38,12 @@
   <p align="center">
     Your Enterprise ready web3 plug & play platform
     <br />
-    <a href="https://developer.build5.com/"><strong>Explore the docs »</strong></a>
+    <a href="https://developer.buildcore.com/"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/build-5/core/issues/new?template=bug_report.md">Report Bug</a>
+    <a href="https://github.com/buildcore/core/issues/new?template=bug_report.md">Report Bug</a>
     ·
-    <a href="https://github.com/build-5/core/issues/new?template=feature_request.md">Request Feature</a>
+    <a href="https://github.com/buildcore/core/issues/new?template=feature_request.md">Request Feature</a>
   </p>
 </div>
 
@@ -72,46 +71,40 @@
   </ol>
 </details>
 
-
-
 <!-- ABOUT THE PROJECT -->
+
 ## About The Project
 
 Buildcore is your Enterprise ready web3 plug & play platform. This repo contains the back-end based on [serverless functions](./packages/functions/) and our easy to use [SDK](./packages/sdk/) for third parties.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 ### Built With
 
-* [![Typescript][Typescript]][Typescript-url]
-* [![Firestore][Firestore]][Firestore-url]
+- [![Typescript][Typescript]][Typescript-url]
+- [![Firestore][Firestore]][Firestore-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- GETTING STARTED -->
+
 ## Getting Started
 
-To build the project locally, follow these simple steps. If you are interested in using the SDK to interact with our services, please refer to the [SDK documentation](https://developer.build5.com/).
+To build the project locally, follow these simple steps. If you are interested in using the SDK to interact with our services, please refer to the [SDK documentation](https://developer.buildcore.com/).
 
 ### Prerequisites
 
 Make sure you have the following installed:
 
-* npm
-* node >= 20
-* modern yarn (optional, for running the docs locally)
-
-
+- npm
+- node >= 20
+- modern yarn (optional, for running the docs locally)
 
 ### Installation
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/build-5/core.git
+   git clone https://github.com/buildcore/core.git
    ```
 2. Install NPM packages
    ```sh
@@ -126,18 +119,16 @@ For running the docs locally, please refer to the documentation [README](./docs/
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- USAGE EXAMPLES -->
+
 ## Usage
 
-The best way to get started with the SDK and interacting with Buildcore is [installing the SDK](https://www.npmjs.com/package/@build-5/sdk) and have a look at our [documentation](https://developer.build5.com).
+The best way to get started with the SDK and interacting with Buildcore is [installing the SDK](https://www.npmjs.com/package/@buildcore/sdk) and have a look at our [documentation](https://developer.buildcore.com).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- CONTRIBUTING -->
+
 ## Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
@@ -153,46 +144,43 @@ Don't forget to give the project a star! Thanks again!
 
 For more information on how to contribute, please read [CONTRIBUTING.md](./CONTRIBUTING.md)
 
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/build-5/core/pulls)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/buildcore/core/pulls)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- LICENSE -->
+
 ## License
 
 Distributed under the Apache License. See `LICENSE` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- CONTACT -->
+
 ## Contact
 
-Buildcore - [@build5tech](https://twitter.com/build5tech) - hello@build5.com
+Buildcore - [@buildcoretech](https://twitter.com/buildcoretech) - hello@buildcore.com
 
-Project Link: [https://build5.com](https://build5.com)
+Project Link: [https://buildcore.com](https://buildcore.com)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/build-5/core.svg?style=for-the-badge
-[contributors-url]: https://github.com/build-5/core/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/build-5/core.svg?style=for-the-badge
-[forks-url]: https://github.com/build-5/core/network/members
-[stars-shield]: https://img.shields.io/github/stars/build-5/core.svg?style=for-the-badge
-[stars-url]: https://github.com/build-5/core/stargazers
-[issues-shield]: https://img.shields.io/github/issues/build-5/core.svg?style=for-the-badge
-[issues-url]: https://github.com/build-5/core/issues
-[license-shield]: https://img.shields.io/github/license/build-5/core.svg?style=for-the-badge
-[license-url]: https://github.com/build-5/core/blob/master/LICENSE
+
+[contributors-shield]: https://img.shields.io/github/contributors/buildcore/core.svg?style=for-the-badge
+[contributors-url]: https://github.com/buildcore/core/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/buildcore/core.svg?style=for-the-badge
+[forks-url]: https://github.com/buildcore/core/network/members
+[stars-shield]: https://img.shields.io/github/stars/buildcore/core.svg?style=for-the-badge
+[stars-url]: https://github.com/buildcore/core/stargazers
+[issues-shield]: https://img.shields.io/github/issues/buildcore/core.svg?style=for-the-badge
+[issues-url]: https://github.com/buildcore/core/issues
+[license-shield]: https://img.shields.io/github/license/buildcore/core.svg?style=for-the-badge
+[license-url]: https://github.com/buildcore/core/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/company/build5/
+[linkedin-url]: https://linkedin.com/company/buildcore/
 [Typescript]: https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white
 [Typescript-url]: https://www.typescriptlang.org/
 [Firestore]: https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black

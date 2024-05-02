@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, TangleRequestType, TangleResponse, WenError } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, TangleRequestType, TangleResponse, WenError } from '@buildcore/interfaces';
 import { invalidArgument } from '../../../../utils/error.utils';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { assertIsGuardian } from '../../../../utils/token.utils';
@@ -15,7 +15,7 @@ export class ProposalApprovalService extends BaseTangleService<TangleResponse> {
       params.uid,
       params.requestType === TangleRequestType.PROPOSAL_APPROVE,
     );
-    const docRef = build5Db().doc(COL.PROPOSAL, params.uid);
+    const docRef = database().doc(COL.PROPOSAL, params.uid);
     this.transactionService.push({ ref: docRef, data, action: Action.U });
 
     return { status: 'success' };
@@ -27,7 +27,7 @@ export const getProposalApprovalData = async (
   proposalId: string,
   approve: boolean,
 ) => {
-  const proposalDocRef = build5Db().doc(COL.PROPOSAL, proposalId);
+  const proposalDocRef = database().doc(COL.PROPOSAL, proposalId);
   const proposal = await proposalDocRef.get();
   if (!proposal) {
     throw invalidArgument(WenError.proposal_does_not_exists);

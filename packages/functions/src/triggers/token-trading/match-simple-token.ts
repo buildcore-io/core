@@ -1,4 +1,4 @@
-import { ITransaction, build5Db } from '@build-5/database';
+import { ITransaction, database } from '@buildcore/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -13,7 +13,7 @@ import {
   Transaction,
   TransactionPayloadType,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty, tail } from 'lodash';
 import { getAddress } from '../../utils/address.utils';
@@ -34,7 +34,7 @@ const createBuyPayments = async (
 ) => {
   let salePrice = Number(bigDecimal.floor(bigDecimal.multiply(tokensToTrade, price)));
   const fulfilled = buy.fulfilled + tokensToTrade === buy.count;
-  const buyOrder = (await build5Db().doc(COL.TRANSACTION, buy.orderTransactionId!).get())!;
+  const buyOrder = (await database().doc(COL.TRANSACTION, buy.orderTransactionId!).get())!;
   const royaltyFees = await getRoyaltyFees(salePrice, seller.tokenTradingFeePercentage);
 
   let balanceLeft = buy.balance - salePrice;
@@ -54,7 +54,7 @@ const createBuyPayments = async (
   const royaltyPaymentPromises = Object.entries(royaltyFees)
     .filter((entry) => entry[1] > 0)
     .map(async ([space, fee]): Promise<Transaction> => {
-      const spaceData = await build5Db().doc(COL.SPACE, space).get();
+      const spaceData = await database().doc(COL.SPACE, space).get();
       return {
         project: getProject(buy),
         type: TransactionType.BILL_PAYMENT,
@@ -148,11 +148,11 @@ const updateSaleLock = async (
   sell: TokenTradeOrder,
 ) => {
   const diff = sell.fulfilled - prev.fulfilled;
-  const docRef = build5Db().doc(COL.TOKEN, sell.token, SUB_COL.DISTRIBUTION, sell.owner);
+  const docRef = database().doc(COL.TOKEN, sell.token, SUB_COL.DISTRIBUTION, sell.owner);
   const data = {
-    lockedForSale: build5Db().inc(-diff),
-    sold: build5Db().inc(diff),
-    tokenOwned: build5Db().inc(-diff),
+    lockedForSale: database().inc(-diff),
+    sold: database().inc(diff),
+    tokenOwned: database().inc(-diff),
   };
   await transaction.upsert(docRef, data);
 };
@@ -163,10 +163,10 @@ const updateBuyerDistribution = async (
   buy: TokenTradeOrder,
 ) => {
   const diff = buy.fulfilled - prev.fulfilled;
-  const docRef = build5Db().doc(COL.TOKEN, buy.token, SUB_COL.DISTRIBUTION, buy.owner);
+  const docRef = database().doc(COL.TOKEN, buy.token, SUB_COL.DISTRIBUTION, buy.owner);
   const data = {
-    totalPurchased: build5Db().inc(diff),
-    tokenOwned: build5Db().inc(diff),
+    totalPurchased: database().inc(diff),
+    tokenOwned: database().inc(diff),
   };
   await transaction.upsert(docRef, data);
 };
@@ -181,8 +181,8 @@ export const matchSimpleToken = async (
 ): Promise<Match> => {
   const tokensToTrade = Math.min(sell.count - sell.fulfilled, buy.count - buy.fulfilled);
 
-  const seller = (await build5Db().doc(COL.MEMBER, sell.owner).get())!;
-  const buyer = (await build5Db().doc(COL.MEMBER, buy.owner).get())!;
+  const seller = (await database().doc(COL.MEMBER, sell.owner).get())!;
+  const buyer = (await database().doc(COL.MEMBER, buy.owner).get())!;
   const buyerPayments = await createBuyPayments(
     token,
     buy,
@@ -197,7 +197,7 @@ export const matchSimpleToken = async (
     return { purchase: undefined, buyerCreditId: undefined, sellerCreditId: undefined };
   }
   buyerPayments.forEach((p) => {
-    const docRef = build5Db().doc(COL.TRANSACTION, p.uid);
+    const docRef = database().doc(COL.TRANSACTION, p.uid);
     return transaction.create(docRef, p);
   });
 

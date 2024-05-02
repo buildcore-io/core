@@ -1,4 +1,4 @@
-import { ProposalCreateRequest, ProposalStartDateMin, ProposalType } from '@build-5/interfaces';
+import { ProposalCreateRequest, ProposalStartDateMin, ProposalType } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 import { isProdEnv } from '../../utils/config.utils';
@@ -7,7 +7,7 @@ export const createProposalSchema = {
   name: Joi.string().required().description('Name of the proposal'),
   description: Joi.string().allow(null, '').optional().description('Description of the proposal'),
   space: CommonJoi.uid().description(
-    'Build5 id of the space where the proposal should be created.',
+    'Buildcore id of the space where the proposal should be created.',
   ),
   additionalInfo: Joi.string()
     .allow(null, '')

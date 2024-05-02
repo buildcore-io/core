@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, SUB_COL, SpaceMemberUpsertRequest } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, SUB_COL, SpaceMemberUpsertRequest } from '@buildcore/interfaces';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { Context } from '../common';
 
@@ -9,7 +9,7 @@ export const unblockMemberControl = async ({
 }: Context<SpaceMemberUpsertRequest>) => {
   await assertIsGuardian(params.uid, owner);
 
-  const blockedMemberDocRef = build5Db().doc(
+  const blockedMemberDocRef = database().doc(
     COL.SPACE,
     params.uid,
     SUB_COL.BLOCKED_MEMBERS,

@@ -1,4 +1,4 @@
-import { ITransaction, build5Db } from '@build-5/database';
+import { ITransaction, database } from '@buildcore/database';
 import {
   COL,
   MilestoneTransaction,
@@ -8,7 +8,7 @@ import {
   TransactionPayloadType,
   TransactionType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { head, isEmpty } from 'lodash';
 import { getProject } from '../../utils/common.utils';
@@ -54,11 +54,11 @@ export class ProcessingService {
   public submit = () => this.tranService.submit();
 
   public processMilestoneTransactions = async (tran: MilestoneTransaction): Promise<void> => {
-    const build5Transaction = await this.getBuild5Transaction(tran);
+    const buildcoreTransaction = await this.getBuildcoreTransaction(tran);
 
     for (const tranOutput of tran.outputs) {
       if (
-        build5Transaction?.type !== TransactionType.UNLOCK &&
+        buildcoreTransaction?.type !== TransactionType.UNLOCK &&
         tran.fromAddresses.includes(tranOutput.address)
       ) {
         continue;
@@ -66,7 +66,7 @@ export class ProcessingService {
 
       const order = await this.findOrderForAddress(tranOutput.address);
       if (order) {
-        await this.processOrderTransaction(tran, tranOutput, order.uid, build5Transaction);
+        await this.processOrderTransaction(tran, tranOutput, order.uid, buildcoreTransaction);
       }
     }
   };
@@ -75,9 +75,9 @@ export class ProcessingService {
     tran: MilestoneTransaction,
     tranEntry: MilestoneTransactionEntry,
     orderId: string,
-    build5Tran: Transaction | undefined,
+    buildcoreTran: Transaction | undefined,
   ): Promise<void> {
-    const orderRef = build5Db().doc(COL.TRANSACTION, orderId);
+    const orderRef = database().doc(COL.TRANSACTION, orderId);
     const order = await this.transaction.get(orderRef);
 
     if (!order) {
@@ -91,13 +91,13 @@ export class ProcessingService {
       await this.markAsVoid(nftService, order);
     }
 
-    const match = await this.tranService.isMatch(tran, tranEntry, order, build5Tran);
+    const match = await this.tranService.isMatch(tran, tranEntry, order, buildcoreTran);
     const expirationUnlock = this.tranService.getExpirationUnlock(tranEntry.unlockConditions);
     const outputExpired =
       expirationUnlock !== undefined && dayjs.unix(expirationUnlock.unixTime).isBefore(dayjs());
 
     if (orderExpired || outputExpired || order.payload.reconciled || order.payload.void || !match) {
-      await this.tranService.processAsInvalid(tran, order, tranEntry, build5Tran);
+      await this.tranService.processAsInvalid(tran, order, tranEntry, buildcoreTran);
     } else {
       if (expirationUnlock !== undefined) {
         const type = tranEntry.nftOutput
@@ -123,7 +123,7 @@ export class ProcessingService {
         owner: order.member || '',
         tran,
         tranEntry,
-        build5Tran,
+        buildcoreTran: buildcoreTran,
         request: {},
       };
       const service = this.getService(this.tranService, order.payload.type!);
@@ -201,7 +201,7 @@ export class ProcessingService {
   };
 
   private findOrderForAddress = async (address: NetworkAddress) => {
-    const snap = await build5Db()
+    const snap = await database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.ORDER)
       .where('payload_targetAddress', '==', address)
@@ -210,11 +210,11 @@ export class ProcessingService {
     return head(snap);
   };
 
-  private getBuild5Transaction = (tran: MilestoneTransaction) => {
-    if (isEmpty(tran.build5TransactionId)) {
+  private getBuildcoreTransaction = (tran: MilestoneTransaction) => {
+    if (isEmpty(tran.buildcoreTransactionId)) {
       return;
     }
-    const docRef = build5Db().doc(COL.TRANSACTION, tran.build5TransactionId!);
+    const docRef = database().doc(COL.TRANSACTION, tran.buildcoreTransactionId!);
     return docRef.get();
   };
 }

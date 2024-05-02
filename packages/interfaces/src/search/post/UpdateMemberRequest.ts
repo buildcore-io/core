@@ -12,11 +12,11 @@ export interface MemberUpdateRequest {
    */
   about?: string | null | '';
   /**
-   * Build5 id of the avatar to be used for this member
+   * Buildcore id of the avatar to be used for this member
    */
   avatar?: string;
   /**
-   * Build5 id of the nft to be used as an avatar
+   * Buildcore id of the nft to be used as an avatar
    */
   avatarNft?: string;
   /**

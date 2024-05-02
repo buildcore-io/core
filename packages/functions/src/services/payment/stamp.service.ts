@@ -1,4 +1,4 @@
-import { build5Db, build5Storage } from '@build-5/database';
+import { database, storage } from '@buildcore/database';
 import {
   COL,
   MediaStatus,
@@ -7,7 +7,7 @@ import {
   Transaction,
   TransactionPayloadType,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
 import { packBasicOutput } from '../../utils/basic-output.utils';
@@ -25,7 +25,7 @@ export class StampService extends BaseService {
   public handleRequest = async ({ order, match }: HandlerParams) => {
     const payment = await this.transactionService.createPayment(order, match);
 
-    const stampDocRef = build5Db().doc(COL.STAMP, order.payload.stamp!);
+    const stampDocRef = database().doc(COL.STAMP, order.payload.stamp!);
     const stamp = <Stamp>await this.transaction.get(stampDocRef);
 
     const mintAmount = stamp.funded
@@ -85,7 +85,7 @@ export class StampService extends BaseService {
           },
         };
         this.transactionService.push({
-          ref: build5Db().doc(COL.TRANSACTION, credit.uid),
+          ref: database().doc(COL.TRANSACTION, credit.uid),
           data: credit,
           action: Action.C,
         });
@@ -101,8 +101,8 @@ export class StampService extends BaseService {
       expiresAt: expiresAt.toDate(),
     };
     if (!stamp.funded && !isStorageUrl(stamp.originUri)) {
-      const bucket = build5Storage().bucket(getBucket());
-      const build5Url = await migrateUriToSotrage(
+      const bucket = storage().bucket(getBucket());
+      const buildcoreUrl = await migrateUriToSotrage(
         COL.STAMP,
         stamp.createdBy!,
         stamp.uid,
@@ -110,7 +110,7 @@ export class StampService extends BaseService {
         bucket,
         true,
       );
-      set(updateData, 'build5Url', build5Url);
+      set(updateData, 'buildcoreUrl', buildcoreUrl);
     }
     this.transactionService.push({ ref: stampDocRef, data: updateData, action: Action.U });
 
@@ -136,13 +136,13 @@ export class StampService extends BaseService {
       },
     };
     this.transactionService.push({
-      ref: build5Db().doc(COL.TRANSACTION, royaltyPayment.uid),
+      ref: database().doc(COL.TRANSACTION, royaltyPayment.uid),
       data: royaltyPayment,
       action: Action.C,
     });
 
     this.transactionService.push({
-      ref: build5Db().doc(COL.TRANSACTION, order.uid),
+      ref: database().doc(COL.TRANSACTION, order.uid),
       data: {
         payload_days: undefined,
         payload_amount: Number(royaltyOutput.amount),
@@ -174,14 +174,14 @@ export class StampService extends BaseService {
         },
       };
       this.transactionService.push({
-        ref: build5Db().doc(COL.TRANSACTION, mintAlias.uid),
+        ref: database().doc(COL.TRANSACTION, mintAlias.uid),
         data: mintAlias,
         action: Action.C,
       });
       return;
     }
 
-    const spaceDocRef = build5Db().doc(COL.SPACE, stamp.space);
+    const spaceDocRef = database().doc(COL.SPACE, stamp.space);
     const space = <Space>await spaceDocRef.get();
 
     const mintNftOrder: Transaction = {
@@ -202,7 +202,7 @@ export class StampService extends BaseService {
         stamp: order.payload.stamp,
       },
     };
-    const nftMintOrderDocRef = build5Db().doc(COL.TRANSACTION, mintNftOrder.uid);
+    const nftMintOrderDocRef = database().doc(COL.TRANSACTION, mintNftOrder.uid);
     this.transactionService.push({
       ref: nftMintOrderDocRef,
       data: mintNftOrder,

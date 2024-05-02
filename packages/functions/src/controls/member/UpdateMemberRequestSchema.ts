@@ -3,7 +3,7 @@ import {
   GITHUB_REGEXP,
   MemberUpdateRequest,
   TWITTER_REGEXP,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 
@@ -25,8 +25,8 @@ export const updateMemberSchema = toJoiObject<MemberUpdateRequest>({
     .regex(TWITTER_REGEXP)
     .optional()
     .description('Twitter url of the member'),
-  avatarNft: CommonJoi.uid(false).description('Build5 id of the nft to be used as an avatar'),
-  avatar: CommonJoi.uid(false).description('Build5 id of the avatar to be used for this member'),
+  avatarNft: CommonJoi.uid(false).description('Buildcore id of the nft to be used as an avatar'),
+  avatar: CommonJoi.uid(false).description('Buildcore id of the avatar to be used for this member'),
 })
   .description('Request object to update a member')
   .meta({

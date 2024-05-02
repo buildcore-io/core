@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Access,
   Award,
@@ -18,7 +18,7 @@ import {
   Transaction,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -59,7 +59,7 @@ describe('ProposalController: ' + WEN_FUNC.rejectProposal + ' NATIVE', () => {
     body = dummyBody(space.uid);
 
     const tokenId = wallet.getRandomEthAddress();
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, tokenId)
       .create({
         links: [] as URL[],
@@ -262,7 +262,7 @@ describe('ProposalController: ' + WEN_FUNC.createProposal + ' MEMBERS', () => {
     const award = await testEnv.wrap<Award>(WEN_FUNC.createAward);
     expect(award?.uid).toBeDefined();
 
-    await build5Db().doc(COL.AWARD, award.uid).update({ approved: true, address: '' });
+    await database().doc(COL.AWARD, award.uid).update({ approved: true, address: '' });
 
     // Participate
     mockWalletReturnValue(address, { uid: award?.uid });
@@ -309,7 +309,7 @@ describe('ProposalController: ' + WEN_FUNC.createProposal + ' MEMBERS', () => {
     expect(vResult?.payload?.weight).toEqual(1);
     await vote(memberId, proposal, 2);
 
-    const proposalDocRef = build5Db().doc(COL.PROPOSAL, proposal.uid);
+    const proposalDocRef = database().doc(COL.PROPOSAL, proposal.uid);
     proposal = <Proposal>await proposalDocRef.get();
     expect(proposal.results.answers[2]).toBe(1);
   });
@@ -326,7 +326,7 @@ describe('ProposalController: ' + WEN_FUNC.createProposal + ' MEMBERS', () => {
 
     await vote(memberId, proposal, 1);
 
-    const proposalDocRef = build5Db().doc(COL.PROPOSAL, proposal.uid);
+    const proposalDocRef = database().doc(COL.PROPOSAL, proposal.uid);
     proposal = <Proposal>await proposalDocRef.get();
 
     expect(proposal.results.answers[2]).toBe(0);
@@ -365,7 +365,7 @@ describe('ProposalController: ' + WEN_FUNC.createProposal + ' MEMBERS', () => {
     expect(v?.payload).toBeDefined();
     expect(v?.payload?.weight).toEqual(1);
 
-    const proposalDocRef = build5Db().doc(COL.PROPOSAL, proposal.uid);
+    const proposalDocRef = database().doc(COL.PROPOSAL, proposal.uid);
     proposal = (await proposalDocRef.get())!;
     expect(proposal.results.answers['1']).toEqual(7);
     expect(proposal.results.voted).toEqual(7);
@@ -404,7 +404,7 @@ describe('ProposalController: ' + WEN_FUNC.createProposal + ' MEMBERS', () => {
     expect(v?.payload).toBeDefined();
     expect(v?.payload?.weight).toEqual(1);
 
-    const proposalDocRef = build5Db().doc(COL.PROPOSAL, proposal.uid);
+    const proposalDocRef = database().doc(COL.PROPOSAL, proposal.uid);
     proposal = (await proposalDocRef.get())!;
     expect(proposal.results.answers['1']).toEqual(4);
     expect(proposal.results.answers['2']).toEqual(3);
@@ -453,7 +453,7 @@ describe('ProposalController: ' + WEN_FUNC.createProposal + ' MEMBERS', () => {
     expect(v?.payload).toBeDefined();
     expect(v?.payload?.weight).toEqual(1);
 
-    const proposalDocRef = build5Db().doc(COL.PROPOSAL, proposal.uid);
+    const proposalDocRef = database().doc(COL.PROPOSAL, proposal.uid);
     proposal = (await proposalDocRef.get())!;
     expect(proposal.results.answers['1']).toEqual(2);
     expect(proposal.results.answers['2']).toEqual(3);
@@ -479,7 +479,7 @@ export const saveBaseToken = async (space: string, guardian: string) => {
     icon: MEDIA,
     mintingData_network: Network.RMS,
   };
-  const docRef = build5Db().doc(COL.TOKEN, token.uid);
+  const docRef = database().doc(COL.TOKEN, token.uid);
   await docRef.upsert(token);
   return (await docRef.get())!;
 };

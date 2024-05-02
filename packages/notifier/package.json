@@ -1,5 +1,5 @@
 {
-  "name": "@build-5/notifier",
+  "name": "@buildcore/notifier",
   "version": "0.0.0",
   "description": "pg_notify listener",
   "main": "lib/index.js",

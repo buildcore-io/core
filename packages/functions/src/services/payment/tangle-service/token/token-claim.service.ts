@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Member,
@@ -13,7 +13,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { assertMemberHasValidAddress } from '../../../../utils/address.utils';
@@ -33,7 +33,7 @@ export class TangleTokenClaimService extends BaseTangleService<TangleResponse> {
     const params = await assertValidationAsync(tokenClaimSchema, request);
     const order = await createMintedTokenAirdropClaimOrder(project, owner, params.symbol);
     this.transactionService.push({
-      ref: build5Db().doc(COL.TRANSACTION, order.uid),
+      ref: database().doc(COL.TRANSACTION, order.uid),
       data: order,
       action: Action.C,
     });
@@ -55,7 +55,7 @@ export const createMintedTokenAirdropClaimOrder = async (
     throw invalidArgument(WenError.token_in_invalid_status);
   }
 
-  const member = <Member>await build5Db().doc(COL.MEMBER, owner).get();
+  const member = <Member>await database().doc(COL.MEMBER, owner).get();
   assertMemberHasValidAddress(member, token.mintingData?.network!);
 
   const drops = await getClaimableDrops(token.uid, owner);
@@ -95,7 +95,7 @@ export const createMintedTokenAirdropClaimOrder = async (
 
 const getClaimableDrops = async (token: string, member: string) => {
   const airdops = await getUnclaimedDrops(token, member);
-  const distributionDocRef = build5Db().doc(COL.TOKEN, token, SUB_COL.DISTRIBUTION, member);
+  const distributionDocRef = database().doc(COL.TOKEN, token, SUB_COL.DISTRIBUTION, member);
   const distribution = await distributionDocRef.get();
   if (distribution?.mintedClaimedOn || !distribution?.tokenOwned) {
     return airdops;

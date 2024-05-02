@@ -1,4 +1,4 @@
-import { MediaStatus, Network, Space } from '@build-5/interfaces';
+import { MediaStatus, Network, Space } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgSpace } from '../../models';
 import { removeNulls } from '../common';

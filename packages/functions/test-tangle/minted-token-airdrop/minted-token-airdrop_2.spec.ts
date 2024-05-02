@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -15,7 +15,7 @@ import {
   Transaction,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
@@ -38,7 +38,7 @@ describe('Minted token airdrop', () => {
   });
 
   it('Mint token, airdrop then claim all', async () => {
-    await build5Db().doc(COL.TOKEN, helper.token!.uid).update({
+    await database().doc(COL.TOKEN, helper.token!.uid).update({
       mintingData_mintedBy: undefined,
       mintingData_mintedOn: undefined,
       mintingData_aliasBlockId: undefined,
@@ -58,7 +58,7 @@ describe('Minted token airdrop', () => {
       status: TokenStatus.AVAILABLE,
       totalSupply: Number.MAX_SAFE_INTEGER,
     });
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, helper.token!.uid, SUB_COL.DISTRIBUTION, helper.member)
       .upsert({ tokenOwned: 1 });
 
@@ -73,7 +73,7 @@ describe('Minted token airdrop', () => {
       count: 1,
       status: TokenDropStatus.UNCLAIMED,
     };
-    await build5Db().doc(COL.AIRDROP, airdrop.uid).create(airdrop);
+    await database().doc(COL.AIRDROP, airdrop.uid).create(airdrop);
 
     mockWalletReturnValue(helper.guardian!, {
       token: helper.token!.uid,
@@ -86,14 +86,14 @@ describe('Minted token airdrop', () => {
       mintingOrder.payload.amount,
     );
 
-    const guardian = <Member>await build5Db().doc(COL.MEMBER, helper.guardian).get();
+    const guardian = <Member>await database().doc(COL.MEMBER, helper.guardian).get();
     await requestFundsFromFaucet(
       helper.network,
       getAddress(guardian, helper.network),
       MIN_IOTA_AMOUNT,
     );
     await wait(async () => {
-      const tokenDocRef = await build5Db().doc(COL.TOKEN, helper.token!.uid).get();
+      const tokenDocRef = await database().doc(COL.TOKEN, helper.token!.uid).get();
       return tokenDocRef?.status === TokenStatus.MINTED;
     });
 
@@ -109,7 +109,7 @@ describe('Minted token airdrop', () => {
     const guardianAddress = await helper.walletService!.getAddressDetails(
       getAddress(guardian, helper.network),
     );
-    const token = <Token>await build5Db().doc(COL.TOKEN, helper.token!.uid).get();
+    const token = <Token>await database().doc(COL.TOKEN, helper.token!.uid).get();
     await helper.walletService!.send(guardianAddress, order.payload.targetAddress!, 0, {
       nativeTokens: [{ id: token.mintingData?.tokenId!, amount: BigInt(2) }],
     });
@@ -127,13 +127,13 @@ describe('Minted token airdrop', () => {
       claimOrder.payload.amount,
     );
 
-    const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
+    const orderDocRef = database().doc(COL.TRANSACTION, order.uid);
     await wait(async () => {
       order = <Transaction>await orderDocRef.get();
       return order.payload.unclaimedAirdrops === 0;
     });
 
-    const distributionDocRef = build5Db().doc(
+    const distributionDocRef = database().doc(
       COL.TOKEN,
       helper.token!.uid,
       SUB_COL.DISTRIBUTION,
@@ -146,7 +146,7 @@ describe('Minted token airdrop', () => {
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
 
     const billPayments = (
-      await build5Db()
+      await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
         .where('member', '==', helper.member)
@@ -155,7 +155,7 @@ describe('Minted token airdrop', () => {
     expect(billPayments.length).toBe(4);
 
     const credit = (
-      await build5Db()
+      await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
         .where('member', '==', order.member)
@@ -163,7 +163,7 @@ describe('Minted token airdrop', () => {
     ).map((d) => <Transaction>d);
     expect(credit.length).toBe(2);
 
-    const member = <Member>await build5Db().doc(COL.MEMBER, helper.member).get();
+    const member = <Member>await database().doc(COL.MEMBER, helper.member).get();
     const memberAddress = await helper.walletService!.getAddressDetails(
       getAddress(member, helper.network),
     );

@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   SUB_COL,
@@ -6,7 +6,7 @@ import {
   TokenStatus,
   Transaction,
   TransactionPayloadType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import bigDecimal from 'js-big-decimal';
 import { getBoughtByMemberDiff, getTotalPublicSupply } from '../../../utils/token.utils';
 import { BaseService, HandlerParams } from '../base';
@@ -23,8 +23,8 @@ export class TokenPurchaseService extends BaseService {
     tran: TransactionMatch,
     payment: Transaction,
   ) {
-    const tokenRef = build5Db().doc(COL.TOKEN, order.payload.token!);
-    const distributionRef = build5Db().doc(
+    const tokenRef = database().doc(COL.TOKEN, order.payload.token!);
+    const distributionRef = database().doc(
       COL.TOKEN,
       order.payload.token!,
       SUB_COL.DISTRIBUTION,
@@ -52,8 +52,8 @@ export class TokenPurchaseService extends BaseService {
     );
 
     const tokenUpdateData = {
-      totalDeposit: build5Db().inc(tran.to.amount),
-      tokensOrdered: build5Db().inc(boughtByMemberDiff),
+      totalDeposit: database().inc(tran.to.amount),
+      tokensOrdered: database().inc(boughtByMemberDiff),
     };
     const tokensOrdered = Number(bigDecimal.add(token.tokensOrdered, boughtByMemberDiff));
     const totalPublicSupply = getTotalPublicSupply(token);
@@ -69,7 +69,7 @@ export class TokenPurchaseService extends BaseService {
 
     this.transactionService.push({
       ref: distributionRef,
-      data: { totalDeposit: build5Db().inc(tran.to.amount) },
+      data: { totalDeposit: database().inc(tran.to.amount) },
       action: Action.UPS,
     });
   }

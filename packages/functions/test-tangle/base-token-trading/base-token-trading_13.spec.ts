@@ -1,5 +1,11 @@
-import { build5Db } from '@build-5/database';
-import { COL, MIN_IOTA_AMOUNT, Network, TangleRequestType, Transaction } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import {
+  COL,
+  MIN_IOTA_AMOUNT,
+  Network,
+  TangleRequestType,
+  Transaction,
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { awaitTransactionConfirmationsForToken, getTangleOrder } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
@@ -57,7 +63,7 @@ describe('Base token trading', () => {
       },
     });
 
-    const queryBySeller = build5Db()
+    const queryBySeller = database()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.seller!.uid);
     await wait(async () => {
@@ -66,7 +72,7 @@ describe('Base token trading', () => {
     });
     const sell = (await queryBySeller.get())[0]!;
 
-    const queryByBuyer = build5Db()
+    const queryByBuyer = database()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.buyer!.uid);
     await wait(async () => {
@@ -75,7 +81,7 @@ describe('Base token trading', () => {
     });
     const buy = (await queryByBuyer.get())[0]!;
 
-    const query = build5Db()
+    const query = database()
       .collection(COL.TOKEN_PURCHASE)
       .where('sell', '==', sell.uid)
       .where('buy', '==', buy.uid);

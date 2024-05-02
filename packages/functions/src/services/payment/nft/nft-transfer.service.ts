@@ -1,4 +1,4 @@
-import { ITransaction, PgNftUpdate, build5Db } from '@build-5/database';
+import { ITransaction, PgNftUpdate, database } from '@buildcore/database';
 import {
   COL,
   Entity,
@@ -7,7 +7,7 @@ import {
   Transaction,
   TransactionType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { get, head, isEmpty } from 'lodash';
 import { getAddress } from '../../../utils/address.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
@@ -35,7 +35,7 @@ export const createNftTransferData = async (
   const members: { [uid: string]: Member } = {};
 
   const getTarget = async (nft: Nft, transfer: NftTransfer) => {
-    const memberDocRef = build5Db().doc(COL.MEMBER, transfer.target);
+    const memberDocRef = database().doc(COL.MEMBER, transfer.target);
     const member = members[transfer.target] || (await memberDocRef.get());
 
     if (member) {
@@ -99,12 +99,12 @@ export const createNftTransferData = async (
 };
 
 const getNft = async (transaction: ITransaction, uidOrTangleId: string) => {
-  const nftDocRef = build5Db().doc(COL.NFT, uidOrTangleId);
+  const nftDocRef = database().doc(COL.NFT, uidOrTangleId);
   const nft = await transaction.get(nftDocRef);
   if (nft) {
     return nft;
   }
-  const snap = await build5Db()
+  const snap = await database()
     .collection(COL.NFT)
     .where('mintingData_nftId', '==', uidOrTangleId)
     .get();

@@ -1,8 +1,8 @@
-import { Dataset, Network } from '@build-5/interfaces';
-import { Build5, SoonaverseOtrAddress, otr } from '@build-5/sdk';
+import { Dataset, Network } from '@buildcore/interfaces';
+import { Buildcore, SoonaverseOtrAddress, otr } from '@buildcore/sdk';
 
 async function main() {
-  const origin = Build5.TEST;
+  const origin = Buildcore.TEST;
   // @ts-ignore
   const otrAddress = SoonaverseOtrAddress[origin];
 
@@ -15,7 +15,7 @@ async function main() {
       maxBids: 1,
       minimalBidIncrement: 1000000,
       network: Network.RMS,
-      space: 'build5spaceid',
+      space: 'spaceid',
     });
 
     const fireflyDeeplink = otrCreateRequest.getFireflyDeepLink();

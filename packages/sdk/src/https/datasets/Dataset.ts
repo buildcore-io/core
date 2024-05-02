@@ -1,6 +1,6 @@
 import {
   ApiRoutes,
-  Build5Request,
+  BuildcoreRequest,
   Dataset,
   GetManyAdvancedRequest,
   GetManyRequest,
@@ -8,10 +8,10 @@ import {
   Opr,
   Subset,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import axios from 'axios';
 import { Observable, from, switchMap } from 'rxjs';
-import { Build5 } from '..';
+import { Buildcore } from '..';
 import { toQueryParams, wrappedFetch } from '../fetch.utils';
 import GetByIdGrouped from '../get/GetByIdGrouped';
 import GetByIdGroupedLive from '../get/GetByIdGroupedLive';
@@ -31,7 +31,7 @@ import { TokenStatsSubset } from './token/TokenStatsSubset';
 
 export abstract class BaseSet<T> {
   constructor(
-    protected readonly origin: Build5,
+    protected readonly origin: Buildcore,
     protected readonly apiKey: string,
     protected readonly dataset: Dataset,
   ) {}
@@ -45,8 +45,8 @@ export abstract class BaseSet<T> {
 abstract class BaseDataSetClass<T> extends BaseSet<T> {
   protected sendRequest =
     (name: WEN_FUNC) =>
-    async <Req, Res>(request: Build5Request<Req>) => {
-      const isLocal = !Object.values(Build5).includes(this.origin);
+    async <Req, Res>(request: BuildcoreRequest<Req>) => {
+      const isLocal = !Object.values(Buildcore).includes(this.origin);
       const url = this.origin + `/${isLocal ? 'https-' : ''}` + name;
       try {
         return (await axios.post(url, { ...request, projectApiKey: this.apiKey })).data as Res;
@@ -223,7 +223,7 @@ export abstract class DatasetClass<D extends Dataset, T> extends BaseDataSetClas
 
 export class ExactDataSet<D extends Dataset, T> extends BaseSet<T> {
   constructor(
-    origin: Build5,
+    origin: Buildcore,
     apiKey: string,
     dataset: Dataset,
     private readonly setId: string,

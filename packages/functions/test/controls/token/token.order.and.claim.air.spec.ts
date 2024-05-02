@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Access,
   COL,
@@ -12,7 +12,7 @@ import {
   TokenStatus,
   Transaction,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { serverTime } from '../../../src/utils/dateTime.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
@@ -63,8 +63,8 @@ describe('Order and claim airdropped token test', () => {
       access: Access.OPEN,
       decimals: 6,
     };
-    await build5Db().doc(COL.TOKEN, tokenId).upsert(tokenUpsert);
-    token = (await build5Db().doc(COL.TOKEN, tokenId).get())!;
+    await database().doc(COL.TOKEN, tokenId).upsert(tokenUpsert);
+    token = (await database().doc(COL.TOKEN, tokenId).get())!;
     const airdropRequest = {
       token: token.uid,
       drops: [{ count: 5, recipient: memberAddress, vestingAt: dayjs().toDate() }],
@@ -74,7 +74,7 @@ describe('Order and claim airdropped token test', () => {
   });
 
   it('Should order and claim dropped', async () => {
-    const distributionDocRef = build5Db().doc(
+    const distributionDocRef = database().doc(
       COL.TOKEN,
       token.uid,
       SUB_COL.DISTRIBUTION,
@@ -88,14 +88,14 @@ describe('Order and claim airdropped token test', () => {
     const claimOrder = await testEnv.wrap<Transaction>(WEN_FUNC.claimAirdroppedToken);
     await submitMilestoneFunc(claimOrder);
     await wait(async () => {
-      const snap = await build5Db()
+      const snap = await database()
         .collection(COL.AIRDROP)
         .where('member', '==', memberAddress)
         .where('status', '==', TokenDropStatus.CLAIMED)
         .get();
       return snap.length === 1;
     });
-    await build5Db().doc(COL.TOKEN, token.uid).update({ status: TokenStatus.PROCESSING });
+    await database().doc(COL.TOKEN, token.uid).update({ status: TokenStatus.PROCESSING });
     await tokenProcessed(token.uid, 1, true);
     distribution = (await distributionDocRef.get())!;
     expect(distribution.tokenClaimed).toBe(5);

@@ -1,4 +1,4 @@
-import { SystemConfig } from '@build-5/interfaces';
+import { SystemConfig } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgSystem } from '../../models';
 import { removeNulls } from '../common';

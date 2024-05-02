@@ -8,7 +8,7 @@
  */
 export interface SwapRejectRequest {
   /**
-   * Build5 UID of the swap
+   * Buildcore UID of the swap
    */
   uid: string;
 }

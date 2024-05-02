@@ -1,5 +1,5 @@
 import {
-  Build5Request,
+  BuildcoreRequest,
   Collection,
   CollectionMintRequest,
   CreateCollectionRequest,
@@ -14,7 +14,7 @@ import {
   Vote,
   VoteRequest,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { DatasetClass } from '../Dataset';
 
 /**
@@ -24,58 +24,58 @@ export class CollectionDataset<D extends Dataset> extends DatasetClass<D, Collec
   /**
    * Create NFT Collection.
    *
-   * @param req Use {@link Build5Request} with data based on {@link CreateCollectionRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link CreateCollectionRequest}
    * @returns
    */
-  create = (req: Build5Request<CreateCollectionRequest>) =>
+  create = (req: BuildcoreRequest<CreateCollectionRequest>) =>
     this.sendRequest(WEN_FUNC.createCollection)<CreateCollectionRequest, Collection>(req);
   /**
    * Update NFT Collection.
    *
-   * @param req Use {@link Build5Request} with data based on {@link UpdateCollectionRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link UpdateCollectionRequest}
    * @returns
    */
-  update = (req: Build5Request<UpdateCollectionRequest>) =>
+  update = (req: BuildcoreRequest<UpdateCollectionRequest>) =>
     this.sendRequest(WEN_FUNC.updateCollection)<UpdateCollectionRequest, Collection>(req);
   /**
    * Update minted NFT Collection. Only certain fields are updated (typically those that are not immutable and stored on DLT)
    *
-   * @param req Use {@link Build5Request} with data based on {@link UpdateCollectionRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link UpdateCollectionRequest}
    * @returns
    */
-  updateMinted = (req: Build5Request<UpdateCollectionRequest>) =>
+  updateMinted = (req: BuildcoreRequest<UpdateCollectionRequest>) =>
     this.sendRequest(WEN_FUNC.updateCollection)<UpdateCollectionRequest, Collection>(req);
   /**
    * Reject collection and hide it.
    *
-   * @param req Use {@link Build5Request} with data based on {@link RejectCollectionRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link RejectCollectionRequest}
    * @returns
    */
-  reject = (req: Build5Request<RejectCollectionRequest>) =>
+  reject = (req: BuildcoreRequest<RejectCollectionRequest>) =>
     this.sendRequest(WEN_FUNC.rejectCollection)<RejectCollectionRequest, Collection>(req);
   /**
    * Mint collection on defined network.
    *
-   * @param req Use {@link Build5Request} with data based on {@link CollectionMintRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link CollectionMintRequest}
    * @returns
    */
-  mint = (req: Build5Request<CollectionMintRequest>) =>
+  mint = (req: BuildcoreRequest<CollectionMintRequest>) =>
     this.sendRequest(WEN_FUNC.mintCollection)<CollectionMintRequest, Transaction>(req);
   /**
    * Give collection a vote up or down.
    *
-   * @param req Use {@link Build5Request} with data based on {@link VoteRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link VoteRequest}
    * @returns
    */
-  vote = (req: Build5Request<VoteRequest>) =>
+  vote = (req: BuildcoreRequest<VoteRequest>) =>
     this.sendRequest(WEN_FUNC.voteController)<VoteRequest, Vote>(req);
   /**
    * Rank collection. This typically is managed by Rank Moderators.
    *
-   * @param req Use {@link Build5Request} with data based on {@link RankRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link RankRequest}
    * @returns
    */
-  rank = (req: Build5Request<RankRequest>) =>
+  rank = (req: BuildcoreRequest<RankRequest>) =>
     this.sendRequest(WEN_FUNC.rankController)<RankRequest, Rank>(req);
   /**
    * Get all pending collections per space. Real time stream.

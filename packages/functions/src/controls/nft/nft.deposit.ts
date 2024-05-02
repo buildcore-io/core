@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Network,
@@ -8,7 +8,7 @@ import {
   TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { WalletService } from '../../services/wallet/wallet.service';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
@@ -41,7 +41,7 @@ export const depositNftControl = async ({
       void: false,
     },
   };
-  const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
+  const orderDocRef = database().doc(COL.TRANSACTION, order.uid);
   await orderDocRef.create(order);
   return order;
 };

@@ -1,4 +1,4 @@
-import { COL } from '@build-5/interfaces';
+import { COL } from '@buildcore/interfaces';
 import type { Knex } from 'knex';
 import { baseRecord, createTable, mintingData } from './20240129091246_common';
 

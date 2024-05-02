@@ -1,4 +1,4 @@
-import { StampTangleRequest, TangleRequestType } from '@build-5/interfaces';
+import { StampTangleRequest, TangleRequestType } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../../joi/common';
 import { baseTangleSchema } from '../common';

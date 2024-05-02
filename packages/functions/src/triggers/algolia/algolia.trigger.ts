@@ -1,5 +1,5 @@
-import { BaseRecord } from '@build-5/database';
-import { COL, SOON_PROJECT_ID } from '@build-5/interfaces';
+import { BaseRecord } from '@buildcore/database';
+import { COL, SOON_PROJECT_ID } from '@buildcore/interfaces';
 import algoliasearch from 'algoliasearch';
 import { algoliaAppId, algoliaKey } from '../../utils/config.utils';
 import { logger } from '../../utils/logger';

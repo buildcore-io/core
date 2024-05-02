@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Award,
   COL,
@@ -13,7 +13,7 @@ import {
   Transaction,
   TransactionPayloadType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
@@ -53,7 +53,7 @@ describe('Create award, native', () => {
     mockWalletReturnValue(member, awardRequest(space.uid, token.symbol));
     award = await testEnv.wrap(WEN_FUNC.createAward);
 
-    const guardianDocRef = build5Db().doc(COL.MEMBER, guardian);
+    const guardianDocRef = database().doc(COL.MEMBER, guardian);
     const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, network);
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
@@ -72,7 +72,7 @@ describe('Create award, native', () => {
     );
     await MnemonicService.store(guardianAddress.bech32, guardianAddress.mnemonic);
 
-    const awardDocRef = build5Db().doc(COL.AWARD, award.uid);
+    const awardDocRef = database().doc(COL.AWARD, award.uid);
     await wait(async () => {
       const award = <Award>await awardDocRef.get();
       return award.approved && award.funded;
@@ -87,11 +87,11 @@ describe('Create award, native', () => {
     mockWalletReturnValue(guardian, { award: award.uid, members: [member, member] });
     await testEnv.wrap(WEN_FUNC.approveParticipantAward);
 
-    const distributionDocRef = build5Db().doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, member);
+    const distributionDocRef = database().doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, member);
     let distribution = <TokenDistribution | undefined>await distributionDocRef.get();
     expect(distribution?.totalUnclaimedAirdrop || 0).toBe(0);
 
-    const nttQuery = build5Db()
+    const nttQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
       .where('payload_type', '==', TransactionPayloadType.BADGE);
@@ -138,7 +138,7 @@ const saveToken = async (space: string, guardian: string) => {
       tokenId: MINTED_TOKEN_ID,
     },
   } as Token;
-  await build5Db().doc(COL.TOKEN, token.uid).create(token);
+  await database().doc(COL.TOKEN, token.uid).create(token);
   return token;
 };
 

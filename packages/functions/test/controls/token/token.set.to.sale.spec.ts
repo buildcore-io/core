@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -8,7 +8,7 @@ import {
   TokenAllocation,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { dateToTimestamp } from '../../../src/utils/dateTime.utils';
 import { MEDIA, mockWalletReturnValue, testEnv } from '../../set-up';
@@ -41,11 +41,11 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
     space = await testEnv.createSpace(memberAddress);
     mockWalletReturnValue(memberAddress, dummyToken(space.uid));
     token = await testEnv.wrap<Token>(WEN_FUNC.createToken);
-    await build5Db().doc(COL.TOKEN, token.uid).update({ approved: true });
+    await database().doc(COL.TOKEN, token.uid).update({ approved: true });
   });
 
   it('Should throw, not approved', async () => {
-    await build5Db().doc(COL.TOKEN, token.uid).update({ approved: false });
+    await database().doc(COL.TOKEN, token.uid).update({ approved: false });
     const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };
     mockWalletReturnValue(memberAddress, updateData);
     await expectThrow(
@@ -55,7 +55,7 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
   });
 
   it('Should throw, rejected', async () => {
-    await build5Db().doc(COL.TOKEN, token.uid).update({ approved: true, rejected: true });
+    await database().doc(COL.TOKEN, token.uid).update({ approved: true, rejected: true });
     const updateData = { token: token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };
     mockWalletReturnValue(memberAddress, updateData);
     await expectThrow(
@@ -84,7 +84,7 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
   });
 
   it('Should throw, no space', async () => {
-    const tokenDocRef = build5Db().doc(COL.TOKEN, token.uid);
+    const tokenDocRef = database().doc(COL.TOKEN, token.uid);
     await tokenDocRef.update({
       space: '',
       allocations: JSON.stringify([{ title: 'public', percentage: 100, isPublicSale: true }]),
@@ -98,7 +98,7 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
   });
 
   it('Should set public availability', async () => {
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, token.uid)
       .update({
         allocations: JSON.stringify([{ title: 'public', percentage: 100, isPublicSale: true }]),
@@ -111,7 +111,7 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
     };
     mockWalletReturnValue(memberAddress, updateData);
     const result = await testEnv.wrap<Token>(WEN_FUNC.setTokenAvailableForSale);
-    token = await build5Db().doc(COL.TOKEN, result.uid).get();
+    token = await database().doc(COL.TOKEN, result.uid).get();
     expect(token.uid).toBeDefined();
     expect(token.saleStartDate!.toDate()).toEqual(
       dateToTimestamp(dayjs(publicTime.saleStartDate), true).toDate(),
@@ -127,7 +127,7 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
   });
 
   it('Should throw, can not set public availability twice', async () => {
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, token.uid)
       .update({
         allocations: JSON.stringify([{ title: 'public', percentage: 100, isPublicSale: true }]),
@@ -150,7 +150,7 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
   });
 
   it('Should set no cool down length', async () => {
-    const docRef = build5Db().doc(COL.TOKEN, token.uid);
+    const docRef = database().doc(COL.TOKEN, token.uid);
     await docRef.update({
       allocations: JSON.stringify([{ title: 'public', percentage: 100, isPublicSale: true }]),
     });
@@ -165,7 +165,7 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
       pricePerToken: MIN_IOTA_AMOUNT,
     });
     const result = await testEnv.wrap<Token>(WEN_FUNC.setTokenAvailableForSale);
-    token = await build5Db().doc(COL.TOKEN, result.uid).get();
+    token = await database().doc(COL.TOKEN, result.uid).get();
     expect(token.saleStartDate!.toDate()).toEqual(
       dateToTimestamp(dayjs(publicTime.saleStartDate), true).toDate(),
     );

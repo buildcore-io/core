@@ -5,7 +5,7 @@ import { TangleResponse } from './TangleResponse';
  */
 export interface SpaceCreateTangleResponse extends TangleResponse {
   /**
-   * Build5 id of the created space
+   * Buildcore id of the created space
    */
   space: string;
 }
@@ -15,7 +15,7 @@ export interface SpaceCreateTangleResponse extends TangleResponse {
  */
 export interface SpaceGuardianUpsertTangleResponse extends TangleResponse {
   /**
-   * Build5 id of the created proposal
+   * Buildcore id of the created proposal
    */
   proposal: string;
 }

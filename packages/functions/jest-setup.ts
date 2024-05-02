@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config({ path: __dirname + '/.env' });
-import { PgProjectAdmins, PgProjectUpdate, PgTokenUpdate, build5Db } from '@build-5/database';
+import { PgProjectAdmins, PgProjectUpdate, PgTokenUpdate, database } from '@buildcore/database';
 import {
   Access,
   COL,
@@ -10,7 +10,7 @@ import {
   SOON_PROJECT_ID,
   SUB_COL,
   TokenStatus,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import initKnex from 'knex';
 import { createChangeTriggers } from './migration/create.triggers';
 import { createCompositeIndexes } from './migration/indexes/composit.indexes';
@@ -40,7 +40,7 @@ const knex = initKnex({
 const setup = async () => {
   await migrateSchema();
 
-  await build5Db()
+  await database()
     .doc(COL.TOKEN, soonTokenId)
     .upsert({
       project: SOON_PROJECT_ID,
@@ -49,7 +49,7 @@ const setup = async () => {
       symbol: 'SOON',
     } as PgTokenUpdate);
 
-  await build5Db().doc(COL.TOKEN, rmsTokenId).upsert({
+  await database().doc(COL.TOKEN, rmsTokenId).upsert({
     project: SOON_PROJECT_ID,
     symbol: 'RMS',
     approved: true,
@@ -72,9 +72,9 @@ const setup = async () => {
     otr: JSON.stringify({}),
   };
 
-  const soonProjDocRef = build5Db().doc(COL.PROJECT, SOON_PROJECT_ID);
+  const soonProjDocRef = database().doc(COL.PROJECT, SOON_PROJECT_ID);
   await soonProjDocRef.upsert(soonProject);
-  const adminDocRef = build5Db().doc(
+  const adminDocRef = database().doc(
     COL.PROJECT,
     SOON_PROJECT_ID,
     SUB_COL.ADMINS,
@@ -87,7 +87,7 @@ const setup = async () => {
   };
   await adminDocRef.upsert(admin);
 
-  await build5Db().destroy();
+  await database().destroy();
   await knex.destroy();
   console.log('Setup env');
 };

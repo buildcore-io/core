@@ -1,6 +1,6 @@
 import {
   ApiRoutes,
-  Build5Request,
+  BuildcoreRequest,
   Dataset,
   GetManyAdvancedRequest,
   GetTokenPriceResponse,
@@ -11,7 +11,7 @@ import {
   TradeTokenRequest,
   Transaction,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { from, map, switchMap } from 'rxjs';
 import { wrappedFetch } from '../../fetch.utils';
 import GetTokenPriceGrouped from '../../get/GetTokenPriceGrouped';
@@ -26,10 +26,10 @@ export class TokenMarketDataset<D extends Dataset> extends DatasetClass<D, Token
   /**
    * Trade token.
    *
-   * @param req Use {@link Build5Request} with data based on {@link TradeTokenRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link TradeTokenRequest}
    * @returns
    */
-  tradeToken = (req: Build5Request<TradeTokenRequest>) =>
+  tradeToken = (req: BuildcoreRequest<TradeTokenRequest>) =>
     this.sendRequest(WEN_FUNC.tradeToken)<TradeTokenRequest, Transaction>(req);
 
   /**

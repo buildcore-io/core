@@ -1,5 +1,5 @@
-import { IDocument, PgTokenStatsUpdate, Update, build5Db } from '@build-5/database';
-import { COL, SUB_COL, VoteRequest, WenError } from '@build-5/interfaces';
+import { IDocument, PgTokenStatsUpdate, Update, database } from '@buildcore/database';
+import { COL, SUB_COL, VoteRequest, WenError } from '@buildcore/interfaces';
 import { hasStakedTokens } from '../../services/stake.service';
 import { invalidArgument } from '../../utils/error.utils';
 import { Context } from '../common';
@@ -12,7 +12,7 @@ export const voteControl = async ({ owner, params, project }: Context<VoteReques
 
   const col = params.collection === 'collection' ? COL.COLLECTION : COL.TOKEN;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const parentDocRef: IDocument<any, any, Update> = build5Db().doc(col, params.uid);
+  const parentDocRef: IDocument<any, any, Update> = database().doc(col, params.uid);
   const parent = await parentDocRef.get();
   if (!parent) {
     if (col === COL.COLLECTION) {
@@ -21,8 +21,8 @@ export const voteControl = async ({ owner, params, project }: Context<VoteReques
     throw invalidArgument(WenError.token_does_not_exist);
   }
 
-  await build5Db().runTransaction(async (transaction) => {
-    const voteDocRef = build5Db().doc(col, params.uid, SUB_COL.VOTES, owner);
+  await database().runTransaction(async (transaction) => {
+    const voteDocRef = database().doc(col, params.uid, SUB_COL.VOTES, owner);
     const prevVote = await transaction.get(voteDocRef);
 
     if (!params.direction) {
@@ -36,9 +36,9 @@ export const voteControl = async ({ owner, params, project }: Context<VoteReques
 
     const change = getVoteChagens(prevVote?.direction || 0, params.direction);
     const votes = {
-      upvotes: build5Db().inc(change.upvotes),
-      downvotes: build5Db().inc(change.downvotes),
-      voteDiff: build5Db().inc(change.voteDiff),
+      upvotes: database().inc(change.upvotes),
+      downvotes: database().inc(change.downvotes),
+      voteDiff: database().inc(change.voteDiff),
     };
     await transaction.upsert(parentDocRef, {
       votes_upvotes: votes.upvotes,
@@ -47,7 +47,7 @@ export const voteControl = async ({ owner, params, project }: Context<VoteReques
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const statsDocRef: IDocument<any, any, PgTokenStatsUpdate> = build5Db().doc(
+    const statsDocRef: IDocument<any, any, PgTokenStatsUpdate> = database().doc(
       col,
       params.uid,
       SUB_COL.STATS,
@@ -61,7 +61,7 @@ export const voteControl = async ({ owner, params, project }: Context<VoteReques
     });
   });
 
-  const voteDocRef = build5Db().doc(col, params.uid, SUB_COL.VOTES, owner);
+  const voteDocRef = database().doc(col, params.uid, SUB_COL.VOTES, owner);
   return (await voteDocRef.get())!;
 };
 

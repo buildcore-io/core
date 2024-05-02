@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, TangleResponse } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, TangleResponse } from '@buildcore/interfaces';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { WalletService } from '../../../wallet/wallet.service';
 import { BaseTangleService, HandlerParams } from '../../base';
@@ -44,10 +44,10 @@ export class SwapCreateTangleService extends BaseTangleService<TangleResponse> {
       bids,
     );
 
-    const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
+    const orderDocRef = database().doc(COL.TRANSACTION, order.uid);
     this.transactionService.push({ ref: orderDocRef, data: order, action: Action.C });
 
-    const swapDocRef = build5Db().doc(COL.SWAP, swap.uid);
+    const swapDocRef = database().doc(COL.SWAP, swap.uid);
     this.transactionService.push({ ref: swapDocRef, data: swap, action: Action.C });
 
     if (params.setFunded) {

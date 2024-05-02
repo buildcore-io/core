@@ -1,4 +1,4 @@
-import { NftStake, StakeType } from '@build-5/interfaces';
+import { NftStake, StakeType } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgNftStake } from '../../models';
 import { removeNulls } from '../common';

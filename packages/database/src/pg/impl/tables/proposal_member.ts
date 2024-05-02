@@ -1,4 +1,4 @@
-import { COL, ProposalMember } from '@build-5/interfaces';
+import { COL, ProposalMember } from '@buildcore/interfaces';
 import { get } from 'lodash';
 import { Converter } from '../../interfaces/common';
 import { PgProposalMembers } from '../../models';

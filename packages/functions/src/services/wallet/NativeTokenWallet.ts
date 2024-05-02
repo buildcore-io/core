@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, Member, SUB_COL, Token, Transaction } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, Member, SUB_COL, Token, Transaction } from '@buildcore/interfaces';
 import {
   AliasOutputBuilderParams,
   Client,
@@ -51,7 +51,7 @@ export class NativeTokenWallet {
     nextAliasOutput.stateIndex!++;
     nextAliasOutput.foundryCounter!++;
 
-    const token = <Token>await build5Db().doc(COL.TOKEN, transaction.payload.token!).get();
+    const token = <Token>await database().doc(COL.TOKEN, transaction.payload.token!).get();
 
     const metadata = await tokenToFoundryMetadata(token);
     const foundryOutput = await createFoundryOutput(
@@ -61,15 +61,15 @@ export class NativeTokenWallet {
       JSON.stringify(metadata),
     );
 
-    const totalOwned = await build5Db()
+    const totalOwned = await database()
       .collection(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION)
       .getTotalOwned();
-    const airdropTotal = await build5Db()
+    const airdropTotal = await database()
       .collection(COL.AIRDROP)
       .getUnclaimedAirdropTotalValue(token.uid);
     const totalDistributed = totalOwned + airdropTotal;
 
-    const member = <Member>await build5Db().doc(COL.MEMBER, transaction.member!).get();
+    const member = <Member>await database().doc(COL.MEMBER, transaction.member!).get();
     const tokenId = Utils.computeFoundryId(
       nextAliasOutput.aliasId,
       foundryOutput.serialNumber,

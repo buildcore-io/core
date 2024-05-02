@@ -1,4 +1,4 @@
-import { COL, SUB_COL } from '@build-5/interfaces';
+import { COL, SUB_COL } from '@buildcore/interfaces';
 import { Knex } from 'knex';
 import { head } from 'lodash';
 import { undefinedToNull } from '../impl/common';

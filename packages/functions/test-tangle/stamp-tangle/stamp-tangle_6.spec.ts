@@ -1,11 +1,11 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   KEY_NAME_TANGLE,
   MIN_IOTA_AMOUNT,
   MediaStatus,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { NftOutput } from '@iota/sdk';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
@@ -32,7 +32,7 @@ describe('Stamp tangle test', () => {
     );
     await MnemonicService.store(helper.address.bech32, helper.address.mnemonic);
 
-    const query = build5Db().collection(COL.STAMP).where('createdBy', '==', helper.address.bech32);
+    const query = database().collection(COL.STAMP).where('createdBy', '==', helper.address.bech32);
     await wait(async () => {
       const snap = await query.get();
       return snap.length === 1 && snap[0].funded;
@@ -61,9 +61,9 @@ describe('Stamp tangle test', () => {
     const metadata = getNftMetadata(nftOutput);
     expect(metadata.uri).toBe('ipfs://' + stamp!.ipfsMedia);
     expect(metadata.issuerName).toBe(KEY_NAME_TANGLE);
-    expect(metadata.build5Id).toBe(stamp!.uid);
+    expect(metadata.originId).toBe(stamp!.uid);
 
-    const billPayment = await build5Db()
+    const billPayment = await database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)
       .where('payload_stamp', '==', stamp?.uid)

@@ -1,4 +1,4 @@
-import { SpaceMember } from '@build-5/interfaces';
+import { SpaceMember } from '@buildcore/interfaces';
 import { SubsetClass } from '../Subset';
 
 /**

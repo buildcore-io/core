@@ -1,4 +1,4 @@
-import { Dataset, GetManyAdvancedRequest, Notification, Opr } from '@build-5/interfaces';
+import { Dataset, GetManyAdvancedRequest, Notification, Opr } from '@buildcore/interfaces';
 import { DatasetClass } from './Dataset';
 
 /**

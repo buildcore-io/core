@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, TangleResponse, TransactionType } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, TangleResponse, TransactionType } from '@buildcore/interfaces';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { BaseTangleService, HandlerParams } from '../../base';
 import { createNftTransferData } from '../../nft/nft-transfer.service';
@@ -22,19 +22,19 @@ export class TangleNftTransferService extends BaseTangleService<TangleResponse> 
         continue;
       }
       if (nftUpdateData) {
-        const nftDocRef = build5Db().doc(COL.NFT, nftId);
+        const nftDocRef = database().doc(COL.NFT, nftId);
         this.transactionService.push({ ref: nftDocRef, data: nftUpdateData, action: Action.U });
       }
       if (order) {
-        const tranDocRef = build5Db().doc(COL.TRANSACTION, order?.uid!);
+        const tranDocRef = database().doc(COL.TRANSACTION, order?.uid!);
         this.transactionService.push({ ref: tranDocRef, data: order, action: Action.C });
       }
 
       if (order?.type === TransactionType.WITHDRAW_NFT) {
-        const collectionDocRef = build5Db().doc(COL.COLLECTION, order.payload.collection!);
+        const collectionDocRef = database().doc(COL.COLLECTION, order.payload.collection!);
         this.transactionService.push({
           ref: collectionDocRef,
-          data: { total: build5Db().inc(-1) },
+          data: { total: database().inc(-1) },
           action: Action.U,
         });
       }

@@ -4,7 +4,7 @@ import {
   SendToManyTargets,
   Timestamp,
   Transaction,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import {
   AddressUnlockCondition,
   AliasOutput,

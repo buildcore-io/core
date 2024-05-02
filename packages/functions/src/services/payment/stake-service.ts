@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Entity,
@@ -9,7 +9,7 @@ import {
   TransactionPayloadType,
   TransactionType,
   calcStakedMultiplier,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { getProject } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
@@ -41,7 +41,7 @@ export class StakeService extends BaseService {
     const expiresAt = dateToTimestamp(dayjs().add(weeks, 'week').toDate());
 
     const tokenUid = order.payload.token || '';
-    const tokenDocRef = build5Db().doc(COL.TOKEN, tokenUid);
+    const tokenDocRef = database().doc(COL.TOKEN, tokenUid);
     const token = <Token>await tokenDocRef.get();
 
     const billPayment: Transaction = {
@@ -90,13 +90,13 @@ export class StakeService extends BaseService {
     billPayment.payload.stake = stake.uid;
 
     this.transactionService.push({
-      ref: build5Db().doc(COL.STAKE, stake.uid),
+      ref: database().doc(COL.STAKE, stake.uid),
       data: stake,
       action: Action.C,
     });
 
     this.transactionService.push({
-      ref: build5Db().doc(COL.TRANSACTION, billPayment.uid),
+      ref: database().doc(COL.TRANSACTION, billPayment.uid),
       data: billPayment,
       action: Action.C,
     });

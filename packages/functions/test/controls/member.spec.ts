@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Member,
@@ -8,7 +8,7 @@ import {
   SOON_PROJECT_ID,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { MEDIA, mockWalletReturnValue, testEnv } from '../set-up';
 import { expectThrow } from './common';
@@ -16,7 +16,7 @@ import { expectThrow } from './common';
 describe('Member control - create', () => {
   it('successfully create member', async () => {
     const uid = await testEnv.createMember();
-    const memberDocRef = build5Db().doc(COL.MEMBER, uid);
+    const memberDocRef = database().doc(COL.MEMBER, uid);
     const member = await memberDocRef.get();
     expect(member?.uid).toEqual(uid.toLowerCase());
     expect(member?.createdOn).toBeDefined();
@@ -76,7 +76,7 @@ describe('Member control - update', () => {
       status: NftStatus.MINTED,
       available: NftAvailable.UNAVAILABLE,
     } as Nft;
-    const nftDocRef = build5Db().doc(COL.NFT, nft.uid);
+    const nftDocRef = database().doc(COL.NFT, nft.uid);
     await nftDocRef.create(nft);
     const updateParams = { avatarNft: nft.uid };
     mockWalletReturnValue(member, updateParams);
@@ -101,7 +101,7 @@ describe('Member control - update', () => {
       owner: member,
       status: NftStatus.MINTED,
     } as Nft;
-    const nftDocRef = build5Db().doc(COL.NFT, nft.uid);
+    const nftDocRef = database().doc(COL.NFT, nft.uid);
     await nftDocRef.create(nft);
     const updateParams = { avatarNft: nft.uid };
     mockWalletReturnValue(member, updateParams);
@@ -117,7 +117,7 @@ describe('Member control - update', () => {
     let call = testEnv.wrap<Member>(WEN_FUNC.updateMember);
     await expectThrow(call, WenError.nft_does_not_exists.key);
     const nft = { project: SOON_PROJECT_ID, uid: getRandomEthAddress(), media: MEDIA } as Nft;
-    const nftDocRef = build5Db().doc(COL.NFT, nft.uid);
+    const nftDocRef = database().doc(COL.NFT, nft.uid);
     await nftDocRef.create(nft);
     mockWalletReturnValue(member, { avatarNft: nft.uid });
     call = testEnv.wrap<Member>(WEN_FUNC.updateMember);

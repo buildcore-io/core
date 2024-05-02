@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Auction,
   COL,
@@ -10,7 +10,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { mockWalletReturnValue, testEnv } from '../../set-up';
 import { submitMilestoneFunc, wait } from '../common';
 import { Helper, dummyAuctionData } from './Helper';
@@ -22,7 +22,7 @@ describe('Nft bidding', () => {
     mockWalletReturnValue(h.member, dummyAuctionData(h.nft.uid));
     await testEnv.wrap(WEN_FUNC.setForSaleNft);
     await wait(async () => {
-      const docRef = build5Db().doc(COL.NFT, h.nft.uid);
+      const docRef = database().doc(COL.NFT, h.nft.uid);
       h.nft = <Nft>await docRef.get();
       return h.nft.available === 3;
     });
@@ -30,7 +30,7 @@ describe('Nft bidding', () => {
 
   it('Should create bid request', async () => {
     await h.bidNft(h.members[0], MIN_IOTA_AMOUNT);
-    const snap = await build5Db()
+    const snap = await database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.ORDER)
       .where('payload_type', '==', TransactionPayloadType.NFT_BID)
@@ -47,17 +47,17 @@ describe('Nft bidding', () => {
     expect(tran.payload.validationType).toBe(TransactionValidationType.ADDRESS);
     expect(tran.payload.nft).toBe(h.nft.uid);
     expect(tran.payload.collection).toBe(h.collection.uid);
-    const nftDocRef = build5Db().doc(COL.NFT, h.nft.uid);
+    const nftDocRef = database().doc(COL.NFT, h.nft.uid);
     h.nft = <Nft>await nftDocRef.get();
     expect(h.nft.lastTradedOn).toBeDefined();
     expect(h.nft.totalTrades).toBe(1);
     expect(h.nft.auctionHighestBid).toBe(MIN_IOTA_AMOUNT);
     expect(h.nft.auctionHighestBidder).toBe(h.members[0]);
-    const collectionDocRef = build5Db().doc(COL.COLLECTION, h.nft.collection);
+    const collectionDocRef = database().doc(COL.COLLECTION, h.nft.collection);
     h.collection = <Collection>await collectionDocRef.get();
     expect(h.collection.lastTradedOn).toBeDefined();
     expect(h.collection.totalTrades).toBe(1);
-    const auctionDocRef = build5Db().doc(COL.AUCTION, h.nft.auction!);
+    const auctionDocRef = database().doc(COL.AUCTION, h.nft.auction!);
     const auction = <Auction>await auctionDocRef.get();
     expect(auction.bids.length).toBe(1);
     expect(auction.bids[0].amount).toBe(MIN_IOTA_AMOUNT);
@@ -67,19 +67,19 @@ describe('Nft bidding', () => {
   it('Should override 2 bids for same user', async () => {
     await h.bidNft(h.members[0], MIN_IOTA_AMOUNT);
     await h.bidNft(h.members[0], 2 * MIN_IOTA_AMOUNT);
-    const auctionDocRef = build5Db().doc(COL.AUCTION, h.nft.auction!);
+    const auctionDocRef = database().doc(COL.AUCTION, h.nft.auction!);
     const auction = <Auction>await auctionDocRef.get();
     expect(auction.bids.length).toBe(1);
     expect(auction.bids[0].amount).toBe(2 * MIN_IOTA_AMOUNT);
     expect(auction.bids[0].bidder).toBe(h.members[0]);
-    const orders = await build5Db()
+    const orders = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', h.members[0])
       .where('type', '==', TransactionType.ORDER)
       .where('payload_type', '==', TransactionPayloadType.NFT_BID)
       .get();
     expect(orders.length).toBe(2);
-    const credits = await build5Db()
+    const credits = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', h.members[0])
       .where('type', '==', TransactionType.CREDIT)
@@ -89,7 +89,7 @@ describe('Nft bidding', () => {
   });
 
   it('Should overbid 2 bids, topup', async () => {
-    const auctionDocRef = build5Db().doc(COL.AUCTION, h.nft.auction!);
+    const auctionDocRef = database().doc(COL.AUCTION, h.nft.auction!);
     await auctionDocRef.update({ topUpBased: true });
 
     await h.bidNft(h.members[0], MIN_IOTA_AMOUNT);
@@ -101,7 +101,7 @@ describe('Nft bidding', () => {
     expect(auction.bids[0].bidder).toBe(h.members[0]);
     expect(auction.auctionHighestBid).toBe(2 * MIN_IOTA_AMOUNT);
     expect(auction.auctionHighestBidder).toBe(h.members[0]);
-    const nftDocRef = build5Db().doc(COL.NFT, h.nft.uid);
+    const nftDocRef = database().doc(COL.NFT, h.nft.uid);
     h.nft = <Nft>await nftDocRef.get();
     expect(h.nft.auctionHighestBid).toBe(2 * MIN_IOTA_AMOUNT);
     expect(h.nft.auctionHighestBidder).toBe(h.members[0]);
@@ -115,14 +115,14 @@ describe('Nft bidding', () => {
     h.nft = <Nft>await nftDocRef.get();
     expect(h.nft.auctionHighestBid).toBe(3 * MIN_IOTA_AMOUNT);
     expect(h.nft.auctionHighestBidder).toBe(h.members[1]);
-    const payments = await build5Db()
+    const payments = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', h.members[0])
       .where('type', '==', TransactionType.PAYMENT)
       .get();
     for (const payment of payments) {
       expect(payment.payload.invalidPayment).toBe(true);
-      const credit = await build5Db()
+      const credit = await database()
         .collection(COL.TRANSACTION)
         .where('payload_sourceTransaction', 'array-contains', payment.uid as any)
         .get();
@@ -131,14 +131,14 @@ describe('Nft bidding', () => {
   });
 
   it('Should reject smaller bid', async () => {
-    const nftDocRef = build5Db().doc(COL.NFT, h.nft.uid);
+    const nftDocRef = database().doc(COL.NFT, h.nft.uid);
     await h.bidNft(h.members[0], 2 * MIN_IOTA_AMOUNT);
     h.nft = <Nft>await nftDocRef.get();
     expect(h.nft.auctionHighestBidder).toBe(h.members[0]);
     await h.bidNft(h.members[1], MIN_IOTA_AMOUNT);
     h.nft = <Nft>await nftDocRef.get();
     expect(h.nft.auctionHighestBidder).toBe(h.members[0]);
-    const snap = await build5Db()
+    const snap = await database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', h.members[1])
@@ -148,12 +148,12 @@ describe('Nft bidding', () => {
   });
 
   it('Should reject bid where min inc is too small', async () => {
-    const nftDocRef = build5Db().doc(COL.NFT, h.nft.uid);
+    const nftDocRef = database().doc(COL.NFT, h.nft.uid);
     await h.bidNft(h.members[0], MIN_IOTA_AMOUNT);
     h.nft = <Nft>await nftDocRef.get();
     expect(h.nft.auctionHighestBidder).toBe(h.members[0]);
     await h.bidNft(h.members[0], 1.5 * MIN_IOTA_AMOUNT);
-    const snap = await build5Db()
+    const snap = await database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', h.members[0])
@@ -170,10 +170,10 @@ describe('Nft bidding', () => {
       h.bidNft(h.members[2], MIN_IOTA_AMOUNT),
     ];
     await Promise.all(bidPromises);
-    const nftDocRef = build5Db().doc(COL.NFT, h.nft.uid);
+    const nftDocRef = database().doc(COL.NFT, h.nft.uid);
     h.nft = <Nft>await nftDocRef.get();
     expect(h.nft.auctionHighestBidder).toBe(h.members[1]);
-    const transactionSnap = await build5Db()
+    const transactionSnap = await database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('payload_nft', '==', h.nft.uid)
@@ -188,10 +188,10 @@ describe('Nft bidding', () => {
     mockWalletReturnValue(h.members[1], { collection: h.nft.collection, nft: h.nft.uid });
     const nftOrder = await testEnv.wrap<Transaction>(WEN_FUNC.orderNft);
     await submitMilestoneFunc(nftOrder);
-    const nftDocRef = build5Db().doc(COL.NFT, h.nft.uid);
+    const nftDocRef = database().doc(COL.NFT, h.nft.uid);
     h.nft = <Nft>await nftDocRef.get();
     expect(h.nft.owner).toBe(h.members[1]);
-    const credits = await build5Db()
+    const credits = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', h.members[0])
       .where('type', '==', TransactionType.CREDIT)

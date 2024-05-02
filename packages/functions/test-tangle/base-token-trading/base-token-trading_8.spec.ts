@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -8,7 +8,7 @@ import {
   TokenTradeOrderType,
   Transaction,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsForManyFromFaucet, requestFundsFromFaucet } from '../faucet';
@@ -40,7 +40,7 @@ describe('Base token trading', () => {
       orders.map((o) => ({ toAddress: o.payload.targetAddress!, amount: o.payload.amount! })),
     );
 
-    const tradeQuery = build5Db()
+    const tradeQuery = database()
       .collection(COL.TOKEN_MARKET)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {

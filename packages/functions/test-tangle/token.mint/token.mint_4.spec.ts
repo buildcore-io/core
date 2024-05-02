@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -9,7 +9,7 @@ import {
   Transaction,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
@@ -33,7 +33,7 @@ describe('Token minting', () => {
       saleLength: 86400000 * 2,
       coolDownLength: 86400000,
     };
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, helper.token.uid)
       .update({
         allocations: JSON.stringify([{ title: 'public', percentage: 100, isPublicSale: true }]),
@@ -44,7 +44,7 @@ describe('Token minting', () => {
 
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, order.payload.amount);
 
-    const creditQuery = build5Db()
+    const creditQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.guardian.uid);
@@ -70,7 +70,7 @@ describe('Token minting', () => {
       saleLength: 86400000 * 2,
       coolDownLength: 86400000,
     };
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, helper.token.uid)
       .update({
         allocations: JSON.stringify([{ title: 'public', percentage: 100, isPublicSale: true }]),
@@ -81,7 +81,7 @@ describe('Token minting', () => {
 
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, order.payload.amount);
 
-    const creditQuery = build5Db()
+    const creditQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.guardian.uid);
@@ -97,7 +97,7 @@ describe('Token minting', () => {
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, order.payload.amount);
 
     await wait(async () => {
-      const tokenData = <Token>await build5Db().doc(COL.TOKEN, helper.token.uid).get();
+      const tokenData = <Token>await database().doc(COL.TOKEN, helper.token.uid).get();
       return tokenData.status === TokenStatus.MINTED;
     });
   });

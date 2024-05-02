@@ -4,7 +4,7 @@ import {
   NotificationLostBidParams,
   NotificationType,
   NotificationWinBidParams,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgNotification } from '../../models';
 import { removeNulls } from '../common';

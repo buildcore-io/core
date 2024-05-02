@@ -1,5 +1,5 @@
-import { MilestoneTransactions, build5Db } from '@build-5/database';
-import { COL, NetworkAddress } from '@build-5/interfaces';
+import { MilestoneTransactions, database } from '@buildcore/database';
+import { COL, NetworkAddress } from '@buildcore/interfaces';
 import {
   RegularTransactionEssence,
   TaggedDataPayload,
@@ -17,7 +17,7 @@ export const confirmTransaction = async (
   if (isEmpty(transactionId)) {
     return;
   }
-  const docRef = build5Db().doc(COL.TRANSACTION, transactionId);
+  const docRef = database().doc(COL.TRANSACTION, transactionId);
   const transaction = await docRef.get();
   if (!transaction) {
     return;
@@ -39,7 +39,7 @@ export const unclockMnemonic = async (address: NetworkAddress | undefined) => {
   if (isEmpty(address)) {
     return;
   }
-  await build5Db().doc(COL.MNEMONIC, address!).update({
+  await database().doc(COL.MNEMONIC, address!).update({
     lockedBy: '',
     consumedOutputIds: [],
     consumedNftOutputIds: [],

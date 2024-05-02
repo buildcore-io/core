@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -6,7 +6,7 @@ import {
   Nft,
   TangleRequestType,
   Transaction,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
@@ -43,8 +43,8 @@ describe('Nft bulk order', () => {
       },
     );
 
-    const nft1DocRef = build5Db().doc(COL.NFT, nft1.uid);
-    const nft2DocRef = build5Db().doc(COL.NFT, nft2.uid);
+    const nft1DocRef = database().doc(COL.NFT, nft1.uid);
+    const nft2DocRef = database().doc(COL.NFT, nft2.uid);
 
     await wait(async () => {
       const nft1 = <Nft>await nft1DocRef.get();

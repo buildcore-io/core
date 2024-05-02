@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Member,
@@ -9,7 +9,7 @@ import {
   Space,
   Token,
   TokenStatus,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import {
   AliasOutput,
   AliasOutputBuilderParams,
@@ -49,7 +49,7 @@ export class Helper {
   public setup = async (approved = true, isPublicToken?: boolean) => {
     const guardianId = await testEnv.createMember();
     this.member = await testEnv.createMember();
-    this.guardian = <Member>await build5Db().doc(COL.MEMBER, guardianId).get();
+    this.guardian = <Member>await database().doc(COL.MEMBER, guardianId).get();
     this.space = await testEnv.createSpace(this.guardian.uid);
     this.token = await this.saveToken(
       this.space.uid,
@@ -89,8 +89,8 @@ export class Helper {
       approved,
       decimals: 5,
     } as Token;
-    await build5Db().doc(COL.TOKEN, token.uid).create(token);
-    await build5Db()
+    await database().doc(COL.TOKEN, token.uid).create(token);
+    await database()
       .doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, member)
       .upsert({ tokenOwned: 1000 });
     return <Token>token;

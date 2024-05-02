@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Network,
@@ -8,7 +8,7 @@ import {
   TransactionType,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { Helper } from './Helper';
@@ -26,13 +26,13 @@ describe('Stake nft', () => {
 
   it('Should credit nft, not enough base tokens', async () => {
     let nft = await helper.createAndOrderNft();
-    let nftDocRef = build5Db().doc(COL.NFT, nft.uid);
+    let nftDocRef = database().doc(COL.NFT, nft.uid);
     await helper.mintCollection();
     nft = <Nft>await nftDocRef.get();
     await helper.withdrawNftAndAwait(nft.uid);
 
     await nftDocRef.delete();
-    await build5Db().doc(COL.COLLECTION, nft.collection).delete();
+    await database().doc(COL.COLLECTION, nft.collection).delete();
 
     mockWalletReturnValue(helper.guardian!, {
       network: Network.RMS,
@@ -47,7 +47,7 @@ describe('Stake nft', () => {
       nft.mintingData?.nftId,
     );
 
-    const creditQuery = build5Db()
+    const creditQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_NFT)
       .where('member', '==', helper.guardian);
@@ -62,7 +62,7 @@ describe('Stake nft', () => {
     expect(credit.payload.response!.message).toBe(WenError.not_enough_base_token.key);
     expect(credit.payload.response!.requiredAmount).toBeDefined();
 
-    nftDocRef = build5Db().doc(COL.NFT, nft.mintingData?.nftId!);
+    nftDocRef = database().doc(COL.NFT, nft.mintingData?.nftId!);
     nft = <Nft>await nftDocRef.get();
     expect(nft).toBeUndefined();
   });

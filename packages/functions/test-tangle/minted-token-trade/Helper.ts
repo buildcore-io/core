@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Member,
@@ -13,7 +13,7 @@ import {
   TokenTradeOrderType,
   Transaction,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
@@ -48,7 +48,7 @@ export class Helper {
     this.token = (await saveToken(this.space.uid, this.guardian, this.walletService!)) as Token;
 
     this.seller = await testEnv.createMember();
-    const sellerDoc = <Member>await build5Db().doc(COL.MEMBER, this.seller).get();
+    const sellerDoc = <Member>await database().doc(COL.MEMBER, this.seller).get();
     this.sellerAddress = await this.walletService!.getAddressDetails(
       getAddress(sellerDoc, this.network!),
     );
@@ -61,7 +61,7 @@ export class Helper {
     );
 
     this.buyer = await testEnv.createMember();
-    const buyerDoc = <Member>await build5Db().doc(COL.MEMBER, this.buyer).get();
+    const buyerDoc = <Member>await database().doc(COL.MEMBER, this.buyer).get();
     this.buyerAddress = await this.walletService!.getAddressDetails(
       getAddress(buyerDoc, this.network),
     );
@@ -89,7 +89,7 @@ export class Helper {
         : undefined,
     });
     await wait(async () => {
-      const snap = await build5Db()
+      const snap = await database()
         .collection(COL.TOKEN_MARKET)
         .where('orderTransactionId', '==', sellOrder.uid)
         .get();
@@ -118,7 +118,7 @@ export class Helper {
       expiresAt,
     );
     await wait(async () => {
-      const snap = await build5Db()
+      const snap = await database()
         .collection(COL.TOKEN_MARKET)
         .where('orderTransactionId', '==', buyOrder.uid)
         .get();
@@ -155,7 +155,7 @@ export const saveToken = async (
     access: 0,
     icon: MEDIA,
   } as Token;
-  await build5Db().doc(COL.TOKEN, token.uid).create(token);
+  await database().doc(COL.TOKEN, token.uid).create(token);
   return token;
 };
 

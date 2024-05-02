@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, Nft, NftPurchaseBulkRequest, Transaction, WEN_FUNC } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, Nft, NftPurchaseBulkRequest, Transaction, WEN_FUNC } from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
@@ -31,8 +31,8 @@ describe('Nft bulk order', () => {
       order.payload.amount!,
     );
 
-    const nft1DocRef = build5Db().doc(COL.NFT, nft1.uid);
-    const nft2DocRef = build5Db().doc(COL.NFT, nft2.uid);
+    const nft1DocRef = database().doc(COL.NFT, nft1.uid);
+    const nft2DocRef = database().doc(COL.NFT, nft2.uid);
     await wait(async () => {
       const nft1 = <Nft>await nft1DocRef.get();
       const nft2 = <Nft>await nft2DocRef.get();

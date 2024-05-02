@@ -1,4 +1,4 @@
-import { COL, StakeType, TokenDistribution } from '@build-5/interfaces';
+import { COL, StakeType, TokenDistribution } from '@buildcore/interfaces';
 import { head } from 'lodash';
 import { ISubCollection } from '../../interfaces/collection';
 import { Converter } from '../../interfaces/common';

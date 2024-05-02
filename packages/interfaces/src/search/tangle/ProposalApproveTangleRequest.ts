@@ -12,7 +12,7 @@ export interface ApproveProposalTangleRequest {
    */
   requestType: 'PROPOSAL_APPROVE' | 'PROPOSAL_REJECT';
   /**
-   * Build5 id of the proposal.
+   * Buildcore id of the proposal.
    */
   uid: string;
 }

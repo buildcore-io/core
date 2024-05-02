@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Space,
@@ -8,7 +8,7 @@ import {
   TokenDropStatus,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { MEDIA, mockWalletReturnValue, testEnv } from '../../set-up';
 import { expectThrow, getRandomSymbol } from '../common';
@@ -47,11 +47,11 @@ describe('Token airdrop test', () => {
     mockWalletReturnValue(guardian, dummyTokenData);
     token = await testEnv.wrap<Token>(WEN_FUNC.createToken);
     member = await testEnv.createMember();
-    await build5Db().doc(COL.TOKEN, token.uid).update({ approved: true });
+    await database().doc(COL.TOKEN, token.uid).update({ approved: true });
   });
 
   it('Should fail, token not approved', async () => {
-    await build5Db().doc(COL.TOKEN, token.uid).update({ approved: false });
+    await database().doc(COL.TOKEN, token.uid).update({ approved: false });
     const airdropRequest = {
       token: token.uid,
       drops: [{ count: 900, recipient: guardian, vestingAt: dayjs().toDate() }],
@@ -79,7 +79,7 @@ describe('Token airdrop test', () => {
   });
 
   it('Should airdrop token with no space', async () => {
-    await build5Db().doc(COL.TOKEN, token.uid).update({ space: '' });
+    await database().doc(COL.TOKEN, token.uid).update({ space: '' });
     const vestingAt = dayjs().toDate();
     const airdropRequest = {
       token: token.uid,
@@ -214,11 +214,11 @@ describe('Token airdrop test', () => {
 });
 
 const getAirdropsForMember = async (member: string) => {
-  const snap = await build5Db().collection(COL.AIRDROP).where('member', '==', member).get();
+  const snap = await database().collection(COL.AIRDROP).where('member', '==', member).get();
   return snap.map((d) => d as TokenDrop);
 };
 
 const getAirdropsForToken = async (token: string) => {
-  const snap = await build5Db().collection(COL.AIRDROP).where('token', '==', token).get();
+  const snap = await database().collection(COL.AIRDROP).where('token', '==', token).get();
   return snap.map((d) => d as TokenDrop);
 };

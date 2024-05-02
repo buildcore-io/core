@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   IgnoreWalletReason,
@@ -15,7 +15,7 @@ import {
   Transaction,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { onStakeRewardExpired } from '../../src/cron/stakeReward.cron';
@@ -41,7 +41,7 @@ describe('Stake reward test test', () => {
   });
 
   const verifyMemberAirdrop = async (member: string, count: number) => {
-    const airdropQuery = build5Db().collection(COL.AIRDROP).where('member', '==', member);
+    const airdropQuery = database().collection(COL.AIRDROP).where('member', '==', member);
     await wait(async () => {
       const snap = await airdropQuery.get();
       return snap.length > 0;
@@ -55,7 +55,7 @@ describe('Stake reward test test', () => {
     expect(dayjs().add(1, 'y').subtract(5, 'm').isBefore(airdrops[0].vestingAt.toDate())).toBe(
       true,
     );
-    const distributionDocRef = build5Db().doc(
+    const distributionDocRef = database().doc(
       COL.TOKEN,
       helper.token!.uid,
       SUB_COL.DISTRIBUTION,
@@ -77,7 +77,7 @@ describe('Stake reward test test', () => {
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
     };
-    const stakeRewardDocRef = build5Db().doc(COL.STAKE_REWARD, stakeReward.uid);
+    const stakeRewardDocRef = database().doc(COL.STAKE_REWARD, stakeReward.uid);
     await stakeRewardDocRef.create(stakeReward);
     await onStakeRewardExpired();
 
@@ -99,7 +99,7 @@ describe('Stake reward test test', () => {
     await helper.validateStatsStakeAmount(1000, 1000, 1490, 1490, StakeType.DYNAMIC, 1);
 
     const member2Uid = await testEnv.createMember();
-    const member2 = <Member>await build5Db().doc(COL.MEMBER, member2Uid).get();
+    const member2 = <Member>await database().doc(COL.MEMBER, member2Uid).get();
     const member2Address = await helper.walletService?.getAddressDetails(
       getAddress(member2, helper.network)!,
     )!;
@@ -125,7 +125,7 @@ describe('Stake reward test test', () => {
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
     };
-    const stakeRewardDocRef = build5Db().doc(COL.STAKE_REWARD, stakeReward.uid);
+    const stakeRewardDocRef = database().doc(COL.STAKE_REWARD, stakeReward.uid);
     await stakeRewardDocRef.create(stakeReward);
     await onStakeRewardExpired();
 
@@ -165,7 +165,7 @@ describe('Stake reward test test', () => {
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
     };
-    const stakeRewardDocRef = build5Db().doc(COL.STAKE_REWARD, stakeReward.uid);
+    const stakeRewardDocRef = database().doc(COL.STAKE_REWARD, stakeReward.uid);
     await stakeRewardDocRef.create(stakeReward);
     await onStakeRewardExpired();
 
@@ -182,7 +182,7 @@ describe('Stake reward test test', () => {
     );
 
     await wait(async () => {
-      const snap = await build5Db()
+      const snap = await database()
         .collection(COL.TRANSACTION)
         .where('member', '==', helper.member!.uid)
         .where('type', '==', TransactionType.BILL_PAYMENT)
@@ -192,7 +192,7 @@ describe('Stake reward test test', () => {
 
     await awaitTransactionConfirmationsForToken(helper.token?.uid!);
 
-    const member = <Member>await build5Db().doc(COL.MEMBER, helper.member?.uid!).get();
+    const member = <Member>await database().doc(COL.MEMBER, helper.member?.uid!).get();
     for (const address of [helper.memberAddress?.bech32!, getAddress(member, Network.RMS)]) {
       const outputs = await helper.walletService!.getOutputs(address, [], false, true);
       const nativeTokens = Object.values(outputs).reduce(
@@ -202,7 +202,7 @@ describe('Stake reward test test', () => {
       expect(nativeTokens).toBe(address === helper.memberAddress?.bech32! ? 100 : 149);
     }
 
-    const distributionDocRef = build5Db().doc(
+    const distributionDocRef = database().doc(
       COL.TOKEN,
       helper.token?.uid!,
       SUB_COL.DISTRIBUTION,
@@ -231,7 +231,7 @@ describe('Stake reward test test', () => {
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
     };
-    const stakeRewardDocRef = build5Db().doc(COL.STAKE_REWARD, stakeReward.uid);
+    const stakeRewardDocRef = database().doc(COL.STAKE_REWARD, stakeReward.uid);
     await stakeRewardDocRef.create(stakeReward);
     await onStakeRewardExpired();
 
@@ -247,7 +247,7 @@ describe('Stake reward test test', () => {
       claimOrder.payload.amount,
     );
 
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.member!.uid)
       .where('type', '==', TransactionType.BILL_PAYMENT);
@@ -273,7 +273,7 @@ describe('Stake reward test test', () => {
     });
 
     if (failed) {
-      const docRef = build5Db().doc(COL.TRANSACTION, failed.uid);
+      const docRef = database().doc(COL.TRANSACTION, failed.uid);
       await docRef.update({
         payload_walletReference_count: 4,
         payload_walletReference_processedOn: dayjs().subtract(1, 'h').toDate(),
@@ -283,7 +283,7 @@ describe('Stake reward test test', () => {
 
     await awaitTransactionConfirmationsForToken(helper.token?.uid!);
 
-    const member = <Member>await build5Db().doc(COL.MEMBER, helper.member?.uid!).get();
+    const member = <Member>await database().doc(COL.MEMBER, helper.member?.uid!).get();
     for (const address of [helper.memberAddress?.bech32!, getAddress(member, Network.RMS)]) {
       const outputs = await helper.walletService!.getOutputs(address, [], false, true);
       const nativeTokens = Object.values(outputs).reduce(
@@ -308,14 +308,14 @@ describe('Stake reward test test', () => {
     await helper.stakeAmount(50, 26);
     await helper.stakeAmount(25, 26);
     const stake = await helper.stakeAmount(12, 26);
-    await build5Db()
+    await database()
       .doc(COL.STAKE, stake.uid)
       .update({
         createdOn: dayjs().subtract(3, 'h').toDate(),
         expiresAt: dayjs().subtract(2, 'h').toDate(),
       });
     const stake2 = await helper.stakeAmount(13, 26);
-    await build5Db()
+    await database()
       .doc(COL.STAKE, stake2.uid)
       .update({
         createdOn: dayjs().add(2, 'h').toDate(),
@@ -333,7 +333,7 @@ describe('Stake reward test test', () => {
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
     };
-    const stakeRewardDocRef = build5Db().doc(COL.STAKE_REWARD, stakeReward.uid);
+    const stakeRewardDocRef = database().doc(COL.STAKE_REWARD, stakeReward.uid);
     await stakeRewardDocRef.create(stakeReward);
     await onStakeRewardExpired();
 
@@ -348,7 +348,7 @@ describe('Stake reward test test', () => {
   });
 
   it('Should claim extras properly', async () => {
-    const distributionDocRef = build5Db().doc(
+    const distributionDocRef = database().doc(
       COL.TOKEN,
       helper.token?.uid!,
       SUB_COL.DISTRIBUTION,
@@ -379,10 +379,10 @@ describe('Stake reward test test', () => {
       token: helper.token?.uid!,
       status: StakeRewardStatus.UNPROCESSED,
     };
-    const stakeRewardDocRef = build5Db().doc(COL.STAKE_REWARD, stakeReward.uid);
+    const stakeRewardDocRef = database().doc(COL.STAKE_REWARD, stakeReward.uid);
     await stakeRewardDocRef.create(stakeReward);
 
-    const billPaymentQuery = build5Db()
+    const billPaymentQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.member?.uid)
       .where('ignoreWalletReason', '==', IgnoreWalletReason.EXTRA_STAKE_REWARD);
@@ -418,7 +418,7 @@ describe('Stake reward test test', () => {
     distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.extraStakeRewards).toBe(-47);
 
-    const airdropSnap = await build5Db()
+    const airdropSnap = await database()
       .collection(COL.AIRDROP)
       .where('member', '==', helper.member?.uid)
       .get();

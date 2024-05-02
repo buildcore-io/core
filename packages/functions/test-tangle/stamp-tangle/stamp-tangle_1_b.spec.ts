@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   KEY_NAME_TANGLE,
@@ -6,7 +6,7 @@ import {
   MediaStatus,
   Stamp,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { NftOutput } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
@@ -31,7 +31,7 @@ describe('Stamp tangle test', () => {
     );
     await MnemonicService.store(helper.address.bech32, helper.address.mnemonic);
 
-    const query = build5Db().collection(COL.STAMP).where('createdBy', '==', helper.address.bech32);
+    const query = database().collection(COL.STAMP).where('createdBy', '==', helper.address.bech32);
     await wait(async () => {
       const snap = await query.get();
       return snap.length === 1 && snap[0].funded;
@@ -46,7 +46,7 @@ describe('Stamp tangle test', () => {
     expect(expiresAfter30Days).toBe(true);
 
     await uploadMediaToWeb3();
-    const stampDocRef = build5Db().doc(COL.STAMP, stamp.uid);
+    const stampDocRef = database().doc(COL.STAMP, stamp.uid);
     await wait(async () => {
       const stamp = await stampDocRef.get();
       return stamp?.mediaStatus === MediaStatus.UPLOADED;
@@ -64,12 +64,12 @@ describe('Stamp tangle test', () => {
     const metadata = getNftMetadata(nftOutput);
     expect(metadata.uri).toBe('ipfs://' + stamp!.ipfsMedia);
     expect(metadata.issuerName).toBe(KEY_NAME_TANGLE);
-    expect(metadata.build5Id).toBe(stamp!.uid);
+    expect(metadata.originId).toBe(stamp!.uid);
     expect(metadata.originUri).toBe(helper.dowloadUrl);
-    expect(metadata.build5Url).toBe(helper.dowloadUrl);
+    expect(metadata.buildcoreUrl).toBe(helper.dowloadUrl);
     expect(metadata.checksum).toBe(helper.checksum);
 
-    const billPayment = await build5Db()
+    const billPayment = await database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)
       .where('payload_stamp', '==', stamp?.uid)

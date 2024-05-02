@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Award,
   COL,
@@ -10,7 +10,7 @@ import {
   TransactionPayloadType,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { processExpiredAwards } from '../../src/cron/award.cron';
 import { Wallet } from '../../src/services/wallet/wallet';
@@ -57,7 +57,7 @@ describe('Create award, base', () => {
       await requestFundsFromFaucet(network, address.bech32, order.payload.amount);
       await walletService.send(address, order.payload.targetAddress!, order.payload.amount!, {});
 
-      const awardDocRef = build5Db().doc(COL.AWARD, award.uid);
+      const awardDocRef = database().doc(COL.AWARD, award.uid);
       await wait(async () => {
         const award = <Award>await awardDocRef.get();
         return award.approved && award.funded;
@@ -91,7 +91,7 @@ describe('Create award, base', () => {
         claimOrder.payload.amount,
       );
 
-      const billPaymentQuery = build5Db()
+      const billPaymentQuery = database()
         .collection(COL.TRANSACTION)
         .where('member', '==', member)
         .where('type', '==', TransactionType.BILL_PAYMENT);
@@ -100,7 +100,7 @@ describe('Create award, base', () => {
         return snap.length === 1;
       });
 
-      const nttQuery = build5Db()
+      const nttQuery = database()
         .collection(COL.TRANSACTION)
         .where('member', '==', member)
         .where('payload_type', '==', TransactionPayloadType.BADGE);
@@ -109,7 +109,7 @@ describe('Create award, base', () => {
         return snap.length === 1;
       });
 
-      const creditQuery = build5Db()
+      const creditQuery = database()
         .collection(COL.TRANSACTION)
         .where('member', '==', guardian)
         .where('type', '==', TransactionType.CREDIT);
@@ -125,7 +125,7 @@ describe('Create award, base', () => {
 
       await awaitAllTransactionsForAward(award.uid);
 
-      const burnAliasQuery = build5Db()
+      const burnAliasQuery = database()
         .collection(COL.TRANSACTION)
         .where('payload_type', '==', TransactionPayloadType.BURN_ALIAS)
         .where('member', '==', guardian);

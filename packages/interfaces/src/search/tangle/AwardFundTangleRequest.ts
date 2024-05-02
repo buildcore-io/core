@@ -12,7 +12,7 @@ export interface AwardFundTangleRequest {
    */
   requestType: 'AWARD_FUND';
   /**
-   * Build5 id of the award.
+   * Buildcore id of the award.
    */
   uid: string;
 }

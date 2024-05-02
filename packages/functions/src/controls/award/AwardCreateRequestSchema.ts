@@ -1,4 +1,8 @@
-import { AwardCreateBadgeRequest, AwardCreateRequest, MAX_IOTA_AMOUNT } from '@build-5/interfaces';
+import {
+  AwardCreateBadgeRequest,
+  AwardCreateRequest,
+  MAX_IOTA_AMOUNT,
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
@@ -43,7 +47,7 @@ export const awardBageSchemaObject = toJoiObject<AwardCreateBadgeRequest>(awardB
 export const awardCreateSchema = {
   name: Joi.string().required().description('Name of the award'),
   description: Joi.string().allow(null, '').optional().description('Description of the award'),
-  space: CommonJoi.uid().description('Build5 id of the space'),
+  space: CommonJoi.uid().description('Buildcore id of the space'),
   endDate: Joi.date().required().description('End date of the award issuing period.'),
   badge: awardBageSchemaObject,
   network: Joi.string()

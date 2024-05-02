@@ -6,8 +6,8 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@build-5/interfaces": "file:../../interfaces",
-    "@build-5/sdk": "file:../",
+    "@buildcore/interfaces": "file:../../interfaces",
+    "@buildcore/sdk": "file:../",
     "@iota/sdk": "^1.1.4",
     "bip39": "^3.1.0"
   },

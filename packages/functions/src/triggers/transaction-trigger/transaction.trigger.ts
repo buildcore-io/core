@@ -1,4 +1,4 @@
-import { ITransaction, PgTransaction, build5Db } from '@build-5/database';
+import { ITransaction, PgTransaction, database } from '@buildcore/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -12,7 +12,7 @@ import {
   TransactionPayloadType,
   TransactionType,
   WalletResult,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { AliasWallet } from '../../services/wallet/AliasWallet';
@@ -74,7 +74,7 @@ export const onTransactionWrite = async (event: PgDocEvent<PgTransaction>) => {
   const shouldRetry = !prev?.shouldRetry && curr?.shouldRetry;
 
   if (isCreate) {
-    const docRef = build5Db().doc(COL.TRANSACTION, curr.uid);
+    const docRef = database().doc(COL.TRANSACTION, curr.uid);
     await docRef.update({ isOrderType: type === TransactionType.ORDER });
   }
 
@@ -102,15 +102,15 @@ export const onTransactionWrite = async (event: PgDocEvent<PgTransaction>) => {
   }
 
   if (type === TransactionType.CREDIT_STORAGE_DEPOSIT_LOCKED && isConfirmed(prev, curr)) {
-    await build5Db()
+    await database()
       .doc(COL.TRANSACTION, curr.payload_transaction!)
       .update({
         payload_walletReference_confirmed: true,
         payload_walletReference_inProgress: false,
-        payload_walletReference_count: build5Db().inc(1),
+        payload_walletReference_count: database().inc(1),
         payload_walletReference_processedOn: dayjs().toDate(),
         payload_walletReference_chainReference: curr.payload_walletReference_chainReference || '',
-        payload_walletReference_chainReferences: build5Db().arrayUnion(
+        payload_walletReference_chainReferences: database().arrayUnion(
           curr.payload_walletReference_chainReference || '',
         ),
       });
@@ -175,8 +175,8 @@ export const onTransactionWrite = async (event: PgDocEvent<PgTransaction>) => {
     curr.payload_award &&
     curr.payload_type === TransactionPayloadType.MINTED_AIRDROP_CLAIM
   ) {
-    const awardDocRef = build5Db().doc(COL.AWARD, curr.payload_award);
-    await awardDocRef.update({ airdropClaimed: build5Db().inc(1) });
+    const awardDocRef = database().doc(COL.AWARD, curr.payload_award);
+    await awardDocRef.update({ airdropClaimed: database().inc(1) });
   }
 };
 
@@ -186,7 +186,7 @@ const executeTransaction = async (transactionId: string) => {
     return;
   }
 
-  const docRef = build5Db().doc(COL.TRANSACTION, transactionId);
+  const docRef = database().doc(COL.TRANSACTION, transactionId);
   const transaction = (await docRef.get())!;
   const payload = transaction.payload;
 
@@ -250,7 +250,7 @@ const executeTransaction = async (transactionId: string) => {
     await docRef.update({
       payload_walletReference_processedOn: dayjs().toDate(),
       payload_walletReference_chainReference: chainReference,
-      payload_walletReference_chainReferences: build5Db().arrayUnion(chainReference),
+      payload_walletReference_chainReferences: database().arrayUnion(chainReference),
       payload_walletReference_nodeIndex: wallet.nodeIndex,
     });
   } catch (error) {
@@ -444,8 +444,8 @@ const submitUnlockTransaction = async (
 };
 
 const prepareTransaction = (transactionId: string) =>
-  build5Db().runTransaction(async (transaction) => {
-    const docRef = build5Db().doc(COL.TRANSACTION, transactionId);
+  database().runTransaction(async (transaction) => {
+    const docRef = database().doc(COL.TRANSACTION, transactionId);
     const tranData = await transaction.get(docRef);
     if (
       isEmulatorEnv() &&
@@ -531,7 +531,7 @@ const getMnemonic = async (
   if (isEmpty(address)) {
     return {} as Mnemonic;
   }
-  const docRef = build5Db().doc(COL.MNEMONIC, address!);
+  const docRef = database().doc(COL.MNEMONIC, address!);
   return (await transaction.get(docRef)) || ({} as Mnemonic);
 };
 
@@ -543,7 +543,7 @@ const lockMnemonic = async (
   if (isEmpty(address)) {
     return;
   }
-  const docRef = build5Db().doc(COL.MNEMONIC, address!);
+  const docRef = database().doc(COL.MNEMONIC, address!);
   await transaction.update(docRef, {
     lockedBy,
     consumedOutputIds: [],
@@ -571,7 +571,7 @@ const isConfirmed = (prev: PgTransaction | undefined, curr: PgTransaction | unde
 
 const onMintedAirdropCleared = async (curr: PgTransaction) => {
   const network = (curr.network as Network) || DEFAULT_NETWORK;
-  const member = <Member>await build5Db().doc(COL.MEMBER, curr.member!).get();
+  const member = <Member>await database().doc(COL.MEMBER, curr.member!).get();
   const credit: Transaction = {
     project: getProject(curr),
     type: TransactionType.CREDIT,
@@ -590,5 +590,5 @@ const onMintedAirdropCleared = async (curr: PgTransaction) => {
       token: curr.payload_token,
     },
   };
-  await build5Db().doc(COL.TRANSACTION, credit.uid).create(credit);
+  await database().doc(COL.TRANSACTION, credit.uid).create(credit);
 };

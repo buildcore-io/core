@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Access,
   COL,
@@ -11,7 +11,7 @@ import {
   TokenAllocation,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { dateToTimestamp } from '../../../src/utils/dateTime.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
@@ -75,7 +75,7 @@ describe('Token controller: ' + WEN_FUNC.createToken, () => {
   });
 
   it('Should create token, verify soon', async () => {
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, soonTokenId, SUB_COL.DISTRIBUTION, memberAddress)
       .upsert({ stakes_dynamic_value: 10 * MIN_IOTA_AMOUNT });
     await setProdTiers();
@@ -100,7 +100,7 @@ describe('Token controller: ' + WEN_FUNC.createToken, () => {
     token.autoProcessAt100Percent = true;
     mockWalletReturnValue(memberAddress, token);
     const result = await testEnv.wrap<Token>(WEN_FUNC.createToken);
-    token = await build5Db().doc(COL.TOKEN, result.uid).get();
+    token = await database().doc(COL.TOKEN, result.uid).get();
     expect(token.uid).toBeDefined();
     expect(token.saleStartDate!.toDate()).toEqual(dateToTimestamp(saleStartDate, true).toDate());
     expect(token.saleLength).toBe(86400000);
@@ -118,7 +118,7 @@ describe('Token controller: ' + WEN_FUNC.createToken, () => {
     token.coolDownLength = 0;
     mockWalletReturnValue(memberAddress, token);
     const result = await testEnv.wrap<Token>(WEN_FUNC.createToken);
-    token = await build5Db().doc(COL.TOKEN, result.uid).get();
+    token = await database().doc(COL.TOKEN, result.uid).get();
     expect(token.uid).toBeDefined();
     expect(token.saleStartDate!.toDate()).toEqual(dateToTimestamp(saleStartDate, true).toDate());
     expect(token.saleLength).toBe(86400000);
@@ -141,7 +141,7 @@ describe('Token controller: ' + WEN_FUNC.createToken, () => {
   it('Should only allow two tokens if first rejected', async () => {
     mockWalletReturnValue(memberAddress, token);
     const cToken = await testEnv.wrap<Token>(WEN_FUNC.createToken);
-    await build5Db().doc(COL.TOKEN, cToken.uid).update({ approved: false, rejected: true });
+    await database().doc(COL.TOKEN, cToken.uid).update({ approved: false, rejected: true });
     mockWalletReturnValue(memberAddress, dummyToken(space.uid));
     const secondToken = await testEnv.wrap<Token>(WEN_FUNC.createToken);
     expect(secondToken.uid).toBeDefined();
@@ -273,7 +273,7 @@ describe('Token controller: ' + WEN_FUNC.createToken, () => {
   it('Should not throw, token symbol not unique but prev token is rejected', async () => {
     mockWalletReturnValue(memberAddress, token);
     const newToken = await testEnv.wrap<Token>(WEN_FUNC.createToken);
-    await build5Db().doc(COL.TOKEN, newToken.uid).update({ rejected: true });
+    await database().doc(COL.TOKEN, newToken.uid).update({ rejected: true });
     const space = await testEnv.createSpace(memberAddress);
     mockWalletReturnValue(memberAddress, {
       ...dummyToken(space.uid),

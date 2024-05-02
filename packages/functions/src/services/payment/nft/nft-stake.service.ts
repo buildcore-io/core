@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MilestoneTransactionEntry,
@@ -10,7 +10,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import {
   FeatureType,
   NftOutput,
@@ -54,14 +54,14 @@ export class NftStakeService extends BaseService {
         order.payload.weeks || 0,
         order.payload.stakeType || StakeType.DYNAMIC,
       );
-      const withdrawOrderDocRef = build5Db().doc(COL.TRANSACTION, withdrawOrder.uid);
+      const withdrawOrderDocRef = database().doc(COL.TRANSACTION, withdrawOrder.uid);
       this.transactionService.push({
         ref: withdrawOrderDocRef,
         data: withdrawOrder,
         action: Action.C,
       });
 
-      const nftDocRef = build5Db().doc(COL.NFT, nft.uid);
+      const nftDocRef = database().doc(COL.NFT, nft.uid);
       this.transactionService.push({
         ref: nftDocRef,
         data: nftUpdateData,
@@ -71,7 +71,7 @@ export class NftStakeService extends BaseService {
       await this.transactionService.createPayment(order, match);
       this.transactionService.markAsReconciled(order, match.msgId);
 
-      const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
+      const orderDocRef = database().doc(COL.TRANSACTION, order.uid);
       this.transactionService.push({
         ref: orderDocRef,
         data: { payload_nft: nft.uid, payload_collection: nft.collection },

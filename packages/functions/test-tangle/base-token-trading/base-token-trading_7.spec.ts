@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   CreditPaymentReason,
@@ -9,7 +9,7 @@ import {
   TokenTradeOrderType,
   Transaction,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { cancelExpiredSale } from '../../src/cron/token.cron';
 import { getAddress } from '../../src/utils/address.utils';
@@ -44,7 +44,7 @@ describe('Base token trading', () => {
         tradeOrder.payload.amount,
       );
 
-      const tradeQuery = build5Db()
+      const tradeQuery = database()
         .collection(COL.TOKEN_MARKET)
         .where('token', '==', helper.token!.uid);
       await wait(async () => {
@@ -52,7 +52,7 @@ describe('Base token trading', () => {
         return snap.length > 0;
       });
       let trade = <TokenTradeOrder>(await tradeQuery.get())[0];
-      await build5Db()
+      await database()
         .doc(COL.TOKEN_MARKET, trade.uid)
         .update({ expiresAt: dayjs().subtract(1, 'd').toDate() });
 
@@ -61,7 +61,7 @@ describe('Base token trading', () => {
       trade = <TokenTradeOrder>(await tradeQuery.get())[0];
       expect(trade.status).toBe(TokenTradeOrderStatus.EXPIRED);
 
-      const creditDocRef = build5Db().doc(COL.TRANSACTION, trade.creditTransactionId!);
+      const creditDocRef = database().doc(COL.TRANSACTION, trade.creditTransactionId!);
       await wait(async () => {
         const credit = <Transaction>await creditDocRef.get();
         return credit.payload?.walletReference?.confirmed;

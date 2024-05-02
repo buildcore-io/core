@@ -8,11 +8,11 @@
  */
 export interface AwardAddOwnerRequest {
   /**
-   * Build5 id or wallet address of the member to be added as an owner.
+   * Buildcore id or wallet address of the member to be added as an owner.
    */
   member: string;
   /**
-   * Build5 id of the award.
+   * Buildcore id of the award.
    */
   uid: string;
 }

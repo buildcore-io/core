@@ -12,7 +12,7 @@ import {
   TOKEN_SALE_TEST,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { isEmpty } from 'lodash';
 import { invalidArgument } from './error.utils';
 

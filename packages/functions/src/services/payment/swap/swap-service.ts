@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Entity,
@@ -15,7 +15,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { get, head, isEmpty, isEqual } from 'lodash';
 import { getAddress } from '../../../utils/address.utils';
@@ -30,7 +30,7 @@ export class SwapService extends BaseService {
   handleRequest = async ({ project, order, match }: HandlerParams) => {
     const payment = await this.transactionService.createPayment(order, match);
 
-    const swapDocRef = build5Db().doc(COL.SWAP, order.payload.swap!);
+    const swapDocRef = database().doc(COL.SWAP, order.payload.swap!);
     const swap = <Swap>await this.transaction.get(swapDocRef);
 
     if (swap.status == SwapStatus.FULFILLED || swap.status === SwapStatus.REJECTED) {
@@ -65,7 +65,7 @@ export class SwapService extends BaseService {
 
     const transfers = await createSwapTransfers(project, { ...swap, askOutputs });
     for (const transfer of transfers) {
-      const docRef = build5Db().doc(COL.TRANSACTION, transfer.uid);
+      const docRef = database().doc(COL.TRANSACTION, transfer.uid);
       this.transactionService.push({ ref: docRef, data: transfer, action: Action.C });
     }
 
@@ -95,7 +95,7 @@ export class SwapService extends BaseService {
       return;
     }
     this.transactionService.createCredit(TransactionPayloadType.SWAP, payment, match);
-    const paymentDocRef = build5Db().doc(COL.TRANSACTION, payment.uid);
+    const paymentDocRef = database().doc(COL.TRANSACTION, payment.uid);
     this.transactionService.push({
       ref: paymentDocRef,
       data: { payload_invalidPayment: true },
@@ -167,7 +167,7 @@ export const createSwapOrder = async (
 };
 
 const getNftTangleId = async (wallet: Wallet, uidOrTangleId: string) => {
-  const docRef = build5Db().doc(COL.NFT, uidOrTangleId);
+  const docRef = database().doc(COL.NFT, uidOrTangleId);
   const nft = await docRef.get();
   if (nft?.mintingData?.nftId) {
     return nft.mintingData.nftId;
@@ -323,7 +323,7 @@ export const asksAreFulfilled = (swap: Swap) => {
 };
 
 export const createSwapTransfers = async (project: string, swap: Swap) => {
-  const targetMemberDocRef = build5Db().doc(COL.MEMBER, swap.recipient);
+  const targetMemberDocRef = database().doc(COL.MEMBER, swap.recipient);
   const targetMember = <Member>await targetMemberDocRef.get();
 
   const bidTransfers = (swap.bidOutputs || []).map((bid) => {
@@ -338,7 +338,7 @@ export const createSwapTransfers = async (project: string, swap: Swap) => {
     );
   });
 
-  const memberDocRef = build5Db().doc(COL.MEMBER, swap.createdBy!);
+  const memberDocRef = database().doc(COL.MEMBER, swap.createdBy!);
   const mmber = <Member>await memberDocRef.get();
   const askTransfers = (swap.askOutputs || []).map((ask) => {
     const func = ask.nftId ? createNftTransfer : createAssetTransfer;

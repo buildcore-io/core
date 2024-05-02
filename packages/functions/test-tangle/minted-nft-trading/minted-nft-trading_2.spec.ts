@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Member,
@@ -9,7 +9,7 @@ import {
   TransactionType,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { NftOutput } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { getAddress } from '../../src/utils/address.utils';
@@ -51,19 +51,19 @@ describe('Minted nft trading', () => {
     );
 
     await wait(async () => {
-      const nft = <Nft>await build5Db().doc(COL.NFT, helper.nft!.uid).get();
+      const nft = <Nft>await database().doc(COL.NFT, helper.nft!.uid).get();
       return nft.owner === helper.member;
     });
 
     mockWalletReturnValue(helper.member!, { nft: helper.nft!.uid });
     await testEnv.wrap(WEN_FUNC.withdrawNft);
 
-    const nft = <Nft>await build5Db().doc(COL.NFT, helper.nft!.uid).get();
+    const nft = <Nft>await database().doc(COL.NFT, helper.nft!.uid).get();
     expect(nft.status).toBe(NftStatus.WITHDRAWN);
 
     await wait(async () => {
       const transaction = (
-        await build5Db()
+        await database()
           .collection(COL.TRANSACTION)
           .where('type', '==', TransactionType.WITHDRAW_NFT)
           .where('payload_nft', '==', helper.nft!.uid)
@@ -78,7 +78,7 @@ describe('Minted nft trading', () => {
       )
     ).output;
     const ownerAddress = Bech32AddressHelper.bech32FromUnlockConditions(output as NftOutput, 'rms');
-    const member = <Member>await build5Db().doc(COL.MEMBER, helper.member).get();
+    const member = <Member>await database().doc(COL.MEMBER, helper.member).get();
     expect(ownerAddress).toBe(getAddress(member, Network.RMS));
   });
 });

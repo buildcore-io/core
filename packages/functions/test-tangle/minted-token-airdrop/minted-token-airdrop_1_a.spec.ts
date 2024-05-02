@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -16,7 +16,7 @@ import {
   TransactionType,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { head, isEmpty } from 'lodash';
 import { getAddress } from '../../src/utils/address.utils';
@@ -61,7 +61,7 @@ describe('Minted token airdrop', () => {
       WenError.no_tokens_to_claim.key,
     );
 
-    const guardian = <Member>await build5Db().doc(COL.MEMBER, helper.guardian!).get();
+    const guardian = <Member>await database().doc(COL.MEMBER, helper.guardian!).get();
     const guardianAddress = await helper.walletService!.getAddressDetails(
       getAddress(guardian, helper.network),
     );
@@ -83,7 +83,7 @@ describe('Minted token airdrop', () => {
       return airdrops.length === 2;
     });
 
-    const distributionDocRef = build5Db().doc(
+    const distributionDocRef = database().doc(
       COL.TOKEN,
       helper.token!.uid,
       SUB_COL.DISTRIBUTION,
@@ -109,7 +109,7 @@ describe('Minted token airdrop', () => {
     );
 
     await wait(async () => {
-      const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
+      const orderDocRef = database().doc(COL.TRANSACTION, order.uid);
       order = <Transaction>await orderDocRef.get();
       return order.payload.unclaimedAirdrops === 0;
     });
@@ -120,7 +120,7 @@ describe('Minted token airdrop', () => {
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
 
     const billPayments = (
-      await build5Db()
+      await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
         .where('member', '==', helper.member)
@@ -148,7 +148,7 @@ describe('Minted token airdrop', () => {
     }
 
     await wait(async () => {
-      const snap = await build5Db()
+      const snap = await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
         .whereIn('member', [helper.guardian, helper.member])
@@ -159,7 +159,7 @@ describe('Minted token airdrop', () => {
     const { amount } = await helper.walletService!.getBalance(guardianAddress.bech32);
     expect(amount).toBe(5 * MIN_IOTA_AMOUNT);
 
-    const member = <Member>await build5Db().doc(COL.MEMBER, helper.member!).get();
+    const member = <Member>await database().doc(COL.MEMBER, helper.member!).get();
     const memberAddress = await helper.walletService!.getAddressDetails(
       getAddress(member, helper.network),
     );
@@ -182,10 +182,10 @@ describe('Minted token airdrop', () => {
 
     const tokenUid = helper.token?.uid;
 
-    helper.token = <Token>await build5Db().doc(COL.TOKEN, tokenUid!).get();
+    helper.token = <Token>await database().doc(COL.TOKEN, tokenUid!).get();
     expect(helper.token.mintingData?.tokensInVault).toBe(0);
 
-    const statsDocRef = build5Db().doc(COL.TOKEN, tokenUid!, SUB_COL.STATS, tokenUid);
+    const statsDocRef = database().doc(COL.TOKEN, tokenUid!, SUB_COL.STATS, tokenUid);
     const tokenStats = <TokenStats>await statsDocRef.get();
     expect(tokenStats.stakes![stakeType]?.amount).toBe(1);
     expect(tokenStats.stakes![stakeType]?.totalAmount).toBe(1);

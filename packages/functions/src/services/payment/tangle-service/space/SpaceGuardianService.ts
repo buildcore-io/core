@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   ADD_REMOVE_GUARDIAN_THRESHOLD_PERCENTAGE,
   BaseProposalAnswerValue,
@@ -14,7 +14,7 @@ import {
   Transaction,
   TransactionType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { getProject } from '../../../../utils/common.utils';
 import { dateToTimestamp } from '../../../../utils/dateTime.utils';
@@ -47,17 +47,17 @@ export class SpaceGuardianService extends BaseTangleService<SpaceGuardianUpsertT
     );
 
     const memberPromisses = members.map((member) =>
-      build5Db().doc(COL.PROPOSAL, proposal.uid, SUB_COL.MEMBERS, member.uid).create(member),
+      database().doc(COL.PROPOSAL, proposal.uid, SUB_COL.MEMBERS, member.uid).create(member),
     );
     await Promise.all(memberPromisses);
 
     this.transactionService.push({
-      ref: build5Db().doc(COL.TRANSACTION, voteTransaction.uid),
+      ref: database().doc(COL.TRANSACTION, voteTransaction.uid),
       data: voteTransaction,
       action: Action.C,
     });
     this.transactionService.push({
-      ref: build5Db().doc(COL.PROPOSAL, proposal.uid),
+      ref: database().doc(COL.PROPOSAL, proposal.uid),
       data: proposal,
       action: Action.C,
     });
@@ -75,15 +75,15 @@ export const addRemoveGuardian = async (
   const isAddGuardian = type === ProposalType.ADD_GUARDIAN;
   await assertIsGuardian(params.uid as string, owner);
 
-  const spaceDocRef = build5Db().doc(COL.SPACE, params.uid as string);
-  const spaceMemberDoc = await build5Db()
+  const spaceDocRef = database().doc(COL.SPACE, params.uid as string);
+  const spaceMemberDoc = await database()
     .doc(COL.SPACE, params.uid as string, SUB_COL.MEMBERS, params.member as string)
     .get();
   if (!spaceMemberDoc) {
     throw invalidArgument(WenError.member_is_not_part_of_the_space);
   }
 
-  const spaceGuardianMember = await build5Db()
+  const spaceGuardianMember = await database()
     .doc(COL.SPACE, params.uid as string, SUB_COL.GUARDIANS, params.member as string)
     .get();
   if (isAddGuardian && spaceGuardianMember) {
@@ -92,7 +92,7 @@ export const addRemoveGuardian = async (
     throw invalidArgument(WenError.member_is_not_guardian_of_space);
   }
 
-  const ongoingProposalSnap = await build5Db()
+  const ongoingProposalSnap = await database()
     .collection(COL.PROPOSAL)
     .where('settings_addRemoveGuardian', '==', params.member as string)
     .where('completed', '==', false)
@@ -103,7 +103,7 @@ export const addRemoveGuardian = async (
   }
 
   if (!isAddGuardian) {
-    await build5Db().runTransaction(async (transaction) => {
+    await database().runTransaction(async (transaction) => {
       const space = <Space>await transaction.get(spaceDocRef);
       if (space.totalGuardians < 2) {
         throw invalidArgument(WenError.at_least_one_guardian_must_be_in_the_space);
@@ -111,11 +111,11 @@ export const addRemoveGuardian = async (
     });
   }
 
-  const guardian = <Member>await build5Db().doc(COL.MEMBER, owner).get();
-  const member = <Member>await build5Db()
+  const guardian = <Member>await database().doc(COL.MEMBER, owner).get();
+  const member = <Member>await database()
     .doc(COL.MEMBER, params.member as string)
     .get();
-  const guardians = await build5Db()
+  const guardians = await database()
     .collection(COL.SPACE, params.uid as string, SUB_COL.GUARDIANS)
     .get();
   const space = await spaceDocRef.get();

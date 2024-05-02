@@ -1,4 +1,4 @@
-import { COL, SpaceMember } from '@build-5/interfaces';
+import { COL, SpaceMember } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgSpaceMembers } from '../../models';
 import { removeNulls } from '../common';

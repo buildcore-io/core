@@ -7,7 +7,7 @@ import { TangleResponse } from './TangleResponse';
 export interface ProposalVoteTangleResponse extends TangleResponse {
   status?: string;
   /**
-   * Build5 id of the created vote transaction
+   * Buildcore id of the created vote transaction
    */
   voteTransaction?: NetworkAddress;
 }
@@ -17,7 +17,7 @@ export interface ProposalVoteTangleResponse extends TangleResponse {
  */
 export interface ProposalCreateTangleResponse extends TangleResponse {
   /**
-   * Build5 id of the created proposal
+   * Buildcore id of the created proposal
    */
   proposal: NetworkAddress;
 }

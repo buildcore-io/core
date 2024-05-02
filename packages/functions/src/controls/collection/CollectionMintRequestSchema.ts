@@ -3,7 +3,7 @@ import {
   MAX_IOTA_AMOUNT,
   MIN_IOTA_AMOUNT,
   UnsoldMintingOptions,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 import { networks } from '../../utils/config.utils';
@@ -11,7 +11,7 @@ import { AVAILABLE_NETWORKS } from '../common';
 
 const availaibleNetworks = AVAILABLE_NETWORKS.filter((n) => networks.includes(n));
 export const mintCollectionSchema = toJoiObject<CollectionMintRequest>({
-  collection: CommonJoi.uid().description('Build5 id of the collection to mint.'),
+  collection: CommonJoi.uid().description('Buildcore id of the collection to mint.'),
   network: Joi.string()
     .equal(...availaibleNetworks)
     .required()

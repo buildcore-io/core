@@ -8,7 +8,7 @@ import {
   MediaStatus,
   Network,
   UnsoldMintingOptions,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { get } from 'lodash';
 import { ICollection } from '../../interfaces/collection';
 import { Converter } from '../../interfaces/common';

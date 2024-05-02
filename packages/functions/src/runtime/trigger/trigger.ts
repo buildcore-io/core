@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { COL, SUB_COL } from '@build-5/interfaces';
+import { COL, SUB_COL } from '@buildcore/interfaces';
 import { PgDocEvent } from '../../triggers/common';
 import { CloudFunctions, RuntimeOptions } from '../common';
 

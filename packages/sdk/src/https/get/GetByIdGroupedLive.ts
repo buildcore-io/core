@@ -1,4 +1,4 @@
-import { API_RETRY_TIMEOUT } from '@build-5/interfaces';
+import { API_RETRY_TIMEOUT } from '@buildcore/interfaces';
 import { flatten, get } from 'lodash';
 import { Observable, map } from 'rxjs';
 import { toQueryParams } from '../fetch.utils';

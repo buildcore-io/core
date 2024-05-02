@@ -1,4 +1,4 @@
-import { COL, Rank } from '@build-5/interfaces';
+import { COL, Rank } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgTokenRanks } from '../../models';
 import { removeNulls } from '../common';

@@ -1,4 +1,4 @@
-import { COL, WEN_FUNC } from '@build-5/interfaces';
+import { COL, WEN_FUNC } from '@buildcore/interfaces';
 import {
   RuntimeOptions,
   WEN_FUNC_TRIGGER,

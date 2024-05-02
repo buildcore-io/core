@@ -1,5 +1,5 @@
 {
-  "name": "@build-5/sdk",
+  "name": "@buildcore/sdk",
   "version": "0.0.0",
   "description": "",
   "main": "lib/index.js",
@@ -14,7 +14,7 @@
     "test": "jest --forceExit"
   },
   "dependencies": {
-    "@build-5/interfaces": "*",
+    "@buildcore/interfaces": "*",
     "axios": "^1.6.7",
     "bip39": "3.1.0",
     "form-data": "^4.0.0",

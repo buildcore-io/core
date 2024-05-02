@@ -1,4 +1,4 @@
-import { MAX_NFT_BULK_PURCHASE, NftPurchaseBulkRequest } from '@build-5/interfaces';
+import { MAX_NFT_BULK_PURCHASE, NftPurchaseBulkRequest } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { toJoiObject } from '../../services/joi/common';
 import { nftPurchaseSchema } from './NftPurchaseRequestSchema';

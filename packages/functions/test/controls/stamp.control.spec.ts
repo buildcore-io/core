@@ -1,4 +1,4 @@
-import { build5Db, build5Storage } from '@build-5/database';
+import { database, storage } from '@buildcore/database';
 import {
   Bucket,
   COL,
@@ -11,7 +11,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { EMPTY_ALIAS_ID } from '../../src/utils/token-minting-utils/alias.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { mockWalletReturnValue, testEnv } from '../set-up';
@@ -21,7 +21,7 @@ describe('Stamp control', () => {
   let dowloadUrl: string;
 
   beforeEach(async () => {
-    const bucket = build5Storage().bucket(Bucket.DEV);
+    const bucket = storage().bucket(Bucket.DEV);
     const destination = `nft/${wallet.getRandomEthAddress()}/image.jpeg`;
     dowloadUrl = await bucket.upload('./test/puppy.jpeg', destination, {
       contentType: 'image/jpeg',
@@ -43,9 +43,9 @@ describe('Stamp control', () => {
     expect(order.payload.stamp).toBeDefined();
     expect(order.payload.aliasId).toBe('');
     expect(order.payload.aliasOutputAmount).toBe(53700);
-    expect(order.payload.nftOutputAmount).toBe(104500);
+    expect(order.payload.nftOutputAmount).toBe(104800);
 
-    const stampDocRef = build5Db().doc(COL.STAMP, order.payload.stamp!);
+    const stampDocRef = database().doc(COL.STAMP, order.payload.stamp!);
     const stamp = await stampDocRef.get();
     expect(stamp?.space).toBe(order.space);
     expect(stamp?.build5Url).toBe(dowloadUrl);
@@ -60,7 +60,7 @@ describe('Stamp control', () => {
     expect(stamp?.aliasId).toBe(EMPTY_ALIAS_ID);
     expect(stamp?.nftId).toBeUndefined();
 
-    const guardianDocRef = build5Db().doc(COL.SPACE, order.space!, SUB_COL.GUARDIANS, member);
+    const guardianDocRef = database().doc(COL.SPACE, order.space!, SUB_COL.GUARDIANS, member);
     const guardian = await guardianDocRef.get();
     expect(guardian).toBeDefined();
   });

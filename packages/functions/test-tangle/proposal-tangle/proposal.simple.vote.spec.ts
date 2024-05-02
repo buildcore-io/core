@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -6,7 +6,7 @@ import {
   ProposalType,
   TangleRequestType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
@@ -49,7 +49,7 @@ describe('Create proposal via tangle request', () => {
       return snap.length === 2;
     });
 
-    let proposalDocRef = build5Db().doc(COL.PROPOSAL, proposalUid);
+    let proposalDocRef = database().doc(COL.PROPOSAL, proposalUid);
     let proposal = <Proposal>await proposalDocRef.get();
     expect(proposal.results.answers[1]).toBe(1);
 
@@ -73,7 +73,7 @@ describe('Create proposal via tangle request', () => {
       return snap.length === 3;
     });
 
-    proposalDocRef = build5Db().doc(COL.PROPOSAL, proposalUid);
+    proposalDocRef = database().doc(COL.PROPOSAL, proposalUid);
     proposal = <Proposal>await proposalDocRef.get();
     expect(proposal.results.answers[2]).toBe(1);
     expect(proposal.results.answers[1]).toBe(0);

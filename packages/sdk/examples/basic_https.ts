@@ -1,9 +1,9 @@
-import { Dataset } from '@build-5/interfaces';
-import { Build5, SoonaverseApiKey, https } from '@build-5/sdk';
+import { Dataset } from '@buildcore/interfaces';
+import { Buildcore, SoonaverseApiKey, https } from '@buildcore/sdk';
 
 async function main() {
-  var members = await https(Build5.TEST)
-    .project(SoonaverseApiKey[Build5.TEST])
+  var members = await https(Buildcore.TEST)
+    .project(SoonaverseApiKey[Buildcore.TEST])
     .dataset(Dataset.MEMBER)
     .getByField('name', 'Santa Claus');
   console.log(members);

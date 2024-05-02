@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MAX_TOTAL_TOKEN_SUPPLY,
@@ -8,7 +8,7 @@ import {
   TokenTradeOrderType,
   Transaction,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { getTangleOrder } from '../common';
@@ -68,7 +68,7 @@ describe('Base token trading', () => {
       },
     );
 
-    const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer!.uid);
+    const query = database().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer!.uid);
     await wait(async () => {
       const snap = await query.get();
       return snap.length === 1 && snap[0].fulfilled === 2 * MIN_IOTA_AMOUNT;
@@ -79,7 +79,7 @@ describe('Base token trading', () => {
     expect(buyOrder.fulfilled).toBe(2 * MIN_IOTA_AMOUNT);
     expect(buyOrder.balance).toBe(MIN_IOTA_AMOUNT);
 
-    const sellOrders = await build5Db()
+    const sellOrders = await database()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.seller?.uid)
       .where('type', '==', TokenTradeOrderType.SELL)

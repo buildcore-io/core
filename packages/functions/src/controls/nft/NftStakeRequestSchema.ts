@@ -3,7 +3,7 @@ import {
   MIN_WEEKS_TO_STAKE,
   NftStakeRequest,
   StakeType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import Joi from 'joi';
 import { toJoiObject } from '../../services/joi/common';
 import { networks } from '../../utils/config.utils';

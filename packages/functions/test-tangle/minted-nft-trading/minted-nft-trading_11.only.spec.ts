@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -7,7 +7,7 @@ import {
   NftStatus,
   TangleRequestType,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
 import { awaitLedgerInclusionState, requestFundsFromFaucet } from '../faucet';
@@ -63,12 +63,12 @@ describe('Minted nft trading', () => {
     );
     await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
 
-    const nftDocRef1 = build5Db().doc(COL.NFT, nft1.uid);
-    const nftDocRef2 = build5Db().doc(COL.NFT, nft2.uid);
+    const nftDocRef1 = database().doc(COL.NFT, nft1.uid);
+    const nftDocRef2 = database().doc(COL.NFT, nft2.uid);
     nft1 = (await nftDocRef1.get())!;
     nft2 = (await nftDocRef2.get())!;
 
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.WITHDRAW_NFT)
       .where('member', '==', address.bech32);

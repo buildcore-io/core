@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { Access, COL, SUB_COL, TransactionPayloadType, WenError } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { Access, COL, SUB_COL, TransactionPayloadType, WenError } from '@buildcore/interfaces';
 import { invalidArgument } from '../../utils/error.utils';
 
 export const assertHasAccess = async (
@@ -14,20 +14,20 @@ export const assertHasAccess = async (
   }
 
   if (access === Access.MEMBERS_ONLY) {
-    if (!(await build5Db().doc(COL.SPACE, spaceId, SUB_COL.MEMBERS, member).get())) {
+    if (!(await database().doc(COL.SPACE, spaceId, SUB_COL.MEMBERS, member).get())) {
       throw invalidArgument(WenError.you_are_not_part_of_space);
     }
   }
 
   if (access === Access.GUARDIANS_ONLY) {
-    if (!(await build5Db().doc(COL.SPACE, spaceId, SUB_COL.GUARDIANS, member).get())) {
+    if (!(await database().doc(COL.SPACE, spaceId, SUB_COL.GUARDIANS, member).get())) {
       throw invalidArgument(WenError.you_are_not_guardian_of_space);
     }
   }
 
   if (access === Access.MEMBERS_WITH_BADGE) {
     for (const award of accessAwards) {
-      const snapshot = await build5Db()
+      const snapshot = await database()
         .collection(COL.TRANSACTION)
         .where('payload_type', '==', TransactionPayloadType.BADGE)
         .where('member', '==', member)
@@ -42,7 +42,7 @@ export const assertHasAccess = async (
 
   if (access === Access.MEMBERS_WITH_NFT_FROM_COLLECTION) {
     const includedCollections: string[] = [];
-    const snapshot = await build5Db().collection(COL.NFT).where('owner', '==', member).get();
+    const snapshot = await database().collection(COL.NFT).where('owner', '==', member).get();
     if (snapshot.length > 0 && accessCollections?.length) {
       for (const data of snapshot) {
         if (

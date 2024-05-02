@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   BaseProposalAnswerValue,
   COL,
@@ -12,7 +12,7 @@ import {
   TransactionPayloadType,
   TransactionType,
   UPDATE_SPACE_THRESHOLD_PERCENTAGE,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { getAddress } from '../../../utils/address.utils';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
@@ -30,13 +30,13 @@ export class SpaceAddressService extends BaseService {
     );
     this.transactionService.markAsReconciled(order, match.msgId);
 
-    const spaceDocRef = build5Db().doc(COL.SPACE, order.space!);
+    const spaceDocRef = database().doc(COL.SPACE, order.space!);
     const space = await this.transaction.get(spaceDocRef);
 
-    const ownerDocRef = build5Db().doc(COL.MEMBER, order.member!);
+    const ownerDocRef = database().doc(COL.MEMBER, order.member!);
     const owner = <Member>await this.transaction.get(ownerDocRef);
 
-    const guardians = await build5Db().collection(COL.SPACE, order.space!, SUB_COL.GUARDIANS).get();
+    const guardians = await database().collection(COL.SPACE, order.space!, SUB_COL.GUARDIANS).get();
     const proposal = createUpdateSpaceValidatedAddressProposal(
       project,
       order,
@@ -63,7 +63,7 @@ export class SpaceAddressService extends BaseService {
     };
 
     for (const guardian of guardians) {
-      const memberDocRef = build5Db().doc(
+      const memberDocRef = database().doc(
         COL.PROPOSAL,
         proposal.uid,
         SUB_COL.MEMBERS,
@@ -80,7 +80,7 @@ export class SpaceAddressService extends BaseService {
       });
     }
 
-    const proposalDocRef = build5Db().doc(COL.PROPOSAL, proposal.uid);
+    const proposalDocRef = database().doc(COL.PROPOSAL, proposal.uid);
 
     this.transactionService.push({
       ref: proposalDocRef,
@@ -88,7 +88,7 @@ export class SpaceAddressService extends BaseService {
       action: Action.C,
     });
 
-    const voteTransactionDocRef = build5Db().doc(COL.TRANSACTION, voteTransaction.uid);
+    const voteTransactionDocRef = database().doc(COL.TRANSACTION, voteTransaction.uid);
     this.transactionService.push({
       ref: voteTransactionDocRef,
       data: voteTransaction,

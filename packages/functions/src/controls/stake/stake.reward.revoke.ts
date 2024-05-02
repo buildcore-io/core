@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   BaseProposalAnswerValue,
   COL,
@@ -15,7 +15,7 @@ import {
   Transaction,
   TransactionType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { uniq } from 'lodash';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
@@ -31,7 +31,7 @@ export const removeStakeRewardControl = async ({
 }: Context<TokenStakeRewardsRemoveRequest>) => {
   const stakeRewardIds = params.stakeRewardIds as string[];
   const stakeRewardPromises = stakeRewardIds.map(async (stakeId) => {
-    const docRef = build5Db().doc(COL.STAKE_REWARD, stakeId);
+    const docRef = database().doc(COL.STAKE_REWARD, stakeId);
     return await docRef.get();
   });
   const stakeRewards = await Promise.all(stakeRewardPromises);
@@ -51,12 +51,12 @@ export const removeStakeRewardControl = async ({
     throw invalidArgument(WenError.invalid_params);
   }
 
-  const tokenDocRef = build5Db().doc(COL.TOKEN, tokenIds[0]);
+  const tokenDocRef = database().doc(COL.TOKEN, tokenIds[0]);
   const token = (await tokenDocRef.get())!;
 
   await assertIsTokenGuardian(token, owner);
 
-  const ongoingProposalSnap = await build5Db()
+  const ongoingProposalSnap = await database()
     .collection(COL.PROPOSAL)
     .where('space', '==', token.space)
     .where('completed', '==', false)
@@ -65,11 +65,11 @@ export const removeStakeRewardControl = async ({
     throw invalidArgument(WenError.ongoing_proposal);
   }
 
-  const guardianDocRef = build5Db().doc(COL.MEMBER, owner);
+  const guardianDocRef = database().doc(COL.MEMBER, owner);
   const guardian = (await guardianDocRef.get())!;
-  const guardians = await build5Db().collection(COL.SPACE, token.space, SUB_COL.GUARDIANS).get();
+  const guardians = await database().collection(COL.SPACE, token.space, SUB_COL.GUARDIANS).get();
 
-  const spaceDocRef = build5Db().doc(COL.SPACE, token.space!);
+  const spaceDocRef = database().doc(COL.SPACE, token.space!);
   const space = await spaceDocRef.get();
   const proposal = createUpdateSpaceProposal(
     project,
@@ -96,9 +96,9 @@ export const removeStakeRewardControl = async ({
     linkedTransactions: [],
   };
 
-  const proposalDocRef = build5Db().doc(COL.PROPOSAL, proposal.uid);
+  const proposalDocRef = database().doc(COL.PROPOSAL, proposal.uid);
   const memberPromisses = guardians.map((guardian) => {
-    build5Db()
+    database()
       .doc(COL.PROPOSAL, proposal.uid, SUB_COL.MEMBERS, guardian.uid)
       .create({
         project,
@@ -113,7 +113,7 @@ export const removeStakeRewardControl = async ({
   });
   await Promise.all(memberPromisses);
 
-  await build5Db().doc(COL.TRANSACTION, voteTransaction.uid).create(voteTransaction);
+  await database().doc(COL.TRANSACTION, voteTransaction.uid).create(voteTransaction);
 
   await proposalDocRef.create(proposal);
 

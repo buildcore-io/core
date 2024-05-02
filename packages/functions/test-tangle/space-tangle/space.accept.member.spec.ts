@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -6,7 +6,7 @@ import {
   Space,
   TangleRequestType,
   Transaction,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
@@ -23,7 +23,7 @@ describe('Join space', () => {
   });
 
   it('Should join space via tangle request', async () => {
-    const spaceDocRef = build5Db().doc(COL.SPACE, helper.space.uid);
+    const spaceDocRef = database().doc(COL.SPACE, helper.space.uid);
     await spaceDocRef.update({ open: false });
 
     await requestFundsFromFaucet(Network.RMS, helper.memberAddress.bech32, MIN_IOTA_AMOUNT);

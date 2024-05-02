@@ -9,9 +9,9 @@ import {
   Transaction,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import dayjs from 'dayjs';
 import { getAddress } from '../../src/utils/address.utils';
 import { expectThrow, wait } from '../../test/controls/common';
@@ -48,7 +48,7 @@ describe('Minted token airdrop', () => {
       WenError.no_tokens_to_claim.key,
     );
 
-    const guardian = <Member>await build5Db().doc(COL.MEMBER, helper.guardian).get();
+    const guardian = <Member>await database().doc(COL.MEMBER, helper.guardian).get();
     const guardianAddress = await helper.walletService!.getAddressDetails(
       getAddress(guardian, helper.network),
     );
@@ -80,12 +80,12 @@ describe('Minted token airdrop', () => {
     );
 
     await wait(async () => {
-      const orderDocRef = build5Db().doc(COL.TRANSACTION, order.uid);
+      const orderDocRef = database().doc(COL.TRANSACTION, order.uid);
       order = <Transaction>await orderDocRef.get();
       return order.payload.unclaimedAirdrops === 0;
     });
 
-    const distributionDocRef = build5Db().doc(
+    const distributionDocRef = database().doc(
       COL.TOKEN,
       helper.token?.uid,
       SUB_COL.DISTRIBUTION,
@@ -95,7 +95,7 @@ describe('Minted token airdrop', () => {
     expect(distribution.tokenOwned).toBe(600);
     expect(distribution.tokenClaimed).toBe(600);
 
-    const stakesSnap = await build5Db()
+    const stakesSnap = await database()
       .collection(COL.STAKE)
       .where('member', '==', helper.member)
       .get();

@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Auction,
   AuctionType,
@@ -12,7 +12,7 @@ import {
   NftSetForSaleRequest,
   TangleResponse,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { assertMemberHasValidAddress } from '../../../../utils/address.utils';
 import { getDefaultNetwork } from '../../../../utils/config.utils';
@@ -27,15 +27,15 @@ import { setNftForSaleTangleSchema } from './NftSetForSaleTangleRequestSchema';
 export class TangleNftSetForSaleService extends BaseTangleService<TangleResponse> {
   public handleRequest = async ({ owner, request, project }: HandlerParams) => {
     const params = await assertValidationAsync(setNftForSaleTangleSchema, request);
-    const memberDocRef = build5Db().doc(COL.MEMBER, owner);
+    const memberDocRef = database().doc(COL.MEMBER, owner);
     const member = await memberDocRef.get();
 
     const { nft, auction } = await getNftSetForSaleParams(member!, project, params);
-    const nftDocRef = build5Db().doc(COL.NFT, params.nft);
+    const nftDocRef = database().doc(COL.NFT, params.nft);
     this.transactionService.push({ ref: nftDocRef, data: nft, action: Action.U });
 
     if (auction) {
-      const auctionDocRef = build5Db().doc(COL.AUCTION, auction.uid);
+      const auctionDocRef = database().doc(COL.AUCTION, auction.uid);
       this.transactionService.push({ ref: auctionDocRef, data: auction, action: Action.C });
     }
 
@@ -48,7 +48,7 @@ export const getNftSetForSaleParams = async (
   project: string,
   params: NftSetForSaleRequest,
 ) => {
-  const nftDocRef = build5Db().doc(COL.NFT, params.nft);
+  const nftDocRef = database().doc(COL.NFT, params.nft);
   const nft = await nftDocRef.get();
   if (!nft) {
     throw invalidArgument(WenError.nft_does_not_exists);
@@ -84,7 +84,7 @@ export const getNftSetForSaleParams = async (
     params.auctionFrom = dateToTimestamp(params.auctionFrom, true).toDate();
   }
 
-  const collectionDocRef = build5Db().doc(COL.COLLECTION, nft.collection);
+  const collectionDocRef = database().doc(COL.COLLECTION, nft.collection);
   const collection = await collectionDocRef.get();
   if (![CollectionStatus.PRE_MINTED, CollectionStatus.MINTED].includes(collection?.status!)) {
     throw invalidArgument(WenError.invalid_collection_status);

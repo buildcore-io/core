@@ -1,4 +1,4 @@
-import { build5Db, build5Storage } from '@build-5/database';
+import { database, storage } from '@buildcore/database';
 import {
   COL,
   MediaStatus,
@@ -6,7 +6,7 @@ import {
   SUB_COL,
   SpaceCreateTangleResponse,
   SpaceGuardian,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
 import { downloadMediaAndPackCar } from '../../../../utils/car.utils';
@@ -33,23 +33,23 @@ export class SpaceCreateService extends BaseTangleService<SpaceCreateTangleRespo
     const { space, guardian } = await getCreateSpaceData(project, owner, request);
 
     this.transactionService.push({
-      ref: build5Db().doc(COL.SPACE, space.uid),
+      ref: database().doc(COL.SPACE, space.uid),
       data: space,
       action: Action.C,
     });
 
     this.transactionService.push({
-      ref: build5Db().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, owner),
+      ref: database().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, owner),
       data: guardian,
       action: Action.C,
     });
     this.transactionService.push({
-      ref: build5Db().doc(COL.SPACE, space.uid, SUB_COL.MEMBERS, owner),
+      ref: database().doc(COL.SPACE, space.uid, SUB_COL.MEMBERS, owner),
       data: guardian,
       action: Action.C,
     });
 
-    const memberDocRef = build5Db().doc(COL.MEMBER, owner);
+    const memberDocRef = database().doc(COL.MEMBER, owner);
     this.transactionService.push({
       ref: memberDocRef,
       data: { spaces: { [space.uid]: { uid: space.uid, isMember: true } } },
@@ -88,7 +88,7 @@ export const getCreateSpaceData = async (
     const metadata = spaceToIpfsMetadata(space as any);
 
     if (!isStorageUrl(bannerUrl)) {
-      const bucket = build5Storage().bucket(getBucket());
+      const bucket = storage().bucket(getBucket());
       bannerUrl = await migrateUriToSotrage(
         COL.SPACE,
         owner,

@@ -1,5 +1,11 @@
-import { build5Db } from '@build-5/database';
-import { COL, GetAddressesRequest, MAX_MILLISECONDS, Mnemonic, Network } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import {
+  COL,
+  GetAddressesRequest,
+  MAX_MILLISECONDS,
+  Mnemonic,
+  Network,
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import Joi from 'joi';
 import { get } from 'lodash';
@@ -16,7 +22,7 @@ const getAddressesSchema = Joi.object({
 export const getAddresses = async (url: string, isLive: boolean) => {
   const body = getQueryParams<GetAddressesRequest>(url, getAddressesSchema);
 
-  const query = build5Db()
+  const query = database()
     .collection(COL.MNEMONIC)
     .where('network', '==', body.network)
     .where('createdOn', '>', dayjs.unix(body.createdAfter).toDate())

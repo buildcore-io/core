@@ -3,7 +3,7 @@ import {
   MIN_WEEKS_TO_STAKE,
   StakeType,
   TokenStakeRequest,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 

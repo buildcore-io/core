@@ -8,7 +8,7 @@
  */
 export interface CreditUnrefundableRequest {
   /**
-   * Build5 id of the transaction to be unlocked and credited back.
+   * Buildcore id of the transaction to be unlocked and credited back.
    */
   transaction: string;
 }

@@ -1,11 +1,11 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   AwardParticipant,
   AwardParticpateRequest,
   COL,
   SUB_COL,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { invalidArgument } from '../../utils/error.utils';
@@ -16,7 +16,7 @@ export const awardParticipateControl = async ({
   params,
   project,
 }: Context<AwardParticpateRequest>): Promise<AwardParticipant> => {
-  const awardDocRef = build5Db().doc(COL.AWARD, params.uid);
+  const awardDocRef = database().doc(COL.AWARD, params.uid);
   const award = await awardDocRef.get();
   if (!award) {
     throw invalidArgument(WenError.award_does_not_exists);
@@ -34,7 +34,7 @@ export const awardParticipateControl = async ({
     throw invalidArgument(WenError.award_is_no_longer_available);
   }
 
-  const awardParticipant = await build5Db()
+  const awardParticipant = await database()
     .doc(COL.AWARD, params.uid, SUB_COL.PARTICIPANTS, owner)
     .get();
   if (awardParticipant) {
@@ -52,6 +52,6 @@ export const awardParticipateControl = async ({
     tokenReward: 0,
     createdOn: dateToTimestamp(dayjs()),
   };
-  await build5Db().doc(COL.AWARD, params.uid, SUB_COL.PARTICIPANTS, owner).create(participant);
+  await database().doc(COL.AWARD, params.uid, SUB_COL.PARTICIPANTS, owner).create(participant);
   return participant;
 };

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -14,7 +14,7 @@ import {
   TransactionType,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { expectThrow, submitMilestoneFunc, wait } from '../../test/controls/common';
@@ -42,7 +42,7 @@ describe('Token minting', () => {
     await submitMilestoneFunc(order2);
 
     await wait(async () => {
-      const buySnap = await build5Db()
+      const buySnap = await database()
         .collection(COL.TOKEN_MARKET)
         .where('type', '==', TokenTradeOrderType.BUY)
         .where('owner', '==', helper.guardian.uid)
@@ -61,14 +61,14 @@ describe('Token minting', () => {
       mintOrder.payload.amount,
     );
 
-    const tokenDocRef = build5Db().doc(COL.TOKEN, helper.token.uid);
+    const tokenDocRef = database().doc(COL.TOKEN, helper.token.uid);
     await wait(async () => {
       const snap = await tokenDocRef.get();
       return snap?.status === TokenStatus.MINTING;
     });
 
     await wait(async () => {
-      const buySnap = await build5Db()
+      const buySnap = await database()
         .collection(COL.TOKEN_MARKET)
         .where('type', '==', TokenTradeOrderType.BUY)
         .where('status', '==', TokenTradeOrderStatus.CANCELLED_MINTING_TOKEN)
@@ -78,7 +78,7 @@ describe('Token minting', () => {
     });
 
     await wait(async () => {
-      const creditSnap = await build5Db()
+      const creditSnap = await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
         .where('member', '==', helper.guardian.uid)
@@ -112,12 +112,12 @@ describe('Token minting', () => {
     );
 
     await wait(async () => {
-      const snap = await build5Db().doc(COL.TOKEN, helper.token.uid).get();
+      const snap = await database().doc(COL.TOKEN, helper.token.uid).get();
       return snap?.status === TokenStatus.MINTING;
     });
 
     await wait(async () => {
-      const sellSnap = await build5Db()
+      const sellSnap = await database()
         .collection(COL.TOKEN_MARKET)
         .where('type', '==', TokenTradeOrderType.SELL)
         .where('status', '==', TokenTradeOrderStatus.CANCELLED_MINTING_TOKEN)
@@ -127,7 +127,7 @@ describe('Token minting', () => {
     });
 
     const distribution = <TokenDistribution>(
-      await build5Db().doc(COL.TOKEN, helper.token.uid, SUB_COL.DISTRIBUTION, helper.member).get()
+      await database().doc(COL.TOKEN, helper.token.uid, SUB_COL.DISTRIBUTION, helper.member).get()
     );
     expect(distribution.lockedForSale).toBe(0);
     expect(distribution.tokenOwned).toBe(1000);
@@ -140,7 +140,7 @@ describe('Token minting', () => {
       saleLength: 86400000 * 2,
       coolDownLength: 86400000,
     };
-    await build5Db()
+    await database()
       .doc(COL.TOKEN, helper.token.uid)
       .update({
         allocations: JSON.stringify([{ title: 'public', percentage: 100, isPublicSale: true }]),
@@ -148,7 +148,7 @@ describe('Token minting', () => {
     const updateData = { token: helper.token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };
     mockWalletReturnValue(helper.guardian.uid, updateData);
     let token = await testEnv.wrap<Token>(WEN_FUNC.setTokenAvailableForSale);
-    token = (await build5Db().doc(COL.TOKEN, token.uid).get())!;
+    token = (await database().doc(COL.TOKEN, token.uid).get())!;
     expect(token.saleStartDate?.toDate()).toEqual(
       dateToTimestamp(dayjs(publicTime.saleStartDate), true).toDate(),
     );

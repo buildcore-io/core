@@ -1,4 +1,4 @@
-import { Project, ProjectBilling, ProjectOtr } from '@build-5/interfaces';
+import { Project, ProjectBilling, ProjectOtr } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgProject } from '../../models';
 import { removeNulls } from '../common';

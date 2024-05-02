@@ -1,4 +1,4 @@
-import { DISCORD_REGEXP, TWITTER_REGEXP, UpdateCollectionRequest } from '@build-5/interfaces';
+import { DISCORD_REGEXP, TWITTER_REGEXP, UpdateCollectionRequest } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 import { updateMintedCollectionSchema } from './CollectionUpdateMintedRequestSchema';
@@ -27,7 +27,7 @@ export const updateCollectionSchema = {
       then: CommonJoi.uid(true),
       otherwise: CommonJoi.uid(false).allow(''),
     })
-    .description('Build5 id of the royalty space.'),
+    .description('Buildcore id of the royalty space.'),
   discord: Joi.string()
     .allow(null, '')
     .regex(DISCORD_REGEXP)

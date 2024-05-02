@@ -1,4 +1,4 @@
-import { BaseRecord as PgBaseRecord, build5Db } from '@build-5/database';
+import { BaseRecord as PgBaseRecord, database } from '@buildcore/database';
 import {
   Access,
   BaseRecord,
@@ -10,7 +10,7 @@ import {
   SOON_PROJECT_ID,
   SUB_COL,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { invalidArgument } from './error.utils';
 
 const MAX_RERUNS = 10;
@@ -68,7 +68,7 @@ export const getRestrictions = (collection?: Collection, nft?: Nft): Restriction
 };
 
 export const assertIsProjectAdmin = async (project: string, member: string) => {
-  const admin = await build5Db().doc(COL.PROJECT, project, SUB_COL.ADMINS, member).get();
+  const admin = await database().doc(COL.PROJECT, project, SUB_COL.ADMINS, member).get();
   if (!admin) {
     throw invalidArgument(WenError.you_are_not_admin_of_project);
   }

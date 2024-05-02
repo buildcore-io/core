@@ -1,8 +1,8 @@
 /* eslint-disable import/namespace */
 /* eslint-disable @typescript-eslint/no-var-requires */
 require('dotenv').config({ path: __dirname + '/.env' });
-import { BaseRecord, PgChanges, build5Db } from '@build-5/database';
-import { WEN_FUNC } from '@build-5/interfaces';
+import { BaseRecord, PgChanges, database } from '@buildcore/database';
+import { WEN_FUNC } from '@buildcore/interfaces';
 import cors from 'cors';
 import dayjs from 'dayjs';
 import express from 'express';
@@ -63,7 +63,7 @@ Object.entries(flattenObject(onTriggers)).forEach(([name, config]) => {
     const processId = JSON.parse(raw).processId;
     let snap: PgChanges | undefined = undefined;
 
-    const docRef = build5Db().getCon()('changes').where({ uid: processId });
+    const docRef = database().getCon()('changes').where({ uid: processId });
     try {
       snap = head(await docRef);
       if (!snap) {
@@ -121,7 +121,7 @@ app.head('/', (_, res) => {
 });
 
 app.on('close', async () => {
-  await build5Db().destroy();
+  await database().destroy();
 });
 
 const server = app.listen(8080).setTimeout(0);
@@ -148,7 +148,7 @@ process.on('unhandledRejection', async () => {
 });
 
 const cleanup = async () => {
-  await build5Db().destroy();
+  await database().destroy();
   for (const client of Object.values(tangleClients)) {
     await client.destroy();
   }

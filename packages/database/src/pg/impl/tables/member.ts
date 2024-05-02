@@ -1,4 +1,4 @@
-import { Member, Network } from '@build-5/interfaces';
+import { Member, Network } from '@buildcore/interfaces';
 import { Converter } from '../../interfaces/common';
 import { PgMember } from '../../models';
 import { removeNulls } from '../common';

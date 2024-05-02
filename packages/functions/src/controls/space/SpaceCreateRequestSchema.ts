@@ -1,4 +1,4 @@
-import { GITHUB_REGEXP, SpaceCreateRequest, TWITTER_REGEXP } from '@build-5/interfaces';
+import { GITHUB_REGEXP, SpaceCreateRequest, TWITTER_REGEXP } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 

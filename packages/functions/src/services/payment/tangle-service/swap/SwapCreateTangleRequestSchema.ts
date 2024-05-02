@@ -1,4 +1,4 @@
-import { SwapCreateTangleRequest, TangleRequestType } from '@build-5/interfaces';
+import { SwapCreateTangleRequest, TangleRequestType } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { swapCreateSchemaObject } from '../../../../controls/swaps/SwapCreateRequestSchema';
 import { toJoiObject } from '../../../joi/common';

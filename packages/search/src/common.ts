@@ -1,5 +1,5 @@
-import { BaseRecord, IDocument, IQuery, PgTokenPurchase, Update } from '@build-5/database';
-import { Dataset, QUERY_MAX_LENGTH, Subset, TokenPurchase } from '@build-5/interfaces';
+import { BaseRecord, IDocument, IQuery, PgTokenPurchase, Update } from '@buildcore/database';
+import { Dataset, QUERY_MAX_LENGTH, Subset, TokenPurchase } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { head } from 'lodash';
 import { Observable, map } from 'rxjs';

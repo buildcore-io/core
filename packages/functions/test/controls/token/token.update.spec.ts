@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -9,7 +9,7 @@ import {
   TokenStatus,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { MEDIA, mockWalletReturnValue, testEnv } from '../../set-up';
 import { expectThrow, getRandomSymbol } from '../common';
 const dummyToken = (space: string) =>
@@ -63,7 +63,7 @@ describe('Token controller: ' + WEN_FUNC.updateToken, () => {
   });
 
   it('Should update token, no space', async () => {
-    await build5Db().doc(COL.TOKEN, token.uid).update({ space: '' });
+    await database().doc(COL.TOKEN, token.uid).update({ space: '' });
     const updateData = {
       ...data,
       name: 'TokenName2',
@@ -91,7 +91,7 @@ describe('Token controller: ' + WEN_FUNC.updateToken, () => {
     const updateData = { ...data, name: token.name, uid: token.uid, title: 'title2' };
     mockWalletReturnValue(memberAddress, updateData);
     const result = await testEnv.wrap<Token>(WEN_FUNC.updateToken);
-    token = (await build5Db().doc(COL.TOKEN, result.uid).get())!;
+    token = (await database().doc(COL.TOKEN, result.uid).get())!;
     expect(token.name).toBe(token.name);
     expect(token.title).toBe(updateData.title);
     expect(token.description).toBe(updateData.description);
@@ -133,20 +133,20 @@ describe('Token controller: ' + WEN_FUNC.updateToken, () => {
   it('Should update short description', async () => {
     const updateData = { ...data, name: token.name, uid: token.uid, title: 'title2' };
 
-    await build5Db().doc(COL.TOKEN, token.uid).update({ status: TokenStatus.BASE });
+    await database().doc(COL.TOKEN, token.uid).update({ status: TokenStatus.BASE });
     mockWalletReturnValue(memberAddress, updateData);
     await expectThrow(
       testEnv.wrap<Token>(WEN_FUNC.updateToken),
       WenError.token_in_invalid_status.key,
     );
-    await build5Db().doc(COL.TOKEN, token.uid).update({ status: TokenStatus.AVAILABLE });
+    await database().doc(COL.TOKEN, token.uid).update({ status: TokenStatus.AVAILABLE });
     mockWalletReturnValue(memberAddress, updateData);
     const result = await testEnv.wrap<Token>(WEN_FUNC.updateToken);
     expect(result.name).toBe(token.name);
   });
 
   it('Should throw, token minted', async () => {
-    await build5Db().doc(COL.TOKEN, token.uid).update({ status: TokenStatus.MINTED });
+    await database().doc(COL.TOKEN, token.uid).update({ status: TokenStatus.MINTED });
     const updateData = { ...data, name: 'TokenName2', uid: token.uid, title: 'title' };
     mockWalletReturnValue(memberAddress, updateData);
     await expectThrow(testEnv.wrap<Token>(WEN_FUNC.updateToken), WenError.invalid_params.key);

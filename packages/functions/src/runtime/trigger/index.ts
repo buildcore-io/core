@@ -1,4 +1,4 @@
-import { ALGOLIA_COLLECTIONS, COL, Network, SUB_COL, getMilestoneCol } from '@build-5/interfaces';
+import { ALGOLIA_COLLECTIONS, COL, Network, SUB_COL, getMilestoneCol } from '@buildcore/interfaces';
 import { ALGOLIA_TRIGGER_SCALE, TRIGGER_SCALE } from '../../scale.settings';
 import { algoliaTrigger } from '../../triggers/algolia/algolia.trigger';
 import { onAwardUpdated } from '../../triggers/award.trigger';

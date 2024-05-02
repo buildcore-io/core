@@ -1,13 +1,13 @@
-import { Dataset, Network } from '@build-5/interfaces';
-import { Build5, SoonaverseApiKey, https } from '@build-5/sdk';
+import { Dataset, Network } from '@buildcore/interfaces';
+import { Buildcore, SoonaverseApiKey, https } from '@buildcore/sdk';
 import { address } from '../../utils/secret';
 import { walletSign } from '../../utils/utils';
 
-const collectionId = 'build5nftcollectionid';
-const nftIds = ['build5nftid1', 'build5nftid2'];
+const collectionId = 'nftcollectionid';
+const nftIds = ['nftid1', 'nftid2'];
 
 async function main() {
-  const origin = Build5.TEST;
+  const origin = Buildcore.TEST;
 
   const member = await https(origin).createMember({
     address: address.bech32,

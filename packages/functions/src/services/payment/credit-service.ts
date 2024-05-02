@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, Transaction, TransactionPayloadType, TransactionType } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, Transaction, TransactionPayloadType, TransactionType } from '@buildcore/interfaces';
 import { isEmpty } from 'lodash';
 import { getProject } from '../../utils/common.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -10,7 +10,7 @@ export class CreditService extends BaseService {
   public handleRequest = async ({ order, match }: HandlerParams) => {
     const payment = await this.transactionService.createPayment(order, match);
 
-    const transactionDocRef = build5Db().doc(COL.TRANSACTION, order.payload.transaction || '');
+    const transactionDocRef = database().doc(COL.TRANSACTION, order.payload.transaction || '');
     const transaction = <Transaction>await this.transaction.get(transactionDocRef);
 
     if (!isEmpty(transaction.payload.unlockedBy)) {
@@ -43,7 +43,7 @@ export class CreditService extends BaseService {
       },
     };
     this.transactionService.push({
-      ref: build5Db().doc(COL.TRANSACTION, credit.uid),
+      ref: database().doc(COL.TRANSACTION, credit.uid),
       data: credit,
       action: Action.C,
     });

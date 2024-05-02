@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Award,
   COL,
@@ -10,7 +10,7 @@ import {
   Token,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
@@ -43,7 +43,7 @@ describe('Award tangle request', () => {
 
     token = await saveBaseToken(space.uid, guardian, network);
 
-    const guardianDocRef = build5Db().doc(COL.MEMBER, guardian);
+    const guardianDocRef = database().doc(COL.MEMBER, guardian);
     const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, network);
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
@@ -58,7 +58,7 @@ describe('Award tangle request', () => {
     });
     await MnemonicService.store(guardianAddress.bech32, guardianAddress.mnemonic);
 
-    const creditQuery = build5Db()
+    const creditQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST)
       .where('member', '==', guardian);
@@ -74,7 +74,7 @@ describe('Award tangle request', () => {
       credit.payload.response!.amount as number,
     );
 
-    const awardDocRef = build5Db().doc(COL.AWARD, credit.payload.response!.award as string);
+    const awardDocRef = database().doc(COL.AWARD, credit.payload.response!.award as string);
     await wait(async () => {
       const award = (await awardDocRef.get()) as Award;
       return award.approved;
@@ -102,7 +102,7 @@ describe('Award tangle request', () => {
     expect(Object.keys(credit.payload.response!.badges as any).length).toBe(150);
 
     await wait(async () => {
-      const snap = await build5Db().collection(COL.AIRDROP).where('member', '==', guardian).get();
+      const snap = await database().collection(COL.AIRDROP).where('member', '==', guardian).get();
       return snap.length === 150;
     });
   });
