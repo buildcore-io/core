@@ -2,7 +2,7 @@ import { FirebaseApp } from '@build-5/database';
 import { IDocument, Update, database as pgDb } from '@buildcore/database';
 import { COL, SUB_COL } from '@buildcore/interfaces';
 import { Firestore } from 'firebase-admin/firestore';
-import { chunk, last } from 'lodash';
+import { chunk, flatMap } from 'lodash';
 
 const collections: { [key: string]: SUB_COL[] } = {
   // [COL.MEMBER]: [],
@@ -18,10 +18,10 @@ const collections: { [key: string]: SUB_COL[] } = {
   // [COL.PROPOSAL]: [SUB_COL.OWNERS, SUB_COL.MEMBERS],
   // [COL.NOTIFICATION]: [],
 
-  [COL.TRANSACTION]: [],
-  [COL.MILESTONE]: [SUB_COL.TRANSACTIONS],
+  // [COL.TRANSACTION]: [],
+  // [COL.MILESTONE]: [SUB_COL.TRANSACTIONS],
   [COL.MILESTONE_SMR]: [SUB_COL.TRANSACTIONS],
-  [COL.MILESTONE_RMS]: [SUB_COL.TRANSACTIONS],
+  // [COL.MILESTONE_RMS]: [SUB_COL.TRANSACTIONS],
 
   // [COL.TOKEN]: [SUB_COL.STATS, SUB_COL.RANKS, SUB_COL.VOTES, SUB_COL.DISTRIBUTION],
   // [COL.TOKEN_MARKET]: [],
@@ -53,90 +53,102 @@ export const migrateToPg = async (app: FirebaseApp) => {
 };
 
 const LIMIT = 100000;
-const batches = Array.from(Array(200));
-const batchSize = 500;
+
+const saveToPg = async (table: string, data: any[]) => {
+  await pgDb().getCon()(table).insert(data).onConflict('uid').ignore();
+};
 
 const migrateColletion = async (firestore: Firestore, col: COL) => {
   let lastDoc: any = undefined;
   let count = 0;
 
+  const docRef = pgDb().doc(col, 'placeholder') as IDocument<any, any, Update>;
+
   do {
-    let query = firestore.collection(col).limit(LIMIT);
+    const promises: Promise<any>[] = [];
+    let query = firestore.collection(col).orderBy('milestone', 'desc').limit(LIMIT);
     if (lastDoc) {
       query = query.startAfter(lastDoc);
     }
-    const snap = await query.get();
-    lastDoc = last(snap.docs);
-    count += snap.size;
-    console.log('count', col, count);
 
-    if (!lastDoc) {
-      break;
-    }
-
-    const docRef = pgDb().doc(col, 'placeholder') as IDocument<any, any, Update>;
-
-    const promises = batches.map(async (_, batch) => {
-      const data: any[] = [];
-      for (let i = batch * batchSize; i < (batch + 1) * batchSize; ++i) {
-        if (snap.docs[i]) {
-          const doc = snap.docs[i];
-          data.push(docRef.converter.toPg({ ...doc.data(), uid: doc.id }));
-        }
-      }
+    const data: any[] = [];
+    let actLastDoc = lastDoc;
+    for await (const doc of query.stream()) {
       try {
-        await pgDb().getCon()(docRef.table).insert(data).onConflict('uid').ignore();
-      } catch (err: any) {
-        err.lastDoc = lastDoc.ref.path;
+        const pg = docRef.converter.toPg({ ...(doc as any).data(), uid: (doc as any).id });
+        data.push(pg);
+      } catch (err) {
+        console.log((doc as any).id);
         throw err;
       }
-    });
 
-    // const promises = chunk(snap.docs, 150).map(async (ch) => {
-    //   try {
-    //     const data = ch.map((doc) =>
-    //       undefinedToNull(docRef.converter.toPg({ ...doc.data(), uid: doc.id })),
-    //     );
-    //     await pgDb().getCon()(docRef.table).insert(data).onConflict('uid').ignore();
-    //   } catch (err: any) {
-    //     err.lastDoc = lastDoc.ref.path;
-    //     throw err;
-    //   }
-    // });
+      if (data.length === 500) {
+        const toSave = data.splice(0);
+        promises.push(saveToPg(docRef.table, toSave));
 
-    await Promise.all(promises);
+        for (const subCol of collections[col]) {
+          promises.push(
+            migrateSubDocs(
+              firestore,
+              col,
+              toSave.map((t) => t.uid),
+              subCol,
+            ),
+          );
+        }
 
-    for (const subCol of collections[col]) {
-      const writes = snap.docs.map((doc) => migrateSubDocs(firestore, col, doc.id, subCol));
-      await awaitAll(writes, lastDoc.ref.path);
+        console.log(count);
+      }
+      ++count;
+      actLastDoc = doc as any;
     }
+
+    console.log(count);
+
+    try {
+      await Promise.all(promises);
+    } catch (err: any) {
+      err.lastDoc = lastDoc;
+      throw err;
+    }
+    lastDoc = actLastDoc;
   } while (lastDoc);
 };
 
-const awaitAll = async (writes: Promise<any>[], lastDoc: string) => {
-  try {
-    await Promise.all(writes);
-  } catch (err: any) {
-    err.lastDoc = lastDoc;
-    throw err;
+const migrateSubDocs = async (
+  firestore: Firestore,
+  col: COL,
+  colIds: string[],
+  subCol: SUB_COL,
+) => {
+  const subDocsPromise = colIds.map((colId) => getSubDocs(firestore, col, colId, subCol));
+  const subDocs = flatMap(await Promise.all(subDocsPromise));
+
+  if (subDocs.length) {
+    console.log('Size', col, subCol, subDocs.length);
   }
-};
 
-const migrateSubDocs = async (firestore: Firestore, col: COL, colId: string, subCol: SUB_COL) => {
-  const snap = await firestore.collection(`${col}/${colId}/${subCol}`).get();
-  // console.log('Size', col, colId, subCol, snap.size);
-
-  const promises = chunk(snap.docs, 200).map(async (ch) => {
-    const data = ch.map((doc) => {
-      const docRef = pgDb().doc(col, colId, subCol, doc.id) as IDocument<any, any, Update>;
-      const converted = docRef.converter.toPg({ ...doc.data(), uid: doc.id, parentId: colId });
-      return converted;
+  const docRef = pgDb().doc(col, 'p', subCol, 'p') as IDocument<any, any, Update>;
+  const promises = chunk(subDocs, 200).map(async (ch) => {
+    const data = ch.map((subDoc) => {
+      const [_col, parentId, _sub, uid] = subDoc.ref.path.split('/');
+      try {
+        const converted = docRef.converter.toPg({ ...subDoc.data(), uid, parentId });
+        return converted;
+      } catch (err: any) {
+        err.path = subDoc.ref.path;
+        throw err;
+      }
     });
-    const docRef = pgDb().doc(col, colId, subCol, 'placeholder') as IDocument<any, any, Update>;
     await pgDb().getCon()(docRef.table).insert(data).onConflict(['uid', 'parentId']).ignore();
   });
 
   await Promise.all(promises);
+};
+
+const getSubDocs = async (firestore: Firestore, col: COL, colId: string, subCol: SUB_COL) => {
+  const snap = await firestore.collection(`${col}/${colId}/${subCol}`).get();
+  return snap.docs;
 };
 
 export const roll = migrateToPg;
