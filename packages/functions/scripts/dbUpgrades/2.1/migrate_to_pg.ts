@@ -52,7 +52,7 @@ export const migrateToPg = async (app: FirebaseApp) => {
   await pgDb().destroy();
 };
 
-const LIMIT = 100000;
+const LIMIT = 10000;
 
 const saveToPg = async (table: string, data: any[]) => {
   await pgDb().getCon()(table).insert(data).onConflict('uid').ignore();
