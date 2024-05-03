@@ -1,5 +1,5 @@
 import { FirebaseApp } from '@build-5/database';
-import { IDocument, Update, database as pgDb, undefinedToNull } from '@buildcore/database';
+import { IDocument, Update, database as pgDb } from '@buildcore/database';
 import { COL, SUB_COL } from '@buildcore/interfaces';
 import { Firestore } from 'firebase-admin/firestore';
 import { chunk, last } from 'lodash';
@@ -18,10 +18,10 @@ const collections: { [key: string]: SUB_COL[] } = {
   // [COL.PROPOSAL]: [SUB_COL.OWNERS, SUB_COL.MEMBERS],
   // [COL.NOTIFICATION]: [],
 
-  [COL.MILESTONE]: [SUB_COL.TRANSACTIONS],
-  // [COL.MILESTONE_RMS]: [SUB_COL.TRANSACTIONS],
-  [COL.MILESTONE_SMR]: [SUB_COL.TRANSACTIONS],
   [COL.TRANSACTION]: [],
+  [COL.MILESTONE]: [SUB_COL.TRANSACTIONS],
+  [COL.MILESTONE_SMR]: [SUB_COL.TRANSACTIONS],
+  [COL.MILESTONE_RMS]: [SUB_COL.TRANSACTIONS],
 
   // [COL.TOKEN]: [SUB_COL.STATS, SUB_COL.RANKS, SUB_COL.VOTES, SUB_COL.DISTRIBUTION],
   // [COL.TOKEN_MARKET]: [],
@@ -43,16 +43,18 @@ const collections: { [key: string]: SUB_COL[] } = {
 export const migrateToPg = async (app: FirebaseApp) => {
   const firestore: Firestore = app.getInstance().firestore();
 
-  const promises = Object.keys(collections).map(async (col) => {
+  for (const col of Object.keys(collections)) {
     console.log(`Migrating ${col} collection`);
     await migrateColletion(firestore, col as COL);
-  });
-  await Promise.all(promises);
+  }
+
   console.log('Migration done');
   await pgDb().destroy();
 };
 
-const LIMIT = 10000;
+const LIMIT = 100000;
+const batches = Array.from(Array(200));
+const batchSize = 500;
 
 const migrateColletion = async (firestore: Firestore, col: COL) => {
   let lastDoc: any = undefined;
@@ -74,17 +76,33 @@ const migrateColletion = async (firestore: Firestore, col: COL) => {
 
     const docRef = pgDb().doc(col, 'placeholder') as IDocument<any, any, Update>;
 
-    const promises = chunk(snap.docs, 150).map(async (ch) => {
+    const promises = batches.map(async (_, batch) => {
+      const data: any[] = [];
+      for (let i = batch * batchSize; i < (batch + 1) * batchSize; ++i) {
+        if (snap.docs[i]) {
+          const doc = snap.docs[i];
+          data.push(docRef.converter.toPg({ ...doc.data(), uid: doc.id }));
+        }
+      }
       try {
-        const data = ch.map((doc) =>
-          undefinedToNull(docRef.converter.toPg({ ...doc.data(), uid: doc.id })),
-        );
         await pgDb().getCon()(docRef.table).insert(data).onConflict('uid').ignore();
       } catch (err: any) {
         err.lastDoc = lastDoc.ref.path;
         throw err;
       }
     });
+
+    // const promises = chunk(snap.docs, 150).map(async (ch) => {
+    //   try {
+    //     const data = ch.map((doc) =>
+    //       undefinedToNull(docRef.converter.toPg({ ...doc.data(), uid: doc.id })),
+    //     );
+    //     await pgDb().getCon()(docRef.table).insert(data).onConflict('uid').ignore();
+    //   } catch (err: any) {
+    //     err.lastDoc = lastDoc.ref.path;
+    //     throw err;
+    //   }
+    // });
 
     await Promise.all(promises);
 
