@@ -17,7 +17,7 @@ export async function up(knex: Knex): Promise<void> {
 
   await createTable(knex, COL.COLLECTION, undefined, (table) => {
     baseRecord(knex, table);
-    table.string('name');
+    table.text('name');
     table.text('description');
     table.text('bannerUrl');
     table.double('royaltiesFee');

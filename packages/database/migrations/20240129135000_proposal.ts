@@ -18,7 +18,7 @@ export async function up(knex: Knex): Promise<void> {
   await createTable(knex, COL.PROPOSAL, undefined, (t) => {
     baseRecord(knex, t);
     t.string('space');
-    t.string('name');
+    t.text('name');
     t.text('description');
     t.text('additionalInfo');
     t.integer('type');

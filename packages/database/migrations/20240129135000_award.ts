@@ -6,7 +6,7 @@ export async function up(knex: Knex): Promise<void> {
   await createTable(knex, COL.AWARD, undefined, (table) => {
     baseRecord(knex, table);
 
-    table.string('name');
+    table.text('name');
     table.text('description');
     table.string('space');
     table.timestamp('endDate');
@@ -32,7 +32,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string('mediaStatus');
     table.double('mediaUploadErrorCount');
     table.boolean('isLegacy');
-    table.string('badge_name');
+    table.text('badge_name');
     table.text('badge_description');
     table.double('badge_total');
     table.string('badge_type');
@@ -40,7 +40,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string('badge_tokenUid');
     table.string('badge_tokenId');
     table.string('badge_tokenSymbol');
-    table.string('badge_image');
+    table.text('badge_image');
     table.string('badge_ipfsMedia');
     table.string('badge_ipfsMetadata');
     table.string('badge_ipfsRoot');

@@ -6,8 +6,8 @@ export async function up(knex: Knex): Promise<void> {
   await createTable(knex, COL.PROJECT, undefined, (table) => {
     baseRecord(knex, table);
 
-    table.string('name');
-    table.string('contactEmail');
+    table.text('name');
+    table.text('contactEmail');
     table.boolean('deactivated');
     table.string('config_billing');
     table.specificType('config_tiers', 'FLOAT[]');

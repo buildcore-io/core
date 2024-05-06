@@ -6,7 +6,7 @@ export async function up(knex: Knex): Promise<void> {
   await createTable(knex, COL.TOKEN, undefined, (t) => {
     baseRecord(knex, t);
 
-    t.string('name').defaultTo('');
+    t.text('name').defaultTo('');
     t.string('symbol').defaultTo('');
     t.text('title');
     t.text('description');
