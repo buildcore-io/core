@@ -46,5 +46,7 @@ export const createCompositeIndexes = async (knex: Knex) => {
   CREATE INDEX IF NOT EXISTS nft_41816187111373496 ON nft (collection, "availablePrice", "saleAccess", available);
 
   CREATE INDEX IF NOT EXISTS transaction_41816187111373494 ON "transaction" ("type", "payload_void", "payload_reconciled", "payload_expiresOn", "uid");
+
+  CREATE INDEX IF NOT EXISTS milestone_1816187111373494 ON "milestone" ("createdOn" DESC, "uid" ASC);
   `);
 };
