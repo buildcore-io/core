@@ -82,7 +82,7 @@ Buildcore is your Enterprise ready web3 plug & play platform. This repo contains
 ### Built With
 
 - [![Typescript][Typescript]][Typescript-url]
-- [![Firestore][Firestore]][Firestore-url]
+- [![Postgresql][Postgresql]][Postgresql-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -183,5 +183,5 @@ Project Link: [https://buildcore.io](https://buildcore.io)
 [linkedin-url]: https://linkedin.com/company/buildcore/
 [Typescript]: https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white
 [Typescript-url]: https://www.typescriptlang.org/
-[Firestore]: https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black
-[Firestore-url]: https://firebase.google.com/
+[Postgresql]: https://img.shields.io/badge/postgresql-4169e1?style=for-the-badge&logo=postgresql&logoColor=white
+[Postgresql-url]: https://www.postgresql.org/
