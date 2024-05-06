@@ -1,10 +1,10 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   ApiError,
   AwardApproveParticipantRequest,
   AwardApproveParticipantResponse,
   Transaction,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { get } from 'lodash';
 import { approveAwardParticipant } from '../../services/payment/tangle-service/award/award.approve.participant.service';
 import { Context } from '../common';
@@ -21,15 +21,15 @@ export const approveAwardParticipantControl = async ({
 
   for (const member of members) {
     try {
-      const badge = await build5Db().runTransaction(
+      const badge = await database().runTransaction(
         approveAwardParticipant(project, owner, awardId, member),
       );
       badges[badge.uid] = badge;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       errors[member] = {
-        code: get<number>(error, 'details.code', 0),
-        message: get<string>(error, 'details.key', ''),
+        code: get<number>(error, 'eCode', 0),
+        message: get<string>(error, 'eKey', ''),
       };
     }
   }

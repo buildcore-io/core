@@ -1,13 +1,11 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
-  Swap,
   SwapStatus,
   TangleRequestType,
-  Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
@@ -44,12 +42,12 @@ describe('Swap control test', () => {
       customMetadata: { request },
     });
 
-    let query = build5Db().collection(COL.SWAP).where('createdBy', '==', address.bech32);
+    const createdByQuery = database().collection(COL.SWAP).where('createdBy', '==', address.bech32);
     await wait(async () => {
-      const snap = await query.get<Swap>();
+      const snap = await createdByQuery.get();
       return snap.length === 1;
     });
-    const swap = (await query.get<Swap>())[0];
+    const swap = (await createdByQuery.get())[0];
     expect(swap.bidOutputs?.length).toBe(1);
     expect(swap.bidOutputs![0].amount).toBe(MIN_IOTA_AMOUNT);
     expect(swap.status).toBe(SwapStatus.FUNDED);
@@ -57,11 +55,11 @@ describe('Swap control test', () => {
       [MINTED_TOKEN_ID_1, MINTED_TOKEN_ID_2].sort(),
     );
 
-    query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', address.bech32)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
-    const snap = await query.get<Transaction>();
+    const snap = await query.get();
     expect(snap.length).toBe(0);
   });
 });

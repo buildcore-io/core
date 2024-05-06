@@ -1,13 +1,12 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
   Network,
   TangleRequestType,
-  Transaction,
   TransactionType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { wait } from '../../test/controls/common';
@@ -21,7 +20,7 @@ describe('Metadata nft', () => {
     async (network: Network) => {
       await helper.beforeEach(network);
 
-      const metadata = { mytest: 'mytest', asd: 'asdasdasd' };
+      const metadata = { mytest: 'mytest', name: 'asdasdasd' };
       await helper.walletService.send(
         helper.memberAddress,
         helper.tangleOrder.payload.targetAddress!,
@@ -41,7 +40,7 @@ describe('Metadata nft', () => {
         helper.network,
       );
 
-      const mintMetadataNftQuery = build5Db()
+      const mintMetadataNftQuery = database()
         .collection(COL.TRANSACTION)
         .where('member', '==', helper.member)
         .where('type', '==', TransactionType.METADATA_NFT);
@@ -50,12 +49,12 @@ describe('Metadata nft', () => {
         return snap.length === 3;
       });
 
-      let creditQuery = build5Db()
+      let creditQuery = database()
         .collection(COL.TRANSACTION)
         .where('member', '==', helper.member)
         .where('type', '==', TransactionType.CREDIT);
       await wait(async () => {
-        const snap = await creditQuery.get<Transaction>();
+        const snap = await creditQuery.get();
         return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
       });
 
@@ -73,15 +72,15 @@ describe('Metadata nft', () => {
           },
         },
       );
-      creditQuery = build5Db()
+      creditQuery = database()
         .collection(COL.TRANSACTION)
         .where('member', '==', helper.member)
         .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
       await wait(async () => {
-        const snap = await creditQuery.get<Transaction>();
+        const snap = await creditQuery.get();
         return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
       });
-      const snap = await creditQuery.get<Transaction>();
+      const snap = await creditQuery.get();
       expect((snap[0].payload.response as any).message).toBe(WenError.invalid_collection_id.key);
     },
   );

@@ -8,7 +8,7 @@ import {
   TRANSACTION_MAX_EXPIRY_MS,
   TokenAllocation,
   TokenCreateRequest,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
@@ -32,7 +32,7 @@ export const createTokenSchema = toJoiObject<TokenCreateRequest>({
     .optional()
     .description('Short description title of the token.'),
   shortDescription: Joi.string().optional().description('Short description of the token.'),
-  space: CommonJoi.uid(false).description('Build5 id of the space.'),
+  space: CommonJoi.uid(false).description('Buildcore id of the space.'),
   pricePerToken: Joi.number()
     .min(MIN_PRICE_PER_TOKEN)
     .max(MAX_PRICE)
@@ -112,10 +112,10 @@ export const createTokenSchema = toJoiObject<TokenCreateRequest>({
     .optional()
     .description('If true, purchases will be fullfilled once reuqest reach 100%.'),
   links: Joi.array().min(0).items(Joi.string().uri()).description('Usefull links for the token.'),
-  icon: Joi.string().uri().description('Build5 url pointing to the token icon.'),
+  icon: Joi.string().uri().description('Buildcore url pointing to the token icon.'),
   overviewGraphics: Joi.string()
     .uri()
-    .description('Build5 url pointing to the overview graphics of the token.'),
+    .description('Buildcore url pointing to the overview graphics of the token.'),
   termsAndConditions: Joi.string()
     .uri()
     .optional()
@@ -132,7 +132,7 @@ export const createTokenSchema = toJoiObject<TokenCreateRequest>({
       otherwise: Joi.forbidden(),
     })
     .description(
-      'Build5 id of the awards. If present only members with the given awards can purchase this token.',
+      'Buildcore id of the awards. If present only members with the given awards can purchase this token.',
     ),
   accessCollections: Joi.array()
     .when('access', {
@@ -141,7 +141,7 @@ export const createTokenSchema = toJoiObject<TokenCreateRequest>({
       otherwise: Joi.forbidden(),
     })
     .description(
-      'Build5 id of the collections. If present only members having NFTs from the give collections can purchase this token.',
+      'Buildcore id of the collections. If present only members having NFTs from the give collections can purchase this token.',
     ),
   tradingDisabled: Joi.boolean()
     .allow(true, false)

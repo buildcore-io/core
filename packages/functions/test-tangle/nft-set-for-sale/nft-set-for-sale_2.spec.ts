@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -8,7 +8,7 @@ import {
   Transaction,
   TransactionType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
@@ -43,16 +43,16 @@ describe('Nft set for sale OTR', () => {
       },
     });
 
-    const credit = build5Db()
+    const credit = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', address.bech32)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
     await wait(async () => {
-      const snap = await credit.get<Transaction>();
+      const snap = await credit.get();
       return snap.length === 1 && snap[0].payload?.walletReference?.confirmed;
     });
 
-    const snap = await credit.get<Transaction>();
+    const snap = await credit.get();
     expect(snap[0].payload.response!['code']).toBe(WenError.you_must_be_the_owner_of_nft.code);
   });
 });

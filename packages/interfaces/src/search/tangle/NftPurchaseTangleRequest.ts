@@ -8,7 +8,7 @@
  */
 export interface NftPurchaseTangleRequest {
   /**
-   * Build5 id of the collection in case a random nft is bought.
+   * Buildcore id of the collection in case a random nft is bought.
    */
   collection: string;
   /**
@@ -16,7 +16,7 @@ export interface NftPurchaseTangleRequest {
    */
   disableWithdraw?: boolean;
   /**
-   * Build5 id of the nft to be purchased.
+   * Buildcore id of the nft to be purchased.
    */
   nft?: string;
   /**

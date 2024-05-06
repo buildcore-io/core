@@ -1,14 +1,21 @@
-import { build5Db } from '@build-5/database';
-import { COL, Member, Network, SOON_PROJECT_ID, Space, TokenStatus } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import {
+  COL,
+  Member,
+  Network,
+  SOON_PROJECT_ID,
+  Space,
+  Token,
+  TokenStatus,
+} from '@buildcore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as walletUtil from '../../src/utils/wallet.utils';
-import { createMember, createSpace, getRandomSymbol } from '../../test/controls/common';
-import { MEDIA, getWallet } from '../../test/set-up';
+import { getRandomSymbol } from '../../test/controls/common';
+import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 
 export class Helper {
-  public walletSpy: any;
   public network = Network.RMS;
   public guardian: Member = {} as any;
   public space: Space = {} as any;
@@ -17,12 +24,11 @@ export class Helper {
 
   public beforeEach = async (vaultMnemonic: string, mintedTokenId: string, notMinted = false) => {
     this.wallet = await getWallet(this.network);
-    this.walletSpy = jest.spyOn(walletUtil, 'decodeAuth');
 
-    const guardianId = await createMember(this.walletSpy);
-    this.guardian = <Member>await build5Db().doc(`${COL.MEMBER}/${guardianId}`).get();
+    const guardianId = await testEnv.createMember();
+    this.guardian = <Member>await database().doc(COL.MEMBER, guardianId).get();
 
-    this.space = await createSpace(this.walletSpy, this.guardian.uid);
+    this.space = await testEnv.createSpace(this.guardian.uid);
     this.token = await this.saveToken(
       this.space.uid,
       this.guardian.uid,
@@ -64,8 +70,8 @@ export class Helper {
       access: 0,
       totalSupply: 10,
       icon: MEDIA,
-    };
-    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+    } as Token;
+    await database().doc(COL.TOKEN, token.uid).create(token);
     return token;
   };
 }

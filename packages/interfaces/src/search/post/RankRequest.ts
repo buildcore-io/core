@@ -8,7 +8,7 @@
  */
 export interface RankRequest {
   /**
-   * Build5 collection name to rank.
+   * Buildcore collection name to rank.
    */
   collection: 'collection' | 'token';
   /**
@@ -16,7 +16,7 @@ export interface RankRequest {
    */
   rank: number;
   /**
-   * Build5 id of the entity to rank.
+   * Buildcore id of the entity to rank.
    */
   uid: string;
 }

@@ -1,4 +1,4 @@
-import { Timestamp } from './base';
+import { BaseRecord, Timestamp } from './base';
 import { Network } from './transaction';
 
 /**
@@ -6,7 +6,7 @@ import { Network } from './transaction';
  *
  * @hidden
  */
-export interface Mnemonic {
+export interface Mnemonic extends BaseRecord {
   readonly mnemonic?: string;
   readonly network?: Network;
   readonly createdOn?: Timestamp;

@@ -1,4 +1,4 @@
-import { Dataset, Ticker } from '@build-5/interfaces';
+import { Dataset, Ticker } from '@buildcore/interfaces';
 import { DatasetClass } from './Dataset';
 
 /**

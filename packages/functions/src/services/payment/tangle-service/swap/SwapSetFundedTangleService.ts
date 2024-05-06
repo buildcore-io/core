@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, Swap, SwapStatus, TangleResponse } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, SwapStatus, TangleResponse } from '@buildcore/interfaces';
 import { assertValidationAsync } from '../../../../utils/schema.utils';
 import { BaseTangleService, HandlerParams } from '../../base';
 import {
@@ -7,6 +7,7 @@ import {
   assertSwapCanBeSetAsFunded,
   createSwapTransfers,
 } from '../../swap/swap-service';
+import { Action } from '../../transaction-service';
 import { swapSetFundedTangleSchema } from './SwapSetFundedTangleRequestSchema';
 
 export class SwapSetFundedTangleService extends BaseTangleService<TangleResponse> {
@@ -17,26 +18,25 @@ export class SwapSetFundedTangleService extends BaseTangleService<TangleResponse
   }: HandlerParams): Promise<TangleResponse> => {
     const params = await assertValidationAsync(swapSetFundedTangleSchema, request);
 
-    const swapDocRef = build5Db().doc(`${COL.SWAP}/${params.uid}`);
-    const swap = await this.transactionService.get<Swap>(swapDocRef);
+    const swapDocRef = database().doc(COL.SWAP, params.uid);
+    const swap = await this.transaction.get(swapDocRef);
 
     assertSwapCanBeSetAsFunded(owner, swap);
 
     if (asksAreFulfilled(swap!)) {
       const transfers = await createSwapTransfers(project, swap!);
       for (const transfer of transfers) {
-        const docRef = build5Db().doc(`${COL.TRANSACTION}/${transfer.uid}`);
         this.transactionService.push({
-          ref: docRef,
+          ref: database().doc(COL.TRANSACTION, transfer.uid),
           data: transfer,
-          action: 'set',
+          action: Action.C,
         });
       }
 
       this.transactionService.push({
         ref: swapDocRef,
         data: { status: SwapStatus.FULFILLED },
-        action: 'update',
+        action: Action.U,
       });
 
       return { status: 'success' };
@@ -45,7 +45,7 @@ export class SwapSetFundedTangleService extends BaseTangleService<TangleResponse
     this.transactionService.push({
       ref: swapDocRef,
       data: { status: SwapStatus.FUNDED },
-      action: 'update',
+      action: Action.U,
     });
 
     return { status: 'success' };

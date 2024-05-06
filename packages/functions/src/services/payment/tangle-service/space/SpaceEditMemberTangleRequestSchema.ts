@@ -1,4 +1,4 @@
-import { SpaceMemberUpsertTangleRequest, TangleRequestType } from '@build-5/interfaces';
+import { SpaceMemberUpsertTangleRequest, TangleRequestType } from '@buildcore/interfaces';
 import { editSpaceMemberSchema } from '../../../../controls/space/SpaceEditMemberRequestSchema';
 import { toJoiObject } from '../../../joi/common';
 import { baseTangleSchema } from '../common';

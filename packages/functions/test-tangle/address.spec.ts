@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -12,27 +12,19 @@ import {
   Transaction,
   TransactionPayloadType,
   TransactionType,
-} from '@build-5/interfaces';
+  WEN_FUNC,
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty, set } from 'lodash';
 import { getAddress } from '../src/utils/address.utils';
 import { dateToTimestamp } from '../src/utils/dateTime.utils';
-import * as wallet from '../src/utils/wallet.utils';
-import {
-  createMember,
-  createSpace,
-  validateMemberAddressFunc,
-  validateSpaceAddressFunc,
-  wait,
-} from '../test/controls/common';
-import { getWallet } from '../test/set-up';
+import { validateMemberAddressFunc, wait } from '../test/controls/common';
+import { getWallet, mockWalletReturnValue, testEnv } from '../test/set-up';
 import { getTangleOrder } from './common';
 import { requestFundsFromFaucet } from './faucet';
 
-let walletSpy: any;
-
 const awaitMemberAddressValidation = async (memberId: string, network: Network) => {
-  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${memberId}`);
+  const memberDocRef = database().doc(COL.MEMBER, memberId);
   await wait(async () => {
     const member = <Member>await memberDocRef.get();
     return !isEmpty(getAddress(member, network));
@@ -40,7 +32,7 @@ const awaitMemberAddressValidation = async (memberId: string, network: Network) 
 };
 
 const awaitSpaceAddressValidation = async (space: string, network: Network) => {
-  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space}`);
+  const spaceDocRef = database().doc(COL.SPACE, space);
   await wait(async () => {
     const space = <Space>await spaceDocRef.get();
     return !isEmpty(getAddress(space, network));
@@ -53,13 +45,14 @@ describe('Address validation', () => {
   let tangleOrder: Transaction;
 
   beforeEach(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    member = await createMember(walletSpy);
-    await build5Db().doc(`${COL.MEMBER}/${member}`).update({ validatedAddress: {} });
+    member = await testEnv.createMember();
+    await database()
+      .doc(COL.MEMBER, member)
+      .update({ smrAddress: '', rmsAddress: '', iotaAddress: '', atoiAddress: '' });
   });
 
   const validateMemberAddress = async (network: Network, expiresAt?: Timestamp) => {
-    const order = await validateMemberAddressFunc(walletSpy, member, network);
+    const order = await validateMemberAddressFunc(member, network);
     const { faucetAddress } = await requestFundsFromFaucet(
       network,
       order.payload.targetAddress!,
@@ -69,9 +62,17 @@ describe('Address validation', () => {
 
     await awaitMemberAddressValidation(member, network);
 
-    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${member}`);
+    const memberDocRef = database().doc(COL.MEMBER, member);
     const data = <Member>await memberDocRef.get();
     expect(data.validatedAddress![network]).toBe(faucetAddress.bech32);
+  };
+
+  const validateSpaceAddressFunc = async (adr: string, space: string, network?: Network) => {
+    mockWalletReturnValue(adr, network ? { space, network } : { space });
+    const order = await testEnv.wrap<Transaction>(WEN_FUNC.validateAddress);
+    expect(order?.type).toBe(TransactionType.ORDER);
+    expect(order?.payload.type).toBe(TransactionPayloadType.SPACE_ADDRESS_VALIDATION);
+    return <Transaction>order;
   };
 
   it.each([Network.ATOI, Network.RMS])(
@@ -87,7 +88,7 @@ describe('Address validation', () => {
   });
 
   const validateSpace = async (network: Network) => {
-    const order = await validateSpaceAddressFunc(walletSpy, member, space, network);
+    const order = await validateSpaceAddressFunc(member, space, network);
     const { faucetAddress } = await requestFundsFromFaucet(
       network,
       order.payload.targetAddress!,
@@ -96,7 +97,7 @@ describe('Address validation', () => {
 
     await awaitSpaceAddressValidation(space, network);
 
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space}`);
+    const spaceDocRef = database().doc(COL.SPACE, space);
     const spaceData = <Space>await spaceDocRef.get();
     expect(spaceData.validatedAddress![network]).toBe(faucetAddress.bech32);
   };
@@ -104,15 +105,19 @@ describe('Address validation', () => {
   it.each([Network.ATOI, Network.RMS])(
     'Should validate space address with network',
     async (network: Network) => {
-      space = (await createSpace(walletSpy, member)).uid;
-      await build5Db().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} });
+      space = (await testEnv.createSpace(member)).uid;
+      await database()
+        .doc(COL.SPACE, space)
+        .update({ smrAddress: '', rmsAddress: '', iotaAddress: '', atoiAddress: '' });
       await validateSpace(network);
     },
   );
 
   it('Should validate space address with both network', async () => {
-    space = (await createSpace(walletSpy, member)).uid;
-    await build5Db().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} });
+    space = (await testEnv.createSpace(member)).uid;
+    await database()
+      .doc(COL.SPACE, space)
+      .update({ smrAddress: '', rmsAddress: '', iotaAddress: '', atoiAddress: '' });
     await validateSpace(Network.ATOI);
     await validateSpace(Network.RMS);
   });
@@ -125,8 +130,8 @@ describe('Address validation', () => {
     const walletService = await getWallet(network);
     const tmpAddress = await walletService.getNewIotaAddressDetails();
 
-    const order = await validateMemberAddressFunc(walletSpy, member, network);
-    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${member}`);
+    const order = await validateMemberAddressFunc(member, network);
+    const memberDocRef = database().doc(COL.MEMBER, member);
     let memberData = <Member>await memberDocRef.get();
 
     await requestFundsFromFaucet(network, tmpAddress.bech32, order.payload.amount!);
@@ -140,7 +145,7 @@ describe('Address validation', () => {
     expect(memberData.validatedAddress![network]).toBe(tmpAddress.bech32);
 
     const unlock = (
-      await build5Db()
+      await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.UNLOCK)
         .where('member', '==', member)
@@ -149,11 +154,11 @@ describe('Address validation', () => {
     expect(dayjs(unlock.payload.expiresOn!.toDate()).isSame(dayjs(expiresAt.toDate()))).toBe(true);
 
     await wait(async () => {
-      const snap = await build5Db()
+      const snap = await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
         .where('member', '==', member)
-        .get<Transaction>();
+        .get();
       return snap.length === 1 && snap[0].payload?.walletReference?.confirmed;
     });
 
@@ -171,13 +176,15 @@ describe('Address validation', () => {
     const wallet = await getWallet(network);
     const tmp = await wallet.getNewIotaAddressDetails();
 
-    await build5Db()
-      .doc(`${COL.MEMBER}/${member}`)
-      .set({ validatedAddress: { [network]: tmp.bech32 } }, true);
+    await database()
+      .doc(COL.MEMBER, member)
+      .upsert({ [`${network}Address`]: tmp.bech32 });
 
     if (validateSpace) {
-      space = (await createSpace(walletSpy, member)).uid;
-      await build5Db().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} });
+      space = (await testEnv.createSpace(member)).uid;
+      await database()
+        .doc(COL.SPACE, space)
+        .update({ smrAddress: '', rmsAddress: '', iotaAddress: '', atoiAddress: '' });
     }
     await requestFundsFromFaucet(network, tmp.bech32, 5 * MIN_IOTA_AMOUNT);
 
@@ -189,29 +196,29 @@ describe('Address validation', () => {
       customMetadata: { request },
     });
 
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', member);
 
     await wait(async () => {
-      const snap = await query.get<Transaction>();
+      const snap = await query.get();
       return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
     });
 
     if (validateSpace) {
-      const spaceData = <Space>await build5Db().doc(`${COL.SPACE}/${space}`).get();
+      const spaceData = <Space>await database().doc(COL.SPACE, space).get();
       expect(spaceData.validatedAddress![network]).toBe(tmp.bech32);
     } else {
-      const memberData = <Member>await build5Db().doc(`${COL.MEMBER}/${member}`).get();
+      const memberData = <Member>await database().doc(COL.MEMBER, member).get();
       expect(memberData.validatedAddress![network]).toBe(tmp.bech32);
       expect(memberData.prevValidatedAddresses).toEqual([tmp.bech32]);
     }
 
-    const snap = await build5Db()
+    const snap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
-      .where('payload.type', '==', TransactionPayloadType.TANGLE_TRANSFER)
+      .where('payload_type', '==', TransactionPayloadType.TANGLE_TRANSFER)
       .get();
     expect(snap.length).toBe(1);
   });

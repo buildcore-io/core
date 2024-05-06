@@ -1,8 +1,6 @@
-import { build5Db } from '@build-5/database';
-import { COL, Nft, NftTransferRequest, Transaction, TransactionType } from '@build-5/interfaces';
-import { nftTransfer } from '../../src/runtime/firebase/nft';
-import { mockWalletReturnValue } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { database } from '@buildcore/database';
+import { COL, Nft, NftTransferRequest, TransactionType, WEN_FUNC } from '@buildcore/interfaces';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { Helper } from './Helper';
 
 describe('Nft transfer', () => {
@@ -28,27 +26,27 @@ describe('Nft transfer', () => {
       ],
     };
 
-    mockWalletReturnValue(h.spy, h.guardian, request);
-    const response: { [key: string]: number } = await testEnv.wrap(nftTransfer)({});
+    mockWalletReturnValue(h.guardian, request);
+    const response: { [key: string]: number } = await testEnv.wrap(WEN_FUNC.nftTransfer);
     expect(response[nft1.uid]).toBe(200);
     expect(response[nft2.uid]).toBe(200);
 
-    const transfers = await build5Db()
+    const transfers = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', h.guardian)
       .where('type', '==', TransactionType.NFT_TRANSFER)
-      .get<Transaction>();
+      .get();
     expect(transfers.length).toBe(1);
 
-    const nft2DocRef = build5Db().doc(`${COL.NFT}/${nft2.uid}`);
+    const nft2DocRef = database().doc(COL.NFT, nft2.uid);
     nft2 = <Nft>await nft2DocRef.get();
     expect(nft2.owner).toBe(h.member);
 
-    const withdraws = await build5Db()
+    const withdraws = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', h.guardian)
       .where('type', '==', TransactionType.WITHDRAW_NFT)
-      .get<Transaction>();
+      .get();
     expect(withdraws.length).toBe(1);
   });
 });

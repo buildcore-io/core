@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Member,
@@ -12,19 +12,17 @@ import {
   Transaction,
   TransactionType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { createMember, createSpace, getRandomSymbol, wait } from '../../test/controls/common';
-import { getWallet, MEDIA } from '../../test/set-up';
+import { getRandomSymbol, wait } from '../../test/controls/common';
+import { getWallet, MEDIA, testEnv } from '../../test/set-up';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
-
-let walletSpy: any;
 
 describe('Tangle request spec', () => {
   let member: string;
@@ -38,22 +36,19 @@ describe('Tangle request spec', () => {
   });
 
   beforeEach(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    member = await createMember(walletSpy);
+    member = await testEnv.createMember();
     rmsWallet = await getWallet(Network.RMS);
-    const space = await createSpace(walletSpy, member);
+    const space = await testEnv.createSpace(member);
     token = await saveToken(space.uid, member);
 
-    const memberData = <Member>await build5Db().doc(`${COL.MEMBER}/${member}`).get();
+    const memberData = <Member>await database().doc(COL.MEMBER, member).get();
     rmsAddress = await rmsWallet.getAddressDetails(getAddress(memberData, Network.RMS)!);
     await requestFundsFromFaucet(Network.RMS, rmsAddress.bech32, 10 * MIN_IOTA_AMOUNT);
   });
 
   it('Should return amount, multiple users with same address', async () => {
-    const member2 = await createMember(walletSpy);
-    await build5Db()
-      .doc(`${COL.MEMBER}/${member2}`)
-      .set({ validatedAddress: { [Network.RMS]: rmsAddress.bech32 } }, true);
+    const member2 = await testEnv.createMember();
+    await database().doc(COL.MEMBER, member2).upsert({ rmsAddress: rmsAddress.bech32 });
 
     await rmsWallet.send(rmsAddress, tangleOrder.payload.targetAddress!, 5 * MIN_IOTA_AMOUNT, {
       customMetadata: {
@@ -66,15 +61,15 @@ describe('Tangle request spec', () => {
       },
     });
 
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', rmsAddress.bech32)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
     await wait(async () => {
-      const snap = await query.get<Transaction>();
+      const snap = await query.get();
       return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
     });
-    const snap = await query.get<Transaction>();
+    const snap = await query.get();
     expect(snap.length).toBe(1);
     expect(snap[0]?.payload?.response).toEqual({
       code: WenError.multiple_members_with_same_address.code,
@@ -100,23 +95,19 @@ describe('Tangle request spec', () => {
     });
     await MnemonicService.store(address.bech32, address.mnemonic);
 
-    const query = build5Db()
+    const query = database()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', address.bech32)
       .where('type', '==', TokenTradeOrderType.BUY);
     await wait(async () => {
-      const snap = await query.get<Transaction>();
+      const snap = await query.get();
       return snap.length === 1;
     });
 
-    const member2 = await createMember(walletSpy);
-    await build5Db()
-      .doc(`${COL.MEMBER}/${member2}`)
-      .set({ validatedAddress: { [Network.RMS]: rmsAddress.bech32 } }, true);
-    const member3 = await createMember(walletSpy);
-    await build5Db()
-      .doc(`${COL.MEMBER}/${member3}`)
-      .set({ validatedAddress: { [Network.RMS]: rmsAddress.bech32 } }, true);
+    const member2 = await testEnv.createMember();
+    await database().doc(COL.MEMBER, member2).upsert({ rmsAddress: rmsAddress.bech32 });
+    const member3 = await testEnv.createMember();
+    await database().doc(COL.MEMBER, member3).upsert({ rmsAddress: rmsAddress.bech32 });
 
     await rmsWallet.send(address, tangleOrder.payload.targetAddress!, 0.2 * MIN_IOTA_AMOUNT, {
       customMetadata: {
@@ -130,7 +121,7 @@ describe('Tangle request spec', () => {
     });
 
     await wait(async () => {
-      const snap = await query.get<Transaction>();
+      const snap = await query.get();
       return snap.length === 2;
     });
   });
@@ -149,7 +140,7 @@ describe('Tangle request spec', () => {
       },
     }));
     await rmsWallet.sendToMany(rmsAddress, requests, {});
-    const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', member);
+    const query = database().collection(COL.TOKEN_MARKET).where('owner', '==', member);
     await wait(async () => {
       const snap = await query.get();
       return snap.length === 10;
@@ -161,15 +152,15 @@ describe('Tangle request spec', () => {
       customMetadata: { request: { requestType: 'wrong_request' } },
     });
 
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
     await wait(async () => {
-      const snap = await query.get<Transaction>();
+      const snap = await query.get();
       return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
     });
-    const snap = await query.get<Transaction>();
+    const snap = await query.get();
     expect(snap.length).toBe(1);
     expect(snap[0]?.payload?.response).toEqual({
       code: WenError.invalid_tangle_request_type.code,
@@ -196,7 +187,7 @@ const saveToken = async (space: string, guardian: string) => {
     mintingData: {
       network: Network.RMS,
     },
-  };
-  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  } as Token;
+  await database().doc(COL.TOKEN, token.uid).create(token);
   return token as Token;
 };

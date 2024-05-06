@@ -44,7 +44,7 @@ export interface AuctionCreateTangleRequest {
    */
   requestType: 'CREATE_AUCTION';
   /**
-   * Build5 id of the space
+   * Buildcore id of the space
    */
   space: string;
   /**

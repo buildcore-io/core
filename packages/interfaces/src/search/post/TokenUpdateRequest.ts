@@ -32,7 +32,7 @@ export interface MintedTokenUpdateRequest {
    */
   title: string | null | '';
   /**
-   * Build5 id of the token.
+   * Buildcore id of the token.
    */
   uid: string;
 }
@@ -70,7 +70,7 @@ export interface TokenUpdateRequest {
    */
   title: string | null | '';
   /**
-   * Build5 id of the token.
+   * Buildcore id of the token.
    */
   uid: string;
 }

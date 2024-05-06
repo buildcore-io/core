@@ -1,4 +1,4 @@
-import { MintMetadataNftTangleRequest, TangleRequestType } from '@build-5/interfaces';
+import { MintMetadataNftTangleRequest, TangleRequestType } from '@buildcore/interfaces';
 import { commonMetadataNftParams } from '../../../../controls/nft/NftMetadataRequestSchema';
 import { toJoiObject } from '../../../joi/common';
 import { baseTangleSchema } from '../common';

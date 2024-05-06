@@ -24,7 +24,7 @@ export interface MilestoneTransaction extends Base {
   consumedOutputIds: string[];
   outputs: MilestoneTransactionEntry[];
   processed: boolean;
-  build5TransactionId?: string;
+  buildcoreTransactionId?: string;
 }
 
 /**
@@ -39,6 +39,10 @@ export interface Milestone {
    */
   createdOn: Timestamp;
   /**
+   * Completed on
+   */
+  completedOn: Timestamp;
+  /**
    * Milestone number
    */
   milestone: number;
@@ -48,4 +52,9 @@ export interface Milestone {
   cmi: number;
   completed: boolean;
   processed: boolean;
+  listenerNodeId: string;
+  milestoneTimestamp: Timestamp;
+  trxConflictCount: number;
+  trxFailedCount: number;
+  trxValidCount: number;
 }

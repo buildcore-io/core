@@ -40,7 +40,9 @@ jobs:
               --allow-unauthenticated \
               --timeout=600 \
               --ingress=internal-and-cloud-load-balancing \
+              --add-cloudsql-instances $GOOGLE_CLOUD_PROJECT:us-central1:$GOOGLE_CLOUD_PROJECT \
               --region=us-central1 \
+  
   deploy_to_npm_as_next:
     runs-on: ubuntu-latest
     env:
@@ -64,6 +66,7 @@ jobs:
         run: |
           npm publish --workspace packages/interfaces --tag next --access public
           cd packages/sdk/lib && npm publish --tag next --access public
+  
   deploy_functions:
     runs-on: ubuntu-latest
     environment: staging
@@ -89,49 +92,3 @@ jobs:
             npm run create-deploy-script
             chmod 777 ./deploy.sh
             ./deploy.sh
-
-  deploy-firestore-indexes:
-    runs-on: ubuntu-latest
-    environment: staging
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - name: Deploy indexes
-        uses: w9jds/firebase-action@v12.8.0
-        with:
-          args: deploy --only firestore:indexes -f
-        env:
-          GCP_SA_KEY: ${{ secrets.SERVICE_ACCOUNT }}
-          PROJECT_ID: preview
-
-  roll-firestore:
-    runs-on: ubuntu-latest
-    environment: staging
-    timeout-minutes: 360
-    needs: [deploy_functions]
-    defaults:
-      run:
-        working-directory: packages/functions
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: '10'
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - name: Set env vars
-        run: echo "$ENV_VARS" > .env
-        env:
-          ENV_VARS: ${{ secrets.ENV_VARS }}
-      - name: Create serviceAccountKey.json
-        run: echo "$SERVICE_ACCOUNT" > scripts/serviceAccountKey.json
-        env:
-          SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
-      - name: Install dependencies
-        run: |
-          npm i -g ts-node
-          cd ../../ && npm run build:functions
-      - name: Roll firestore
-        run: cd scripts && ts-node db.upgrade.ts

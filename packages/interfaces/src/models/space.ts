@@ -133,10 +133,18 @@ export interface Space extends BaseRecord {
    * Vault address
    */
   vaultAddress?: string;
+
+  /**
+   * @deprecated This is not longer used
+   */
   guardians: {
     // Owner / from date
     [propName: string]: SpaceGuardian;
   };
+
+  /**
+   * @deprecated This is not longer used
+   */
   members: {
     // Owner / from date
     [propName: string]: SpaceMember;
@@ -165,6 +173,10 @@ export interface Space extends BaseRecord {
    * Media status
    */
   readonly mediaStatus?: MediaStatus;
+  /**
+   * @hidden
+   */
+  readonly mediaUploadErrorCount?: number;
   /**
    * Space Alias details.
    */

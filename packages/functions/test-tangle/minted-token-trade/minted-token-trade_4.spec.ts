@@ -1,16 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   CreditPaymentReason,
   TokenTradeOrder,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
-import { cancelTradeOrder } from '../../src/runtime/firebase/token/trading';
-import { mockWalletReturnValue } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+  WEN_FUNC,
+} from '@buildcore/interfaces';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { Helper } from './Helper';
 
@@ -28,12 +27,12 @@ describe('Token minting', () => {
   it('Create and cancel sell', async () => {
     await helper.createSellTradeOrder();
 
-    const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', helper.seller);
+    const query = database().collection(COL.TOKEN_MARKET).where('owner', '==', helper.seller);
     const sell = <TokenTradeOrder>(await query.get())[0];
-    mockWalletReturnValue(helper.walletSpy, helper.seller!, { uid: sell.uid });
-    await testEnv.wrap(cancelTradeOrder)({});
+    mockWalletReturnValue(helper.seller!, { uid: sell.uid });
+    await testEnv.wrap<TokenTradeOrder>(WEN_FUNC.cancelTradeOrder);
 
-    const sellerCreditSnap = await build5Db()
+    const sellerCreditSnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller)
       .where('type', '==', TransactionType.CREDIT)

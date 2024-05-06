@@ -1,13 +1,12 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
   Network,
-  Nft,
   NftPurchaseTangleRequest,
   NftStatus,
   TangleRequestType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
 import { requestFundsFromFaucet } from '../faucet';
@@ -44,9 +43,9 @@ describe('Minted nft trading', () => {
       );
       await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
 
-      const nftDocRef = build5Db().doc(`${COL.NFT}/${helper.nft!.uid}`);
+      const nftDocRef = database().doc(COL.NFT, helper.nft!.uid);
       await wait(async () => {
-        const nft = await nftDocRef.get<Nft>();
+        const nft = await nftDocRef.get();
         return nft?.owner === address.bech32 && nft.status === NftStatus.MINTED;
       });
     },

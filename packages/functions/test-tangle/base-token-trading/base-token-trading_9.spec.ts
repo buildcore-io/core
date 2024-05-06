@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -7,10 +7,10 @@ import {
   TokenTradeOrderStatus,
   TokenTradeOrderType,
   Transaction,
-} from '@build-5/interfaces';
-import { tradeToken } from '../../src/runtime/firebase/token/trading';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+  WEN_FUNC,
+} from '@buildcore/interfaces';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsForManyFromFaucet, requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
@@ -24,20 +24,22 @@ describe('Base token trading', () => {
   it('Should fulfill many buys with sell', async () => {
     const count = 15;
 
-    mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
+    mockWalletReturnValue(helper.buyer!.uid, {
       symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 1,
       type: TokenTradeOrderType.BUY,
     });
-    const promises = Array.from(Array(count)).map(() => testEnv.wrap(tradeToken)({}));
+    const promises = Array.from(Array(count)).map(() =>
+      testEnv.wrap<Transaction>(WEN_FUNC.tradeToken),
+    );
     const orders: Transaction[] = await Promise.all(promises);
     await requestFundsForManyFromFaucet(
       Network.RMS,
       orders.map((o) => ({ toAddress: o.payload.targetAddress!, amount: o.payload.amount! })),
     );
 
-    const tradeQuery = build5Db()
+    const tradeQuery = database()
       .collection(COL.TOKEN_MARKET)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {
@@ -45,13 +47,13 @@ describe('Base token trading', () => {
       return snap.length === count;
     });
 
-    mockWalletReturnValue(helper.walletSpy, helper.seller!.uid, {
+    mockWalletReturnValue(helper.seller!.uid, {
       symbol: helper.token!.symbol,
       count: count * MIN_IOTA_AMOUNT,
       price: 1,
       type: TokenTradeOrderType.SELL,
     });
-    const trade = await testEnv.wrap(tradeToken)({});
+    const trade = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await requestFundsFromFaucet(Network.ATOI, trade.payload.targetAddress, trade.payload.amount);
 
     await wait(async () => {

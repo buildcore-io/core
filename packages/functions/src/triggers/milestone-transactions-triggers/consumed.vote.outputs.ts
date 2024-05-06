@@ -1,39 +1,35 @@
-import { build5Db } from '@build-5/database';
-import { COL, Proposal, SUB_COL, Transaction, TransactionType } from '@build-5/interfaces';
+import { PgProposalUpdate, database } from '@buildcore/database';
+import { COL, Proposal, SUB_COL, TransactionType } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { getTokenVoteMultiplier } from '../../services/payment/voting-service';
-import { serverTime } from '../../utils/dateTime.utils';
 
 export const processConsumedVoteOutputs = async (consumedOutputIds: string[]) => {
-  const batch = build5Db().batch();
+  const batch = database().batch();
   for (const consumedOutput of consumedOutputIds) {
-    const voteTransactionSnap = await build5Db()
+    const voteTransactionSnap = await database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.VOTE)
-      .where('payload.outputId', '==', consumedOutput)
-      .where('payload.outputConsumed', '==', false)
+      .where('payload_outputId', '==', consumedOutput)
+      .where('payload_outputConsumed', '==', false)
       .limit(1)
-      .get<Transaction>();
+      .get();
     if (!voteTransactionSnap.length) {
       continue;
     }
 
-    const voteTransactionDocRef = build5Db().doc(
-      `${COL.TRANSACTION}/${voteTransactionSnap[0].uid}`,
-    );
+    const voteTransactionDocRef = database().doc(COL.TRANSACTION, voteTransactionSnap[0].uid);
     const voteTransaction = voteTransactionSnap[0];
-    const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${voteTransaction.payload.proposalId}`);
+    const proposalDocRef = database().doc(COL.PROPOSAL, voteTransaction.payload.proposalId!);
     const proposal = <Proposal>await proposalDocRef.get();
+
     if (dayjs().isAfter(proposal.settings.endDate.toDate())) {
       batch.update(voteTransactionDocRef, {
-        'payload.outputConsumed': true,
-        'payload.outputConsumedOn': serverTime(),
+        payload_outputConsumed: true,
+        payload_outputConsumedOn: dayjs().toDate(),
       });
       continue;
     }
-
     const prevWeight = voteTransaction.payload.weight!;
-
     const currWeightMultiplier = getTokenVoteMultiplier(
       proposal,
       dayjs(voteTransaction.createdOn?.toDate()),
@@ -42,42 +38,31 @@ export const processConsumedVoteOutputs = async (consumedOutputIds: string[]) =>
     const currWeight = voteTransaction.payload.tokenAmount! * currWeightMultiplier;
 
     const value = voteTransaction.payload.values![0];
-    const data = {
+    const data: PgProposalUpdate = {
       results: {
-        total: build5Db().inc(-prevWeight + currWeight),
-        voted: build5Db().inc(-prevWeight + currWeight),
-        answers: { [value]: build5Db().inc(-prevWeight + currWeight) },
+        total: database().inc(-prevWeight + currWeight),
+        voted: database().inc(-prevWeight + currWeight),
+        answers: { [value.toString()]: database().inc(-prevWeight + currWeight) },
       },
     };
-    batch.set(proposalDocRef, data, true);
+    batch.update(proposalDocRef, data);
 
-    batch.update(voteTransactionDocRef, {
-      'payload.weight': currWeight,
-      'payload.weightMultiplier': currWeightMultiplier,
-      'payload.outputConsumed': true,
-      'payload.outputConsumedOn': serverTime(),
-    });
-
-    const proposalMemberDocRef = proposalDocRef
-      .collection(SUB_COL.MEMBERS)
-      .doc(voteTransaction.member!);
-    batch.set(
-      proposalMemberDocRef,
-      {
-        values: build5Db().arrayRemove({
-          [value]: prevWeight,
-          voteTransaction: voteTransaction.uid,
-        }),
-        voteTransactions: build5Db().inc(-1),
-        weightPerAnswer: { [value]: build5Db().inc(-prevWeight + currWeight) },
-      },
-      true,
+    const proposalMemberDocRef = database().doc(
+      COL.PROPOSAL,
+      voteTransaction.payload.proposalId!,
+      SUB_COL.MEMBERS,
+      voteTransaction.member!,
     );
     batch.update(proposalMemberDocRef, {
-      values: build5Db().arrayUnion({
-        [value]: currWeight,
-        voteTransaction: voteTransaction.uid,
-      }),
+      weight: database().inc(-prevWeight + currWeight),
+      values: { [voteTransaction.uid]: { weight: database().inc(-prevWeight + currWeight) } },
+    });
+
+    batch.update(voteTransactionDocRef, {
+      payload_weight: currWeight,
+      payload_weightMultiplier: currWeightMultiplier,
+      payload_outputConsumed: true,
+      payload_outputConsumedOn: dayjs().toDate(),
     });
   }
   await batch.commit();

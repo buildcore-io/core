@@ -1,10 +1,10 @@
-import { Dataset, Network } from '@build-5/interfaces';
-import { Build5, SoonaverseApiKey, https } from '@build-5/sdk';
+import { Dataset, Network } from '@buildcore/interfaces';
+import { Buildcore, SoonaverseApiKey, https } from '@buildcore/sdk';
 import { address } from '../../utils/secret';
 import { walletSign } from '../../utils/utils';
 
 async function main() {
-  const origin = Build5.TEST;
+  const origin = Buildcore.TEST;
   const userSign = await walletSign(address.bech32, address);
 
   try {
@@ -26,7 +26,7 @@ async function main() {
           maxBids: 1,
           minimalBidIncrement: 1000000,
           network: Network.RMS,
-          space: 'build5spaceid',
+          space: 'spaceid',
         },
       });
     console.log('Auction created with id: ', auction.uid);

@@ -5,7 +5,7 @@ import { TangleResponse } from './TangleResponse';
  */
 export interface AuctionCreateTangleResponse extends TangleResponse {
   /**
-   * Build5 id of the created auction
+   * Buildcore id of the created auction
    */
   auction: string;
 }

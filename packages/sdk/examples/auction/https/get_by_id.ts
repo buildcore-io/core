@@ -1,8 +1,8 @@
-import { Dataset } from '@build-5/interfaces';
-import { Build5, SoonaverseApiKey, SoonaverseOtrAddress, https } from '@build-5/sdk';
+import { Dataset } from '@buildcore/interfaces';
+import { Buildcore, SoonaverseApiKey, SoonaverseOtrAddress, https } from '@buildcore/sdk';
 
 async function main() {
-  const origin = Build5.TEST;
+  const origin = Buildcore.TEST;
   // @ts-ignore
   const otrAddress = SoonaverseOtrAddress[origin];
 

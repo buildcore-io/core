@@ -1,4 +1,4 @@
-import { CollectionStats } from '@build-5/interfaces';
+import { CollectionStats } from '@buildcore/interfaces';
 import { SubsetClass } from '../Subset';
 
 /**

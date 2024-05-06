@@ -1,8 +1,7 @@
-import { MIN_IOTA_AMOUNT, WenError } from '@build-5/interfaces';
+import { MIN_IOTA_AMOUNT, WEN_FUNC, WenError } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
-import { voteOnProposal } from '../../src/runtime/firebase/proposal';
-import { expectThrow, mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { expectThrow, wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 import { Helper, MINTED_TOKEN_ID, VAULT_MNEMONIC } from './Helper';
 
@@ -20,9 +19,9 @@ describe('Token based voting', () => {
 
   it('Should vote on both answers and spend both', async () => {
     let voteTransactionOrder = await helper.voteOnProposal(1);
-    await helper.sendTokensToVote(voteTransactionOrder.payload.targetAddress);
+    await helper.sendTokensToVote(voteTransactionOrder.payload.targetAddress!);
     const credit = await helper.awaitVoteTransactionCreditIsConfirmed(
-      voteTransactionOrder.payload.targetAddress,
+      voteTransactionOrder.payload.targetAddress!,
     );
 
     const voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
@@ -44,9 +43,9 @@ describe('Token based voting', () => {
     );
 
     voteTransactionOrder = await helper.voteOnProposal(2);
-    await helper.sendTokensToVote(voteTransactionOrder.payload.targetAddress, 10, tmp);
+    await helper.sendTokensToVote(voteTransactionOrder.payload.targetAddress!, 10, tmp);
     const credit2 = await helper.awaitVoteTransactionCreditIsConfirmed(
-      voteTransactionOrder.payload.targetAddress,
+      voteTransactionOrder.payload.targetAddress!,
     );
     const voteTransaction2 = await helper.getVoteTransactionForCredit(credit2.uid);
     expect(+voteTransaction2.payload.weight!.toFixed(2)).toBe(5);
@@ -72,10 +71,10 @@ describe('Token based voting', () => {
 
   it('Should throw, can not vote after end date', async () => {
     await helper.updatePropoasalDates(dayjs().subtract(2, 'd'), dayjs().subtract(1, 'd'));
-    mockWalletReturnValue(helper.walletSpy, helper.guardian, {
+    mockWalletReturnValue(helper.guardian, {
       uid: helper.proposal!.uid,
       value: 1,
     });
-    await expectThrow(testEnv.wrap(voteOnProposal)({}), WenError.vote_is_no_longer_active.key);
+    await expectThrow(testEnv.wrap(WEN_FUNC.voteOnProposal), WenError.vote_is_no_longer_active.key);
   });
 });

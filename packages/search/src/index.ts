@@ -1,5 +1,5 @@
 require('dotenv').config({ path: __dirname + '/.env' });
-import { ApiRoutes, WenError } from '@build-5/interfaces';
+import { ApiRoutes, WenError } from '@buildcore/interfaces';
 import cors from 'cors';
 import express from 'express';
 import jwt from 'jsonwebtoken';
@@ -62,11 +62,14 @@ const onConnection = async (jwtToken: string, url: URL, res: express.Response | 
   try {
     const project = getProjectId(jwtToken);
 
-    const observable = await getObservable(project, url);
-    if (res instanceof ws.WebSocket) {
+    const isLive = res instanceof ws.WebSocket;
+    const observable = await getObservable(project, url, isLive);
+
+    if (isLive) {
       sendLiveUpdates(res, observable);
       return;
     }
+
     observable.pipe(first()).subscribe({
       next: (r) => {
         res.send(r);
@@ -80,28 +83,32 @@ const onConnection = async (jwtToken: string, url: URL, res: express.Response | 
   }
 };
 
-const getObservable = (project: string, url: URL): Promise<Observable<unknown>> => {
+const getObservable = (
+  project: string,
+  url: URL,
+  isLive: boolean,
+): Promise<Observable<unknown>> => {
   switch (url.pathname) {
     case ApiRoutes.GET_BY_ID:
-      return getById(url.href);
+      return getById(url.href, isLive);
     case ApiRoutes.GET_MANY_BY_ID:
-      return getManyById(url.href);
+      return getManyById(url.href, isLive);
     case ApiRoutes.GET_MANY:
-      return getMany(project, url.href);
+      return getMany(project, url.href, isLive);
     case ApiRoutes.GET_MANY_ADVANCED:
-      return getManyAdvanced(project, url.href);
+      return getManyAdvanced(project, url.href, isLive);
     case ApiRoutes.GET_UPDATED_AFTER:
-      return getUpdatedAfter(project, url.href);
+      return getUpdatedAfter(project, url.href, isLive);
     case ApiRoutes.GET_TOKEN_PRICE:
-      return getTokenPrice(url.href);
+      return getTokenPrice(url.href, isLive);
     case ApiRoutes.GET_AVG_PRICE:
-      return getAvgPrice(url.href);
+      return getAvgPrice(url.href, isLive);
     case ApiRoutes.GET_PRICE_CHANGE:
-      return getPriceChange(url.href);
+      return getPriceChange(url.href, isLive);
     case ApiRoutes.GET_ADDRESSES:
-      return getAddresses(url.href);
+      return getAddresses(url.href, isLive);
     case ApiRoutes.GET_TOP_MILESTONES:
-      return getTopMilestones(url.href);
+      return getTopMilestones(url.href, isLive);
     case ApiRoutes.GET_NFT_MUTABLE_METADATA:
       return getNftMutableMetadata(url.href);
     case ApiRoutes.GET_NFT_IDS:

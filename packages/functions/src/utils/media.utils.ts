@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Storage, IBucket } from '@build-5/database';
+import { IBucket, storage } from '@buildcore/database';
 import {
   Bucket,
   COL,
-  generateRandomFileName,
   IMAGE_CACHE_AGE,
   IPFS_GATEWAY,
   MAX_FILE_SIZE_BYTES,
   WenError,
-} from '@build-5/interfaces';
+  generateRandomFileName,
+} from '@buildcore/interfaces';
 import axios from 'axios';
 import { createHash, randomUUID } from 'crypto';
 import fs from 'fs';
@@ -16,7 +16,8 @@ import mime from 'mime-types';
 import os from 'os';
 import path from 'path';
 import { BUCKET_BASE_URLS } from '../services/joi/common';
-import { getBucket, isEmulatorEnv } from './config.utils';
+import { getBucket } from './config.utils';
+import { logger } from './logger';
 
 export const migrateUriToSotrage = async (
   col: COL,
@@ -36,11 +37,11 @@ export const migrateUriToSotrage = async (
       contentType,
       cacheControl: `public,max-age=${IMAGE_CACHE_AGE}`,
     });
-    const build5Url =
+    const buildcoreUrl =
       bucket.getName() === Bucket.DEV ? response : `https://${bucket.getName()}/${destination}`;
-    return build5Url;
+    return buildcoreUrl;
   } catch (error: any) {
-    console.error('migrateUriToSotrage - error', col, uid, error);
+    logger.error('migrateUriToSotrage - error', col, uid, error);
     throw error.code && error.key ? error : WenError.ipfs_retrieve;
   } finally {
     fs.rmSync(workdir, { recursive: true, force: true });
@@ -86,15 +87,15 @@ export const uriToUrl = (uri: string) => {
   throw WenError.ipfs_retrieve;
 };
 
-export const getRandomBuild5Url = (owner: string, uid: string, extension: string) => {
-  const bucket = build5Storage().bucket(getBucket());
-  const baseUrl = isEmulatorEnv() ? BUCKET_BASE_URLS['local'] : BUCKET_BASE_URLS[bucket.getName()];
+export const getRandomBuildcoreUrl = (owner: string, uid: string, extension: string) => {
+  const bucket = storage().bucket(getBucket());
+  const baseUrl = BUCKET_BASE_URLS[bucket.getName()];
 
-  const isEmulatorOrDev = isEmulatorEnv() || bucket.getName() === Bucket.DEV;
+  const isDev = bucket.getName() === Bucket.DEV;
   const destination = `${owner}/${uid}/${generateRandomFileName()}.${extension}`;
-  const url = `${baseUrl}${isEmulatorOrDev ? encodeURIComponent(destination) : destination}`;
+  const url = `${baseUrl}${isDev ? encodeURIComponent(destination) : destination}`;
 
-  return isEmulatorOrDev ? url + '?generation=1695968595134&alt=media' : url;
+  return isDev ? url + '?alt=media' : url;
 };
 
 export const downloadFile = async (url: string, workDir: string, fileName: string) => {
@@ -117,26 +118,22 @@ export const downloadFile = async (url: string, workDir: string, fileName: strin
   const extension = <string>mime.extension(contentType);
 
   return new Promise<{ extension: string; size: number; hash: string }>((resolve, reject) => {
-    let size = 0;
-    const chunks: any = [];
-    response.data.on('data', (chunk: any) => {
-      chunks.push(chunk);
-      size += chunk.length;
-    });
-
-    response.data.on('end', () => {
-      if (size > MAX_FILE_SIZE_BYTES) {
+    stream.on('finish', () => {
+      const stats = fs.statSync(destination);
+      if (stats.size > MAX_FILE_SIZE_BYTES) {
         reject(WenError.max_size);
         return;
       }
+      const content = fs.readFileSync(destination);
       resolve({
         extension,
-        size,
+        size: stats.size,
         hash: createHash('sha1')
-          .update('' + chunks.join())
+          .update('' + content)
           .digest('hex'),
       });
     });
-    response.data.on('error', reject);
+
+    stream.on('error', reject);
   });
 };

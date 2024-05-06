@@ -1,6 +1,6 @@
 import {
   ApproveProposalRequest,
-  Build5Request,
+  BuildcoreRequest,
   Dataset,
   GetManyAdvancedRequest,
   Opr,
@@ -10,7 +10,7 @@ import {
   RejectProposalRequest,
   Transaction,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { DatasetClass } from '../Dataset';
 
 /**
@@ -20,34 +20,34 @@ export class ProposalDataset<D extends Dataset> extends DatasetClass<D, Proposal
   /**
    * Method to create Proposal
    *
-   * @param req Use {@link Build5Request} with data based on {@link ProposalCreateRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link ProposalCreateRequest}
    * @returns
    */
-  create = (req: Build5Request<ProposalCreateRequest>) =>
+  create = (req: BuildcoreRequest<ProposalCreateRequest>) =>
     this.sendRequest(WEN_FUNC.createProposal)<ProposalCreateRequest, Proposal>(req);
   /**
    * Method to approve Proposal
    *
-   * @param req Use {@link Build5Request} with data based on {@link ApproveProposalRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link ApproveProposalRequest}
    * @returns
    */
-  approve = (req: Build5Request<ApproveProposalRequest>) =>
+  approve = (req: BuildcoreRequest<ApproveProposalRequest>) =>
     this.sendRequest(WEN_FUNC.approveProposal)<ApproveProposalRequest, Proposal>(req);
   /**
    * Method to reject Proposal
    *
-   * @param req Use {@link Build5Request} with data based on {@link RejectProposalRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link RejectProposalRequest}
    * @returns
    */
-  reject = (req: Build5Request<RejectProposalRequest>) =>
+  reject = (req: BuildcoreRequest<RejectProposalRequest>) =>
     this.sendRequest(WEN_FUNC.rejectProposal)<RejectProposalRequest, Proposal>(req);
   /**
    * Method to vote on Proposal
    *
-   * @param req Use {@link Build5Request} with data based on {@link ProposalVoteRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link ProposalVoteRequest}
    * @returns
    */
-  vote = (req: Build5Request<ProposalVoteRequest>) =>
+  vote = (req: BuildcoreRequest<ProposalVoteRequest>) =>
     this.sendRequest(WEN_FUNC.voteOnProposal)<ProposalVoteRequest, Transaction>(req);
 
   /**

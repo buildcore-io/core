@@ -1,14 +1,13 @@
-import { build5Db } from '@build-5/database';
+import { PgMemberUpdate, database } from '@buildcore/database';
 import {
-  Build5Request,
+  BuildcoreRequest,
   COL,
   DecodedToken,
-  Member,
   Network,
   NetworkAddress,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { Ed25519 } from '@iota/crypto.js';
 import { Ed25519 as Ed25519Next } from '@iota/crypto.js-next';
 import { Bech32Helper, Ed25519Address } from '@iota/iota.js';
@@ -37,7 +36,7 @@ const toHex = (stringToConvert: string) =>
     .join('');
 
 export const decodeAuth = async (
-  req: Build5Request<unknown>,
+  req: BuildcoreRequest<unknown>,
   func: WEN_FUNC,
   requireProjectApiKey?: boolean,
 ): Promise<DecodedToken> => {
@@ -63,14 +62,14 @@ export const decodeAuth = async (
   }
 
   if (req.customToken) {
-    await validateWithIdToken(req, func);
+    validateWithIdToken(req, func);
     return { address: req.address, project, body: req.body };
   }
 
   throw unAuthenticated(WenError.signature_or_custom_token_must_be_provided);
 };
 
-const validateWithSignature = async (req: Build5Request<unknown>) => {
+const validateWithSignature = async (req: BuildcoreRequest<unknown>) => {
   const member = await getMember(req.address);
 
   const recoveredAddress = recoverPersonalSignature({
@@ -82,11 +81,11 @@ const validateWithSignature = async (req: Build5Request<unknown>) => {
     throw unAuthenticated(WenError.invalid_signature);
   }
 
-  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${req.address}`);
+  const memberDocRef = database().doc(COL.MEMBER, req.address);
   await memberDocRef.update({ nonce: getRandomNonce() });
 };
 
-const validateLegacyPubKey = async (req: Build5Request<unknown>) => {
+const validateLegacyPubKey = async (req: BuildcoreRequest<unknown>) => {
   const network = req.legacyPublicKey!.network;
 
   const validateFunc = getValidateFuncForNetwork(network);
@@ -98,10 +97,10 @@ const validateLegacyPubKey = async (req: Build5Request<unknown>) => {
   const validatedAddress = (member.validatedAddress || {})[network] || address;
   const updateData = {
     nonce: getRandomNonce(),
-    validatedAddress: { [network]: validatedAddress },
+    [`${network}Address`]: validatedAddress,
   };
-  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${address}`);
-  await memberDocRef.set(updateData, true);
+  const memberDocRef = database().doc(COL.MEMBER, address);
+  await memberDocRef.upsert(updateData);
 
   return address;
 };
@@ -117,7 +116,7 @@ const getValidateFuncForNetwork = (network: Network) => {
   }
   throw unAuthenticated(WenError.invalid_network);
 };
-const validateSmrPubKey = async (req: Build5Request<unknown>) => {
+const validateSmrPubKey = async (req: BuildcoreRequest<unknown>) => {
   const signedData = ConverterNext.hexToBytes(HexHelper.stripPrefix(req.signature!));
   const legacyPublicKey = ConverterNext.hexToBytes(
     HexHelper.stripPrefix(req.legacyPublicKey?.hex!),
@@ -140,7 +139,7 @@ const validateSmrPubKey = async (req: Build5Request<unknown>) => {
   return { member, address: bech32Address };
 };
 
-const validateIotaPubKey = async (req: Build5Request<unknown>) => {
+const validateIotaPubKey = async (req: BuildcoreRequest<unknown>) => {
   const signedData = Converter.hexToBytes(HexHelper.stripPrefix(req.signature!));
   const legacyPublicKey = Converter.hexToBytes(HexHelper.stripPrefix(req.legacyPublicKey?.hex!));
 
@@ -161,7 +160,7 @@ const validateIotaPubKey = async (req: Build5Request<unknown>) => {
   return { member, address: bech32Address };
 };
 
-const validateWithPublicKey = async (req: Build5Request<unknown>) => {
+const validateWithPublicKey = async (req: BuildcoreRequest<unknown>) => {
   const network = req.publicKey!.network;
 
   const wallet = await WalletService.newWallet(network);
@@ -171,17 +170,17 @@ const validateWithPublicKey = async (req: Build5Request<unknown>) => {
   }
 
   const validatedAddress = (member.validatedAddress || {})[network] || address;
-  const updateData = {
+  const updateData: PgMemberUpdate = {
     nonce: getRandomNonce(),
-    validatedAddress: { [network]: validatedAddress },
+    [`${network}Address`]: validatedAddress,
   };
-  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${address}`);
-  await memberDocRef.set(updateData, true);
+  const memberDocRef = database().doc(COL.MEMBER, address);
+  await memberDocRef.upsert(updateData);
 
   return address;
 };
 
-const validatePubKey = async (info: INodeInfo, req: Build5Request<unknown>) => {
+const validatePubKey = async (info: INodeInfo, req: BuildcoreRequest<unknown>) => {
   const bech32Address = Utils.hexPublicKeyToBech32Address(
     req.publicKey?.hex!,
     info.protocol.bech32Hrp,
@@ -201,8 +200,8 @@ const validatePubKey = async (info: INodeInfo, req: Build5Request<unknown>) => {
 };
 
 const getMember = async (address: NetworkAddress) => {
-  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${address}`);
-  const member = await memberDocRef.get<Member>();
+  const memberDocRef = database().doc(COL.MEMBER, address);
+  const member = await memberDocRef.get();
   if (!member) {
     throw unAuthenticated(WenError.failed_to_decode_token);
   }
@@ -212,7 +211,7 @@ const getMember = async (address: NetworkAddress) => {
   return member;
 };
 
-const validateWithIdToken = async (req: Build5Request<unknown>, func: WEN_FUNC) => {
+const validateWithIdToken = (req: BuildcoreRequest<unknown>, func: WEN_FUNC) => {
   const decoded = jwt.verify(req.customToken!, getJwtSecretKey());
 
   if (get(decoded, 'uid', '') !== req.address) {
@@ -238,7 +237,7 @@ export function getRandomEthAddress() {
 
 export const getRandomNonce = () => Math.floor(Math.random() * 1000000).toString();
 
-export const getProject = (req: Build5Request<unknown>, requireProjectApiKey = true) => {
+export const getProject = (req: BuildcoreRequest<unknown>, requireProjectApiKey = true) => {
   try {
     const decoded = jwt.verify(req.projectApiKey || '', getJwtSecretKey());
     const project = get(decoded, 'project', '');

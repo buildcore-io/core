@@ -1,11 +1,11 @@
-import { COL, SUB_COL } from '@build-5/interfaces';
+import { BaseRecord } from '@buildcore/database';
+import { COL, SUB_COL } from '@buildcore/interfaces';
 
-export interface FirestoreDocEvent<T> {
-  prev?: T;
+export interface PgDocEvent<T extends BaseRecord> {
+  prev: T;
   curr?: T;
-  path: string;
   col: COL;
-  docId: string;
+  uid: string;
   subCol?: SUB_COL;
-  subDocId?: string;
+  subColId?: string;
 }

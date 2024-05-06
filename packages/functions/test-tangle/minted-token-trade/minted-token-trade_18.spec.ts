@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -8,7 +8,7 @@ import {
   TokenTradeOrderType,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { wait } from '../../test/controls/common';
@@ -43,9 +43,9 @@ describe('Minted toke trading tangle request', () => {
         },
       },
     });
-    await build5Db().doc(`${COL.MNEMONIC}/${tmp.bech32}`).update({ consumedOutputIds: [] });
+    await database().doc(COL.MNEMONIC, tmp.bech32).update({ consumedOutputIds: [] });
 
-    const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', tmp.bech32);
+    const query = database().collection(COL.TOKEN_MARKET).where('owner', '==', tmp.bech32);
     await wait(async () => {
       const snap = await query.get();
       return snap.length > 0;
@@ -90,7 +90,7 @@ describe('Minted toke trading tangle request', () => {
             : undefined,
         },
       );
-      const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', helper.seller);
+      const query = database().collection(COL.TOKEN_MARKET).where('owner', '==', helper.seller);
       await wait(async () => {
         const snap = await query.get();
         return snap.length > 0;
@@ -113,7 +113,7 @@ describe('Minted toke trading tangle request', () => {
   );
 
   it('Should throw, trading disabled', async () => {
-    await build5Db().doc(`${COL.TOKEN}/${helper.token!.uid}`).update({ tradingDisabled: true });
+    await database().doc(COL.TOKEN, helper.token!.uid).update({ tradingDisabled: true });
     const tmp = await helper.walletService!.getNewIotaAddressDetails();
     await requestFundsFromFaucet(Network.RMS, tmp.bech32, 10 * MIN_IOTA_AMOUNT);
 
@@ -127,9 +127,9 @@ describe('Minted toke trading tangle request', () => {
         },
       },
     });
-    await build5Db().doc(`${COL.MNEMONIC}/${tmp.bech32}`).update({ consumedOutputIds: [] });
+    await database().doc(COL.MNEMONIC, tmp.bech32).update({ consumedOutputIds: [] });
 
-    const creditQuery = build5Db()
+    const creditQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST)
       .where('member', '==', tmp.bech32);

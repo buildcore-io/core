@@ -1,20 +1,22 @@
-import { build5Db } from '@build-5/database';
-import { COL, Member, Network, Space, SUB_COL, Token, TokenStatus } from '@build-5/interfaces';
-import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
+import { database } from '@buildcore/database';
+import {
+  COL,
+  Member,
+  Network,
+  SUB_COL,
+  Space,
+  Token,
+  TokenStatus,
+  Transaction,
+  WEN_FUNC,
+} from '@buildcore/interfaces';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
-import * as wallet from '../../src/utils/wallet.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
-import {
-  createMember,
-  createSpace,
-  getRandomSymbol,
-  mockWalletReturnValue,
-  wait,
-} from '../../test/controls/common';
-import { getWallet, MEDIA, testEnv } from '../../test/set-up';
+import { getRandomSymbol, wait } from '../../test/controls/common';
+import { MEDIA, getWallet, mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 
 export class Helper {
@@ -25,32 +27,29 @@ export class Helper {
   public token: Token = {} as any;
   public walletService: Wallet = {} as any;
   public member: string = '';
-  public walletSpy: any = {} as any;
   public network = Network.RMS;
   public totalSupply = 1500;
 
   public beforeEach = async () => {
-    this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
-
-    const guardianId = await createMember(this.walletSpy);
-    this.member = await createMember(this.walletSpy);
-    this.guardian = <Member>await build5Db().doc(`${COL.MEMBER}/${guardianId}`).get();
-    this.space = await createSpace(this.walletSpy, this.guardian.uid);
-    this.importSpace = await createSpace(this.walletSpy, this.guardian.uid);
+    const guardianId = await testEnv.createMember();
+    this.member = await testEnv.createMember();
+    this.guardian = <Member>await database().doc(COL.MEMBER, guardianId).get();
+    this.space = await testEnv.createSpace(this.guardian.uid);
+    this.importSpace = await testEnv.createSpace(this.guardian.uid);
     this.token = await this.saveToken(this.space.uid, this.guardian.uid, this.member);
     this.walletService = await getWallet(this.network);
     this.address = await this.walletService.getAddressDetails(
       getAddress(this.guardian, this.network),
     );
 
-    mockWalletReturnValue(this.walletSpy, this.guardian.uid, {
+    mockWalletReturnValue(this.guardian.uid, {
       token: this.token.uid,
       network: this.network,
     });
-    const order = await testEnv.wrap(mintTokenOrder)({});
+    const order = await testEnv.wrap<Transaction>(WEN_FUNC.mintTokenOrder);
     await requestFundsFromFaucet(this.network, order.payload.targetAddress, order.payload.amount);
 
-    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${this.token.uid}`);
+    const tokenDocRef = database().doc(COL.TOKEN, this.token.uid);
     await wait(async () => {
       this.token = <Token>await tokenDocRef.get();
       return this.token.status === TokenStatus.MINTED;
@@ -76,11 +75,11 @@ export class Helper {
       description: 'myrandomtoken',
       icon: MEDIA,
       decimals: 4,
-    };
-    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
-    await build5Db()
-      .doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`)
-      .set({ tokenOwned: 1000 });
+    } as Token;
+    await database().doc(COL.TOKEN, token.uid).create(token);
+    await database()
+      .doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, member)
+      .upsert({ tokenOwned: 1000 });
     return <Token>token;
   };
 }

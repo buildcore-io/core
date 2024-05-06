@@ -1,7 +1,7 @@
+import { MintMetadataNftRequest } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 import { AVAILABLE_NETWORKS } from '../common';
-import { MintMetadataNftRequest } from '@build-5/interfaces';
 
 export const commonMetadataNftParams = {
   nftId: CommonJoi.uid(false).description('Nft network id. Only specify it in case of edit.'),

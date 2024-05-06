@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
-import { COL, Transaction, TransactionType } from '@build-5/interfaces';
-import { depositNft } from '../../src/runtime/firebase/nft';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { database } from '@buildcore/database';
+import { COL, Transaction, TransactionType, WEN_FUNC } from '@buildcore/interfaces';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { Helper } from './Helper';
 
 const HUGE_CID = 'bafybeidxlcm7vs3uh3afk6tzye3rdzjjgaqrmj6fzaz3jf23e66f35dkce';
@@ -23,11 +22,11 @@ describe('Collection minting', () => {
   it.skip('Should credit, ipfs max size', async () => {
     await helper.mintWithCustomNftCID(() => HUGE_CID);
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, { network: helper.network });
-    const depositOrder = await testEnv.wrap(depositNft)({});
-    await helper.sendNftToAddress(helper.guardianAddress!, depositOrder.payload.targetAddress);
+    mockWalletReturnValue(helper.guardian!, { network: helper.network });
+    const depositOrder = await testEnv.wrap<Transaction>(WEN_FUNC.depositNft);
+    await helper.sendNftToAddress(helper.guardianAddress!, depositOrder.payload.targetAddress!);
 
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.guardian)
       .where('type', '==', TransactionType.CREDIT_NFT);

@@ -8,7 +8,7 @@
  */
 export interface NftWithdrawRequest {
   /**
-   * Build5 id of the nft to withdraw.
+   * Buildcore id of the nft to withdraw.
    */
   nft: string;
 }

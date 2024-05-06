@@ -1,4 +1,4 @@
-import { COL, TransactionType } from '@build-5/interfaces';
+import { COL, TransactionType } from '@buildcore/interfaces';
 import { UnitsHelper } from '@iota/iota.js';
 import dayjs from 'dayjs';
 import { cert, initializeApp } from 'firebase-admin/app';

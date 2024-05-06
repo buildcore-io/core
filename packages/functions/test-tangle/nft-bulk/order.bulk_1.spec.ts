@@ -1,8 +1,7 @@
-import { build5Db } from '@build-5/database';
-import { COL, Nft, NftPurchaseBulkRequest, Transaction } from '@build-5/interfaces';
-import { orderNftBulk } from '../../src/runtime/firebase/nft';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { database } from '@buildcore/database';
+import { COL, Nft, NftPurchaseBulkRequest, Transaction, WEN_FUNC } from '@buildcore/interfaces';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
@@ -14,8 +13,8 @@ describe('Nft bulk order', () => {
   });
 
   it('Should order 2 nfts', async () => {
-    const { collection: col1, nft: nft1 } = await h.createColletionAndNft(h.member, h.space);
-    const { collection: col2, nft: nft2 } = await h.createColletionAndNft(h.member, h.space);
+    const { collection: col1, nft: nft1 } = await h.createCollectionAndNft(h.member, h.space);
+    const { collection: col2, nft: nft2 } = await h.createCollectionAndNft(h.member, h.space);
 
     const request: NftPurchaseBulkRequest = {
       orders: [
@@ -23,8 +22,8 @@ describe('Nft bulk order', () => {
         { collection: col2.uid, nft: nft2.uid },
       ],
     };
-    mockWalletReturnValue(h.walletSpy, h.member, request);
-    const order: Transaction = await testEnv.wrap(orderNftBulk)({});
+    mockWalletReturnValue(h.member, request);
+    const order = await testEnv.wrap<Transaction>(WEN_FUNC.orderNftBulk);
 
     await requestFundsFromFaucet(
       order.network,
@@ -32,8 +31,8 @@ describe('Nft bulk order', () => {
       order.payload.amount!,
     );
 
-    const nft1DocRef = build5Db().doc(`${COL.NFT}/${nft1.uid}`);
-    const nft2DocRef = build5Db().doc(`${COL.NFT}/${nft2.uid}`);
+    const nft1DocRef = database().doc(COL.NFT, nft1.uid);
+    const nft2DocRef = database().doc(COL.NFT, nft2.uid);
     await wait(async () => {
       const nft1 = <Nft>await nft1DocRef.get();
       const nft2 = <Nft>await nft2DocRef.get();

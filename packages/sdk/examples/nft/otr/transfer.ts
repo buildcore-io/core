@@ -1,7 +1,7 @@
-import { Dataset } from '@build-5/interfaces';
-import { Build5, SoonaverseOtrAddress, otr } from '@build-5/sdk';
+import { Dataset } from '@buildcore/interfaces';
+import { Buildcore, SoonaverseOtrAddress, otr } from '@buildcore/sdk';
 
-const origin = Build5.TEST;
+const origin = Buildcore.TEST;
 // @ts-ignore
 const otrAddress = SoonaverseOtrAddress[origin];
 
@@ -10,8 +10,8 @@ async function main() {
     .dataset(Dataset.NFT)
     .transfer({
       transfers: [
-        { nft: 'build5nftid', target: 'build5memberid' },
-        { nft: 'build5nftid', target: 'tangleaddress' },
+        { nft: 'nftid', target: 'memberid' },
+        { nft: 'nftid', target: 'tangleaddress' },
       ],
     });
   const fireflyDeeplink = otrRequest.getFireflyDeepLink();

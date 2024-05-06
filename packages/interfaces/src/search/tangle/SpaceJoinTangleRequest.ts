@@ -12,7 +12,7 @@ export interface SpaceJoinTangleRequest {
    */
   requestType: 'SPACE_JOIN';
   /**
-   * Build5 id of the space
+   * Buildcore id of the space
    */
   uid: string;
 }

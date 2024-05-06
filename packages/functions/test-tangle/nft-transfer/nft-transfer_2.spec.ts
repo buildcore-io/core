@@ -1,7 +1,5 @@
-import { NftTransferRequest } from '@build-5/interfaces';
-import { nftTransfer } from '../../src/runtime/firebase/nft';
-import { mockWalletReturnValue } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { NftTransferRequest, WEN_FUNC } from '@buildcore/interfaces';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { Helper } from './Helper';
 
 describe('Nft transfer', () => {
@@ -29,8 +27,8 @@ describe('Nft transfer', () => {
       ],
     };
 
-    mockWalletReturnValue(h.spy, h.guardian, request);
-    const response: { [key: string]: number } = await testEnv.wrap(nftTransfer)({});
+    mockWalletReturnValue(h.guardian, request);
+    const response: { [key: string]: number } = await testEnv.wrap(WEN_FUNC.nftTransfer);
     expect(response[nft1.uid]).toBe(200);
     expect(response[nft2.uid]).toBe(2092);
   });

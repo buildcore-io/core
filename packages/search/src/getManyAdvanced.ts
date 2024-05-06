@@ -1,4 +1,11 @@
-import { build5Db, getSnapshot } from '@build-5/database';
+import {
+  BaseRecord,
+  ICollection,
+  IDocument,
+  Update,
+  WhereFilterOp,
+  database,
+} from '@buildcore/database';
 import {
   COL,
   Dataset,
@@ -7,10 +14,11 @@ import {
   MAX_FIELD_VALUE_LENGTH,
   Opr,
   QUERY_MAX_LENGTH,
+  SUB_COL,
   Subset,
   TransactionType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import Joi from 'joi';
 import { get, isEmpty, isEqual } from 'lodash';
 import { map } from 'rxjs';
@@ -18,6 +26,7 @@ import {
   CommonJoi,
   getQueryLimit,
   getQueryParams,
+  keyToPg,
   queryToObservable,
   shouldSetProjectFilter,
 } from './common';
@@ -52,7 +61,7 @@ const getManyAdvancedSchema = Joi.object({
   startAfter: CommonJoi.uid(false),
 });
 
-export const getManyAdvanced = async (project: string, url: string) => {
+export const getManyAdvanced = async (project: string, url: string, isLive: boolean) => {
   const body = getQueryParams<GetManyAdvancedRequest>(url, getManyAdvancedSchema);
 
   const { dataset, subset, setId } = body;
@@ -62,11 +71,11 @@ export const getManyAdvanced = async (project: string, url: string) => {
   try {
     for (const [key, values] of Object.entries(filters)) {
       if (operators[key][0] === Opr.IN) {
-        query = query.where(key, operators[key][0], values);
+        query = query.whereIn(keyToPg(key), values);
         continue;
       }
       for (let i = 0; i < values.length; ++i) {
-        query = query.where(key, operators[key][i], values[i]);
+        query = query.where(keyToPg(key), operators[key][i] as WhereFilterOp, values[i]);
       }
     }
   } catch (error) {
@@ -74,11 +83,11 @@ export const getManyAdvanced = async (project: string, url: string) => {
   }
 
   if (body.dataset === Dataset.NFT && !isEqual(filters['hidden'], [false])) {
-    query = query.where('hidden', '==', false);
+    query = query.where('hidden' as any, '==', false);
   }
 
   if (shouldSetProjectFilter(body.dataset, body.subset)) {
-    query = query.where('project', '==', project);
+    query = query.where('project' as any, '==', project);
   }
 
   const typeFilters = filters['type'];
@@ -86,12 +95,12 @@ export const getManyAdvanced = async (project: string, url: string) => {
     body.dataset === Dataset.TRANSACTION &&
     (!typeFilters || typeFilters.includes(TransactionType.ORDER))
   ) {
-    query = query.where('isOrderType', '==', false);
+    query = query.where('isOrderType' as any, '==', false);
   }
 
   const orderByDir = (body.orderByDir || []) as ('asc' | 'desc')[];
   for (let i = 0; i < (body.orderBy?.length || 0); ++i) {
-    query = query.orderBy(body.orderBy![i], orderByDir[i]);
+    query = query.orderBy(keyToPg(body.orderBy![i]), orderByDir[i]);
   }
 
   if (body.limit) {
@@ -99,16 +108,19 @@ export const getManyAdvanced = async (project: string, url: string) => {
   }
 
   if (body.startAfter) {
-    const startAfter = await getSnapshot(
-      body.dataset,
+    const docRef = database().doc(
+      body.dataset as unknown as COL,
       body.setId || body.startAfter,
-      body.subset,
+      body.subset as unknown as SUB_COL,
       body.startAfter,
-    );
-    query = query.startAfter(startAfter);
+    )! as unknown as IDocument<any, BaseRecord, Update>;
+    const startAfter = await docRef.get();
+    if (startAfter) {
+      query = query.startAfter(startAfter);
+    }
   }
 
-  return queryToObservable<Record<string, unknown>>(query).pipe(
+  return queryToObservable(query, isLive).pipe(
     map((snap) => snap.filter((d) => !isEmpty(d)).map((d) => ({ id: d.uid, ...d }))),
   );
 };
@@ -139,10 +151,9 @@ const getFilters = (fieldNames?: string[], fieldValues?: unknown[], fieldOperato
   return { filters: nameAndValues, operators: nameAndOperators };
 };
 
-const getBaseQuery = (dataset: Dataset, setId?: string, subset?: Subset) => {
-  if (!setId && subset) {
-    return build5Db().collectionGroup(subset);
-  }
-  const path = subset && setId ? `${dataset}/${setId}/${subset}` : dataset;
-  return build5Db().collection(path as COL);
-};
+const getBaseQuery = (dataset: Dataset, setId?: string, subset?: Subset) =>
+  database().collection(
+    dataset as unknown as COL,
+    setId,
+    subset as unknown as SUB_COL,
+  )! as unknown as ICollection<any, BaseRecord, Update>;

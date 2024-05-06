@@ -1,4 +1,4 @@
-import { Dataset, Milestone } from '@build-5/interfaces';
+import { Dataset, Milestone } from '@buildcore/interfaces';
 import { DatasetClass } from '../Dataset';
 
 /**

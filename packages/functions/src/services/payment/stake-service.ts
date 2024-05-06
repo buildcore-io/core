@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Entity,
@@ -9,13 +9,13 @@ import {
   TransactionPayloadType,
   TransactionType,
   calcStakedMultiplier,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
-import { get } from 'lodash';
 import { getProject } from '../../utils/common.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { BaseService, HandlerParams } from './base';
+import { Action } from './transaction-service';
 
 export class StakeService extends BaseService {
   public handleRequest = async ({ project, order, match }: HandlerParams) => {
@@ -23,7 +23,7 @@ export class StakeService extends BaseService {
 
     const matchAmount = match.to.amount;
     const nativeTokens = (match.to.nativeTokens || []).map((nt) => ({ ...nt, amount: nt.amount }));
-    const tokenId = get(order, 'payload.tokenId', '');
+    const tokenId = order.payload.tokenId || '';
     const stakeAmount = Number(nativeTokens.find((nt) => nt.id === tokenId)?.amount || 0);
 
     if (!stakeAmount || nativeTokens.length > 1 || matchAmount < order.payload.amount!) {
@@ -36,12 +36,12 @@ export class StakeService extends BaseService {
     }
     this.transactionService.markAsReconciled(order, match.msgId);
 
-    const weeks = get(order, 'payload.weeks', 1);
+    const weeks = order.payload.weeks || 1;
     const stakedValue = Math.floor(stakeAmount * calcStakedMultiplier(weeks));
     const expiresAt = dateToTimestamp(dayjs().add(weeks, 'week').toDate());
 
-    const tokenUid = get(order, 'payload.token', '');
-    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${tokenUid}`);
+    const tokenUid = order.payload.token || '';
+    const tokenDocRef = database().doc(COL.TOKEN, tokenUid);
     const token = <Token>await tokenDocRef.get();
 
     const billPayment: Transaction = {
@@ -65,7 +65,7 @@ export class StakeService extends BaseService {
         royalty: false,
         void: false,
         vestingAt: expiresAt,
-        customMetadata: get(order, 'payload.customMetadata', {}),
+        customMetadata: order.payload.customMetadata || {},
         token: token!.uid,
         tokenSymbol: token!.symbol,
       },
@@ -76,7 +76,7 @@ export class StakeService extends BaseService {
       uid: getRandomEthAddress(),
       member: order.member!,
       token: order.payload.token!,
-      type: get(order, 'payload.stakeType', StakeType.DYNAMIC),
+      type: order.payload.stakeType || StakeType.DYNAMIC,
       space: order.space!,
       amount: stakeAmount,
       value: stakedValue,
@@ -85,20 +85,20 @@ export class StakeService extends BaseService {
       expirationProcessed: false,
       orderId: order.uid,
       billPaymentId: billPayment.uid,
-      customMetadata: get(order, 'payload.customMetadata', {}),
+      customMetadata: order.payload.customMetadata || {},
     };
     billPayment.payload.stake = stake.uid;
 
     this.transactionService.push({
-      ref: build5Db().doc(`${COL.STAKE}/${stake.uid}`),
+      ref: database().doc(COL.STAKE, stake.uid),
       data: stake,
-      action: 'set',
+      action: Action.C,
     });
 
     this.transactionService.push({
-      ref: build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`),
+      ref: database().doc(COL.TRANSACTION, billPayment.uid),
       data: billPayment,
-      action: 'set',
+      action: Action.C,
     });
   };
 }

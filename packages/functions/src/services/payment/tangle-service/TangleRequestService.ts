@@ -1,17 +1,18 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
-  Member,
   Network,
   NetworkAddress,
   TangleRequestType,
   TangleResponse,
   Transaction,
+  ValidatedAddress,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { get, isEmpty } from 'lodash';
 import { getOutputMetadata } from '../../../utils/basic-output.utils';
 import { invalidArgument } from '../../../utils/error.utils';
+import { logger } from '../../../utils/logger';
 import { getRandomNonce } from '../../../utils/wallet.utils';
 import { BaseTangleService, HandlerParams } from '../base';
 import { TangleAddressValidationService } from './address/address-validation.service';
@@ -20,7 +21,7 @@ import { TangleAuctionCreateService } from './auction/auction.create.service';
 import { AwardApproveParticipantService } from './award/award.approve.participant.service';
 import { AwardCreateService } from './award/award.create.service';
 import { AwardFundService } from './award/award.fund.service';
-import { VerifyEthForBuil5TangleService } from './build5/verify.eth.for.b5.service';
+import { VerifyEthForBuilTokenTangleService } from './buildcore-token/verify.eth.for.buildtoken.service';
 import { MintMetadataNftService } from './metadataNft/mint-metadata-nft.service';
 import { NftDepositService } from './nft/nft-deposit.service';
 import { TangleNftPurchaseBulkService } from './nft/nft-purchase.bulk.service';
@@ -69,7 +70,7 @@ export class TangleRequestService extends BaseTangleService<TangleResponse> {
         );
       }
     } catch (error) {
-      console.warn('tangle service error warning', owner, error);
+      logger.warn('tangle service error warning', owner, error);
       if (!payment) {
         payment = await this.transactionService.createPayment({ ...order, member: owner }, match);
       }
@@ -78,8 +79,8 @@ export class TangleRequestService extends BaseTangleService<TangleResponse> {
         match,
         {
           status: 'error',
-          code: get(error, 'details.code', 1000),
-          message: get(error, 'details.key', 'none'),
+          code: get(error, 'eCode', 1000),
+          message: get(error, 'eKey', 'none'),
         },
         tranEntry.outputId!,
       );
@@ -157,24 +158,24 @@ export class TangleRequestService extends BaseTangleService<TangleResponse> {
       case TangleRequestType.REJECT_SWAP:
         return new SwapRejectTangleService(this.transactionService);
       case TangleRequestType.VERIFY_ETH_ADDRESS:
-        return new VerifyEthForBuil5TangleService(this.transactionService);
+        return new VerifyEthForBuilTokenTangleService(this.transactionService);
       default:
         throw invalidArgument(WenError.invalid_tangle_request_type);
     }
   };
 
   private getOwner = async (senderAddress: NetworkAddress, network: Network) => {
-    const docRef = build5Db().doc(`${COL.MEMBER}/${senderAddress}`);
-    const member = await docRef.get<Member>();
+    const docRef = database().doc(COL.MEMBER, senderAddress);
+    const member = await docRef.get();
     if (member) {
       return senderAddress;
     }
 
-    const snap = await build5Db()
+    const snap = await database()
       .collection(COL.MEMBER)
-      .where(`validatedAddress.${network}`, '==', senderAddress)
+      .where(`${network}Address`, '==', senderAddress)
       .limit(2)
-      .get<Member>();
+      .get();
 
     if (snap.length > 1) {
       throw invalidArgument(WenError.multiple_members_with_same_address);
@@ -189,7 +190,7 @@ export class TangleRequestService extends BaseTangleService<TangleResponse> {
       nonce: getRandomNonce(),
       validatedAddress: {
         [network as string]: senderAddress,
-      },
+      } as unknown as ValidatedAddress,
     };
     await docRef.create(memberData);
 

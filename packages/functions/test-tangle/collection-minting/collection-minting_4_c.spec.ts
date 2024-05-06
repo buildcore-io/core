@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
-import { COL, Nft, NftStatus, Transaction } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, NftStatus, Transaction } from '@buildcore/interfaces';
 import { CollectionMintHelper } from './Helper';
 
 describe('Collection minting', () => {
@@ -18,13 +18,13 @@ describe('Collection minting', () => {
     let lockedNft = await helper.createLockedNft();
     await helper.mintCollection();
     const lockedNftOrder = <Transaction>(
-      await build5Db().doc(`${COL.TRANSACTION}/${lockedNft.lockedBy}`).get()
+      await database().doc(COL.TRANSACTION, lockedNft.lockedBy!).get()
     );
     expect(lockedNftOrder.payload.void).toBe(true);
 
-    lockedNft = <Nft>await build5Db().doc(`${COL.NFT}/${lockedNft.uid}`).get();
+    lockedNft = (await database().doc(COL.NFT, lockedNft.uid).get())!;
     expect(lockedNft.locked).toBe(false);
-    expect(lockedNft.lockedBy).toBe(null);
+    expect(lockedNft.lockedBy).toBe(undefined);
     expect(lockedNft.mintingData).toBeDefined();
     expect(lockedNft.status).toBe(NftStatus.MINTED);
   });

@@ -1,16 +1,15 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
   Network,
-  Nft,
   NftAvailable,
   NftSetForSaleTangleRequest,
   TangleRequestType,
   Transaction,
   TransactionType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
@@ -56,9 +55,9 @@ describe('Nft set for auction OTR', () => {
     );
     await MnemonicService.store(helper.guardianAddress.bech32, helper.guardianAddress.mnemonic);
 
-    const nftDocRef = build5Db().doc(`${COL.NFT}/${helper.nft.uid}`);
+    const nftDocRef = database().doc(COL.NFT, helper.nft.uid);
     await wait(async () => {
-      helper.nft = (await nftDocRef.get<Nft>())!;
+      helper.nft = (await nftDocRef.get())!;
       return helper.nft.available === NftAvailable.AUCTION_AND_SALE;
     });
 
@@ -78,17 +77,15 @@ describe('Nft set for auction OTR', () => {
     );
     await MnemonicService.store(helper.guardianAddress.bech32, helper.guardianAddress.mnemonic);
 
-    const credit = build5Db()
+    const credit = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.guardian)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
     await wait(async () => {
-      const snap = await credit.get<Transaction>();
+      const snap = await credit.get();
       return snap.length === 2;
     });
-    const succeses = (await credit.get<Transaction>()).filter(
-      (t) => t.payload.response?.status === 'success',
-    );
+    const succeses = (await credit.get()).filter((t) => t.payload.response?.status === 'success');
     expect(succeses.length).toBe(2);
 
     auctionData = helper.dummyAuctionData(helper.nft.uid);
@@ -107,10 +104,10 @@ describe('Nft set for auction OTR', () => {
     );
 
     await wait(async () => {
-      const snap = await credit.get<Transaction>();
+      const snap = await credit.get();
       return snap.length === 3;
     });
-    const snap = await credit.get<Transaction>();
+    const snap = await credit.get();
     const creditTransction = snap.find(
       (t) => t.payload.response?.code === WenError.auction_already_in_progress.code,
     );

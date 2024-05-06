@@ -1,4 +1,4 @@
-import { IQuery, build5Db } from '@build-5/database';
+import { IQuery, database } from '@buildcore/database';
 import {
   COL,
   Network,
@@ -7,29 +7,29 @@ import {
   TokenStatus,
   TransactionPayloadType,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { getRandomSymbol, wait } from '../../test/controls/common';
 import { MEDIA } from '../../test/set-up';
 
 export const awaitAllTransactionsForAward = async (awardId: string) => {
-  const baseTransQuery = build5Db()
+  const baseTransQuery = database()
     .collection(COL.TRANSACTION)
-    .where('payload.award', '==', awardId)
-    .where('type', 'in', [TransactionType.BILL_PAYMENT, TransactionType.CREDIT]);
+    .where('payload_award', '==', awardId)
+    .whereIn('type', [TransactionType.BILL_PAYMENT, TransactionType.CREDIT]);
   await allConfirmed(baseTransQuery);
 
-  const nttQuery = build5Db()
+  const nttQuery = database()
     .collection(COL.TRANSACTION)
-    .where('payload.award', '==', awardId)
-    .where('payload.type', '==', TransactionPayloadType.BADGE);
+    .where('payload_award', '==', awardId)
+    .where('payload_type', '==', TransactionPayloadType.BADGE);
   await allConfirmed(nttQuery);
 };
 
-const allConfirmed = (query: IQuery) =>
+const allConfirmed = (query: IQuery<any, any>) =>
   wait(async () => {
-    const snap = await query.get<Record<string, any>>();
+    const snap = await query.get();
     const allConfirmed = snap.reduce(
       (acc, doc) => acc && doc?.payload?.walletReference?.confirmed,
       true,
@@ -54,7 +54,7 @@ export const saveBaseToken = async (space: string, guardian: string, network = N
     mintingData: {
       network,
     },
-  };
-  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
-  return token as Token;
+  } as Token;
+  await database().doc(COL.TOKEN, token.uid).create(token);
+  return token;
 };

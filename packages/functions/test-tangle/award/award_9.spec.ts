@@ -1,38 +1,31 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Award,
   COL,
   Member,
   Network,
   SOON_PROJECT_ID,
-  Space,
   SUB_COL,
+  Space,
   Token,
   TokenDistribution,
   TokenStatus,
+  Transaction,
   TransactionPayloadType,
-} from '@build-5/interfaces';
+  WEN_FUNC,
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
-import { approveAwardParticipant, createAward, fundAward } from '../../src/runtime/firebase/award';
-import { joinSpace } from '../../src/runtime/firebase/space';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import {
-  createMember,
-  createSpace,
-  getRandomSymbol,
-  mockWalletReturnValue,
-  wait,
-} from '../../test/controls/common';
-import { getWallet, MEDIA, testEnv } from '../../test/set-up';
+import { getRandomSymbol, wait } from '../../test/controls/common';
+import { MEDIA, getWallet, mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 
 const network = Network.RMS;
-let walletSpy: any;
 
 describe('Create award, native', () => {
   let guardian: string;
@@ -44,43 +37,42 @@ describe('Create award, native', () => {
   let token: Token;
 
   beforeAll(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
     walletService = await getWallet(network);
   });
 
   beforeEach(async () => {
-    guardian = await createMember(walletSpy);
-    member = await createMember(walletSpy);
-    space = await createSpace(walletSpy, guardian);
+    guardian = await testEnv.createMember();
+    member = await testEnv.createMember();
+    space = await testEnv.createSpace(guardian);
 
-    mockWalletReturnValue(walletSpy, member, { uid: space?.uid });
-    await testEnv.wrap(joinSpace)({});
+    mockWalletReturnValue(member, { uid: space?.uid });
+    await testEnv.wrap(WEN_FUNC.joinSpace);
 
     token = await saveToken(space.uid, guardian);
 
-    mockWalletReturnValue(walletSpy, member, awardRequest(space.uid, token.symbol));
-    award = await testEnv.wrap(createAward)({});
+    mockWalletReturnValue(member, awardRequest(space.uid, token.symbol));
+    award = await testEnv.wrap(WEN_FUNC.createAward);
 
-    const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${guardian}`);
+    const guardianDocRef = database().doc(COL.MEMBER, guardian);
     const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, network);
     guardianAddress = await walletService.getAddressDetails(guardianBech32);
   });
 
   it('Should create and fund native award, no reward', async () => {
-    mockWalletReturnValue(walletSpy, guardian, { uid: award.uid });
-    const order = await testEnv.wrap(fundAward)({});
+    mockWalletReturnValue(guardian, { uid: award.uid });
+    const order = await testEnv.wrap<Transaction>(WEN_FUNC.fundAward);
 
     await requestFundsFromFaucet(network, guardianAddress.bech32, order.payload.amount);
     await walletService.send(
       guardianAddress,
-      order.payload.targetAddress,
-      order.payload.amount,
+      order.payload.targetAddress!,
+      order.payload.amount!,
       {},
     );
     await MnemonicService.store(guardianAddress.bech32, guardianAddress.mnemonic);
 
-    const awardDocRef = build5Db().doc(`${COL.AWARD}/${award.uid}`);
+    const awardDocRef = database().doc(COL.AWARD, award.uid);
     await wait(async () => {
       const award = <Award>await awardDocRef.get();
       return award.approved && award.funded;
@@ -92,18 +84,17 @@ describe('Create award, native', () => {
     expect(awardData.collectionId).toBeDefined();
     expect(awardData.nativeTokenStorageDeposit).toBe(0);
 
-    mockWalletReturnValue(walletSpy, guardian, { award: award.uid, members: [member, member] });
-    await testEnv.wrap(approveAwardParticipant)({});
+    mockWalletReturnValue(guardian, { award: award.uid, members: [member, member] });
+    await testEnv.wrap(WEN_FUNC.approveParticipantAward);
 
-    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
-    const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member);
+    const distributionDocRef = database().doc(COL.TOKEN, token.uid, SUB_COL.DISTRIBUTION, member);
     let distribution = <TokenDistribution | undefined>await distributionDocRef.get();
     expect(distribution?.totalUnclaimedAirdrop || 0).toBe(0);
 
-    const nttQuery = build5Db()
+    const nttQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
-      .where('payload.type', '==', TransactionPayloadType.BADGE);
+      .where('payload_type', '==', TransactionPayloadType.BADGE);
     await wait(async () => {
       const snap = await nttQuery.get();
       return snap.length === 2;
@@ -146,9 +137,9 @@ const saveToken = async (space: string, guardian: string) => {
       network: Network.RMS,
       tokenId: MINTED_TOKEN_ID,
     },
-  };
-  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
-  return token as Token;
+  } as Token;
+  await database().doc(COL.TOKEN, token.uid).create(token);
+  return token;
 };
 
 const MINTED_TOKEN_ID =

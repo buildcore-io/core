@@ -1,26 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
-  Member,
   MIN_IOTA_AMOUNT,
+  Member,
   Network,
-  StakeType,
   SUB_COL,
+  StakeType,
   TangleRequestType,
   TokenDistribution,
   TokenDropStatus,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+  WEN_FUNC,
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
-import { airdropMintedToken } from '../../src/runtime/firebase/token/minting';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken, getTangleOrder } from '../common';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 import { Helper, VAULT_MNEMONIC } from './Helper';
@@ -50,14 +50,14 @@ describe('Minted token airdrop tangle claim', () => {
       { count: 1, recipient: helper.member!, vestingAt: dayjs().add(2, 'M').toDate(), stakeType },
     ];
     const total = drops.reduce((acc, act) => acc + act.count, 0);
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
+    mockWalletReturnValue(helper.guardian!, {
       token: helper.token!.uid,
       drops,
     });
-    const airdropOrder = await testEnv.wrap(airdropMintedToken)({});
+    const airdropOrder = await testEnv.wrap<Transaction>(WEN_FUNC.airdropMintedToken);
     expect(airdropOrder.payload.unclaimedAirdrops).toBe(2);
 
-    const guardian = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.guardian}`).get();
+    const guardian = <Member>await database().doc(COL.MEMBER, helper.guardian).get();
     const guardianAddress = await helper.walletService!.getAddressDetails(
       getAddress(guardian, helper.network),
     );
@@ -76,7 +76,7 @@ describe('Minted token airdrop tangle claim', () => {
       expiresAt,
     );
 
-    await helper.walletService!.send(guardianAddress, airdropOrder.payload.targetAddress, 0, {
+    await helper.walletService!.send(guardianAddress, airdropOrder.payload.targetAddress!, 0, {
       expiration: expiresAt
         ? { expiresAt, returnAddressBech32: guardianAddress.bech32 }
         : undefined,
@@ -88,13 +88,16 @@ describe('Minted token airdrop tangle claim', () => {
       return airdrops.length === 2;
     });
 
-    const distributionDocRef = build5Db().doc(
-      `${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${helper.member}`,
+    const distributionDocRef = database().doc(
+      COL.TOKEN,
+      helper.token!.uid,
+      SUB_COL.DISTRIBUTION,
+      helper.member,
     );
     let distribution = <TokenDistribution>await distributionDocRef.get();
     expect(distribution.totalUnclaimedAirdrop).toBe(2);
 
-    const member = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.member}`).get();
+    const member = <Member>await database().doc(COL.MEMBER, helper.member).get();
     const memberAddress = await helper.walletService!.getAddressDetails(
       getAddress(member, helper.network),
     );
@@ -115,7 +118,7 @@ describe('Minted token airdrop tangle claim', () => {
     );
     await MnemonicService.store(memberAddress.bech32, memberAddress.mnemonic);
 
-    const orderQuery = build5Db()
+    const orderQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.member)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
@@ -134,7 +137,7 @@ describe('Minted token airdrop tangle claim', () => {
     );
 
     await wait(async () => {
-      const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${airdropOrder.uid}`);
+      const orderDocRef = database().doc(COL.TRANSACTION, airdropOrder.uid);
       const order = <Transaction>await orderDocRef.get();
       return order.payload.unclaimedAirdrops === 0;
     });

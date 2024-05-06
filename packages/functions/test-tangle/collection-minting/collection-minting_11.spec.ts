@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, Nft, UnsoldMintingOptions } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, Nft, UnsoldMintingOptions } from '@buildcore/interfaces';
 import { CollectionMintHelper } from './Helper';
 
 describe('Collection minting', () => {
@@ -19,16 +19,16 @@ describe('Collection minting', () => {
       await helper.createAndOrderNft(true, true);
       let nft: Nft | undefined = await helper.createAndOrderNft();
       let placeholderNft = await helper.createAndOrderNft(true, false);
-      await build5Db().doc(`${COL.NFT}/${placeholderNft.uid}`).update({ placeholderNft: true });
-      await build5Db()
-        .doc(`${COL.COLLECTION}/${helper.collection}`)
-        .update({ total: build5Db().inc(-1) });
+      await database().doc(COL.NFT, placeholderNft.uid).update({ placeholderNft: true });
+      await database()
+        .doc(COL.COLLECTION, helper.collection)
+        .update({ total: database().inc(-1) });
 
       await helper.mintCollection(unsoldMintingOptions);
 
-      placeholderNft = <Nft>await build5Db().doc(`${COL.NFT}/${placeholderNft.uid}`).get();
+      placeholderNft = <Nft>await database().doc(COL.NFT, placeholderNft.uid).get();
       expect(placeholderNft.hidden).toBe(true);
-      nft = <Nft | undefined>await build5Db().doc(`${COL.NFT}/${nft.uid}`).get();
+      nft = <Nft | undefined>await database().doc(COL.NFT, nft.uid).get();
       if (unsoldMintingOptions === UnsoldMintingOptions.BURN_UNSOLD) {
         expect(nft).toBe(undefined);
       } else {

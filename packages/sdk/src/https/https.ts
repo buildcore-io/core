@@ -1,8 +1,8 @@
-import { Dataset, FileUploadResponse, WEN_FUNC } from '@build-5/interfaces';
+import { Dataset, FileUploadResponse, WEN_FUNC } from '@buildcore/interfaces';
 import axios from 'axios';
 import FormData, { Stream } from 'form-data';
 import { Observable as RxjsObservable, from, map } from 'rxjs';
-import { Build5 } from '.';
+import { Buildcore } from '.';
 import { AuctionDataset } from './datasets/AuctionDataset';
 import { BadgesDataset } from './datasets/BadgesDataset';
 import { MemberDataset } from './datasets/MemberDataset';
@@ -33,7 +33,7 @@ import { Observable } from './tag.tracker';
  */
 export class ProjectWrapper {
   constructor(
-    private readonly origin: Build5,
+    private readonly origin: Buildcore,
     private readonly apiKey: string,
   ) {}
 
@@ -118,7 +118,7 @@ export class ProjectWrapper {
     member: string,
     uid: string,
   ): RxjsObservable<FileUploadResponse> => {
-    const isLocal = !Object.values(Build5).includes(this.origin);
+    const isLocal = !Object.values(Buildcore).includes(this.origin);
     const url = this.origin + `/${isLocal ? 'https-' : ''}` + WEN_FUNC.uploadFile;
     const form = new FormData();
     form.append('member', member);

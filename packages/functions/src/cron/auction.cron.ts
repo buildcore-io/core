@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Auction,
   AuctionType,
@@ -6,7 +6,7 @@ import {
   Member,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { AuctionFinalizeService } from '../services/payment/auction/auction.finalize.service';
 import { TransactionService } from '../services/payment/transaction-service';
@@ -15,11 +15,11 @@ import { getProject } from '../utils/common.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 
 export const finalizeAuctions = async () => {
-  const snap = await build5Db()
+  const snap = await database()
     .collection(COL.AUCTION)
     .where('auctionTo', '<=', dayjs().toDate())
     .where('active', '==', true)
-    .get<Auction>();
+    .get();
   const promises = snap.map((a) => {
     switch (a.type) {
       case AuctionType.NFT:
@@ -32,29 +32,29 @@ export const finalizeAuctions = async () => {
 };
 
 const finalizeNftAuction = (auction: string) =>
-  build5Db().runTransaction(async (transaction) => {
+  database().runTransaction(async (transaction) => {
     const tranService = new TransactionService(transaction);
     const service = new AuctionFinalizeService(tranService);
     await service.markAsFinalized(auction);
-    tranService.submit();
+    await tranService.submit();
   });
 
 const finalizeOpenAuction = async (auction: Auction) => {
-  const batch = build5Db().batch();
+  const batch = database().batch();
 
   let targetAddress = auction.targetAddress;
   if (!targetAddress) {
-    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${auction.createdBy}`);
+    const memberDocRef = database().doc(COL.MEMBER, auction.createdBy!);
     const member = <Member>await memberDocRef.get();
     targetAddress = getAddress(member, auction.network);
   }
 
-  const payments = await build5Db()
+  const payments = await database()
     .collection(COL.TRANSACTION)
     .where('type', '==', TransactionType.PAYMENT)
-    .where('payload.invalidPayment', '==', false)
-    .where('payload.auction', '==', auction.uid)
-    .get<Transaction>();
+    .where('payload_invalidPayment', '==', false)
+    .where('payload_auction', '==', auction.uid)
+    .get();
 
   for (const payment of payments) {
     const billPayment: Transaction = {
@@ -75,7 +75,7 @@ const finalizeOpenAuction = async (auction: Auction) => {
         auction: auction.uid,
       },
     };
-    const billPaymentDocRef = build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+    const billPaymentDocRef = database().doc(COL.TRANSACTION, billPayment.uid);
     batch.create(billPaymentDocRef, billPayment);
   }
 

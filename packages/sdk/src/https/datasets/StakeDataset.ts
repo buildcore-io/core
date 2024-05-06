@@ -1,5 +1,5 @@
 import {
-  Build5Request,
+  BuildcoreRequest,
   Dataset,
   GetManyAdvancedRequest,
   Opr,
@@ -7,7 +7,7 @@ import {
   TokenStakeRequest,
   Transaction,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { DatasetClass } from './Dataset';
 
 /**
@@ -17,10 +17,10 @@ export class StakeDataset<D extends Dataset> extends DatasetClass<D, Stake> {
   /**
    * Stake Token
    *
-   * @param req Use {@link Build5Request} with data based on {@link TokenStakeRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link TokenStakeRequest}
    * @returns
    */
-  deposit = (req: Build5Request<TokenStakeRequest>) =>
+  deposit = (req: BuildcoreRequest<TokenStakeRequest>) =>
     this.sendRequest(WEN_FUNC.depositStake)<TokenStakeRequest, Transaction>(req);
 
   /**

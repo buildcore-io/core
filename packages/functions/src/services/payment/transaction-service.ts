@@ -1,4 +1,4 @@
-import { IDocument, ITransaction, build5Db } from '@build-5/database';
+import { BaseRecord, IDocument, ITransaction, Update, database } from '@buildcore/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -10,13 +10,12 @@ import {
   StorageReturn,
   TRANSACTION_AUTO_EXPIRY_MS,
   Timestamp,
-  Token,
   Transaction,
   TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
   getMilestoneCol,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { ExpirationUnlockCondition, UnlockCondition, UnlockConditionType } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { get, isEmpty, set } from 'lodash';
@@ -24,44 +23,66 @@ import { MilestoneTransactionAdapter } from '../../triggers/milestone-transactio
 import { getOutputMetadata } from '../../utils/basic-output.utils';
 import { getProject } from '../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
+import { logger } from '../../utils/logger';
+import { getPathParts } from '../../utils/milestone';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
+
 export interface TransactionMatch {
   msgId: string;
   from: string;
   to: MilestoneTransactionEntry;
 }
 
-interface TransactionUpdates {
-  ref: IDocument;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any;
-  action: 'update' | 'set' | 'delete';
-  merge?: boolean;
+export enum Action {
+  C = 'create',
+  U = 'update',
+  UPS = 'upsert',
+  D = 'delete',
+}
+
+// prettier-ignore
+type DataType<C, U extends Update, A extends Action> =
+    A extends Action.C ? C :
+    A extends Action.U ? U :
+    A extends Action.UPS ? U :
+    A extends Action.D ? undefined :
+    never;
+
+interface TransactionUpdates<C, B extends BaseRecord, U extends Update, A extends Action> {
+  ref: IDocument<C, B, U>;
+  data: DataType<C, U, A>;
+  action: A;
 }
 
 export class TransactionService {
   public readonly linkedTransactions: string[] = [];
-  private readonly updates: TransactionUpdates[] = [];
+  private readonly updates: TransactionUpdates<unknown, BaseRecord, Update, Action>[] = [];
 
   constructor(public readonly transaction: ITransaction) {}
 
-  public submit(): void {
-    this.updates.forEach((params) => {
-      if (params.action === 'set') {
-        this.transaction.set(params.ref, params.data, params.merge || false);
-      } else if (params.action === 'update') {
-        this.transaction.update(params.ref, params.data);
-      } else if (params.action === 'delete') {
-        this.transaction.delete(params.ref);
-      } else {
-        throw Error('Invalid action ' + params.action);
+  public submit = async () => {
+    const promises = this.updates.map((params) => {
+      switch (params.action) {
+        case Action.C:
+          return this.transaction.create(params.ref, params.data);
+        case Action.U:
+          return this.transaction.update(params.ref, params.data as Update);
+        case Action.UPS:
+          return this.transaction.upsert(params.ref, params.data as Update);
+        case Action.D:
+          return this.transaction.delete(params.ref);
+        default:
+          throw Error('Invalid action ' + params.action);
       }
     });
-  }
+    await Promise.all(promises);
+  };
 
-  public push = (update: TransactionUpdates) => this.updates.push(update);
-
-  public get = <T>(docRef: IDocument) => this.transaction.get<T>(docRef);
+  public push = <C, B extends BaseRecord, U extends Update, A extends Action>(
+    update: TransactionUpdates<C, B, U, A>,
+  ) =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.updates.push(update as any);
 
   public async createPayment(
     order: Transaction,
@@ -79,7 +100,6 @@ export class TransactionService {
       space: order.space || '',
       network: order.network || DEFAULT_NETWORK,
       payload: {
-        // This must be the amount they send. As we're handing both correct amount from order or invalid one.
         amount: tran.to.amount,
         nativeTokens: (tran.to.nativeTokens || []).map((nt) => ({
           ...nt,
@@ -107,18 +127,14 @@ export class TransactionService {
     }
 
     if (order.payload.token) {
-      const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${order.payload.token}`);
-      const token = await tokenDocRef.get<Token>();
+      const tokenDocRef = database().doc(COL.TOKEN, order.payload.token);
+      const token = await tokenDocRef.get();
       if (token) {
         set(data, 'payload.token', token.uid);
         set(data, 'payload.tokenSymbol', token.symbol);
       }
     }
-    this.updates.push({
-      ref: build5Db().doc(`${COL.TRANSACTION}/${data.uid}`),
-      data,
-      action: 'set',
-    });
+    this.push({ ref: database().doc(COL.TRANSACTION, data.uid), data, action: Action.C });
     if (order.payload.type !== TransactionPayloadType.TANGLE_REQUEST) {
       this.linkedTransactions.push(data.uid);
     }
@@ -163,14 +179,10 @@ export class TransactionService {
           void: false,
           collection: order.payload.collection || null,
           quantity: (order.payload.quantity || null) as number,
-          restrictions: get(order, 'payload.restrictions', {}),
+          restrictions: order.payload.restrictions || {},
         },
       };
-      this.updates.push({
-        ref: build5Db().doc(`${COL.TRANSACTION}/${data.uid}`),
-        data,
-        action: 'set',
-      });
+      this.push({ ref: database().doc(COL.TRANSACTION, data.uid), data, action: Action.C });
       transOut.push(data);
       this.linkedTransactions.push(data.uid);
     }
@@ -196,13 +208,13 @@ export class TransactionService {
           nft: order.payload.nft || null,
           collection: order.payload.collection || null,
           quantity: (order.payload.quantity || null) as number,
-          restrictions: get(order, 'payload.restrictions', {}),
+          restrictions: order.payload.restrictions || {},
         },
       };
-      this.updates.push({
-        ref: build5Db().doc(`${COL.TRANSACTION}/${data.uid}`),
+      this.push({
+        ref: database().doc(COL.TRANSACTION, data.uid),
         data,
-        action: 'set',
+        action: Action.C,
       });
       transOut.push(data);
       this.linkedTransactions.push(data.uid);
@@ -261,18 +273,14 @@ export class TransactionService {
       }
 
       if (payment.payload.token) {
-        const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${payment.payload.token}`);
-        const token = await tokenDocRef.get<Token>();
+        const tokenDocRef = database().doc(COL.TOKEN, payment.payload.token);
+        const token = await tokenDocRef.get();
         if (token) {
           set(data, 'payload.token', token.uid);
           set(data, 'payload.tokenSymbol', token.symbol);
         }
       }
-      this.updates.push({
-        ref: build5Db().doc(`${COL.TRANSACTION}/${data.uid}`),
-        data: data,
-        action: 'set',
-      });
+      this.push({ ref: database().doc(COL.TRANSACTION, data.uid), data, action: Action.C });
       setLink && this.linkedTransactions.push(data.uid);
       return data;
     }
@@ -309,10 +317,10 @@ export class TransactionService {
         },
         linkedTransactions: [],
       };
-      this.updates.push({
-        ref: build5Db().doc(`${COL.TRANSACTION}/${data.uid}`),
+      this.push({
+        ref: database().doc(COL.TRANSACTION, data.uid),
         data: data,
-        action: 'set',
+        action: Action.C,
       });
       return data;
     }
@@ -331,7 +339,7 @@ export class TransactionService {
       ? { status: 'error', code: error.code || '', message: error.key || '', ...customErrorParams }
       : {};
     if (!isEmpty(error) && !get(error, 'code')) {
-      console.error('createNftCredit-error', payment.uid, tran.to.nftOutput?.nftId, error);
+      logger.error('createNftCredit-error', payment.uid, tran.to.nftOutput?.nftId, error);
     }
     const transaction: Transaction = {
       project: getProject(payment),
@@ -357,34 +365,32 @@ export class TransactionService {
     if (expiresOn) {
       set(transaction, 'payload.expiresOn', expiresOn);
     }
-    this.updates.push({
-      ref: build5Db().doc(`${COL.TRANSACTION}/${transaction.uid}`),
+    this.push({
+      ref: database().doc(COL.TRANSACTION, transaction.uid),
       data: transaction,
-      action: 'set',
+      action: Action.C,
     });
     this.linkedTransactions.push(transaction.uid);
     return transaction;
   }
 
   public markAsReconciled = (transaction: Transaction, chainRef: string) =>
-    this.updates.push({
-      ref: build5Db().doc(`${COL.TRANSACTION}/${transaction.uid}`),
-      data: {
-        'payload.reconciled': true,
-        'payload.chainReference': chainRef,
-      },
-      action: 'update',
+    this.push({
+      ref: database().doc(COL.TRANSACTION, transaction.uid),
+      data: { payload_reconciled: true, payload_chainReference: chainRef },
+      action: Action.U,
     });
 
   private getFromAddress = async (
     tran: MilestoneTransaction,
     order: Transaction,
-    build5Transaction?: Transaction,
+    buildcoreTransaction?: Transaction,
   ) => {
-    if (build5Transaction?.type === TransactionType.UNLOCK) {
-      const doc = (await build5Db()
-        .doc(build5Transaction.payload?.milestoneTransactionPath!)
-        .get<Record<string, unknown>>())!;
+    if (buildcoreTransaction?.type === TransactionType.UNLOCK) {
+      const { col, colId, subCol, subColId } = getPathParts(
+        buildcoreTransaction.payload?.milestoneTransactionPath!,
+      );
+      const doc = (await database().doc(col, colId, subCol, subColId).get())!;
       const adapter = new MilestoneTransactionAdapter(order.network!);
       const milestoneTransaction = await adapter.toMilestoneTransaction(doc);
       return milestoneTransaction.fromAddresses[0];
@@ -396,7 +402,7 @@ export class TransactionService {
     tran: MilestoneTransaction,
     tranOutput: MilestoneTransactionEntry,
     order: Transaction,
-    build5Transaction?: Transaction,
+    buildcoreTransaction?: Transaction,
   ): Promise<TransactionMatch | undefined> {
     const unsupportedUnlockCondition = this.getUnsupportedUnlockCondition(
       tranOutput.unlockConditions,
@@ -405,11 +411,11 @@ export class TransactionService {
       return;
     }
     let found: TransactionMatch | undefined;
-    const fromAddress = await this.getFromAddress(tran, order, build5Transaction);
+    const fromAddress = await this.getFromAddress(tran, order, buildcoreTransaction);
     if (fromAddress && tran.outputs) {
       for (const o of tran.outputs) {
         if (
-          build5Transaction?.type !== TransactionType.UNLOCK &&
+          buildcoreTransaction?.type !== TransactionType.UNLOCK &&
           tran.fromAddresses.includes(o.address)
         ) {
           continue;
@@ -435,9 +441,9 @@ export class TransactionService {
     tran: MilestoneTransaction,
     order: Transaction,
     tranOutput: MilestoneTransactionEntry,
-    build5Transaction: Transaction | undefined,
+    buildcoreTransaction: Transaction | undefined,
   ): Promise<void> {
-    const fromAddress = await this.getFromAddress(tran, order, build5Transaction);
+    const fromAddress = await this.getFromAddress(tran, order, buildcoreTransaction);
     if (fromAddress) {
       const match: TransactionMatch = {
         msgId: tran.messageId,
@@ -529,19 +535,13 @@ export class TransactionService {
           : tranOutput.address,
         sourceTransaction: [payment?.uid || order.uid],
         expiresOn: expiresOn || dateToTimestamp(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS)),
-        milestoneTransactionPath: `${getMilestoneCol(network)}/${tran.milestone}/${
-          SUB_COL.TRANSACTIONS
-        }/${tran.uid}`,
+        milestoneTransactionPath: `${getMilestoneCol(network)}/${tran.milestone}/${SUB_COL.TRANSACTIONS}/${tran.uid}`,
         outputToConsume,
         customMetadata: getOutputMetadata(tranOutput.output),
         nftId: tranOutput.nftOutput?.nftId || '',
       },
     };
-    this.updates.push({
-      ref: build5Db().doc(`${COL.TRANSACTION}/${data.uid}`),
-      data,
-      action: 'set',
-    });
+    this.push({ ref: database().doc(COL.TRANSACTION, data.uid), data, action: Action.C });
   };
 
   public getExpirationUnlock = (unlockCondition: UnlockCondition[] = []) =>

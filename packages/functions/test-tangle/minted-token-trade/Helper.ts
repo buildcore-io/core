@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Member,
@@ -12,52 +12,43 @@ import {
   TokenStatus,
   TokenTradeOrderType,
   Transaction,
-} from '@build-5/interfaces';
+  WEN_FUNC,
+} from '@buildcore/interfaces';
 
-import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import {
-  createMember,
-  createRoyaltySpaces,
-  createSpace,
-  getRandomSymbol,
-  mockWalletReturnValue,
-  wait,
-} from '../../test/controls/common';
-import { getWallet, MEDIA, testEnv } from '../../test/set-up';
+import { createRoyaltySpaces, getRandomSymbol, wait } from '../../test/controls/common';
+import { getWallet, MEDIA, mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 
 export class Helper {
   public network = Network.RMS;
-  public seller: string | undefined;
-  public space: Space | undefined;
-  public token: Token | undefined;
-  public sellerAddress: AddressDetails | undefined;
-  public buyer: string | undefined;
-  public buyerAddress: AddressDetails | undefined;
+  public seller = '';
+  public space: Space = {} as any;
+  public token: Token = {} as any;
+  public sellerAddress: AddressDetails = {} as any;
+  public buyer = '';
+  public buyerAddress: AddressDetails = {} as any;
 
-  public guardian: string | undefined;
-  public walletService: Wallet | undefined;
-  public walletSpy: any;
+  public guardian = '';
+  public walletService: Wallet = {} as any;
 
   public berforeAll = async () => {
     this.walletService = await getWallet(this.network);
     await createRoyaltySpaces();
-    this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
   };
 
   public beforeEach = async () => {
-    this.guardian = await createMember(this.walletSpy);
-    this.space = await createSpace(this.walletSpy, this.guardian);
+    this.guardian = await testEnv.createMember();
+    this.space = await testEnv.createSpace(this.guardian);
     this.token = (await saveToken(this.space.uid, this.guardian, this.walletService!)) as Token;
 
-    this.seller = await createMember(this.walletSpy);
-    const sellerDoc = <Member>await build5Db().doc(`${COL.MEMBER}/${this.seller}`).get();
+    this.seller = await testEnv.createMember();
+    const sellerDoc = <Member>await database().doc(COL.MEMBER, this.seller).get();
     this.sellerAddress = await this.walletService!.getAddressDetails(
       getAddress(sellerDoc, this.network!),
     );
@@ -69,8 +60,8 @@ export class Helper {
       VAULT_MNEMONIC,
     );
 
-    this.buyer = await createMember(this.walletSpy);
-    const buyerDoc = <Member>await build5Db().doc(`${COL.MEMBER}/${this.buyer}`).get();
+    this.buyer = await testEnv.createMember();
+    const buyerDoc = <Member>await database().doc(COL.MEMBER, this.buyer).get();
     this.buyerAddress = await this.walletService!.getAddressDetails(
       getAddress(buyerDoc, this.network),
     );
@@ -81,13 +72,13 @@ export class Helper {
     price = MIN_IOTA_AMOUNT,
     expiresAt?: Timestamp,
   ) => {
-    mockWalletReturnValue(this.walletSpy, this.seller!, {
+    mockWalletReturnValue(this.seller!, {
       symbol: this.token!.symbol,
       count,
       price,
       type: TokenTradeOrderType.SELL,
     });
-    const sellOrder: Transaction = await testEnv.wrap(tradeToken)({});
+    const sellOrder: Transaction = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await this.walletService!.send(this.sellerAddress!, sellOrder.payload.targetAddress!, 0, {
       nativeTokens: [{ amount: BigInt(count), id: this.token!.mintingData?.tokenId! }],
       expiration: expiresAt
@@ -98,7 +89,7 @@ export class Helper {
         : undefined,
     });
     await wait(async () => {
-      const snap = await build5Db()
+      const snap = await database()
         .collection(COL.TOKEN_MARKET)
         .where('orderTransactionId', '==', sellOrder.uid)
         .get();
@@ -113,13 +104,13 @@ export class Helper {
   };
 
   public createBuyOrder = async (count = 10, price = MIN_IOTA_AMOUNT, expiresAt?: Timestamp) => {
-    mockWalletReturnValue(this.walletSpy, this.buyer!, {
+    mockWalletReturnValue(this.buyer!, {
       symbol: this.token!.symbol,
       count,
       price,
       type: TokenTradeOrderType.BUY,
     });
-    const buyOrder: Transaction = await testEnv.wrap(tradeToken)({});
+    const buyOrder: Transaction = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await requestFundsFromFaucet(
       this.network,
       buyOrder.payload.targetAddress!,
@@ -127,7 +118,7 @@ export class Helper {
       expiresAt,
     );
     await wait(async () => {
-      const snap = await build5Db()
+      const snap = await database()
         .collection(COL.TOKEN_MARKET)
         .where('orderTransactionId', '==', buyOrder.uid)
         .get();
@@ -163,8 +154,8 @@ export const saveToken = async (
     },
     access: 0,
     icon: MEDIA,
-  };
-  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  } as Token;
+  await database().doc(COL.TOKEN, token.uid).create(token);
   return token;
 };
 

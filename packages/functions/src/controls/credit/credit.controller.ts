@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   CreditUnrefundableRequest,
@@ -11,7 +11,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { WalletService } from '../../services/wallet/wallet.service';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
@@ -24,9 +24,9 @@ export const creditUnrefundableControl = ({
   params,
   project,
 }: Context<CreditUnrefundableRequest>): Promise<Transaction> =>
-  build5Db().runTransaction(async (transaction) => {
-    const transactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${params.transaction}`);
-    const creditTransaction = await transaction.get<Transaction>(transactionDocRef);
+  database().runTransaction(async (transaction) => {
+    const transactionDocRef = database().doc(COL.TRANSACTION, params.transaction);
+    const creditTransaction = await transaction.get(transactionDocRef);
 
     if (
       !creditTransaction ||
@@ -49,8 +49,8 @@ export const creditUnrefundableControl = ({
     const targetAddress = await wallet.getNewIotaAddressDetails();
 
     const creditOrder = createCreditOrder(project, creditTransaction, owner, targetAddress.bech32);
-    const creditDocRef = build5Db().doc(`${COL.TRANSACTION}/${creditOrder.uid}`);
-    transaction.create(creditDocRef, creditOrder);
+    const creditDocRef = database().doc(COL.TRANSACTION, creditOrder.uid);
+    await transaction.create(creditDocRef, creditOrder);
 
     return creditOrder;
   });

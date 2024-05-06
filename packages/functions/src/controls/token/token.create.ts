@@ -1,13 +1,13 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
+  Access,
   COL,
   SOON_PROJECT_ID,
   Token,
   TokenCreateRequest,
   TokenStatus,
   WenError,
-} from '@build-5/interfaces';
-import { merge } from 'lodash';
+} from '@buildcore/interfaces';
 import { hasStakedTokens } from '../../services/stake.service';
 import { isProdEnv } from '../../utils/config.utils';
 import { dateToTimestamp } from '../../utils/dateTime.utils';
@@ -29,7 +29,7 @@ export const createTokenControl = async ({
 
   const space = params.space || '';
   if (space) {
-    const tokens = await build5Db().collection(COL.TOKEN).where('space', '==', space).get<Token>();
+    const tokens = await database().collection(COL.TOKEN).where('space', '==', space).get();
     const nonOrAllRejected = tokens.reduce(
       (acc, token) => acc && !token.approved && token.rejected,
       true,
@@ -40,11 +40,11 @@ export const createTokenControl = async ({
     await assertIsGuardian(space, owner);
   }
 
-  const symbolSnapshot = await build5Db()
+  const symbolSnapshot = await database()
     .collection(COL.TOKEN)
     .where('symbol', '==', params.symbol)
     .where('rejected', '==', false)
-    .get<Token>();
+    .get();
   if (symbolSnapshot.length > 0) {
     throw invalidArgument(WenError.token_symbol_must_be_globally_unique);
   }
@@ -58,7 +58,7 @@ export const createTokenControl = async ({
         params.saleLength || 0,
         params.coolDownLength || 0,
       )
-    : {};
+    : { saleStartDate: undefined, saleLength: undefined, coolDownEnd: undefined };
 
   const tokenUid = getRandomEthAddress();
   const extraData = {
@@ -76,7 +76,18 @@ export const createTokenControl = async ({
     totalAirdropped: 0,
     tradingDisabled: true,
   };
-  const data = merge(params, publicSaleTimeFrames, extraData);
-  await build5Db().collection(COL.TOKEN).doc(tokenUid).set(data);
-  return (await build5Db().doc(`${COL.TOKEN}/${tokenUid}`).get<Token>())!;
+  const data: Token = {
+    ...params,
+    ...publicSaleTimeFrames,
+    ...extraData,
+    pricePerToken: params.pricePerToken || 0,
+    allocations: params.allocations || [],
+    links: (params.links || []).map((l) => new URL(l)),
+    termsAndConditions: params.termsAndConditions || '',
+    access: params.access as Access,
+    ipfsMedia: '',
+    ipfsMetadata: '',
+  };
+  await database().doc(COL.TOKEN, tokenUid).create(data);
+  return (await database().doc(COL.TOKEN, tokenUid).get())!;
 };

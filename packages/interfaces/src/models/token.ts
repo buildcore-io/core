@@ -272,6 +272,10 @@ export interface Token extends BaseRecord {
    */
   readonly mediaStatus?: MediaStatus;
   /**
+   * @hidden
+   */
+  readonly mediaUploadErrorCount?: number;
+  /**
    * Trading disabled for the token
    */
   readonly tradingDisabled?: boolean;
@@ -641,4 +645,9 @@ export interface TokenStats extends BaseSubCollection {
    * TODODOC
    */
   readonly ranks?: RankStats;
+
+  // First key -> dynamic/static
+  // Second key -> stake expires at in millis
+  // value -> stake value
+  readonly stakeExpiry?: { [key: string]: { [key: number]: number } };
 }

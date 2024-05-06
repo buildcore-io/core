@@ -5,7 +5,7 @@ import {
   MIN_IOTA_AMOUNT,
   TRANSACTION_AUTO_EXPIRY_MS,
   TRANSACTION_MAX_EXPIRY_MS,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
@@ -16,7 +16,7 @@ const minBids = 1;
 const maxBids = 10;
 
 export const auctionCreateSchema = {
-  space: CommonJoi.uid().description('Build5 id of the space'),
+  space: CommonJoi.uid().description('Buildcore id of the space'),
   auctionFrom: Joi.date()
     .greater(dayjs().subtract(minAvailableFrom, 'minutes').toDate())
     .required()

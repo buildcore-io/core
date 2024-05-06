@@ -8,7 +8,7 @@
  */
 export interface AuctionBidRequest {
   /**
-   * Build5 id of the auction.
+   * Buildcore id of the auction.
    */
   auction: string;
 }

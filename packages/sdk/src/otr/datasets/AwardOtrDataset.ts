@@ -3,7 +3,7 @@ import {
   AwardCreateTangleRequest,
   AwardFundTangleRequest,
   TangleRequestType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { DatasetClass, OtrRequest } from './common';
 
 /**

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   KEY_NAME_TANGLE,
@@ -10,34 +10,30 @@ import {
   Transaction,
   TransactionPayloadType,
   TransactionType,
-} from '@build-5/interfaces';
+  WEN_FUNC,
+} from '@buildcore/interfaces';
 import { FoundryOutput } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { isEqual } from 'lodash';
-import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper, getAliasOutput, getFoundryMetadata, getStateAndGovernorAddress } from './Helper';
 
 describe('Token minting', () => {
   const helper = new Helper();
 
-  beforeEach(async () => {
-    await helper.beforeEach();
-  });
-
   it.each([false, true])('Should mint token', async (hasExpiration: boolean) => {
     const expiresAt = hasExpiration ? dateToTimestamp(dayjs().add(2, 'h').toDate()) : undefined;
 
     await helper.setup(false, hasExpiration);
-    mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, {
+    mockWalletReturnValue(helper.guardian.uid, {
       token: helper.token.uid,
       network: helper.network,
     });
-    const order = await testEnv.wrap(mintTokenOrder)({});
+    const order = await testEnv.wrap<Transaction>(WEN_FUNC.mintTokenOrder);
     await requestFundsFromFaucet(
       helper.network,
       order.payload.targetAddress,
@@ -45,9 +41,9 @@ describe('Token minting', () => {
       expiresAt,
     );
 
-    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${helper.token.uid}`);
+    const tokenDocRef = database().doc(COL.TOKEN, helper.token.uid);
     await wait(async () => {
-      const snap = await tokenDocRef.get<Token>();
+      const snap = await tokenDocRef.get();
       return snap?.status === TokenStatus.MINTED;
     });
 
@@ -75,7 +71,7 @@ describe('Token minting', () => {
       );
       return Number(Object.values(nativeTokens)[0]) === 1000;
     });
-    const guardianData = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.guardian.uid}`).get();
+    const guardianData = <Member>await database().doc(COL.MEMBER, helper.guardian.uid).get();
     await wait(async () => {
       const { nativeTokens } = await helper.walletService.getBalance(
         getAddress(guardianData, helper.network),
@@ -93,9 +89,9 @@ describe('Token minting', () => {
     });
 
     const mintTransactions = (
-      await build5Db()
+      await database()
         .collection(COL.TRANSACTION)
-        .where('payload.token', '==', helper.token.uid)
+        .where('payload_token', '==', helper.token.uid)
         .where('type', '==', TransactionType.MINT_TOKEN)
         .get()
     ).map((d) => <Transaction>d);
@@ -126,7 +122,7 @@ describe('Token minting', () => {
     expect(metadata.name).toBe(helper.token.name);
     expect(metadata.logoUrl).toBeDefined();
     expect(metadata.issuerName).toBe(KEY_NAME_TANGLE);
-    expect(metadata.build5Id).toBe(helper.token.uid);
+    expect(metadata.originId).toBe(helper.token.uid);
     expect(metadata.symbol).toBe(helper.token.symbol.toUpperCase());
     expect(metadata.decimals).toBe(5);
   });

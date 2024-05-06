@@ -1,4 +1,4 @@
-import { WEN_FUNC } from '@build-5/interfaces';
+import { WEN_FUNC } from '@buildcore/interfaces';
 import { uniq } from 'lodash';
 import { WEN_FUNC_TRIGGER, WEN_SCHEDULED, WEN_STORAGE_TRIGGER } from '../src/runtime/common';
 

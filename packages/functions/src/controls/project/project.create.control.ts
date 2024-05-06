@@ -1,4 +1,4 @@
-import { IBatch, build5Db } from '@build-5/database';
+import { IBatch, database } from '@buildcore/database';
 import {
   COL,
   Project,
@@ -13,7 +13,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import jwt from 'jsonwebtoken';
 import { set } from 'lodash';
@@ -30,13 +30,13 @@ export const createProjectControl = async ({
   owner,
   params,
 }: Context<ProjectCreateRequest>): Promise<ProjectCreateResponse> => {
-  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${owner}`);
+  const memberDocRef = database().doc(COL.MEMBER, owner);
   const member = await memberDocRef.get();
   if (!member) {
     throw invalidArgument(WenError.member_does_not_exists);
   }
 
-  const batch = build5Db().batch();
+  const batch = database().batch();
 
   const projectData = {
     ...params,
@@ -45,21 +45,21 @@ export const createProjectControl = async ({
     deactivated: false,
   } as Project;
 
-  if (projectData.config.billing === ProjectBilling.TOKEN_BASE) {
+  if (projectData.config.billing === ProjectBilling.TOKEN_BASED) {
     const token = await getTokenBySymbol(projectData.config.nativeTokenSymbol!);
     if (!token) {
       throw invalidArgument(WenError.token_does_not_exist);
     }
     set(projectData, 'config.nativeTokenUid', token.uid);
   }
-  const projectDocRef = build5Db().doc(`${COL.PROJECT}/${projectData.uid}`);
+  const projectDocRef = database().doc(COL.PROJECT, projectData.uid);
 
   const otr = await createOtrs(batch, projectData.uid);
   set(projectData, 'otr', otr);
 
   batch.create(projectDocRef, projectData);
 
-  const adminDocRef = projectDocRef.collection(SUB_COL.ADMINS).doc(owner);
+  const adminDocRef = database().doc(COL.PROJECT, projectData.uid, SUB_COL.ADMINS, owner);
   const admin: ProjectAdmin = {
     project: projectData.uid,
     uid: owner,
@@ -76,13 +76,14 @@ export const createProjectControl = async ({
     parentCol: COL.PROJECT,
     parentId: projectData.uid,
     token,
+    createdOn: dateToTimestamp(dayjs()),
   };
-  const apiKeyDocRef = projectDocRef.collection(SUB_COL._API_KEY).doc();
+  const apiKeyDocRef = database().doc(COL.PROJECT, projectData.uid, SUB_COL._API_KEY, apiKey.uid);
   batch.create(apiKeyDocRef, apiKey);
 
   await batch.commit();
 
-  return { project: (await projectDocRef.get<Project>())!, token };
+  return { project: (await projectDocRef.get())!, token };
 };
 
 const createOtrs = async (batch: IBatch, project: string) => {
@@ -110,10 +111,10 @@ const createOtrs = async (batch: IBatch, project: string) => {
   });
   const otrs = await Promise.all(promise);
 
-  otrs.forEach((otr) => {
-    const docRef = build5Db().doc(`${COL.TRANSACTION}/${otr.uid}`);
+  for (const otr of otrs) {
+    const docRef = database().doc(COL.TRANSACTION, otr.uid);
     batch.create(docRef, otr);
-  });
+  }
 
   return otrs.reduce(
     (acc, act) => ({

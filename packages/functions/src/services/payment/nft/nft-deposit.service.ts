@@ -1,7 +1,6 @@
-import { ITransaction, build5Db, build5Storage } from '@build-5/database';
+import { ITransaction, PgNftUpdate, database, storage } from '@buildcore/database';
 import {
   Access,
-  Award,
   COL,
   Categories,
   Collection,
@@ -17,14 +16,17 @@ import {
   Space,
   Transaction,
   TransactionPayloadType,
+  ValidatedAddress,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { NftOutput } from '@iota/sdk';
+import dayjs from 'dayjs';
 import { head, isEmpty, set } from 'lodash';
 import { getNftByMintingId } from '../../../utils/collection-minting-utils/nft.utils';
 import { getProject } from '../../../utils/common.utils';
 import { getBucket } from '../../../utils/config.utils';
-import { serverTime } from '../../../utils/dateTime.utils';
+import { dateToTimestamp, serverTime } from '../../../utils/dateTime.utils';
+import { logger } from '../../../utils/logger';
 import { migrateUriToSotrage, uriToUrl } from '../../../utils/media.utils';
 import {
   collectionIrc27Scheam,
@@ -38,7 +40,7 @@ import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { NftWallet } from '../../wallet/NftWallet';
 import { WalletService } from '../../wallet/wallet.service';
 import { BaseService, HandlerParams } from '../base';
-import { TransactionMatch } from '../transaction-service';
+import { Action, TransactionMatch } from '../transaction-service';
 
 export class NftDepositService extends BaseService {
   public handleRequest = async ({ order, match, tranEntry }: HandlerParams) => {
@@ -47,11 +49,11 @@ export class NftDepositService extends BaseService {
       await this.transactionService.createPayment(order, match);
       this.transactionService.markAsReconciled(order, match.msgId);
 
-      const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
+      const orderDocRef = database().doc(COL.TRANSACTION, order.uid);
       this.transactionService.push({
         ref: orderDocRef,
-        data: { 'payload.nft': nft.uid },
-        action: 'update',
+        data: { payload_nft: nft.uid },
+        action: Action.U,
       });
     } catch (error) {
       const payment = await this.transactionService.createPayment(order, match, true);
@@ -73,34 +75,60 @@ export class NftDepositService extends BaseService {
     }
     const nft = await getNftByMintingId(transactionEntry.nftOutput.nftId);
     if (!nft) {
-      return await this.depositNftMintedOutsideBuild5(
+      return await this.depositNftMintedOutsideBuildcore(
         order,
         match.msgId,
         transactionEntry.nftOutput!,
       );
     }
-    return await this.depositNftMintedOnBuild5(nft, order, transactionEntry.nftOutput, match);
+    return await this.depositNftMintedOnBuildcore(nft, order, transactionEntry.nftOutput, match);
   };
 
-  private depositNftMintedOnBuild5 = async (
+  private depositNftMintedOnBuildcore = async (
     nft: Nft,
     order: Transaction,
     nftOutput: NftOutput,
     match: TransactionMatch,
   ) => {
-    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nft.collection}`);
-    const collection = <Collection>await this.transactionService.get(collectionDocRef);
+    const collectionDocRef = database().doc(COL.COLLECTION, nft.collection);
+    const collection = <Collection>await this.transaction.get(collectionDocRef);
 
     if (!collection.approved) {
       throw WenError.collection_must_be_approved;
     }
 
-    const data = {
+    const data: PgNftUpdate = {
+      status: NftStatus.MINTED,
+      depositData_address: order.payload.targetAddress,
+      depositData_network: order.network,
+      depositData_mintedOn: dayjs().toDate(),
+      depositData_mintedBy: order.member,
+      depositData_blockId: match.msgId,
+      depositData_nftId: nftOutput.nftId,
+      depositData_storageDeposit: match.to.amount,
+      depositData_mintingOrderId: order.uid,
+      hidden: false,
+      isOwned: true,
+      owner: order.member,
+    };
+    const nftDocRef = database().doc(COL.NFT, nft.uid);
+    this.transactionService.push({ ref: nftDocRef, data, action: Action.U });
+    this.transactionService.push({
+      ref: database().doc(COL.TRANSACTION, order.uid),
+      data: {
+        space: nft.space,
+        payload_amount: match.to.amount,
+        payload_nft: nft.uid,
+      },
+      action: Action.U,
+    });
+    return {
+      ...nft,
       status: NftStatus.MINTED,
       depositData: {
         address: order.payload.targetAddress,
         network: order.network,
-        mintedOn: serverTime(),
+        mintedOn: dateToTimestamp(dayjs().toDate()),
         mintedBy: order.member,
         blockId: match.msgId,
         nftId: nftOutput.nftId,
@@ -111,21 +139,9 @@ export class NftDepositService extends BaseService {
       isOwned: true,
       owner: order.member,
     };
-    const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
-    this.transactionService.push({ ref: nftDocRef, data, action: 'update' });
-    this.transactionService.push({
-      ref: build5Db().doc(`${COL.TRANSACTION}/${order.uid}`),
-      data: {
-        space: nft.space,
-        'payload.amount': match.to.amount,
-        'payload.nft': nft.uid,
-      },
-      action: 'update',
-    });
-    return { ...nft, ...data } as Nft;
   };
 
-  private depositNftMintedOutsideBuild5 = async (
+  private depositNftMintedOutsideBuildcore = async (
     order: Transaction,
     blockId: string,
     nftOutput: NftOutput,
@@ -205,7 +221,7 @@ export class NftDepositService extends BaseService {
       placeholderNft: false,
     };
 
-    const bucket = build5Storage().bucket(getBucket());
+    const bucket = storage().bucket(getBucket());
     const nftUrl = uriToUrl(metadata.nft.uri);
     const nftMedia = await migrateUriToSotrage(COL.NFT, nft.owner!, nft.uid, nftUrl, bucket);
     set(nft, 'media', nftMedia);
@@ -223,25 +239,24 @@ export class NftDepositService extends BaseService {
         set(migratedCollection, 'mediaStatus', MediaStatus.PENDING_UPLOAD);
         set(space, 'avatarUrl', bannerUrl);
       } catch (error) {
-        console.warn('Could not get banner url warning', order.uid, nftOutput.nftId, error);
+        logger.warn('Could not get banner url warning', order.uid, nftOutput.nftId, error);
       }
     }
 
-    const collectionDocRef = build5Db().doc(
-      `${COL.COLLECTION}/${(existingCollection || migratedCollection).uid}`,
+    const collectionDocRef = database().doc(
+      COL.COLLECTION,
+      (existingCollection || migratedCollection).uid,
     );
+
     this.transactionService.push({
       ref: collectionDocRef,
-      data: existingCollection
-        ? { total: build5Db().inc(1) }
-        : { ...migratedCollection, total: build5Db().inc(1) },
-      action: 'set',
-      merge: true,
+      data: existingCollection ? { total: database().inc(1) } : migratedCollection,
+      action: existingCollection ? Action.U : Action.C,
     });
 
     if (isNewSpace) {
-      const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
-      this.transactionService.push({ ref: spaceDocRef, data: space, action: 'set' });
+      const spaceDocRef = database().doc(COL.SPACE, space.uid);
+      this.transactionService.push({ ref: spaceDocRef, data: space, action: Action.C });
     }
 
     if (!existingCollection && !isEmpty(metadata.collection.royalties)) {
@@ -252,19 +267,24 @@ export class NftDepositService extends BaseService {
         name: 'Royalty space for ' + migratedCollection.name,
         collectionId: migratedCollection.uid,
         claimed: false,
-        validatedAddress: { [order.network!]: royaltyAddress },
+        validatedAddress: { [order.network!]: royaltyAddress } as unknown as ValidatedAddress,
+        createdBy: order.member!,
+        totalGuardians: 0,
+        totalMembers: 0,
+        totalPendingMembers: 0,
+        guardians: {},
+        members: {},
       };
-      const royaltySpaceDocRef = build5Db().doc(`${COL.SPACE}/${royaltySpace.uid}`);
+      const royaltySpaceDocRef = database().doc(COL.SPACE, royaltySpace.uid);
       this.transactionService.push({
         ref: royaltySpaceDocRef,
         data: royaltySpace,
-        action: 'set',
-        merge: true,
+        action: Action.C,
       });
     }
 
-    const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
-    this.transactionService.push({ ref: nftDocRef, data: nft, action: 'set' });
+    const nftDocRef = database().doc(COL.NFT, nft.uid);
+    this.transactionService.push({ ref: nftDocRef, data: nft, action: Action.C });
 
     return nft;
   };
@@ -298,17 +318,17 @@ export class NftDepositService extends BaseService {
 }
 
 const getCollection = async (transaction: ITransaction, collectionId: string) => {
-  const collectionSnap = await build5Db()
+  const collectionSnap = await database()
     .collection(COL.COLLECTION)
-    .where('mintingData.nftId', '==', collectionId)
-    .get<Collection>();
+    .where('mintingData_nftId', '==', collectionId)
+    .get();
   if (collectionSnap.length) {
-    const docRef = build5Db().doc(`${COL.COLLECTION}/${collectionSnap[0].uid}`);
-    return await transaction.get<Collection>(docRef);
+    const docRef = database().doc(COL.COLLECTION, collectionSnap[0].uid);
+    return await transaction.get(docRef);
   }
 
-  const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${collectionId}`);
-  return await transaction.get<Collection>(collectionDocRef);
+  const collectionDocRef = database().doc(COL.COLLECTION, collectionId);
+  return await transaction.get(collectionDocRef);
 };
 
 const getSpace = async (
@@ -317,20 +337,20 @@ const getSpace = async (
   collectionId: string,
 ) => {
   if (collection) {
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${collection.space}`);
+    const spaceDocRef = database().doc(COL.SPACE, collection.space!);
     const space = <Space>await spaceDocRef.get();
     return { space, isNewSpace: false };
   }
 
-  const awardsSnap = await build5Db()
+  const awardsSnap = await database()
     .collection(COL.AWARD)
     .where('collectionId', '==', collectionId)
     .limit(1)
-    .get<Award>();
+    .get();
 
   if (awardsSnap.length) {
     const award = awardsSnap[0];
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${award.space}`);
+    const spaceDocRef = database().doc(COL.SPACE, award.space);
     const space = <Space>await spaceDocRef.get();
     return { space, isNewSpace: false };
   }

@@ -41,14 +41,6 @@ module.exports = {
     '@typescript-eslint/prefer-enum-initializers': 2,
     '@typescript-eslint/member-delimiter-style': 2,
     // Disabled for now.
-    'require-jsdoc': 0, // ["error", {
-    //   "require": {
-    //       "FunctionDeclaration": true,
-    //       "MethodDefinition": true,
-    //       "ClassDeclaration": true,
-    //       "ArrowFunctionExpression": true,
-    //       "FunctionExpression": true
-    //   }
-    // }]
+    'require-jsdoc': 0,
   },
 };

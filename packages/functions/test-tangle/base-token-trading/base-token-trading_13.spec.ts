@@ -1,12 +1,11 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
   Network,
   TangleRequestType,
-  TokenTradeOrder,
   Transaction,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { awaitTransactionConfirmationsForToken, getTangleOrder } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
@@ -64,21 +63,25 @@ describe('Base token trading', () => {
       },
     });
 
-    let query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', helper.seller!.uid);
+    const queryBySeller = database()
+      .collection(COL.TOKEN_MARKET)
+      .where('owner', '==', helper.seller!.uid);
     await wait(async () => {
-      const snap = await query.get<TokenTradeOrder>();
+      const snap = await queryBySeller.get();
       return snap.length > 0;
     });
-    const sell = (await query.get<TokenTradeOrder>())[0]!;
+    const sell = (await queryBySeller.get())[0]!;
 
-    query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer!.uid);
+    const queryByBuyer = database()
+      .collection(COL.TOKEN_MARKET)
+      .where('owner', '==', helper.buyer!.uid);
     await wait(async () => {
-      const snap = await query.get<TokenTradeOrder>();
+      const snap = await queryByBuyer.get();
       return snap.length > 0;
     });
-    const buy = (await query.get<TokenTradeOrder>())[0]!;
+    const buy = (await queryByBuyer.get())[0]!;
 
-    query = build5Db()
+    const query = database()
       .collection(COL.TOKEN_PURCHASE)
       .where('sell', '==', sell.uid)
       .where('buy', '==', buy.uid);

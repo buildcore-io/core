@@ -1,4 +1,4 @@
-import { API_TIMEOUT_SECONDS } from '@build-5/interfaces';
+import { API_TIMEOUT_SECONDS } from '@buildcore/interfaces';
 import { Observable } from 'rxjs';
 import ws from 'ws';
 

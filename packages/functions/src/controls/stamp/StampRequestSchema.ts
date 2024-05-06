@@ -1,4 +1,4 @@
-import { StampRequest } from '@build-5/interfaces';
+import { StampRequest } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 import { AVAILABLE_NETWORKS } from '../common';

@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { Award, AwardCancelRequest, COL, WenError } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { Award, AwardCancelRequest, COL, WenError } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
@@ -9,9 +9,9 @@ export const cancelAwardControl = ({
   owner,
   params,
 }: Context<AwardCancelRequest>): Promise<Award> =>
-  build5Db().runTransaction(async (transaction) => {
-    const awardDocRef = build5Db().doc(`${COL.AWARD}/${params.uid}`);
-    const award = await transaction.get<Award>(awardDocRef);
+  database().runTransaction(async (transaction) => {
+    const awardDocRef = database().doc(COL.AWARD, params.uid);
+    const award = await transaction.get(awardDocRef);
 
     if (!award) {
       throw invalidArgument(WenError.award_does_not_exists);
@@ -26,7 +26,7 @@ export const cancelAwardControl = ({
     await assertIsGuardian(award.space, owner);
 
     const data = { uid: award.uid, completed: true };
-    transaction.update(awardDocRef, data);
+    await transaction.update(awardDocRef, data);
 
     return { ...award, ...data };
   });

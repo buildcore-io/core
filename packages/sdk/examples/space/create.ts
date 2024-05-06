@@ -1,10 +1,10 @@
-import { Dataset, Network, Space } from '@build-5/interfaces';
-import { Build5, SoonaverseApiKey, https } from '@build-5/sdk';
+import { Dataset, Network, Space } from '@buildcore/interfaces';
+import { Buildcore, SoonaverseApiKey, https } from '@buildcore/sdk';
 import { address } from '../utils/secret';
 import { walletSign } from '../utils/utils';
 
 async function main() {
-  const origin = Build5.TEST;
+  const origin = Buildcore.TEST;
   let response: Space;
   const userSign = await walletSign(address.bech32, address);
   try {

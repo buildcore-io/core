@@ -1,6 +1,8 @@
-import { build5Db } from '@build-5/database';
-import { COL, Network, SUB_COL, StampRequest } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, Network, SUB_COL, StampRequest } from '@buildcore/interfaces';
+import dayjs from 'dayjs';
 import { createStampAndStampOrder } from '../../services/payment/tangle-service/stamp/StampTangleService';
+import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { Context } from '../common';
 
 export const stampCreateControl = async ({ project, owner, params }: Context<StampRequest>) => {
@@ -13,24 +15,29 @@ export const stampCreateControl = async ({ project, owner, params }: Context<Sta
     params.aliasId,
   );
 
-  const batch = build5Db().batch();
+  const batch = database().batch();
 
   if (!params.aliasId) {
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
+    const spaceDocRef = database().doc(COL.SPACE, space.uid);
     batch.create(spaceDocRef, space);
 
-    const guardian = { uid: owner, parentId: space.uid, parentCol: COL.SPACE };
-    const guardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(owner);
+    const guardian = {
+      uid: owner,
+      parentId: space.uid,
+      parentCol: COL.SPACE,
+      createdOn: dateToTimestamp(dayjs()),
+    };
+    const guardianDocRef = database().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, owner);
     batch.create(guardianDocRef, guardian);
 
-    const memberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner);
+    const memberDocRef = database().doc(COL.SPACE, space.uid, SUB_COL.MEMBERS, owner);
     batch.create(memberDocRef, guardian);
   }
 
-  const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
+  const orderDocRef = database().doc(COL.TRANSACTION, order.uid);
   batch.create(orderDocRef, order);
 
-  const stampDocRef = build5Db().doc(`${COL.STAMP}/${stamp.uid}`);
+  const stampDocRef = database().doc(COL.STAMP, stamp.uid);
   batch.create(stampDocRef, stamp);
 
   await batch.commit();

@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { Award, AwardRejectRequest, COL, WenError } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { Award, AwardRejectRequest, COL, WenError } from '@buildcore/interfaces';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsGuardian } from '../../utils/token.utils';
 import { Context } from '../common';
@@ -8,8 +8,8 @@ export const rejectAwardControl = async ({
   owner,
   params,
 }: Context<AwardRejectRequest>): Promise<Award> => {
-  const awardDocRef = build5Db().doc(`${COL.AWARD}/${params.uid}`);
-  const award = await awardDocRef.get<Award>();
+  const awardDocRef = database().doc(COL.AWARD, params.uid);
+  const award = await awardDocRef.get();
   if (!award) {
     throw invalidArgument(WenError.award_does_not_exists);
   }

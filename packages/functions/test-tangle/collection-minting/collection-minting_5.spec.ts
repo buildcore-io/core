@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Collection,
@@ -6,11 +6,11 @@ import {
   Transaction,
   TransactionType,
   UnsoldMintingOptions,
-} from '@build-5/interfaces';
+  WEN_FUNC,
+} from '@buildcore/interfaces';
 import { isEqual } from 'lodash';
-import { mintCollection } from '../../src/runtime/firebase/collection/index';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { CollectionMintHelper } from './Helper';
 
@@ -30,18 +30,18 @@ describe('Collection minting', () => {
     const tmpAddress1 = await helper.walletService!.getNewIotaAddressDetails();
     const tmpAddress2 = await helper.walletService!.getNewIotaAddressDetails();
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
+    mockWalletReturnValue(helper.guardian!, {
       collection: helper.collection,
       network: helper.network,
       unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE,
     });
-    const collectionMintOrder1 = await testEnv.wrap(mintCollection)({});
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
+    const collectionMintOrder1 = await testEnv.wrap<Transaction>(WEN_FUNC.mintCollection);
+    mockWalletReturnValue(helper.guardian!, {
       collection: helper.collection,
       network: helper.network,
       unsoldMintingOptions: UnsoldMintingOptions.KEEP_PRICE,
     });
-    const collectionMintOrder2 = await testEnv.wrap(mintCollection)({});
+    const collectionMintOrder2 = await testEnv.wrap<Transaction>(WEN_FUNC.mintCollection);
 
     expect(isEqual(collectionMintOrder1, collectionMintOrder2)).toBe(false);
     expect(collectionMintOrder1.payload.amount).toBe(collectionMintOrder2.payload.amount);
@@ -61,14 +61,14 @@ describe('Collection minting', () => {
     const promises = [tmpAddress1, tmpAddress2].map((address, i) =>
       helper.walletService!.send(
         address,
-        orders[i].payload.targetAddress,
-        orders[i].payload.amount,
+        orders[i].payload.targetAddress!,
+        orders[i].payload.amount!,
         {},
       ),
     );
     await Promise.all(promises);
 
-    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${helper.collection}`);
+    const collectionDocRef = database().doc(COL.COLLECTION, helper.collection);
     let collection = <Collection>await collectionDocRef.get();
     await wait(async () => {
       collection = <Collection>await collectionDocRef.get();
@@ -76,12 +76,12 @@ describe('Collection minting', () => {
     });
     expect(collection.approved).toBe(true);
 
-    const creditQuery = build5Db()
+    const creditQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
-      .where('payload.collection', '==', helper.collection);
+      .where('payload_collection', '==', helper.collection);
     await wait(async () => {
-      const snap = await creditQuery.get<Transaction>();
+      const snap = await creditQuery.get();
       const allConfirmed = snap.reduce(
         (acc, act) => acc && (act.payload?.walletReference?.confirmed || false),
         true,

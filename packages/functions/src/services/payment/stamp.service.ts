@@ -1,4 +1,4 @@
-import { build5Db, build5Storage } from '@build-5/database';
+import { database, storage } from '@buildcore/database';
 import {
   COL,
   MediaStatus,
@@ -7,25 +7,25 @@ import {
   Transaction,
   TransactionPayloadType,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
 import { packBasicOutput } from '../../utils/basic-output.utils';
 import { getProject } from '../../utils/common.utils';
 import { getBucket, getStampRoyaltyAddress } from '../../utils/config.utils';
-import { dateToTimestamp } from '../../utils/dateTime.utils';
 import { migrateUriToSotrage, uriToUrl } from '../../utils/media.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 import { isStorageUrl } from '../joi/common';
 import { WalletService } from '../wallet/wallet.service';
 import { BaseService, HandlerParams } from './base';
 import { getStampDailyCost } from './tangle-service/stamp/StampTangleService';
+import { Action } from './transaction-service';
 
 export class StampService extends BaseService {
   public handleRequest = async ({ order, match }: HandlerParams) => {
     const payment = await this.transactionService.createPayment(order, match);
 
-    const stampDocRef = build5Db().doc(`${COL.STAMP}/${order.payload.stamp}`);
+    const stampDocRef = database().doc(COL.STAMP, order.payload.stamp!);
     const stamp = <Stamp>await this.transaction.get(stampDocRef);
 
     const mintAmount = stamp.funded
@@ -84,11 +84,10 @@ export class StampService extends BaseService {
             void: false,
           },
         };
-        const creditDocRef = build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`);
         this.transactionService.push({
-          ref: creditDocRef,
+          ref: database().doc(COL.TRANSACTION, credit.uid),
           data: credit,
-          action: 'set',
+          action: Action.C,
         });
       }
     }
@@ -99,11 +98,11 @@ export class StampService extends BaseService {
     const updateData = {
       funded: true,
       mediaStatus: stamp.mediaStatus || MediaStatus.PENDING_UPLOAD,
-      expiresAt: dateToTimestamp(expiresAt),
+      expiresAt: expiresAt.toDate(),
     };
     if (!stamp.funded && !isStorageUrl(stamp.originUri)) {
-      const bucket = build5Storage().bucket(getBucket());
-      const build5Url = await migrateUriToSotrage(
+      const bucket = storage().bucket(getBucket());
+      const buildcoreUrl = await migrateUriToSotrage(
         COL.STAMP,
         stamp.createdBy!,
         stamp.uid,
@@ -111,9 +110,9 @@ export class StampService extends BaseService {
         bucket,
         true,
       );
-      set(updateData, 'build5Url', build5Url);
+      set(updateData, 'buildcoreUrl', buildcoreUrl);
     }
-    this.transactionService.push({ ref: stampDocRef, data: updateData, action: 'update' });
+    this.transactionService.push({ ref: stampDocRef, data: updateData, action: Action.U });
 
     const aliasId = order.payload.aliasId;
 
@@ -136,21 +135,19 @@ export class StampService extends BaseService {
         void: false,
       },
     };
-    const royaltyPaymentDocRef = build5Db().doc(`${COL.TRANSACTION}/${royaltyPayment.uid}`);
     this.transactionService.push({
-      ref: royaltyPaymentDocRef,
+      ref: database().doc(COL.TRANSACTION, royaltyPayment.uid),
       data: royaltyPayment,
-      action: 'set',
+      action: Action.C,
     });
 
-    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
     this.transactionService.push({
-      ref: orderDocRef,
+      ref: database().doc(COL.TRANSACTION, order.uid),
       data: {
-        'payload.days': build5Db().deleteField(),
-        'payload.amount': Number(royaltyOutput.amount),
+        payload_days: undefined,
+        payload_amount: Number(royaltyOutput.amount),
       },
-      action: 'update',
+      action: Action.U,
     });
 
     if (stamp.funded) {
@@ -177,14 +174,14 @@ export class StampService extends BaseService {
         },
       };
       this.transactionService.push({
-        ref: build5Db().doc(`${COL.TRANSACTION}/${mintAlias.uid}`),
+        ref: database().doc(COL.TRANSACTION, mintAlias.uid),
         data: mintAlias,
-        action: 'set',
+        action: Action.C,
       });
       return;
     }
 
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${stamp.space}`);
+    const spaceDocRef = database().doc(COL.SPACE, stamp.space);
     const space = <Space>await spaceDocRef.get();
 
     const mintNftOrder: Transaction = {
@@ -205,11 +202,11 @@ export class StampService extends BaseService {
         stamp: order.payload.stamp,
       },
     };
-    const nftMintOrderDocRef = build5Db().doc(`${COL.TRANSACTION}/${mintNftOrder.uid}`);
+    const nftMintOrderDocRef = database().doc(COL.TRANSACTION, mintNftOrder.uid);
     this.transactionService.push({
       ref: nftMintOrderDocRef,
       data: mintNftOrder,
-      action: 'set',
+      action: Action.C,
     });
 
     return;

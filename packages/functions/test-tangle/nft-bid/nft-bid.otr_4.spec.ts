@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -8,10 +8,9 @@ import {
   TangleRequestType,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { finalizeAuctions } from '../../src/cron/auction.cron';
-import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { wait } from '../../test/controls/common';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
@@ -60,15 +59,15 @@ describe('Nft otr bid', () => {
       },
     });
 
-    const nftDocRef = build5Db().doc(`${COL.NFT}/${helper.nft!.uid}`);
+    const nftDocRef = database().doc(COL.NFT, helper.nft!.uid);
     await wait(async () => {
       helper.nft = <Nft>await nftDocRef.get();
       return helper.nft.auctionHighestBidder === address2.bech32;
     });
 
-    await build5Db()
-      .doc(`${COL.AUCTION}/${helper.nft!.auction}`)
-      .update({ auctionTo: dateToTimestamp(dayjs().subtract(1, 'm').toDate()) });
+    await database()
+      .doc(COL.AUCTION, helper.nft!.auction!)
+      .update({ auctionTo: dayjs().subtract(1, 'm').toDate() });
 
     await finalizeAuctions();
 
@@ -77,12 +76,12 @@ describe('Nft otr bid', () => {
       return helper.nft.owner === address2.bech32;
     });
 
-    const creditQuery = build5Db()
+    const creditQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', address1.bech32);
     await wait(async () => {
-      const snap = await creditQuery.get<Transaction>();
+      const snap = await creditQuery.get();
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
   });

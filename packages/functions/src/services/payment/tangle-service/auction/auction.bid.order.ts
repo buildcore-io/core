@@ -1,22 +1,19 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   Auction,
   AuctionType,
   COL,
-  Collection,
   CollectionStatus,
   Entity,
   MIN_AMOUNT_TO_TRANSFER,
-  Member,
   Nft,
   NftAccess,
-  Space,
   Transaction,
   TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { assertMemberHasValidAddress, getAddress } from '../../../../utils/address.utils';
 import { generateRandomAmount, getRestrictions } from '../../../../utils/common.utils';
 import { isProdEnv } from '../../../../utils/config.utils';
@@ -33,8 +30,8 @@ export const createBidOrder = async (
   auctionId: string,
   ip = '',
 ): Promise<Transaction> => {
-  const auctionDocRef = build5Db().doc(`${COL.AUCTION}/${auctionId}`);
-  const auction = await auctionDocRef.get<Auction>();
+  const auctionDocRef = database().doc(COL.AUCTION, auctionId);
+  const auction = await auctionDocRef.get();
   if (!auction) {
     throw invalidArgument(WenError.auction_does_not_exist);
   }
@@ -76,14 +73,14 @@ export const createBidOrder = async (
   if (auction.type === AuctionType.NFT) {
     const nft = validationResponse as Nft;
 
-    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nft.collection}`);
-    const collection = (await collectionDocRef.get<Collection>())!;
+    const collectionDocRef = database().doc(COL.COLLECTION, nft.collection);
+    const collection = (await collectionDocRef.get())!;
 
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${collection.space}`);
-    const space = await spaceDocRef.get<Space>();
+    const spaceDocRef = database().doc(COL.SPACE, collection.space!);
+    const space = await spaceDocRef.get();
 
-    const prevOwnerDocRef = build5Db().doc(`${COL.MEMBER}/${nft.owner}`);
-    const prevOwner = await prevOwnerDocRef.get<Member | undefined>();
+    const prevOwnerDocRef = database().doc(COL.MEMBER, nft.owner!);
+    const prevOwner = await prevOwnerDocRef.get();
     assertMemberHasValidAddress(prevOwner, network);
 
     const royaltySpace = await getSpace(collection.royaltiesSpace);
@@ -126,8 +123,8 @@ const assertAuctionData = async (owner: string, ip: string, auction: Auction) =>
 };
 
 const assertNftAuction = async (owner: string, ip: string, auction: Auction) => {
-  const nftDocRef = build5Db().doc(`${COL.NFT}/${auction.nftId}`);
-  const nft = await nftDocRef.get<Nft>();
+  const nftDocRef = database().doc(COL.NFT, auction.nftId!);
+  const nft = await nftDocRef.get();
   if (!nft) {
     throw invalidArgument(WenError.nft_does_not_exists);
   }
@@ -136,8 +133,8 @@ const assertNftAuction = async (owner: string, ip: string, auction: Auction) => 
     await assertIpNotBlocked(ip, nft.uid, 'nft');
   }
 
-  const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nft.collection}`);
-  const collection = (await collectionDocRef.get<Collection>())!;
+  const collectionDocRef = database().doc(COL.COLLECTION, nft.collection);
+  const collection = (await collectionDocRef.get())!;
 
   if (![CollectionStatus.PRE_MINTED, CollectionStatus.MINTED].includes(collection.status!)) {
     throw invalidArgument(WenError.invalid_collection_status);

@@ -1,4 +1,4 @@
-import { GetNftIds, WenError } from '@build-5/interfaces';
+import { GetNftIds, WenError } from '@buildcore/interfaces';
 import { NftOutput, Utils } from '@iota/sdk';
 import Joi from 'joi';
 import { of } from 'rxjs';

@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, MIN_IOTA_AMOUNT, Proposal, TangleRequestType } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, MIN_IOTA_AMOUNT, Proposal, TangleRequestType } from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { Helper } from './Helper';
 
@@ -41,7 +41,7 @@ describe('Proposal approval via tangle request', () => {
         return snap.length === 2;
       });
 
-      const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposalUid}`);
+      const proposalDocRef = database().doc(COL.PROPOSAL, proposalUid);
       const proposal = <Proposal>await proposalDocRef.get();
 
       expect(approve ? proposal.approved : proposal.rejected).toBe(true);

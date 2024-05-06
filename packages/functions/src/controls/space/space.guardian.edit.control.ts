@@ -1,11 +1,5 @@
-import { build5Db } from '@build-5/database';
-import {
-  COL,
-  Proposal,
-  ProposalType,
-  SUB_COL,
-  SpaceMemberUpsertRequest,
-} from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, ProposalType, SUB_COL, SpaceMemberUpsertRequest } from '@buildcore/interfaces';
 import { addRemoveGuardian } from '../../services/payment/tangle-service/space/SpaceGuardianService';
 import { Context } from '../common';
 
@@ -18,16 +12,15 @@ export const editGuardianControl =
       { ...params },
       type,
     );
-
-    const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
-    const memberPromisses = members.map((member) => {
-      proposalDocRef.collection(SUB_COL.MEMBERS).doc(member.uid).set(member);
-    });
+    const memberPromisses = members.map((member) =>
+      database().doc(COL.PROPOSAL, proposal.uid, SUB_COL.MEMBERS, member.uid).create(member),
+    );
     await Promise.all(memberPromisses);
 
-    const transactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`);
+    const transactionDocRef = database().doc(COL.TRANSACTION, voteTransaction.uid);
     await transactionDocRef.create(voteTransaction);
 
+    const proposalDocRef = database().doc(COL.PROPOSAL, proposal.uid);
     await proposalDocRef.create(proposal);
-    return await proposalDocRef.get<Proposal>();
+    return await proposalDocRef.get();
   };

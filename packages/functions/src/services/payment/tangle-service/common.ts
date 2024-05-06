@@ -1,4 +1,4 @@
-import { TangleRequestType } from '@build-5/interfaces';
+import { TangleRequestType } from '@buildcore/interfaces';
 import Joi from 'joi';
 
 export const baseTangleSchema = (...requestType: TangleRequestType[]) => ({

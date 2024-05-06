@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -10,30 +10,20 @@ import {
   TokenStatus,
   TokenTradeOrderStatus,
   TokenTradeOrderType,
+  Transaction,
   TransactionType,
+  WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
-import { setTokenAvailableForSale } from '../../src/runtime/firebase/token/base';
-import { mintTokenOrder } from '../../src/runtime/firebase/token/minting';
-import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
-import {
-  expectThrow,
-  mockWalletReturnValue,
-  submitMilestoneFunc,
-  wait,
-} from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { expectThrow, submitMilestoneFunc, wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
 describe('Token minting', () => {
   const helper = new Helper();
-
-  beforeEach(async () => {
-    await helper.beforeEach();
-  });
 
   it('Should cancel all active buys', async () => {
     await helper.setup();
@@ -43,16 +33,16 @@ describe('Token minting', () => {
       count: 5,
       type: TokenTradeOrderType.BUY,
     };
-    mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, request);
+    mockWalletReturnValue(helper.guardian.uid, request);
 
-    const order = await testEnv.wrap(tradeToken)({});
+    const order = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await submitMilestoneFunc(order);
 
-    const order2 = await testEnv.wrap(tradeToken)({});
+    const order2 = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await submitMilestoneFunc(order2);
 
     await wait(async () => {
-      const buySnap = await build5Db()
+      const buySnap = await database()
         .collection(COL.TOKEN_MARKET)
         .where('type', '==', TokenTradeOrderType.BUY)
         .where('owner', '==', helper.guardian.uid)
@@ -60,25 +50,25 @@ describe('Token minting', () => {
       return buySnap.length === 2;
     });
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, {
+    mockWalletReturnValue(helper.guardian.uid, {
       token: helper.token.uid,
       network: helper.network,
     });
-    const mintOrder = await testEnv.wrap(mintTokenOrder)({});
+    const mintOrder = await testEnv.wrap<Transaction>(WEN_FUNC.mintTokenOrder);
     await requestFundsFromFaucet(
       helper.network,
       mintOrder.payload.targetAddress,
       mintOrder.payload.amount,
     );
 
-    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${helper.token.uid}`);
+    const tokenDocRef = database().doc(COL.TOKEN, helper.token.uid);
     await wait(async () => {
-      const snap = await tokenDocRef.get<Token>();
+      const snap = await tokenDocRef.get();
       return snap?.status === TokenStatus.MINTING;
     });
 
     await wait(async () => {
-      const buySnap = await build5Db()
+      const buySnap = await database()
         .collection(COL.TOKEN_MARKET)
         .where('type', '==', TokenTradeOrderType.BUY)
         .where('status', '==', TokenTradeOrderStatus.CANCELLED_MINTING_TOKEN)
@@ -88,7 +78,7 @@ describe('Token minting', () => {
     });
 
     await wait(async () => {
-      const creditSnap = await build5Db()
+      const creditSnap = await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
         .where('member', '==', helper.guardian.uid)
@@ -106,15 +96,15 @@ describe('Token minting', () => {
       count: 500,
       type: TokenTradeOrderType.SELL,
     };
-    mockWalletReturnValue(helper.walletSpy, helper.member, request);
-    await testEnv.wrap(tradeToken)({});
-    await testEnv.wrap(tradeToken)({});
+    mockWalletReturnValue(helper.member, request);
+    await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
+    await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, {
+    mockWalletReturnValue(helper.guardian.uid, {
       token: helper.token.uid,
       network: helper.network,
     });
-    const mintOrder = await testEnv.wrap(mintTokenOrder)({});
+    const mintOrder = await testEnv.wrap<Transaction>(WEN_FUNC.mintTokenOrder);
     await requestFundsFromFaucet(
       helper.network,
       mintOrder.payload.targetAddress,
@@ -122,12 +112,12 @@ describe('Token minting', () => {
     );
 
     await wait(async () => {
-      const snap = await build5Db().doc(`${COL.TOKEN}/${helper.token.uid}`).get<Token>();
+      const snap = await database().doc(COL.TOKEN, helper.token.uid).get();
       return snap?.status === TokenStatus.MINTING;
     });
 
     await wait(async () => {
-      const sellSnap = await build5Db()
+      const sellSnap = await database()
         .collection(COL.TOKEN_MARKET)
         .where('type', '==', TokenTradeOrderType.SELL)
         .where('status', '==', TokenTradeOrderStatus.CANCELLED_MINTING_TOKEN)
@@ -137,9 +127,7 @@ describe('Token minting', () => {
     });
 
     const distribution = <TokenDistribution>(
-      await build5Db()
-        .doc(`${COL.TOKEN}/${helper.token.uid}/${SUB_COL.DISTRIBUTION}/${helper.member}`)
-        .get()
+      await database().doc(COL.TOKEN, helper.token.uid, SUB_COL.DISTRIBUTION, helper.member).get()
     );
     expect(distribution.lockedForSale).toBe(0);
     expect(distribution.tokenOwned).toBe(1000);
@@ -152,20 +140,26 @@ describe('Token minting', () => {
       saleLength: 86400000 * 2,
       coolDownLength: 86400000,
     };
-    await build5Db()
-      .doc(`${COL.TOKEN}/${helper.token.uid}`)
-      .update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] });
+    await database()
+      .doc(COL.TOKEN, helper.token.uid)
+      .update({
+        allocations: JSON.stringify([{ title: 'public', percentage: 100, isPublicSale: true }]),
+      });
     const updateData = { token: helper.token.uid, ...publicTime, pricePerToken: MIN_IOTA_AMOUNT };
-    mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, updateData);
-    const result = await testEnv.wrap(setTokenAvailableForSale)({});
-    expect(result?.saleStartDate.toDate()).toEqual(
+    mockWalletReturnValue(helper.guardian.uid, updateData);
+    let token = await testEnv.wrap<Token>(WEN_FUNC.setTokenAvailableForSale);
+    token = (await database().doc(COL.TOKEN, token.uid).get())!;
+    expect(token.saleStartDate?.toDate()).toEqual(
       dateToTimestamp(dayjs(publicTime.saleStartDate), true).toDate(),
     );
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, {
+    mockWalletReturnValue(helper.guardian.uid, {
       token: helper.token.uid,
       network: helper.network,
     });
-    await expectThrow(testEnv.wrap(mintTokenOrder)({}), WenError.can_not_mint_in_pub_sale.key);
+    await expectThrow(
+      testEnv.wrap<Transaction>(WEN_FUNC.mintTokenOrder),
+      WenError.can_not_mint_in_pub_sale.key,
+    );
   });
 });

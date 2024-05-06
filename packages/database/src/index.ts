@@ -1,3 +1,2 @@
-export * from './app/index';
-export * from './firestore/index';
-export * from './storage/index';
+export * from './pg';
+export * from './storage';

@@ -5,7 +5,7 @@ import {
   GetPriceChangeResponse,
   Opr,
   TokenPurchase,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { from, map, switchMap } from 'rxjs';
 import GetTokenAvgPriceGroupedLive from '../../get/GetTokenAvgPriceGroupedLive';
 import GetTokenPriceChangeGroupedLive from '../../get/GetTokenPriceChangeGroupedLive';

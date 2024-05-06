@@ -12,7 +12,7 @@ export interface SpaceLeaveTangleRequest {
    */
   requestType: 'SPACE_LEAVE';
   /**
-   * Build5 id of the space
+   * Buildcore id of the space
    */
   uid: string;
 }

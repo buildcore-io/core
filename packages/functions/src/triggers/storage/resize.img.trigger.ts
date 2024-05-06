@@ -1,11 +1,12 @@
-import { IBucket, build5Storage } from '@build-5/database';
-import { IMAGE_CACHE_AGE, ImageWidth } from '@build-5/interfaces';
+import { IBucket, storage } from '@buildcore/database';
+import { IMAGE_CACHE_AGE, ImageWidth } from '@buildcore/interfaces';
 import { path as ffmpegPath } from '@ffmpeg-installer/ffmpeg';
 import { spawn } from 'child-process-promise';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import sharp from 'sharp';
+import { logger } from '../../utils/logger';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -35,9 +36,9 @@ export const onStorageObjectFinalized = async (data: StorageObject) => {
       await uploadVideoPreview(workdir, data, downloadedMediaPath);
       return;
     }
-    console.warn('Unsupported content type error', data);
+    logger.warn('Unsupported content type error', data);
   } catch (error) {
-    console.error('onStorageObjectFinalized-error', data, error);
+    logger.error('onStorageObjectFinalized-error', data, error);
   } finally {
     fs.rmSync(workdir, { recursive: true, force: true });
   }
@@ -45,7 +46,7 @@ export const onStorageObjectFinalized = async (data: StorageObject) => {
 
 const downloadMedia = async (workdir: string, object: StorageObject) => {
   const destination = path.join(workdir, path.basename(object.name!));
-  await build5Storage().bucket(object.bucket).download(object.name!, destination);
+  await storage().bucket(object.bucket).download(object.name!, destination);
   return destination;
 };
 
@@ -56,7 +57,7 @@ const uploadeResizedImages = async (
 ) => {
   const extension = path.extname(downloadedImgPath);
   const fileName = path.basename(downloadedImgPath).replace(extension, '');
-  const bucket = build5Storage().bucket(object.bucket);
+  const bucket = storage().bucket(object.bucket);
 
   const uploadPromises = Object.values(ImageWidth).map(async (size) => {
     const resizedImgName = `${fileName}_${extension.replace('.', '')}_${size}X${size}.webp`;
@@ -77,7 +78,7 @@ const uploadVideoPreview = async (
 ) => {
   const extension = path.extname(downloadedVideoPath);
   const fileName = path.basename(downloadedVideoPath).replace(extension, '');
-  const bucket = build5Storage().bucket(object.bucket);
+  const bucket = storage().bucket(object.bucket);
 
   const thumbnailName = `${fileName}.png`;
   const thumbnailLocalPath = path.join(workdir, thumbnailName);

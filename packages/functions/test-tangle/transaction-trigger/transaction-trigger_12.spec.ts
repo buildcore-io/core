@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -8,14 +8,14 @@ import {
   SOON_PROJECT_ID,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { RegularTransactionEssence, TransactionPayload, UTXOInput, Utils } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { retryWallet } from '../../src/cron/wallet.cron';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
-import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
+import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { wait } from '../../test/controls/common';
 import { getWallet } from '../../test/set-up';
@@ -52,7 +52,7 @@ describe('Transaction trigger spec', () => {
           2 * MIN_IOTA_AMOUNT,
         ),
       };
-      const billPaymentDocRef = build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+      const billPaymentDocRef = database().doc(COL.TRANSACTION, billPayment.uid);
       await billPaymentDocRef.create(billPayment);
 
       await wait(async () => {
@@ -65,10 +65,8 @@ describe('Transaction trigger spec', () => {
       expect(consumedOutputIds.sort()).toEqual(outputIds.sort());
 
       await billPaymentDocRef.update({
-        'payload.amount': MIN_IOTA_AMOUNT,
-        'payload.walletReference.processedOn': dateToTimestamp(
-          dayjs().subtract(4, 'minute').toDate(),
-        ),
+        payload_amount: MIN_IOTA_AMOUNT,
+        payload_walletReference_processedOn: dayjs().subtract(4, 'minute').toDate(),
       });
       const result = await retryWallet();
       expect(result.find((r) => r === billPayment.uid)).toBeDefined();

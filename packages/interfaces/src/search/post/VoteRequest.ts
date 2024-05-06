@@ -8,7 +8,7 @@
  */
 export interface VoteRequest {
   /**
-   * Build5 collection to vote on.
+   * Buildcore collection to vote on.
    */
   collection: 'collection' | 'token';
   /**
@@ -16,7 +16,7 @@ export interface VoteRequest {
    */
   direction: -1 | 0 | 1;
   /**
-   * Build5 id of the entity to vote on.
+   * Buildcore id of the entity to vote on.
    */
   uid: string;
 }

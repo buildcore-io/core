@@ -1,4 +1,4 @@
-import { Dataset, Network } from '@build-5/interfaces';
+import { Dataset, Network } from '@buildcore/interfaces';
 import { v4 as uuid } from 'uuid';
 import { AuctionOtrDataset } from './AuctionOtrDataset';
 import { AwardOtrDataset } from './AwardOtrDataset';

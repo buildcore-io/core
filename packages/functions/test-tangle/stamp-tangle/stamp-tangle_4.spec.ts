@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, Transaction, TransactionType } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, TransactionType } from '@buildcore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
 import { Helper } from './Helper';
@@ -20,7 +20,7 @@ describe('Stamp tangle test', () => {
     );
     await MnemonicService.store(helper.address.bech32, helper.address.mnemonic);
 
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.address.bech32)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
@@ -28,7 +28,7 @@ describe('Stamp tangle test', () => {
       const snap = await query.get();
       return snap.length === 1;
     });
-    const credit = (await query.get<Transaction>())[0];
+    const credit = (await query.get())[0];
     expect(credit.payload.response!.address).toBeDefined();
   });
 });

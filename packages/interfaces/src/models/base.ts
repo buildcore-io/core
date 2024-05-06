@@ -35,7 +35,7 @@ export class Timestamp {
 /**
  * Build 5 Request
  */
-export interface Build5Request<T> {
+export interface BuildcoreRequest<T> {
   /**
    * Network Address.
    */
@@ -138,6 +138,7 @@ export interface Base {
 }
 
 export interface BaseSubCollection {
+  uid?: string;
   project?: string;
   parentId: string;
   parentCol: string;

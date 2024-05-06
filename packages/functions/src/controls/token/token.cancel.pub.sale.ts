@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, CanelPublicSaleRequest, Token, TokenStatus, WenError } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, CanelPublicSaleRequest, TokenStatus, WenError } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { invalidArgument } from '../../utils/error.utils';
 import { assertIsTokenGuardian } from '../../utils/token.utils';
@@ -9,10 +9,10 @@ export const cancelPublicSaleControl = async ({
   owner,
   params,
 }: Context<CanelPublicSaleRequest>) => {
-  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${params.token}`);
+  const tokenDocRef = database().doc(COL.TOKEN, params.token);
 
-  await build5Db().runTransaction(async (transaction) => {
-    const token = await transaction.get<Token>(tokenDocRef);
+  await database().runTransaction(async (transaction) => {
+    const token = await transaction.get(tokenDocRef);
 
     if (!token) {
       throw invalidArgument(WenError.invalid_params);
@@ -24,14 +24,14 @@ export const cancelPublicSaleControl = async ({
 
     await assertIsTokenGuardian(token, owner);
 
-    transaction.update(tokenDocRef, {
-      saleStartDate: build5Db().deleteField(),
-      saleLength: build5Db().deleteField(),
-      coolDownEnd: build5Db().deleteField(),
+    await transaction.update(tokenDocRef, {
+      saleStartDate: undefined,
+      saleLength: undefined,
+      coolDownEnd: undefined,
       status: TokenStatus.CANCEL_SALE,
       totalDeposit: 0,
     });
   });
 
-  return (await tokenDocRef.get<Token>())!;
+  return (await tokenDocRef.get())!;
 };

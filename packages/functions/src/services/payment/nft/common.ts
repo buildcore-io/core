@@ -1,25 +1,25 @@
-import { build5Db } from '@build-5/database';
-import { COL, Collection, Member, Nft, NftAccess, Transaction } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, Member, Nft, NftAccess, Transaction } from '@buildcore/interfaces';
+import dayjs from 'dayjs';
 import { getAddress } from '../../../utils/address.utils';
 import { getProject } from '../../../utils/common.utils';
-import { serverTime } from '../../../utils/dateTime.utils';
 import { createNftWithdrawOrder } from '../tangle-service/nft/nft-purchase.service';
-import { TransactionService } from '../transaction-service';
+import { Action, TransactionService } from '../transaction-service';
 
 export class BaseNftService {
   constructor(private readonly transactionService: TransactionService) {}
 
   public setTradingStats = (nft: Nft) => {
-    const data = { lastTradedOn: serverTime(), totalTrades: build5Db().inc(1) };
-    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${nft.collection}`);
-    this.transactionService.push({ ref: collectionDocRef, data, action: 'update' });
+    const data = { lastTradedOn: dayjs().toDate(), totalTrades: database().inc(1) };
+    const collectionDocRef = database().doc(COL.COLLECTION, nft.collection);
+    this.transactionService.push({ ref: collectionDocRef, data, action: Action.U });
 
-    const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
-    this.transactionService.push({ ref: nftDocRef, data, action: 'update' });
+    const nftDocRef = database().doc(COL.NFT, nft.uid);
+    this.transactionService.push({ ref: nftDocRef, data, action: Action.U });
   };
 
   public withdrawNft = async (order: Transaction, nft: Nft) => {
-    const membderDocRef = build5Db().doc(`${COL.MEMBER}/${order.member}`);
+    const membderDocRef = database().doc(COL.MEMBER, order.member!);
     const member = <Member>await membderDocRef.get();
     const { order: withdrawOrder, nftUpdateData } = createNftWithdrawOrder(
       getProject(order),
@@ -28,20 +28,20 @@ export class BaseNftService {
       getAddress(member, order.network!),
     );
     this.transactionService.push({
-      ref: build5Db().doc(`${COL.TRANSACTION}/${withdrawOrder.uid}`),
+      ref: database().doc(COL.TRANSACTION, withdrawOrder.uid),
       data: withdrawOrder,
-      action: 'set',
+      action: Action.C,
     });
     this.transactionService.push({
-      ref: build5Db().doc(`${COL.NFT}/${nft.uid}`),
+      ref: database().doc(COL.NFT, nft.uid),
       data: nftUpdateData,
-      action: 'update',
+      action: Action.U,
     });
   };
 
   public setNftOwner = async (order: Transaction, amount: number) => {
-    const nftDocRef = build5Db().collection(COL.NFT).doc(order.payload.nft!);
-    const nft = <Nft>await this.transactionService.get(nftDocRef);
+    const nftDocRef = database().collection(COL.NFT).doc(order.payload.nft!);
+    const nft = <Nft>await nftDocRef.get();
 
     const nftUpdateData = {
       owner: order.member,
@@ -51,7 +51,7 @@ export class BaseNftService {
       locked: false,
       lockedBy: null,
       hidden: false,
-      soldOn: nft.soldOn || serverTime(),
+      soldOn: nft.soldOn?.toDate() || dayjs().toDate(),
       availableFrom: null,
       availablePrice: null,
       auctionFrom: null,
@@ -69,20 +69,20 @@ export class BaseNftService {
     this.transactionService.push({
       ref: nftDocRef,
       data: nftUpdateData,
-      action: 'update',
+      action: Action.U,
     });
 
     if (order.payload.beneficiary === 'space') {
-      const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${order.payload.collection}`);
+      const collectionDocRef = database().doc(COL.COLLECTION, order.payload.collection!);
       this.transactionService.push({
         ref: collectionDocRef,
-        data: { sold: build5Db().inc(1) },
-        action: 'update',
+        data: { sold: database().inc(1) },
+        action: Action.U,
       });
 
-      const collection = (await this.transactionService.get<Collection>(collectionDocRef))!;
+      const collection = (await collectionDocRef.get())!;
       if (collection.placeholderNft && collection.total === collection.sold + 1) {
-        const placeholderNftDocRef = build5Db().doc(`${COL.NFT}/${collection.placeholderNft}`);
+        const placeholderNftDocRef = database().doc(COL.NFT, collection.placeholderNft);
         this.transactionService.push({
           ref: placeholderNftDocRef,
           data: {
@@ -90,10 +90,10 @@ export class BaseNftService {
             owner: null,
             availablePrice: null,
             availableFrom: null,
-            soldOn: serverTime(),
+            soldOn: dayjs().toDate(),
             hidden: false,
           },
-          action: 'update',
+          action: Action.U,
         });
       }
     }

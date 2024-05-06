@@ -1,4 +1,4 @@
-import { MAX_TOTAL_TOKEN_SUPPLY, SwapCreateRequest } from '@build-5/interfaces';
+import { MAX_TOTAL_TOKEN_SUPPLY, SwapCreateRequest } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 import { AVAILABLE_NETWORKS } from '../common';
@@ -13,7 +13,7 @@ export const swapCreateSchemaObject = {
     .items(CommonJoi.uid(true))
     .min(1)
     .optional()
-    .description('List of requested Build5 NFT ids or NFT tangle ids'),
+    .description('List of requested Buildcore NFT ids or NFT tangle ids'),
 
   baseTokenAmount: Joi.number()
     .integer()
@@ -28,7 +28,7 @@ export const swapCreateSchemaObject = {
     .optional()
     .description('Requested native token(s)'),
 
-  recipient: CommonJoi.uid().description('Target member Build5 uid or tangle address'),
+  recipient: CommonJoi.uid().description('Target member Buildcore uid or tangle address'),
 };
 
 export const swapCreateSchema = toJoiObject<SwapCreateRequest>({

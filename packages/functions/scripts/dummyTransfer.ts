@@ -1,16 +1,16 @@
 import { Bip32Path } from '@iota/crypto.js';
 import {
   Bech32Helper,
+  ED25519_ADDRESS_TYPE,
   Ed25519Address,
   Ed25519Seed,
-  ED25519_ADDRESS_TYPE,
   IKeyPair,
   ISigLockedSingleOutput,
   IUTXOInput,
-  sendAdvanced,
   SIG_LOCKED_SINGLE_OUTPUT_TYPE,
   SingleNodeClient,
   UTXO_INPUT_TYPE,
+  sendAdvanced,
 } from '@iota/iota.js';
 import { Converter } from '@iota/util.js';
 import { generateMnemonic } from 'bip39';

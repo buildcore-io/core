@@ -228,6 +228,10 @@ export interface Collection extends CollectionBase {
    */
   mediaStatus?: MediaStatus;
   /**
+   * @hidden
+   */
+  mediaUploadErrorCount?: number;
+  /**
    * Total number of staked NFTs
    */
   stakedNft?: number;

@@ -1,6 +1,6 @@
 # Overview
 
-Complete reference documentation for @build-5/sdk and @build-5/interfaces.
+Complete reference documentation for @buildcore/sdk and @buildcore/interfaces.
 
 # 🤝 Contributing
 

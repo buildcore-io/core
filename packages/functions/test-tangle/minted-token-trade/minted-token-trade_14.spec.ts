@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
   TokenPurchase,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { head } from 'lodash';
 import { wait } from '../../test/controls/common';
 import { awaitTransactionConfirmationsForToken } from '../common';
@@ -28,7 +28,7 @@ describe('Token minting', () => {
     await helper.createSellTradeOrder(20, MIN_IOTA_AMOUNT);
     await helper.createBuyOrder(20, MIN_IOTA_AMOUNT + 0.1);
 
-    const purchaseQuery = build5Db()
+    const purchaseQuery = database()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {
@@ -41,10 +41,10 @@ describe('Token minting', () => {
     expect(purchase.price).toBe(MIN_IOTA_AMOUNT);
 
     const billPayments = (
-      await build5Db()
+      await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
-        .where('payload.token', '==', helper.token!.uid)
+        .where('payload_token', '==', helper.token!.uid)
         .get()
     ).map((d) => <Transaction>d);
 

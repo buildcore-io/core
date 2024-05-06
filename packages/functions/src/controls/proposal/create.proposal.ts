@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, Proposal, ProposalCreateRequest, SUB_COL } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, ProposalCreateRequest, SUB_COL } from '@buildcore/interfaces';
 import { createProposal } from '../../services/payment/tangle-service/proposal/ProposalCreateService';
 import { Context } from '../common';
 
@@ -10,11 +10,16 @@ export const createProposalControl = async ({
 }: Context<ProposalCreateRequest>) => {
   const { proposal, proposalOwner } = await createProposal(project, owner, { ...params });
 
-  const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
+  const proposalDocRef = database().doc(COL.PROPOSAL, proposal.uid);
   await proposalDocRef.create(proposal);
 
-  const proposalOwnerDocRef = proposalDocRef.collection(SUB_COL.OWNERS).doc(proposal.uid);
+  const proposalOwnerDocRef = database().doc(
+    COL.PROPOSAL,
+    proposal.uid,
+    SUB_COL.OWNERS,
+    proposal.uid,
+  );
   await proposalOwnerDocRef.create(proposalOwner);
 
-  return (await proposalDocRef.get<Proposal>())!;
+  return (await proposalDocRef.get())!;
 };

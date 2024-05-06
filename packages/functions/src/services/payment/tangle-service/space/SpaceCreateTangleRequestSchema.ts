@@ -1,4 +1,4 @@
-import { SpaceCreateTangleRequest, TangleRequestType } from '@build-5/interfaces';
+import { SpaceCreateTangleRequest, TangleRequestType } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { createSpaceSchema } from '../../../../controls/space/SpaceCreateRequestSchema';
 import { toJoiObject } from '../../../joi/common';

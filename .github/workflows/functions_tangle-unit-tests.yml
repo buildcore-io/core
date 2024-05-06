@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - packages/functions/**
+      - packages/database/**
 
 jobs:
   npm-install:
@@ -30,6 +31,22 @@ jobs:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -43,30 +60,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/address.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/auction-tangle/auction.bit.tangle.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award-tangle/award-tangle_1.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_0
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/address.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/auction-tangle/auction.bit.tangle.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/award-tangle/award-tangle_1.spec.ts 
   chunk_1:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -80,30 +102,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award-tangle/award-tangle_2.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award-tangle/award-tangle_3.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award-tangle/award-tangle_4.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_1
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/award-tangle/award-tangle_2.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/award-tangle/award-tangle_3.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/award-tangle/award-tangle_4.spec.ts 
   chunk_2:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -117,30 +144,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award-tangle/award-tangle_5.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award-tangle/award-tangle_6.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award-tangle/award-tangle_7.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_2
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/award-tangle/award-tangle_5.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/award-tangle/award-tangle_6.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/award-tangle/award-tangle_7.spec.ts 
   chunk_3:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -154,30 +186,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award/award_1_b.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award/award_1.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award/award_10.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_3
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/award/award_1_b.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/award/award_1.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/award/award_10.spec.ts 
   chunk_4:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -191,30 +228,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award/award_11.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award/award_12.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award/award_2.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_4
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/award/award_11.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/award/award_12.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/award/award_2.spec.ts 
   chunk_5:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -228,30 +270,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award/award_3.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award/award_4.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award/award_5.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_5
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/award/award_3.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/award/award_4.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/award/award_5.spec.ts 
   chunk_6:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -265,30 +312,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award/award_6.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award/award_7.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award/award_8.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_6
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/award/award_6.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/award/award_7.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/award/award_8.spec.ts 
   chunk_7:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -302,30 +354,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/award/award_9.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_1.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_10.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_7
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/award/award_9.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/base-token-trading/base-token-trading_1.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/base-token-trading/base-token-trading_10.spec.ts 
   chunk_8:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -339,30 +396,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_11_a.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_11_b.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_11_c.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_8
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/base-token-trading/base-token-trading_11_a.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/base-token-trading/base-token-trading_11_b.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/base-token-trading/base-token-trading_11_c.spec.ts 
   chunk_9:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -376,30 +438,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_11_d.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_12.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_13.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_9
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/base-token-trading/base-token-trading_11_d.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/base-token-trading/base-token-trading_12.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/base-token-trading/base-token-trading_13.spec.ts 
   chunk_10:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -413,30 +480,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_14.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_15.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_16.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_10
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/base-token-trading/base-token-trading_14.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/base-token-trading/base-token-trading_15.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/base-token-trading/base-token-trading_16.spec.ts 
   chunk_11:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -450,30 +522,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_17.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_18.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_19.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_11
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/base-token-trading/base-token-trading_17.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/base-token-trading/base-token-trading_18.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/base-token-trading/base-token-trading_19.spec.ts 
   chunk_12:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -487,30 +564,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_2.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_3.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_4.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_12
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/base-token-trading/base-token-trading_2.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/base-token-trading/base-token-trading_3.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/base-token-trading/base-token-trading_4.spec.ts 
   chunk_13:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -524,30 +606,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_5.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_6.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_7.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_13
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/base-token-trading/base-token-trading_5.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/base-token-trading/base-token-trading_6.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/base-token-trading/base-token-trading_7.spec.ts 
   chunk_14:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -561,30 +648,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_8.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/base-token-trading/base-token-trading_9.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_1.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_14
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/base-token-trading/base-token-trading_8.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/base-token-trading/base-token-trading_9.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/collection-minting/collection-minting_1.spec.ts 
   chunk_15:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -598,30 +690,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_10.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_11.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_12.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_15
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/collection-minting/collection-minting_10.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/collection-minting/collection-minting_11.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/collection-minting/collection-minting_12.spec.ts 
   chunk_16:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -635,30 +732,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_13.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_2.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_4_a.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_16
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/collection-minting/collection-minting_13.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/collection-minting/collection-minting_2.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/collection-minting/collection-minting_4_a.spec.ts 
   chunk_17:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -672,30 +774,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_4_b.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_4_c.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_5.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_17
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/collection-minting/collection-minting_4_b.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/collection-minting/collection-minting_4_c.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/collection-minting/collection-minting_5.spec.ts 
   chunk_18:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -709,30 +816,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_6.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_7.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_8.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_18
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/collection-minting/collection-minting_6.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/collection-minting/collection-minting_7.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/collection-minting/collection-minting_8.spec.ts 
   chunk_19:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -746,30 +858,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_9.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_1_b.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_1.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_19
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/collection-minting/collection-minting_9.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/metadata-nft/mint-metadata-nft_1_b.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/metadata-nft/mint-metadata-nft_1.spec.ts 
   chunk_20:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -783,30 +900,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_10.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_2.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_3_b.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_20
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/metadata-nft/mint-metadata-nft_10.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/metadata-nft/mint-metadata-nft_2.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/metadata-nft/mint-metadata-nft_3_b.spec.ts 
   chunk_21:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -820,30 +942,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_3.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_4.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_5_b.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_21
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/metadata-nft/mint-metadata-nft_3.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/metadata-nft/mint-metadata-nft_4.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/metadata-nft/mint-metadata-nft_5_b.spec.ts 
   chunk_22:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -857,30 +984,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_5.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_6.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_7.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_22
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/metadata-nft/mint-metadata-nft_5.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/metadata-nft/mint-metadata-nft_6.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/metadata-nft/mint-metadata-nft_7.spec.ts 
   chunk_23:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -894,30 +1026,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_8.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/metadata-nft/mint-metadata-nft_9.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_1_b.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_23
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/metadata-nft/mint-metadata-nft_8.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/metadata-nft/mint-metadata-nft_9.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-nft-trading/minted-nft-trading_1_b.spec.ts 
   chunk_24:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -931,30 +1068,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_1.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_10.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_2.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_24
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-nft-trading/minted-nft-trading_1.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-nft-trading/minted-nft-trading_10.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-nft-trading/minted-nft-trading_2.spec.ts 
   chunk_25:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -968,30 +1110,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_3.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_4.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_5.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_25
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-nft-trading/minted-nft-trading_3.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-nft-trading/minted-nft-trading_4.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-nft-trading/minted-nft-trading_5.spec.ts 
   chunk_26:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1005,30 +1152,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_6.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_7.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_8.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_26
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-nft-trading/minted-nft-trading_6.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-nft-trading/minted-nft-trading_7.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-nft-trading/minted-nft-trading_8.spec.ts 
   chunk_27:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1042,30 +1194,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_1_a.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_1_b.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_1_c.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_27
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-airdrop/minted-token-airdrop_1_a.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-airdrop/minted-token-airdrop_1_b.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-airdrop/minted-token-airdrop_1_c.spec.ts 
   chunk_28:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1079,30 +1236,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_2.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_4.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-airdrop/minted-token-airdrop_5.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_28
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-airdrop/minted-token-airdrop_2.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-airdrop/minted-token-airdrop_4.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-airdrop/minted-token-airdrop_5.spec.ts 
   chunk_29:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1116,30 +1278,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-claim/token.claim.minted_1.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-claim/token.claim.minted_2.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-claim/token.claim.minted_3.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_29
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-claim/token.claim.minted_1.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-claim/token.claim.minted_2.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-claim/token.claim.minted_3.spec.ts 
   chunk_30:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1153,30 +1320,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-claim/token.claim.minted_4.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-claim/token.claim.minted_5.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-claim/token.claim.minted_6.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_30
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-claim/token.claim.minted_4.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-claim/token.claim.minted_5.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-claim/token.claim.minted_6.spec.ts 
   chunk_31:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1190,30 +1362,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-claim/token.claim.minted_7.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_1.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_10.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_31
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-claim/token.claim.minted_7.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_1.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_10.spec.ts 
   chunk_32:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1227,30 +1404,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_11.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_12_b.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_12.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_32
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_11.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_12_b.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_12.spec.ts 
   chunk_33:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1264,30 +1446,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_13.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_14_b.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_14.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_33
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_13.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_14_b.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_14.spec.ts 
   chunk_34:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1301,30 +1488,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_16.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_17.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_18.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_34
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_16.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_17.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_18.spec.ts 
   chunk_35:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1338,30 +1530,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_19.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_2_b.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_2.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_35
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_19.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_2_b.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_2.spec.ts 
   chunk_36:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1375,30 +1572,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_20.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_21.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_22.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_36
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_20.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_21.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_22.spec.ts 
   chunk_37:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1412,30 +1614,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_23.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_24.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_3.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_37
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_23.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_24.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_3.spec.ts 
   chunk_38:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1449,30 +1656,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_4.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_5.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_6.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_38
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_4.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_5.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_6.spec.ts 
   chunk_39:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1486,30 +1698,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_7.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_8.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_9.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_39
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_7.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_8.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_9.spec.ts 
   chunk_40:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1523,30 +1740,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-bid/nft-bid.otr_1.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-bid/nft-bid.otr_2.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-bid/nft-bid.otr_3.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_40
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-bid/nft-bid.otr_1.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-bid/nft-bid.otr_2.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-bid/nft-bid.otr_3.spec.ts 
   chunk_41:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1560,30 +1782,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-bid/nft-bid.otr_4.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-bulk/order.bulk_1.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-bulk/order.bulk_2.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_41
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-bid/nft-bid.otr_4.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-bulk/order.bulk_1.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-bulk/order.bulk_2.spec.ts 
   chunk_42:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1597,30 +1824,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-bulk/order.bulk_3.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-bulk/order.bulk_4.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-bulk/order.bulk_5.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_42
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-bulk/order.bulk_3.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-bulk/order.bulk_4.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-bulk/order.bulk_5.spec.ts 
   chunk_43:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1634,30 +1866,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-bulk/order.bulk_6.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-set-for-sale/nft-set-for-sale_1.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-set-for-sale/nft-set-for-sale_2.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_43
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-bulk/order.bulk_6.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-set-for-sale/nft-set-for-sale_1.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-set-for-sale/nft-set-for-sale_2.spec.ts 
   chunk_44:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1671,30 +1908,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-set-for-sale/nft-set-for-sale_3.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-staking/nft-staking_1.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-staking/nft-staking_10.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_44
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-set-for-sale/nft-set-for-sale_3.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-staking/nft-staking_1.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-staking/nft-staking_10.spec.ts 
   chunk_45:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1708,30 +1950,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-staking/nft-staking_2_b.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-staking/nft-staking_2.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-staking/nft-staking_3.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_45
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-staking/nft-staking_2_b.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-staking/nft-staking_2.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-staking/nft-staking_3.spec.ts 
   chunk_46:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1745,30 +1992,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-staking/nft-staking_4.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-staking/nft-staking_5.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-staking/nft-staking_6.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_46
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-staking/nft-staking_4.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-staking/nft-staking_5.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-staking/nft-staking_6.spec.ts 
   chunk_47:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1782,30 +2034,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-staking/nft-staking_7.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-staking/nft-staking_8.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-staking/nft-staking_9.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_47
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-staking/nft-staking_7.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-staking/nft-staking_8.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-staking/nft-staking_9.spec.ts 
   chunk_48:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1819,30 +2076,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-transfer/nft-transfer_1.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-transfer/nft-transfer_2.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-transfer/nft-transfer_3.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_48
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-transfer/nft-transfer_1.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-transfer/nft-transfer_2.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-transfer/nft-transfer_3.spec.ts 
   chunk_49:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1856,30 +2118,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-transfer/nft-transfer_4.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-transfer/nft-transfer_5.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-transfer/nft-transfer_6.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_49
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-transfer/nft-transfer_4.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-transfer/nft-transfer_5.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-transfer/nft-transfer_6.spec.ts 
   chunk_50:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1893,30 +2160,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-transfer/nft-transfer_7.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/nft-transfer/nft-transfer_8.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/proposal-tangle/proposal.approval.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_50
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-transfer/nft-transfer_7.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/nft-transfer/nft-transfer_8.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/proposal-tangle/proposal.approval.spec.ts 
   chunk_51:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1930,30 +2202,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/proposal-tangle/proposal.create.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/proposal-tangle/proposal.simple.vote.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/proposal-tangle/proposal.stake.voting.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_51
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/proposal-tangle/proposal.create.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/proposal-tangle/proposal.simple.vote.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/proposal-tangle/proposal.stake.voting.spec.ts 
   chunk_52:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -1967,30 +2244,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/proposal-tangle/proposal.token.voting.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/space-tangle/space.accept.member.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/space-tangle/space.block.member.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_52
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/proposal-tangle/proposal.token.voting.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/space-tangle/space.accept.member.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/space-tangle/space.block.member.spec.ts 
   chunk_53:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2004,30 +2286,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/space-tangle/space.create.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/space-tangle/space.decline.member.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/space-tangle/space.edit.guardian.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_53
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/space-tangle/space.create.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/space-tangle/space.decline.member.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/space-tangle/space.edit.guardian.spec.ts 
   chunk_54:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2041,30 +2328,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/space-tangle/space.join.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/space-tangle/space.leave.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/staking/staking_1.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_54
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/space-tangle/space.join.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/space-tangle/space.leave.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/staking/staking_1.spec.ts 
   chunk_55:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2078,30 +2370,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/staking/staking_2.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/staking/staking_3.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/staking/staking_4.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_55
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/staking/staking_2.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/staking/staking_3.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/staking/staking_4.spec.ts 
   chunk_56:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2115,30 +2412,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/staking/staking_5.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/stamp-tangle/stamp-tangle_1_a.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/stamp-tangle/stamp-tangle_1_b.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_56
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/staking/staking_5.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/stamp-tangle/stamp-tangle_1_a.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/stamp-tangle/stamp-tangle_1_b.spec.ts 
   chunk_57:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2152,30 +2454,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/stamp-tangle/stamp-tangle_2.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/stamp-tangle/stamp-tangle_3.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/stamp-tangle/stamp-tangle_4.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_57
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/stamp-tangle/stamp-tangle_2.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/stamp-tangle/stamp-tangle_3.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/stamp-tangle/stamp-tangle_4.spec.ts 
   chunk_58:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2189,30 +2496,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/stamp-tangle/stamp-tangle_5.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/stamp-tangle/stamp-tangle_6.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/swap/swap_1.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_58
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/stamp-tangle/stamp-tangle_5.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/stamp-tangle/stamp-tangle_6.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/swap/swap_1.spec.ts 
   chunk_59:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2226,30 +2538,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/swap/swap_2.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/swap/swap_3_a.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/swap/swap_3_b.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_59
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/swap/swap_2.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/swap/swap_3_a.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/swap/swap_3_b.spec.ts 
   chunk_60:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2263,30 +2580,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/swap/swap_4.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/swap/swap_5.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/swap/swap_6.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_60
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/swap/swap_4.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/swap/swap_5.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/swap/swap_6.spec.ts 
   chunk_61:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2300,30 +2622,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/swap/swap_7.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/swap/swap_8.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/tangleRequest/simple.token.trade.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_61
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/swap/swap_7.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/swap/swap_8.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/tangleRequest/simple.token.trade.spec.ts 
   chunk_62:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2337,30 +2664,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/tangleRequest/tangle-request.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token-import/token.import_1.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token-import/token.import_2.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_62
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/tangleRequest/tangle-request.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/token-import/token.import_1.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/token-import/token.import_2.spec.ts 
   chunk_63:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2374,30 +2706,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.based.voting/stake.voting.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.based.voting/token.based.voting_1.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.based.voting/token.based.voting_2.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_63
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/token.based.voting/stake.voting.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/token.based.voting/token.based.voting_1.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/token.based.voting/token.based.voting_2.spec.ts 
   chunk_64:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2411,30 +2748,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.based.voting/token.based.voting_3.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.based.voting/token.based.voting_4.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.based.voting/token.based.voting_5.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_64
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/token.based.voting/token.based.voting_3.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/token.based.voting/token.based.voting_4.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/token.based.voting/token.based.voting_5.spec.ts 
   chunk_65:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2448,30 +2790,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.mint/token.mint_1.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.mint/token.mint_2.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.mint/token.mint_3.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_65
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/token.mint/token.mint_1.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/token.mint/token.mint_2.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/token.mint/token.mint_3.spec.ts 
   chunk_66:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2485,30 +2832,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/token.mint/token.mint_4.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/trade-base-token-order.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/tran.match.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_66
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/token.mint/token.mint_4.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/trade-base-token-order.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/tran.match.spec.ts 
   chunk_67:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2522,30 +2874,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_1.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_10.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_11.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_67
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/transaction-trigger/transaction-trigger_1.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/transaction-trigger/transaction-trigger_10.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/transaction-trigger/transaction-trigger_11.spec.ts 
   chunk_68:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2559,30 +2916,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_12.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_13.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_14.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_68
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/transaction-trigger/transaction-trigger_12.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/transaction-trigger/transaction-trigger_13.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/transaction-trigger/transaction-trigger_14.spec.ts 
   chunk_69:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2596,30 +2958,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_15.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_2.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_3.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_69
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/transaction-trigger/transaction-trigger_15.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/transaction-trigger/transaction-trigger_2.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/transaction-trigger/transaction-trigger_3.spec.ts 
   chunk_70:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2633,30 +3000,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_4.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_5.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_6.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_70
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/transaction-trigger/transaction-trigger_4.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/transaction-trigger/transaction-trigger_5.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/transaction-trigger/transaction-trigger_6.spec.ts 
   chunk_71:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2670,30 +3042,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_7.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_8.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/transaction-trigger/transaction-trigger_9.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_71
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/transaction-trigger/transaction-trigger_7.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/transaction-trigger/transaction-trigger_8.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/transaction-trigger/transaction-trigger_9.spec.ts 
   chunk_72:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2707,30 +3084,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/web3/web3_1.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/web3/web3_2.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/web3/web3_3.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_72
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/web3/web3_1.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/web3/web3_2.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/web3/web3_3.spec.ts 
   chunk_73:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2744,30 +3126,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1_a.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1_b.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1_c.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_73
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1_a.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1_b.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_1_c.spec.ts 
   chunk_74:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2781,30 +3168,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_10_1.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_10_2.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_10_3.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_74
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_10_1.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_10_2.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_10_3.spec.ts 
   chunk_75:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2818,30 +3210,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_11.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_12_a.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_12_b.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_75
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_11.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_12_a.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_12_b.spec.ts 
   chunk_76:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2855,30 +3252,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_13.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_14.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_15.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_76
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_13.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_14.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_15.spec.ts 
   chunk_77:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2892,30 +3294,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_16.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_2.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_4_b.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_77
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_16.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_2.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_4_b.spec.ts 
   chunk_78:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2929,30 +3336,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_4.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_5.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_6.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_78
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_4.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_5.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_6.spec.ts 
   chunk_79:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -2966,30 +3378,35 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_7.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_8.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_9.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_79
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_7.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_8.spec.ts &&
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/withdraw-deposit-nft/deposit-withraw-nft_9.spec.ts 
   chunk_80:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -3003,29 +3420,33 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/workflow-online.spec.ts &&
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/workflow.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_80
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/workflow.spec.ts 
   chunk_81:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -3039,28 +3460,33 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/collection-minting/collection-minting_3.only.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_81
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/collection-minting/collection-minting_3.only.spec.ts 
   chunk_82:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -3074,28 +3500,33 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-nft-trading/minted-nft-trading_11.only.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_82
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-nft-trading/minted-nft-trading_11.only.spec.ts 
   chunk_83:
     needs: npm-install
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -3109,56 +3540,10 @@ jobs:
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
       - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
+        run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/minted-token-trade/minted-token-trade_15.only.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_83
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
-  chunk_84:
-    needs: npm-install
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
-      - uses: actions/cache@v4
-        with:
-          path: |
-           node_modules
-           packages/functions/node_modules
-           packages/interfaces/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
-      - name: Init
-        run: |
-          npm run build:functions
-          npm install -g firebase-tools
-      - name: Test
-        working-directory: packages/functions
-        run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="./test-service-account-key.json"
-          npm run milestone-sync &
-          firebase emulators:exec "
-                npm run test-tangle:ci -- --forceExit --findRelatedTests ./test-tangle/soon.snapshot.only.spec.ts 
-             " --project dev --only functions,firestore,storage,ui,auth --export-on-exit=./firestore-data
-      - name: Archive firestore data
-        uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-           name: firestore-data-test-tangle-chunk_84
-           path: ./packages/functions/firestore-data/
-           retention-days: 1
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_15.only.spec.ts 

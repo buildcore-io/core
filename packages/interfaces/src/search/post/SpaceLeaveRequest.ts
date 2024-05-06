@@ -8,7 +8,7 @@
  */
 export interface SpaceLeaveRequest {
   /**
-   * Build5 id of the space.
+   * Buildcore id of the space.
    */
   uid: string;
 }

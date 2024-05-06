@@ -1,4 +1,4 @@
-import { AddressValidationTangleRequest, TangleRequestType } from '@build-5/interfaces';
+import { AddressValidationTangleRequest, TangleRequestType } from '@buildcore/interfaces';
 import { DatasetClass, OtrRequest } from './common';
 
 /**

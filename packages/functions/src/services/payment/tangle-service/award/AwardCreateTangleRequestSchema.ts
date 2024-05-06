@@ -2,7 +2,7 @@ import {
   AwardCreateBadgeRequest,
   AwardCreateTangleRequest,
   TangleRequestType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import Joi from 'joi';
 import {
   awardBageSchema as baseAwardBageSchema,

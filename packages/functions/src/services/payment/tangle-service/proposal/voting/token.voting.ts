@@ -7,7 +7,7 @@ import {
   TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { packBasicOutput } from '../../../../../utils/basic-output.utils';
 import { isProdEnv } from '../../../../../utils/config.utils';

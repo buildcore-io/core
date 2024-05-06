@@ -1,13 +1,13 @@
-import { Dataset, Member } from '@build-5/interfaces';
+import { Dataset, Member } from '@buildcore/interfaces';
 import { CoinType, SecretManager, utf8ToHex } from '@iota/sdk';
 import { mnemonicToSeedSync } from 'bip39';
-import * as build5 from '../src';
-import { AddressDetails, Build5Local, Build5LocalApiKey } from './config';
+import * as buildcore from '../src';
+import { AddressDetails, BuildcoreLocal, BuildcoreLocalApiKey } from './config';
 
 export const getSignature = async (uid: string, address: AddressDetails) => {
-  const member = await build5
-    .https(Build5Local)
-    .project(Build5LocalApiKey)
+  const member = await buildcore
+    .https(BuildcoreLocal)
+    .project(BuildcoreLocalApiKey)
     .dataset(Dataset.MEMBER)
     .id(uid)
     .get();

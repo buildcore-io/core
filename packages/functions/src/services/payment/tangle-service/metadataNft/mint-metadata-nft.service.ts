@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MintMetadataNftRequest,
@@ -6,7 +6,6 @@ import {
   NftStatus,
   SUB_COL,
   Space,
-  SpaceGuardian,
   TRANSACTION_AUTO_EXPIRY_MS,
   TangleResponse,
   Transaction,
@@ -14,7 +13,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { AliasAddress, Ed25519Address, NftAddress, NftOutput } from '@iota/sdk';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
@@ -38,6 +37,7 @@ import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { Wallet } from '../../../wallet/wallet';
 import { WalletService } from '../../../wallet/wallet.service';
 import { BaseTangleService, HandlerParams } from '../../base';
+import { Action } from '../../transaction-service';
 import { metadataNftSchema } from './MetadataNftTangleRequestSchema';
 
 export class MintMetadataNftService extends BaseTangleService<TangleResponse> {
@@ -84,15 +84,20 @@ export class MintMetadataNftService extends BaseTangleService<TangleResponse> {
     }
 
     if (aliasId === EMPTY_ALIAS_ID) {
-      const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
-      this.transactionService.push({ ref: spaceDocRef, data: space, action: 'set' });
+      const spaceDocRef = database().doc(COL.SPACE, space.uid);
+      this.transactionService.push({ ref: spaceDocRef, data: space, action: Action.C });
 
-      const guardian = { uid: owner, parentId: space.uid, parentCol: COL.SPACE };
-      const guardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(owner);
-      this.transactionService.push({ ref: guardianDocRef, data: guardian, action: 'set' });
+      const guardian = {
+        uid: owner,
+        parentId: space.uid,
+        parentCol: COL.SPACE,
+        createdOn: dateToTimestamp(dayjs()),
+      };
+      const guardianDocRef = database().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, owner);
+      this.transactionService.push({ ref: guardianDocRef, data: guardian, action: Action.C });
 
-      const memberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(owner);
-      this.transactionService.push({ ref: memberDocRef, data: guardian, action: 'set' });
+      const memberDocRef = database().doc(COL.SPACE, space.uid, SUB_COL.MEMBERS, owner);
+      this.transactionService.push({ ref: memberDocRef, data: guardian, action: Action.C });
     }
 
     const order: Transaction = {
@@ -120,8 +125,8 @@ export class MintMetadataNftService extends BaseTangleService<TangleResponse> {
         tag: match.msgId,
       },
     };
-    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
-    this.transactionService.push({ ref: orderDocRef, data: order, action: 'set' });
+    const orderDocRef = database().doc(COL.TRANSACTION, order.uid);
+    this.transactionService.push({ ref: orderDocRef, data: order, action: Action.C });
 
     this.transactionService.createUnlockTransaction(
       payment,
@@ -175,9 +180,8 @@ const getAliasOutputAmount = async (owner: string, space: Space, wallet: Wallet)
   if (!space.alias?.address) {
     throw invalidArgument(WenError.not_alias_governor);
   }
-  const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
-  const guardianDocRef = spaceDocRef.collection(SUB_COL.GUARDIANS).doc(owner);
-  const guardian = await guardianDocRef.get<SpaceGuardian>();
+  const guardianDocRef = database().doc(COL.SPACE, space.uid, SUB_COL.GUARDIANS, owner);
+  const guardian = await guardianDocRef.get();
 
   if (!guardian) {
     throw invalidArgument(WenError.not_alias_governor);

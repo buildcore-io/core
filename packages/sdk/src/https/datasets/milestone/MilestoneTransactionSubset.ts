@@ -1,4 +1,4 @@
-import { MilestoneTransaction } from '@build-5/interfaces';
+import { MilestoneTransaction } from '@buildcore/interfaces';
 import { SubsetClass } from '../Subset';
 
 /**

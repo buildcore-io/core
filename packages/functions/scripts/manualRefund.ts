@@ -5,7 +5,7 @@ import {
   Transaction,
   TransactionPayloadType,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import * as admin from 'firebase-admin';
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
@@ -31,7 +31,7 @@ db.collection(COL.MEMBER)
       await db
         .collection(COL.TRANSACTION)
         .doc(tranId)
-        .set(<Transaction>{
+        .upsert(<Transaction>{
           project: SOON_PROJECT_ID,
           type: TransactionType.CREDIT,
           uid: tranId,

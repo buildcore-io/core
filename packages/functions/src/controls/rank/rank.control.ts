@@ -1,6 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, Collection, Rank, RankRequest, SUB_COL, Token, WenError } from '@build-5/interfaces';
-import { set } from 'lodash';
+import { IDocument, PgCollectionStatsUpdate, Update, database } from '@buildcore/database';
+import { COL, RankRequest, SUB_COL, WenError } from '@buildcore/interfaces';
 import { hasStakedTokens } from '../../services/stake.service';
 import { getRankingSpace } from '../../utils/config.utils';
 import { invalidArgument } from '../../utils/error.utils';
@@ -13,52 +12,56 @@ export const rankControl = async ({ owner, params, project }: Context<RankReques
     throw invalidArgument(WenError.no_staked_soon);
   }
 
-  const parentDocRef = build5Db().doc(`${params.collection}/${params.uid}`);
+  const col = params.collection === 'collection' ? COL.COLLECTION : COL.TOKEN;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const parentDocRef: IDocument<any, any, Update> = database().doc(col, params.uid);
   const parent = await parentDocRef.get();
   if (!parent) {
-    const errorMsg =
-      params.collection === COL.COLLECTION
-        ? WenError.collection_does_not_exists
-        : WenError.token_does_not_exist;
-    throw invalidArgument(errorMsg);
+    if (col === COL.COLLECTION) {
+      throw invalidArgument(WenError.collection_does_not_exists);
+    }
+    throw invalidArgument(WenError.token_does_not_exist);
   }
 
   const rankingSpaceId = getRankingSpace(params.collection as COL);
   await assertIsGuardian(rankingSpaceId, owner);
 
-  await build5Db().runTransaction(async (transaction) => {
-    const parent = (await transaction.get<Collection | Token>(parentDocRef))!;
-    const rankDocRef = parentDocRef.collection(SUB_COL.RANKS).doc(owner);
-    const prevRank = await transaction.get<Rank | undefined>(rankDocRef);
+  const rankDocRef = database().doc(col, params.uid, SUB_COL.RANKS, owner);
 
-    if (prevRank) {
-      transaction.update(rankDocRef, { rank: params.rank });
-    } else {
-      transaction.create(rankDocRef, {
-        uid: owner,
-        parentCol: params.collection,
-        parentId: params.uid,
-        rank: params.rank,
-      });
-    }
+  await database().runTransaction(async (transaction) => {
+    const parent = (await transaction.get(parentDocRef))!;
+    const prevRank = await transaction.get(rankDocRef);
 
-    const ranks = {
-      count: (parent.rankCount || 0) + (prevRank ? 0 : 1),
-      sum: (parent.rankSum || 0) + (-(prevRank?.rank || 0) + params.rank),
-      avg: 0,
-    };
-    set(ranks, 'avg', Number((ranks.sum / ranks.count).toFixed(3)));
+    await transaction.upsert(rankDocRef, {
+      parentId: params.uid,
+      rank: params.rank,
+    });
 
-    transaction.update(parentDocRef, {
+    const count = (parent.rankCount || 0) + (prevRank ? 0 : 1);
+    const sum = (parent.rankSum || 0) + (-(prevRank?.rank || 0) + params.rank);
+    const ranks = { count, sum, avg: Number((sum / count).toFixed(3)) };
+
+    await transaction.update(parentDocRef, {
       rankCount: ranks.count,
       rankSum: ranks.sum,
       rankAvg: ranks.avg,
     });
 
-    const statsDocRef = parentDocRef.collection(SUB_COL.STATS).doc(params.uid);
-    transaction.set(statsDocRef, { ranks }, true);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const statsDocRef: IDocument<any, any, PgCollectionStatsUpdate> = database().doc(
+      col,
+      params.uid,
+      SUB_COL.STATS,
+      params.uid,
+    );
+    await transaction.upsert(statsDocRef, {
+      project: parent.project,
+      parentId: params.uid,
+      ranks_avg: ranks.avg,
+      ranks_sum: ranks.sum,
+      ranks_count: ranks.count,
+    });
   });
 
-  const rankDocRef = parentDocRef.collection(SUB_COL.RANKS).doc(owner);
-  return (await rankDocRef.get<Rank>())!;
+  return (await rankDocRef.get())!;
 };

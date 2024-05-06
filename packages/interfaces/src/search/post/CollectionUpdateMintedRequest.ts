@@ -12,11 +12,11 @@ export interface UpdateMintedCollectionRequest {
    */
   access?: 0 | 1 | 2 | 3 | 4;
   /**
-   * Build5 id of awards. If set, only members having the specified awards can access this collection.
+   * Buildcore id of awards. If set, only members having the specified awards can access this collection.
    */
   accessAwards?: any[];
   /**
-   * Build5 id of collections. If set, only members owning NFTs from the specified collection can access this collection.
+   * Buildcore id of collections. If set, only members owning NFTs from the specified collection can access this collection.
    */
   accessCollections?: any[];
   /**
@@ -49,7 +49,7 @@ export interface UpdateMintedCollectionRequest {
    */
   price?: number;
   /**
-   * Build5 id of the collection.
+   * Buildcore id of the collection.
    */
   uid: string;
 }

@@ -1,11 +1,17 @@
-import { Dataset, Network } from '@build-5/interfaces';
-import * as build5 from '../../src';
+import { Dataset, Network } from '@buildcore/interfaces';
+import * as buildcore from '../../src';
 import { getSignature } from '../common';
-import { Build5Local, Build5LocalApi, Build5LocalApiKey, Build5LocalKey, address } from '../config';
+import {
+  BuildcoreLocal,
+  BuildcoreLocalApi,
+  BuildcoreLocalApiKey,
+  BuildcoreLocalKey,
+  address,
+} from '../config';
 
 describe('', () => {
   it('Create and update member name', async () => {
-    let response = await build5.https(Build5Local).createMember({
+    let response = await buildcore.https(BuildcoreLocal).createMember({
       address: address.bech32,
       signature: '',
       body: { address: address.bech32 },
@@ -13,9 +19,9 @@ describe('', () => {
 
     const uid = response.uid;
 
-    const member = await build5
-      .https(Build5LocalApi)
-      .project(Build5LocalApiKey)
+    const member = await buildcore
+      .https(BuildcoreLocalApi)
+      .project(BuildcoreLocalApiKey)
       .dataset(Dataset.MEMBER)
       .id(uid)
       .get();
@@ -23,9 +29,9 @@ describe('', () => {
 
     const name = Math.random().toString().split('.')[1];
     const signature = await getSignature(uid, address);
-    response = await build5
-      .https(Build5Local)
-      .project(Build5LocalKey)
+    response = await buildcore
+      .https(BuildcoreLocal)
+      .project(BuildcoreLocalKey)
       .dataset(Dataset.MEMBER)
       .update({
         address: address.bech32,

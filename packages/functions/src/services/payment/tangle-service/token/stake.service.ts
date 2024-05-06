@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   StakeType,
@@ -9,7 +9,7 @@ import {
   TransactionType,
   TransactionValidationType,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { set } from 'lodash';
 import { packBasicOutput } from '../../../../utils/basic-output.utils';
@@ -20,6 +20,7 @@ import { getTokenBySymbol } from '../../../../utils/token.utils';
 import { getRandomEthAddress } from '../../../../utils/wallet.utils';
 import { WalletService } from '../../../wallet/wallet.service';
 import { BaseTangleService, HandlerParams } from '../../base';
+import { Action } from '../../transaction-service';
 import { depositStakeSchemaObject } from './TokenStakeTangleRequestSchema';
 
 export class TangleStakeService extends BaseTangleService<TangleResponse> {
@@ -44,9 +45,9 @@ export class TangleStakeService extends BaseTangleService<TangleResponse> {
     set(order, 'payload.amount', tranEntry.amount);
 
     this.transactionService.push({
-      ref: build5Db().doc(`${COL.TRANSACTION}/${order.uid}`),
+      ref: database().doc(COL.TRANSACTION, order.uid),
       data: order,
-      action: 'set',
+      action: Action.C,
     });
 
     this.transactionService.createUnlockTransaction(

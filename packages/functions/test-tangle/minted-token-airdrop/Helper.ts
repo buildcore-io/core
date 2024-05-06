@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Network,
@@ -9,38 +9,36 @@ import {
   TokenDrop,
   TokenDropStatus,
   TokenStatus,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { createMember, createSpace, getRandomSymbol } from '../../test/controls/common';
-import { MEDIA, getWallet } from '../../test/set-up';
+import { getRandomSymbol } from '../../test/controls/common';
+import { MEDIA, getWallet, testEnv } from '../../test/set-up';
 
 export class Helper {
   public network = Network.RMS;
-  public space: Space | undefined;
-  public token: Token | undefined;
+  public space: Space = {} as any;
+  public token: Token = {} as any;
 
-  public guardian: string | undefined;
-  public member: string | undefined;
-  public walletService: Wallet | undefined;
-  public walletSpy: any;
+  public guardian = '';
+  public member = '';
+  public walletService: Wallet = {} as any;
 
   public berforeAll = async () => {
     this.walletService = await getWallet(this.network);
-    this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
   };
 
   public beforeEach = async () => {
-    this.guardian = await createMember(this.walletSpy);
-    this.member = await createMember(this.walletSpy);
-    this.space = await createSpace(this.walletSpy, this.guardian);
+    this.guardian = await testEnv.createMember();
+    this.member = await testEnv.createMember();
+    this.space = await testEnv.createSpace(this.guardian);
     this.token = (await saveToken(this.space.uid, this.guardian, this.walletService!)) as Token;
   };
 
   public getAirdropsForMember = async (member: string, status = TokenDropStatus.UNCLAIMED) => {
-    const snap = await build5Db()
+    const snap = await database()
       .collection(COL.AIRDROP)
       .where('member', '==', member)
       .where('status', '==', status)
@@ -76,8 +74,8 @@ export const saveToken = async (
     },
     access: 0,
     icon: MEDIA,
-  };
-  await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  } as Token;
+  await database().doc(COL.TOKEN, token.uid).create(token);
   return token;
 };
 

@@ -1,158 +1,139 @@
-import { build5Db } from '@build-5/database';
+require('dotenv').config({ path: (__dirname + '/.env').replace('test/', '') });
+import { database } from '@buildcore/database';
 import {
-  Build5Request,
   COL,
-  MIN_IOTA_AMOUNT,
   Network,
-  ProjectAdmin,
-  ProjectBilling,
   SOON_PROJECT_ID,
-  SUB_COL,
   SendToManyTargets,
-  TokenStatus,
-} from '@build-5/interfaces';
-import dayjs from 'dayjs';
-import dotenv from 'dotenv';
-import express from 'express';
-import test from 'firebase-functions-test';
-import * as functions from 'firebase-functions/v2';
-import { isEmpty } from 'lodash';
+  Space,
+  WEN_FUNC,
+} from '@buildcore/interfaces';
+import { CoinType, utf8ToHex } from '@iota/sdk';
+import axios from 'axios';
+import { generateCustomTokenControl } from '../src/controls/auth/auth.control';
+import { Context } from '../src/controls/common';
+import { createMemberControl } from '../src/controls/member/member.create';
+import { MnemonicService } from '../src/services/wallet/mnemonic';
 import { Wallet, WalletParams } from '../src/services/wallet/wallet';
 import { AddressDetails, WalletService } from '../src/services/wallet/wallet.service';
-import { dateToTimestamp } from '../src/utils/dateTime.utils';
+import { getSecretManager } from '../src/utils/secret.manager.utils';
+import { getRandomEthAddress } from '../src/utils/wallet.utils';
 
-dotenv.config({ path: '.env.local' });
-
-export const projectId = 'soonaverse-dev';
-process.env.GCLOUD_PROJECT = projectId;
-
-export const getConfig = () => {
-  if (process.env.LOCAL_TEST) {
-    process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
-    process.env.FIREBASE_STORAGE_EMULATOR_HOST = '127.0.0.1:9199';
-    return {
-      projectId,
-      storageBucket: 'soonaverse-dev.appspot.com',
-    };
-  }
-  return {
-    databaseURL: `https://${projectId}.firebaseio.com`,
-    projectId,
-    storageBucket: 'soonaverse-dev.appspot.com',
-  };
-};
+const tokens: { [key: string]: string } = {};
 
 export const PROJECT_API_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9qZWN0IjoiMHg0NjIyM2VkZDQxNTc2MzVkZmM2Mzk5MTU1NjA5ZjMwMWRlY2JmZDg4IiwiaWF0IjoxNjk5MjgyMTQxfQ.Bd0IZNdtc3ne--CC1Bk5qDgWl4NojAsX64K1rCj-5Co';
 
-export const sendOnRequest =
-  (func: (req: functions.https.Request, response: express.Response<any>) => void | Promise<void>) =>
-  async (body: any, address = '', customToken = '') => {
-    const wenReq: Build5Request<any> = {
-      address,
-      customToken,
-      projectApiKey: PROJECT_API_KEY,
-      body,
-    };
-    const req = {
-      ip: '127.0.0.1',
-      body: wenReq,
-      headers: { origin: true },
-    } as any;
-    let error = false;
-    let response: any = undefined;
-    const res = {
-      status: (code: number) => {
-        if (code !== 200) {
-          error = true;
-        }
-      },
-      send: (res: any) => {
-        response = res;
-      },
-      setHeader: (key: any, value: any) => {},
-      getHeader: (key: any) => {},
-    } as any;
-    await func(req, res);
-
-    for (let attempt = 0; attempt < 5000; ++attempt) {
-      if (response !== undefined) {
-        break;
-      }
-      await new Promise((r) => setTimeout(r, 100));
-    }
-
-    if (error) {
-      throw response;
-    }
-    return isEmpty(response) ? undefined : response;
-  };
-
-export const testEnv = {
-  config: process.env.LOCAL_TEST
-    ? test(getConfig())
-    : test(getConfig(), './test-service-account-key.json'),
-  wrap: sendOnRequest,
+const mockk = {
+  address: '',
+  body: {} as any,
+  token: undefined as string | undefined,
+  projectApiKey: PROJECT_API_KEY,
 };
 
-export const MEDIA =
-  'https://images-wen.soonaverse.com/0x0275dfc7c2624c0111d441a0819dccfd5e947c89%2F6stvhnutvg%2Ftoken_introductionary';
+export const mockWalletReturnValue = (
+  address: string,
+  body: any,
+  token?: string,
+  projectApiKey?: string,
+) => {
+  mockk.address = address;
+  mockk.body = body;
+  mockk.token = token;
+  mockk.projectApiKey = projectApiKey !== undefined ? projectApiKey : PROJECT_API_KEY;
+};
 
-export const SOON_PROJ_GUARDIAN = '0x3d5d0b3f40c9438871b1c43d6b70117eeff77ad8';
+export const testEnv = {
+  wrap: async <T>(func: WEN_FUNC) => {
+    try {
+      let request = {
+        address: mockk.address,
+        projectApiKey: mockk.projectApiKey,
+        signature: '',
+        publicKey: {},
+        customToken: mockk.token || tokens[mockk.address],
+        body: mockk.body || {},
+      };
+      if (!request.customToken) {
+        const memberDocRef = database().doc(COL.MEMBER, mockk.address);
+        const member = await memberDocRef.get();
+        const mnemonic = await MnemonicService.get(mockk.address);
+        const secretManager = getSecretManager(mnemonic);
+        const signature = await secretManager.signEd25519(utf8ToHex(member?.nonce!), {
+          coinType: CoinType.IOTA,
+        });
+        request = {
+          address: mockk.address,
+          projectApiKey: mockk.projectApiKey,
+          signature: signature.signature,
+          publicKey: { hex: signature.publicKey, network: Network.RMS },
+          customToken: '',
+          body: mockk.body || {},
+        };
+      }
+      const payload = JSON.stringify(request, (_key, value) =>
+        value === undefined ? null : value,
+      );
+      const response = await axios.post('http://localhost:8080/' + func, payload, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+      return response.data as T;
+    } catch (err: any) {
+      if (err.response?.data) {
+        throw err.response?.data;
+      }
+      throw err;
+    }
+  },
 
-export const soonTokenId = '0xa381bfccaf121e38e31362d85b5ad30cd7fc0d06';
-export const rmsTokenId = '0x52f27a34170900537acb61e5ff0fe94a2841ff52';
-export const atoiTokenId = '0x9c119bd60f7cadf3406c43cead6c8723012bca27';
-
-const setup = async () => {
-  await build5Db().doc(`${COL.TOKEN}/${soonTokenId}`).set({
-    project: SOON_PROJECT_ID,
-    uid: soonTokenId,
-    symbol: 'SOON',
-  });
-  await build5Db()
-    .doc(`${COL.TOKEN}/${rmsTokenId}`)
-    .set({
+  mockWrap: async <T>(func: (context: Context<any>) => Promise<any>) => {
+    const request = {
+      ip: '127.0.0.1',
+      owner: mockk.address,
+      params: mockk.body || {},
       project: SOON_PROJECT_ID,
-      symbol: 'RMS',
-      approved: true,
-      space: '',
-      uid: rmsTokenId,
-      name: 'RMS token',
-      status: TokenStatus.BASE,
-      access: 0,
-      icon: MEDIA,
-      mintingData: {
-        network: Network.RMS,
-      },
+      headers: {},
+      rawBody: {},
+    };
+    return (await func(request)) as T;
+  },
+
+  createMember: async () => {
+    const owner = getRandomEthAddress();
+    mockWalletReturnValue(owner, undefined);
+    await testEnv.mockWrap(createMemberControl);
+    mockWalletReturnValue(owner, undefined);
+    const token = await testEnv.mockWrap<string>(generateCustomTokenControl);
+    tokens[owner] = token;
+    const addresses = {} as any;
+    const promises = Object.values(Network).map(async (network) => {
+      const wallet = await getWallet(network);
+      const address = await wallet.getNewIotaAddressDetails();
+      addresses[`${network}Address`] = address.bech32;
     });
+    await Promise.all(promises);
+    await database().doc(COL.MEMBER, owner).update(addresses);
+    return owner;
+  },
 
-  const soonProject = {
-    uid: SOON_PROJECT_ID,
-    name: 'Soonaverse',
-    createdBy: SOON_PROJ_GUARDIAN,
-    deactivated: false,
-    config: {
-      billing: ProjectBilling.TOKEN_BASE,
-      tiers: [0, 0, 0, 0, 0].map((v) => v * MIN_IOTA_AMOUNT),
-      tokenTradingFeeDiscountPercentage: [0, 0, 0, 0, 0],
-      nativeTokenSymbol: 'SOON',
-      nativeTokenUid: soonTokenId,
-    },
-  };
-  const soonProjDocRef = build5Db().doc(`${COL.PROJECT}/${soonProject.uid}`);
-  await soonProjDocRef.set(soonProject);
+  createSpace: async (member: string) => {
+    mockWalletReturnValue(member, { name: 'Space A', bannerUrl: MEDIA });
+    const space = await testEnv.wrap<Space>(WEN_FUNC.createSpace);
 
-  const adminDocRef = soonProjDocRef.collection(SUB_COL.ADMINS).doc(SOON_PROJ_GUARDIAN);
-  const admin: ProjectAdmin = {
-    uid: SOON_PROJ_GUARDIAN,
-    createdOn: dateToTimestamp(dayjs()),
-    parentCol: COL.PROJECT,
-    parentId: SOON_PROJECT_ID,
-  };
-  await adminDocRef.set(admin);
+    const addresses = {} as any;
+    const promises = Object.values(Network).map(async (network) => {
+      const wallet = await getWallet(network);
+      const address = await wallet.getNewIotaAddressDetails();
+      addresses[`${network}Address`] = address.bech32;
+    });
+    await Promise.all(promises);
+    await database().doc(COL.SPACE, space.uid).update(addresses);
+    return (await database().doc(COL.SPACE, space.uid).get())!;
+  },
 
-  console.log('Setup env');
+  createBlock: async (blockId: string) => {
+    await database().getCon()('blocks').insert({ blockId });
+  },
 };
 
 export const wallets: { [key: string]: Wallet } = {};
@@ -166,7 +147,6 @@ class TestWallet extends Wallet {
   public getNewIotaAddressDetails = this.wallet.getNewIotaAddressDetails;
   public getIotaAddressDetails = this.wallet.getIotaAddressDetails;
   public getAddressDetails = this.wallet.getAddressDetails;
-
   public bechAddressFromOutput = this.wallet.bechAddressFromOutput;
   public getOutputs = this.wallet.getOutputs;
   public creditLocked = this.wallet.creditLocked;
@@ -179,16 +159,17 @@ class TestWallet extends Wallet {
     outputToConsume?: string | undefined,
   ) => {
     const blockId = await this.wallet.send(from, toAddress, amount, params, outputToConsume);
-    await build5Db().doc(`blocks/${blockId}`).create({ blockId });
+    await database().getCon()('blocks').insert({ blockId });
     return blockId;
   };
+
   public sendToMany = async (
     from: AddressDetails,
     targets: SendToManyTargets[],
     params: WalletParams,
   ) => {
     const blockId = await this.wallet.sendToMany(from, targets, params);
-    await build5Db().doc(`blocks/${blockId}`).create({ blockId });
+    await database().getCon()('blocks').insert({ blockId });
     return blockId;
   };
 }
@@ -202,4 +183,9 @@ export const getWallet = async (network: Network) => {
   return wallets[network];
 };
 
-export default setup;
+export const MEDIA =
+  'https://images-wen.soonaverse.com/0x0275dfc7c2624c0111d441a0819dccfd5e947c89%2F6stvhnutvg%2Ftoken_introductionary';
+export const SOON_PROJ_GUARDIAN = '0x3d5d0b3f40c9438871b1c43d6b70117eeff77ad8';
+export const soonTokenId = '0xa381bfccaf121e38e31362d85b5ad30cd7fc0d06';
+export const rmsTokenId = '0x52f27a34170900537acb61e5ff0fe94a2841ff52';
+export const atoiTokenId = '0x9c119bd60f7cadf3406c43cead6c8723012bca27';

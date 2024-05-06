@@ -1,4 +1,4 @@
-import { Bucket } from '@build-5/interfaces';
+import { Bucket } from '@buildcore/interfaces';
 
 export interface IStorage {
   bucket: (name: string) => IBucket;

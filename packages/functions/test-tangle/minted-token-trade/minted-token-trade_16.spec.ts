@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -8,11 +8,11 @@ import {
   TokenTradeOrderType,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
-import { cancelTradeOrder, tradeToken } from '../../src/runtime/firebase/token/trading';
+  WEN_FUNC,
+} from '@buildcore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { Helper } from './Helper';
 
@@ -28,13 +28,13 @@ describe('Token minting', () => {
   });
 
   it('Should create sell with higher storage deposit', async () => {
-    mockWalletReturnValue(helper.walletSpy, helper.seller!, {
+    mockWalletReturnValue(helper.seller!, {
       symbol: helper.token!.symbol,
       count: 1,
       price: 5 * MIN_IOTA_AMOUNT,
       type: TokenTradeOrderType.SELL,
     });
-    const sellOrder: Transaction = await testEnv.wrap(tradeToken)({});
+    const sellOrder: Transaction = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await helper.walletService!.send(
       helper.sellerAddress!,
       sellOrder.payload.targetAddress!,
@@ -44,7 +44,7 @@ describe('Token minting', () => {
       },
     );
     await wait(async () => {
-      const snap = await build5Db()
+      const snap = await database()
         .collection(COL.TOKEN_MARKET)
         .where('orderTransactionId', '==', sellOrder.uid)
         .get();
@@ -58,17 +58,17 @@ describe('Token minting', () => {
 
     const sell = <TokenTradeOrder>(
       (
-        await build5Db()
+        await database()
           .collection(COL.TOKEN_MARKET)
           .where('orderTransactionId', '==', sellOrder.uid)
           .get()
       )[0]
     );
 
-    mockWalletReturnValue(helper.walletSpy, helper.seller!, { uid: sell.uid });
-    await testEnv.wrap(cancelTradeOrder)({});
+    mockWalletReturnValue(helper.seller!, { uid: sell.uid });
+    await testEnv.wrap<TokenTradeOrder>(WEN_FUNC.cancelTradeOrder);
 
-    const sellerCreditSnap = await build5Db()
+    const sellerCreditSnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller)
       .where('type', '==', TransactionType.CREDIT)
@@ -83,13 +83,13 @@ describe('Token minting', () => {
   it('Should fulfill sell and credit higher storage deposit', async () => {
     await helper.createBuyOrder(1, 5 * MIN_IOTA_AMOUNT);
 
-    mockWalletReturnValue(helper.walletSpy, helper.seller!, {
+    mockWalletReturnValue(helper.seller!, {
       symbol: helper.token!.symbol,
       count: 1,
       price: 5 * MIN_IOTA_AMOUNT,
       type: TokenTradeOrderType.SELL,
     });
-    const sellOrder: Transaction = await testEnv.wrap(tradeToken)({});
+    const sellOrder: Transaction = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await helper.walletService!.send(
       helper.sellerAddress!,
       sellOrder.payload.targetAddress!,
@@ -99,7 +99,7 @@ describe('Token minting', () => {
       },
     );
     await wait(async () => {
-      const snap = await build5Db()
+      const snap = await database()
         .collection(COL.TOKEN_MARKET)
         .where('orderTransactionId', '==', sellOrder.uid)
         .get();
@@ -112,14 +112,14 @@ describe('Token minting', () => {
     );
 
     await wait(async () => {
-      const snap = await build5Db()
+      const snap = await database()
         .collection(COL.TOKEN_PURCHASE)
         .where('token', '==', helper.token!.uid)
         .get();
       return snap.length === 1;
     });
 
-    const sellerCreditSnap = await build5Db()
+    const sellerCreditSnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller)
       .where('type', '==', TransactionType.CREDIT)

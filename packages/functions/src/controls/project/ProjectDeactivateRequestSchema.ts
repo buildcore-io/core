@@ -1,4 +1,4 @@
-import { ProjectDeactivateRequest } from '@build-5/interfaces';
+import { ProjectDeactivateRequest } from '@buildcore/interfaces';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 
 export const projectDeactivateSchema = toJoiObject<ProjectDeactivateRequest>({

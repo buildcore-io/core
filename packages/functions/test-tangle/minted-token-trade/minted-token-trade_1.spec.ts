@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -11,7 +11,7 @@ import {
   Transaction,
   TransactionPayloadType,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { Helper } from './Helper';
@@ -38,17 +38,17 @@ describe('Token minting', () => {
       buyOrder = await helper.createBuyOrder();
     }
 
-    const billPaymentsQuery = build5Db()
+    const billPaymentsQuery = database()
       .collection(COL.TRANSACTION)
-      .where('member', 'in', [helper.seller, helper.buyer])
-      .where('type', '==', TransactionType.BILL_PAYMENT);
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .whereIn('member', [helper.seller, helper.buyer]);
     await wait(async () => {
       const snap = await billPaymentsQuery.get();
       return snap.length === 4;
     });
 
     const trades = (
-      await build5Db().collection(COL.TOKEN_MARKET).where('token', '==', helper.token!.uid).get()
+      await database().collection(COL.TOKEN_MARKET).where('token', '==', helper.token!.uid).get()
     ).map((d) => <TokenTradeOrder>d);
     const allHaveTokenStatus = trades.reduce(
       (acc, act) => acc && act.tokenStatus === TokenStatus.MINTED,
@@ -69,7 +69,7 @@ describe('Token minting', () => {
     )!;
     expect(paymentToSeller.payload.amount).toBe(9602600);
     expect(paymentToSeller.payload.sourceAddress).toBe(buyOrder.payload.targetAddress);
-    expect(paymentToSeller.payload.storageReturn).toBeUndefined();
+    expect(paymentToSeller.payload.storageReturn).toEqual({});
 
     const royaltyOnePayment = billPayments.find((bp) => bp.payload.amount === 271800)!;
     expect(royaltyOnePayment.payload.storageReturn!.address).toBe(helper.sellerAddress!.bech32);
@@ -91,7 +91,7 @@ describe('Token minting', () => {
     expect(paymentToBuyer.payload.storageReturn!.amount).toBe(53800);
     expect(paymentToBuyer.payload.storageReturn!.address).toBe(helper.sellerAddress?.bech32);
 
-    const sellerCreditSnap = await build5Db()
+    const sellerCreditSnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller!)
       .where('type', '==', TransactionType.CREDIT)
@@ -104,7 +104,7 @@ describe('Token minting', () => {
     expect(sellerCredit.payload.type).toBe(TransactionPayloadType.TOKEN_TRADE_FULLFILLMENT);
 
     const purchase = (
-      await build5Db().collection(COL.TOKEN_PURCHASE).where('token', '==', helper.token!.uid).get()
+      await database().collection(COL.TOKEN_PURCHASE).where('token', '==', helper.token!.uid).get()
     )[0] as TokenPurchase;
     expect(purchase.triggeredBy).toBe(
       saveBuyFirst ? TokenTradeOrderType.SELL : TokenTradeOrderType.BUY,
@@ -113,7 +113,7 @@ describe('Token minting', () => {
     expect(purchase.count).toBe(10);
     expect(purchase.tokenStatus).toBe(TokenStatus.MINTED);
     expect(purchase.sellerTier).toBe(0);
-    expect(purchase.sellerTokenTradingFeePercentage).toBeNull();
+    expect(purchase.sellerTokenTradingFeePercentage).toBeUndefined();
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
   });
 });

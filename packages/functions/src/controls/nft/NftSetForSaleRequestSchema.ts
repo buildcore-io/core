@@ -6,7 +6,7 @@ import {
   NftSetForSaleRequest,
   TRANSACTION_AUTO_EXPIRY_MS,
   TRANSACTION_MAX_EXPIRY_MS,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
@@ -14,7 +14,7 @@ import { CommonJoi, toJoiObject } from '../../services/joi/common';
 const minAvailableFrom = 10;
 
 export const baseNftSetForSaleSchema = {
-  nft: CommonJoi.uid().description('Build5 id of the nft.'),
+  nft: CommonJoi.uid().description('Buildcore id of the nft.'),
   price: Joi.number()
     .min(MIN_IOTA_AMOUNT)
     .max(MAX_IOTA_AMOUNT)

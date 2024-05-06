@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
-import { COL, MIN_IOTA_AMOUNT, TokenPurchase } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, MIN_IOTA_AMOUNT, TokenPurchase } from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { Helper } from './Helper';
@@ -22,7 +22,7 @@ describe('Token minting', () => {
     await helper.createSellTradeOrder(5, 2 * MIN_IOTA_AMOUNT);
     await helper.createBuyOrder(5, 2 * MIN_IOTA_AMOUNT);
 
-    const purchaseQuery = build5Db()
+    const purchaseQuery = database()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {

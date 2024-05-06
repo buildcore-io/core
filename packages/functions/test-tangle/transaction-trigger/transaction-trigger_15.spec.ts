@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
-import { COL, MIN_IOTA_AMOUNT, Network, TangleRequestType, Transaction } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, MIN_IOTA_AMOUNT, Network, TangleRequestType } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { wait } from '../../test/controls/common';
@@ -34,15 +34,15 @@ describe('Transaction trigger spec', () => {
     });
 
     await wait(async () => {
-      const snap = await build5Db()
+      const snap = await database()
         .collection(COL.TRANSACTION)
         .where('member', '==', address.bech32)
-        .get<Transaction>();
+        .get();
       return snap.length === 1 && snap[0].payload.invalidPayment;
     });
 
     await new Promise((r) => setTimeout(r, 2000));
-    const snap = await build5Db()
+    const snap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', address.bech32)
       .get();

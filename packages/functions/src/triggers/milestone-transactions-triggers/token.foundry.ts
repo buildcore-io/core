@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL } from '@build-5/interfaces';
+import { MilestoneTransactions, database } from '@buildcore/database';
+import { COL } from '@buildcore/interfaces';
 import {
   AddressUnlockCondition,
   AliasAddress,
@@ -13,9 +13,9 @@ import {
 } from '@iota/sdk';
 import { getTokenByMintId } from '../../utils/token.utils';
 
-export const updateTokenSupplyData = async (data: Record<string, unknown>) => {
+export const updateTokenSupplyData = async (data: MilestoneTransactions) => {
   const foundryOutputs = (
-    (data.payload as TransactionPayload).essence as RegularTransactionEssence
+    (data.payload as unknown as TransactionPayload).essence as RegularTransactionEssence
   ).outputs
     .filter((o) => o.type === OutputType.Foundry)
     .map((o) => <FoundryOutput>o);
@@ -32,10 +32,10 @@ export const updateTokenSupplyData = async (data: Record<string, unknown>) => {
     const tokenScheme = foundryOutput.tokenScheme as SimpleTokenScheme;
     const meltedTokens = Number(tokenScheme.meltedTokens);
     const totalSupply = Number(tokenScheme.maximumSupply);
-    const tokendDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
+    const tokendDocRef = database().doc(COL.TOKEN, token.uid);
     await tokendDocRef.update({
-      'mintingData.meltedTokens': meltedTokens,
-      'mintingData.circulatingSupply': totalSupply - meltedTokens,
+      mintingData_meltedTokens: meltedTokens,
+      mintingData_circulatingSupply: totalSupply - meltedTokens,
     });
   }
 };

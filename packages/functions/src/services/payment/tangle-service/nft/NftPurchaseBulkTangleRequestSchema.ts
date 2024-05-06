@@ -2,16 +2,16 @@ import {
   MAX_NFT_BULK_PURCHASE,
   NftPurchaseBulkTangleRequest,
   TangleRequestType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../../joi/common';
 import { baseTangleSchema } from '../common';
 
 const nftPurchaseSchema = Joi.object({
   collection: CommonJoi.uid().description(
-    'Build5 id of the collection in case a random nft is bought.',
+    'Buildcore id of the collection in case a random nft is bought.',
   ),
-  nft: CommonJoi.uid(false).description('Build5 id of the nft to be purchased.'),
+  nft: CommonJoi.uid(false).description('Buildcore id of the nft to be purchased.'),
 });
 
 export const nftPurchaseBulkSchema = toJoiObject<NftPurchaseBulkTangleRequest>({

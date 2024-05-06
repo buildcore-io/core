@@ -17,9 +17,9 @@ describe('Token based voting', () => {
   it('Should vote full, then 50%', async () => {
     const voteTransactionOrder = await helper.voteOnProposal(1);
 
-    await helper.sendTokensToVote(voteTransactionOrder.payload.targetAddress);
+    await helper.sendTokensToVote(voteTransactionOrder.payload.targetAddress!);
     const credit = await helper.awaitVoteTransactionCreditIsConfirmed(
-      voteTransactionOrder.payload.targetAddress,
+      voteTransactionOrder.payload.targetAddress!,
     );
 
     const voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
@@ -44,13 +44,13 @@ describe('Token based voting', () => {
     const voteTransactionOrder = await helper.voteOnProposal(1);
 
     await helper.sendTokensToVote(
-      voteTransactionOrder.payload.targetAddress,
+      voteTransactionOrder.payload.targetAddress!,
       10,
       undefined,
       voteTransactionOrder.payload.amount,
     );
     const credit = await helper.awaitVoteTransactionCreditIsConfirmed(
-      voteTransactionOrder.payload.targetAddress,
+      voteTransactionOrder.payload.targetAddress!,
     );
 
     const voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);

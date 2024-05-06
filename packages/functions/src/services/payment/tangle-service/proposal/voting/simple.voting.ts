@@ -1,9 +1,9 @@
-import { build5Db } from '@build-5/database';
-import { Proposal, ProposalMember } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { Proposal, ProposalMember } from '@buildcore/interfaces';
 import { head } from 'lodash';
 import { createVoteTransaction } from './ProposalVoteService';
 
-export const executeSimpleVoting = async (
+export const executeSimpleVoting = (
   project: string,
   member: ProposalMember,
   proposal: Proposal,
@@ -16,7 +16,7 @@ export const executeSimpleVoting = async (
     uid: member.uid,
     voted: true,
     tranId: voteTransaction.uid,
-    values: [{ [values[0]]: weight }],
+    values: JSON.stringify({ [voteTransaction.uid]: { value: values[0], weight } }),
   };
   return {
     proposal: proposalUpdateData,
@@ -32,17 +32,16 @@ const getProposalUpdateDataAfterVote = (
 ) => {
   const prevAnswer = head(Object.keys(head(proposalMember.values) || {}));
   if (prevAnswer === values[0].toString()) {
-    return { uid: proposalMember.parentId };
+    return undefined;
   }
   const data = {
-    uid: proposalMember.parentId,
     results: {
-      voted: build5Db().inc(proposalMember.voted ? 0 : weight),
-      answers: { [`${values[0]}`]: build5Db().inc(weight) },
+      voted: database().inc(proposalMember.voted ? 0 : weight),
+      answers: { [`${values[0]}`]: database().inc(weight) },
     },
   };
   if (prevAnswer) {
-    data.results.answers[prevAnswer] = build5Db().inc(-weight);
+    data.results.answers[prevAnswer] = database().inc(-weight);
   }
   return data;
 };

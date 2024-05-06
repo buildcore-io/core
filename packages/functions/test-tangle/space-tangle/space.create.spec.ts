@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -6,7 +6,7 @@ import {
   Space,
   TangleRequestType,
   Transaction,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
@@ -41,12 +41,12 @@ describe('Create space', () => {
     );
 
     await wait(async () => {
-      const snap = await helper.memberCreditQuery.get<Transaction>();
+      const snap = await helper.memberCreditQuery.get();
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
     const snap = await helper.memberCreditQuery.get();
     const credit = snap[0] as Transaction;
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${credit.payload.response!.space}`);
+    const spaceDocRef = database().doc(COL.SPACE, credit.payload.response!.space as string);
     const space = <Space>await spaceDocRef.get();
     expect(space.name).toBe('Space A');
   });

@@ -1,4 +1,4 @@
-import { Bucket } from '@build-5/interfaces';
+import { Bucket } from '@buildcore/interfaces';
 import Joi, { SchemaMap } from 'joi';
 import { isEmpty } from 'lodash';
 import { isEmulatorEnv, isProdEnv } from '../../utils/config.utils';
@@ -9,7 +9,7 @@ const maxAddressLength = 255;
 export class CommonJoi {
   public static uid(required = true): Joi.StringSchema<string> {
     const base = Joi.string().alphanum().min(minAddressLength).max(maxAddressLength).lowercase();
-    return required ? base.required() : base;
+    return required ? base.required() : base.allow(null, '');
   }
   public static storageUrl(required = true): Joi.StringSchema<string> {
     const base = Joi.string().custom((url: string, helpers) => {
@@ -33,16 +33,13 @@ export const isStorageUrl = (url: string | undefined) =>
 export const BUCKET_BASE_URLS = {
   [Bucket.PROD]: 'https://' + Bucket.PROD + '/',
   [Bucket.TEST]: 'https://' + Bucket.TEST + '/',
-  [Bucket.DEV]: `https://firebasestorage.googleapis.com/v0/b/${Bucket.DEV}/o/`,
-  local: `http://127.0.0.1:9199/download/storage/v1/b/soonaverse-dev-custom-bucket/o/`,
+  [Bucket.DEV]: `https://storage.googleapis.com/download/storage/v1/b/${Bucket.DEV}/o/`,
 };
 
 const startsWithBaseUrl = (url: string) => {
   if (isEmulatorEnv()) {
     return (
-      url.startsWith(BUCKET_BASE_URLS[Bucket.DEV]) ||
-      url.startsWith(BUCKET_BASE_URLS[Bucket.TEST]) ||
-      url.startsWith(BUCKET_BASE_URLS['local'])
+      url.startsWith(BUCKET_BASE_URLS[Bucket.DEV]) || url.startsWith(BUCKET_BASE_URLS[Bucket.TEST])
     );
   }
   if (isProdEnv()) {
@@ -51,7 +48,7 @@ const startsWithBaseUrl = (url: string) => {
   return url.startsWith(BUCKET_BASE_URLS[Bucket.TEST]);
 };
 
-export const getBuild5FromUri = (url: string) =>
+export const getBuildcoreFromUri = (url: string) =>
   Object.values(BUCKET_BASE_URLS)
     .reduce((acc, act) => acc.replace(act, ''), url)
     .replace(/%2F/g, '/')

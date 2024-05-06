@@ -1,21 +1,21 @@
-import { build5Db } from '@build-5/database';
-import { COL, Collection, NftStake, SOON_PROJECT_ID, StakeType } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, Collection, NftStake, SOON_PROJECT_ID, StakeType } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { processExpiredNftStakes } from '../../src/cron/nftStake.cron';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 
 describe('Expired nft stake cron', () => {
+  beforeAll(() => {});
   it('Should process expired nft stake', async () => {
     const collection = getRandomEthAddress();
-    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${collection}`);
+    const collectionDocRef = database().doc(COL.COLLECTION, collection);
     await collectionDocRef.create({
       project: SOON_PROJECT_ID,
       uid: collection,
-      name: 'asd',
+      name: 'name',
       stakedNft: 2,
-    });
-
+    } as Collection);
     let nftStake: NftStake = {
       project: SOON_PROJECT_ID,
       uid: getRandomEthAddress(),
@@ -33,17 +33,13 @@ describe('Expired nft stake cron', () => {
       uid: getRandomEthAddress(),
       expiresAt: dateToTimestamp(dayjs().add(2, 'd')),
     };
-    await build5Db().doc(`${COL.NFT_STAKE}/${nonExpiredStake.uid}`).create(nonExpiredStake);
-
-    const stakeDocRef = build5Db().doc(`${COL.NFT_STAKE}/${nftStake.uid}`);
+    await database().doc(COL.NFT_STAKE, nonExpiredStake.uid).create(nonExpiredStake);
+    const stakeDocRef = database().doc(COL.NFT_STAKE, nftStake.uid);
     await stakeDocRef.create(nftStake);
-
     const promises = [processExpiredNftStakes(), processExpiredNftStakes()];
     await Promise.all(promises);
-
     const collectionData = <Collection>await collectionDocRef.get();
     expect(collectionData.stakedNft).toBe(1);
-
     nftStake = <NftStake>await stakeDocRef.get();
     expect(nftStake.expirationProcessed).toBe(true);
   });
