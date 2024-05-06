@@ -39,7 +39,7 @@ const deployServices = () => {
       --image gcr.io/$GOOGLE_CLOUD_PROJECT/functions \\
       --allow-unauthenticated \\
       --ingress=internal-and-cloud-load-balancing \\
-      --add-cloudsql-instances $GOOGLE_CLOUD_PROJECT:us-central1:$GOOGLE_CLOUD_PROJECT \\
+      --add-cloudsql-instances $GOOGLE_CLOUD_PROJECT:us-central1:buildcore \\
     `;
     if (options?.region) {
       command += `  --region=${options.region} \\\n`;
