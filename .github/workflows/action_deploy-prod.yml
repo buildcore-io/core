@@ -8,6 +8,7 @@ jobs:
   deploy_search:
     runs-on: ubuntu-latest
     environment: production
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -45,6 +46,7 @@ jobs:
   deploy_functions:
     runs-on: ubuntu-latest
     environment: production
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -71,6 +73,7 @@ jobs:
   deploy_to_npm:
     runs-on: ubuntu-latest
     environment: production
+    timeout-minutes: 30
     env:
       NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
     steps:
