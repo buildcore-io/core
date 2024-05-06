@@ -17,10 +17,8 @@ Look at the [Getting Started](../getting-started.mdx) section to learn more abou
 
 Most functions will trow a [WenError](../reference-api/modules.md#wenerror) if the fail.
 
-<!-- TODO: Uncomment once the repo is public
 :::tip
 
-You can find all examples of the SDK in our repo.
+You can find all examples of the SDK in our [repo](https://github.com/build-5/core/tree/master/packages/sdk/examples).
 
 :::
--->
