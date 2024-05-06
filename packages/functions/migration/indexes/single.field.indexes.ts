@@ -1,4 +1,5 @@
 import { Knex } from 'knex';
+import { isEmpty } from 'lodash';
 
 export const createSingleFieldIndexes = async (knex: Knex) => {
   const columns = await knex
@@ -26,13 +27,16 @@ export const createSingleFieldIndexes = async (knex: Knex) => {
       'udt_name as udt',
     );
 
-  const promises = columns.map(async ({ table, udt, column }) => {
-    if (column === 'uid' || !shouldCreateIndex(udt)) {
-      return;
-    }
-    await knex.raw(`CREATE INDEX IF NOT EXISTS ${table}_${column} on ${table} ("${column}");`);
-  });
-  await Promise.all(promises);
+  const indexes = columns
+    .map(({ table, udt, column }) => {
+      if (column === 'uid' || !shouldCreateIndex(udt)) {
+        return;
+      }
+      return `CREATE INDEX IF NOT EXISTS ${table}_${column} on ${table} ("${column}");`;
+    })
+    .filter((index) => !isEmpty(index))
+    .join(' ');
+  await knex.raw(indexes);
 };
 
 const shouldCreateIndex = (fieldType: string) => {

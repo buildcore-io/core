@@ -6,9 +6,9 @@ export async function up(knex: Knex): Promise<void> {
   await createTable(knex, COL.MEMBER, undefined, (table) => {
     baseRecord(knex, table);
     table.string('nonce');
-    table.string('name');
+    table.text('name');
     table.text('about');
-    table.string('avatarNft');
+    table.text('avatarNft');
     table.text('avatar');
     table.text('discord');
     table.text('twitter');

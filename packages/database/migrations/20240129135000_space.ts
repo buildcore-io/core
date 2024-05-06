@@ -5,7 +5,7 @@ import { baseRecord, baseSubCollection, createTable } from './20240129091246_com
 export async function up(knex: Knex): Promise<void> {
   await createTable(knex, COL.SPACE, undefined, (table) => {
     baseRecord(knex, table);
-    table.string('name');
+    table.text('name');
     table.text('about');
     table.boolean('open');
     table.boolean('tokenBased');

@@ -5,7 +5,7 @@ import { baseRecord, createTable, mintingData } from './20240129091246_common';
 export async function up(knex: Knex): Promise<void> {
   await createTable(knex, COL.NFT, undefined, (table) => {
     baseRecord(knex, table);
-    table.string('name');
+    table.text('name');
     table.text('description');
     table.string('collection');
     table.string('owner');
