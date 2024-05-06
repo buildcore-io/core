@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { WEN_FUNC } from '@build-5/interfaces';
+import { WEN_FUNC } from '@buildcore/interfaces';
 import express from 'express';
 import { AnySchema, ValidationOptions } from 'joi';
 import { get } from 'lodash';
 import { Context } from '../../controls/common';
 import { WEN_FUNC_SCALE } from '../../scale.settings';
+import { logger } from '../../utils/logger';
 import { CloudFunctions, RuntimeOptions } from '../common';
 import { auth } from './middlewares';
 
@@ -49,11 +50,15 @@ export const onRequest = (params: OnRequest) => {
       const result = await params.handler(context);
       res.send(result || {});
     } catch (error) {
-      res.status(get(error, 'httpErrorCode.status', 400));
+      const code = get(error, 'eCode', 500);
+      if (code === 500) {
+        logger.error(error);
+      }
+      res.status(get(error, 'status', 500));
       res.send({
-        code: get(error, 'details.code', 0),
-        key: get(error, 'details.key', ''),
-        message: get(error, 'message', ''),
+        code,
+        key: get(error, 'eKey', ''),
+        message: get(error, 'eMessage', code === 500 ? 'Internal server error' : ''),
       });
     }
   };

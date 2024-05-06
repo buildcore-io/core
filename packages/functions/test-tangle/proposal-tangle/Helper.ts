@@ -1,4 +1,4 @@
-import { build5Db, IQuery } from '@build-5/database';
+import { database, IQuery } from '@buildcore/database';
 import {
   COL,
   Member,
@@ -9,12 +9,14 @@ import {
   ProposalType,
   SOON_PROJECT_ID,
   Space,
+  Stake,
   SUB_COL,
   TangleRequestType,
+  Token,
   TokenStatus,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
@@ -22,22 +24,21 @@ import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { createMember, createSpace, wait } from '../../test/controls/common';
-import { getWallet } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { getWallet, testEnv } from '../../test/set-up';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
 
 export class Helper {
   constructor(public readonly type = ProposalType.NATIVE) {}
 
-  public walletSpy: any = {} as any;
   public guardian: string = '';
   public space: Space = {} as any;
   public guardianAddress: AddressDetails = {} as any;
   public walletService: Wallet = {} as any;
   public tangleOrder: Transaction = {} as any;
   public network = Network.RMS;
-  public guardianCreditQuery: IQuery = {} as any;
+  public guardianCreditQuery: IQuery<any, any> = {} as any;
   public tokenId = '';
   public proposalUid = '';
 
@@ -47,18 +48,17 @@ export class Helper {
   };
 
   public beforeEach = async () => {
-    this.walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    this.guardian = await createMember(this.walletSpy);
-    const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${this.guardian}`);
+    this.guardian = await testEnv.createMember();
+    const guardianDocRef = database().doc(COL.MEMBER, this.guardian);
     const guardianData = <Member>await guardianDocRef.get();
     const guardianBech32 = getAddress(guardianData, this.network);
     this.guardianAddress = await this.walletService.getAddressDetails(guardianBech32);
 
-    this.space = await createSpace(this.walletSpy, this.guardian);
+    this.space = await testEnv.createSpace(this.guardian);
 
     this.tokenId = wallet.getRandomEthAddress();
-    await build5Db()
-      .doc(`${COL.TOKEN}/${this.tokenId}`)
+    await database()
+      .doc(COL.TOKEN, this.tokenId)
       .create({
         project: SOON_PROJECT_ID,
         uid: this.tokenId,
@@ -66,16 +66,17 @@ export class Helper {
         status: TokenStatus.MINTED,
         mintingData: { tokenId: MINTED_TOKEN_ID },
         approved: true,
-      });
+      } as Token);
 
-    const distributionDocRef = build5Db()
-      .collection(COL.TOKEN)
-      .doc(this.tokenId)
-      .collection(SUB_COL.DISTRIBUTION)
-      .doc(this.guardian);
-    await distributionDocRef.create({});
+    const distributionDocRef = database().doc(
+      COL.TOKEN,
+      this.tokenId,
+      SUB_COL.DISTRIBUTION,
+      this.guardian,
+    );
+    await distributionDocRef.create({ parentId: this.tokenId, parentCol: COL.TOKEN });
 
-    this.guardianCreditQuery = build5Db()
+    this.guardianCreditQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST)
       .where('member', '==', this.guardian);
@@ -135,13 +136,13 @@ export class Helper {
       uid: wallet.getRandomEthAddress(),
       token: this.tokenId,
       expirationProcessed: false,
-    };
-    const docRef = build5Db().doc(`${COL.STAKE}/${stake.uid}`);
+    } as Stake;
+    const docRef = database().doc(COL.STAKE, stake.uid);
     await docRef.create(stake);
   };
 
   public assertProposalWeights = async (total: number, voted: number) => {
-    const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${this.proposalUid}`);
+    const proposalDocRef = database().doc(COL.PROPOSAL, this.proposalUid);
     const proposal = <Proposal>await proposalDocRef.get();
     expect(+proposal.results?.total.toFixed(0)).toBe(total);
     expect(+proposal.results?.voted.toFixed(0)).toBe(voted);
@@ -152,34 +153,29 @@ export class Helper {
     weight: number,
     answer: number,
   ) => {
-    const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${this.proposalUid}`);
-    const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(member);
+    const proposalMemberDocRef = database().doc(
+      COL.PROPOSAL,
+      this.proposalUid,
+      SUB_COL.MEMBERS,
+      member,
+    );
     const proposalMember = <ProposalMember>await proposalMemberDocRef.get();
     expect(+proposalMember.weightPerAnswer![answer].toFixed(0)).toBe(weight);
   };
 
   public updatePropoasalDates = (startDate: dayjs.Dayjs, endDate: dayjs.Dayjs) =>
-    build5Db()
-      .doc(`${COL.PROPOSAL}/${this.proposalUid}`)
-      .set(
-        {
-          settings: {
-            startDate: dateToTimestamp(startDate),
-            endDate: dateToTimestamp(endDate),
-          },
-        },
-        true,
-      );
+    database().doc(COL.PROPOSAL, this.proposalUid).upsert({
+      settings_startDate: startDate.toDate(),
+      settings_endDate: endDate.toDate(),
+    });
 
   public updateVoteTranCreatedOn = (voteTransactionId: string, createdOn: dayjs.Dayjs) =>
-    build5Db()
-      .doc(`${COL.TRANSACTION}/${voteTransactionId}`)
-      .update({ createdOn: dateToTimestamp(createdOn) });
+    database().doc(COL.TRANSACTION, voteTransactionId).update({ createdOn: createdOn.toDate() });
 
   public getVoteTransactionForCredit = async (creditId: string) => {
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
-      .where('payload.creditId', '==', creditId)
+      .where('payload_creditId', '==', creditId)
       .where('type', '==', TransactionType.VOTE);
     const voteTranSnap = await query.get();
     return voteTranSnap[0] as Transaction;

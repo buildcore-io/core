@@ -10,7 +10,7 @@ const db = getFirestore();
 const nfts: any = {};
 db.collection('transaction')
   .where('type', '==', 'BILL_PAYMENT')
-  .where('payload.royalty', '==', false)
+  .where('payload_royalty', '==', false)
   .get()
   .then(async (ss) => {
     for (const t of ss.docs) {

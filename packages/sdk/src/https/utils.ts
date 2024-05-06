@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Timestamp } from '@build-5/interfaces';
+import { Timestamp } from '@buildcore/interfaces';
 import { isEqual } from 'lodash';
 
 export const processObjectArray = <T>(array: any[]) =>
@@ -22,8 +22,8 @@ const processValue = (value: any): any => {
   }
   if (value && typeof value === 'object') {
     const keys = Object.keys(value);
-    if (isEqual(keys, ['_seconds', '_nanoseconds'])) {
-      return new Timestamp(value._seconds, value._nanoseconds);
+    if (isEqual(keys, ['seconds', 'nanoseconds'])) {
+      return new Timestamp(value.seconds, value.nanoseconds);
     }
     return processObject(value);
   }
@@ -32,7 +32,7 @@ const processValue = (value: any): any => {
 
 export const randomString = (length = 16) => {
   let result = '';
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0154326789';
   for (let i = 0; i < length; i++) {
     const randomIndex = Math.floor(Math.random() * characters.length);
     result += characters.charAt(randomIndex);

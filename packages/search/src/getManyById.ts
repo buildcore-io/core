@@ -1,5 +1,12 @@
-import { build5Db } from '@build-5/database';
-import { Dataset, GetManyByIdRequest, QUERY_MAX_LENGTH, Subset } from '@build-5/interfaces';
+import { BaseRecord, IDocument, Update, database } from '@buildcore/database';
+import {
+  COL,
+  Dataset,
+  GetManyByIdRequest,
+  QUERY_MAX_LENGTH,
+  SUB_COL,
+  Subset,
+} from '@buildcore/interfaces';
 import Joi from 'joi';
 import { combineLatest, map } from 'rxjs';
 import {
@@ -23,10 +30,10 @@ const getManyByIdSchema = Joi.object({
   subsetIds: Joi.array().items(uidSchema).min(1).max(QUERY_MAX_LENGTH).optional(),
 });
 
-export const getManyById = async (url: string) => {
+export const getManyById = async (url: string, isLive: boolean) => {
   const body = getQueryParams<GetManyByIdRequest>(url, getManyByIdSchema);
 
-  const observables = getQueries(body).map(documentToObservable<Record<string, unknown>>);
+  const observables = getQueries(body).map((b) => documentToObservable(b, isLive));
   return combineLatest(observables).pipe(
     map((all) => all.flat().filter((record) => record && !isHiddenNft(body.dataset, record))),
   );
@@ -35,11 +42,16 @@ export const getManyById = async (url: string) => {
 const getQueries = (body: GetManyByIdRequest) =>
   body.setIds.map((setId, i) => {
     if (body.subset && body.subsetIds?.[i]) {
-      return build5Db()
-        .collection(body.dataset)
-        .doc(setId)
-        .collection(body.subset)
-        .doc(body.subsetIds[i]);
+      return database().doc(
+        body.dataset as unknown as COL,
+        setId,
+        body.subset as unknown as SUB_COL,
+        body.subsetIds[i],
+      )! as unknown as IDocument<any, BaseRecord, Update>;
     }
-    return build5Db().doc(`${body.dataset}/${setId}`);
+    return database().doc(body.dataset as unknown as COL, setId)! as IDocument<
+      any,
+      BaseRecord,
+      Update
+    >;
   });

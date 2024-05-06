@@ -1,5 +1,5 @@
-import { Dataset, Member } from '@build-5/interfaces';
-import { Build5, SoonaverseApiKey, https } from '@build-5/sdk';
+import { Dataset, Member } from '@buildcore/interfaces';
+import { Buildcore, SoonaverseApiKey, https } from '@buildcore/sdk';
 import { CoinType, SecretManager, utf8ToHex } from '@iota/sdk';
 import { AddressDetails } from './secret';
 
@@ -11,8 +11,8 @@ import { AddressDetails } from './secret';
  * @returns
  */
 export const walletSign = async (uid: string, address: AddressDetails) => {
-  const member = await https(Build5.TEST)
-    .project(SoonaverseApiKey[Build5.TEST])
+  const member = await https(Buildcore.TEST)
+    .project(SoonaverseApiKey[Buildcore.TEST])
     .dataset(Dataset.MEMBER)
     .id(uid)
     .get();

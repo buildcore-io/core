@@ -55,7 +55,7 @@ export interface AwardCreateTangleRequest {
    */
   requestType: 'AWARD_CREATE';
   /**
-   * Build5 id of the space
+   * Buildcore id of the space
    */
   space: string;
 }

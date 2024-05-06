@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   CreditPaymentReason,
@@ -8,10 +8,10 @@ import {
   TokenTradeOrder,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
-import { cancelTradeOrder } from '../../src/runtime/firebase/token/trading';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+  WEN_FUNC,
+} from '@buildcore/interfaces';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { Helper } from './Helper';
 
@@ -30,20 +30,20 @@ describe('Token minting', () => {
     const sellOrder = await helper.createSellTradeOrder(5, MIN_IOTA_AMOUNT);
     const buyOrder = await helper.createBuyOrder();
 
-    const query = build5Db().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer);
+    const query = database().collection(COL.TOKEN_MARKET).where('owner', '==', helper.buyer);
     await wait(async () => {
       const orders = (await query.get()).map((d) => <TokenTradeOrder>d);
       return orders.length === 1 && orders[0].fulfilled === 5;
     });
 
     const buy = <TokenTradeOrder>(await query.get())[0];
-    mockWalletReturnValue(helper.walletSpy, helper.buyer!, { uid: buy.uid });
-    await testEnv.wrap(cancelTradeOrder)({});
+    mockWalletReturnValue(helper.buyer!, { uid: buy.uid });
+    await testEnv.wrap<TokenTradeOrder>(WEN_FUNC.cancelTradeOrder);
 
-    const billPaymentsQuery = build5Db()
+    const billPaymentsQuery = database()
       .collection(COL.TRANSACTION)
-      .where('member', 'in', [helper.seller, helper.buyer])
-      .where('type', '==', TransactionType.BILL_PAYMENT);
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .whereIn('member', [helper.seller, helper.buyer]);
     await wait(async () => {
       const snap = await billPaymentsQuery.get();
       return snap.length === 4;
@@ -55,7 +55,7 @@ describe('Token minting', () => {
     )!;
     expect(paymentToSeller.payload.amount).toBe(4727600);
     expect(paymentToSeller.payload.sourceAddress).toBe(buyOrder.payload.targetAddress);
-    expect(paymentToSeller.payload.storageReturn).toBeUndefined();
+    expect(paymentToSeller.payload.storageReturn).toEqual({});
 
     const royaltyOnePayment = billPayments.find((bp) => bp.payload.amount === 159300)!;
     expect(royaltyOnePayment.payload.storageReturn!.address).toBe(helper.sellerAddress!.bech32);
@@ -77,7 +77,7 @@ describe('Token minting', () => {
     expect(paymentToBuyer.payload.storageReturn!.amount).toBe(53800);
     expect(paymentToBuyer.payload.storageReturn!.address).toBe(helper.sellerAddress?.bech32);
 
-    const sellerCreditSnap = await build5Db()
+    const sellerCreditSnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller)
       .where('type', '==', TransactionType.CREDIT)
@@ -86,7 +86,7 @@ describe('Token minting', () => {
     const sellerCredit = sellerCreditSnap.map((d) => d as Transaction)[0];
     expect(sellerCredit.payload.amount).toBe(49600);
 
-    const buyerCreditSnap = await build5Db()
+    const buyerCreditSnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer)
       .where('type', '==', TransactionType.CREDIT)

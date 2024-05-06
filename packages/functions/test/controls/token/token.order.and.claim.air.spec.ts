@@ -1,40 +1,27 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
+  Access,
   COL,
   MIN_IOTA_AMOUNT,
   NetworkAddress,
   SOON_PROJECT_ID,
-  Space,
   SUB_COL,
+  Space,
   Token,
-  TokenDistribution,
   TokenDropStatus,
   TokenStatus,
-} from '@build-5/interfaces';
+  Transaction,
+  WEN_FUNC,
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
-import {
-  airdropToken,
-  claimAirdroppedToken,
-  orderToken,
-} from '../../../src/runtime/firebase/token/base';
-import { dateToTimestamp, serverTime } from '../../../src/utils/dateTime.utils';
+import { serverTime } from '../../../src/utils/dateTime.utils';
 import * as wallet from '../../../src/utils/wallet.utils';
-import { MEDIA, testEnv } from '../../set-up';
-import {
-  createMember,
-  createSpace,
-  getRandomSymbol,
-  mockWalletReturnValue,
-  submitMilestoneFunc,
-  tokenProcessed,
-  wait,
-} from '../common';
+import { MEDIA, mockWalletReturnValue, testEnv } from '../../set-up';
+import { getRandomSymbol, submitMilestoneFunc, tokenProcessed, wait } from '../common';
 
-let walletSpy: any;
-
-const submitTokenOrderFunc = async <T>(spy: string, address: NetworkAddress, params: T) => {
-  mockWalletReturnValue(spy, address, params);
-  const order = await testEnv.wrap(orderToken)({});
+const submitTokenOrderFunc = async <T>(address: NetworkAddress, params: T) => {
+  mockWalletReturnValue(address, params);
+  const order = await testEnv.wrap<Transaction>(WEN_FUNC.orderToken);
   expect(order?.createdOn).toBeDefined();
   return order;
 };
@@ -43,14 +30,11 @@ describe('Order and claim airdropped token test', () => {
   let memberAddress: NetworkAddress;
   let space: Space;
   let token: Token;
-
   beforeEach(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    memberAddress = await createMember(walletSpy);
-    space = await createSpace(walletSpy, memberAddress);
-
+    memberAddress = await testEnv.createMember();
+    space = await testEnv.createSpace(memberAddress);
     const tokenId = wallet.getRandomEthAddress();
-    token = {
+    const tokenUpsert = {
       project: SOON_PROJECT_ID,
       symbol: getRandomSymbol(),
       totalSupply: 10,
@@ -58,64 +42,62 @@ describe('Order and claim airdropped token test', () => {
       rejected: false,
       icon: MEDIA,
       overviewGraphics: MEDIA,
-      updatedOn: serverTime(),
-      createdOn: serverTime(),
+      updatedOn: serverTime().toDate(),
+      createdOn: serverTime().toDate(),
       space: space.uid,
       uid: tokenId,
       pricePerToken: MIN_IOTA_AMOUNT,
-      allocations: [
+      allocations: JSON.stringify([
         { title: 'Public sale', isPublicSale: true, percentage: 50 },
         { title: 'Private', percentage: 50 },
-      ],
+      ]),
       createdBy: memberAddress,
       name: 'MyToken',
       saleLength: 86400000 * 2,
-      saleStartDate: dateToTimestamp(dayjs().subtract(1, 'd').toDate()),
+      saleStartDate: dayjs().subtract(1, 'd').toDate(),
       links: [],
       status: TokenStatus.AVAILABLE,
       totalDeposit: 0,
       totalAirdropped: 0,
       termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
-      access: 0,
+      access: Access.OPEN,
       decimals: 6,
     };
-    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).set(token);
-
+    await database().doc(COL.TOKEN, tokenId).upsert(tokenUpsert);
+    token = (await database().doc(COL.TOKEN, tokenId).get())!;
     const airdropRequest = {
       token: token.uid,
       drops: [{ count: 5, recipient: memberAddress, vestingAt: dayjs().toDate() }],
     };
-    mockWalletReturnValue(walletSpy, memberAddress, airdropRequest);
-    await testEnv.wrap(airdropToken)({});
+    mockWalletReturnValue(memberAddress, airdropRequest);
+    await testEnv.wrap(WEN_FUNC.airdropToken);
   });
 
   it('Should order and claim dropped', async () => {
-    const distributionDocRef = build5Db().doc(
-      `${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`,
+    const distributionDocRef = database().doc(
+      COL.TOKEN,
+      token.uid,
+      SUB_COL.DISTRIBUTION,
+      memberAddress,
     );
-    let distribution = <TokenDistribution>await distributionDocRef.get();
-    expect(distribution.totalUnclaimedAirdrop).toBe(5);
-
-    const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
+    let distribution = await distributionDocRef.get();
+    expect(distribution!.totalUnclaimedAirdrop).toBe(5);
+    const order = await submitTokenOrderFunc(memberAddress, { token: token.uid });
     await submitMilestoneFunc(order, 5 * token.pricePerToken);
-
-    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid });
-    const claimOrder = await testEnv.wrap(claimAirdroppedToken)({});
+    mockWalletReturnValue(memberAddress, { token: token.uid });
+    const claimOrder = await testEnv.wrap<Transaction>(WEN_FUNC.claimAirdroppedToken);
     await submitMilestoneFunc(claimOrder);
-
     await wait(async () => {
-      const snap = await build5Db()
+      const snap = await database()
         .collection(COL.AIRDROP)
         .where('member', '==', memberAddress)
         .where('status', '==', TokenDropStatus.CLAIMED)
         .get();
       return snap.length === 1;
     });
-
-    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.PROCESSING });
+    await database().doc(COL.TOKEN, token.uid).update({ status: TokenStatus.PROCESSING });
     await tokenProcessed(token.uid, 1, true);
-
-    distribution = <TokenDistribution>await distributionDocRef.get();
+    distribution = (await distributionDocRef.get())!;
     expect(distribution.tokenClaimed).toBe(5);
     expect(distribution.totalPaid).toBe(5 * token.pricePerToken);
     expect(distribution.tokenOwned).toBe(10);

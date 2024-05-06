@@ -8,7 +8,7 @@
  */
 export interface AwardCancelRequest {
   /**
-   * Build5 id of the award.
+   * Buildcore id of the award.
    */
   uid: string;
 }

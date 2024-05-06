@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
-import { COL, MIN_IOTA_AMOUNT, Network, Nft } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, MIN_IOTA_AMOUNT, Network, Nft, Transaction, WEN_FUNC } from '@buildcore/interfaces';
 import {
   Ed25519Address,
   NftAddress,
@@ -13,14 +13,13 @@ import {
   Utils,
 } from '@iota/sdk';
 import { cloneDeep } from 'lodash';
-import { depositNft } from '../../src/runtime/firebase/nft';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { packBasicOutput } from '../../src/utils/basic-output.utils';
 import { createUnlock, packEssence, submitBlock } from '../../src/utils/block.utils';
 import { EMPTY_NFT_ID, createNftOutput } from '../../src/utils/collection-minting-utils/nft.utils';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { getWallet, testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { getWallet, mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitLedgerInclusionState, requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
@@ -49,7 +48,7 @@ describe('Collection minting', () => {
         description: 'test',
       },
     );
-    const query = build5Db().collection(COL.NFT).where('owner', '==', helper.guardian);
+    const query = database().collection(COL.NFT).where('owner', '==', helper.guardian);
     await wait(async () => {
       const snap = await query.get();
       return snap.length === 1;
@@ -70,7 +69,7 @@ describe('Collection minting', () => {
         description: 'test',
       },
     );
-    const query = build5Db().collection(COL.NFT).where('owner', '==', helper.guardian);
+    const query = database().collection(COL.NFT).where('owner', '==', helper.guardian);
     await wait(async () => {
       const snap = await query.get();
       return snap.length === 1;
@@ -105,11 +104,11 @@ describe('Collection minting', () => {
       fail();
     }
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, { network: helper.network });
-    const depositOrder = await testEnv.wrap(depositNft)({});
+    mockWalletReturnValue(helper.guardian!, { network: helper.network });
+    const depositOrder = await testEnv.wrap<Transaction>(WEN_FUNC.depositNft);
     await helper.sendNftToAddress(
       helper.guardianAddress!,
-      depositOrder.payload.targetAddress,
+      depositOrder.payload.targetAddress!,
       undefined,
       nftId,
     );
@@ -144,7 +143,7 @@ const mintCustomCollection = async (address: AddressDetails, metadata: any) => {
 
   const payload = new TransactionPayload(essence, unlocks);
   const blockId = await submitBlock(wallet, essence, unlocks);
-  await build5Db().doc(`blocks/${blockId}`).create({ blockId });
+  await testEnv.createBlock(blockId);
 
   const collectionOutputId = Utils.computeOutputId(Utils.transactionId(payload), 0);
   const collectionId = Utils.computeNftId(collectionOutputId);
@@ -200,7 +199,7 @@ const mintNft = async (address: AddressDetails, metadata: any) => {
 
   const payload = new TransactionPayload(essence, unlocks);
   const blockId = await submitBlock(wallet, essence, unlocks);
-  await build5Db().doc(`blocks/${blockId}`).create({ blockId });
+  await testEnv.createBlock(blockId);
 
   const nftOutputId = Utils.computeOutputId(Utils.transactionId(payload), 1);
   const nftId = Utils.computeNftId(nftOutputId);

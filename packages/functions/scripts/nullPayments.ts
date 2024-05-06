@@ -1,4 +1,4 @@
-import { DEF_WALLET_PAY_IN_PROGRESS, SUB_COL } from '@build-5/interfaces';
+import { DEF_WALLET_PAY_IN_PROGRESS, SUB_COL } from '@buildcore/interfaces';
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import serviceAccount from './serviceAccountKeyProd.json';
@@ -9,8 +9,8 @@ initializeApp({
 
 const db = getFirestore();
 db.collection('transaction')
-  .where('payload.walletReference.chainReference', '==', null)
-  .where('payload.walletReference.error', '==', 'Error: You must specify some inputs')
+  .where('payload_walletReference.chainReference', '==', null)
+  .where('payload_walletReference.error', '==', 'Error: You must specify some inputs')
   .get()
   .then(async (ss) => {
     for (const t of ss.docs) {

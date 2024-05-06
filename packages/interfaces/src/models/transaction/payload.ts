@@ -79,7 +79,7 @@ export interface TransactionPayload {
   /**
    * A reference to the source order or payment
    */
-  sourceTransaction?: string | string[];
+  sourceTransaction?: string[];
   /**
    * Specifies the processing type
    */
@@ -298,17 +298,21 @@ export interface TransactionPayload {
    */
   customMetadata?: { [key: string]: string };
   /**
-   * Build5 stake id
+   * Buildcore stake id
    */
   stake?: string;
   /**
-   * Build5 award id
+   * Buildcore award id
    */
   award?: NetworkAddress | null;
   /**
    * Legacy award fund request id
    */
   legacyAwardFundRequestId?: NetworkAddress;
+  /**
+   * Number of legacy awards being funded by this transaction
+   */
+  legacyAwardsBeeingFunded?: number;
   /**
    * Length of the stake in weeks
    */
@@ -331,7 +335,7 @@ export interface TransactionPayload {
 
   // TransactionPayloadType.BADGE
   /**
-   * Build5 id of the token reward
+   * Buildcore id of the token reward
    */
   tokenReward?: number;
   /**
@@ -345,7 +349,7 @@ export interface TransactionPayload {
 
   // TransactionPayloadType.PROPOSAL_VOTE
   /**
-   * Build5 id of the proposal
+   * Buildcore id of the proposal
    */
   proposalId?: NetworkAddress;
   /**
@@ -363,7 +367,7 @@ export interface TransactionPayload {
    */
   storageReturn?: StorageReturn;
   /**
-   * Build5 id of the airdrop
+   * Buildcore id of the airdrop
    */
   airdropId?: NetworkAddress;
   /**
@@ -372,7 +376,7 @@ export interface TransactionPayload {
   walletReference?: WalletResult;
 
   /**
-   * Build5 of the minted NFTs
+   * Buildcore of the minted NFTs
    */
   nfts?: NetworkAddress[];
 
@@ -408,7 +412,7 @@ export interface TransactionPayload {
    */
   dependsOnBillPayment?: boolean;
   /**
-   * Build5 path to the transaction
+   * Buildcore path to the transaction
    */
   milestoneTransactionPath?: string;
   /**
@@ -432,7 +436,7 @@ export interface TransactionPayload {
    */
   votes?: number[];
   /**
-   * Build5 transaction id of a vote
+   * Buildcore transaction id of a vote
    */
   creditId?: NetworkAddress;
   /**
@@ -444,11 +448,11 @@ export interface TransactionPayload {
    */
   outputConsumedOn?: Timestamp;
   /**
-   * Build5 ids of the stakes
+   * Buildcore ids of the stakes
    */
   stakes?: NetworkAddress[];
   /**
-   * Build5 ids of the stake rewards
+   * Buildcore ids of the stake rewards
    */
   stakeReward?: NetworkAddress;
 
@@ -467,7 +471,7 @@ export interface TransactionPayload {
   lockCollectionNft?: boolean;
 
   /**
-   * Build5 if of the stamp
+   * Buildcore if of the stamp
    */
   stamp?: string;
   /**
@@ -476,7 +480,7 @@ export interface TransactionPayload {
   tokenTradeOderTargetAddress?: string;
 
   /**
-   * Build5 id of the auction
+   * Buildcore id of the auction
    */
   auction?: string;
 
@@ -494,5 +498,6 @@ export interface TransactionPayload {
    */
   nftOrders?: NftBulkOrder[];
 
+  outputId?: string;
   swap?: string;
 }

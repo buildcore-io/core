@@ -12,7 +12,7 @@ export interface ImportMintedTokenRequest {
    */
   network: 'iota' | 'smr' | 'atoi' | 'rms';
   /**
-   * Build5 space id to which the token should be associated with.
+   * Buildcore space id to which the token should be associated with.
    */
   space: string;
   /**

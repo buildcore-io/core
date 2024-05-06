@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { FirestoreDocEvent } from '../../triggers/common';
+import { COL, SUB_COL } from '@buildcore/interfaces';
+import { PgDocEvent } from '../../triggers/common';
 import { CloudFunctions, RuntimeOptions } from '../common';
 
 export enum TriggeredFunctionType {
@@ -12,8 +13,9 @@ export enum TriggeredFunctionType {
 export class TriggeredFunction extends CloudFunctions {
   constructor(
     public readonly type: TriggeredFunctionType,
-    public readonly document: string,
-    public readonly handler: (event: FirestoreDocEvent<any>) => Promise<void>,
+    public readonly col: COL,
+    public readonly subCol: SUB_COL | undefined = undefined,
+    public readonly handler: (event: PgDocEvent<any>) => Promise<void>,
     options?: RuntimeOptions,
   ) {
     super({
@@ -24,31 +26,37 @@ export class TriggeredFunction extends CloudFunctions {
 }
 
 export const onCreate = ({
-  document,
+  col,
+  subCol,
   handler,
   options,
 }: {
-  document: string;
-  handler: (event: FirestoreDocEvent<any>) => Promise<void>;
+  col: COL;
+  subCol?: SUB_COL;
+  handler: (event: PgDocEvent<any>) => Promise<void>;
   options?: RuntimeOptions;
-}) => new TriggeredFunction(TriggeredFunctionType.ON_CREATE, document, handler, options);
+}) => new TriggeredFunction(TriggeredFunctionType.ON_CREATE, col, subCol, handler, options);
 
 export const onUpdate = ({
-  document,
+  col,
+  subCol,
   handler,
   options,
 }: {
-  document: string;
-  handler: (event: FirestoreDocEvent<any>) => Promise<void>;
+  col: COL;
+  subCol?: SUB_COL;
+  handler: (event: PgDocEvent<any>) => Promise<void>;
   options?: RuntimeOptions;
-}) => new TriggeredFunction(TriggeredFunctionType.ON_UPDATE, document, handler, options);
+}) => new TriggeredFunction(TriggeredFunctionType.ON_UPDATE, col, subCol, handler, options);
 
 export const onWrite = ({
-  document,
+  col,
+  subCol,
   handler,
   options,
 }: {
-  document: string;
-  handler: (event: FirestoreDocEvent<any>) => Promise<void>;
+  col: COL;
+  subCol?: SUB_COL;
+  handler: (event: PgDocEvent<any>) => Promise<void>;
   options?: RuntimeOptions;
-}) => new TriggeredFunction(TriggeredFunctionType.ON_WRITE, document, handler, options);
+}) => new TriggeredFunction(TriggeredFunctionType.ON_WRITE, col, subCol, handler, options);

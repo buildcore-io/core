@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -11,14 +11,14 @@ import {
   Transaction,
   TransactionPayloadType,
   TransactionType,
-} from '@build-5/interfaces';
+  WEN_FUNC,
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { getWallet, testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { getWallet, mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
@@ -31,33 +31,33 @@ describe('Base token trading', () => {
   });
 
   it('Should fulfill sell order', async () => {
-    mockWalletReturnValue(helper.walletSpy, helper.seller!.uid, {
+    mockWalletReturnValue(helper.seller!.uid, {
       symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 2,
       type: TokenTradeOrderType.SELL,
     });
-    const sellOrder = await testEnv.wrap(tradeToken)({});
+    const sellOrder = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await requestFundsFromFaucet(
       helper.sourceNetwork,
       sellOrder.payload.targetAddress,
       MIN_IOTA_AMOUNT,
     );
 
-    mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
+    mockWalletReturnValue(helper.buyer!.uid, {
       symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 2,
       type: TokenTradeOrderType.BUY,
     });
-    const buyOrder = await testEnv.wrap(tradeToken)({});
+    const buyOrder = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await requestFundsFromFaucet(
       helper.targetNetwork,
       buyOrder.payload.targetAddress,
       2 * MIN_IOTA_AMOUNT,
     );
 
-    const sellQuery = build5Db()
+    const sellQuery = database()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.seller!.uid);
     await wait(async () => {
@@ -68,7 +68,7 @@ describe('Base token trading', () => {
     const sell = <TokenTradeOrder>(await sellQuery.get())[0];
     expect(sell.tokenStatus).toBe(TokenStatus.BASE);
 
-    const buyQuery = build5Db()
+    const buyQuery = database()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.buyer!.uid);
     await wait(async () => {
@@ -78,7 +78,7 @@ describe('Base token trading', () => {
     const buy = <TokenTradeOrder>(await buyQuery.get())[0];
     expect(buy.tokenStatus).toBe(TokenStatus.BASE);
 
-    const purchaseQuery = build5Db()
+    const purchaseQuery = database()
       .collection(COL.TOKEN_PURCHASE)
       .where('sell', '==', sell.uid)
       .where('buy', '==', buy.uid);
@@ -94,9 +94,9 @@ describe('Base token trading', () => {
     expect(purchase.targetNetwork).toBe(helper.targetNetwork);
     expect(purchase.tokenStatus).toBe(TokenStatus.BASE);
     expect(purchase.sellerTier).toBe(0);
-    expect(purchase.sellerTokenTradingFeePercentage).toBeNull();
+    expect(purchase.sellerTokenTradingFeePercentage).toBeUndefined();
 
-    const sellerBillPaymentsSnap = await build5Db()
+    const sellerBillPaymentsSnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller!.uid)
       .where('type', '==', TransactionType.BILL_PAYMENT)
@@ -122,14 +122,14 @@ describe('Base token trading', () => {
       expect(sellerBillPayment.payload.tokenSymbol).toBe(helper.token!.symbol);
       expect(sellerBillPayment.payload.type).toBe(TransactionPayloadType.BASE_TOKEN_TRADE);
     });
-    const sellerCreditSnap = await build5Db()
+    const sellerCreditSnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller!.uid)
       .where('type', '==', TransactionType.CREDIT)
       .get();
     expect(sellerCreditSnap.length).toBe(0);
 
-    const buyerBillPaymentsSnap = await build5Db()
+    const buyerBillPaymentsSnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer!.uid)
       .where('type', '==', TransactionType.BILL_PAYMENT)
@@ -172,7 +172,7 @@ describe('Base token trading', () => {
           bp.payload.targetAddress === getAddress(helper.seller, helper.targetNetwork),
       ),
     ).toBeDefined();
-    const buyerCreditnap = await build5Db()
+    const buyerCreditnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer!.uid)
       .where('type', '==', TransactionType.CREDIT)
@@ -194,13 +194,13 @@ describe('Base token trading', () => {
     const date = dayjs().add(2, 'h').millisecond(0).toDate();
     const expiresAt = dateToTimestamp(date);
 
-    mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
+    mockWalletReturnValue(helper.buyer!.uid, {
       symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 2,
       type: TokenTradeOrderType.BUY,
     });
-    const buyOrder = await testEnv.wrap(tradeToken)({});
+    const buyOrder = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await requestFundsFromFaucet(
       helper.targetNetwork,
       buyOrder.payload.targetAddress,
@@ -208,7 +208,7 @@ describe('Base token trading', () => {
       expiresAt,
     );
 
-    const buyQuery = build5Db()
+    const buyQuery = database()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.buyer!.uid);
     await wait(async () => {
@@ -221,13 +221,13 @@ describe('Base token trading', () => {
   });
 
   it('Should not credit buy order with expiration unlock, custom amount', async () => {
-    mockWalletReturnValue(helper.walletSpy, helper.seller!.uid, {
+    mockWalletReturnValue(helper.seller!.uid, {
       symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 2,
       type: TokenTradeOrderType.SELL,
     });
-    const sellOrder = await testEnv.wrap(tradeToken)({});
+    const sellOrder = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await requestFundsFromFaucet(
       helper.sourceNetwork,
       sellOrder.payload.targetAddress,
@@ -237,13 +237,13 @@ describe('Base token trading', () => {
     const date = dayjs().add(2, 'h').millisecond(0).toDate();
     const expiresAt = dateToTimestamp(date) as Timestamp;
 
-    mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
+    mockWalletReturnValue(helper.buyer!.uid, {
       symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 2,
       type: TokenTradeOrderType.BUY,
     });
-    const buyOrder = await testEnv.wrap(tradeToken)({});
+    const buyOrder = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await requestFundsFromFaucet(
       helper.targetNetwork,
       buyOrder.payload.targetAddress,
@@ -251,24 +251,24 @@ describe('Base token trading', () => {
       expiresAt,
     );
 
-    const buyQuery = build5Db()
+    const buyQuery = database()
       .collection(COL.TOKEN_MARKET)
       .where('type', '==', TokenTradeOrderType.BUY)
       .where('owner', '==', helper.buyer?.uid);
     await wait(async () => {
-      const snap = await buyQuery.get<TokenTradeOrder>();
+      const snap = await buyQuery.get();
       return snap.length === 1 && snap[0].status === TokenTradeOrderStatus.SETTLED;
     });
-    const buy = (await buyQuery.get<TokenTradeOrder>())[0];
+    const buy = (await buyQuery.get())[0];
     expect(buy.balance).toBe(2 * MIN_IOTA_AMOUNT);
     expect(buy.count).toBe(MIN_IOTA_AMOUNT);
     expect(buy.fulfilled).toBe(MIN_IOTA_AMOUNT);
 
-    const credit = await build5Db()
+    const credit = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer?.uid)
-      .where('payload.type', '==', TransactionPayloadType.TOKEN_TRADE_FULLFILLMENT)
-      .get<Transaction>();
+      .where('payload_type', '==', TransactionPayloadType.TOKEN_TRADE_FULLFILLMENT)
+      .get();
     expect(credit.length).toBe(1);
     expect(credit[0].payload.amount).toBe(2 * MIN_IOTA_AMOUNT);
   });

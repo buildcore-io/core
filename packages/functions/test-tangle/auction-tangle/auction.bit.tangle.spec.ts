@@ -1,28 +1,24 @@
-import { IDocument, build5Db } from '@build-5/database';
+import { IDocument, Update, database } from '@buildcore/database';
 import {
   Auction,
   AuctionType,
   COL,
   MIN_IOTA_AMOUNT,
-  Member,
   Network,
   Space,
   TangleRequestType,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { Wallet } from '../../src/services/wallet/wallet';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { getAddress } from '../../src/utils/address.utils';
-import * as wallet from '../../src/utils/wallet.utils';
-import { createMember, createSpace, wait } from '../../test/controls/common';
-import { getWallet } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { getWallet, testEnv } from '../../test/set-up';
 import { getTangleOrder } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
-
-let walletSpy: any;
 
 describe('Auction tangle test', () => {
   let member: string;
@@ -30,22 +26,21 @@ describe('Auction tangle test', () => {
   let memberAddress: AddressDetails;
   let w: Wallet;
   let tangleOrder: Transaction;
-  let auctionDocRef: IDocument;
+  let auctionDocRef: IDocument<any, any, Update>;
   const now = dayjs();
   let auction: Auction;
 
   beforeAll(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
     w = await getWallet(Network.RMS);
     tangleOrder = await getTangleOrder(Network.RMS);
   });
 
   beforeEach(async () => {
-    member = await createMember(walletSpy);
-    space = await createSpace(walletSpy, member);
+    member = await testEnv.createMember();
+    space = await testEnv.createSpace(member);
 
-    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${member}`);
-    const memberData = <Member>await memberDocRef.get();
+    const memberDocRef = database().doc(COL.MEMBER, member);
+    const memberData = await memberDocRef.get();
     const bech32 = getAddress(memberData, Network.RMS);
     memberAddress = await w.getAddressDetails(bech32);
 
@@ -60,19 +55,19 @@ describe('Auction tangle test', () => {
     });
     await MnemonicService.store(bech32, memberAddress.mnemonic);
 
-    const creaditQuery = build5Db()
+    const creaditQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', member)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
     await wait(async () => {
-      const credits = await creaditQuery.get<Transaction>();
+      const credits = await creaditQuery.get();
       return credits.length === 1 && credits[0].payload.walletReference?.confirmed;
     });
 
-    const credits = await creaditQuery.get<Transaction>();
+    const credits = await creaditQuery.get();
     expect(credits[0].payload.response?.auction).toBeDefined();
 
-    auctionDocRef = build5Db().doc(`${COL.AUCTION}/${credits[0].payload.response?.auction}`);
+    auctionDocRef = database().doc(COL.AUCTION, credits[0].payload.response?.auction! as string);
     auction = <Auction>await auctionDocRef.get();
   });
 

@@ -2,7 +2,7 @@ import {
   Network,
   PROD_AVAILABLE_MINTABLE_NETWORKS,
   TEST_AVAILABLE_MINTABLE_NETWORKS,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { Client, FeatureType, MetadataFeature, NftOutput, hexToUtf8 } from '@iota/sdk';
 
 const NODES = {

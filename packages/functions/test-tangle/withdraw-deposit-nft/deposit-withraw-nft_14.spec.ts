@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   IgnoreWalletReason,
@@ -8,15 +8,14 @@ import {
   Nft,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+  WEN_FUNC,
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
-import { creditUnrefundable } from '../../src/runtime/firebase/credit/index';
-import { depositNft, withdrawNft } from '../../src/runtime/firebase/nft/index';
 import { NftWallet } from '../../src/services/wallet/NftWallet';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { getWallet, testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { getWallet, mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 describe('Collection minting', () => {
@@ -36,42 +35,42 @@ describe('Collection minting', () => {
     const tmpAddress = await helper.walletService!.getNewIotaAddressDetails();
     await helper.updateGuardianAddress(tmpAddress.bech32);
 
-    const nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, { nft: nft.uid });
-    await testEnv.wrap(withdrawNft)({});
-    const query = build5Db()
+    const nftDocRef = database().doc(COL.NFT, nft.uid);
+    mockWalletReturnValue(helper.guardian!, { nft: nft.uid });
+    await testEnv.wrap(WEN_FUNC.withdrawNft);
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.WITHDRAW_NFT)
-      .where('payload.nft', '==', nft.uid);
+      .where('payload_nft', '==', nft.uid);
     await wait(async () => {
-      const snap = await query.get<Transaction>();
+      const snap = await query.get();
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
     nft = <Nft>await nftDocRef.get();
-    let snap = await query.get<Transaction>();
+    let snap = await query.get();
     expect(snap[0].payload.nftId).toBe(nft.mintingData?.nftId);
 
     const wallet = await getWallet(helper.network);
-    const guardianDocRef = build5Db().doc(`${COL.MEMBER}/${helper.guardian}`);
+    const guardianDocRef = database().doc(COL.MEMBER, helper.guardian!);
     const guardianData = <Member>await guardianDocRef.get();
     const guardianAddress = getAddress(guardianData, helper.network!);
     const nftWallet = new NftWallet(wallet);
     const outputs = await nftWallet.getNftOutputs(undefined, guardianAddress);
     expect(Object.keys(outputs).length).toBe(1);
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, { network: helper.network });
-    let depositOrder = await testEnv.wrap(depositNft)({});
+    mockWalletReturnValue(helper.guardian!, { network: helper.network });
+    let depositOrder = await testEnv.wrap<Transaction>(WEN_FUNC.depositNft);
 
     const sourceAddress = await helper.walletService!.getAddressDetails(guardianAddress);
     await helper.sendNftToAddress(
       sourceAddress!,
-      depositOrder.payload.targetAddress,
+      depositOrder.payload.targetAddress!,
       dateToTimestamp(dayjs().add(1, 'd')),
       undefined,
       guardianAddress,
     );
 
-    const creditQuery = build5Db()
+    const creditQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.guardian)
       .where('type', '==', TransactionType.CREDIT_NFT);
@@ -87,12 +86,12 @@ describe('Collection minting', () => {
       IgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION,
     );
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, { transaction: credit.uid });
-    const order = await testEnv.wrap(creditUnrefundable)({});
+    mockWalletReturnValue(helper.guardian!, { transaction: credit.uid });
+    const order = await testEnv.wrap<Transaction>(WEN_FUNC.creditUnrefundable);
     await requestFundsFromFaucet(Network.RMS, order.payload.targetAddress, order.payload.amount);
 
     await wait(async () => {
-      const snap = await creditQuery.get<Transaction>();
+      const snap = await creditQuery.get();
       return snap[0]?.payload?.walletReference?.confirmed;
     });
   });

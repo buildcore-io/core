@@ -1,10 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
-import { COL, SUB_COL, Token, TokenDistribution, TransactionType } from '@build-5/interfaces';
-import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { database } from '@buildcore/database';
+import {
+  COL,
+  SUB_COL,
+  Token,
+  TokenDistribution,
+  Transaction,
+  TransactionType,
+  WEN_FUNC,
+} from '@buildcore/interfaces';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
@@ -16,12 +23,12 @@ describe('Token minting', () => {
   });
 
   it('Should credit second claim', async () => {
-    await build5Db()
-      .doc(`${COL.TOKEN}/${helper.token.uid}/${SUB_COL.DISTRIBUTION}/${helper.guardian.uid}`)
-      .set({ tokenOwned: 1 });
-    mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, { symbol: helper.token.symbol });
-    const order = await testEnv.wrap(claimMintedTokenOrder)({});
-    const order2 = await testEnv.wrap(claimMintedTokenOrder)({});
+    await database()
+      .doc(COL.TOKEN, helper.token.uid, SUB_COL.DISTRIBUTION, helper.guardian.uid)
+      .upsert({ tokenOwned: 1 });
+    mockWalletReturnValue(helper.guardian.uid, { symbol: helper.token.symbol });
+    const order = await testEnv.wrap<Transaction>(WEN_FUNC.claimMintedTokenOrder);
+    const order2 = await testEnv.wrap<Transaction>(WEN_FUNC.claimMintedTokenOrder);
 
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, order.payload.amount);
     await requestFundsFromFaucet(
@@ -31,14 +38,17 @@ describe('Token minting', () => {
     );
 
     await wait(async () => {
-      const distributionDocRef = build5Db().doc(
-        `${COL.TOKEN}/${helper.token.uid}/${SUB_COL.DISTRIBUTION}/${helper.guardian.uid}`,
+      const distributionDocRef = database().doc(
+        COL.TOKEN,
+        helper.token.uid,
+        SUB_COL.DISTRIBUTION,
+        helper.guardian.uid,
       );
       const distribution = <TokenDistribution>await distributionDocRef.get();
       return distribution?.mintedClaimedOn !== undefined;
     });
 
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.guardian.uid)
       .where('type', '==', TransactionType.CREDIT);
@@ -47,7 +57,7 @@ describe('Token minting', () => {
       return snap.length === 1;
     });
 
-    const tokenData = <Token>await build5Db().doc(`${COL.TOKEN}/${helper.token.uid}`).get();
+    const tokenData = <Token>await database().doc(COL.TOKEN, helper.token.uid).get();
     expect(tokenData.mintingData?.tokensInVault).toBe(9);
   });
 });

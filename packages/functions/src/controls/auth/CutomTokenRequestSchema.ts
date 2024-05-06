@@ -1,4 +1,4 @@
-import { CustomTokenRequest } from '@build-5/interfaces';
+import { CustomTokenRequest } from '@buildcore/interfaces';
 import Joi from 'joi';
 
 export const customTokenSchema = Joi.object<CustomTokenRequest>({})

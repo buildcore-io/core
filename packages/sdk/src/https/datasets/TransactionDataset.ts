@@ -1,6 +1,6 @@
 import {
   ApiRoutes,
-  Build5Request,
+  BuildcoreRequest,
   CreditUnrefundableRequest,
   Dataset,
   GetManyAdvancedRequest,
@@ -11,7 +11,7 @@ import {
   TransactionPayloadType,
   TransactionType,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { toQueryParams } from '../fetch.utils';
 import { fetchLive } from '../get/observable';
 import { DatasetClass } from './Dataset';
@@ -20,10 +20,10 @@ export class TransactionDataset<D extends Dataset> extends DatasetClass<D, Trans
   /**
    * Credit blocked transactions back (ie. not gifted storage deposit)
    *
-   * @param req Use {@link Build5Request} with data based on {@link CreditUnrefundableRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link CreditUnrefundableRequest}
    * @returns
    */
-  creditUnrefundable = (req: Build5Request<CreditUnrefundableRequest>) =>
+  creditUnrefundable = (req: BuildcoreRequest<CreditUnrefundableRequest>) =>
     this.sendRequest(WEN_FUNC.creditUnrefundable)<CreditUnrefundableRequest, Transaction>(req);
   /**
    * TODO

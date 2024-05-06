@@ -1,4 +1,4 @@
-import { KEY_NAME_TANGLE } from '@build-5/interfaces';
+import { KEY_NAME_TANGLE } from '@buildcore/interfaces';
 import {
   CoinType,
   Output,

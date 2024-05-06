@@ -1,4 +1,4 @@
-import { NftDepositRequest } from '@build-5/interfaces';
+import { NftDepositRequest } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { toJoiObject } from '../../services/joi/common';
 import { networks } from '../../utils/config.utils';

@@ -1,4 +1,4 @@
-import { TokenDistribution } from '@build-5/interfaces';
+import { TokenDistribution } from '@buildcore/interfaces';
 import { SubsetClass } from '../Subset';
 
 /**

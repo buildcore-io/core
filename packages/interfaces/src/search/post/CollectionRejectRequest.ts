@@ -8,7 +8,7 @@
  */
 export interface RejectCollectionRequest {
   /**
-   * Build5 id of the collection.
+   * Buildcore id of the collection.
    */
   uid: string;
 }

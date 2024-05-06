@@ -1,36 +1,23 @@
-import { build5Db, getSnapshot } from '@build-5/database';
-import { COL, Stake, SUB_COL } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, SUB_COL } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
-import { last } from 'lodash';
 import { onStakeExpired } from '../services/stake.service';
-import { dateToTimestamp } from '../utils/dateTime.utils';
 
 export const removeExpiredStakesFromSpace = async () => {
-  let lastDocId = '';
-  do {
-    const query = await getExpiredStakeQuery(lastDocId);
-    const snap = await query.get<Stake>();
-    lastDocId = last(snap)?.uid || '';
-
-    const promises = snap.map((d) => updateTokenStakeStats(d.uid));
-    await Promise.all(promises);
-  } while (lastDocId);
-};
-
-const getExpiredStakeQuery = async (lastDocId = '') => {
-  const lastDoc = await getSnapshot(COL.STAKE, lastDocId);
-  return build5Db()
+  const snap = await database()
     .collection(COL.STAKE)
-    .where('expiresAt', '<=', dateToTimestamp(dayjs().toDate()))
+    .where('expiresAt', '<=', dayjs().toDate())
     .where('expirationProcessed', '==', false)
-    .startAfter(lastDoc)
-    .limit(1000);
+    .get();
+
+  const promises = snap.map((d) => updateTokenStakeStats(d.uid));
+  await Promise.all(promises);
 };
 
-const updateTokenStakeStats = async (stakeId: string) =>
-  build5Db().runTransaction(async (transaction) => {
-    const stakeDocRef = build5Db().doc(`${COL.STAKE}/${stakeId}`);
-    const stake = <Stake>await transaction.get(stakeDocRef);
+const updateTokenStakeStats = (stakeId: string) =>
+  database().runTransaction(async (transaction) => {
+    const stakeDocRef = database().doc(COL.STAKE, stakeId);
+    const stake = (await transaction.get(stakeDocRef))!;
     if (stake.expirationProcessed) {
       return;
     }
@@ -38,27 +25,20 @@ const updateTokenStakeStats = async (stakeId: string) =>
     await onStakeExpired(transaction, stake);
 
     const updateData = {
-      stakes: {
-        [stake.type]: {
-          amount: build5Db().inc(-stake.amount),
-          value: build5Db().inc(-stake.value),
-        },
-      },
-      stakeExpiry: {
-        [stake.type]: {
-          [stake.expiresAt.toMillis()]: build5Db().deleteField(),
-        },
-      },
+      [`stakes_${stake.type}_amount`]: database().inc(-stake.amount),
+      [`stakes_${stake.type}_value`]: database().inc(-stake.value),
+      stakeExpiry: { [stake.type]: { [stake.expiresAt.toMillis()]: null } },
     };
-    const spaceDocRef = build5Db().doc(
-      `${COL.TOKEN}/${stake.token}/${SUB_COL.STATS}/${stake.token}`,
-    );
-    transaction.set(spaceDocRef, updateData, true);
+    const spaceDocRef = database().doc(COL.TOKEN, stake.token, SUB_COL.STATS, stake.token);
+    await transaction.upsert(spaceDocRef, updateData);
 
-    const spaceMemberDocRef = build5Db().doc(
-      `${COL.TOKEN}/${stake.token}/${SUB_COL.DISTRIBUTION}/${stake.member}`,
+    const distributionDocRef = database().doc(
+      COL.TOKEN,
+      stake.token,
+      SUB_COL.DISTRIBUTION,
+      stake.member,
     );
-    transaction.set(spaceMemberDocRef, updateData, true);
+    await transaction.upsert(distributionDocRef, updateData);
 
-    transaction.update(stakeDocRef, { expirationProcessed: true });
+    await transaction.update(stakeDocRef, { expirationProcessed: true });
   });

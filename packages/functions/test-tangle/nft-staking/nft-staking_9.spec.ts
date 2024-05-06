@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   IgnoreWalletReason,
@@ -9,13 +9,12 @@ import {
   TRANSACTION_AUTO_EXPIRY_MS,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+  WEN_FUNC,
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
-import { creditUnrefundable } from '../../src/runtime/firebase/credit';
-import { stakeNft } from '../../src/runtime/firebase/nft';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { Helper } from './Helper';
 
 describe('Stake nft', () => {
@@ -31,20 +30,20 @@ describe('Stake nft', () => {
 
   it('Should not stake with storage dep and timelock, also should not credit', async () => {
     let nft = await helper.createAndOrderNft();
-    let nftDocRef = build5Db().doc(`${COL.NFT}/${nft.uid}`);
+    let nftDocRef = database().doc(COL.NFT, nft.uid);
     await helper.mintCollection();
     nft = <Nft>await nftDocRef.get();
     await helper.withdrawNftAndAwait(nft.uid);
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
+    mockWalletReturnValue(helper.guardian!, {
       network: Network.RMS,
       weeks: 25,
       type: StakeType.DYNAMIC,
     });
-    const stakeNftOrder = await testEnv.wrap(stakeNft)({});
+    const stakeNftOrder = await testEnv.wrap<Transaction>(WEN_FUNC.stakeNft);
     await helper.sendNftToAddress(
       helper.guardianAddress!,
-      stakeNftOrder.payload.targetAddress,
+      stakeNftOrder.payload.targetAddress!,
       dateToTimestamp(dayjs().add(1, 'm')),
       nft.mintingData?.nftId,
       MIN_IOTA_AMOUNT,
@@ -52,7 +51,7 @@ describe('Stake nft', () => {
       true,
     );
 
-    let creditQuery = build5Db()
+    let creditQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT_NFT)
       .where('member', '==', helper.guardian)
@@ -62,14 +61,14 @@ describe('Stake nft', () => {
         IgnoreWalletReason.UNREFUNDABLE_DUE_STORAGE_DEPOSIT_CONDITION,
       );
     await wait(async () => {
-      const snap = await creditQuery.get<Transaction>();
+      const snap = await creditQuery.get();
       return snap.length === 1;
     });
 
-    const snap = await creditQuery.get<Transaction>();
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, { transaction: snap[0].uid });
-    const order = await testEnv.wrap(creditUnrefundable)({});
-
+    const snap = await creditQuery.get();
+    mockWalletReturnValue(helper.guardian!, { transaction: snap[0].uid });
+    let order = await testEnv.wrap<Transaction>(WEN_FUNC.creditUnrefundable);
+    order = (await database().doc(COL.TRANSACTION, order.uid).get())!;
     const expiresOn = order.payload.expiresOn!;
     const isEarlier = dayjs(expiresOn.toDate()).isBefore(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS));
     expect(isEarlier).toBe(true);

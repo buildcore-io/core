@@ -21,6 +21,10 @@ export interface Stamp extends BaseRecord {
   expired: boolean;
 
   mediaStatus?: MediaStatus;
+  /**
+   * @hidden
+   */
+  mediaUploadErrorCount?: number;
 
   aliasId?: string;
   nftId?: string;

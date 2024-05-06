@@ -1,4 +1,4 @@
-import { TokenStats } from '@build-5/interfaces';
+import { TokenStats } from '@buildcore/interfaces';
 import { SubsetClass } from '../Subset';
 
 /**

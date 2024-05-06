@@ -1,10 +1,10 @@
-import { Dataset, Network, Subset } from '@build-5/interfaces';
-import * as build5 from '../../src';
+import { Dataset, Network, Subset } from '@buildcore/interfaces';
+import * as buildcore from '../../src';
 import {
-  Build5Local,
-  Build5LocalApi,
-  Build5LocalApiKey,
-  Build5LocalKey,
+  BuildcoreLocal,
+  BuildcoreLocalApi,
+  BuildcoreLocalApiKey,
+  BuildcoreLocalKey,
   address,
   address_secondary,
 } from '../config';
@@ -14,16 +14,16 @@ describe('Space', () => {
   let space: string;
 
   beforeEach(async () => {
-    await build5.https(Build5Local).createMember({
+    await buildcore.https(BuildcoreLocal).createMember({
       address: address.bech32,
       signature: '',
       body: { address: address.bech32 },
     });
 
     const signature = await walletSign(address.bech32, address);
-    let spaceResponse = await build5
-      .https(Build5Local)
-      .project(Build5LocalKey)
+    let spaceResponse = await buildcore
+      .https(BuildcoreLocal)
+      .project(BuildcoreLocalKey)
       .dataset(Dataset.SPACE)
       .create({
         address: address.bech32,
@@ -32,7 +32,7 @@ describe('Space', () => {
           hex: signature.publicKey,
           network: Network.RMS,
         },
-        projectApiKey: Build5LocalApiKey,
+        projectApiKey: BuildcoreLocalApiKey,
         body: {
           name: 'My test space',
           open: true,
@@ -42,16 +42,16 @@ describe('Space', () => {
   });
 
   it('Should get member and guardian', async () => {
-    await build5.https(Build5Local).createMember({
+    await buildcore.https(BuildcoreLocal).createMember({
       address: address_secondary.bech32,
       signature: '',
       body: { address: address_secondary.bech32 },
     });
 
     const signature = await walletSign(address_secondary.bech32, address_secondary);
-    await build5
-      .https(Build5Local)
-      .project(Build5LocalKey)
+    await buildcore
+      .https(BuildcoreLocal)
+      .project(BuildcoreLocalKey)
       .dataset(Dataset.SPACE)
       .join({
         address: address.bech32,
@@ -60,15 +60,15 @@ describe('Space', () => {
           hex: signature.publicKey,
           network: Network.RMS,
         },
-        projectApiKey: Build5LocalApiKey,
+        projectApiKey: BuildcoreLocalApiKey,
         body: {
           uid: space,
         },
       });
 
-    const base = build5
-      .https(Build5LocalApi)
-      .project(Build5LocalApiKey)
+    const base = buildcore
+      .https(BuildcoreLocalApi)
+      .project(BuildcoreLocalApiKey)
       .dataset(Dataset.SPACE)
       .id(space);
 

@@ -3,7 +3,7 @@ import {
   MIN_PRICE_PER_TOKEN,
   MintedTokenUpdateRequest,
   TokenUpdateRequest,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 
@@ -21,7 +21,7 @@ export const uptdateMintedTokenSchema = {
     .allow(null, '')
     .description('Short description of the token'),
   links: Joi.array().min(0).items(Joi.string().uri()).description('Links for the token'),
-  uid: CommonJoi.uid().description('Build5 id of the token.'),
+  uid: CommonJoi.uid().description('Buildcore id of the token.'),
   pricePerToken: Joi.number()
     .min(MIN_PRICE_PER_TOKEN)
     .max(MAX_IOTA_AMOUNT)

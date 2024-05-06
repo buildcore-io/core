@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Collection,
@@ -8,10 +8,9 @@ import {
   NftStatus,
   TangleRequestType,
   TangleResponse,
-  Transaction,
   TransactionPayloadType,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
 import { requestFundsFromFaucet } from '../faucet';
@@ -48,34 +47,34 @@ describe('Minted nft trading', () => {
       );
       await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
 
-      const creditQuery = build5Db()
+      const creditQuery = database()
         .collection(COL.TRANSACTION)
         .where('member', '==', address.bech32)
         .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
       await wait(async () => {
-        const snap = await creditQuery.get<Transaction>();
+        const snap = await creditQuery.get();
         return snap.length > 0 && snap[0].payload?.walletReference?.confirmed;
       });
 
-      const snap = await creditQuery.get<Transaction>();
+      const snap = await creditQuery.get();
       const credit = snap[0];
       const response = credit.payload.response as TangleResponse;
 
       await helper.walletService!.send(address, response.address!, response.amount!, {});
       await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
 
-      const nftDocRef = build5Db().doc(`${COL.NFT}/${helper.nft?.uid}`);
+      const nftDocRef = database().doc(COL.NFT, helper.nft?.uid);
       await wait(async () => {
         const nft = <Nft>await nftDocRef.get();
         return nft.status === NftStatus.WITHDRAWN;
       });
 
       await wait(async () => {
-        const snap = await build5Db()
+        const snap = await database()
           .collection(COL.TRANSACTION)
           .where('member', '==', address.bech32)
           .where('type', '==', TransactionType.WITHDRAW_NFT)
-          .get<Transaction>();
+          .get();
         return snap.length > 0 && snap[0].payload?.walletReference?.confirmed;
       });
 
@@ -84,22 +83,22 @@ describe('Minted nft trading', () => {
       ]);
       expect(nftOutputIds.items.length).toBe(1);
 
-      const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${helper.nft?.collection}`);
+      const collectionDocRef = database().doc(COL.COLLECTION, helper.nft?.collection);
       const collection = <Collection>await collectionDocRef.get();
       expect(collection.nftsOnSale).toBe(0);
       expect(collection.nftsOnAuction).toBe(0);
 
-      const orders = await build5Db()
+      const orders = await database()
         .collection(COL.TRANSACTION)
-        .where('payload.type', '==', TransactionPayloadType.NFT_PURCHASE)
-        .where('payload.nft', '==', helper.nft!.uid)
-        .get<Transaction>();
+        .where('payload_type', '==', TransactionPayloadType.NFT_PURCHASE)
+        .where('payload_nft', '==', helper.nft!.uid)
+        .get();
 
-      const billPayments = await build5Db()
+      const billPayments = await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
-        .where('payload.nft', '==', helper.nft!.uid)
-        .get<Transaction>();
+        .where('payload_nft', '==', helper.nft!.uid)
+        .get();
       for (const billPayment of billPayments) {
         expect(billPayment.payload.restrictions).toEqual(orders[0].payload.restrictions);
       }

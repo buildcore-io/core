@@ -1,4 +1,4 @@
-import { MIN_IOTA_AMOUNT } from '@build-5/interfaces';
+import { MIN_IOTA_AMOUNT } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { wait } from '../../test/controls/common';
 import { requestFundsFromFaucet, requestMintedTokenFromFaucet } from '../faucet';
@@ -18,9 +18,9 @@ describe('Token based voting', () => {
 
   it('Should vote, spend and vote again', async () => {
     let voteTransactionOrder = await helper.voteOnProposal(1);
-    await helper.sendTokensToVote(voteTransactionOrder.payload.targetAddress);
+    await helper.sendTokensToVote(voteTransactionOrder.payload.targetAddress!);
     let credit = await helper.awaitVoteTransactionCreditIsConfirmed(
-      voteTransactionOrder.payload.targetAddress,
+      voteTransactionOrder.payload.targetAddress!,
     );
 
     let voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
@@ -40,9 +40,9 @@ describe('Token based voting', () => {
     await helper.assertProposalMemberWeightsPerAnser(helper.guardian, 5, 1);
 
     voteTransactionOrder = await helper.voteOnProposal(1);
-    await helper.sendTokensToVote(voteTransactionOrder.payload.targetAddress);
+    await helper.sendTokensToVote(voteTransactionOrder.payload.targetAddress!);
     credit = await helper.awaitVoteTransactionCreditIsConfirmed(
-      voteTransactionOrder.payload.targetAddress,
+      voteTransactionOrder.payload.targetAddress!,
     );
     voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
     expect(+voteTransaction.payload.weight!.toFixed(2)).toBe(5);
@@ -52,9 +52,9 @@ describe('Token based voting', () => {
 
   it('Should vote twice without spending', async () => {
     let voteTransactionOrder = await helper.voteOnProposal(1);
-    await helper.sendTokensToVote(voteTransactionOrder.payload.targetAddress);
+    await helper.sendTokensToVote(voteTransactionOrder.payload.targetAddress!);
     let credit = await helper.awaitVoteTransactionCreditIsConfirmed(
-      voteTransactionOrder.payload.targetAddress,
+      voteTransactionOrder.payload.targetAddress!,
     );
 
     let voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
@@ -76,9 +76,9 @@ describe('Token based voting', () => {
     );
 
     voteTransactionOrder = await helper.voteOnProposal(1);
-    await helper.sendTokensToVote(voteTransactionOrder.payload.targetAddress, 10, tmp);
+    await helper.sendTokensToVote(voteTransactionOrder.payload.targetAddress!, 10, tmp);
     credit = await helper.awaitVoteTransactionCreditIsConfirmed(
-      voteTransactionOrder.payload.targetAddress,
+      voteTransactionOrder.payload.targetAddress!,
     );
     voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);
     expect(+voteTransaction.payload.weight!.toFixed(2)).toBe(5);

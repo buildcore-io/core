@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -6,10 +6,10 @@ import {
   TokenTradeOrderType,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
-import { tradeToken } from '../../src/runtime/firebase/token/trading';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+  WEN_FUNC,
+} from '@buildcore/interfaces';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
@@ -22,33 +22,33 @@ describe('Base token trading', () => {
   });
 
   it('Should not fill buy, dust and order not fulfilled', async () => {
-    mockWalletReturnValue(helper.walletSpy, helper.seller!.uid, {
+    mockWalletReturnValue(helper.seller!.uid, {
       symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 2,
       type: TokenTradeOrderType.SELL,
     });
-    const sellOrder = await testEnv.wrap(tradeToken)({});
+    const sellOrder = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await requestFundsFromFaucet(
       helper.sourceNetwork,
       sellOrder.payload.targetAddress,
       MIN_IOTA_AMOUNT,
     );
 
-    mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
+    mockWalletReturnValue(helper.buyer!.uid, {
       symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT + 1,
       price: 2,
       type: TokenTradeOrderType.BUY,
     });
-    const buyOrder = await testEnv.wrap(tradeToken)({});
+    const buyOrder = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await requestFundsFromFaucet(
       helper.targetNetwork,
       buyOrder.payload.targetAddress,
       2 * (MIN_IOTA_AMOUNT + 1),
     );
 
-    const tradesQuery = build5Db()
+    const tradesQuery = database()
       .collection(COL.TOKEN_MARKET)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {
@@ -58,7 +58,7 @@ describe('Base token trading', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    const purchase = await build5Db()
+    const purchase = await database()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', helper.token!.uid)
       .get();
@@ -68,16 +68,16 @@ describe('Base token trading', () => {
   });
 
   it('Should send dust to space', async () => {
-    const tradesQuery = build5Db()
+    const tradesQuery = database()
       .collection(COL.TOKEN_MARKET)
       .where('token', '==', helper.token!.uid);
-    mockWalletReturnValue(helper.walletSpy, helper.seller!.uid, {
+    mockWalletReturnValue(helper.seller!.uid, {
       symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 2,
       type: TokenTradeOrderType.SELL,
     });
-    const sellOrder = await testEnv.wrap(tradeToken)({});
+    const sellOrder = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await requestFundsFromFaucet(
       helper.sourceNetwork,
       sellOrder.payload.targetAddress,
@@ -89,20 +89,20 @@ describe('Base token trading', () => {
       return snap.length === 1;
     });
 
-    mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
+    mockWalletReturnValue(helper.buyer!.uid, {
       symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 2.001,
       type: TokenTradeOrderType.BUY,
     });
-    const buyOrder = await testEnv.wrap(tradeToken)({});
+    const buyOrder = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await requestFundsFromFaucet(
       helper.targetNetwork,
       buyOrder.payload.targetAddress,
       2.001 * MIN_IOTA_AMOUNT,
     );
 
-    const purchaseQuery = build5Db()
+    const purchaseQuery = database()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', helper.token!.uid);
     await wait(async () => {
@@ -114,10 +114,10 @@ describe('Base token trading', () => {
     expect(purchase.price).toBe(2);
 
     const billPayments = (
-      await build5Db()
+      await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
-        .where('payload.token', '==', helper.token!.uid)
+        .where('payload_token', '==', helper.token!.uid)
         .get()
     ).map((d) => <Transaction>d);
 

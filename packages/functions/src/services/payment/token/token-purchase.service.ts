@@ -1,17 +1,16 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   SUB_COL,
   Token,
-  TokenDistribution,
   TokenStatus,
   Transaction,
   TransactionPayloadType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import bigDecimal from 'js-big-decimal';
 import { getBoughtByMemberDiff, getTotalPublicSupply } from '../../../utils/token.utils';
 import { BaseService, HandlerParams } from '../base';
-import { TransactionMatch } from '../transaction-service';
+import { Action, TransactionMatch } from '../transaction-service';
 
 export class TokenPurchaseService extends BaseService {
   public handleRequest = async ({ order, match }: HandlerParams) => {
@@ -24,10 +23,15 @@ export class TokenPurchaseService extends BaseService {
     tran: TransactionMatch,
     payment: Transaction,
   ) {
-    const tokenRef = build5Db().doc(`${COL.TOKEN}/${order.payload.token}`);
-    const distributionRef = tokenRef.collection(SUB_COL.DISTRIBUTION).doc(order.member!);
+    const tokenRef = database().doc(COL.TOKEN, order.payload.token!);
+    const distributionRef = database().doc(
+      COL.TOKEN,
+      order.payload.token!,
+      SUB_COL.DISTRIBUTION,
+      order.member!,
+    );
 
-    const token = <Token>await this.transactionService.get(tokenRef);
+    const token = <Token>await this.transaction.get(tokenRef);
     if (token.status !== TokenStatus.AVAILABLE) {
       await this.transactionService.createCredit(
         TransactionPayloadType.DATA_NO_LONGER_VALID,
@@ -37,8 +41,7 @@ export class TokenPurchaseService extends BaseService {
       return;
     }
 
-    const distribution =
-      await this.transactionService.transaction.get<TokenDistribution>(distributionRef);
+    const distribution = await this.transaction.get(distributionRef);
     const currentTotalDeposit = Number(
       bigDecimal.add(distribution?.totalDeposit || 0, tran.to.amount),
     );
@@ -49,8 +52,8 @@ export class TokenPurchaseService extends BaseService {
     );
 
     const tokenUpdateData = {
-      totalDeposit: build5Db().inc(tran.to.amount),
-      tokensOrdered: build5Db().inc(boughtByMemberDiff),
+      totalDeposit: database().inc(tran.to.amount),
+      tokensOrdered: database().inc(boughtByMemberDiff),
     };
     const tokensOrdered = Number(bigDecimal.add(token.tokensOrdered, boughtByMemberDiff));
     const totalPublicSupply = getTotalPublicSupply(token);
@@ -61,19 +64,13 @@ export class TokenPurchaseService extends BaseService {
         tokensOrdered >= totalPublicSupply && token.autoProcessAt100Percent
           ? { ...tokenUpdateData, status: TokenStatus.PROCESSING }
           : tokenUpdateData,
-      action: 'update',
+      action: Action.U,
     });
 
     this.transactionService.push({
       ref: distributionRef,
-      data: {
-        uid: order.member,
-        totalDeposit: build5Db().inc(tran.to.amount),
-        parentId: order.payload.token,
-        parentCol: COL.TOKEN,
-      },
-      action: 'set',
-      merge: true,
+      data: { totalDeposit: database().inc(tran.to.amount) },
+      action: Action.UPS,
     });
   }
 }

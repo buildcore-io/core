@@ -1,29 +1,37 @@
-import { build5Db } from '@build-5/database';
-import { COL, SOON_PROJECT_ID, Space, StakeReward, WenError } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import {
+  COL,
+  SOON_PROJECT_ID,
+  Space,
+  StakeReward,
+  Token,
+  WEN_FUNC,
+  WenError,
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
-import { stakeReward } from '../../src/runtime/firebase/stake';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { testEnv } from '../set-up';
-import { createMember, createSpace, expectThrow, mockWalletReturnValue } from './common';
+import { mockWalletReturnValue, testEnv } from '../set-up';
+import { expectThrow } from './common';
 
 describe('Stake reward controller', () => {
-  let walletSpy: any;
   let guardian: string;
   let space: Space;
   let token: string;
 
   beforeEach(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    guardian = await createMember(walletSpy);
-    space = await createSpace(walletSpy, guardian);
+    guardian = await testEnv.createMember();
+    space = await testEnv.createSpace(guardian);
 
     token = wallet.getRandomEthAddress();
-    await build5Db().doc(`${COL.TOKEN}/${token}`).create({
-      project: SOON_PROJECT_ID,
-      uid: token,
-      space: space.uid,
-    });
+    await database()
+      .doc(COL.TOKEN, token)
+      .create({
+        project: SOON_PROJECT_ID,
+        uid: token,
+        space: space.uid,
+        links: [] as URL[],
+      } as Token);
   });
 
   it('Should throw, token does not exist', async () => {
@@ -35,12 +43,12 @@ describe('Stake reward controller', () => {
         tokensToDistribute: 100,
       },
     ];
-    mockWalletReturnValue(walletSpy, guardian, { token: wallet.getRandomEthAddress(), items });
-    await expectThrow(testEnv.wrap(stakeReward)({}), WenError.token_does_not_exist.key);
+    mockWalletReturnValue(guardian, { token: wallet.getRandomEthAddress(), items });
+    await expectThrow(testEnv.wrap(WEN_FUNC.stakeReward), WenError.token_does_not_exist.key);
   });
 
   it('Should throw, not guardian', async () => {
-    await build5Db().doc(`${COL.TOKEN}/${token}`).update({ space: wallet.getRandomEthAddress() });
+    await database().doc(COL.TOKEN, token).update({ space: wallet.getRandomEthAddress() });
     const items = [
       {
         startDate: dayjs().valueOf(),
@@ -49,8 +57,11 @@ describe('Stake reward controller', () => {
         tokensToDistribute: 100,
       },
     ];
-    mockWalletReturnValue(walletSpy, guardian, { token, items });
-    await expectThrow(testEnv.wrap(stakeReward)({}), WenError.you_are_not_guardian_of_space.key);
+    mockWalletReturnValue(guardian, { token, items });
+    await expectThrow(
+      testEnv.wrap(WEN_FUNC.stakeReward),
+      WenError.you_are_not_guardian_of_space.key,
+    );
   });
 
   it('Should create rewards', async () => {
@@ -63,11 +74,12 @@ describe('Stake reward controller', () => {
         tokensToDistribute: 100,
       },
     ];
-    mockWalletReturnValue(walletSpy, guardian, { token, items: [items[0], items[0]] });
-    const stakeRewards: StakeReward[] = await testEnv.wrap(stakeReward)({});
+    mockWalletReturnValue(guardian, { token, items: [items[0], items[0]] });
+    const stakeRewards: StakeReward[] = await testEnv.wrap<StakeReward[]>(WEN_FUNC.stakeReward);
     expect(stakeRewards.length).toBe(2);
 
-    for (const stakeReward of stakeRewards) {
+    for (let stakeReward of stakeRewards) {
+      stakeReward = (await database().doc(COL.STAKE_REWARD, stakeReward.uid).get())!;
       expect(stakeReward.uid).toBeDefined();
       expect(stakeReward.token).toBe(token);
       expect(
@@ -99,8 +111,8 @@ describe('Stake reward controller', () => {
         tokensToDistribute: 100,
       },
     ];
-    mockWalletReturnValue(walletSpy, guardian, { token, items });
-    await expectThrow(testEnv.wrap(stakeReward)({}), WenError.invalid_params.key);
+    mockWalletReturnValue(guardian, { token, items });
+    await expectThrow(testEnv.wrap(WEN_FUNC.stakeReward), WenError.invalid_params.key);
   });
 
   it('Should throw, vesting date before end date', async () => {
@@ -113,7 +125,7 @@ describe('Stake reward controller', () => {
         tokensToDistribute: 100,
       },
     ];
-    mockWalletReturnValue(walletSpy, guardian, { token, items });
-    await expectThrow(testEnv.wrap(stakeReward)({}), WenError.invalid_params.key);
+    mockWalletReturnValue(guardian, { token, items });
+    await expectThrow(testEnv.wrap(WEN_FUNC.stakeReward), WenError.invalid_params.key);
   });
 });

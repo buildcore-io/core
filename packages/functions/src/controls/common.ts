@@ -3,7 +3,7 @@ import {
   NetworkAddress,
   PROD_AVAILABLE_MINTABLE_NETWORKS,
   TEST_AVAILABLE_MINTABLE_NETWORKS,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { CommonJoi } from '../services/joi/common';
 import { isProdEnv } from '../utils/config.utils';
 

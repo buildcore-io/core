@@ -1,44 +1,44 @@
-import { IDocument, build5Db } from '@build-5/database';
-import { Auction, COL, MIN_IOTA_AMOUNT, Network, Space } from '@build-5/interfaces';
+import { IDocument, PgAuction, PgAuctionUpdate, database } from '@buildcore/database';
+import {
+  Auction,
+  COL,
+  MIN_IOTA_AMOUNT,
+  Network,
+  Space,
+  Transaction,
+  WEN_FUNC,
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
-import { auctionCreate, bidAuction } from '../../../src/runtime/firebase/auction/index';
-import * as wallet from '../../../src/utils/wallet.utils';
-import { testEnv } from '../../set-up';
-import { createMember, createSpace, mockWalletReturnValue, submitMilestoneFunc } from '../common';
-
+import { mockWalletReturnValue, testEnv } from '../../set-up';
+import { submitMilestoneFunc } from '../common';
 export class Helper {
-  public spy: any = {} as any;
   public space: Space = {} as any;
   public member: string = {} as any;
   public members: string[] = [];
   public auction: Auction = {} as any;
-  public auctionDocRef: IDocument = {} as any;
-
-  public beforeAll = async () => {
-    this.spy = jest.spyOn(wallet, 'decodeAuth');
-  };
+  public auctionDocRef: IDocument<Auction, PgAuction, PgAuctionUpdate> = {} as any;
 
   public beforeEach = async (now: dayjs.Dayjs) => {
-    this.member = await createMember(this.spy);
-    this.space = await createSpace(this.spy, this.member);
-    const memberPromises = Array.from(Array(3)).map(() => createMember(this.spy));
+    this.member = await testEnv.createMember();
+    this.space = await testEnv.createSpace(this.member);
+    const memberPromises = Array.from(Array(3)).map(() => testEnv.createMember());
     this.members = await Promise.all(memberPromises);
-
     await this.createAuction(now);
   };
 
   public createAuction = async (now: dayjs.Dayjs, customAuctionParams?: { [key: string]: any }) => {
-    mockWalletReturnValue(this.spy, this.member, {
+    mockWalletReturnValue(this.member, {
       ...auctionRequest(this.space.uid, now),
       ...customAuctionParams,
     });
-    this.auction = await testEnv.wrap(auctionCreate)({});
-    this.auctionDocRef = build5Db().doc(`${COL.AUCTION}/${this.auction.uid}`);
+    const auc = await testEnv.wrap<Auction>(WEN_FUNC.createauction);
+    this.auction = (await database().doc(COL.AUCTION, auc.uid).get())!;
+    this.auctionDocRef = database().doc(COL.AUCTION, this.auction.uid);
   };
 
   public bidOnAuction = async (memberId: string, amount: number) => {
-    mockWalletReturnValue(this.spy, memberId, { auction: this.auction.uid });
-    const bidOrder = await testEnv.wrap(bidAuction)({});
+    mockWalletReturnValue(memberId, { auction: this.auction.uid });
+    const bidOrder = await testEnv.wrap<Transaction>(WEN_FUNC.bidAuction);
     await submitMilestoneFunc(bidOrder, amount);
     return bidOrder;
   };

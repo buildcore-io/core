@@ -4,7 +4,6 @@ describe('Workflow test', () => {
   it('Test if workflow contains all files', async () => {
     const buffer = fs.readFileSync('../../.github/workflows/functions_emulated-tests.yml');
     const workflowTxt = buffer.toString();
-
     const glob = require('glob');
     const testFileNames = glob
       .sync(`./test/**/*.spec.ts`)

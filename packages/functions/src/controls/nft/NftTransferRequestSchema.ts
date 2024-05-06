@@ -1,10 +1,10 @@
-import { NFT_TRANSFER_LIMIT, NftTransferRequest } from '@build-5/interfaces';
+import { NFT_TRANSFER_LIMIT, NftTransferRequest } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 
 export const nftTransferObject = {
-  nft: CommonJoi.uid().description('Build5 id or tangle id of the nft.'),
-  target: CommonJoi.uid().description('Build5 id of a member or a tangle address.'),
+  nft: CommonJoi.uid().description('Buildcore id or tangle id of the nft.'),
+  target: CommonJoi.uid().description('Buildcore id of a member or a tangle address.'),
   withdraw: Joi.boolean().optional().description('If set, NFT will be always withdrawn.'),
 };
 

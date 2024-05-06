@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -7,10 +7,10 @@ import {
   ProposalType,
   TangleRequestType,
   Transaction,
-} from '@build-5/interfaces';
-import { joinSpace } from '../../src/runtime/firebase/space';
-import { addGuardianToSpace, mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+  WEN_FUNC,
+} from '@buildcore/interfaces';
+import { addGuardianToSpace, wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
@@ -28,8 +28,8 @@ describe('Edit guardian space', () => {
   it.each([TangleRequestType.SPACE_ADD_GUARDIAN, TangleRequestType.SPACE_REMOVE_GUARDIAN])(
     'Should add/remove guardian',
     async (requestType: TangleRequestType) => {
-      mockWalletReturnValue(helper.walletSpy, helper.member, { uid: helper.space.uid });
-      await testEnv.wrap(joinSpace)({});
+      mockWalletReturnValue(helper.member, { uid: helper.space.uid });
+      await testEnv.wrap(WEN_FUNC.joinSpace);
 
       if (requestType === TangleRequestType.SPACE_REMOVE_GUARDIAN) {
         await addGuardianToSpace(helper.space.uid, helper.member);
@@ -52,14 +52,14 @@ describe('Edit guardian space', () => {
       );
 
       await wait(async () => {
-        const snap = await helper.guardianCreditQuery.get<Transaction>();
+        const snap = await helper.guardianCreditQuery.get();
         return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
       });
       const snap = await helper.guardianCreditQuery.get();
       const credit = snap[0] as Transaction;
-      const proposalId = credit.payload.response!.proposal;
+      const proposalId = credit.payload.response!.proposal as string;
 
-      const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposalId}`);
+      const proposalDocRef = database().doc(COL.PROPOSAL, proposalId);
       const proposal = <Proposal>await proposalDocRef.get();
       expect(proposal.type).toBe(
         requestType === TangleRequestType.SPACE_ADD_GUARDIAN

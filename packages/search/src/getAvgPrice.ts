@@ -1,11 +1,5 @@
-import { build5Db } from '@build-5/database';
-import {
-  Dataset,
-  GetAvgPriceRequest,
-  QUERY_MAX_LENGTH,
-  QUERY_MIN_LENGTH,
-  TokenPurchaseAge,
-} from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, GetAvgPriceRequest, QUERY_MAX_LENGTH, QUERY_MIN_LENGTH } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { combineLatest, map } from 'rxjs';
 import { CommonJoi, getHeadPriceObs, getQueryParams } from './common';
@@ -19,20 +13,20 @@ const getAvgPriceSchema = Joi.object({
     .required(),
 });
 
-export const getAvgPrice = async (url: string) => {
+export const getAvgPrice = async (url: string, isLive: boolean) => {
   const body = getQueryParams<GetAvgPriceRequest>(url, getAvgPriceSchema);
 
   const tokens = Array.isArray(body.token) ? body.token : [body.token];
-  const changes = tokens.map(getAvgLive);
+  const changes = tokens.map((t) => getAvgLive(t, isLive));
   const observable = combineLatest(changes).pipe(map((r) => (r.length === 1 ? r[0] : r)));
 
   return observable;
 };
 
-const getAvgLive = (token: string) => {
-  const lowestPurchaseObs = getHeadPriceObs(purchaseQuery(token, true));
-  const highestPurchaseObs = getHeadPriceObs(purchaseQuery(token, false));
-  const lastPurchaseObs = getHeadPriceObs(purchaseQuery(token));
+const getAvgLive = (token: string, isLive: boolean) => {
+  const lowestPurchaseObs = getHeadPriceObs(purchaseQuery(token, true), isLive);
+  const highestPurchaseObs = getHeadPriceObs(purchaseQuery(token, false), isLive);
+  const lastPurchaseObs = getHeadPriceObs(purchaseQuery(token), isLive);
   return combineLatest([lowestPurchaseObs, highestPurchaseObs, lastPurchaseObs]).pipe(
     map(([lowest, highest, last]) => (highest + lowest + last) / 3),
     map((avg) => ({ id: token, avg })),
@@ -41,19 +35,24 @@ const getAvgLive = (token: string) => {
 
 const purchaseQuery = (token: string, lowest?: boolean) => {
   if (lowest === undefined) {
-    return build5Db()
-      .collection(Dataset.TOKEN_PURCHASE)
+    return database()
+      .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', token)
-      .orderBy('createdOn')
-      .limitToLast(1);
+      .orderBy('createdOn', 'desc')
+      .limit(1);
   }
-  const query = build5Db()
-    .collection(Dataset.TOKEN_PURCHASE)
-    .where('token', '==', token)
-    .where('age', 'array-contains', TokenPurchaseAge.IN_7_D)
-    .orderBy('price', 'asc');
   if (lowest) {
-    return query.limit(1);
+    return database()
+      .collection(COL.TOKEN_PURCHASE)
+      .where('token', '==', token)
+      .where('in7d', '==', true)
+      .orderBy('price', 'asc')
+      .limit(1);
   }
-  return query.limitToLast(1);
+  return database()
+    .collection(COL.TOKEN_PURCHASE)
+    .where('token', '==', token)
+    .where('in7d', '==', true)
+    .orderBy('price', 'desc')
+    .limit(1);
 };

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   SOON_PROJECT_ID,
@@ -10,14 +10,14 @@ import {
   TokenDropStatus,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+  WEN_FUNC,
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { claimMintedTokenOrder } from '../../src/runtime/firebase/token/minting';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
@@ -30,10 +30,13 @@ describe('Token minting', () => {
   });
 
   it('Claim owned and airdroped-vesting', async () => {
-    const distributionDocRef = build5Db().doc(
-      `${COL.TOKEN}/${helper.token.uid}/${SUB_COL.DISTRIBUTION}/${helper.guardian.uid}`,
+    const distributionDocRef = database().doc(
+      COL.TOKEN,
+      helper.token.uid,
+      SUB_COL.DISTRIBUTION,
+      helper.guardian.uid,
     );
-    await distributionDocRef.set({ tokenOwned: 1 });
+    await distributionDocRef.upsert({ tokenOwned: 1 });
 
     const airdrop: TokenDrop = {
       project: SOON_PROJECT_ID,
@@ -46,13 +49,13 @@ describe('Token minting', () => {
       count: 1,
       status: TokenDropStatus.UNCLAIMED,
     };
-    await build5Db().doc(`${COL.AIRDROP}/${airdrop.uid}`).create(airdrop);
+    await database().doc(COL.AIRDROP, airdrop.uid).create(airdrop);
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, { symbol: helper.token.symbol });
-    const order = await testEnv.wrap(claimMintedTokenOrder)({});
+    mockWalletReturnValue(helper.guardian.uid, { symbol: helper.token.symbol });
+    const order = await testEnv.wrap<Transaction>(WEN_FUNC.claimMintedTokenOrder);
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, order.payload.amount);
 
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)
       .where('member', '==', helper.guardian.uid);
@@ -66,10 +69,10 @@ describe('Token minting', () => {
     expect(vesting.payload.nativeTokens![0].amount).toBe(1);
 
     const unlocked = billPayments.filter((bp) => isEmpty(bp.payload.vestingAt))[0];
-    expect(unlocked.payload.amount).toBe(order.payload.amount - 50100);
+    expect(unlocked.payload.amount).toBe(order.payload.amount! - 50100);
     expect(unlocked.payload.nativeTokens![0].amount).toBe(1);
 
-    const tokenData = <Token>await build5Db().doc(`${COL.TOKEN}/${helper.token.uid}`).get();
+    const tokenData = <Token>await database().doc(COL.TOKEN, helper.token.uid).get();
     expect(tokenData.mintingData?.tokensInVault).toBe(8);
     await awaitTransactionConfirmationsForToken(helper.token.uid);
   });

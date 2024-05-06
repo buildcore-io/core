@@ -8,11 +8,11 @@
  */
 export interface AwardApproveParticipantTangleRequest {
   /**
-   * Build5 id of the award
+   * Buildcore id of the award
    */
   award: string;
   /**
-   * Build5 id or wallet address of the participants to approve. Minimum 1, maximum 1000
+   * Buildcore id or wallet address of the participants to approve. Minimum 1, maximum 1000
    */
   members: string[];
   /**

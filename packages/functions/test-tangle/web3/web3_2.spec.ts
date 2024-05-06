@@ -1,18 +1,15 @@
-import { build5Db } from '@build-5/database';
-import { COL, Collection, MediaStatus, Space } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, Collection, MediaStatus, Space } from '@buildcore/interfaces';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
 import { collectionToIpfsMetadata, nftToIpfsMetadata } from '../../src/utils/car.utils';
-import * as wallet from '../../src/utils/wallet.utils';
-import { createMember, createSpace, wait } from '../../test/controls/common';
+import { wait } from '../../test/controls/common';
+import { testEnv } from '../../test/set-up';
 import { CollectionMintHelper } from '../collection-minting/Helper';
-
-let walletSpy: any;
 
 describe('Web3 cron test', () => {
   const collectionHelper = new CollectionMintHelper();
 
   beforeEach(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
     await cleanupPendingUploads();
   });
 
@@ -20,7 +17,7 @@ describe('Web3 cron test', () => {
     await collectionHelper.beforeAll();
     await collectionHelper.beforeEach();
 
-    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${collectionHelper.collection}`);
+    const collectionDocRef = database().doc(COL.COLLECTION, collectionHelper.collection);
     const collection = <Collection>await collectionDocRef.get();
     const nft = collectionHelper.createDummyNft(collection.uid, collectionHelper.space!.uid) as any;
 
@@ -47,12 +44,12 @@ describe('Web3 cron test', () => {
   });
 
   it('Should upload space media', async () => {
-    const guardian = await createMember(walletSpy);
-    let space = await createSpace(walletSpy, guardian);
+    const guardian = await testEnv.createMember();
+    let space = await testEnv.createSpace(guardian);
 
     await uploadMediaToWeb3();
 
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${space.uid}`);
+    const spaceDocRef = database().doc(COL.SPACE, space.uid);
     await wait(async () => {
       space = <Space>await spaceDocRef.get();
       return space.mediaStatus === MediaStatus.UPLOADED;
@@ -66,14 +63,16 @@ describe('Web3 cron test', () => {
 
 const cleanupPendingUploads = async () => {
   for (const col of [COL.TOKEN, COL.NFT, COL.COLLECTION]) {
-    const snap = await pendingUploadsQuery(col).get<Record<string, unknown>>();
+    const snap = await pendingUploadsQuery(col).get();
     const promises = snap.map((d) => {
-      const docRef = build5Db().doc(`${col}/${d.uid}`);
-      return docRef.update({ mediaStatus: build5Db().deleteField() });
+      const docRef = database().doc(col as COL.TOKEN, d.uid);
+      return docRef.update({ mediaStatus: undefined });
     });
     await Promise.all(promises);
   }
 };
 
 const pendingUploadsQuery = (col: COL) =>
-  build5Db().collection(col).where('mediaStatus', '==', MediaStatus.PENDING_UPLOAD);
+  database()
+    .collection(col as COL.TOKEN)
+    .where('mediaStatus', '==', MediaStatus.PENDING_UPLOAD);

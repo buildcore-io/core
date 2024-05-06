@@ -1,7 +1,7 @@
-import { MIN_PRICE_PER_TOKEN, TokenTradeOrderType, TradeTokenRequest } from '@build-5/interfaces';
+import { MIN_PRICE_PER_TOKEN, TokenTradeOrderType, TradeTokenRequest } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
-import { MIN_COUNT, MAX_COUNT, MAX_PRICE } from '../token/common';
+import { MAX_COUNT, MAX_PRICE, MIN_COUNT } from '../token/common';
 
 export const tradeTokenSchema = toJoiObject<TradeTokenRequest>({
   symbol: CommonJoi.tokenSymbol().description('Symbol of the token to trade.'),

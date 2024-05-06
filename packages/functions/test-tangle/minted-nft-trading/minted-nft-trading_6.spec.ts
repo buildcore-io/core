@@ -1,13 +1,12 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   CollectionType,
   MIN_IOTA_AMOUNT,
   Network,
   TangleRequestType,
-  Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
 import { requestFundsFromFaucet } from '../faucet';
@@ -42,11 +41,11 @@ describe('Minted nft trading', () => {
       await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
 
       await wait(async () => {
-        const snap = await build5Db()
+        const snap = await database()
           .collection(COL.TRANSACTION)
           .where('member', '==', address.bech32)
           .where('type', '==', TransactionType.WITHDRAW_NFT)
-          .get<Transaction>();
+          .get();
         return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
       });
       const nftOutputIds = await helper.walletService!.client.nftOutputIds([

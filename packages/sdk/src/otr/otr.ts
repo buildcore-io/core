@@ -1,4 +1,4 @@
-import { Dataset } from '@build-5/interfaces';
+import { Dataset } from '@buildcore/interfaces';
 import { AuctionOtrDataset } from './datasets/AuctionOtrDataset';
 import { AwardOtrDataset } from './datasets/AwardOtrDataset';
 import { MemberOtrDataset } from './datasets/MemberOtrDataset';

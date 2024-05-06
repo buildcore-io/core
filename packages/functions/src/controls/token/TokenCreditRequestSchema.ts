@@ -1,9 +1,9 @@
-import { CreditTokenRequest, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '@build-5/interfaces';
+import { CreditTokenRequest, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 
 export const creditTokenSchema = toJoiObject<CreditTokenRequest>({
-  token: CommonJoi.uid().description('Build5 id of the token.'),
+  token: CommonJoi.uid().description('Buildcore id of the token.'),
   amount: Joi.number()
     .min(MIN_IOTA_AMOUNT)
     .max(MAX_IOTA_AMOUNT)

@@ -8,13 +8,13 @@ import { TangleResponse } from './TangleResponse';
 export interface AwardApproveParticipantTangleResponse extends TangleResponse {
   /**
    * Key value pair for the received badges where
-   * key is the build5 id/wallet address of the member
-   * value is the build5 id of the badge transaction
+   * key is the buildcore id/wallet address of the member
+   * value is the buildcore id of the badge transaction
    */
   badges: { [key: string]: string };
   /**
    * Key value pair representing badge issuing errors
-   * key is the build5 id/wallet address of the member
+   * key is the buildcore id/wallet address of the member
    * value is information about the error
    */
   errors: { [key: string]: ApiError };
@@ -25,7 +25,7 @@ export interface AwardApproveParticipantTangleResponse extends TangleResponse {
  */
 export interface AwardCreateTangleResponse extends TangleResponse {
   /**
-   * Build5 id of the award created
+   * Buildcore id of the award created
    */
   award: NetworkAddress;
   /**

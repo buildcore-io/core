@@ -1,19 +1,18 @@
-import { build5Db } from '@build-5/database';
+import { PgAward, database } from '@buildcore/database';
 import {
-  Award,
   AwardBadgeType,
   COL,
-  Token,
+  Network,
   Transaction,
   TransactionPayloadType,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { head } from 'lodash';
 import { getProject } from '../utils/common.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
-import { FirestoreDocEvent } from './common';
+import { PgDocEvent } from './common';
 
-export const onAwardUpdated = async (event: FirestoreDocEvent<Award>) => {
+export const onAwardUpdated = async (event: PgDocEvent<PgAward>) => {
   const { prev, curr } = event;
   if (!prev || !curr || !curr.funded) {
     return;
@@ -26,13 +25,13 @@ export const onAwardUpdated = async (event: FirestoreDocEvent<Award>) => {
   ) {
     const targetAddress = await getReturnAddress(curr);
 
-    const burnAlias = <Transaction>{
+    const burnAlias: Transaction = {
       project: getProject(curr),
       type: TransactionType.AWARD,
       uid: getRandomEthAddress(),
       space: curr.space,
       member: curr.fundedBy,
-      network: curr.network,
+      network: curr.network as Network,
       payload: {
         type: TransactionPayloadType.BURN_ALIAS,
         sourceAddress: curr.address,
@@ -42,22 +41,22 @@ export const onAwardUpdated = async (event: FirestoreDocEvent<Award>) => {
         award: curr.uid,
       },
     };
-    await build5Db().doc(`${COL.TRANSACTION}/${burnAlias.uid}`).create(burnAlias);
+    await database().doc(COL.TRANSACTION, burnAlias.uid).create(burnAlias);
 
-    const remainingBadges = curr.badge.total - curr.issued;
-    if (curr.badge.type === AwardBadgeType.BASE && remainingBadges) {
-      const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${curr.badge.tokenUid}`);
-      const token = (await tokenDocRef.get<Token>())!;
-      const baseTokenCredit = <Transaction>{
+    const remainingBadges = curr.badge_total! - curr.issued!;
+    if (curr.badge_type === AwardBadgeType.BASE && remainingBadges) {
+      const tokenDocRef = database().doc(COL.TOKEN, curr.badge_tokenUid!);
+      const token = (await tokenDocRef.get())!;
+      const baseTokenCredit: Transaction = {
         project: getProject(curr),
         type: TransactionType.CREDIT,
         uid: getRandomEthAddress(),
         space: curr.space,
         member: curr.fundedBy,
-        network: curr.network,
+        network: curr.network as Network,
         payload: {
           type: TransactionPayloadType.AWARD_COMPLETED,
-          amount: remainingBadges * curr.badge.tokenReward,
+          amount: remainingBadges * curr.badge_tokenReward!,
           sourceAddress: curr.address,
           targetAddress,
           reconciled: false,
@@ -67,21 +66,21 @@ export const onAwardUpdated = async (event: FirestoreDocEvent<Award>) => {
           tokenSymbol: token.symbol,
         },
       };
-      await build5Db().doc(`${COL.TRANSACTION}/${baseTokenCredit.uid}`).create(baseTokenCredit);
+      await database().doc(COL.TRANSACTION, baseTokenCredit.uid).create(baseTokenCredit);
     }
   }
 
   if (
-    curr.badge.type === AwardBadgeType.NATIVE &&
+    curr.badge_type === AwardBadgeType.NATIVE &&
     (prev.completed !== curr.completed || prev.airdropClaimed !== curr.airdropClaimed) &&
     curr.completed &&
     curr.airdropClaimed === curr.issued
   ) {
     const targetAddress = await getReturnAddress(curr);
-    const remainingBadges = curr.badge.total - curr.issued;
+    const remainingBadges = curr.badge_total! - curr.issued!;
 
-    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${curr.badge.tokenUid}`);
-    const token = (await tokenDocRef.get<Token>())!;
+    const tokenDocRef = database().doc(COL.TOKEN, curr.badge_tokenUid!);
+    const token = (await tokenDocRef.get())!;
 
     const nativeTokensCredit: Transaction = {
       project: getProject(curr),
@@ -89,15 +88,15 @@ export const onAwardUpdated = async (event: FirestoreDocEvent<Award>) => {
       uid: getRandomEthAddress(),
       space: curr.space,
       member: curr.fundedBy,
-      network: curr.network,
+      network: curr.network as Network,
       payload: {
         type: TransactionPayloadType.AWARD_COMPLETED,
         amount: curr.nativeTokenStorageDeposit,
         nativeTokens: remainingBadges
           ? [
               {
-                id: curr.badge.tokenId!,
-                amount: BigInt(remainingBadges * curr.badge.tokenReward),
+                id: curr.badge_tokenId!,
+                amount: BigInt(remainingBadges * curr.badge_tokenReward!),
               },
             ]
           : [],
@@ -110,20 +109,20 @@ export const onAwardUpdated = async (event: FirestoreDocEvent<Award>) => {
         tokenSymbol: token.symbol,
       },
     };
-    await build5Db().doc(`${COL.TRANSACTION}/${nativeTokensCredit.uid}`).create(nativeTokensCredit);
+    await database().doc(COL.TRANSACTION, nativeTokensCredit.uid).create(nativeTokensCredit);
   }
 };
 
-const getReturnAddress = async (award: Award) => {
+const getReturnAddress = async (award: PgAward) => {
   if (award.fundingAddress) {
     return award.fundingAddress;
   }
-  const snap = await build5Db()
+  const snap = await database()
     .collection(COL.TRANSACTION)
     .where('type', '==', TransactionType.PAYMENT)
-    .where('payload.targetAddress', '==', award.address)
-    .where('payload.invalidPayment', '==', false)
+    .where('payload_targetAddress', '==', award.address)
+    .where('payload_invalidPayment', '==', false)
     .limit(1)
-    .get<Transaction>();
+    .get();
   return head(snap)?.payload.sourceAddress || '';
 };

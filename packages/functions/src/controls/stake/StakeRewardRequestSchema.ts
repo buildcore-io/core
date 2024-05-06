@@ -3,7 +3,7 @@ import {
   MAX_TOTAL_TOKEN_SUPPLY,
   TokenStakeRewardRequest,
   TokenStakeRewardsRequest,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 
@@ -59,7 +59,7 @@ export const stakeRewardSchema = toJoiObject<TokenStakeRewardRequest>({
   });
 
 export const stakeRewardsSchema = toJoiObject<TokenStakeRewardsRequest>({
-  token: CommonJoi.uid().description('Build5 if of the token.'),
+  token: CommonJoi.uid().description('Buildcore if of the token.'),
   items: Joi.array()
     .min(MIN_REWARDS)
     .max(MAX_REWARDS)

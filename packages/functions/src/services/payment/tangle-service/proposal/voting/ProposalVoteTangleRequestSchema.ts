@@ -1,4 +1,4 @@
-import { ProposalVoteTangleRequest, TangleRequestType } from '@build-5/interfaces';
+import { ProposalVoteTangleRequest, TangleRequestType } from '@buildcore/interfaces';
 import { voteOnProposalSchema } from '../../../../../controls/proposal/ProposalVoteRequestSchema';
 import { toJoiObject } from '../../../../joi/common';
 import { baseTangleSchema } from '../../common';

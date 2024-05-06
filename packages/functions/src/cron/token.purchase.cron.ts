@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, SUB_COL, TokenPurchase, TokenPurchaseAge } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, SUB_COL, TokenPurchaseAge } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { chunk } from 'lodash';
 
@@ -13,14 +13,14 @@ const removeExiredPurchaseFromStats = async (age: TokenPurchaseAge) => {
   const allPurchases = await getExpiredPurchases(age);
   const chunks = chunk(allPurchases, 250);
   for (const purchases of chunks) {
-    const batch = build5Db().batch();
+    const batch = database().batch();
     for (const purchase of purchases) {
-      const docRef = build5Db().doc(`${COL.TOKEN_PURCHASE}/${purchase.uid}`);
-      batch.set(docRef, { age: build5Db().arrayRemove(age) }, true);
+      const docRef = database().doc(COL.TOKEN_PURCHASE, purchase.uid);
+      batch.update(docRef, { [age]: false });
 
       const token = purchase.token;
-      const statsDocRef = build5Db().doc(`${COL.TOKEN}/${token}/${SUB_COL.STATS}/${token}`);
-      batch.set(statsDocRef, { volume: { [age]: build5Db().inc(-purchase.count) } }, true);
+      const statsDocRef = database().doc(COL.TOKEN, token, SUB_COL.STATS, token);
+      batch.upsert(statsDocRef, { [`volume_${age}`]: database().inc(-purchase.count) });
     }
     await batch.commit();
   }
@@ -29,11 +29,11 @@ const removeExiredPurchaseFromStats = async (age: TokenPurchaseAge) => {
 const getExpiredPurchases = (age: TokenPurchaseAge) => {
   const days = toknePurchaseAgeToDayCount(age);
   const createdBefore = dayjs().subtract(days, 'd').toDate();
-  return build5Db()
+  return database()
     .collection(COL.TOKEN_PURCHASE)
-    .where('age', 'array-contains', age)
+    .where(age, '==', true)
     .where('createdOn', '<=', createdBefore)
-    .get<TokenPurchase>();
+    .get();
 };
 
 const toknePurchaseAgeToDayCount = (age: TokenPurchaseAge) => {

@@ -1,13 +1,5 @@
-import { build5Db, ITransaction } from '@build-5/database';
-import {
-  COL,
-  Proposal,
-  Stake,
-  SUB_COL,
-  TokenDistribution,
-  Transaction,
-  WenError,
-} from '@build-5/interfaces';
+import { database, ITransaction } from '@buildcore/database';
+import { COL, Proposal, Stake, SUB_COL, WenError } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { invalidArgument } from '../../../../../utils/error.utils';
 import { getTokenVoteMultiplier } from '../../../voting-service';
@@ -20,12 +12,13 @@ export const voteWithStakedTokens = async (
   proposal: Proposal,
   values: number[],
 ) => {
-  const distributionDocRef = build5Db()
-    .collection(COL.TOKEN)
-    .doc(proposal.token!)
-    .collection(SUB_COL.DISTRIBUTION)
-    .doc(member);
-  const distribution = (await transaction.get<TokenDistribution>(distributionDocRef))!;
+  const distributionDocRef = database().doc(
+    COL.TOKEN,
+    proposal.token!,
+    SUB_COL.DISTRIBUTION,
+    member,
+  );
+  const distribution = (await transaction.get(distributionDocRef))!;
   if (distribution.stakeVoteTransactionId) {
     await expireStakeVoteTransaction(transaction, proposal, distribution.stakeVoteTransactionId);
   }
@@ -50,36 +43,29 @@ export const voteWithStakedTokens = async (
     values,
     stakes.map((s) => s.uid),
   );
-  const voteTransactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${voteTransaction.uid}`);
-  transaction.create(voteTransactionDocRef, voteTransaction);
+  const voteTransactionDocRef = database().doc(COL.TRANSACTION, voteTransaction.uid);
+  await transaction.create(voteTransactionDocRef, voteTransaction);
 
-  const proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${proposal.uid}`);
-  const proposalMemberDocRef = proposalDocRef.collection(SUB_COL.MEMBERS).doc(member);
-  transaction.set(
-    proposalMemberDocRef,
-    {
-      voted: true,
-      voteTransactions: build5Db().inc(1),
-      tranId: voteTransaction.uid,
-      weightPerAnswer: { [values[0]]: build5Db().inc(weight) },
-      values: build5Db().arrayUnion({
-        [values[0]]: weight,
-        voteTransaction: voteTransaction.uid,
-      }),
-    },
-    true,
-  );
+  const proposalDocRef = database().doc(COL.PROPOSAL, proposal.uid);
+  const proposalMemberDocRef = database().doc(COL.PROPOSAL, proposal.uid, SUB_COL.MEMBERS, member);
 
-  const proposalData = {
+  const value = values[0].toString();
+  await transaction.update(proposalDocRef, {
     results: {
-      total: build5Db().inc(weight),
-      voted: build5Db().inc(weight),
-      answers: { [`${values[0]}`]: build5Db().inc(weight) },
+      total: database().inc(weight),
+      voted: database().inc(weight),
+      answers: { [value]: database().inc(weight) },
     },
-  };
-  transaction.set(proposalDocRef, proposalData, true);
+  });
 
-  transaction.update(distributionDocRef, { stakeVoteTransactionId: voteTransaction.uid });
+  await transaction.upsert(proposalMemberDocRef, {
+    voted: true,
+    tranId: voteTransaction.uid,
+    weight: database().inc(weight),
+    values: { [voteTransaction.uid]: { value, weight: database().inc(weight) } },
+  });
+
+  await transaction.update(distributionDocRef, { stakeVoteTransactionId: voteTransaction.uid });
 
   return voteTransaction;
 };
@@ -89,21 +75,18 @@ const expireStakeVoteTransaction = async (
   currentProposal: Proposal,
   voteTransactionId: string,
 ) => {
-  const voteTransactionDocRef = build5Db().doc(`${COL.TRANSACTION}/${voteTransactionId}`);
-  const voteTransaction = (await transaction.get<Transaction>(voteTransactionDocRef))!;
+  const voteTransactionDocRef = database().doc(COL.TRANSACTION, voteTransactionId);
+  const voteTransaction = (await transaction.get(voteTransactionDocRef))!;
   let proposal = currentProposal;
-  let proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${currentProposal.uid}`);
+  let proposalDocRef = database().doc(COL.PROPOSAL, currentProposal.uid);
   if (voteTransaction.payload.proposalId !== currentProposal.uid) {
-    proposalDocRef = build5Db().doc(`${COL.PROPOSAL}/${voteTransaction.payload.proposalId}`);
-    proposal = (await proposalDocRef.get<Proposal>())!;
+    proposalDocRef = database().doc(COL.PROPOSAL, voteTransaction.payload.proposalId!);
+    proposal = (await proposalDocRef.get())!;
   }
 
   if (dayjs().isAfter(dayjs(proposal.settings.endDate.toDate()))) {
     return;
   }
-  const proposalMemberDocRef = proposalDocRef
-    .collection(SUB_COL.MEMBERS)
-    .doc(voteTransaction.member!);
 
   const stakes = await getStakesById(voteTransaction.payload.stakes!);
   const weight = getWeightForStakes(
@@ -113,48 +96,37 @@ const expireStakeVoteTransaction = async (
     dayjs(),
   );
 
-  transaction.update(voteTransactionDocRef, {
-    'payload.weight': weight,
-    'payload.outputConsumed': true,
-    'payload.outputConsumedOn': dayjs().toDate(),
+  await transaction.update(voteTransactionDocRef, {
+    payload_weight: weight,
+    payload_outputConsumed: true,
+    payload_outputConsumedOn: dayjs().toDate(),
   });
 
   const prevWeight = voteTransaction.payload.weight!;
-  const prevValue = voteTransaction.payload.values![0];
+  const prevValue = voteTransaction.payload.values![0].toString();
 
-  transaction.set(
-    proposalMemberDocRef,
-    {
-      values: build5Db().arrayRemove({
-        [prevValue]: prevWeight,
-        voteTransaction: voteTransaction.uid,
-      }),
-      voteTransactions: build5Db().inc(-1),
-      weightPerAnswer: { [prevValue]: build5Db().inc(-prevWeight + weight) },
-    },
-    true,
+  const proposalMemberDocRef = database().doc(
+    COL.PROPOSAL,
+    proposal.uid,
+    SUB_COL.MEMBERS,
+    voteTransaction.member!,
   );
-  transaction.update(proposalMemberDocRef, {
-    values: build5Db().arrayUnion({
-      [prevValue]: weight,
-      voteTransaction: voteTransaction.uid,
-    }),
-  });
+  await transaction.update(proposalMemberDocRef, { values: { [voteTransaction.uid]: { weight } } });
 
   const data = {
     results: {
-      total: build5Db().inc(-prevWeight + weight),
-      voted: build5Db().inc(-prevWeight + weight),
-      answers: { [prevValue]: build5Db().inc(-prevWeight + weight) },
+      total: database().inc(-prevWeight + weight),
+      voted: database().inc(-prevWeight + weight),
+      answers: { [prevValue]: database().inc(-prevWeight + weight) },
     },
   };
-  transaction.set(proposalDocRef, data, true);
+  await transaction.update(proposalDocRef, data);
 };
 
 const getStakesById = (stakeIds: string[]) => {
   const promises = stakeIds.map(async (uid) => {
-    const docRef = build5Db().doc(`${COL.STAKE}/${uid}`);
-    return (await docRef.get<Stake>())!;
+    const docRef = database().doc(COL.STAKE, uid);
+    return (await docRef.get())!;
   });
   return Promise.all(promises);
 };
@@ -176,11 +148,11 @@ const getWeightForStakes = (
   }, 0);
 
 const getActiveStakes = async (member: string, token: string) => {
-  const stakes = await build5Db()
+  const stakes = await database()
     .collection(COL.STAKE)
     .where('member', '==', member)
     .where('token', '==', token)
     .where('expirationProcessed', '==', false)
-    .get<Stake>();
+    .get();
   return stakes.filter((s) => dayjs(s.expiresAt.toDate()).isAfter(dayjs()));
 };

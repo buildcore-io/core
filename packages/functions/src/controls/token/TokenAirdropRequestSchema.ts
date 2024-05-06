@@ -3,7 +3,7 @@ import {
   MAX_TOTAL_TOKEN_SUPPLY,
   NetworkAddress,
   StakeType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 import { MAX_COUNT, MIN_AIRDROP, MIN_COUNT } from './common';
@@ -22,7 +22,7 @@ export interface CreateAirdropsRequest {
 }
 
 export const airdropTokenSchema = toJoiObject<CreateAirdropsRequest>({
-  token: CommonJoi.uid().description('Build5 id of the token'),
+  token: CommonJoi.uid().description('Buildcore id of the token'),
   drops: Joi.array()
     .required()
     .items(
@@ -36,7 +36,7 @@ export const airdropTokenSchema = toJoiObject<CreateAirdropsRequest>({
           .description(
             `Amount of tokens to be airdroped. Minimum ${MIN_COUNT}, maximum ${MAX_TOTAL_TOKEN_SUPPLY}`,
           ),
-        recipient: CommonJoi.uid().description('Build5 id or wallet address of the recipient'),
+        recipient: CommonJoi.uid().description('Buildcore id or wallet address of the recipient'),
         stakeType: Joi.string()
           .equal(StakeType.STATIC, StakeType.DYNAMIC)
           .optional()

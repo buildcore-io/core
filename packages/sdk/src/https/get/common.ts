@@ -1,6 +1,6 @@
-import { ApiRoutes, Dataset, Subset } from '@build-5/interfaces';
+import { ApiRoutes, Dataset, Subset } from '@buildcore/interfaces';
 import { set } from 'lodash';
-import { Build5 } from '..';
+import { Buildcore } from '..';
 
 export const BATCH_MAX_SIZE = 100;
 export const BATCH_TIMEOUT = 500;
@@ -10,7 +10,7 @@ export interface Request {
   setId: string;
   subset?: Subset;
   subsetId?: string;
-  origin: Build5;
+  origin: Buildcore;
   apiKey: string;
 }
 

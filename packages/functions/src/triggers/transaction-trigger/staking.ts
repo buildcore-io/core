@@ -1,48 +1,36 @@
-import { build5Db } from '@build-5/database';
-import { COL, Stake, SUB_COL, Transaction } from '@build-5/interfaces';
+import { PgTokenStatsUpdate, PgTransaction, database } from '@buildcore/database';
+import { COL, SUB_COL } from '@buildcore/interfaces';
 import { onStakeCreated } from '../../services/stake.service';
 
-export const onStakingConfirmed = async (billPayment: Transaction) => {
-  const stakeDocRef = build5Db().doc(`${COL.STAKE}/${billPayment.payload.stake}`);
-  const stake = (await stakeDocRef.get<Stake>())!;
+export const onStakingConfirmed = async (billPayment: PgTransaction) => {
+  const stakeDocRef = database().doc(COL.STAKE, billPayment.payload_stake!);
+  const stake = (await stakeDocRef.get())!;
 
-  await build5Db().runTransaction((transaction) => onStakeCreated(transaction, stake));
+  await database().runTransaction((transaction) => onStakeCreated(transaction, stake));
 
-  const batch = build5Db().batch();
+  const tokenUid = billPayment.payload_token;
 
-  const updateData = {
-    stakes: {
-      [stake.type]: {
-        amount: build5Db().inc(stake.amount),
-        totalAmount: build5Db().inc(stake.amount),
-        value: build5Db().inc(stake.value),
-        totalValue: build5Db().inc(stake.value),
-      },
-    },
-    stakeExpiry: {
-      [stake.type]: {
-        [stake.expiresAt.toMillis()]: stake.value,
-      },
-    },
+  const batch = database().batch();
+
+  const updateData: PgTokenStatsUpdate = {
+    [`stakes_${stake.type}_amount`]: database().inc(stake.amount),
+    [`stakes_${stake.type}_totalAmount`]: database().inc(stake.amount),
+    [`stakes_${stake.type}_value`]: database().inc(stake.value),
+    [`stakes_${stake.type}_totalValue`]: database().inc(stake.value),
+    stakeExpiry: { [stake.type]: { [stake.expiresAt.toMillis()]: stake.value } },
+    parentId: tokenUid!,
   };
 
-  const tokenUid = billPayment.payload.token;
-  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${tokenUid}/${SUB_COL.STATS}/${tokenUid}`);
-  batch.set(tokenDocRef, { stakes: updateData.stakes }, true);
+  const tokenDocRef = database().doc(COL.TOKEN, tokenUid!, SUB_COL.STATS, tokenUid);
+  batch.upsert(tokenDocRef, updateData);
 
-  const distirbutionDocRef = build5Db().doc(
-    `${COL.TOKEN}/${tokenUid}/${SUB_COL.DISTRIBUTION}/${billPayment.member}`,
+  const distirbutionDocRef = database().doc(
+    COL.TOKEN,
+    tokenUid!,
+    SUB_COL.DISTRIBUTION,
+    billPayment.member,
   );
-  batch.set(
-    distirbutionDocRef,
-    {
-      parentId: tokenUid,
-      parentCol: COL.TOKEN,
-      uid: billPayment.member,
-      ...updateData,
-    },
-    true,
-  );
+  batch.upsert(distirbutionDocRef, updateData);
 
   await batch.commit();
 };

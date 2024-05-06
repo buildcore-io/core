@@ -1,4 +1,4 @@
-import { Nft, NftStatus, WenError } from '@build-5/interfaces';
+import { Nft, NftStatus, WenError } from '@buildcore/interfaces';
 import { invalidArgument } from '../../../utils/error.utils';
 
 export const assertCanBeWithdrawn = (nft: Nft, owner: string) => {

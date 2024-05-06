@@ -1,4 +1,4 @@
-import { COL } from '@build-5/interfaces';
+import { COL } from '@buildcore/interfaces';
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import serviceAccount from './serviceAccountKeyTest.json';

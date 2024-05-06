@@ -1,8 +1,7 @@
-import { build5Db } from '@build-5/database';
-import { COL, MIN_IOTA_AMOUNT, Transaction } from '@build-5/interfaces';
-import { importMintedToken } from '../../src/runtime/firebase/token/minting';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { database } from '@buildcore/database';
+import { COL, MIN_IOTA_AMOUNT, Transaction, WEN_FUNC } from '@buildcore/interfaces';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
@@ -14,23 +13,22 @@ describe('Token import', () => {
   });
 
   it('Should throw, not guardian ', async () => {
-    mockWalletReturnValue(helper.walletSpy, helper.guardian.uid, {
+    mockWalletReturnValue(helper.guardian.uid, {
       space: helper.importSpace.uid,
       tokenId: helper.token.mintingData?.tokenId,
       network: helper.network,
     });
-    const order = await testEnv.wrap(importMintedToken)({});
+    const order = await testEnv.wrap<Transaction>(WEN_FUNC.importMintedToken);
     await requestFundsFromFaucet(helper.network, order.payload.targetAddress, 2 * MIN_IOTA_AMOUNT);
 
-    const creditQuery = build5Db()
+    const creditQuery = database()
       .collection(COL.TRANSACTION)
-      .where('member', '==', helper.guardian.uid)
-      .where('payload.response.code', '==', 2122);
+      .where('member', '==', helper.guardian.uid);
     await wait(async () => {
-      const snap = await creditQuery.get<Transaction>();
+      const snap = (await creditQuery.get()).filter((s) => s.payload.response?.code === 2122);
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
-    const migratedTokenDocRef = build5Db().doc(`${COL.TOKEN}/${helper.token.mintingData?.tokenId}`);
+    const migratedTokenDocRef = database().doc(COL.TOKEN, helper.token.mintingData?.tokenId!);
     expect((await migratedTokenDocRef.get()) !== undefined).toBe(false);
   });
 });

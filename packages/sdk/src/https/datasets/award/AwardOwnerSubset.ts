@@ -1,4 +1,4 @@
-import { AwardOwner } from '@build-5/interfaces';
+import { AwardOwner } from '@buildcore/interfaces';
 import { SubsetClass } from '../Subset';
 
 /**

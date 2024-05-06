@@ -12,7 +12,7 @@ export interface SwapSetFundedTangleRequest {
    */
   requestType: 'SET_SWAP_FUNDED';
   /**
-   * Build5 UID of the swap
+   * Buildcore UID of the swap
    */
   uid: string;
 }

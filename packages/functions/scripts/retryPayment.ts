@@ -1,4 +1,4 @@
-import { Transaction } from '@build-5/interfaces';
+import { Transaction } from '@buildcore/interfaces';
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import serviceAccount from './serviceAccountKeyProd.json';
@@ -9,8 +9,8 @@ initializeApp({
 
 const db = getFirestore();
 db.collection('transaction')
-  .where('payload.walletReference.confirmed', '==', false)
-  .where('payload.walletReference.count', '<=', 4)
+  .where('payload_walletReference.confirmed', '==', false)
+  .where('payload_walletReference.count', '<=', 4)
   .orderBy('payload.walletReference.count', 'asc')
   .limit(10000)
   .get()

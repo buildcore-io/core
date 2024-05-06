@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -6,12 +6,12 @@ import {
   SwapStatus,
   Transaction,
   TransactionType,
+  WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
-import { createSwap, setSwapFunded } from '../../src/runtime/firebase/swap';
+} from '@buildcore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { expectThrow, mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { expectThrow, wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import {
   awaitLedgerInclusionState,
   requestFundsFromFaucet,
@@ -37,18 +37,18 @@ describe('Swap control test', () => {
   });
 
   it('Should create, offer minted tokens, request base token', async () => {
-    mockWalletReturnValue(h.spy, h.guardian, {
+    mockWalletReturnValue(h.guardian, {
       network: h.network,
       baseTokenAmount: MIN_IOTA_AMOUNT,
       recipient: h.member,
     });
-    const swapOrder: Transaction = await testEnv.wrap(createSwap)({});
+    const swapOrder = await testEnv.wrap<Transaction>(WEN_FUNC.createSwap);
 
-    const swapDocRef = build5Db().doc(`${COL.SWAP}/${swapOrder.payload.swap}`);
+    const swapDocRef = database().doc(COL.SWAP, swapOrder.payload.swap!);
     let swap = <Swap>await swapDocRef.get();
 
-    mockWalletReturnValue(h.spy, h.guardian, { uid: swap.uid });
-    await expectThrow(testEnv.wrap(setSwapFunded)({}), WenError.swap_must_be_funded.key);
+    mockWalletReturnValue(h.guardian, { uid: swap.uid });
+    await expectThrow(testEnv.wrap(WEN_FUNC.setSwapFunded), WenError.swap_must_be_funded.key);
 
     const source = await h.wallet.getNewIotaAddressDetails();
     await requestFundsFromFaucet(h.network, source.bech32, 10 * MIN_IOTA_AMOUNT);
@@ -77,10 +77,10 @@ describe('Swap control test', () => {
     ]);
     expect(swap.bidOutputs!.map((nt) => nt.nativeTokens![0].amount!)).toEqual(['0x5', '0x5']);
 
-    mockWalletReturnValue(h.spy, h.member, { uid: swap.uid });
-    await expectThrow(testEnv.wrap(setSwapFunded)({}), WenError.not_swap_owner.key);
-    mockWalletReturnValue(h.spy, h.guardian, { uid: swap.uid });
-    await testEnv.wrap(setSwapFunded)({});
+    mockWalletReturnValue(h.member, { uid: swap.uid });
+    await expectThrow(testEnv.wrap(WEN_FUNC.setSwapFunded), WenError.not_swap_owner.key);
+    mockWalletReturnValue(h.guardian, { uid: swap.uid });
+    await testEnv.wrap(WEN_FUNC.setSwapFunded);
     swap = <Swap>await swapDocRef.get();
     expect(swap.status).toBe(SwapStatus.FUNDED);
 
@@ -91,33 +91,33 @@ describe('Swap control test', () => {
       return swap.status === SwapStatus.FULFILLED;
     });
 
-    let query = build5Db()
+    let query = database()
       .collection(COL.TRANSACTION)
-      .where('payload.swap', '==', swap.uid)
+      .where('payload_swap', '==', swap.uid)
       .where('type', '==', TransactionType.BILL_PAYMENT);
     await wait(async () => {
-      const snap = await query.get<Transaction>();
+      const snap = await query.get();
       return (
         snap.length === 3 &&
         snap.reduce((acc, act) => (acc && act.payload.walletReference?.confirmed) || false, true)
       );
     });
 
-    query = build5Db()
+    query = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', h.guardian)
       .where('type', '==', TransactionType.BILL_PAYMENT);
-    let billPayments = await query.get<Transaction>();
+    let billPayments = await query.get();
     expect(billPayments.length).toBe(1);
     expect(billPayments[0].payload.amount).toBe(MIN_IOTA_AMOUNT);
     expect(billPayments[0].payload.nativeTokens).toEqual([]);
     expect(billPayments[0].payload.nftId).toBeUndefined();
 
-    query = build5Db()
+    query = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', h.member)
       .where('type', '==', TransactionType.BILL_PAYMENT);
-    billPayments = await query.get<Transaction>();
+    billPayments = await query.get();
     expect(billPayments.length).toBe(2);
     expect(billPayments.map((b) => b.payload.nativeTokens![0].id).sort()).toEqual(
       [MINTED_TOKEN_ID_1, MINTED_TOKEN_ID_2].sort(),

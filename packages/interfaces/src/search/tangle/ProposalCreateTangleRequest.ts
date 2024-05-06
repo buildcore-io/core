@@ -50,7 +50,7 @@ export interface ProposalCreateTangleRequest {
     startDate: Date;
   };
   /**
-   * Build5 id of the space where the proposal should be created.
+   * Buildcore id of the space where the proposal should be created.
    */
   space: string;
   /**

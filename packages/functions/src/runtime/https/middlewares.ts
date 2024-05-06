@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Build5Request, CreateMemberRequest, WEN_FUNC } from '@build-5/interfaces';
+import { BuildcoreRequest, CreateMemberRequest, WEN_FUNC } from '@buildcore/interfaces';
 import express from 'express';
 import { AnySchema, ValidationOptions } from 'joi';
 import { Context } from '../../controls/common';
@@ -29,9 +29,9 @@ export const auth = async (
 export const createMember = async (req: express.Request): Promise<Context<any>> => {
   return {
     ip: req.ip || '',
-    owner: (req.body as Build5Request<CreateMemberRequest>).body.address,
+    owner: (req.body as BuildcoreRequest<CreateMemberRequest>).body.address,
     params: {},
-    project: getProject(req.body as Build5Request<unknown>, false),
+    project: getProject(req.body as BuildcoreRequest<unknown>, false),
     headers: req.headers,
     rawBody: req.body,
   };

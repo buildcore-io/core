@@ -1,4 +1,4 @@
-import { ApiRoutes } from '@build-5/interfaces';
+import { ApiRoutes } from '@buildcore/interfaces';
 import { GetByIdGroupedClass } from './GetByIdGrouped';
 import { CreateUrlResponse } from './common';
 

@@ -1,4 +1,4 @@
-import { TOKEN_EXPIRY_HOURS } from '@build-5/interfaces';
+import { TOKEN_EXPIRY_HOURS } from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import jwt from 'jsonwebtoken';
 import { getJwtSecretKey } from '../../utils/config.utils';

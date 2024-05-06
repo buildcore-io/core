@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -7,12 +7,12 @@ import {
   TokenTradeOrderType,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+  WEN_FUNC,
+} from '@buildcore/interfaces';
 import { isEmpty } from 'lodash';
-import { tradeToken } from '../../src/runtime/firebase/token/trading';
 import { getAddress } from '../../src/utils/address.utils';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { getWallet, testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { getWallet, mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
@@ -25,20 +25,20 @@ describe('Base token trading', () => {
   });
 
   it('Should fulfil trade with half price', async () => {
-    mockWalletReturnValue(helper.walletSpy, helper.seller!.uid, {
+    mockWalletReturnValue(helper.seller!.uid, {
       symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 1,
       type: TokenTradeOrderType.SELL,
     });
-    const sellOrder = await testEnv.wrap(tradeToken)({});
+    const sellOrder = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await requestFundsFromFaucet(
       helper.sourceNetwork,
       sellOrder.payload.targetAddress,
       MIN_IOTA_AMOUNT,
     );
 
-    const sellQuery = build5Db()
+    const sellQuery = database()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.seller!.uid);
     await wait(async () => {
@@ -46,13 +46,13 @@ describe('Base token trading', () => {
       return snap.length !== 0;
     });
 
-    mockWalletReturnValue(helper.walletSpy, helper.buyer!.uid, {
+    mockWalletReturnValue(helper.buyer!.uid, {
       symbol: helper.token!.symbol,
       count: MIN_IOTA_AMOUNT,
       price: 2,
       type: TokenTradeOrderType.BUY,
     });
-    const buyOrder = await testEnv.wrap(tradeToken)({});
+    const buyOrder = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
     await requestFundsFromFaucet(
       helper.targetNetwork,
       buyOrder.payload.targetAddress,
@@ -61,7 +61,7 @@ describe('Base token trading', () => {
 
     const sell = <TokenTradeOrder>(await sellQuery.get())[0];
 
-    const buyQuery = build5Db()
+    const buyQuery = database()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.buyer!.uid);
     await wait(async () => {
@@ -70,7 +70,7 @@ describe('Base token trading', () => {
     });
     let buy = <TokenTradeOrder>(await buyQuery.get())[0];
 
-    const purchaseQuery = build5Db()
+    const purchaseQuery = database()
       .collection(COL.TOKEN_PURCHASE)
       .where('sell', '==', sell.uid)
       .where('buy', '==', buy.uid);
@@ -85,7 +85,7 @@ describe('Base token trading', () => {
     expect(purchase.sourceNetwork).toBe(helper.sourceNetwork);
     expect(purchase.targetNetwork).toBe(helper.targetNetwork);
 
-    const sellerBillPaymentsSnap = await build5Db()
+    const sellerBillPaymentsSnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller!.uid)
       .where('type', '==', TransactionType.BILL_PAYMENT)
@@ -106,7 +106,7 @@ describe('Base token trading', () => {
           bp.payload.targetAddress === getAddress(helper.buyer, helper.sourceNetwork),
       ),
     ).toBeDefined();
-    const sellerCreditnap = await build5Db()
+    const sellerCreditnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.seller!.uid)
       .where('type', '==', TransactionType.CREDIT)
@@ -114,7 +114,7 @@ describe('Base token trading', () => {
     const sellerCredit = sellerCreditnap.map((d) => d as Transaction);
     expect(sellerCredit.length).toBe(0);
 
-    const buyerBillPaymentsSnap = await build5Db()
+    const buyerBillPaymentsSnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer!.uid)
       .where('type', '==', TransactionType.BILL_PAYMENT)
@@ -152,11 +152,11 @@ describe('Base token trading', () => {
           bp.payload.targetAddress === getAddress(helper.seller, helper.targetNetwork),
       ),
     ).toBeDefined();
-    const buyerCreditnap = await build5Db()
+    const buyerCreditnap = await database()
       .collection(COL.TRANSACTION)
       .where('member', '==', helper.buyer!.uid)
       .where('type', '==', TransactionType.CREDIT)
-      .get<Transaction>();
+      .get();
     expect(buyerCreditnap.length).toBe(1);
     expect(buyerCreditnap[0]?.payload.amount).toBe(MIN_IOTA_AMOUNT);
     buy = <TokenTradeOrder>(await buyQuery.get())[0];

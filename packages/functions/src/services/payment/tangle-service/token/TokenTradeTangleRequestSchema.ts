@@ -4,7 +4,7 @@ import {
   MIN_PRICE_PER_TOKEN,
   TangleRequestType,
   TradeTokenTangleRequest,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../../joi/common';
 import { baseTangleSchema } from '../common';

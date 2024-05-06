@@ -12,7 +12,7 @@ export interface NftUpdateUnsoldRequest {
    */
   price: number;
   /**
-   * Build5 id of the nft to update
+   * Buildcore id of the nft to update
    */
   uid: string;
 }

@@ -8,7 +8,7 @@
  */
 export interface SpaceJoinRequest {
   /**
-   * Build5 id of the space.
+   * Buildcore id of the space.
    */
   uid: string;
 }

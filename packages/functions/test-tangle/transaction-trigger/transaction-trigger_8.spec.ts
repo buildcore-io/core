@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -7,7 +7,7 @@ import {
   SOON_PROJECT_ID,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -51,17 +51,17 @@ describe('Transaction trigger spec', () => {
           void: false,
         },
       };
-      const docRef = build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+      const docRef = database().doc(COL.TRANSACTION, billPayment.uid);
       return docRef.create(billPayment);
     });
     await Promise.all(promises);
 
     await wait(async () => {
-      const snap = await build5Db()
+      const snap = await database()
         .collection(COL.TRANSACTION)
-        .where('payload.sourceAddress', '==', sourceAddress.bech32)
-        .where('payload.walletReference.confirmed', '==', true)
-        .get<Transaction>();
+        .where('payload_sourceAddress', '==', sourceAddress.bech32)
+        .where('payload_walletReference_confirmed', '==', true)
+        .get();
       const countSum = snap.reduce(
         (acc, act) => acc + (act?.payload?.walletReference?.count || 0),
         0,

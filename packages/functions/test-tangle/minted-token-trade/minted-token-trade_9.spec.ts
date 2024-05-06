@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
   TokenTradeOrderType,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
-import { tradeToken } from '../../src/runtime/firebase/token/trading';
+  WEN_FUNC,
+} from '@buildcore/interfaces';
 import { packBasicOutput } from '../../src/utils/basic-output.utils';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { Helper, MINTED_TOKEN_ID, dummyTokenId, saveToken } from './Helper';
 
@@ -33,18 +33,18 @@ describe('Token minting', () => {
       helper.walletService!,
       dummyTokenId,
     );
-    mockWalletReturnValue(helper.walletSpy, helper.seller!, {
+    mockWalletReturnValue(helper.seller!, {
       symbol: dummyToken.symbol,
       count: 10,
       price: MIN_IOTA_AMOUNT,
       type: TokenTradeOrderType.SELL,
     });
-    const sellOrder = await testEnv.wrap(tradeToken)({});
-    await helper.walletService!.send(helper.sellerAddress!, sellOrder.payload.targetAddress, 0, {
+    const sellOrder = await testEnv.wrap<Transaction>(WEN_FUNC.tradeToken);
+    await helper.walletService!.send(helper.sellerAddress!, sellOrder.payload.targetAddress!, 0, {
       nativeTokens: [{ amount: BigInt(10), id: helper.token!.mintingData?.tokenId! }],
     });
 
-    const query = build5Db()
+    const query = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', helper.seller);
@@ -56,7 +56,7 @@ describe('Token minting', () => {
     const credit = <Transaction>snap[0];
     const output = await packBasicOutput(
       helper.walletService!,
-      sellOrder.payload.targetAddress,
+      sellOrder.payload.targetAddress!,
       0,
       {
         nativeTokens: [{ amount: BigInt(10), id: helper.token!.mintingData?.tokenId! }],
@@ -65,7 +65,7 @@ describe('Token minting', () => {
     expect(credit.payload.amount).toBe(Number(output.amount));
     expect(credit.payload.nativeTokens![0].id).toBe(MINTED_TOKEN_ID);
     expect(credit.payload.nativeTokens![0].amount).toBe(10);
-    const sellSnap = await build5Db()
+    const sellSnap = await database()
       .collection(COL.TOKEN_MARKET)
       .where('owner', '==', helper.seller)
       .get();

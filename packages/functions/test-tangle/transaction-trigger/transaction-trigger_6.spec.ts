@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
@@ -7,7 +7,7 @@ import {
   SOON_PROJECT_ID,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { AddressDetails } from '../../src/services/wallet/wallet.service';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
@@ -48,10 +48,10 @@ describe('Transaction trigger spec', () => {
           void: false,
         },
       };
-      const docRef = build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
+      const docRef = database().doc(COL.TRANSACTION, billPayment.uid);
       await docRef.create(billPayment);
       await wait(async () => {
-        const doc = await docRef.get<Transaction>();
+        const doc = await docRef.get();
         return (
           doc?.payload?.walletReference?.confirmed === true &&
           !doc?.payload?.walletReference?.inProgress
@@ -59,9 +59,7 @@ describe('Transaction trigger spec', () => {
       });
 
       await wait(async () => {
-        billPayment = <Transaction>(
-          await build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`).get()
-        );
+        billPayment = <Transaction>await database().doc(COL.TRANSACTION, billPayment.uid).get();
         return billPayment.payload?.walletReference?.confirmed;
       });
     },

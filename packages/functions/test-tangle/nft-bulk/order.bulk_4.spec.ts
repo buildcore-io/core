@@ -1,8 +1,7 @@
-import { build5Db } from '@build-5/database';
-import { COL, CollectionType, Nft, Transaction } from '@build-5/interfaces';
-import { orderNftBulk } from '../../src/runtime/firebase/nft';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { database } from '@buildcore/database';
+import { COL, CollectionType, Nft, Transaction, WEN_FUNC } from '@buildcore/interfaces';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
 
@@ -14,9 +13,9 @@ describe('Nft bulk order', () => {
   });
 
   it('Should order 2 nfts, 2 random', async () => {
-    const { collection: col1, nft: nft1 } = await h.createColletionAndNft(h.member, h.space);
-    const { collection: col2, nft: nft2 } = await h.createColletionAndNft(h.member, h.space);
-    const { collection: col3 } = await h.createColletionAndNft(
+    const { collection: col1, nft: nft1 } = await h.createCollectionAndNft(h.member, h.space);
+    const { collection: col2, nft: nft2 } = await h.createCollectionAndNft(h.member, h.space);
+    const { collection: col3 } = await h.createCollectionAndNft(
       h.member,
       h.space,
       CollectionType.GENERATED,
@@ -33,8 +32,8 @@ describe('Nft bulk order', () => {
         { collection: col3.uid },
       ],
     };
-    mockWalletReturnValue(h.walletSpy, h.member, request);
-    const order: Transaction = await testEnv.wrap(orderNftBulk)({});
+    mockWalletReturnValue(h.member, request);
+    const order = await testEnv.wrap<Transaction>(WEN_FUNC.orderNftBulk);
     await requestFundsFromFaucet(
       order.network,
       order.payload.targetAddress!,
@@ -43,7 +42,7 @@ describe('Nft bulk order', () => {
 
     await wait(async () => {
       const promises = order.payload.nftOrders!.map(async (nftOrder) => {
-        const docRef = build5Db().doc(`${COL.NFT}/${nftOrder.nft}`);
+        const docRef = database().doc(COL.NFT, nftOrder.nft);
         return <Nft>await docRef.get();
       });
       const nfts = await Promise.all(promises);

@@ -1,14 +1,14 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
   Network,
+  SUB_COL,
   Space,
   SpaceMember,
-  SUB_COL,
   TangleRequestType,
   Transaction,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { wait } from '../../test/controls/common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
@@ -41,18 +41,23 @@ describe('Join space', () => {
     );
 
     await wait(async () => {
-      const snap = await helper.memberCreditQuery.get<Transaction>();
+      const snap = await helper.memberCreditQuery.get();
       return snap.length === 1 && snap[0]?.payload?.walletReference?.confirmed;
     });
     const snap = await helper.memberCreditQuery.get();
     const credit = snap[0] as Transaction;
     expect(credit.payload.response!.status).toBe('success');
 
-    const spaceDocRef = build5Db().doc(`${COL.SPACE}/${helper.space.uid}`);
+    const spaceDocRef = database().doc(COL.SPACE, helper.space.uid);
     helper.space = <Space>await spaceDocRef.get();
     expect(helper.space.totalMembers).toBe(2);
 
-    const spaceMemberDocRef = spaceDocRef.collection(SUB_COL.MEMBERS).doc(helper.member);
+    const spaceMemberDocRef = database().doc(
+      COL.SPACE,
+      helper.space.uid,
+      SUB_COL.MEMBERS,
+      helper.member,
+    );
     const spaceMember = <SpaceMember | undefined>await spaceMemberDocRef.get();
     expect(spaceMember).toBeDefined();
   });

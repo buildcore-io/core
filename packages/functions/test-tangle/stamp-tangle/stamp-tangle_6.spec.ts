@@ -1,13 +1,11 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   KEY_NAME_TANGLE,
   MIN_IOTA_AMOUNT,
   MediaStatus,
-  Stamp,
-  Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { NftOutput } from '@iota/sdk';
 import { uploadMediaToWeb3 } from '../../src/cron/media.cron';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
@@ -34,12 +32,12 @@ describe('Stamp tangle test', () => {
     );
     await MnemonicService.store(helper.address.bech32, helper.address.mnemonic);
 
-    const query = build5Db().collection(COL.STAMP).where('createdBy', '==', helper.address.bech32);
+    const query = database().collection(COL.STAMP).where('createdBy', '==', helper.address.bech32);
     await wait(async () => {
-      const snap = await query.get<Stamp>();
+      const snap = await query.get();
       return snap.length === 1 && snap[0].funded;
     });
-    let stamp = (await query.get<Stamp>())[0];
+    let stamp = (await query.get())[0];
     expect(stamp?.mediaStatus).toBe(MediaStatus.PENDING_UPLOAD);
     expect(stamp?.ipfsMedia).toBeDefined();
     const ipfsMedia = stamp.ipfsMedia;
@@ -47,29 +45,29 @@ describe('Stamp tangle test', () => {
 
     await uploadMediaToWeb3();
     await wait(async () => {
-      stamp = (await query.get<Stamp>())[0];
+      stamp = (await query.get())[0];
       return stamp?.mediaStatus === MediaStatus.UPLOADED;
     });
     expect(stamp?.ipfsMedia).toBe(ipfsMedia);
 
     await wait(async () => {
-      stamp = (await query.get<Stamp>())[0];
+      stamp = (await query.get())[0];
       return stamp?.aliasId !== EMPTY_ALIAS_ID && stamp?.nftId !== undefined;
     });
 
-    stamp = (await query.get<Stamp>())[0];
+    stamp = (await query.get())[0];
     const nftOutputId = await helper.wallet.client.nftOutputId(stamp?.nftId!);
     const nftOutput = (await helper.wallet.client.getOutput(nftOutputId)).output as NftOutput;
     const metadata = getNftMetadata(nftOutput);
     expect(metadata.uri).toBe('ipfs://' + stamp!.ipfsMedia);
     expect(metadata.issuerName).toBe(KEY_NAME_TANGLE);
-    expect(metadata.build5Id).toBe(stamp!.uid);
+    expect(metadata.originId).toBe(stamp!.uid);
 
-    const billPayment = await build5Db()
+    const billPayment = await database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)
-      .where('payload.stamp', '==', stamp?.uid)
-      .get<Transaction>();
+      .where('payload_stamp', '==', stamp?.uid)
+      .get();
     expect(billPayment.length).toBe(1);
   });
 });

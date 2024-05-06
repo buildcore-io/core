@@ -12,11 +12,11 @@ export interface TokenCreateRequest {
    */
   access?: 0 | 1 | 2 | 3 | 4;
   /**
-   * Build5 id of the awards. If present only members with the given awards can purchase this token.
+   * Buildcore id of the awards. If present only members with the given awards can purchase this token.
    */
   accessAwards?: any[];
   /**
-   * Build5 id of the collections. If present only members having NFTs from the give collections can purchase this token.
+   * Buildcore id of the collections. If present only members having NFTs from the give collections can purchase this token.
    */
   accessCollections?: any[];
   /**
@@ -55,7 +55,7 @@ export interface TokenCreateRequest {
    */
   description?: string;
   /**
-   * Build5 url pointing to the token icon.
+   * Buildcore url pointing to the token icon.
    */
   icon?: string;
   /**
@@ -67,7 +67,7 @@ export interface TokenCreateRequest {
    */
   name: string;
   /**
-   * Build5 url pointing to the overview graphics of the token.
+   * Buildcore url pointing to the overview graphics of the token.
    */
   overviewGraphics?: string;
   /**
@@ -91,7 +91,7 @@ export interface TokenCreateRequest {
    */
   shortDescriptionTitle?: string;
   /**
-   * Build5 id of the space.
+   * Buildcore id of the space.
    */
   space?: string;
   /**

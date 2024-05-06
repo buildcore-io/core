@@ -1,0 +1,22 @@
+{
+  "name": "@buildcore/notifier",
+  "version": "0.0.0",
+  "description": "pg_notify listener",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "export GOOGLE_APPLICATION_CREDENTIALS=\"./sa.json\" && node lib/index.js"
+  },
+  "author": "Boldizsar Mezei",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@google-cloud/pubsub": "4.3.3",
+    "dotenv": "16.4.5",
+    "knex": "3.1.0",
+    "pg": "8.11.3"
+  },
+  "devDependencies": {
+    "@types/node": "20.12.7",
+    "typescript": "5.4.5"
+  }
+}

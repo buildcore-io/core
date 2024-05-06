@@ -1,4 +1,4 @@
-import { GetNftMutableMetadatHistory, Network, WenError } from '@build-5/interfaces';
+import { GetNftMutableMetadatHistory, Network, WenError } from '@buildcore/interfaces';
 import {
   Client,
   NftOutput,

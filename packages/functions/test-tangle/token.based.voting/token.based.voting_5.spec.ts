@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, SOON_PROJECT_ID, TokenStatus } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, SOON_PROJECT_ID, Token, TokenStatus } from '@buildcore/interfaces';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 import { Helper } from './Helper';
 
@@ -22,14 +22,14 @@ describe('Token based voting', () => {
       space: helper.space!.uid,
       status: TokenStatus.PRE_MINTED,
       approved: false,
-    };
-    await build5Db().doc(`${COL.TOKEN}/${falseToken.uid}`).create(falseToken);
+    } as Token;
+    await database().doc(COL.TOKEN, falseToken.uid).create(falseToken);
 
     const voteTransactionOrder = await helper.voteOnProposal(1);
 
-    await helper.sendTokensToVote(voteTransactionOrder.payload.targetAddress);
+    await helper.sendTokensToVote(voteTransactionOrder.payload.targetAddress!);
     const credit = await helper.awaitVoteTransactionCreditIsConfirmed(
-      voteTransactionOrder.payload.targetAddress,
+      voteTransactionOrder.payload.targetAddress!,
     );
 
     const voteTransaction = await helper.getVoteTransactionForCredit(credit.uid);

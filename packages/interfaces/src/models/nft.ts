@@ -230,6 +230,10 @@ export interface Nft extends BaseRecord {
    */
   mediaStatus?: MediaStatus;
   /**
+   * @hidden
+   */
+  mediaUploadErrorCount?: number;
+  /**
    * NFT Sold on
    */
   soldOn?: Timestamp;
@@ -238,7 +242,7 @@ export interface Nft extends BaseRecord {
    */
   setAsAvatar?: boolean;
   /**
-   * The build5 id of the auction this nft belongs to
+   * The buildcore id of the auction this nft belongs to
    */
   auction?: string | null;
 }

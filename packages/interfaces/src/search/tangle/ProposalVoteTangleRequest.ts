@@ -12,7 +12,7 @@ export interface ProposalVoteTangleRequest {
    */
   requestType: 'PROPOSAL_VOTE';
   /**
-   * Build5 id of the proposal to vote on.
+   * Buildcore id of the proposal to vote on.
    */
   uid: string;
   /**

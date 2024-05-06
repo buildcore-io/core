@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   Collection,
@@ -8,7 +8,7 @@ import {
   TangleRequestType,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { wait } from '../../test/controls/common';
 import { getWallet } from '../../test/set-up';
@@ -41,18 +41,18 @@ describe('Minted nft trading', () => {
     );
     await MnemonicService.store(address.bech32, address.mnemonic, Network.RMS);
 
-    const creditQuery = build5Db()
+    const creditQuery = database()
       .collection(COL.TRANSACTION)
       .where('member', '==', address.bech32)
       .where('type', '==', TransactionType.CREDIT_TANGLE_REQUEST);
     await wait(async () => {
-      const snap = await creditQuery.get<Transaction>();
+      const snap = await creditQuery.get();
       return snap.length > 0 && snap[0]?.payload?.walletReference?.confirmed;
     });
     const snap = await creditQuery.get();
     const credit = snap[0] as Transaction;
 
-    const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${helper.nft?.collection}`);
+    const collectionDocRef = database().doc(COL.COLLECTION, helper.nft?.collection);
     const collection = <Collection>await collectionDocRef.get();
     expect(collection.availableNfts).toBe(1);
     expect(collection.nftsOnSale).toBe(0);
@@ -69,7 +69,7 @@ describe('Minted nft trading', () => {
       {},
     );
 
-    const nftDocRef = build5Db().doc(`${COL.NFT}/${helper.nft?.uid}`);
+    const nftDocRef = database().doc(COL.NFT, helper.nft?.uid);
     await wait(async () => {
       const nft = <Nft>await nftDocRef.get();
       return nft.sold || false;
@@ -78,7 +78,7 @@ describe('Minted nft trading', () => {
     expect(nft.owner).toBe(address.bech32);
 
     await wait(async () => {
-      const collectionDocRef = build5Db().doc(`${COL.COLLECTION}/${helper.nft?.collection}`);
+      const collectionDocRef = database().doc(COL.COLLECTION, helper.nft?.collection);
       const collection = <Collection>await collectionDocRef.get();
       return !collection.availableNfts && !collection.nftsOnSale && !collection.nftsOnAuction;
     });

@@ -1,4 +1,4 @@
-import { TokenStakeRewardsRemoveRequest } from '@build-5/interfaces';
+import { TokenStakeRewardsRemoveRequest } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 
@@ -10,7 +10,7 @@ export const removeStakeRewardSchema = toJoiObject<TokenStakeRewardsRemoveReques
     .min(MIN_COUNT)
     .max(MAX_COUNT)
     .required()
-    .description('Build5 ids of the rewards to be removed'),
+    .description('Buildcore ids of the rewards to be removed'),
 })
   .description('Request object to remove a stake reward(s).')
   .meta({

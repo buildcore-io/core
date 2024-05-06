@@ -1,14 +1,14 @@
-import { ITransaction, build5Db } from '@build-5/database';
+import { ITransaction, PgTransaction, database } from '@buildcore/database';
 import {
   COL,
   Entity,
   IgnoreWalletReason,
   Member,
+  Network,
   SUB_COL,
   Stake,
   StakeType,
   Token,
-  TokenDistribution,
   TokenDrop,
   TokenDropStatus,
   TokenStatus,
@@ -16,7 +16,7 @@ import {
   TransactionPayloadType,
   TransactionType,
   calcStakedMultiplier,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { head } from 'lodash';
 import { Wallet } from '../../services/wallet/wallet';
@@ -24,22 +24,23 @@ import { WalletService } from '../../services/wallet/wallet.service';
 import { getAddress } from '../../utils/address.utils';
 import { getProject } from '../../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
+import { logger } from '../../utils/logger';
 import { dropToOutput } from '../../utils/token-minting-utils/member.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 const LOOP_SIZE = 10000;
 
-export const onAirdropClaim = async (order: Transaction) => {
-  const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${order.payload.token}`);
-  const token = (await tokenDocRef.get<Token>())!;
+export const onAirdropClaim = async (order: PgTransaction) => {
+  const tokenDocRef = database().doc(COL.TOKEN, order.payload_token!);
+  const token = (await tokenDocRef.get())!;
 
-  if (order.payload.type === TransactionPayloadType.TOKEN_AIRDROP) {
+  if (order.payload_type === TransactionPayloadType.TOKEN_AIRDROP) {
     return await onPreMintedAirdropClaim(order, token);
   }
   return await onMintedAirdropClaim(order, token);
 };
 
-const onPreMintedAirdropClaim = async (order: Transaction, token: Token) => {
+const onPreMintedAirdropClaim = async (order: PgTransaction, token: Token) => {
   if (![TokenStatus.AVAILABLE, TokenStatus.PRE_MINTED].includes(token.status)) {
     return;
   }
@@ -48,7 +49,7 @@ const onPreMintedAirdropClaim = async (order: Transaction, token: Token) => {
     token,
     true,
   )(async (transaction, airdrop) => {
-    const airdropDocRef = build5Db().doc(`${COL.AIRDROP}/${airdrop.uid}`);
+    const airdropDocRef = database().doc(COL.AIRDROP, airdrop.uid);
 
     const billPayment: Transaction = {
       project: getProject(order),
@@ -56,56 +57,54 @@ const onPreMintedAirdropClaim = async (order: Transaction, token: Token) => {
       uid: getRandomEthAddress(),
       space: order.space,
       member: order.member,
-      network: order.network,
+      network: order.network as Network,
       ignoreWallet: true,
       ignoreWalletReason: IgnoreWalletReason.PRE_MINTED_AIRDROP_CLAIM,
       payload: {
         type: TransactionPayloadType.PRE_MINTED_AIRDROP_CLAIM,
         amount: 0,
         sourceTransaction: [order.uid],
-        quantity: order.payload.quantity || 0,
+        quantity: order.payload_quantity || 0,
         airdropId: airdrop.uid,
         token: token.uid,
         tokenSymbol: token.symbol,
       },
     };
-    const billPaymentDocRef = build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
-    transaction.create(billPaymentDocRef, billPayment);
+    const billPaymentDocRef = database().doc(COL.TRANSACTION, billPayment.uid);
+    await transaction.create(billPaymentDocRef, billPayment);
 
-    transaction.update(airdropDocRef, {
+    await transaction.update(airdropDocRef, {
       status: TokenDropStatus.CLAIMED,
       billPaymentId: billPayment.uid,
     });
 
-    const distributionDocRef = build5Db().doc(
-      `${COL.TOKEN}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`,
+    const distributionDocRef = database().doc(
+      COL.TOKEN,
+      order.payload_token!,
+      SUB_COL.DISTRIBUTION,
+      order.member,
     );
-    transaction.set(
-      distributionDocRef,
-      {
-        parentId: order.payload.token,
-        parentCol: COL.TOKEN,
-        uid: order.member,
-        tokenClaimed: build5Db().inc(airdrop.count),
-        tokenOwned: build5Db().inc(airdrop.count),
-        totalUnclaimedAirdrop: build5Db().inc(-airdrop.count),
-      },
-      true,
-    );
+    await transaction.upsert(distributionDocRef, {
+      parentId: order.payload_token,
+      tokenClaimed: database().inc(airdrop.count),
+      tokenOwned: database().inc(airdrop.count),
+      totalUnclaimedAirdrop: database().inc(-airdrop.count),
+    });
     return billPayment.payload.amount!;
   });
 };
 
-const onMintedAirdropClaim = async (order: Transaction, token: Token) => {
-  const paymentsSnap = await build5Db()
+const onMintedAirdropClaim = async (order: PgTransaction, token: Token) => {
+  const paymentsSnap = await database()
     .collection(COL.TRANSACTION)
     .where('type', '==', TransactionType.PAYMENT)
-    .where('payload.sourceTransaction', 'array-contains', order.uid)
-    .get<Transaction>();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .where('payload_sourceTransaction', 'array-contains', order.uid as any)
+    .get();
   const paymentsId = paymentsSnap.map((d) => d.uid);
 
-  const memberDocRef = build5Db().doc(`${COL.MEMBER}/${order.member}`);
-  const member = (await memberDocRef.get<Member>())!;
+  const memberDocRef = database().doc(COL.MEMBER, order.member!);
+  const member = (await memberDocRef.get())!;
 
   const wallet = await WalletService.newWallet(token.mintingData?.network!);
   let storageDepositUsed = await claimOwnedMintedTokens(order, paymentsId, token, member, wallet);
@@ -114,7 +113,7 @@ const onMintedAirdropClaim = async (order: Transaction, token: Token) => {
     order,
     token,
   )(async (transaction, airdrop) => {
-    const airdropDocRef = build5Db().doc(`${COL.AIRDROP}/${airdrop.uid}`);
+    const airdropDocRef = database().doc(COL.AIRDROP, airdrop.uid);
 
     const billPayment = await mintedDropToBillPayment(
       order,
@@ -124,84 +123,89 @@ const onMintedAirdropClaim = async (order: Transaction, token: Token) => {
       member,
       wallet,
     );
-    const billPaymentDocRef = build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
-    transaction.create(billPaymentDocRef, billPayment);
 
     const stake = mintedDropToStake(order, airdrop, billPayment);
     if (stake) {
-      const stakeDocRef = build5Db().doc(`${COL.STAKE}/${stake.uid}`);
-      transaction.create(stakeDocRef, stake);
+      const stakeDocRef = database().doc(COL.STAKE, stake.uid);
+      await transaction.create(stakeDocRef, stake);
     }
 
-    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
+    const billPaymentDocRef = database().doc(COL.TRANSACTION, billPayment.uid);
+    await transaction.create(billPaymentDocRef, billPayment);
+
+    const tokenDocRef = database().doc(COL.TOKEN, token.uid);
     if (!airdrop.sourceAddress) {
-      transaction.update(tokenDocRef, {
-        'mintingData.tokensInVault': build5Db().inc(-airdrop.count),
+      await transaction.update(tokenDocRef, {
+        mintingData_tokensInVault: database().inc(-airdrop.count),
       });
     }
 
     if (airdrop.orderId) {
-      const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${airdrop.orderId}`);
-      transaction.update(orderDocRef, { 'payload.unclaimedAirdrops': build5Db().inc(-1) });
+      const orderDocRef = database().doc(COL.TRANSACTION, airdrop.orderId);
+      await transaction.update(orderDocRef, { payload_unclaimedAirdrops: database().inc(-1) });
     }
 
-    const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(member.uid);
-    transaction.set(
-      distributionDocRef,
-      {
-        parentId: token.uid,
-        parentCol: COL.TOKEN,
-        uid: member.uid,
-        tokenClaimed: build5Db().inc(airdrop.count),
-        tokenOwned: build5Db().inc(airdrop.count),
-        totalUnclaimedAirdrop: build5Db().inc(-airdrop.count),
-        mintedClaimedOn: dayjs().toDate(),
-      },
-      true,
+    const distributionDocRef = database().doc(
+      COL.TOKEN,
+      token.uid,
+      SUB_COL.DISTRIBUTION,
+      member.uid,
     );
+    await transaction.upsert(distributionDocRef, {
+      parentId: token.uid,
+      tokenClaimed: database().inc(airdrop.count),
+      tokenOwned: database().inc(airdrop.count),
+      totalUnclaimedAirdrop: database().inc(-airdrop.count),
+      mintedClaimedOn: dayjs().toDate(),
+    });
 
-    transaction.update(airdropDocRef, {
+    await transaction.update(airdropDocRef, {
       status: TokenDropStatus.CLAIMED,
       billPaymentId: billPayment.uid,
     });
     return airdrop.isBaseToken ? 0 : billPayment.payload.amount!;
   });
 
-  if (storageDepositUsed < order.payload.amount!) {
-    console.info('onMintedAirdropClaim', order.uid, storageDepositUsed, order.payload.amount);
+  if (storageDepositUsed < order.payload_amount!) {
+    logger.info('onMintedAirdropClaim', order.uid, storageDepositUsed, order.payload_amount);
+    const network = (order.network as Network)!;
     const credit: Transaction = {
       project: getProject(order),
       type: TransactionType.CREDIT,
       uid: getRandomEthAddress(),
       space: token.space,
       member: member.uid,
-      network: order.network,
+      network,
       payload: {
         type: TransactionPayloadType.CLAIM_MINTED_TOKEN,
-        amount: order.payload.amount! - storageDepositUsed,
-        sourceAddress: order.payload.targetAddress,
-        targetAddress: getAddress(member, order.network!),
+        amount: order.payload_amount! - storageDepositUsed,
+        sourceAddress: order.payload_targetAddress,
+        targetAddress: getAddress(member, network),
         sourceTransaction: paymentsId,
         token: token.uid,
         reconciled: true,
         void: false,
       },
     };
-    await build5Db().doc(`${COL.TRANSACTION}/${credit.uid}`).create(credit);
+    await database().doc(COL.TRANSACTION, credit.uid).create(credit);
   }
 };
 
 const claimOwnedMintedTokens = (
-  order: Transaction,
+  order: PgTransaction,
   sourceTransaction: string[],
   token: Token,
   member: Member,
   wallet: Wallet,
 ) =>
-  build5Db().runTransaction(async (transaction) => {
-    const tokenDocRef = build5Db().doc(`${COL.TOKEN}/${token.uid}`);
-    const distributionDocRef = tokenDocRef.collection(SUB_COL.DISTRIBUTION).doc(order.member!);
-    const distribution = (await transaction.get<TokenDistribution>(distributionDocRef))!;
+  database().runTransaction(async (transaction) => {
+    const distributionDocRef = database().doc(
+      COL.TOKEN,
+      token.uid,
+      SUB_COL.DISTRIBUTION,
+      order.member!,
+    );
+    const distribution = (await transaction.get(distributionDocRef))!;
     if (distribution?.mintedClaimedOn || !distribution?.tokenOwned) {
       return 0;
     }
@@ -225,23 +229,26 @@ const claimOwnedMintedTokens = (
       member,
       wallet,
     );
-    const billPaymentDocRef = build5Db().doc(`${COL.TRANSACTION}/${billPayment.uid}`);
-    transaction.create(billPaymentDocRef, billPayment);
 
     const stake = mintedDropToStake(order, airdrop, billPayment);
     if (stake) {
-      const stakeDocRef = build5Db().doc(`${COL.STAKE}/${stake.uid}`);
-      transaction.create(stakeDocRef, stake);
+      const stakeDocRef = database().doc(COL.STAKE, stake.uid);
+      await transaction.create(stakeDocRef, stake);
     }
-    transaction.update(distributionDocRef, { mintedClaimedOn: dayjs().toDate() });
-    transaction.update(tokenDocRef, {
-      'mintingData.tokensInVault': build5Db().inc(-airdrop.count),
+
+    const billPaymentDocRef = database().doc(COL.TRANSACTION, billPayment.uid);
+    await transaction.create(billPaymentDocRef, billPayment);
+
+    await transaction.update(distributionDocRef, { mintedClaimedOn: dayjs().toDate() });
+    const tokenDocRef = database().doc(COL.TOKEN, token.uid);
+    await transaction.update(tokenDocRef, {
+      mintingData_tokensInVault: database().inc(-airdrop.count),
     });
     return billPayment.payload.amount!;
   });
 
 const mintedDropToBillPayment = async (
-  order: Transaction,
+  order: PgTransaction,
   sourceTransaction: string[],
   token: Token,
   drop: TokenDrop,
@@ -257,7 +264,7 @@ const mintedDropToBillPayment = async (
     uid: getRandomEthAddress(),
     space: token.space,
     member: order.member,
-    network: order.network,
+    network: order.network as Network,
     payload: {
       type: drop.isBaseToken
         ? TransactionPayloadType.BASE_AIRDROP_CLAIM
@@ -268,7 +275,7 @@ const mintedDropToBillPayment = async (
       previousOwner: token.space,
       ownerEntity: Entity.MEMBER,
       owner: order.member!,
-      storageDepositSourceAddress: drop.isBaseToken ? '' : order.payload.targetAddress,
+      storageDepositSourceAddress: drop.isBaseToken ? '' : order.payload_targetAddress,
       vestingAt: dayjs(drop.vestingAt.toDate()).isAfter(dayjs()) ? drop.vestingAt : null,
       sourceAddress: drop.sourceAddress || token.mintingData?.vaultAddress!,
       targetAddress: memberAddress,
@@ -281,7 +288,7 @@ const mintedDropToBillPayment = async (
   };
 };
 
-const mintedDropToStake = (order: Transaction, drop: TokenDrop, billPayment: Transaction) => {
+const mintedDropToStake = (order: PgTransaction, drop: TokenDrop, billPayment: Transaction) => {
   const vestingAt = dayjs(drop.vestingAt.toDate());
   const weeks = vestingAt.diff(dayjs(), 'w');
   if (weeks < 1 || drop.isBaseToken) {
@@ -291,7 +298,7 @@ const mintedDropToStake = (order: Transaction, drop: TokenDrop, billPayment: Tra
     project: getProject(order),
     uid: getRandomEthAddress(),
     member: order.member!,
-    token: order.payload.token!,
+    token: order.payload_token!,
     type: drop.stakeType || StakeType.DYNAMIC,
     space: order.space!,
     amount: drop.count,
@@ -307,18 +314,18 @@ const mintedDropToStake = (order: Transaction, drop: TokenDrop, billPayment: Tra
 };
 
 const airdropsQuery = (
-  order: Transaction,
+  order: PgTransaction,
   token: Token,
   member: string,
   isPreMintedClaim?: boolean,
 ) => {
-  let query = build5Db()
+  let query = database()
     .collection(COL.AIRDROP)
     .where('token', '==', token.uid)
     .where('member', '==', member)
     .where('status', '==', TokenDropStatus.UNCLAIMED);
   if (isPreMintedClaim) {
-    query = query.where('vestingAt', '<=', serverTime());
+    query = query.where('vestingAt', '<=', dayjs().toDate());
   } else {
     query = query.where('createdOn', '<=', order.createdOn).orderBy('createdOn');
   }
@@ -327,23 +334,18 @@ const airdropsQuery = (
 };
 
 const runInAirdropLoop =
-  (order: Transaction, token: Token, isPreMintedClaim?: boolean) =>
+  (order: PgTransaction, token: Token, isPreMintedClaim?: boolean) =>
   async (func: (transaction: ITransaction, airdrop: TokenDrop) => Promise<number>) => {
     let storageDeposit = 0;
     for (let i = 0; i < LOOP_SIZE; ++i) {
-      const snap = await airdropsQuery(
-        order,
-        token,
-        order.member!,
-        isPreMintedClaim,
-      ).get<TokenDrop>();
+      const snap = await airdropsQuery(order, token, order.member!, isPreMintedClaim).get();
       if (!snap.length) {
         return storageDeposit;
       }
-      const refs = snap.map((airdrop) => build5Db().doc(`${COL.AIRDROP}/${airdrop.uid}`));
-      storageDeposit += await build5Db().runTransaction(async (transaction) => {
+      storageDeposit += await database().runTransaction(async (transaction) => {
+        const refs = snap.map((airdrop) => database().doc(COL.AIRDROP, airdrop.uid));
         let actStorageDeposit = 0;
-        const airdrops = (await transaction.getAll<TokenDrop>(...refs)).filter(
+        const airdrops = (await transaction.getAll(...refs)).filter(
           (drop) => drop!.status === TokenDropStatus.UNCLAIMED,
         );
         for (const airdrop of airdrops) {

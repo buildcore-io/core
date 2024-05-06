@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   DEFAULT_NETWORK,
@@ -15,12 +15,13 @@ import {
   Transaction,
   TransactionPayloadType,
   getNetworkPair,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
-import { get, head, isEqual, set } from 'lodash';
+import { head, isEqual, set } from 'lodash';
 import { dateToTimestamp } from '../../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../../utils/wallet.utils';
 import { BaseService, HandlerParams } from '../base';
+import { Action } from '../transaction-service';
 
 export class TokenTradeService extends BaseService {
   public handleRequest = async ({
@@ -28,7 +29,7 @@ export class TokenTradeService extends BaseService {
     order,
     match,
     tranEntry,
-    build5Tran,
+    buildcoreTran,
   }: HandlerParams) => {
     const payment = await this.transactionService.createPayment(order, match);
 
@@ -49,14 +50,14 @@ export class TokenTradeService extends BaseService {
     const nativeTokens = Number(head(tranEntry.nativeTokens)?.amount);
 
     await this.createDistributionDocRef(order.payload.token!, order.member!);
-    const token = <Token>await build5Db().doc(`${COL.TOKEN}/${order.payload.token}`).get();
+    const token = <Token>await database().doc(COL.TOKEN, order.payload.token!).get();
     const network = order.network || DEFAULT_NETWORK;
 
     const type =
       order.payload.type === TransactionPayloadType.SELL_TOKEN
         ? TokenTradeOrderType.SELL
         : TokenTradeOrderType.BUY;
-    const price = get(order, 'payload.price', 0);
+    const price = order.payload.price || 0;
     const count = getCount(order, tranEntry, type);
 
     const data: TokenTradeOrder = {
@@ -75,7 +76,7 @@ export class TokenTradeService extends BaseService {
       orderTransactionId: order.uid,
       paymentTransactionId: payment.uid,
       expiresAt:
-        build5Tran?.payload?.expiresOn ||
+        buildcoreTran?.payload?.expiresOn ||
         dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms')),
       sourceNetwork: network,
       targetNetwork: token.status === TokenStatus.BASE ? getNetworkPair(network) : network,
@@ -84,34 +85,27 @@ export class TokenTradeService extends BaseService {
       set(data, 'targetAddress', order.payload.tokenTradeOderTargetAddress);
     }
 
-    const ref = build5Db().doc(`${COL.TOKEN_MARKET}/${data.uid}`);
-    this.transactionService.push({ ref, data, action: 'set' });
+    const ref = database().doc(COL.TOKEN_MARKET, data.uid);
+    this.transactionService.push({ ref, data, action: Action.C });
 
-    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
+    const orderDocRef = database().doc(COL.TRANSACTION, order.uid);
     this.transactionService.push({
       ref: orderDocRef,
-      data: { 'payload.amount': match.to.amount, 'payload.count': count },
-      action: 'update',
+      data: { payload_amount: match.to.amount, payload_count: count },
+      action: Action.U,
     });
   };
 
   private createDistributionDocRef = async (token: string, member: string) => {
-    const distributionDocRef = build5Db().doc(
-      `${COL.TOKEN}/${token}/${SUB_COL.DISTRIBUTION}/${member}`,
-    );
-    const distributionDoc = await this.transactionService.transaction.get(distributionDocRef);
+    const distributionDocRef = database().doc(COL.TOKEN, token, SUB_COL.DISTRIBUTION, member);
+    const distributionDoc = await this.transaction.get(distributionDocRef);
     if (!distributionDoc) {
       const data = {
         uid: member,
         parentId: token,
         parentCol: COL.TOKEN,
       };
-      this.transactionService.push({
-        ref: distributionDocRef,
-        data,
-        action: 'set',
-        merge: true,
-      });
+      this.transactionService.push({ ref: distributionDocRef, data, action: Action.UPS });
     }
   };
 }
@@ -124,5 +118,5 @@ const getCount = (
   if (type === TokenTradeOrderType.SELL) {
     return Number(head(tranEntry.nativeTokens)?.amount || 0) || tranEntry.amount;
   }
-  return get(order, 'payload.count', MAX_TOTAL_TOKEN_SUPPLY);
+  return order.payload.count || MAX_TOTAL_TOKEN_SUPPLY;
 };

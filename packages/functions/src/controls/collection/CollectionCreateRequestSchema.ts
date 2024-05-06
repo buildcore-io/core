@@ -5,7 +5,7 @@ import {
   CreateCollectionRequest,
   MAX_IOTA_AMOUNT,
   MIN_IOTA_AMOUNT,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
@@ -21,7 +21,7 @@ export const createCollectionSchema = toJoiObject<CreateCollectionRequest>({
     .equal(CollectionType.CLASSIC, CollectionType.GENERATED, CollectionType.SFT)
     .required()
     .description('Type of the collection.'),
-  space: CommonJoi.uid(false).description('Build5 id of the space for this collection.'),
+  space: CommonJoi.uid(false).description('Buildcore id of the space for this collection.'),
   price: Joi.number()
     .min(MIN_IOTA_AMOUNT)
     .max(MAX_IOTA_AMOUNT)

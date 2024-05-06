@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
-import { COL, MIN_IOTA_AMOUNT } from '@build-5/interfaces';
+import { database } from '@buildcore/database';
+import { COL, MIN_IOTA_AMOUNT } from '@buildcore/interfaces';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { requestMintedTokenFromFaucet } from '../faucet';
 import { Helper, VAULT_MNEMONIC } from './Helper';
@@ -31,7 +31,7 @@ describe('Token minting', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    const purchase = await build5Db()
+    const purchase = await database()
       .collection(COL.TOKEN_PURCHASE)
       .where('token', '==', helper.token!.uid)
       .get();

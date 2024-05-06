@@ -1,18 +1,15 @@
-import { IQuery, build5Db } from '@build-5/database';
+import { IQuery, database } from '@buildcore/database';
 import {
   Auction,
   AuctionType,
   COL,
   MIN_IOTA_AMOUNT,
-  Member,
   Network,
-  Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import { finalizeAuctions } from '../../../src/cron/auction.cron';
 import { getAddress } from '../../../src/utils/address.utils';
-import { dateToTimestamp } from '../../../src/utils/dateTime.utils';
 import { getWallet } from '../../set-up';
 import { wait } from '../common';
 import { Helper } from './Helper';
@@ -20,10 +17,6 @@ import { Helper } from './Helper';
 describe('Open auction bid', () => {
   const h = new Helper();
   const now = dayjs();
-
-  beforeAll(async () => {
-    await h.beforeAll();
-  });
 
   beforeEach(async () => {
     await h.beforeEach(now);
@@ -75,11 +68,11 @@ describe('Open auction bid', () => {
     expect(h.auction.auctionHighestBidder).toBe(h.members[2]);
     expect(h.auction.auctionHighestBid).toBe(5 * MIN_IOTA_AMOUNT);
 
-    const credits = await build5Db()
+    const credits = await database()
       .collection(COL.TRANSACTION)
-      .where('member', 'in', h.members)
       .where('type', '==', TransactionType.CREDIT)
-      .get<Transaction>();
+      .whereIn('member', h.members)
+      .get();
     expect(credits.length).toBe(1);
     expect(credits[0].member).toBe(h.members[1]);
   });
@@ -88,20 +81,20 @@ describe('Open auction bid', () => {
     await h.bidOnAuction(h.members[0], 2 * MIN_IOTA_AMOUNT);
     await h.bidOnAuction(h.members[0], 3 * MIN_IOTA_AMOUNT);
 
-    const auctionDocRef = build5Db().doc(`${COL.AUCTION}/${h.auction.uid}`);
-    await auctionDocRef.update({ auctionTo: dateToTimestamp(dayjs().subtract(1, 'minute')) });
+    const auctionDocRef = database().doc(COL.AUCTION, h.auction.uid);
+    await auctionDocRef.update({ auctionTo: dayjs().subtract(1, 'minute').toDate() });
 
     await finalizeAuctions();
 
-    const memberDocRef = build5Db().doc(`${COL.MEMBER}/${h.member}`);
-    const member = await memberDocRef.get<Member>();
+    const memberDocRef = database().doc(COL.MEMBER, h.member);
+    const member = await memberDocRef.get();
     const address = getAddress(member, h.auction.network);
 
-    const billPayments = await build5Db()
+    const billPayments = await database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)
       .where('member', '==', h.members[0])
-      .get<Transaction>();
+      .get();
     billPayments.sort((a, b) => a.payload.amount! - b.payload.amount!);
     expect(billPayments.length).toBe(2);
     expect(billPayments[0].payload.amount!).toBe(2 * MIN_IOTA_AMOUNT);
@@ -119,16 +112,16 @@ describe('Open auction bid', () => {
     await h.bidOnAuction(h.members[0], 2 * MIN_IOTA_AMOUNT);
     await h.bidOnAuction(h.members[0], 3 * MIN_IOTA_AMOUNT);
 
-    const auctionDocRef = build5Db().doc(`${COL.AUCTION}/${h.auction.uid}`);
-    await auctionDocRef.update({ auctionTo: dateToTimestamp(dayjs().subtract(1, 'minute')) });
+    const auctionDocRef = database().doc(COL.AUCTION, h.auction.uid);
+    await auctionDocRef.update({ auctionTo: dayjs().subtract(1, 'minute').toDate() });
 
     await finalizeAuctions();
 
-    const billPayments = await build5Db()
+    const billPayments = await database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)
       .where('member', '==', h.members[0])
-      .get<Transaction>();
+      .get();
     billPayments.sort((a, b) => a.payload.amount! - b.payload.amount!);
     expect(billPayments.length).toBe(2);
     expect(billPayments[0].payload.amount!).toBe(2 * MIN_IOTA_AMOUNT);
@@ -138,12 +131,12 @@ describe('Open auction bid', () => {
   });
 
   it('Should finalize open auction, no bids', async () => {
-    const auctionDocRef = build5Db().doc(`${COL.AUCTION}/${h.auction.uid}`);
-    await auctionDocRef.update({ auctionTo: dateToTimestamp(dayjs().subtract(1, 'minute')) });
+    const auctionDocRef = database().doc(COL.AUCTION, h.auction.uid);
+    await auctionDocRef.update({ auctionTo: dayjs().subtract(1, 'minute').toDate() });
     await finalizeAuctions();
   });
 
-  const awaitPayments = (query: IQuery, count: number) =>
+  const awaitPayments = (query: IQuery<any, any>, count: number) =>
     wait(async () => {
       const snap = await query.get();
       return snap.length === count;
@@ -152,16 +145,16 @@ describe('Open auction bid', () => {
   it('Should bid when custom bid increment, topUpBased', async () => {
     await h.createAuction(dayjs(), { minimalBidIncrement: 1.5 * MIN_IOTA_AMOUNT });
 
-    const validPaymentsQuery = build5Db()
+    const validPaymentsQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.PAYMENT)
       .where('member', '==', h.members[0])
-      .where('payload.invalidPayment', '==', false);
-    const invalidPaymentsQuery = build5Db()
+      .where('payload_invalidPayment', '==', false);
+    const invalidPaymentsQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.PAYMENT)
       .where('member', '==', h.members[0])
-      .where('payload.invalidPayment', '==', true);
+      .where('payload_invalidPayment', '==', true);
 
     // Below floor, credit
     await h.bidOnAuction(h.members[0], 1.5 * MIN_IOTA_AMOUNT);
@@ -190,16 +183,16 @@ describe('Open auction bid', () => {
       topUpBased: false,
     });
 
-    const validPaymentsQuery = build5Db()
+    const validPaymentsQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.PAYMENT)
       .where('member', '==', h.members[0])
-      .where('payload.invalidPayment', '==', false);
-    const invalidPaymentsQuery = build5Db()
+      .where('payload_invalidPayment', '==', false);
+    const invalidPaymentsQuery = database()
       .collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.PAYMENT)
       .where('member', '==', h.members[0])
-      .where('payload.invalidPayment', '==', true);
+      .where('payload_invalidPayment', '==', true);
 
     // Below floor, credit
     await h.bidOnAuction(h.members[0], 1.5 * MIN_IOTA_AMOUNT);

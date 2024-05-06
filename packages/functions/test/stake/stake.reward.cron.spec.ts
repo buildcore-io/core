@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   SOON_PROJECT_ID,
@@ -6,9 +6,8 @@ import {
   StakeReward,
   StakeRewardStatus,
   StakeType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
-import { getStakedPerMember } from '../../src/cron/stakeReward.cron';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
 
@@ -145,7 +144,7 @@ describe('Stake reward cron: getStakedPerMember', () => {
       orderId: '',
       billPaymentId: '',
     };
-    await build5Db().doc(`${COL.STAKE}/${stake.uid}`).create(stake);
+    await database().doc(COL.STAKE, stake.uid).create(stake);
     return stake;
   };
 
@@ -160,7 +159,7 @@ describe('Stake reward cron: getStakedPerMember', () => {
       token,
       status: StakeRewardStatus.UNPROCESSED,
     } as StakeReward;
-    await build5Db().doc(`${COL.STAKE_REWARD}/${stakeReward.uid}`).create(stakeReward);
+    await database().doc(COL.STAKE_REWARD, stakeReward.uid).create(stakeReward);
     return stakeReward;
   };
 
@@ -169,7 +168,9 @@ describe('Stake reward cron: getStakedPerMember', () => {
       await createStake(stake.createdOn, stake.expiresAt);
     }
     const stakeReward = await createReward(reward.startDate, reward.endDate);
-    const stakedPerMember = await getStakedPerMember(stakeReward);
+    const stakedPerMember = await database()
+      .collection(COL.STAKE)
+      .getStakeSumPerMember(stakeReward);
     expect(stakedPerMember[member]).toBe(expectedValue || undefined);
   });
 });

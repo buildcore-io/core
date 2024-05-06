@@ -1,35 +1,28 @@
-import { build5Db } from '@build-5/database';
-import { COL, CollectionStats } from '@build-5/interfaces';
+import { PgCollectionStats, database } from '@buildcore/database';
+import { COL } from '@buildcore/interfaces';
 import { getRankingThreshold } from '../utils/config.utils';
-import { FirestoreDocEvent } from './common';
+import { PgDocEvent } from './common';
 
-export const onCollectionStatsWrite = async (event: FirestoreDocEvent<CollectionStats>) => {
+export const onCollectionStatsWrite = async (event: PgDocEvent<PgCollectionStats>) => {
   const { prev, curr } = event;
   if (!curr) {
     return;
   }
 
   if (rankingThresholdReached(prev, curr)) {
-    await onRankingThresholdReached(event.docId);
+    await database().doc(COL.COLLECTION, event.uid).update({ approved: false, rejected: true });
   }
 };
 
 const rankingThresholdReached = (
-  prev: CollectionStats | undefined,
-  curr: CollectionStats | undefined,
+  prev: PgCollectionStats | undefined,
+  curr: PgCollectionStats | undefined,
 ) => {
   const rankingThreshold = getRankingThreshold();
   return (
-    prev?.ranks &&
-    curr?.ranks &&
-    curr.ranks.sum < rankingThreshold &&
-    prev.ranks.sum >= rankingThreshold
+    prev?.ranks_sum &&
+    curr?.ranks_sum &&
+    curr.ranks_sum < rankingThreshold &&
+    prev.ranks_sum >= rankingThreshold
   );
-};
-
-const onRankingThresholdReached = async (collectionId: string) => {
-  await build5Db().doc(`${COL.COLLECTION}/${collectionId}`).update({
-    approved: false,
-    rejected: true,
-  });
 };

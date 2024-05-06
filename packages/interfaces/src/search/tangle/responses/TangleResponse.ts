@@ -29,7 +29,7 @@ export interface TangleResponse {
    */
   readonly nativeTokens?: NativeToken[];
   /**
-   * Swap Build5 uid
+   * Swap Buildcore uid
    */
   readonly swap?: string;
 }

@@ -12,7 +12,7 @@ export interface TokenMintRequest {
    */
   network: 'iota' | 'smr' | 'atoi' | 'rms';
   /**
-   * Build5 id of the token to mint.
+   * Buildcore id of the token to mint.
    */
   token: string;
 }

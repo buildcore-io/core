@@ -101,7 +101,7 @@ const config = {
             position: 'left',
           },
           {
-            href: 'https://github.com/build-5',
+            href: 'https://github.com/buildcore',
             label: 'GitHub',
             position: 'right',
           },
@@ -119,7 +119,7 @@ const config = {
               },
               {
                 label: 'Twitter',
-                href: 'https://twitter.com/build5tech',
+                href: 'https://twitter.com/buildcoretech',
               },
             ],
           },
@@ -132,7 +132,7 @@ const config = {
               },
               {
                 label: 'GitHub',
-                href: 'https://github.com/build-5',
+                href: 'https://github.com/buildcore',
               },
             ],
           },

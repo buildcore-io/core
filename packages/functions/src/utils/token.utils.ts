@@ -1,39 +1,37 @@
-import { build5Db, getSnapshot } from '@build-5/database';
+import { database, PgToken } from '@buildcore/database';
 import {
   COL,
   Collection,
   SUB_COL,
   Token,
-  TokenDrop,
+  TokenAllocation,
   TokenDropStatus,
   TokenStatus,
   WenError,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
-import { last } from 'lodash';
+import { head } from 'lodash';
 import { invalidArgument } from './error.utils';
 
 export const BIG_DECIMAL_PRECISION = 1000;
 
-export const tokenOrderTransactionDocId = (member: string, token: Token) =>
-  member + '_' + token.uid;
+export const tokenOrderTransactionDocId = (member: string, token: Token | PgToken) =>
+  member + token.uid;
 
 export const allPaymentsQuery = (member: string, token: string) =>
-  build5Db()
+  database()
     .collection(COL.TRANSACTION)
     .where('member', '==', member)
-    .where('payload.token', '==', token);
+    .where('payload_token', '==', token);
 
-export const orderDocRef = (member: string, token: Token) =>
-  build5Db().doc(`${COL.TRANSACTION}/${tokenOrderTransactionDocId(member, token)}`);
+export const orderDocRef = (member: string, token: Token | PgToken) =>
+  database().doc(COL.TRANSACTION, tokenOrderTransactionDocId(member, token));
 
-export const memberDocRef = (member: string) => build5Db().doc(`${COL.MEMBER}/${member}`);
+export const memberDocRef = (member: string) => database().doc(COL.MEMBER, member);
 
 export const assertIsGuardian = async (space: string, member: string) => {
-  const guardianDoc = await build5Db()
-    .doc(`${COL.SPACE}/${space}/${SUB_COL.GUARDIANS}/${member}`)
-    .get();
+  const guardianDoc = await database().doc(COL.SPACE, space, SUB_COL.GUARDIANS, member).get();
   if (!guardianDoc) {
     throw invalidArgument(WenError.you_are_not_guardian_of_space);
   }
@@ -78,8 +76,9 @@ export const getBoughtByMemberDiff = (
   return Number(bigDecimal.subtract(currentOrderCount, prevOrderCount));
 };
 
-export const getTotalPublicSupply = (token: Token) => {
-  const publicPercentage = token.allocations.find((a) => a.isPublicSale)?.percentage || 0;
+export const getTotalPublicSupply = (token: Token | PgToken) => {
+  const publicPercentage =
+    (token.allocations! as TokenAllocation[]).find((a) => a.isPublicSale)?.percentage || 0;
   return Number(bigDecimal.floor(bigDecimal.multiply(token.totalSupply, publicPercentage / 100)));
 };
 
@@ -103,7 +102,7 @@ export const tokenIsInCoolDownPeriod = (token: Token) =>
   dayjs().isBefore(dayjs(token.coolDownEnd.toDate()));
 
 export const getTokenForSpace = async (space: string) => {
-  let snap = await build5Db()
+  let snap = await database()
     .collection(COL.TOKEN)
     .where('space', '==', space)
     .where('approved', '==', true)
@@ -112,7 +111,7 @@ export const getTokenForSpace = async (space: string) => {
   if (snap.length) {
     return <Token>snap[0];
   }
-  snap = await build5Db()
+  snap = await database()
     .collection(COL.TOKEN)
     .where('space', '==', space)
     .where('public', '==', true)
@@ -121,55 +120,35 @@ export const getTokenForSpace = async (space: string) => {
   return <Token | undefined>snap[0];
 };
 
-export const getUnclaimedDrops = async (token: string, member: string) =>
-  build5Db()
+export const getUnclaimedDrops = (token: string, member: string) =>
+  database()
     .collection(COL.AIRDROP)
     .where('token', '==', token)
     .where('member', '==', member)
     .where('status', '==', TokenDropStatus.UNCLAIMED)
-    .get<TokenDrop>();
-
-export const getUnclaimedAirdropTotalValue = async (token: string) => {
-  let count = 0;
-  let lastDocId = '';
-  do {
-    const lastDoc = await getSnapshot(COL.AIRDROP, lastDocId);
-    const snap = await build5Db()
-      .collection(COL.AIRDROP)
-      .where('token', '==', token)
-      .where('status', '==', TokenDropStatus.UNCLAIMED)
-      .startAfter(lastDoc)
-      .get<TokenDrop>();
-    lastDocId = last(snap)?.uid || '';
-
-    count += snap.reduce((acc, act) => acc + act.count, 0);
-  } while (lastDocId);
-  return count;
-};
+    .get();
 
 export const getTokenBySymbol = async (symbol: string) => {
-  let snap = await build5Db()
+  let snap = await database()
     .collection(COL.TOKEN)
     .where('symbol', '==', symbol.toUpperCase())
     .where('approved', '==', true)
-    .limit(1)
     .get();
   if (snap.length) {
-    return <Token>snap[0];
+    return head(snap);
   }
-  snap = await build5Db()
+  snap = await database()
     .collection(COL.TOKEN)
     .where('symbol', '==', symbol.toUpperCase())
     .where('public', '==', true)
-    .limit(1)
     .get();
-  return <Token | undefined>snap[0];
+  return head(snap);
 };
 
 export const getTokenByMintId = async (tokenId: string) => {
-  const snap = await build5Db()
+  const snap = await database()
     .collection(COL.TOKEN)
-    .where('mintingData.tokenId', '==', tokenId)
+    .where('mintingData_tokenId', '==', tokenId)
     .get();
   return <Token | undefined>snap[0];
 };

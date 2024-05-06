@@ -1,5 +1,5 @@
 import {
-  Build5Request,
+  BuildcoreRequest,
   ClaimAirdroppedTokensRequest,
   ClaimPreMintedAirdroppedTokensRequest,
   CreateAirdropsRequest,
@@ -7,7 +7,7 @@ import {
   TokenDrop,
   Transaction,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { DatasetClass } from '../Dataset';
 
 /**
@@ -17,36 +17,36 @@ export class AirdropDataset<D extends Dataset> extends DatasetClass<D, TokenDrop
   /**
    * Airdrop tokens.
    *
-   * @param req Use {@link Build5Request} with data based on {@link CreateAirdropsRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link CreateAirdropsRequest}
    * @returns
    */
-  airdropToken = (req: Build5Request<CreateAirdropsRequest>) =>
+  airdropToken = (req: BuildcoreRequest<CreateAirdropsRequest>) =>
     this.sendRequest(WEN_FUNC.airdropToken)<CreateAirdropsRequest, void>(req);
   /**
    * Airdrop minted tokens.
    *
-   * @param req Use {@link Build5Request} with data based on {@link CreateAirdropsRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link CreateAirdropsRequest}
    * @returns
    */
-  airdropMintedToken = (req: Build5Request<CreateAirdropsRequest>) =>
+  airdropMintedToken = (req: BuildcoreRequest<CreateAirdropsRequest>) =>
     this.sendRequest(WEN_FUNC.airdropMintedToken)<CreateAirdropsRequest, Transaction>(req);
   /**
    * Claimed minted token airdrop.
    *
-   * @param req Use {@link Build5Request} with data based on {@link ClaimAirdroppedTokensRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link ClaimAirdroppedTokensRequest}
    * @returns
    */
-  claimMintedAirdrop = (req: Build5Request<ClaimAirdroppedTokensRequest>) =>
+  claimMintedAirdrop = (req: BuildcoreRequest<ClaimAirdroppedTokensRequest>) =>
     this.sendRequest(WEN_FUNC.claimMintedTokenOrder)<ClaimAirdroppedTokensRequest, Transaction>(
       req,
     );
   /**
    * Claim token airdrop.
    *
-   * @param req Use {@link Build5Request} with data based on {@link ClaimPreMintedAirdroppedTokensRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link ClaimPreMintedAirdroppedTokensRequest}
    * @returns
    */
-  claimAirdropped = (req: Build5Request<ClaimPreMintedAirdroppedTokensRequest>) =>
+  claimAirdropped = (req: BuildcoreRequest<ClaimPreMintedAirdroppedTokensRequest>) =>
     this.sendRequest(WEN_FUNC.claimAirdroppedToken)<
       ClaimPreMintedAirdroppedTokensRequest,
       Transaction

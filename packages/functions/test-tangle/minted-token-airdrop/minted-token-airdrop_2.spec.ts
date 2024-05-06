@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
-  Member,
   MIN_IOTA_AMOUNT,
+  Member,
   SOON_PROJECT_ID,
   SUB_COL,
   Token,
@@ -14,18 +14,14 @@ import {
   TokenStatus,
   Transaction,
   TransactionType,
-} from '@build-5/interfaces';
+  WEN_FUNC,
+} from '@buildcore/interfaces';
 import dayjs from 'dayjs';
-import {
-  airdropMintedToken,
-  claimMintedTokenOrder,
-  mintTokenOrder,
-} from '../../src/runtime/firebase/token/minting';
 import { getAddress } from '../../src/utils/address.utils';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import { getRandomEthAddress } from '../../src/utils/wallet.utils';
-import { mockWalletReturnValue, wait } from '../../test/controls/common';
-import { testEnv } from '../../test/set-up';
+import { wait } from '../../test/controls/common';
+import { mockWalletReturnValue, testEnv } from '../../test/set-up';
 import { awaitTransactionConfirmationsForToken } from '../common';
 import { requestFundsFromFaucet } from '../faucet';
 import { Helper } from './Helper';
@@ -42,14 +38,29 @@ describe('Minted token airdrop', () => {
   });
 
   it('Mint token, airdrop then claim all', async () => {
-    await build5Db().doc(`${COL.TOKEN}/${helper.token!.uid}`).update({
-      mintingData: {},
+    await database().doc(COL.TOKEN, helper.token!.uid).update({
+      mintingData_mintedBy: undefined,
+      mintingData_mintedOn: undefined,
+      mintingData_aliasBlockId: undefined,
+      mintingData_aliasId: undefined,
+      mintingData_aliasStorageDeposit: undefined,
+      mintingData_tokenId: undefined,
+      mintingData_blockId: undefined,
+      mintingData_foundryStorageDeposit: undefined,
+      mintingData_network: undefined,
+      mintingData_networkFormat: undefined,
+      mintingData_vaultAddress: undefined,
+      mintingData_tokensInVault: undefined,
+      mintingData_vaultStorageDeposit: undefined,
+      mintingData_guardianStorageDeposit: undefined,
+      mintingData_meltedTokens: undefined,
+      mintingData_circulatingSupply: undefined,
       status: TokenStatus.AVAILABLE,
       totalSupply: Number.MAX_SAFE_INTEGER,
     });
-    await build5Db()
-      .doc(`${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${helper.member}`)
-      .set({ tokenOwned: 1 });
+    await database()
+      .doc(COL.TOKEN, helper.token!.uid, SUB_COL.DISTRIBUTION, helper.member)
+      .upsert({ tokenOwned: 1 });
 
     const airdrop: TokenDrop = {
       project: SOON_PROJECT_ID,
@@ -62,27 +73,27 @@ describe('Minted token airdrop', () => {
       count: 1,
       status: TokenDropStatus.UNCLAIMED,
     };
-    await build5Db().doc(`${COL.AIRDROP}/${airdrop.uid}`).create(airdrop);
+    await database().doc(COL.AIRDROP, airdrop.uid).create(airdrop);
 
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
+    mockWalletReturnValue(helper.guardian!, {
       token: helper.token!.uid,
       network: helper.network,
     });
-    const mintingOrder = await testEnv.wrap(mintTokenOrder)({});
+    const mintingOrder = await testEnv.wrap<Transaction>(WEN_FUNC.mintTokenOrder);
     await requestFundsFromFaucet(
       helper.network,
       mintingOrder.payload.targetAddress,
       mintingOrder.payload.amount,
     );
 
-    const guardian = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.guardian}`).get();
+    const guardian = <Member>await database().doc(COL.MEMBER, helper.guardian).get();
     await requestFundsFromFaucet(
       helper.network,
       getAddress(guardian, helper.network),
       MIN_IOTA_AMOUNT,
     );
     await wait(async () => {
-      const tokenDocRef = await build5Db().doc(`${COL.TOKEN}/${helper.token!.uid}`).get<Token>();
+      const tokenDocRef = await database().doc(COL.TOKEN, helper.token!.uid).get();
       return tokenDocRef?.status === TokenStatus.MINTED;
     });
 
@@ -90,16 +101,16 @@ describe('Minted token airdrop', () => {
       { count: 1, recipient: helper.member!, vestingAt: dayjs().subtract(1, 'm').toDate() },
       { count: 1, recipient: helper.member!, vestingAt: dayjs().add(2, 'h').toDate() },
     ];
-    mockWalletReturnValue(helper.walletSpy, helper.guardian!, {
+    mockWalletReturnValue(helper.guardian!, {
       token: helper.token!.uid,
       drops,
     });
-    let order = await testEnv.wrap(airdropMintedToken)({});
+    let order = await testEnv.wrap<Transaction>(WEN_FUNC.airdropMintedToken);
     const guardianAddress = await helper.walletService!.getAddressDetails(
       getAddress(guardian, helper.network),
     );
-    const token = <Token>await build5Db().doc(`${COL.TOKEN}/${helper.token!.uid}`).get();
-    await helper.walletService!.send(guardianAddress, order.payload.targetAddress, 0, {
+    const token = <Token>await database().doc(COL.TOKEN, helper.token!.uid).get();
+    await helper.walletService!.send(guardianAddress, order.payload.targetAddress!, 0, {
       nativeTokens: [{ id: token.mintingData?.tokenId!, amount: BigInt(2) }],
     });
 
@@ -108,22 +119,25 @@ describe('Minted token airdrop', () => {
       return airdrops.length === 3;
     });
 
-    mockWalletReturnValue(helper.walletSpy, helper.member!, { symbol: helper.token!.symbol });
-    const claimOrder = await testEnv.wrap(claimMintedTokenOrder)({});
+    mockWalletReturnValue(helper.member!, { symbol: helper.token!.symbol });
+    const claimOrder = await testEnv.wrap<Transaction>(WEN_FUNC.claimMintedTokenOrder);
     await requestFundsFromFaucet(
       helper.network,
       claimOrder.payload.targetAddress,
       claimOrder.payload.amount,
     );
 
-    const orderDocRef = build5Db().doc(`${COL.TRANSACTION}/${order.uid}`);
+    const orderDocRef = database().doc(COL.TRANSACTION, order.uid);
     await wait(async () => {
       order = <Transaction>await orderDocRef.get();
       return order.payload.unclaimedAirdrops === 0;
     });
 
-    const distributionDocRef = build5Db().doc(
-      `${COL.TOKEN}/${helper.token!.uid}/${SUB_COL.DISTRIBUTION}/${helper.member}`,
+    const distributionDocRef = database().doc(
+      COL.TOKEN,
+      helper.token!.uid,
+      SUB_COL.DISTRIBUTION,
+      helper.member,
     );
     const distribution = <TokenDistribution | undefined>await distributionDocRef.get();
     expect(distribution?.tokenOwned).toBe(4);
@@ -132,7 +146,7 @@ describe('Minted token airdrop', () => {
     await awaitTransactionConfirmationsForToken(helper.token!.uid);
 
     const billPayments = (
-      await build5Db()
+      await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.BILL_PAYMENT)
         .where('member', '==', helper.member)
@@ -141,7 +155,7 @@ describe('Minted token airdrop', () => {
     expect(billPayments.length).toBe(4);
 
     const credit = (
-      await build5Db()
+      await database()
         .collection(COL.TRANSACTION)
         .where('type', '==', TransactionType.CREDIT)
         .where('member', '==', order.member)
@@ -149,7 +163,7 @@ describe('Minted token airdrop', () => {
     ).map((d) => <Transaction>d);
     expect(credit.length).toBe(2);
 
-    const member = <Member>await build5Db().doc(`${COL.MEMBER}/${helper.member}`).get();
+    const member = <Member>await database().doc(COL.MEMBER, helper.member).get();
     const memberAddress = await helper.walletService!.getAddressDetails(
       getAddress(member, helper.network),
     );

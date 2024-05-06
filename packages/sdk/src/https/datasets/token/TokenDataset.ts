@@ -1,5 +1,5 @@
 import {
-  Build5Request,
+  BuildcoreRequest,
   CanelPublicSaleRequest,
   CreditTokenRequest,
   Dataset,
@@ -20,7 +20,7 @@ import {
   Vote,
   VoteRequest,
   WEN_FUNC,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import { DatasetClass } from '../Dataset';
 
 /**
@@ -30,90 +30,90 @@ export class TokenDataset<D extends Dataset> extends DatasetClass<D, Token> {
   /**
    * Create token.
    *
-   * @param req Use {@link Build5Request} with data based on {@link TokenCreateRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link TokenCreateRequest}
    * @returns
    */
-  create = (req: Build5Request<TokenCreateRequest>) =>
+  create = (req: BuildcoreRequest<TokenCreateRequest>) =>
     this.sendRequest(WEN_FUNC.createToken)<TokenCreateRequest, Token>(req);
   /**
    * Update token.
    *
-   * @param req Use {@link Build5Request} with data based on {@link TokenUpdateRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link TokenUpdateRequest}
    * @returns
    */
-  update = (req: Build5Request<TokenUpdateRequest>) =>
+  update = (req: BuildcoreRequest<TokenUpdateRequest>) =>
     this.sendRequest(WEN_FUNC.updateToken)<TokenUpdateRequest, Token>(req);
   /**
    * Set token for sale on the launchpad.
    *
-   * @param req Use {@link Build5Request} with data based on {@link SetTokenForSaleRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link SetTokenForSaleRequest}
    * @returns
    */
-  setAvailableForSale = (req: Build5Request<SetTokenForSaleRequest>) =>
+  setAvailableForSale = (req: BuildcoreRequest<SetTokenForSaleRequest>) =>
     this.sendRequest(WEN_FUNC.setTokenAvailableForSale)<SetTokenForSaleRequest, Token>(req);
   /**
    * Cancel public token sale.
    *
-   * @param req Use {@link Build5Request} with data based on {@link CanelPublicSaleRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link CanelPublicSaleRequest}
    * @returns
    */
-  cancelPublicSale = (req: Build5Request<CanelPublicSaleRequest>) =>
+  cancelPublicSale = (req: BuildcoreRequest<CanelPublicSaleRequest>) =>
     this.sendRequest(WEN_FUNC.cancelPublicSale)<CanelPublicSaleRequest, Token>(req);
   /**
    * Order Token request.
    *
-   * @param req Use {@link Build5Request} with data based on {@link OrderTokenRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link OrderTokenRequest}
    * @returns
    */
-  order = (req: Build5Request<OrderTokenRequest>) =>
+  order = (req: BuildcoreRequest<OrderTokenRequest>) =>
     this.sendRequest(WEN_FUNC.orderToken)<OrderTokenRequest, Transaction>(req);
   /**
    * Credit token request.
    *
-   * @param req Use {@link Build5Request} with data based on {@link CreditTokenRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link CreditTokenRequest}
    * @returns
    */
-  credit = (req: Build5Request<CreditTokenRequest>) =>
+  credit = (req: BuildcoreRequest<CreditTokenRequest>) =>
     this.sendRequest(WEN_FUNC.creditToken)<CreditTokenRequest, Transaction>(req);
   /**
    * Update member details.
    *
-   * @param req Use {@link Build5Request} with data based on {@link MemberUpdateRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link MemberUpdateRequest}
    * @returns
    */
-  mint = (req: Build5Request<TokenMintRequest>) =>
+  mint = (req: BuildcoreRequest<TokenMintRequest>) =>
     this.sendRequest(WEN_FUNC.mintTokenOrder)<TokenMintRequest, Transaction>(req);
   /**
    * Enable token for trading on a exchange.
    *
-   * @param req Use {@link Build5Request} with data based on {@link EnableTokenTradingRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link EnableTokenTradingRequest}
    * @returns
    */
-  enableTrading = (req: Build5Request<EnableTokenTradingRequest>) =>
+  enableTrading = (req: BuildcoreRequest<EnableTokenTradingRequest>) =>
     this.sendRequest(WEN_FUNC.enableTokenTrading)<EnableTokenTradingRequest, Token>(req);
   /**
    * Imported minted token from the chain.
    *
-   * @param req Use {@link Build5Request} with data based on {@link ImportMintedTokenRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link ImportMintedTokenRequest}
    * @returns
    */
-  importMintedToken = (req: Build5Request<ImportMintedTokenRequest>) =>
+  importMintedToken = (req: BuildcoreRequest<ImportMintedTokenRequest>) =>
     this.sendRequest(WEN_FUNC.importMintedToken)<ImportMintedTokenRequest, Transaction>(req);
   /**
    * Vote on token.
    *
-   * @param req Use {@link Build5Request} with data based on {@link VoteRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link VoteRequest}
    * @returns
    */
-  vote = (req: Build5Request<VoteRequest>) =>
+  vote = (req: BuildcoreRequest<VoteRequest>) =>
     this.sendRequest(WEN_FUNC.voteController)<VoteRequest, Vote>(req);
   /**
    * Rank token.
    *
-   * @param req Use {@link Build5Request} with data based on {@link RankRequest}
+   * @param req Use {@link BuildcoreRequest} with data based on {@link RankRequest}
    * @returns
    */
-  rank = (req: Build5Request<RankRequest>) =>
+  rank = (req: BuildcoreRequest<RankRequest>) =>
     this.sendRequest(WEN_FUNC.rankController)<RankRequest, Rank>(req);
 
   /**

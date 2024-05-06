@@ -12,7 +12,7 @@ export interface NftBidTangleRequest {
    */
   disableWithdraw?: boolean;
   /**
-   * Build5 id of the nft to bid on.
+   * Buildcore id of the nft to bid on.
    */
   nft: string;
   /**

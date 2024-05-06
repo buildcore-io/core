@@ -1,19 +1,10 @@
 {
-  "name": "@build-5/sdk",
+  "name": "@buildcore/sdk",
   "version": "0.0.0",
   "description": "",
   "license": "Apache-2.0",
   "main": "lib/index.js",
-  "types": "lib/index.d.ts",
-  "directories": {
-    "lib": "lib"
-  },
-  "files": [
-    "lib"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
+  "type": "commonjs",
   "scripts": {
     "run:search": "cd ../search && export FIRESTORE_EMULATOR_HOST=\"127.0.0.1:8080\" && export FIREBASE_STORAGE_EMULATOR_HOST=\"127.0.0.1:9199\" && npm run build && node lib/index.js",
     "run:functions": "cd ../functions && npm run serve",
@@ -23,7 +14,7 @@
     "test": "jest --forceExit"
   },
   "dependencies": {
-    "@build-5/interfaces": "*",
+    "@buildcore/interfaces": "*",
     "axios": "^1.6.7",
     "bip39": "3.1.0",
     "form-data": "^4.0.0",

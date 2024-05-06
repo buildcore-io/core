@@ -1,4 +1,4 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MAX_WALLET_RETRY,
@@ -8,7 +8,7 @@ import {
   TransactionPayloadType,
   TransactionType,
   TransactionValidationType,
-} from '@build-5/interfaces';
+} from '@buildcore/interfaces';
 import {
   RegularTransactionEssence,
   TaggedDataPayload,
@@ -27,17 +27,17 @@ import { getWallet } from '../test/set-up';
 export const addValidatedAddress = async (network: Network, member: string) => {
   const walletService = await getWallet(network);
   const address = await walletService.getNewIotaAddressDetails();
-  await build5Db()
-    .doc(`${COL.MEMBER}/${member}`)
+  await database()
+    .doc(COL.MEMBER, member)
     .update({ [`validatedAddress.${network}`]: address.bech32 });
   return address;
 };
 
 export const awaitTransactionConfirmationsForToken = async (token: string) => {
-  const query = build5Db()
+  const query = database()
     .collection(COL.TRANSACTION)
-    .where('payload.token', '==', token)
-    .where('type', 'in', [TransactionType.CREDIT, TransactionType.BILL_PAYMENT]);
+    .where('payload_token', '==', token)
+    .whereIn('type', [TransactionType.CREDIT, TransactionType.BILL_PAYMENT]);
   await wait(async () => {
     const transactions = (await query.get()).map((d) => <Transaction>d);
     const hasErrors = transactions.filter((t) => {
@@ -88,7 +88,7 @@ export const getTangleOrder = async (network: Network) => {
     },
     linkedTransactions: [],
   };
-  await build5Db().doc(`${COL.TRANSACTION}/${order.uid}`).create(order);
+  await database().doc(COL.TRANSACTION, order.uid).create(order);
   tangleOrders[network] = order;
   return tangleOrders[network];
 };

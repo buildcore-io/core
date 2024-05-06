@@ -1,27 +1,17 @@
-import { build5Db } from '@build-5/database';
+import { database } from '@buildcore/database';
 import {
   COL,
   MIN_IOTA_AMOUNT,
   NetworkAddress,
   Space,
+  Token,
   TokenAllocation,
   TokenStatus,
   WEN_FUNC,
   WenError,
-} from '@build-5/interfaces';
-import { createToken, updateToken } from '../../../src/runtime/firebase/token/base';
-import * as wallet from '../../../src/utils/wallet.utils';
-import { MEDIA, testEnv } from '../../set-up';
-import {
-  createMember,
-  createSpace,
-  expectThrow,
-  getRandomSymbol,
-  mockWalletReturnValue,
-} from '../common';
-
-let walletSpy: any;
-
+} from '@buildcore/interfaces';
+import { MEDIA, mockWalletReturnValue, testEnv } from '../../set-up';
+import { expectThrow, getRandomSymbol } from '../common';
 const dummyToken = (space: string) =>
   ({
     name: 'MyToken',
@@ -39,23 +29,20 @@ const dummyToken = (space: string) =>
 describe('Token controller: ' + WEN_FUNC.updateToken, () => {
   let memberAddress: NetworkAddress;
   let space: Space;
-  let token: any;
-
+  let token: Token;
   const data = {
-    shortDescriptionTitle: null,
-    shortDescription: null,
-    name: null,
-    uid: null,
-    title: null,
-    description: null,
+    shortDescriptionTitle: undefined,
+    shortDescription: undefined,
+    name: undefined,
+    uid: undefined,
+    title: undefined,
+    description: undefined,
   };
-
   beforeEach(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    memberAddress = await createMember(walletSpy);
-    space = await createSpace(walletSpy, memberAddress);
-    mockWalletReturnValue(walletSpy, memberAddress, dummyToken(space.uid));
-    token = await testEnv.wrap(createToken)({});
+    memberAddress = await testEnv.createMember();
+    space = await testEnv.createSpace(memberAddress);
+    mockWalletReturnValue(memberAddress, dummyToken(space.uid));
+    token = await testEnv.wrap<Token>(WEN_FUNC.createToken);
   });
 
   it('Should update token', async () => {
@@ -67,8 +54,8 @@ describe('Token controller: ' + WEN_FUNC.updateToken, () => {
       description: 'description',
       pricePerToken: 2 * MIN_IOTA_AMOUNT,
     };
-    mockWalletReturnValue(walletSpy, memberAddress, updateData);
-    const result = await testEnv.wrap(updateToken)({});
+    mockWalletReturnValue(memberAddress, updateData);
+    const result = await testEnv.wrap<Token>(WEN_FUNC.updateToken);
     expect(result.name).toBe(updateData.name);
     expect(result.title).toBe(updateData.title);
     expect(result.description).toBe(updateData.description);
@@ -76,7 +63,7 @@ describe('Token controller: ' + WEN_FUNC.updateToken, () => {
   });
 
   it('Should update token, no space', async () => {
-    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ space: '' });
+    await database().doc(COL.TOKEN, token.uid).update({ space: '' });
     const updateData = {
       ...data,
       name: 'TokenName2',
@@ -85,14 +72,15 @@ describe('Token controller: ' + WEN_FUNC.updateToken, () => {
       description: 'description',
       pricePerToken: 2 * MIN_IOTA_AMOUNT,
     };
-    mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), updateData);
+    const random = await testEnv.createMember();
+
+    mockWalletReturnValue(random, updateData);
     await expectThrow(
-      testEnv.wrap(updateToken)({}),
+      testEnv.wrap<Token>(WEN_FUNC.updateToken),
       WenError.you_must_be_the_creator_of_this_token.key,
     );
-
-    mockWalletReturnValue(walletSpy, memberAddress, updateData);
-    const result = await testEnv.wrap(updateToken)({});
+    mockWalletReturnValue(memberAddress, updateData);
+    const result = await testEnv.wrap<Token>(WEN_FUNC.updateToken);
     expect(result.name).toBe(updateData.name);
     expect(result.title).toBe(updateData.title);
     expect(result.description).toBe(updateData.description);
@@ -101,11 +89,12 @@ describe('Token controller: ' + WEN_FUNC.updateToken, () => {
 
   it('Should update token - remove description', async () => {
     const updateData = { ...data, name: token.name, uid: token.uid, title: 'title2' };
-    mockWalletReturnValue(walletSpy, memberAddress, updateData);
-    const result = await testEnv.wrap(updateToken)({});
-    expect(result.name).toBe(token.name);
-    expect(result.title).toBe(updateData.title);
-    expect(result.description).toBe(updateData.description);
+    mockWalletReturnValue(memberAddress, updateData);
+    const result = await testEnv.wrap<Token>(WEN_FUNC.updateToken);
+    token = (await database().doc(COL.TOKEN, result.uid).get())!;
+    expect(token.name).toBe(token.name);
+    expect(token.title).toBe(updateData.title);
+    expect(token.description).toBe(updateData.description);
   });
 
   it('Should throw, not owner', async () => {
@@ -116,8 +105,13 @@ describe('Token controller: ' + WEN_FUNC.updateToken, () => {
       title: 'title',
       description: 'description',
     };
-    mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), updateData);
-    await expectThrow(testEnv.wrap(updateToken)({}), WenError.you_are_not_guardian_of_space.key);
+    const random = await testEnv.createMember();
+
+    mockWalletReturnValue(random, updateData);
+    await expectThrow(
+      testEnv.wrap<Token>(WEN_FUNC.updateToken),
+      WenError.you_are_not_guardian_of_space.key,
+    );
   });
 
   it('Should throw, not guardian', async () => {
@@ -128,34 +122,33 @@ describe('Token controller: ' + WEN_FUNC.updateToken, () => {
       title: 'title',
       description: 'description',
     };
-    mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), updateData);
-    await expectThrow(testEnv.wrap(updateToken)({}), WenError.you_are_not_guardian_of_space.key);
+    const random = await testEnv.createMember();
+    mockWalletReturnValue(random, updateData);
+    await expectThrow(
+      testEnv.wrap<Token>(WEN_FUNC.updateToken),
+      WenError.you_are_not_guardian_of_space.key,
+    );
   });
 
   it('Should update short description', async () => {
     const updateData = { ...data, name: token.name, uid: token.uid, title: 'title2' };
-    mockWalletReturnValue(walletSpy, memberAddress, updateData);
 
-    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.CANCEL_SALE });
-    await expectThrow(testEnv.wrap(updateToken)({}), WenError.token_in_invalid_status.key);
-
-    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.BASE });
-    await expectThrow(testEnv.wrap(updateToken)({}), WenError.token_in_invalid_status.key);
-
-    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.AVAILABLE });
-    const result = await testEnv.wrap(updateToken)({});
+    await database().doc(COL.TOKEN, token.uid).update({ status: TokenStatus.BASE });
+    mockWalletReturnValue(memberAddress, updateData);
+    await expectThrow(
+      testEnv.wrap<Token>(WEN_FUNC.updateToken),
+      WenError.token_in_invalid_status.key,
+    );
+    await database().doc(COL.TOKEN, token.uid).update({ status: TokenStatus.AVAILABLE });
+    mockWalletReturnValue(memberAddress, updateData);
+    const result = await testEnv.wrap<Token>(WEN_FUNC.updateToken);
     expect(result.name).toBe(token.name);
   });
 
   it('Should throw, token minted', async () => {
-    await build5Db().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.MINTED });
-    const updateData = {
-      ...data,
-      name: 'TokenName2',
-      uid: token.uid,
-      title: 'title',
-    };
-    mockWalletReturnValue(walletSpy, memberAddress, updateData);
-    await expectThrow(testEnv.wrap(updateToken)({}), WenError.invalid_params.key);
+    await database().doc(COL.TOKEN, token.uid).update({ status: TokenStatus.MINTED });
+    const updateData = { ...data, name: 'TokenName2', uid: token.uid, title: 'title' };
+    mockWalletReturnValue(memberAddress, updateData);
+    await expectThrow(testEnv.wrap<Token>(WEN_FUNC.updateToken), WenError.invalid_params.key);
   });
 });

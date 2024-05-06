@@ -1,10 +1,10 @@
-import { Dataset } from '@build-5/interfaces';
-import { Build5, SoonaverseOtrAddress, otr } from '@build-5/sdk';
+import { Dataset } from '@buildcore/interfaces';
+import { Buildcore, SoonaverseOtrAddress, otr } from '@buildcore/sdk';
 
-const collectionId = 'build5nftcollectionid';
-const nftIds = ['build5nftid1', 'build5nftid2'];
+const collectionId = 'nftcollectionid';
+const nftIds = ['nftid1', 'nftid2'];
 
-const origin = Build5.TEST;
+const origin = Buildcore.TEST;
 // @ts-ignore
 const otrAddress = SoonaverseOtrAddress[origin];
 

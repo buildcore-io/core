@@ -1,5 +1,5 @@
-import { build5Db } from '@build-5/database';
-import { COL, NetworkAddress, Transaction } from '@build-5/interfaces';
+import { MilestoneTransactions, database } from '@buildcore/database';
+import { COL, NetworkAddress } from '@buildcore/interfaces';
 import {
   RegularTransactionEssence,
   TaggedDataPayload,
@@ -11,23 +11,23 @@ import { isEmpty } from 'lodash';
 
 export const confirmTransaction = async (
   milestoneTransactionPath: string,
-  milestoneTransaction: Record<string, unknown>,
+  milestoneTransaction: MilestoneTransactions,
 ) => {
-  const transactionId = await getMilestoneTransactionId(milestoneTransaction);
+  const transactionId = getMilestoneTransactionId(milestoneTransaction);
   if (isEmpty(transactionId)) {
     return;
   }
-  const docRef = build5Db().doc(`${COL.TRANSACTION}/${transactionId}`);
-  const transaction = await docRef.get<Transaction>();
+  const docRef = database().doc(COL.TRANSACTION, transactionId);
+  const transaction = await docRef.get();
   if (!transaction) {
     return;
   }
 
   await docRef.update({
-    'payload.walletReference.confirmed': true,
-    'payload.walletReference.confirmedOn': dayjs().toDate(),
-    'payload.walletReference.inProgress': false,
-    'payload.walletReference.milestoneTransactionPath': milestoneTransactionPath,
+    payload_walletReference_confirmed: true,
+    payload_walletReference_confirmedOn: dayjs().toDate(),
+    payload_walletReference_inProgress: false,
+    payload_walletReference_milestoneTransactionPath: milestoneTransactionPath,
   });
 
   await unclockMnemonic(transaction.payload.sourceAddress);
@@ -39,7 +39,7 @@ export const unclockMnemonic = async (address: NetworkAddress | undefined) => {
   if (isEmpty(address)) {
     return;
   }
-  await build5Db().doc(`${COL.MNEMONIC}/${address}`).update({
+  await database().doc(COL.MNEMONIC, address!).update({
     lockedBy: '',
     consumedOutputIds: [],
     consumedNftOutputIds: [],
@@ -47,9 +47,9 @@ export const unclockMnemonic = async (address: NetworkAddress | undefined) => {
   });
 };
 
-export const getMilestoneTransactionId = async (milestoneTransaction: Record<string, unknown>) => {
+export const getMilestoneTransactionId = (milestoneTransaction: MilestoneTransactions) => {
   try {
-    const payload = <TransactionPayload>milestoneTransaction.payload;
+    const payload = milestoneTransaction.payload as unknown as TransactionPayload;
     const essence = payload.essence as RegularTransactionEssence;
     const hexData = (essence?.payload as TaggedDataPayload)?.data || '';
     const metadata = JSON.parse(hexToUtf8(hexData));

@@ -1,10 +1,10 @@
 {
-  "name": "@build-5/interfaces",
+  "name": "@buildcore/interfaces",
   "version": "0.0.0",
   "description": "",
   "license": "Apache-2.0",
   "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "type": "commonjs",
   "directories": {
     "lib": "lib"
   },

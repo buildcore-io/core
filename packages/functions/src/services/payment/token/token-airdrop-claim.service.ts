@@ -1,4 +1,4 @@
-import { TransactionPayloadType } from '@build-5/interfaces';
+import { TransactionPayloadType } from '@buildcore/interfaces';
 import { BaseService, HandlerParams } from '../base';
 
 export class TokenAirdropClaimService extends BaseService {

@@ -1,12 +1,12 @@
 <p align="center">Super easy to use framework to interact with Web3</p>
 <p align="center">
-    <a href="https://www.npmjs.com/package/@build-5/sdk"><img src="https://img.shields.io/npm/v/@build-5/sdk.svg?style=flat-square&colorB=51C838"
+    <a href="https://www.npmjs.com/package/@buildcore/sdk"><img src="https://img.shields.io/npm/v/@buildcore/sdk.svg?style=flat-square&colorB=51C838"
                                                        alt="NPM Version" /></a>
     <img
             src="https://img.shields.io/badge/license-APACHE2-brightgreen.svg?style=flat-square" alt="License" />
 </p>
 
-> @build-5/sdk is a complete framework to interact with Build5 platform and various DLTs like IOTA and Shimmer.
+> @buildcore/sdk is a complete framework to interact with Buildcore platform and various DLTs like IOTA and Shimmer.
 
 - 🕒 Fast and Reliable
 - 💪 Tested and trusted
@@ -25,17 +25,17 @@ You can find more details, API, and other docs on [developer.buildcore.io](https
 ### Installation
 
 ```console
-npm install @build-5/sdk --save
-npm install @build-5/interfaces --save
+npm install @buildcore/sdk --save
+npm install @buildcore/interfaces --save
 ```
 
 ### API
 
-It's easy to use Build5 SDK to read, post or constract OTR requests.
+It's easy to use Buildcore SDK to read, post or constract OTR requests.
 
 ```
-import { Build5, https } from '@build-5/sdk';
-import { Dataset } from '@build-5/interfaces';
+import { Buildcore, https } from '@buildcore/sdk';
+import { Dataset } from '@buildcore/interfaces';
 
 const member = await https(origin).createProject(<YourProjectApiKey>)
                                   .dataset(Dataset.MEMBER)

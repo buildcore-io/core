@@ -1,4 +1,4 @@
-import { ProjectBilling, ProjectCreateRequest } from '@build-5/interfaces';
+import { ProjectBilling, ProjectCreateRequest } from '@buildcore/interfaces';
 import Joi from 'joi';
 import { CommonJoi, toJoiObject } from '../../services/joi/common';
 
@@ -20,30 +20,30 @@ export const projectCreateSchema = toJoiObject<ProjectCreateRequest>({
       .description('Billing type of the project.'),
     tiers: Joi.array()
       .when('billing', {
-        is: Joi.exist().valid(ProjectBilling.TOKEN_BASE),
+        is: Joi.exist().valid(ProjectBilling.TOKEN_BASED),
         then: Joi.array().items(Joi.number().integer().min(0)).min(5).max(5).required(),
         otherwise: Joi.forbidden(),
       })
       .description(
-        `Tiers for this project. Set only if billing type is ${ProjectBilling.TOKEN_BASE}`,
+        `Tiers for this project. Set only if billing type is ${ProjectBilling.TOKEN_BASED}`,
       ),
     tokenTradingFeeDiscountPercentage: Joi.array()
       .when('billing', {
-        is: Joi.exist().valid(ProjectBilling.TOKEN_BASE),
+        is: Joi.exist().valid(ProjectBilling.TOKEN_BASED),
         then: Joi.array().items(Joi.number().integer().min(0)).min(5).max(5).required(),
         otherwise: Joi.forbidden(),
       })
       .description(
-        `Discounts for this project. Set only if billing type is ${ProjectBilling.TOKEN_BASE}`,
+        `Discounts for this project. Set only if billing type is ${ProjectBilling.TOKEN_BASED}`,
       ),
     nativeTokenSymbol: Joi.string()
       .when('billing', {
-        is: Joi.exist().valid(ProjectBilling.TOKEN_BASE),
+        is: Joi.exist().valid(ProjectBilling.TOKEN_BASED),
         then: CommonJoi.tokenSymbol(),
         otherwise: Joi.forbidden(),
       })
       .description(
-        `Base token symbol for this project. Set only if billing type is ${ProjectBilling.TOKEN_BASE}`,
+        `Base token symbol for this project. Set only if billing type is ${ProjectBilling.TOKEN_BASED}`,
       ),
   })
     .required()
