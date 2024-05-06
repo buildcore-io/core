@@ -60,6 +60,10 @@ export const getMany = async (project: string, url: string, isLive: boolean) => 
     try {
       const filters = getFilters(body.fieldName, body.fieldValue);
       Object.entries(filters).forEach(([key, value]) => {
+        // TODO remove once everyone uses new SDK
+        if (key === 'parentCol') {
+          return;
+        }
         const hasMany = value.length > 1;
         if (hasMany) {
           query = query.whereIn(keyToPg(key), value);

@@ -70,6 +70,10 @@ export const getManyAdvanced = async (project: string, url: string, isLive: bool
   const { filters, operators } = getFilters(body.fieldName, body.fieldValue, body.operator);
   try {
     for (const [key, values] of Object.entries(filters)) {
+      // TODO remove once everyone uses new SDK
+      if (key === 'parentCol') {
+        continue;
+      }
       if (operators[key][0] === Opr.IN) {
         query = query.whereIn(keyToPg(key), values);
         continue;
