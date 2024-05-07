@@ -26,7 +26,7 @@ export enum Dataset {
   TICKER = COL.TICKER,
   TRANSACTION = COL.TRANSACTION,
   SWAP = COL.SWAP,
-  SOON_SNAP = COL.SOON_SNAP
+  SOON_SNAP = COL.SOON_SNAP,
 }
 
 export enum Subset {

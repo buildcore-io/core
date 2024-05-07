@@ -50,8 +50,16 @@ const getManyAdvancedSchema = Joi.object({
     .equal(...Object.values(Subset))
     .optional(),
   fieldName: Joi.array().items(fieldNameSchema).optional(),
-  fieldValue: Joi.array().length(Joi.ref('fieldName.length')).items(fieldValueSchema).optional(),
-  operator: Joi.array().length(Joi.ref('fieldName.length')).items(operatorSchema).optional(),
+  fieldValue: Joi.array().when('fieldName', {
+    is: Joi.array().min(1).required(),
+    then: Joi.array().length(Joi.ref('fieldName.length')).items(fieldValueSchema).required(),
+    otherwise: Joi.array().optional(),
+  }),
+  operator: Joi.array().when('fieldName', {
+    is: Joi.array().min(1).required(),
+    then: Joi.array().length(Joi.ref('fieldName.length')).items(operatorSchema).required(),
+    otherwise: Joi.array().optional(),
+  }),
 
   orderBy: Joi.array().min(1).items(fieldNameSchema).optional(),
   orderByDir: Joi.array().min(1).items(Joi.string().valid('asc', 'desc')).optional(),
