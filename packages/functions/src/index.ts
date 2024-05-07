@@ -1,12 +1,12 @@
 /* eslint-disable import/namespace */
 /* eslint-disable @typescript-eslint/no-var-requires */
 require('dotenv').config({ path: __dirname + '/.env' });
-import { BaseRecord, PgChanges, database } from '@buildcore/database';
+import { BaseRecord, database } from '@buildcore/database';
 import { WEN_FUNC } from '@buildcore/interfaces';
 import cors from 'cors';
 import dayjs from 'dayjs';
 import express from 'express';
-import { get, head } from 'lodash';
+import { get } from 'lodash';
 import { flattenObject } from './common';
 import * as onScheduled from './runtime/cron/index';
 import { ScheduledFunction } from './runtime/cron/scheduled';
@@ -28,7 +28,7 @@ app.use(cors());
 app.use(traceMiddleware);
 
 const httpRawParser = express.raw({ type: '*/*', limit: '100mb' });
-const jsonParser = express.json();
+const jsonParser = express.json({ limit: '50mb' });
 
 const loggingMiddleware = (name: string) =>
   isEmulatorEnv()
@@ -60,25 +60,15 @@ Object.entries(flattenObject(onTriggers)).forEach(([name, config]) => {
   app.post(`/${name}`, jsonParser, loggingMiddleware(name), async (req, res) => {
     const pubSubMessage = req.body.message.data;
     const raw = Buffer.from(pubSubMessage, 'base64').toString().trim();
-    const processId = JSON.parse(raw).processId;
-    let snap: PgChanges | undefined = undefined;
-
-    const docRef = database().getCon()('changes').where({ uid: processId });
+    const change = JSON.parse(raw);
     try {
-      snap = head(await docRef);
-      if (!snap) {
-        return;
-      }
-
-      await docRef.delete();
-
       await (config as TriggeredFunction).handler({
-        ...snap.change,
-        prev: snap.change!.prev || undefined,
-        curr: snap.change!.curr || undefined,
+        ...change,
+        prev: change!.prev || undefined,
+        curr: change!.curr || undefined,
       } as PgDocEvent<BaseRecord>);
     } catch (error) {
-      logger.error('onTriggers-error', name, snap, error);
+      logger.error('onTriggers-error', name, change, error);
     } finally {
       res.sendStatus(200);
     }

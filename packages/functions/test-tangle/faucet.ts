@@ -1,5 +1,4 @@
 import { Network, NetworkAddress, Timestamp } from '@buildcore/interfaces';
-
 import { Client } from '@iota/sdk';
 import { MnemonicService } from '../src/services/wallet/mnemonic';
 import { Wallet } from '../src/services/wallet/wallet';

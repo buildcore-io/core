@@ -65,7 +65,8 @@ const notifier = async () => {
 };
 
 const notifyTriggers = async (channel: string, changeId: string) => {
-  const body = { message: { data: btoa(JSON.stringify({ processId: Number(changeId) })) } };
+  const change = await knex('changes').select('*').where({ uid: changeId });
+  const body = { message: { data: Buffer.from(JSON.stringify(change[0].change)) } };
 
   let error: any = undefined;
   for (let i = 0; i < 5; ++i) {
@@ -80,6 +81,7 @@ const notifyTriggers = async (channel: string, changeId: string) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   }
+  await knex('changes').delete().where({ uid: changeId });
   throw error;
 };
 
