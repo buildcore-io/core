@@ -29,7 +29,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/buildcore/core">
-    <img src="docs/static/img/buildcore_logo.png" alt="BUILD.5 logo" width="80" height="80">
+    <img src="docs/static/img/buildcore_logo.png" alt="BUILD.5 logo" height="80">
   </a>
 
 <h3 align="center">Buildcore</h3>
