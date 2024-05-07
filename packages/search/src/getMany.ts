@@ -36,16 +36,20 @@ const getManySchema = Joi.object({
   subset: Joi.string()
     .equal(...Object.values(Subset))
     .optional(),
-  fieldName: Joi.alternatives()
-    .try(fieldNameSchema, Joi.array().min(1).items(fieldNameSchema))
-    .optional(),
-  fieldValue: Joi.alternatives()
-    .conditional('fieldName', {
-      is: fieldNameSchema,
-      then: fieldValueSchema,
-      otherwise: Joi.array().min(1).length(Joi.ref('fieldName.length')).items(fieldValueSchema),
-    })
-    .optional(),
+  fieldName: Joi.alternatives().try(fieldNameSchema, Joi.array().items(fieldNameSchema)).optional(),
+  fieldValue: Joi.alternatives().conditional('fieldName', {
+    is: fieldValueSchema.required(),
+    then: fieldValueSchema.required(),
+    otherwise: Joi.array().when('fieldName', {
+      is: Joi.array().min(1).required(),
+      then: Joi.array()
+        .min(1)
+        .length(Joi.ref('fieldName.length'))
+        .items(fieldValueSchema)
+        .required(),
+      otherwise: Joi.forbidden(),
+    }),
+  }),
   startAfter: CommonJoi.uid(false),
 });
 

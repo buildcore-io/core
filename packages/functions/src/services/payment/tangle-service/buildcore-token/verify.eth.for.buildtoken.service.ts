@@ -20,7 +20,8 @@ export class VerifyEthForBuilTokenTangleService extends BaseTangleService<Tangle
 
     ethAddress = soonSnap?.ethAddress || ethAddress;
 
-    if (!(await isFollowerOfJustBuild(ethAddress))) {
+    const fid = await getFidForEth(ethAddress);
+    if (!(await isUserFollowingChannel(fid))) {
       return { status: 'error', message: 'Must follow JustBuild' };
     }
 
@@ -40,19 +41,16 @@ export class VerifyEthForBuilTokenTangleService extends BaseTangleService<Tangle
   };
 }
 
-const JUST_BUILD_FID = '414955';
-const NEYNAR_API_KEY = '66806C32-DF58-4DA9-9607-A343BA597C55';
-
-const isFollowerOfJustBuild = async (ethAddress: string) => {
-  const fid = await axios(`https://api.neynar.com/v2/farcaster/user/bulk-by-address`, {
+const getFidForEth = async (ethAddress: string) =>
+  axios(`https://api.neynar.com/v2/farcaster/user/bulk-by-address`, {
     params: { addresses: ethAddress },
-    headers: { api_key: NEYNAR_API_KEY },
+    headers: { api_key: process.env.NEYNAR_API_KEY },
   }).then((r) => r.data[ethAddress]?.[0]?.fid);
 
-  return axios(`https://api.neynar.com/v2/farcaster/user/bulk`, {
-    params: { fids: fid, viewer_fid: JUST_BUILD_FID },
-    headers: { api_key: NEYNAR_API_KEY },
+const isUserFollowingChannel = async (fid: number) =>
+  fetch(`https://api.neynar.com/v2/farcaster/channel?id=justbuild&viewer_fid=${fid}`, {
+    headers: { api_key: process.env.NEYNAR_API_KEY! },
   })
-    .then((r) => !!r.data.users[0]?.viewer_context?.followed_by)
+    .then((r) => r.json())
+    .then((obj) => !!obj?.channel?.viewer_context?.following)
     .catch(() => false);
-};
