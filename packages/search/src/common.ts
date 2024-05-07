@@ -112,6 +112,7 @@ export const shouldSetProjectFilter = (dataset: Dataset, subset?: Subset): boole
     Dataset.MILESTONE_RMS,
     Dataset.MILESTONE_SMR,
     Dataset.TICKER,
+    Dataset.SOON_SNAP,
   ].includes(dataset) && !subset;
 
 export const keyToPg = (key: string) => {
