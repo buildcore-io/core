@@ -9,35 +9,32 @@ import { verifyEthForB5TangleSchema } from './VerifyEthForB5TangleRequest';
 export class VerifyEthForBuilTokenTangleService extends BaseTangleService<TangleResponse> {
   public handleRequest = async ({ request, match }: HandlerParams): Promise<TangleResponse> => {
     const params = await assertValidationAsync(verifyEthForB5TangleSchema, request);
-    let ethAddress = params.ethAddress.toLowerCase();
+    const ethAddresses = params.ethAddress.toLowerCase().split(',');
 
-    let soonSnapDocRef = database().doc(COL.SOON_SNAP, match.from);
-    let soonSnap = await this.transaction.get(soonSnapDocRef);
-    if (!soonSnap) {
-      soonSnapDocRef = database().doc(COL.SOON_SNAP, ethAddress);
-      soonSnap = await this.transaction.get(soonSnapDocRef);
-    }
-
-    ethAddress = soonSnap?.ethAddress || ethAddress;
-
-    const fid = await getFidForEth(ethAddress);
+    const fid = await getFidForEth(ethAddresses[0]);
     if (!(await isUserFollowingChannel(fid))) {
       return { status: 'error', message: 'Must follow JustBuild' };
     }
 
-    if (!soonSnap) {
-      return { status: 'error', message: 'No snapshot for this SMR address' };
+    await this.confirmEthAddress(match.from, ethAddresses[0]);
+
+    for (const ethAddress of ethAddresses) {
+      await this.confirmEthAddress(ethAddress, ethAddress);
     }
 
-    if (!soonSnap.ethAddressVerified) {
+    return { status: 'success' };
+  };
+
+  private confirmEthAddress = async (soonSnapUid: string, ethAddress: string) => {
+    const soonSnapDocRef = database().doc(COL.SOON_SNAP, soonSnapUid);
+    const soonSnap = await this.transaction.get(soonSnapDocRef);
+    if (soonSnap && !soonSnap.ethAddressVerified) {
       this.transactionService.push({
         ref: soonSnapDocRef,
         data: { ethAddress, ethAddressVerified: true },
         action: Action.U,
       });
     }
-
-    return { status: 'success' };
   };
 }
 
