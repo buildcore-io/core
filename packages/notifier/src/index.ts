@@ -13,7 +13,7 @@ const knex = Knex({
     host: process.env.DB_HOST,
     port: Number(process.env.DB_PORT),
   },
-  pool: { max: 20 },
+  pool: { max: 50 },
 });
 
 interface Upsert {
@@ -22,6 +22,12 @@ interface Upsert {
   parentId?: string;
 }
 const upsertQueue: Upsert[] = [];
+
+interface Change {
+  channel: string;
+  uid: string;
+}
+const changesQueue: Change[] = [];
 
 const notifier = async () => {
   const connection = await knex.client.acquireConnection();
@@ -32,7 +38,7 @@ const notifier = async () => {
   connection.on('notification', async (data: any) => {
     if (data.channel === 'trigger') {
       const [channel, processId] = data.payload.split(':');
-      await notifyTriggers(channel, processId);
+      changesQueue.push({ channel, uid: processId });
       return;
     }
 
@@ -56,17 +62,28 @@ const getTriggerTopic = (topic: string) => {
   return triggerTopics[topic];
 };
 
-const notifyTriggers = async (channel: string, changeId: string) => {
-  try {
-    const change = await knex('changes').select('*').where({ uid: changeId });
-    await getTriggerTopic(channel).publishMessage({
-      data: Buffer.from(JSON.stringify(change[0].change)),
-    });
-  } catch (err) {
-    logger.error(err);
-  } finally {
-    await knex('changes').delete().where({ uid: changeId });
+const notifyTriggers = async () => {
+  const data = changesQueue.splice(0);
+  if (!data.length) {
+    return;
   }
+  const map = data.reduce(
+    (acc, act) => ({ ...acc, [act.uid]: act.channel }),
+    {} as { [key: string]: string },
+  );
+  const changes = await knex('changes').select('*').whereIn('uid', Object.keys(map));
+
+  const promises = changes.map(async (change) => {
+    const channel = map[change.uid];
+    try {
+      await getTriggerTopic(channel).publishMessage({
+        data: Buffer.from(JSON.stringify(change.change)),
+      });
+    } catch (err) {
+      logger.error(channel, change.uid, err);
+    }
+  });
+  await Promise.allSettled(promises);
 };
 
 const upserTopic = pubSub.topic('onupsert');
@@ -94,5 +111,6 @@ const postDataToPubSub = async () => {
 };
 
 setInterval(postDataToPubSub, 500);
+setInterval(notifyTriggers, 100);
 
 notifier();

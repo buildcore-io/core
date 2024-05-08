@@ -34,8 +34,7 @@ const getUpdatedAfterSchema = Joi.object({
 export const getUpdatedAfter = async (project: string, url: string, isLive: boolean) => {
   const body = getQueryParams<GetUpdatedAfterRequest>(url, getUpdatedAfterSchema);
 
-  const updatedAfter = body.updatedAfter ? dayjs.unix(body.updatedAfter) : dayjs().subtract(1, 'h');
-
+  const updatedAfter = body.updatedAfter ? dayjs(body.updatedAfter) : dayjs().subtract(1, 'h');
   const collection = database().collection(
     body.dataset as unknown as COL,
     body.setId,
