@@ -15,7 +15,7 @@ export const getKnex = () => {
       },
       pool: {
         min: Number(process.env.DB_POOL_MIN || 0),
-        max: Number(process.env.DB_POOL_MAX || 20),
+        max: Number(process.env.DB_POOL_MAX || 10),
       },
     });
   }

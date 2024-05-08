@@ -56,10 +56,17 @@ const getTriggerTopic = (topic: string) => {
   return triggerTopics[topic];
 };
 
-const notifyTriggers = async (channel: string, processId: string) => {
-  await getTriggerTopic(channel).publishMessage({
-    data: Buffer.from(JSON.stringify({ processId: Number(processId) })),
-  });
+const notifyTriggers = async (channel: string, changeId: string) => {
+  try {
+    const change = await knex('changes').select('*').where({ uid: changeId });
+    await getTriggerTopic(channel).publishMessage({
+      data: Buffer.from(JSON.stringify(change[0].change)),
+    });
+  } catch (err) {
+    logger.error(err);
+  } finally {
+    await knex('changes').delete().where({ uid: changeId });
+  }
 };
 
 const upserTopic = pubSub.topic('onupsert');
