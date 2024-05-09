@@ -32,7 +32,10 @@ const deployServices = () => {
     ...flattenObject(onTriggers),
     ...flattenObject(onScheduled),
     ...flattenObject(onStorage),
-  }).forEach(([name, value]) => {
+  }).forEach(([name, value], index) => {
+    if (index % 50 === 0) {
+      fs.appendFileSync(file, 'wait\n\n');
+    }
     const options = (value as CloudFunctions).runtimeOptions;
 
     let command = `gcloud run deploy ${name} \\
