@@ -33,6 +33,9 @@ export class ICollection<T, Q extends BaseRecord, U extends Update> {
     value: Q[F] | undefined | null,
   ) => this.createQuery().where(fieldPath, operator, value);
 
+  whereIn = <F extends keyof Q>(fieldPath: F, value: Q[F][]): IQuery<T, Q> =>
+    this.createQuery().whereIn(fieldPath, value);
+
   update = async <F extends keyof Q>(data: U, where: Record<F, Q[F]>) => {
     await this.con(this.table).update(undefinedToNull(data)).where(where);
   };
