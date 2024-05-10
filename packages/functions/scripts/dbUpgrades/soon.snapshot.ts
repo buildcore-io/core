@@ -25,12 +25,13 @@ import { chunk, head, last } from 'lodash';
 const consumedOutputs: Set<string> = new Set();
 const limit = 10000;
 let tokensPerAddress: { [key: string]: number } = {};
+let members: { [key: string]: Member } = {};
 
 let SOON_TOKEN_ID =
   '0x0884298fe9b82504d26ddb873dbd234a344c120da3a4317d8063dbcf96d356aa9d0100000000';
 let NETWORK: Network.SMR | Network.RMS = Network.SMR;
 let MILESTONE_COL: COL.MILESTONE_SMR | COL.MILESTONE_RMS = COL.MILESTONE_SMR;
-let MIN_MILESTONE = 9460179;
+let MIN_MILESTONE = 125438;
 
 export const soonSnapshot = async (tokenId?: string, network?: Network.SMR | Network.RMS) => {
   SOON_TOKEN_ID = tokenId === undefined ? SOON_TOKEN_ID : tokenId;
@@ -40,6 +41,12 @@ export const soonSnapshot = async (tokenId?: string, network?: Network.SMR | Net
 
   const deleted = await database().getCon()(COL.SOON_SNAP).delete();
   console.log('deleted', deleted);
+
+  members = (await database().collection(COL.MEMBER).get()).reduce(
+    (acc, act) => ({ ...acc, [act.uid]: act }),
+    {},
+  );
+  console.log('members', Object.keys(members).length);
 
   await createSoonSnapshot();
   const tokensPerMember = await addressesToMembers();
@@ -120,8 +127,6 @@ const addressesToMembers = async () => {
   return tokensPerMember;
 };
 
-const members: { [key: string]: Member } = {};
-
 const addressToMember = async (address: string, count: number) => {
   const tokensPerMember: { [key: string]: number } = {};
   console.log('addressToMember', 'getting airdrops', address);
@@ -130,7 +135,7 @@ const addressToMember = async (address: string, count: number) => {
     .where('sourceAddress', '==', address)
     .where('status', '==', TokenDropStatus.UNCLAIMED)
     .get();
-  console.log('addressToMember', address, 'airdrops', airdropsSnap.length);
+  console.log('addressToMember', 'airdrops', address, airdropsSnap.length);
 
   for (const airdrop of airdropsSnap) {
     if (airdrop.member.startsWith('0x')) {
