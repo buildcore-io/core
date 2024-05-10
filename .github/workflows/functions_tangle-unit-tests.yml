@@ -3547,3 +3547,43 @@ jobs:
            npm run start &
            npm run notifier &
            npm run test -- --findRelatedTests --forceExit ./test-tangle/minted-token-trade/minted-token-trade_15.only.spec.ts 
+  chunk_84:
+    needs: npm-install
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: buildcore
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_MAX_CONNECTIONS: 400
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - uses: actions/cache@v4
+        with:
+          path: |
+           node_modules
+           packages/functions/node_modules
+           packages/interfaces/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
+      - name: Init
+        run: npm run build:functions
+      - name: Test
+        working-directory: packages/functions
+        run: |
+           npm run start &
+           npm run notifier &
+           npm run test -- --findRelatedTests --forceExit ./test-tangle/soon.snapshot.only.spec.ts 
