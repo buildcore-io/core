@@ -1,5 +1,5 @@
 import { MilestoneTransactions, database } from '@buildcore/database';
-import { COL, Network, SUB_COL, TokenDropStatus } from '@buildcore/interfaces';
+import { COL, Member, Network, SUB_COL, TokenDropStatus } from '@buildcore/interfaces';
 import {
   Address,
   AddressType,
@@ -38,7 +38,8 @@ export const soonSnapshot = async (tokenId?: string, network?: Network.SMR | Net
   MILESTONE_COL = NETWORK === Network.SMR ? COL.MILESTONE_SMR : COL.MILESTONE_RMS;
   tokensPerAddress = {};
 
-  await database().getCon()(COL.SOON_SNAP).delete();
+  const deleted = await database().getCon()(COL.SOON_SNAP).delete();
+  console.log('deleted', deleted);
 
   await createSoonSnapshot();
   const tokensPerMember = await addressesToMembers();
@@ -100,7 +101,7 @@ const createSoonSnapshot = async () => {
 const addressesToMembers = async () => {
   const tokensPerMember: { [key: string]: number } = {};
 
-  const batches = chunk(Object.entries(tokensPerAddress), 100);
+  const batches = chunk(Object.entries(tokensPerAddress), 10);
   let count = 0;
   console.log('addressesToMembers', 'total', Object.entries(tokensPerAddress).length);
 
@@ -119,17 +120,22 @@ const addressesToMembers = async () => {
   return tokensPerMember;
 };
 
+const members: { [key: string]: Member } = {};
+
 const addressToMember = async (address: string, count: number) => {
   const tokensPerMember: { [key: string]: number } = {};
+  console.log('addressToMember', 'getting airdrops', address);
   const airdropsSnap = await database()
     .collection(COL.AIRDROP)
     .where('sourceAddress', '==', address)
     .where('status', '==', TokenDropStatus.UNCLAIMED)
     .get();
+  console.log('addressToMember', 'airdrops', airdropsSnap.length);
 
   for (const airdrop of airdropsSnap) {
     if (airdrop.member.startsWith('0x')) {
-      const member = await database().doc(COL.MEMBER, airdrop.member).get();
+      const member =
+        members[airdrop.member] || (await database().doc(COL.MEMBER, airdrop.member).get());
       const memberAddress = member?.validatedAddress?.[NETWORK] || airdrop.member;
       tokensPerMember[memberAddress] = (tokensPerMember[memberAddress] || 0) + airdrop.count;
       continue;
