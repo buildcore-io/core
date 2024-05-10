@@ -9,7 +9,7 @@ import {
   ValidatedAddress,
   WenError,
 } from '@buildcore/interfaces';
-import { get, isEmpty } from 'lodash';
+import { get, isEmpty, set } from 'lodash';
 import { getOutputMetadata } from '../../../utils/basic-output.utils';
 import { invalidArgument } from '../../../utils/error.utils';
 import { logger } from '../../../utils/logger';
@@ -74,16 +74,16 @@ export class TangleRequestService extends BaseTangleService<TangleResponse> {
       if (!payment) {
         payment = await this.transactionService.createPayment({ ...order, member: owner }, match);
       }
-      this.transactionService.createTangleCredit(
-        payment,
-        match,
-        {
-          status: 'error',
-          code: get(error, 'eCode', 1000),
-          message: get(error, 'eKey', 'none'),
-        },
-        tranEntry.outputId!,
-      );
+
+      const response = {
+        status: 'error',
+        code: get(error, 'eCode', 1000),
+        message: get(error, 'eKey', 'none'),
+      };
+      if (get(error, 'eMessage', '')) {
+        set(response, 'exp', get(error, 'eMessage', ''));
+      }
+      this.transactionService.createTangleCredit(payment, match, response, tranEntry.outputId!);
     }
 
     return {};
