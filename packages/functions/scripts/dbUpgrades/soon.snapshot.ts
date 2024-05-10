@@ -31,7 +31,7 @@ let SOON_TOKEN_ID =
   '0x0884298fe9b82504d26ddb873dbd234a344c120da3a4317d8063dbcf96d356aa9d0100000000';
 let NETWORK: Network.SMR | Network.RMS = Network.SMR;
 let MILESTONE_COL: COL.MILESTONE_SMR | COL.MILESTONE_RMS = COL.MILESTONE_SMR;
-let MIN_MILESTONE = 9477289;
+let MIN_MILESTONE = 125438;
 
 export const soonSnapshot = async (tokenId?: string, network?: Network.SMR | Network.RMS) => {
   SOON_TOKEN_ID = tokenId === undefined ? SOON_TOKEN_ID : tokenId;
@@ -108,7 +108,7 @@ const createSoonSnapshot = async () => {
 const addressesToMembers = async () => {
   const tokensPerMember: { [key: string]: number } = {};
 
-  const batches = chunk(Object.entries(tokensPerAddress), 10);
+  const batches = chunk(Object.entries(tokensPerAddress), 100);
   let count = 0;
   console.log('addressesToMembers', 'total', Object.entries(tokensPerAddress).length);
 
