@@ -130,7 +130,7 @@ const addressToMember = async (address: string, count: number) => {
     .where('sourceAddress', '==', address)
     .where('status', '==', TokenDropStatus.UNCLAIMED)
     .get();
-  console.log('addressToMember', 'airdrops', airdropsSnap.length);
+  console.log('addressToMember', address, 'airdrops', airdropsSnap.length);
 
   for (const airdrop of airdropsSnap) {
     if (airdrop.member.startsWith('0x')) {
