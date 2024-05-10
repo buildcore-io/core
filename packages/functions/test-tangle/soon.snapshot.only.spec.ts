@@ -115,7 +115,7 @@ describe('Soon snapshot test', () => {
     await database().doc(COL.TOKEN, tokenId).create(token);
   });
 
-  it.only('Should get 100 token from vault and claim it', async () => {
+  it('Should get 100 token from vault and claim it', async () => {
     const tokensPerMember = await soonSnapshot(tokenId, network);
     expect(tokensPerMember[vaultAddress]).toBe(currentSoonTotal);
     expect(tokensPerMember[address.bech32]).toBe(100);
