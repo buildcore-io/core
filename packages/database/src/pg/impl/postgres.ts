@@ -141,7 +141,7 @@ import {
   PgTokenVotesUpdate,
 } from '../models/token_update';
 import { PgTransactionUpdate } from '../models/transaction_update';
-import { getKnex, getKnexTran, knex, knextran } from './knex';
+import { knex, knextran } from './knex';
 import { subscriptions } from './pubsub';
 import { AirdropConverter, PgAirdropCollection } from './tables/airdrop';
 import { AuctionConverter } from './tables/auction';
@@ -338,11 +338,7 @@ export type IDocType<T extends COL, S extends SUB_COL | undefined = undefined> =
 undefined;
 
 export class PgDatabase implements IDatabase {
-  private readonly con: Knex;
-
-  constructor() {
-    this.con = getKnex();
-  }
+  private readonly con: Knex = knex;
 
   private getConverter = (col: COL, subCol?: SUB_COL) => {
     if (!subCol) {
@@ -485,10 +481,9 @@ export class PgDatabase implements IDatabase {
 
   runTransaction = async <T>(func: (transaction: ITransaction) => Promise<T>) => {
     for (let i = 0; i < 240; ++i) {
-      const con = getKnexTran();
       let trx: Knex.Transaction | undefined = undefined;
       try {
-        trx = await con.transaction();
+        trx = await knextran.transaction();
         const transaction = new PgRunTransaction(trx);
         const result = await func(transaction);
         if (transaction.allLocksAquired) {
@@ -501,8 +496,6 @@ export class PgDatabase implements IDatabase {
       } catch (err) {
         await trx?.rollback();
         throw err;
-      } finally {
-        await con.destroy();
       }
     }
     throw { code: 500, key: 'Failed to execute transaction' };
@@ -515,7 +508,7 @@ export class PgDatabase implements IDatabase {
   arrayRemove = <T>(value: T) => new ArrayRemove(value);
 
   destroy = async () => {
-    const promises: any[] = [knex?.destroy(), knextran?.destroy()];
+    const promises: any[] = [knex.destroy(), knextran.destroy()];
 
     for (const subs of Object.values(subscriptions)) {
       promises.push((await subs).delete());
@@ -631,9 +624,12 @@ export class PgRunTransaction implements ITransaction {
     }
     try {
       return await docRef.useTransaction(this.trx, (doc) => doc.get());
-    } catch {
-      this.allLocksAquired = false;
-      return await docRef.get();
+    } catch (err: any) {
+      if (err.name === 'KnexTimeoutError') {
+        this.allLocksAquired = false;
+        return await docRef.get();
+      }
+      throw err;
     }
   };
 

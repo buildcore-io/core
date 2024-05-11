@@ -29,7 +29,7 @@ export class IDocument<C, B extends BaseRecord, U extends Update> {
   createQuery = () => {
     let query = this.con(this.table).where(this.pKey);
     if (this.con.isTransaction) {
-      query.forUpdate().noWait();
+      query.forUpdate().timeout(200);
     }
     return query;
   };

@@ -32,10 +32,7 @@ const deployServices = () => {
     ...flattenObject(onTriggers),
     ...flattenObject(onScheduled),
     ...flattenObject(onStorage),
-  }).forEach(([name, value], index) => {
-    if (index % 50 === 0) {
-      fs.appendFileSync(file, 'wait\n\n');
-    }
+  }).forEach(([name, value]) => {
     const options = (value as CloudFunctions).runtimeOptions;
 
     let command = `gcloud run deploy ${name} \\
@@ -150,7 +147,7 @@ const deployCronTriggers = () => {
 const setMaxAckDeadline = () => {
   fs.appendFileSync(
     file,
-    `for SUBSCRIPTION_NAME in $(gcloud pubsub subscriptions list  --format="value(name)")\n`,
+    `for SUBSCRIPTION_NAME in $(gcloud pubsub subscriptions list --format="value(name)" | grep -v 'subs-onupsert')\n`,
   );
   fs.appendFileSync(file, `do\n`);
   fs.appendFileSync(
