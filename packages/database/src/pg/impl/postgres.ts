@@ -148,7 +148,7 @@ import { AuctionConverter } from './tables/auction';
 import { AwardConverter } from './tables/award';
 import { AwardOwnerConverter } from './tables/award_owner';
 import { AwardParticipantConverter } from './tables/award_participant';
-import { CollectionConverter, PgCollectionCollection } from './tables/collection';
+import { CollectionConverter } from './tables/collection';
 import { CollectionRankConverter } from './tables/collection_rank';
 import { CollectionStatsConverter } from './tables/collection_stats';
 import { CollectionVotesConverter } from './tables/collection_vote';
@@ -159,7 +159,7 @@ import {
   MilestoneTransactions,
 } from './tables/milestone_transactions';
 import { MnemonicConverter } from './tables/mnemonic';
-import { NftConverter } from './tables/nft';
+import { NftConverter, PgNftCollection } from './tables/nft';
 import { NftStakeConverter } from './tables/nft_stake';
 import { NotificationConverter } from './tables/notification';
 import { ProjectConverter } from './tables/project';
@@ -195,8 +195,8 @@ export type IColType<T extends COL, S extends SUB_COL | undefined = undefined> =
     T extends COL.MEMBER ? ICollection<Member, PgMember, PgMemberUpdate> :
     T extends COL.SPACE ? ICollection<Space, PgSpace, PgSpaceUpdate> :
     T extends COL.PROJECT ? ICollection<Project, PgProject, PgProjectUpdate> :
-    T extends COL.COLLECTION ? PgCollectionCollection :
-    T extends COL.NFT ? ICollection<Nft, PgNft, PgNftUpdate> :
+    T extends COL.COLLECTION ? ICollection<Collection, PgCollection, PgCollectionUpdate> :
+    T extends COL.NFT ? PgNftCollection :
     T extends COL.NFT_STAKE ? ICollection<NftStake, PgNftStake, PgNftStakeUpdate> :
     T extends COL.TRANSACTION ? ICollection<Transaction, PgTransaction, PgTransactionUpdate> :
     T extends COL.AUCTION ? ICollection<Auction, PgAuction, PgAuctionUpdate> :
@@ -456,8 +456,8 @@ export class PgDatabase implements IDatabase {
     if (col === COL.AIRDROP) {
       return new PgAirdropCollection(this.con, col, converter) as IColType<C, S>;
     }
-    if (col === COL.COLLECTION) {
-      return new PgCollectionCollection(this.con, col, converter) as IColType<C, S>;
+    if (col === COL.NFT) {
+      return new PgNftCollection(this.con, col, converter) as IColType<C, S>;
     }
     if (col === COL.STAKE) {
       return new PgStakeCollection(this.con, col, converter) as unknown as IColType<C, S>;
