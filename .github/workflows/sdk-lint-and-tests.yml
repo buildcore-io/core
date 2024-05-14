@@ -18,6 +18,6 @@ jobs:
       - name: Install Dependencies
         run: npm run build:sdk
       - name: Prettier
-        run: cd packages/sdk && npx prettier --check .
+        run: npx prettier --check packages/sdk
       - name: Lint
         run: cd packages/sdk && npm run lint

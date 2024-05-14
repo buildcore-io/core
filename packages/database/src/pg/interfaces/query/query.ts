@@ -79,7 +79,7 @@ export abstract class BaseIQuery<C, Q extends BaseRecord> {
   };
 
   checkIndex = async (query: Knex.QueryBuilder) => {
-    if (process.env.ENVIRONMENT !== 'emulator') {
+    if (process.env.ENVIRONMENT !== 'dev') {
       return;
     }
 

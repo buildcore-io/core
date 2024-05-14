@@ -18,7 +18,7 @@ import { invalidArgument } from './error.utils';
 
 export const isProdEnv = () => process.env.ENVIRONMENT === 'prod';
 export const isTestEnv = () => process.env.ENVIRONMENT === 'test';
-export const isEmulatorEnv = () => !['prod', 'test'].includes(process.env.ENVIRONMENT!);
+export const isDevEnv = () => !['prod', 'test'].includes(process.env.ENVIRONMENT!);
 
 export const getTokenSaleConfig = isProdEnv() ? TOKEN_SALE : TOKEN_SALE_TEST;
 
@@ -52,10 +52,7 @@ export const getBucket = () => {
   if (isProdEnv()) {
     return Bucket.PROD;
   }
-  if (isTestEnv()) {
-    return Bucket.TEST;
-  }
-  return Bucket.DEV;
+  return Bucket.TEST;
 };
 
 export const getJwtSecretKey = () => process.env.JWT_SECRET!;
@@ -64,10 +61,6 @@ export const getCustomTokenLifetime = (func: WEN_FUNC) => CUSTOM_TOKEN_MAX_LIFET
 
 export const algoliaAppId = () => process.env.ALGOLIA_APPID!;
 export const algoliaKey = () => process.env.ALGOLIA_KEY!;
-
-export const xpTokenId = () => process.env.XPTOKEN_ID!;
-export const xpTokenUid = () => process.env.XPTOKEN_UID!;
-export const xpTokenGuardianId = () => process.env.XPTOKEN_GUARDIANID!;
 
 export const getStampRoyaltyAddress = (network: Network) => STAMP_ROYALTY_ADDRESS[network];
 

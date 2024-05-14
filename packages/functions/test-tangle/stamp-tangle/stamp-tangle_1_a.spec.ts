@@ -16,7 +16,7 @@ describe('Stamp tangle test', () => {
   beforeEach(helper.beforeEach);
 
   it('Should create and mint stamp', async () => {
-    const fiftyDayCost = 2124 * 50 + 54000 + 104500;
+    const fiftyDayCost = 2124 * 50 + 53700 + 92000;
 
     await helper.wallet!.send(
       helper.address,

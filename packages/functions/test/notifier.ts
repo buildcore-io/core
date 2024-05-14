@@ -1,4 +1,3 @@
-require('dotenv').config({ path: (__dirname + '/.env').replace('test/', '') });
 import { COL, getMilestoneCol, Network, SUB_COL } from '@buildcore/interfaces';
 import { PubSub } from '@google-cloud/pubsub';
 import { Client } from '@iota/sdk';

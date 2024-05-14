@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IBucket, storage } from '@buildcore/database';
 import {
-  Bucket,
   COL,
   IMAGE_CACHE_AGE,
   IPFS_GATEWAY,
@@ -33,13 +32,11 @@ export const migrateUriToSotrage = async (
     fs.mkdirSync(workdir);
     const { fileName, contentType } = await downloadMedia(workdir, url, allowAnyType);
     const destination = `${owner}/${uid}/${fileName}`;
-    const response = await bucket.upload(path.join(workdir, fileName), destination, {
+    await bucket.upload(path.join(workdir, fileName), destination, {
       contentType,
       cacheControl: `public,max-age=${IMAGE_CACHE_AGE}`,
     });
-    const buildcoreUrl =
-      bucket.getName() === Bucket.DEV ? response : `https://${bucket.getName()}/${destination}`;
-    return buildcoreUrl;
+    return `https://${bucket.getName()}/${destination}`;
   } catch (error: any) {
     logger.error('migrateUriToSotrage - error', col, uid, error);
     throw error.code && error.key ? error : WenError.ipfs_retrieve;
@@ -90,12 +87,8 @@ export const uriToUrl = (uri: string) => {
 export const getRandomBuildcoreUrl = (owner: string, uid: string, extension: string) => {
   const bucket = storage().bucket(getBucket());
   const baseUrl = BUCKET_BASE_URLS[bucket.getName()];
-
-  const isDev = bucket.getName() === Bucket.DEV;
   const destination = `${owner}/${uid}/${generateRandomFileName()}.${extension}`;
-  const url = `${baseUrl}${isDev ? encodeURIComponent(destination) : destination}`;
-
-  return isDev ? url + '?alt=media' : url;
+  return `${baseUrl}${destination}`;
 };
 
 export const downloadFile = async (url: string, workDir: string, fileName: string) => {

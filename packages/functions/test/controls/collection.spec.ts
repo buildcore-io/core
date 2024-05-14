@@ -96,7 +96,7 @@ describe('CollectionController: ' + WEN_FUNC.createCollection, () => {
     let call = testEnv.wrap<Collection>(WEN_FUNC.createCollection);
     await expectThrow(call, WenError.invalid_params.key);
     mockWalletReturnValue(member, {
-      media: `https://storage.googleapis.com/download/storage/v1/b/${Bucket.DEV}/o`,
+      media: `https://${Bucket.TEST}/`,
       ...dummyCollection(space, 0.6),
     });
     call = testEnv.wrap<Collection>(WEN_FUNC.createCollection);

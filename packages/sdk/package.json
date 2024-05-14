@@ -5,12 +5,21 @@
   "license": "Apache-2.0",
   "main": "lib/index.js",
   "type": "commonjs",
+  "directories": {
+    "lib": "lib"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
-    "run:search": "cd ../search && export FIRESTORE_EMULATOR_HOST=\"127.0.0.1:8080\" && export FIREBASE_STORAGE_EMULATOR_HOST=\"127.0.0.1:9199\" && npm run build && node lib/index.js",
+    "build": "tsc",
+    "run:search": "cd ../search && npm run build && node lib/index.js",
     "run:functions": "cd ../functions && npm run serve",
     "serve": "run-p \"run:search\" \"run:functions\"",
     "lint": "eslint --ext .js,.ts src",
-    "build": "tsc",
     "test": "jest --forceExit"
   },
   "dependencies": {

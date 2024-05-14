@@ -65,10 +65,7 @@ describe('Nft controll: ' + WEN_FUNC.createCollection, () => {
     let nft = { media: 'some-media-url', ...dummyNft(collection.uid) };
     mockWalletReturnValue(member, nft);
     await expectThrow(testEnv.wrap<Nft>(WEN_FUNC.createNft), WenError.invalid_params.key);
-    nft = {
-      media: `https://storage.googleapis.com/download/storage/v1/b/${Bucket.DEV}/o`,
-      ...dummyNft(collection.uid),
-    };
+    nft = { media: `https://${Bucket.TEST}/`, ...dummyNft(collection.uid) };
     mockWalletReturnValue(member, nft);
     await expectThrow(testEnv.wrap<Nft>(WEN_FUNC.createNft), WenError.invalid_params.key);
   });

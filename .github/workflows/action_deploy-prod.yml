@@ -122,4 +122,34 @@ jobs:
       - name: Deploy to npm
         run: |
           npm publish --workspace packages/interfaces
-          cd packages/sdk/lib && npm publish
+          npm publish --workspace packages/sdk
+
+  database_roll:
+    runs-on: ubuntu-latest
+    environment: staging
+    needs: [deploy_functions]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ secrets.SERVICE_ACCOUNT }}'
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+      - name: Set env vars
+        working-directory: packages/functions
+        run: echo "$ENV_VARS" > .env
+        env:
+          ENV_VARS: ${{ secrets.ENV_VARS }}
+      - uses: mattes/gce-cloudsql-proxy-action@v1
+        with:
+          creds: '${{ secrets.SERVICE_ACCOUNT }}'
+          instance: buildcore-prod:us-central1:buildcore
+      - name: Build and deploy
+        run: |
+            npm run build:functions
+            cd packages/functions
+            npm run migrate

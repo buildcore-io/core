@@ -21,11 +21,12 @@ describe('Stamp control', () => {
   let dowloadUrl: string;
 
   beforeEach(async () => {
-    const bucket = storage().bucket(Bucket.DEV);
+    const bucket = storage().bucket(Bucket.TEST);
     const destination = `nft/${wallet.getRandomEthAddress()}/image.jpeg`;
-    dowloadUrl = await bucket.upload('./test/puppy.jpeg', destination, {
+    await bucket.upload('./test/puppy.jpeg', destination, {
       contentType: 'image/jpeg',
     });
+    dowloadUrl = `https://${bucket.getName()}/${destination}`;
     member = await testEnv.createMember();
   });
 
@@ -43,7 +44,7 @@ describe('Stamp control', () => {
     expect(order.payload.stamp).toBeDefined();
     expect(order.payload.aliasId).toBe('');
     expect(order.payload.aliasOutputAmount).toBe(53700);
-    expect(order.payload.nftOutputAmount).toBe(104800);
+    expect(order.payload.nftOutputAmount).toBe(92000);
 
     const stampDocRef = database().doc(COL.STAMP, order.payload.stamp!);
     const stamp = await stampDocRef.get();

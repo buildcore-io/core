@@ -1,8 +1,3 @@
-/* eslint-disable import/namespace */
-/* eslint-disable @typescript-eslint/no-var-requires */
-import path from 'path';
-require('dotenv').config({ path: path.join(__dirname, '/../.env') });
-
 import initKnex from 'knex';
 import { createChangeTriggers } from './create.triggers';
 import { createCompositeIndexes } from './indexes/composit.indexes';

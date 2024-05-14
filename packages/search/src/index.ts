@@ -1,4 +1,3 @@
-require('dotenv').config({ path: __dirname + '/.env' });
 import { ApiRoutes, WenError } from '@buildcore/interfaces';
 import cors from 'cors';
 import express from 'express';
