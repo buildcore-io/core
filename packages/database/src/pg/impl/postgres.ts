@@ -141,14 +141,14 @@ import {
   PgTokenVotesUpdate,
 } from '../models/token_update';
 import { PgTransactionUpdate } from '../models/transaction_update';
-import { getKnex, getKnexTran, knex, knextran } from './knex';
+import { knex, knextran } from './knex';
 import { subscriptions } from './pubsub';
 import { AirdropConverter, PgAirdropCollection } from './tables/airdrop';
 import { AuctionConverter } from './tables/auction';
 import { AwardConverter } from './tables/award';
 import { AwardOwnerConverter } from './tables/award_owner';
 import { AwardParticipantConverter } from './tables/award_participant';
-import { CollectionConverter, PgCollectionCollection } from './tables/collection';
+import { CollectionConverter } from './tables/collection';
 import { CollectionRankConverter } from './tables/collection_rank';
 import { CollectionStatsConverter } from './tables/collection_stats';
 import { CollectionVotesConverter } from './tables/collection_vote';
@@ -159,7 +159,7 @@ import {
   MilestoneTransactions,
 } from './tables/milestone_transactions';
 import { MnemonicConverter } from './tables/mnemonic';
-import { NftConverter } from './tables/nft';
+import { NftConverter, PgNftCollection } from './tables/nft';
 import { NftStakeConverter } from './tables/nft_stake';
 import { NotificationConverter } from './tables/notification';
 import { ProjectConverter } from './tables/project';
@@ -195,8 +195,8 @@ export type IColType<T extends COL, S extends SUB_COL | undefined = undefined> =
     T extends COL.MEMBER ? ICollection<Member, PgMember, PgMemberUpdate> :
     T extends COL.SPACE ? ICollection<Space, PgSpace, PgSpaceUpdate> :
     T extends COL.PROJECT ? ICollection<Project, PgProject, PgProjectUpdate> :
-    T extends COL.COLLECTION ? PgCollectionCollection :
-    T extends COL.NFT ? ICollection<Nft, PgNft, PgNftUpdate> :
+    T extends COL.COLLECTION ? ICollection<Collection, PgCollection, PgCollectionUpdate> :
+    T extends COL.NFT ? PgNftCollection :
     T extends COL.NFT_STAKE ? ICollection<NftStake, PgNftStake, PgNftStakeUpdate> :
     T extends COL.TRANSACTION ? ICollection<Transaction, PgTransaction, PgTransactionUpdate> :
     T extends COL.AUCTION ? ICollection<Auction, PgAuction, PgAuctionUpdate> :
@@ -338,11 +338,7 @@ export type IDocType<T extends COL, S extends SUB_COL | undefined = undefined> =
 undefined;
 
 export class PgDatabase implements IDatabase {
-  private readonly con: Knex;
-
-  constructor() {
-    this.con = getKnex();
-  }
+  private readonly con: Knex = knex;
 
   private getConverter = (col: COL, subCol?: SUB_COL) => {
     if (!subCol) {
@@ -460,8 +456,8 @@ export class PgDatabase implements IDatabase {
     if (col === COL.AIRDROP) {
       return new PgAirdropCollection(this.con, col, converter) as IColType<C, S>;
     }
-    if (col === COL.COLLECTION) {
-      return new PgCollectionCollection(this.con, col, converter) as IColType<C, S>;
+    if (col === COL.NFT) {
+      return new PgNftCollection(this.con, col, converter) as IColType<C, S>;
     }
     if (col === COL.STAKE) {
       return new PgStakeCollection(this.con, col, converter) as unknown as IColType<C, S>;
@@ -485,10 +481,9 @@ export class PgDatabase implements IDatabase {
 
   runTransaction = async <T>(func: (transaction: ITransaction) => Promise<T>) => {
     for (let i = 0; i < 240; ++i) {
-      const con = getKnexTran();
       let trx: Knex.Transaction | undefined = undefined;
       try {
-        trx = await con.transaction();
+        trx = await knextran.transaction();
         const transaction = new PgRunTransaction(trx);
         const result = await func(transaction);
         if (transaction.allLocksAquired) {
@@ -501,8 +496,6 @@ export class PgDatabase implements IDatabase {
       } catch (err) {
         await trx?.rollback();
         throw err;
-      } finally {
-        await con.destroy();
       }
     }
     throw { code: 500, key: 'Failed to execute transaction' };
@@ -515,7 +508,7 @@ export class PgDatabase implements IDatabase {
   arrayRemove = <T>(value: T) => new ArrayRemove(value);
 
   destroy = async () => {
-    const promises: any[] = [knex?.destroy(), knextran?.destroy()];
+    const promises: any[] = [knex.destroy(), knextran.destroy()];
 
     for (const subs of Object.values(subscriptions)) {
       promises.push((await subs).delete());
@@ -631,9 +624,12 @@ export class PgRunTransaction implements ITransaction {
     }
     try {
       return await docRef.useTransaction(this.trx, (doc) => doc.get());
-    } catch {
-      this.allLocksAquired = false;
-      return await docRef.get();
+    } catch (err: any) {
+      if (err.name === 'KnexTimeoutError') {
+        this.allLocksAquired = false;
+        return await docRef.get();
+      }
+      throw err;
     }
   };
 

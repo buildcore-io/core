@@ -10,30 +10,10 @@ import {
   UnsoldMintingOptions,
 } from '@buildcore/interfaces';
 import { get } from 'lodash';
-import { ICollection } from '../../interfaces/collection';
 import { Converter } from '../../interfaces/common';
 import { PgCollection } from '../../models';
-import { PgCollectionUpdate } from '../../models/collection_update';
 import { removeNulls } from '../common';
 import { pgDateToTimestamp } from '../postgres';
-
-export class PgCollectionCollection extends ICollection<
-  Collection,
-  PgCollection,
-  PgCollectionUpdate
-> {
-  updateFloorPrice = async () => {
-    await this.con(this.table).update({
-      floorPrice: this.con.raw(`(
-        SELECT MIN("availablePrice") 
-        FROM nft 
-        WHERE collection = collection.uid AND
-	            nft."saleAccess" = 0 AND
-              available IN (1, 3) 
-      )`),
-    });
-  };
-}
 
 export class CollectionConverter implements Converter<Collection, PgCollection> {
   toPg = (collection: Collection): PgCollection => ({
@@ -124,7 +104,7 @@ export class CollectionConverter implements Converter<Collection, PgCollection> 
             tokenSymbol: get(d, 'tokenSymbol', ''),
             tokenReward: get(d, 'tokenReward', 0),
             amount: get(d, 'amount', 0),
-          }) as DiscountLine,
+          } as DiscountLine),
       ),
       total: pg.total || 0,
       totalTrades: pg.totalTrades || 0,

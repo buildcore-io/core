@@ -9,10 +9,26 @@ import {
   PropStats,
   UnsoldMintingOptions,
 } from '@buildcore/interfaces';
+import { get, head } from 'lodash';
+import { ICollection } from '../../interfaces/collection';
 import { Converter } from '../../interfaces/common';
-import { PgNft } from '../../models';
+import { PgNft, PgNftUpdate } from '../../models';
 import { removeNulls } from '../common';
 import { pgDateToTimestamp } from '../postgres';
+
+export class PgNftCollection extends ICollection<Nft, PgNft, PgNftUpdate> {
+  getFloorPrice = async (collection: string) => {
+    const result = await this.con.raw(
+      `SELECT MIN("availablePrice") as "floorPrice"
+        FROM ${this.table} 
+        WHERE collection = ? AND nft."saleAccess" = ? AND available IN (?, ?)                 
+      `,
+      [collection, NftAccess.OPEN, NftAvailable.SALE, NftAvailable.AUCTION_AND_SALE],
+    );
+
+    return get(head(result.rows), 'floorPrice', 0);
+  };
+}
 
 export class NftConverter implements Converter<Nft, PgNft> {
   toPg = (nft: Nft): PgNft => ({
