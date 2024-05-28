@@ -8,17 +8,17 @@ import {
 import { getBucket, isProdEnv } from './utils/config.utils';
 export const lowCold = 0;
 export const lowWarm = isProdEnv() ? 1 : lowCold;
-export const highUse = isProdEnv() ? 3 : lowWarm;
+export const highUse = isProdEnv() ? 1 : lowWarm;
 
 export const WEN_FUNC_SCALE: { [key: string]: RuntimeOptions } = {
   // Min MEMORY / CPU instance, so high use works well here.
   [WEN_FUNC.createMember]: { minInstances: highUse },
-  [WEN_FUNC.updateMember]: { minInstances: lowWarm },
+  [WEN_FUNC.updateMember]: { minInstances: lowCold },
 
   // Space functions
   [WEN_FUNC.createSpace]: { minInstances: lowCold },
   [WEN_FUNC.updateSpace]: { minInstances: lowCold },
-  [WEN_FUNC.joinSpace]: { minInstances: lowWarm },
+  [WEN_FUNC.joinSpace]: { minInstances: lowCold },
   [WEN_FUNC.leaveSpace]: { minInstances: lowCold },
   [WEN_FUNC.addGuardianSpace]: { minInstances: lowCold },
   [WEN_FUNC.removeGuardianSpace]: { minInstances: lowCold },
@@ -30,7 +30,7 @@ export const WEN_FUNC_SCALE: { [key: string]: RuntimeOptions } = {
   // Award Functions
   [WEN_FUNC.createAward]: { minInstances: lowCold },
   [WEN_FUNC.addOwnerAward]: { minInstances: lowCold },
-  [WEN_FUNC.participateAward]: { minInstances: lowWarm },
+  [WEN_FUNC.participateAward]: { minInstances: lowCold },
   [WEN_FUNC.approveParticipantAward]: {
     minInstances: lowCold,
     timeoutSeconds: 540,
@@ -45,17 +45,17 @@ export const WEN_FUNC_SCALE: { [key: string]: RuntimeOptions } = {
 
   // Collections
   [WEN_FUNC.createCollection]: { minInstances: lowCold },
-  [WEN_FUNC.updateCollection]: { minInstances: lowWarm },
+  [WEN_FUNC.updateCollection]: { minInstances: lowCold },
   [WEN_FUNC.rejectCollection]: { minInstances: lowCold },
 
   [WEN_FUNC.createNft]: { minInstances: lowCold },
-  [WEN_FUNC.setForSaleNft]: { minInstances: lowWarm },
+  [WEN_FUNC.setForSaleNft]: { minInstances: lowCold },
   [WEN_FUNC.createBatchNft]: { minInstances: lowCold, timeoutSeconds: 300, memory: '4GiB' },
   [WEN_FUNC.updateUnsoldNft]: { minInstances: lowCold },
 
   // Min MEMORY / CPU instance, so high use works well here.
   [WEN_FUNC.orderNft]: { minInstances: highUse },
-  [WEN_FUNC.validateAddress]: { minInstances: lowWarm },
+  [WEN_FUNC.validateAddress]: { minInstances: lowCold },
 
   [WEN_FUNC.createToken]: { minInstances: lowCold },
 
