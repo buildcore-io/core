@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "export GOOGLE_APPLICATION_CREDENTIALS=\"./sa.json\" && node lib/index.js"
+    "start": "node -r dotenv/config lib/index.js"
   },
   "author": "Boldizsar Mezei",
   "license": "Apache-2.0",

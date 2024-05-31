@@ -1,8 +1,6 @@
 import { PubSub, Topic } from '@google-cloud/pubsub';
 import Knex from 'knex';
-import path from 'path';
 import { logger } from './logger';
-require('dotenv').config({ path: path.join(__dirname, '/../.env') });
 
 const knex = Knex({
   client: 'pg',
