@@ -104,7 +104,7 @@ export class CollectionConverter implements Converter<Collection, PgCollection> 
             tokenSymbol: get(d, 'tokenSymbol', ''),
             tokenReward: get(d, 'tokenReward', 0),
             amount: get(d, 'amount', 0),
-          } as DiscountLine),
+          }) as DiscountLine,
       ),
       total: pg.total || 0,
       totalTrades: pg.totalTrades || 0,
