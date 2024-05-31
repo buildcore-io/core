@@ -8,7 +8,8 @@
     "packages/sdk",
     "packages/database",
     "packages/search",
-    "packages/functions"
+    "packages/functions",
+    "packages/farcaster"
   ],
   "scripts": {
     "build:functions": "npm run build:database && npm i --workspace=packages/functions && npm run build --workspace=packages/functions",
@@ -18,6 +19,7 @@
     "build:database": "npm run build:interfaces && npm i --workspace=packages/database && npm run build --workspace=packages/database",
     "build:search": "npm run build:database && npm i --workspace=packages/search && npm run build --workspace=packages/search",
     "build:notifier": "npm i --workspace=packages/notifier && npm run build --workspace=packages/notifier",
+    "build:farcaster": "npm i --workspace=packages/farcaster && npm run build --workspace=packages/farcaster",
     "build": "npm i --workspaces && npm run build --workspaces",
     "clean:search": "rm -rf packages/search/lib; rm -rf packages/search/node_modules",
     "clean:database": "rm -rf packages/database/lib; rm -rf packages/database/node_modules",
@@ -26,7 +28,8 @@
     "clean:sdk": "rm -rf packages/sdk/lib; rm -rf packages/sdk/node_modules",
     "clean:indexes": "rm -rf packages/indexes/lib; rm -rf packages/indexes/node_modules",
     "clean:notifier": "rm -rf packages/notifier/lib; rm -rf packages/notifier/node_modules",
-    "clean": "npm run clean:functions; npm run clean:interfaces; npm run clean:indexes; npm run clean:sdk; npm run clean:search; npm run clean:database; npm run clean:notifier; rm -rf node_modules",
+    "clean:farcaster": "rm -rf packages/farcaster/lib; rm -rf packages/farcaster/node_modules",
+    "clean": "npm run clean:functions; npm run clean:interfaces; npm run clean:indexes; npm run clean:sdk; npm run clean:search; npm run clean:database; npm run clean:notifier; npm run clean:farcaster; rm -rf node_modules",
     "prettier": "npx prettier --write ./packages/**",
     "joi-to-types": "ts-node ./scripts/joi-generator-post.ts && ts-node ./scripts/joi-generator-tangle.ts && npm run prettier",
     "rebuild": "npm run clean; npm run build",
