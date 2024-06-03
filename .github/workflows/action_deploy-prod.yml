@@ -43,6 +43,38 @@ jobs:
               --add-cloudsql-instances $GOOGLE_CLOUD_PROJECT:us-central1:buildcore \
               --region=us-central1 \
 
+  deploy_farcaster:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ secrets.SERVICE_ACCOUNT }}'
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+      - name: Set env vars
+        working-directory: packages/farcaster
+        run: echo "$ENV_VARS" > .env
+        env:
+          ENV_VARS: ${{ secrets.ENV_VARS }}
+      - name: Build image
+        run: |
+            cp packages/farcaster/Dockerfile .
+            gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/farcaster
+      - name: Deploy
+        run: |
+            gcloud run deploy farcaster \
+              --image gcr.io/$GOOGLE_CLOUD_PROJECT/farcaster \
+              --allow-unauthenticated \
+              --ingress=internal-and-cloud-load-balancing \
+              --region=us-central1 \
+
   deploy_functions:
     runs-on: ubuntu-latest
     environment: production
