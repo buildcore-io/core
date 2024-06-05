@@ -45,6 +45,7 @@ jobs:
   
   deploy_to_npm_as_next:
     runs-on: ubuntu-latest
+    environment: staging
     env:
       NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
     steps:
@@ -64,8 +65,8 @@ jobs:
           npm run build:sdk
       - name: Deploy to npm as "upcoming" package
         run: |
-          npm publish --workspace packages/interfaces --tag next --access public
-          cd packages/sdk/lib && npm publish --tag next --access public
+          npm publish --workspace packages/interfaces --tag next
+          npm publish --workspace packages/sdk --tag next
   
   deploy_functions:
     runs-on: ubuntu-latest
@@ -92,3 +93,33 @@ jobs:
             npm run create-deploy-script
             chmod 777 ./deploy.sh
             ./deploy.sh
+
+  database_roll:
+    runs-on: ubuntu-latest
+    environment: staging
+    needs: [deploy_functions]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ secrets.SERVICE_ACCOUNT }}'
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+      - name: Set env vars
+        working-directory: packages/functions
+        run: echo "$ENV_VARS" > .env
+        env:
+          ENV_VARS: ${{ secrets.ENV_VARS }}
+      - uses: mattes/gce-cloudsql-proxy-action@v1
+        with:
+          creds: '${{ secrets.SERVICE_ACCOUNT }}'
+          instance: buildcore-test:us-central1:buildcore
+      - name: Build and deploy
+        run: |
+            npm run build:functions
+            cd packages/functions
+            npm run migrate

@@ -1,7 +1,7 @@
 import { Bucket } from '@buildcore/interfaces';
 import Joi, { SchemaMap } from 'joi';
 import { isEmpty } from 'lodash';
-import { isEmulatorEnv, isProdEnv } from '../../utils/config.utils';
+import { isProdEnv } from '../../utils/config.utils';
 
 const minAddressLength = 42;
 const maxAddressLength = 255;
@@ -28,20 +28,14 @@ export class CommonJoi {
 }
 
 export const isStorageUrl = (url: string | undefined) =>
-  !isEmpty(url) && startsWithBaseUrl(url || '') && (isEmulatorEnv() || !url?.includes('?'));
+  !isEmpty(url) && startsWithBaseUrl(url || '');
 
 export const BUCKET_BASE_URLS = {
   [Bucket.PROD]: 'https://' + Bucket.PROD + '/',
   [Bucket.TEST]: 'https://' + Bucket.TEST + '/',
-  [Bucket.DEV]: `https://storage.googleapis.com/download/storage/v1/b/${Bucket.DEV}/o/`,
 };
 
 const startsWithBaseUrl = (url: string) => {
-  if (isEmulatorEnv()) {
-    return (
-      url.startsWith(BUCKET_BASE_URLS[Bucket.DEV]) || url.startsWith(BUCKET_BASE_URLS[Bucket.TEST])
-    );
-  }
   if (isProdEnv()) {
     return url.startsWith(BUCKET_BASE_URLS[Bucket.PROD]);
   }

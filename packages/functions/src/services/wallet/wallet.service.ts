@@ -14,15 +14,10 @@ export interface AddressDetails {
 }
 
 const NODES = {
-  [Network.SMR]: ['https://smr1.svrs.io/', 'https://smr3.svrs.io/'],
-  [Network.RMS]: ['https://rms1.svrs.io/', 'https://rms1.svrs.io/'], // Second ulr is for testing purposes,
-  [Network.IOTA]: [
-    'https://us3.svrs.io/',
-    'https://us4.svrs.io/',
-    'https://hs5.svrs.io/',
-    'https://hs6.svrs.io/',
-  ],
-  [Network.ATOI]: ['https://rms1.svrs.io/'],
+  [Network.SMR]: process.env.SMR_NODES!.split(','),
+  [Network.RMS]: process.env.RMS_NODES!.split(','),
+  [Network.IOTA]: process.env.IOTA_NODES!.split(','),
+  [Network.ATOI]: process.env.ATOI_NODES!.split(','),
 };
 
 export const tangleClients: { [key: string]: Client } = {};

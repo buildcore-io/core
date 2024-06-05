@@ -43,7 +43,7 @@ describe('Collection minting', () => {
 
   const validateStorageFileCount = (owner: string, uid: string) =>
     wait(async () => {
-      const bucket = storage().bucket(Bucket.DEV);
+      const bucket = storage().bucket(Bucket.TEST);
       return (await bucket.getFilesCount(`${owner}/${uid}`)) > 0;
     });
 

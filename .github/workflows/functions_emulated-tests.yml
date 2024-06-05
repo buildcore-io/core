@@ -29,6 +29,7 @@ jobs:
 
   chunk_0:
     needs: npm-install
+    environment: development
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -59,22 +60,31 @@ jobs:
            packages/functions/node_modules
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
+      - name: Set env vars
+        working-directory: packages/functions
+        run: |
+          echo "$ENV_VARS" > .env
+          echo "$SERVICE_ACCOUNT" > sa.json
+        env:
+          ENV_VARS: ${{ secrets.ENV_VARS }}
+          SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
       - name: Init
         run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-           npm run start &
-           npm run notifier &
-           npm run test -- --findRelatedTests --forceExit ./test/auth.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/auth/legacy.auth.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/address.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/auction/auction.bid.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/collection.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/member.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/nft.spec.ts 
+          npm run start &
+          npm run notifier &
+          npm run test -- --findRelatedTests --forceExit ./test/auth.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/auth/legacy.auth.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/address.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/auction/auction.bid.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/collection.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/member.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/nft.spec.ts 
   chunk_1:
     needs: npm-install
+    environment: development
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -105,22 +115,31 @@ jobs:
            packages/functions/node_modules
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
+      - name: Set env vars
+        working-directory: packages/functions
+        run: |
+          echo "$ENV_VARS" > .env
+          echo "$SERVICE_ACCOUNT" > sa.json
+        env:
+          ENV_VARS: ${{ secrets.ENV_VARS }}
+          SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
       - name: Init
         run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-           npm run start &
-           npm run notifier &
-           npm run test -- --findRelatedTests --forceExit ./test/controls/nft/nft.bidding.extends.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/nft/nft.bidding.finalize.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/nft/nft.bidding.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/nft/nft.set.for.sale.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/order.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/project/project.create.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/project/project.deactivate.spec.ts 
+          npm run start &
+          npm run notifier &
+          npm run test -- --findRelatedTests --forceExit ./test/controls/nft/nft.bidding.extends.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/nft/nft.bidding.finalize.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/nft/nft.bidding.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/nft/nft.set.for.sale.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/order.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/project/project.create.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/project/project.deactivate.spec.ts 
   chunk_2:
     needs: npm-install
+    environment: development
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -151,22 +170,31 @@ jobs:
            packages/functions/node_modules
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
+      - name: Set env vars
+        working-directory: packages/functions
+        run: |
+          echo "$ENV_VARS" > .env
+          echo "$SERVICE_ACCOUNT" > sa.json
+        env:
+          ENV_VARS: ${{ secrets.ENV_VARS }}
+          SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
       - name: Init
         run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-           npm run start &
-           npm run notifier &
-           npm run test -- --findRelatedTests --forceExit ./test/controls/proposal.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/space.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/stake.reward.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/stamp.control.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/token-distribution-auto-trigger.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/token-distribution.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/token-trade.buy.spec.ts 
+          npm run start &
+          npm run notifier &
+          npm run test -- --findRelatedTests --forceExit ./test/controls/proposal.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/space.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/stake.reward.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/stamp.control.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/token-distribution-auto-trigger.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/token-distribution.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/token-trade.buy.spec.ts 
   chunk_3:
     needs: npm-install
+    environment: development
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -197,22 +225,31 @@ jobs:
            packages/functions/node_modules
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
+      - name: Set env vars
+        working-directory: packages/functions
+        run: |
+          echo "$ENV_VARS" > .env
+          echo "$SERVICE_ACCOUNT" > sa.json
+        env:
+          ENV_VARS: ${{ secrets.ENV_VARS }}
+          SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
       - name: Init
         run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-           npm run start &
-           npm run notifier &
-           npm run test -- --findRelatedTests --forceExit ./test/controls/token-trade.sell.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/token-trade.trigger.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/token.expired.sale.cron.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/token.order.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/token/token.airdrop.claim.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/token/token.airdrop.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/token/token.cancel.pub.sale.spec.ts 
+          npm run start &
+          npm run notifier &
+          npm run test -- --findRelatedTests --forceExit ./test/controls/token-trade.sell.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/token-trade.trigger.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/token.expired.sale.cron.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/token.order.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/token/token.airdrop.claim.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/token/token.airdrop.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/token/token.cancel.pub.sale.spec.ts 
   chunk_4:
     needs: npm-install
+    environment: development
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -243,22 +280,31 @@ jobs:
            packages/functions/node_modules
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
+      - name: Set env vars
+        working-directory: packages/functions
+        run: |
+          echo "$ENV_VARS" > .env
+          echo "$SERVICE_ACCOUNT" > sa.json
+        env:
+          ENV_VARS: ${{ secrets.ENV_VARS }}
+          SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
       - name: Init
         run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-           npm run start &
-           npm run notifier &
-           npm run test -- --findRelatedTests --forceExit ./test/controls/token/token.create.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/token/token.order.and.claim.air.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/token/token.rank.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/token/token.set.to.sale.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/token/token.update.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/token/token.vote.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/controls/workflow.spec.ts 
+          npm run start &
+          npm run notifier &
+          npm run test -- --findRelatedTests --forceExit ./test/controls/token/token.create.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/token/token.order.and.claim.air.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/token/token.rank.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/token/token.set.to.sale.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/token/token.update.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/token/token.vote.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/controls/workflow.spec.ts 
   chunk_5:
     needs: npm-install
+    environment: development
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -289,22 +335,31 @@ jobs:
            packages/functions/node_modules
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
+      - name: Set env vars
+        working-directory: packages/functions
+        run: |
+          echo "$ENV_VARS" > .env
+          echo "$SERVICE_ACCOUNT" > sa.json
+        env:
+          ENV_VARS: ${{ secrets.ENV_VARS }}
+          SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
       - name: Init
         run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-           npm run start &
-           npm run notifier &
-           npm run test -- --findRelatedTests --forceExit ./test/cron/floor-price.cron.only.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/cron/nft-stake.cron.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/cron/proposal.cron.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/db.roll.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/func.name.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/naming.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/stake/delete.stake.reward.spec.ts 
+          npm run start &
+          npm run notifier &
+          npm run test -- --findRelatedTests --forceExit ./test/cron/floor-price.cron.only.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/cron/nft-stake.cron.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/cron/proposal.cron.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/db.roll.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/func.name.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/naming.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/stake/delete.stake.reward.spec.ts 
   chunk_6:
     needs: npm-install
+    environment: development
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -335,12 +390,20 @@ jobs:
            packages/functions/node_modules
            packages/interfaces/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
+      - name: Set env vars
+        working-directory: packages/functions
+        run: |
+          echo "$ENV_VARS" > .env
+          echo "$SERVICE_ACCOUNT" > sa.json
+        env:
+          ENV_VARS: ${{ secrets.ENV_VARS }}
+          SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
       - name: Init
         run: npm run build:functions
       - name: Test
         working-directory: packages/functions
         run: |
-           npm run start &
-           npm run notifier &
-           npm run test -- --findRelatedTests --forceExit ./test/stake/stake.reward.cron.spec.ts &&
-           npm run test -- --findRelatedTests --forceExit ./test/storage/resize.img.spec.ts 
+          npm run start &
+          npm run notifier &
+          npm run test -- --findRelatedTests --forceExit ./test/stake/stake.reward.cron.spec.ts &&
+          npm run test -- --findRelatedTests --forceExit ./test/storage/resize.img.spec.ts 

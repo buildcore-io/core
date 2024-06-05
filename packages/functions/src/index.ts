@@ -1,6 +1,4 @@
 /* eslint-disable import/namespace */
-/* eslint-disable @typescript-eslint/no-var-requires */
-require('dotenv').config({ path: __dirname + '/.env' });
 import { BaseRecord, database } from '@buildcore/database';
 import { WEN_FUNC } from '@buildcore/interfaces';
 import cors from 'cors';
@@ -18,7 +16,7 @@ import * as onTriggers from './runtime/trigger/index';
 import { TriggeredFunction } from './runtime/trigger/trigger';
 import { tangleClients } from './services/wallet/wallet.service';
 import { PgDocEvent } from './triggers/common';
-import { isEmulatorEnv } from './utils/config.utils';
+import { isDevEnv } from './utils/config.utils';
 import { logger } from './utils/logger';
 import { traceMiddleware } from './utils/trace';
 
@@ -31,7 +29,7 @@ const httpRawParser = express.raw({ type: '*/*', limit: '100mb' });
 const jsonParser = express.json({ limit: '50mb' });
 
 const loggingMiddleware = (name: string) =>
-  isEmulatorEnv()
+  isDevEnv()
     ? (_req: express.Request, res: express.Response, next: express.NextFunction) => {
         const start = dayjs();
         console.log(`Beginning ${name}`);

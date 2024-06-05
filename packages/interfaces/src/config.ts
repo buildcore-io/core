@@ -176,7 +176,6 @@ export const STAKE_REWARD_TEST_CRON_INTERVAL_CONFIG = 'every 5 minutes';
 export enum Bucket {
   PROD = 'images.soonaverse.com',
   TEST = 'images-wen.soonaverse.com',
-  DEV = 'soonaverse-dev-custom-bucket',
 }
 
 // key - WEN_FUNC

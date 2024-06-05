@@ -48,6 +48,7 @@ function init(outputFile) {
 function job(outputFile, chunk, files) {
   fs.appendFileSync(outputFile, `  chunk_${chunk}:\n`);
   fs.appendFileSync(outputFile, `    needs: npm-install\n`);
+  fs.appendFileSync(outputFile, `    environment: development\n`);
   fs.appendFileSync(outputFile, `    runs-on: ubuntu-latest\n`);
   fs.appendFileSync(outputFile, `    timeout-minutes: 20\n\n`);
 
@@ -68,7 +69,6 @@ function job(outputFile, chunk, files) {
   fs.appendFileSync(outputFile, '          --health-retries 5\n\n');
 
   fs.appendFileSync(outputFile, `    steps:\n`);
-
   fs.appendFileSync(outputFile, `      - uses: actions/checkout@v4\n`);
   fs.appendFileSync(outputFile, `      - uses: actions/setup-node@v4\n`);
   fs.appendFileSync(outputFile, `        with:\n`);
@@ -84,19 +84,28 @@ function job(outputFile, chunk, files) {
     `          key: \${{ runner.os }}-modules-\${{ hashFiles('**/package.json') }}\n`,
   );
 
+  fs.appendFileSync(outputFile, `      - name: Set env vars\n`);
+  fs.appendFileSync(outputFile, `        working-directory: packages/functions\n`);
+  fs.appendFileSync(outputFile, `        run: |\n`);
+  fs.appendFileSync(outputFile, `          echo "$ENV_VARS" > .env\n`);
+  fs.appendFileSync(outputFile, `          echo "$SERVICE_ACCOUNT" > sa.json\n`);
+  fs.appendFileSync(outputFile, `        env:\n`);
+  fs.appendFileSync(outputFile, `          ENV_VARS: \${{ secrets.ENV_VARS }}\n`);
+  fs.appendFileSync(outputFile, `          SERVICE_ACCOUNT: \${{ secrets.SERVICE_ACCOUNT }}\n`);
+
   fs.appendFileSync(outputFile, `      - name: Init\n`);
   fs.appendFileSync(outputFile, `        run: npm run build:functions\n`);
 
   fs.appendFileSync(outputFile, `      - name: Test\n`);
   fs.appendFileSync(outputFile, `        working-directory: packages/functions\n`);
   fs.appendFileSync(outputFile, `        run: |\n`);
-  fs.appendFileSync(outputFile, `           npm run start &\n`);
-  fs.appendFileSync(outputFile, `           npm run notifier &\n`);
+  fs.appendFileSync(outputFile, `          npm run start &\n`);
+  fs.appendFileSync(outputFile, `          npm run notifier &\n`);
 
   files.forEach((file, index) => {
     fs.appendFileSync(
       outputFile,
-      `           npm run test -- --findRelatedTests --forceExit ${file} ${index < files.length - 1 ? '&&' : ''}\n`,
+      `          npm run test -- --findRelatedTests --forceExit ${file} ${index < files.length - 1 ? '&&' : ''}\n`,
     );
   });
 }

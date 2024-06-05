@@ -33,11 +33,13 @@ export class Helper {
   };
 
   public beforeEach = async () => {
-    const bucket = storage().bucket(Bucket.DEV);
+    const bucket = storage().bucket(Bucket.TEST);
     const destination = `nft/${getRandomEthAddress()}/image.jpeg`;
-    this.dowloadUrl = await bucket.upload('./test/puppy.jpeg', destination, {
+    await bucket.upload('./test/puppy.jpeg', destination, {
       contentType: 'image/jpeg',
     });
+    this.dowloadUrl = `https://${bucket.getName()}/${destination}`;
+
     this.request = { requestType: TangleRequestType.STAMP, uri: this.dowloadUrl };
     const content = fs.readFileSync('./test/puppy.jpeg');
     this.checksum = crypto

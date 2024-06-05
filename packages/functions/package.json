@@ -16,13 +16,13 @@
   },
   "scripts": {
     "lint": "eslint --ext .js,.ts src",
-    "build": "tsc && cp .env lib/.env",
-    "start": "export GOOGLE_APPLICATION_CREDENTIALS=\"./sa.json\" && node lib/index.js",
+    "build": "tsc",
+    "start": "node -r dotenv/config lib/index.js",
     "build-start": "npm run build && npm run start",
-    "notifier": "export GOOGLE_APPLICATION_CREDENTIALS=\"./sa.json\" && npx ts-node ./test/notifier.ts",
+    "notifier": "npx ts-node -r dotenv/config ./test/notifier.ts",
     "serve": "run-p \"build-start\" \"notifier\"",
-    "test": "export GOOGLE_APPLICATION_CREDENTIALS=\"./sa.json\" && jest",
-    "migrate": "export GOOGLE_APPLICATION_CREDENTIALS=\"./sa.json\" && ts-node ./migration/index.ts"
+    "test": "jest",
+    "migrate": "ts-node -r dotenv/config ./migration/index.ts"
   },
   "devDependencies": {
     "@google-cloud/pubsub": "4.3.3",
@@ -42,7 +42,6 @@
     "@typescript-eslint/parser": "7.0.2",
     "babel-jest": "29.7.0",
     "chance": "1.1.11",
-    "dotenv": "16.4.5",
     "eslint": "8.56.0",
     "eslint-config-google": "0.14.0",
     "eslint-config-prettier": "9.1.0",
@@ -83,6 +82,7 @@
     "cors": "2.8.5",
     "crypto-js": "4.2.0",
     "dayjs": "1.11.10",
+    "dotenv": "^16.4.5",
     "ethers": "6.11.1",
     "express": "4.19.2",
     "files-from-path": "^1.0.4",

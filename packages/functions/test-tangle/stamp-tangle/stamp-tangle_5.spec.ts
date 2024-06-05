@@ -13,7 +13,7 @@ describe('Stamp tangle test', () => {
   beforeEach(helper.beforeEach);
 
   it('Should create and mint stamp with zip file', async () => {
-    const bucket = storage().bucket(Bucket.DEV);
+    const bucket = storage().bucket(Bucket.TEST);
     const destination = 'nft/test/image.zip';
     const dowloadUrl = await bucket.upload('./test/puppy.zip', destination, {
       contentType: 'application/zip',

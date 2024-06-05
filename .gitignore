@@ -58,5 +58,10 @@ node_modules
 dist
 
 packages/functions/scripts/*.json
-
 deploy.sh
+
+**/lib
+**/node_modules
+.env
+**/.env
+**/sa.json

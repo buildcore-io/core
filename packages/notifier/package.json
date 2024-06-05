@@ -11,7 +11,6 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@google-cloud/pubsub": "4.3.3",
-    "dotenv": "16.4.5",
     "knex": "3.1.0",
     "pg": "8.11.3"
   },

@@ -1,6 +1,5 @@
-/dist
 **/lib
-/coverage
+**/coverage
 **/src/**/files
 **/node_modules
 **/.angular

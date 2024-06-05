@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { storage } from '@buildcore/database';
-import { Bucket, FileUploadRequest, WenError, generateRandomFileName } from '@buildcore/interfaces';
+import { FileUploadRequest, WenError, generateRandomFileName } from '@buildcore/interfaces';
 import busboy from 'busboy';
 import fs from 'fs';
 import jwt from 'jsonwebtoken';
@@ -32,8 +32,7 @@ export const uploadFileControl = async ({ headers, rawBody }: Context<FileUpload
   fs.rmSync(workdir, { recursive: true, force: true });
   (params.file as any).resume();
 
-  const idDevBucket = bucketName === Bucket.DEV;
-  return { url: idDevBucket ? dowloadUrl : `https://${bucket.getName()}/${destination}` };
+  return { url: dowloadUrl };
 };
 
 const getParams = (headers: any, rawBody: any, workdir: string) =>

@@ -22,7 +22,7 @@ import { Wallet, WalletParams } from '../../services/wallet/wallet';
 import { WalletService } from '../../services/wallet/wallet.service';
 import { getAddress } from '../../utils/address.utils';
 import { getProject } from '../../utils/common.utils';
-import { isEmulatorEnv } from '../../utils/config.utils';
+import { isDevEnv } from '../../utils/config.utils';
 import { serverTime } from '../../utils/dateTime.utils';
 import { logger } from '../../utils/logger';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
@@ -447,10 +447,7 @@ const prepareTransaction = (transactionId: string) =>
   database().runTransaction(async (transaction) => {
     const docRef = database().doc(COL.TRANSACTION, transactionId);
     const tranData = await transaction.get(docRef);
-    if (
-      isEmulatorEnv() &&
-      [Network.SMR, Network.IOTA].includes(tranData?.network || DEFAULT_NETWORK)
-    ) {
+    if (isDevEnv() && [Network.SMR, Network.IOTA].includes(tranData?.network || DEFAULT_NETWORK)) {
       return false;
     }
     const walletResponse: WalletResult = tranData?.payload?.walletReference || emptyWalletResult();
