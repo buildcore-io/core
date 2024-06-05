@@ -28,7 +28,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/buildcore/core">
+  <a href="https://github.com/buildcore-io/core">
     <img src="docs/static/img/buildcore_logo.png" alt="BUILD.5 logo" height="80">
   </a>
 
@@ -40,9 +40,9 @@
     <a href="https://developer.buildcore.io/"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/buildcore/core/issues/new?template=bug_report.md">Report Bug</a>
+    <a href="https://github.com/buildcore-io/core/issues/new?template=bug_report.md">Report Bug</a>
     ·
-    <a href="https://github.com/buildcore/core/issues/new?template=feature_request.md">Request Feature</a>
+    <a href="https://github.com/buildcore-io/core/issues/new?template=feature_request.md">Request Feature</a>
   </p>
 </div>
 
@@ -103,7 +103,7 @@ Make sure you have the following installed:
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/buildcore/core.git
+   git clone https://github.com/buildcore-io/core.git
    ```
 2. Install NPM packages
    ```sh
@@ -143,7 +143,7 @@ Don't forget to give the project a star! Thanks again!
 
 For more information on how to contribute, please read [CONTRIBUTING.md](./CONTRIBUTING.md)
 
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/buildcore/core/pulls)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/buildcore-io/core/pulls)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -168,18 +168,18 @@ Project Link: [https://buildcore.io](https://buildcore.io)
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
-[contributors-shield]: https://img.shields.io/github/contributors/buildcore/core.svg?style=for-the-badge
-[contributors-url]: https://github.com/buildcore/core/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/buildcore/core.svg?style=for-the-badge
-[forks-url]: https://github.com/buildcore/core/network/members
-[stars-shield]: https://img.shields.io/github/stars/buildcore/core.svg?style=for-the-badge
-[stars-url]: https://github.com/buildcore/core/stargazers
-[issues-shield]: https://img.shields.io/github/issues/buildcore/core.svg?style=for-the-badge
-[issues-url]: https://github.com/buildcore/core/issues
-[license-shield]: https://img.shields.io/github/license/buildcore/core.svg?style=for-the-badge
-[license-url]: https://github.com/buildcore/core/blob/master/LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/buildcore-io/core.svg?style=for-the-badge
+[contributors-url]: https://github.com/buildcore-io/core/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/buildcore-io/core.svg?style=for-the-badge
+[forks-url]: https://github.com/buildcore-io/core/network/members
+[stars-shield]: https://img.shields.io/github/stars/buildcore-io/core.svg?style=for-the-badge
+[stars-url]: https://github.com/buildcore-io/core/stargazers
+[issues-shield]: https://img.shields.io/github/issues/buildcore-io/core.svg?style=for-the-badge
+[issues-url]: https://github.com/buildcore-io/core/issues
+[license-shield]: https://img.shields.io/github/license/buildcore-io/core.svg?style=for-the-badge
+[license-url]: https://github.com/buildcore-io/core/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/company/buildcore/
+[linkedin-url]: https://linkedin.com/company/buildcore-io/
 [Typescript]: https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white
 [Typescript-url]: https://www.typescriptlang.org/
 [Postgresql]: https://img.shields.io/badge/postgresql-4169e1?style=for-the-badge&logo=postgresql&logoColor=white
