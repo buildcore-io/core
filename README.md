@@ -126,6 +126,28 @@ The best way to get started with the SDK and interacting with Buildcore is [inst
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## Running it locally
+  Navigate to the root folder and build the entire projet by running
+  ```sh
+   npm run build
+   ```
+
+  Buildcore backend consist of 3 individually ran services.
+  1. Search API
+      This is a small express server that connects to the Postgres Database and exposes HTTP endpoints to query the data.
+      To run it navigate to `packages/search` folder, upate `.env.sample` with your DB connection params and run `npm run start`
+  
+  2. Functions:
+    This is the main part of the backend. It is an express server that exposes several HTTP enpoints. One part of the enpoints are for users who wish to interrect with the backend. The other part of the endpoints are triggered by the Notifier once there is a change in the database. To run the Functions locally:  
+      a) Navigate to `packages/functions`.  
+      b) Upate `.env.sample` with your DB connection params  
+      c) Run`npm run serve`. This will start the express server and it will run the Notifier locally.  
+
+  3. Notifier:
+    The Notifier is responsible for listening to changes in the database. Every time there is a change, the Notifier calls the relevant endpoint sending the data before and after the update. Locally, the notifier calls the endpoint directly but if deployed from the `packages/notifier` folder, it posts the changes to Google pub/sub.
+
+Currently some tests in Functions are still strongly dependent on Google Cloud Storage, so to run the full test suite, you will need a Google Cloud service account file.
+
 <!-- CONTRIBUTING -->
 
 ## Contributing
