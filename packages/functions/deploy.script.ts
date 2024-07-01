@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable import/namespace */
-require('dotenv').config();
 import fs from 'fs';
 import { flattenObject } from './src/common';
 import { CloudFunctions } from './src/runtime/common';
@@ -21,10 +20,10 @@ fs.appendFileSync(
 
 fs.appendFileSync(file, `\n`);
 
-const buildImage = () => {
-  fs.appendFileSync(file, 'cp packages/functions/Dockerfile ./Dockerfile\n\n');
-  fs.appendFileSync(file, 'gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/functions\n\n');
-};
+// const buildImage = () => {
+//   fs.appendFileSync(file, 'cp packages/functions/Dockerfile ./Dockerfile\n\n');
+//   fs.appendFileSync(file, 'gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/functions\n\n');
+// };
 
 const deployServices = () => {
   Object.entries({

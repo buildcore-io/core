@@ -23,10 +23,10 @@ jobs:
         run: echo "$ENV_VARS" > .env
         env:
           ENV_VARS: ${{ secrets.ENV_VARS }}
-      - name: Build image
-        run: |
-            cp packages/search/Dockerfile .
-            gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/search
+      # - name: Build image
+      #   run: |
+      #       cp packages/search/Dockerfile .
+      #       gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/search
       - name: Deploy
         run: |
             gcloud run deploy search \
