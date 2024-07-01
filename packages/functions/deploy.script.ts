@@ -162,7 +162,7 @@ const createUpsertTopic = () => {
   fs.appendFileSync(file, command);
 };
 
-buildImage();
+// buildImage();
 deployServices();
 // deployStorageTriggers();
 deployFirestoreTriggers();
