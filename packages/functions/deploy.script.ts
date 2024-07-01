@@ -52,9 +52,8 @@ const deployServices = () => {
     if (options?.memory) {
       command += `      --memory=${options.memory.replace('B', '')} \\\n`;
     }
-    if (options?.minInstances) {
-      command += `      --min-instances=${options.minInstances} \\\n`;
-    }
+    command += `      --max-instances=10 \\\n`;
+    command += `      --min-instances=0 \\\n`;
     if (options?.cpu) {
       command += `      --cpu=${options.cpu} \\\n`;
     }

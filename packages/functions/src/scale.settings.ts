@@ -11,7 +11,6 @@ export const lowWarm = isProdEnv() ? 1 : lowCold;
 export const highUse = isProdEnv() ? 1 : lowWarm;
 
 export const WEN_FUNC_SCALE: { [key: string]: RuntimeOptions } = {
-  // Min MEMORY / CPU instance, so high use works well here.
   [WEN_FUNC.createMember]: { minInstances: highUse },
   [WEN_FUNC.updateMember]: { minInstances: lowCold },
 
@@ -34,11 +33,10 @@ export const WEN_FUNC_SCALE: { [key: string]: RuntimeOptions } = {
   [WEN_FUNC.approveParticipantAward]: {
     minInstances: lowCold,
     timeoutSeconds: 540,
-    memory: '4GiB',
   },
 
   // Proposal Functions
-  [WEN_FUNC.createProposal]: { minInstances: lowCold, timeoutSeconds: 300, memory: '2GiB' },
+  [WEN_FUNC.createProposal]: { minInstances: lowCold, timeoutSeconds: 300 },
   [WEN_FUNC.approveProposal]: { minInstances: lowCold },
   [WEN_FUNC.rejectProposal]: { minInstances: lowCold },
   [WEN_FUNC.voteOnProposal]: { minInstances: lowCold },
@@ -50,17 +48,15 @@ export const WEN_FUNC_SCALE: { [key: string]: RuntimeOptions } = {
 
   [WEN_FUNC.createNft]: { minInstances: lowCold },
   [WEN_FUNC.setForSaleNft]: { minInstances: lowCold },
-  [WEN_FUNC.createBatchNft]: { minInstances: lowCold, timeoutSeconds: 300, memory: '4GiB' },
+  [WEN_FUNC.createBatchNft]: { minInstances: lowCold, timeoutSeconds: 300 },
   [WEN_FUNC.updateUnsoldNft]: { minInstances: lowCold },
 
-  // Min MEMORY / CPU instance, so high use works well here.
   [WEN_FUNC.orderNft]: { minInstances: highUse },
   [WEN_FUNC.validateAddress]: { minInstances: lowCold },
 
   [WEN_FUNC.createToken]: { minInstances: lowCold },
 
-  // Min MEMORY / CPU instance, so high use works well here.
-  [WEN_FUNC.mintCollection]: { minInstances: lowCold, memory: '8GiB', timeoutSeconds: 540, cpu: 2 },
+  [WEN_FUNC.mintCollection]: { minInstances: lowCold, memory: '4GiB', timeoutSeconds: 540 },
 
   [WEN_FUNC.uploadFile]: { memory: '512MiB' },
 };
@@ -69,8 +65,8 @@ export const ALGOLIA_TRIGGER_SCALE: { [key: string]: RuntimeOptions } = {
   [COL.SPACE]: { minInstances: lowWarm, memory: '256MiB' },
   [COL.TOKEN]: { minInstances: lowWarm, memory: '256MiB' },
   [COL.AWARD]: { minInstances: lowWarm, memory: '256MiB' },
-  [COL.NFT]: { minInstances: lowWarm, memory: '512MiB', cpu: 1, concurrency: 100 },
-  [COL.COLLECTION]: { minInstances: lowWarm, memory: '512MiB', cpu: 1, concurrency: 300 },
+  [COL.NFT]: { minInstances: lowWarm, memory: '512MiB' },
+  [COL.COLLECTION]: { minInstances: lowWarm, memory: '512MiB' },
   [COL.MEMBER]: { minInstances: lowWarm, memory: '256MiB' },
   [COL.PROPOSAL]: { minInstances: lowWarm, memory: '256MiB' },
 };
@@ -85,7 +81,6 @@ export const TRIGGER_SCALE: { [key: string]: RuntimeOptions } = {
   },
   [WEN_FUNC_TRIGGER.onTokenStatusUpdated]: {
     timeoutSeconds: 540,
-    memory: '4GiB',
     minInstances: lowWarm,
   },
   [WEN_FUNC_TRIGGER.onTokenTradeOrderWrite]: { timeoutSeconds: 540, minInstances: highUse },
@@ -93,13 +88,11 @@ export const TRIGGER_SCALE: { [key: string]: RuntimeOptions } = {
   [WEN_FUNC_TRIGGER.onNftWrite]: {
     minInstances: lowWarm,
     timeoutSeconds: 540,
-    memory: '2GiB',
     concurrency: 40,
   },
   [WEN_FUNC_TRIGGER.onTransactionWrite]: {
     timeoutSeconds: 1800,
     minInstances: lowWarm,
-    memory: '4GiB',
   },
   [WEN_FUNC_TRIGGER.onMnemonicUpdated]: { minInstances: lowWarm, concurrency: 500 },
   [WEN_FUNC_TRIGGER.onCollectionStatsWrite]: { concurrency: 1000 },
@@ -107,14 +100,13 @@ export const TRIGGER_SCALE: { [key: string]: RuntimeOptions } = {
 
 export const STORAGE_TRIGGER_SCALE: { [key: string]: RuntimeOptions } = {
   [WEN_STORAGE_TRIGGER.onUploadFinalized]: {
-    memory: '4GiB',
     minInstances: lowWarm,
     bucket: getBucket(),
   },
 };
 
 export const CRON_TRIGGER_SCALE: { [key: string]: RuntimeOptions } = {
-  [WEN_SCHEDULED.onStakeRewardExpired]: { timeoutSeconds: 540, memory: '1GiB' },
-  [WEN_SCHEDULED.mediaUpload]: { memory: '4GiB' },
+  [WEN_SCHEDULED.onStakeRewardExpired]: { timeoutSeconds: 540 },
+  [WEN_SCHEDULED.mediaUpload]: {},
   [WEN_SCHEDULED.updateFloorPriceOnCollections]: { timeoutSeconds: 1800 },
 };
