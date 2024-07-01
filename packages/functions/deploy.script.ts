@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable import/namespace */
+require('dotenv').config();
 import fs from 'fs';
 import { flattenObject } from './src/common';
 import { CloudFunctions } from './src/runtime/common';
